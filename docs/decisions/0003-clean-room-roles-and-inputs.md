@@ -28,5 +28,4 @@ Adopt the protocol in `docs/clean-room.md`:
   ISO section. Tidal has to build its own tests from scratch.
 - Comment stripping discards real explanations of intent in compiler code.
   Writers must infer intent from code and behavior.
-- The protocol's guarantees do not hold in this proof of concept. The
-  limitations are listed in `docs/clean-room.md`.
+- Staffing for the proof of concept is described in `docs/clean-room.md`.

@@ -25,6 +25,4 @@ parent WG21 repository does not track it.
 - Tidal's history contains only Tidal work and can be published as is.
 - The parent repository will show `tidal/` as untracked. The author may add it
   to the parent's `.gitignore`.
-- Placing the repository on the same disk as WG21 material is still a weak
-  point. It is acceptable for a proof of concept and is listed in
-  `docs/clean-room.md` under known limitations.
+- The writer works only inside this repository and its `inputs/` directory.

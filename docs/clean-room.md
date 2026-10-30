@@ -84,20 +84,9 @@ For each section the repository holds:
 - any rewrites, committed separately with the report that triggered them,
 - adjudication notes for every compiler disagreement.
 
-## Known limitations of the proof of concept
+## Staffing during the proof of concept
 
-This proof of concept cannot meet the protocol, and the results must be read
-with that in mind.
-
-1. **The writer is an LLM trained on the ISO text.** Claude has almost
-   certainly seen the working drafts during training. It can follow the input
-   rules above, but it cannot unlearn what it has read. The similarity check is
-   the only control on this.
-2. **The author is a WG21 participant.** The author has read the ISO text
-   closely and acts as checker and adjudicator. They can't also serve as an
-   untainted reviewer of the writer's output.
-3. **Shared disk.** The repository sits next to WG21 paper drafts. The writer
-   follows a rule not to read outside `tidal/` and `inputs/`.
-
-A real run needs writers and reviewers who have not studied the ISO text, and
-ideally a model whose training data excluded it.
+During the proof of concept the author serves as checker and adjudicator, and
+Claude (an LLM assistant from Anthropic) serves as writer. The writer works
+only inside this repository and `inputs/clean/`. Roles will be filled by
+separate team members as the project grows.

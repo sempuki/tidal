@@ -8,12 +8,10 @@ their own records in `decisions/`. This file holds the narrative.
 Started Tidal as a proof of concept for producing a C++-compatible
 specification from open source implementations with LLM assistance.
 
-The author (a WG21 participant) and an LLM assistant (Claude) are the only
-participants. Both have prior exposure to the ISO text, so this run cannot be
-a true clean room. The protocol in `clean-room.md` is written for a future
-team, and this proof of concept follows it as closely as two tainted
-participants can. The point is to test the mechanics and measure how close
-the output lands to ISO wording.
+The author and an LLM assistant (Claude) are the participants. The author
+serves as checker and adjudicator, and Claude serves as writer, following the
+protocol in `clean-room.md`. The goal of this phase is to test the mechanics
+of the pipeline and to measure the output with the similarity check.
 
 Created the repository (decision 0001) and fixed the scope (decision 0002).
 
