@@ -105,3 +105,13 @@ All 27 probes matched the writer's predictions. The writer then checked the
 first error of every `reject` test, because a test can be rejected for an
 unrelated mistake and still pass. All were rejected for the intended reason.
 The report now records these errors so reviewers can do the same check.
+
+Draft (steps 5 and 6): 15 rules. 8 `required`, 2 `reject`, 4 `undefined`
+(one of them proposed), 1 `unspecified`, 1 `impl-defined`. Added glossary
+entries for integer promotion, unsequenced evaluation, the usual arithmetic
+conversions, and value categories.
+
+Adjudication (step 7): one divergence, MUL-D1 (floating overflow during
+constant evaluation). Under the protocol the writer doesn't adjudicate, so
+the section lists the options and a recommendation and leaves the decision
+to the adjudicator.
