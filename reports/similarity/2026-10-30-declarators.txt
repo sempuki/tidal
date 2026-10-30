@@ -1,0 +1,124 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   README.md:Tidal specification    longest=0   overlap=0.02
+ok   declarations/auto.md:Placeholder types in variable declaratio longest=0   overlap=0.00
+ok   declarations/auto.md:Syntax      longest=0   overlap=0.00
+ok   AUTO-1                           longest=0   overlap=0.00
+ok   AUTO-2                           longest=0   overlap=0.03
+ok   AUTO-3                           longest=0   overlap=0.02
+ok   AUTO-4                           longest=0   overlap=0.00
+ok   AUTO-5                           longest=0   overlap=0.00
+ok   AUTO-6                           longest=0   overlap=0.00
+ok   AUTO-7                           longest=0   overlap=0.02
+ok   AUTO-8                           longest=0   overlap=0.10
+ok   AUTO-9                           longest=0   overlap=0.02
+ok   AUTO-10                          longest=0   overlap=0.00
+ok   AUTO-11                          longest=0   overlap=0.00
+ok   AUTO-12                          longest=0   overlap=0.07
+ok   AUTO-13                          longest=0   overlap=0.00
+ok   declarations/auto.md:Evidence    longest=0   overlap=0.00
+ok   declarations/auto.md:Divergences longest=0   overlap=0.00
+ok   declarations/declarators.md:Declarators and cv-qualifiers longest=0   overlap=0.00
+ok   declarations/declarators.md:Syntax longest=0   overlap=0.00
+ok   DCL-1                            longest=0   overlap=0.07
+ok   DCL-2                            longest=0   overlap=0.06
+ok   DCL-3                            longest=0   overlap=0.00
+ok   DCL-4                            longest=0   overlap=0.00
+ok   DCL-5                            longest=0   overlap=0.01
+ok   DCL-6                            longest=0   overlap=0.04
+ok   DCL-7                            longest=0   overlap=0.09
+ok   DCL-8                            longest=0   overlap=0.03
+ok   DCL-9                            longest=0   overlap=0.00
+ok   DCL-10                           longest=0   overlap=0.00
+ok   CV-1                             longest=0   overlap=0.00
+ok   CV-2                             longest=0   overlap=0.00
+ok   CV-3                             longest=0   overlap=0.00
+ok   CV-4                             longest=0   overlap=0.07
+ok   CV-5                             longest=0   overlap=0.00
+ok   CV-6                             longest=0   overlap=0.03
+ok   CV-7                             longest=0   overlap=0.00
+ok   CV-8                             longest=0   overlap=0.00
+ok   declarations/declarators.md:Evidence longest=0   overlap=0.00
+ok   declarations/declarators.md:DCL-D1: largest array longest=0   overlap=0.00
+ok   declarations/storage-linkage.md:Storage duration and linkage longest=0   overlap=0.01
+ok   declarations/storage-linkage.md:Syntax longest=0   overlap=0.04
+ok   STO-1                            longest=0   overlap=0.02
+ok   STO-2                            longest=0   overlap=0.00
+ok   STO-3                            longest=0   overlap=0.00
+ok   STO-4                            longest=0   overlap=0.00
+ok   STO-5                            longest=0   overlap=0.00
+ok   STO-6                            longest=0   overlap=0.00
+ok   STO-7                            longest=0   overlap=0.04
+ok   LNK-1                            longest=0   overlap=0.00
+ok   LNK-2                            longest=0   overlap=0.00
+ok   LNK-3                            longest=0   overlap=0.00
+ok   LNK-4                            longest=0   overlap=0.08
+ok   LNK-5                            longest=0   overlap=0.25
+ok   LNK-6                            longest=0   overlap=0.02
+ok   LNK-7                            longest=0   overlap=0.03
+ok   LNK-8                            longest=0   overlap=0.02
+ok   LNK-9                            longest=0   overlap=0.00
+ok   declarations/storage-linkage.md:Evidence longest=0   overlap=0.01
+ok   declarations/storage-linkage.md:Divergences longest=0   overlap=0.00
+ok   expressions/multiplicative.md:Multiplicative operators longest=0   overlap=0.00
+ok   expressions/multiplicative.md:Syntax longest=0   overlap=0.00
+ok   MUL-1                            longest=0   overlap=0.00
+ok   MUL-2                            longest=0   overlap=0.00
+ok   MUL-3                            longest=0   overlap=0.03
+ok   MUL-4                            longest=0   overlap=0.00
+ok   MUL-5                            longest=0   overlap=0.00
+ok   MUL-6                            longest=0   overlap=0.05
+ok   MUL-7                            longest=0   overlap=0.03
+ok   MUL-8                            longest=0   overlap=0.02
+ok   MUL-9                            longest=0   overlap=0.00
+ok   MUL-10                           longest=0   overlap=0.03
+ok   MUL-11                           longest=0   overlap=0.00
+ok   MUL-12                           longest=0   overlap=0.00
+ok   MUL-13                           longest=0   overlap=0.00
+ok   MUL-14                           longest=0   overlap=0.03
+ok   MUL-15                           longest=0   overlap=0.00
+ok   expressions/multiplicative.md:Evidence longest=0   overlap=0.00
+ok   expressions/multiplicative.md:MUL-D1: floating-point overflow during c longest=0   overlap=0.01
+ok   expressions/multiplicative.md:MUL-D2: EDG accepts floating-point divis longest=0   overlap=0.01
+ok   expressions/multiplicative.md:MUL-D3: EDG accepts the most negative in longest=0   overlap=0.00
+ok   glossary.md:Glossary             longest=0   overlap=0.00
+ok   glossary.md:Constant evaluation  longest=0   overlap=0.00
+ok   glossary.md:Contextual conversion to bool longest=0   overlap=0.02
+ok   glossary.md:Cv-qualifier         longest=0   overlap=0.03
+ok   glossary.md:Declarator           longest=0   overlap=0.00
+ok   glossary.md:Discarded statement  longest=0   overlap=0.02
+ok   glossary.md:Immediate function context longest=0   overlap=0.06
+ok   glossary.md:Integer promotion    longest=0   overlap=0.00
+ok   glossary.md:Linkage              longest=0   overlap=0.02
+ok   glossary.md:Placeholder type     longest=0   overlap=0.00
+ok   glossary.md:Storage duration     longest=0   overlap=0.04
+ok   glossary.md:Translation unit     longest=0   overlap=0.00
+ok   glossary.md:Unsequenced          longest=0   overlap=0.02
+ok   glossary.md:Usual arithmetic conversions longest=0   overlap=0.02
+ok   glossary.md:Value category       longest=0   overlap=0.00
+ok   statements/if.md:The if statement longest=0   overlap=0.02
+ok   statements/if.md:Syntax          longest=0   overlap=0.00
+ok   IF-1                             longest=0   overlap=0.04
+ok   IF-2                             longest=0   overlap=0.00
+ok   IF-3                             longest=0   overlap=0.00
+ok   IF-4                             longest=0   overlap=0.00
+ok   IF-5                             longest=0   overlap=0.00
+ok   IF-6                             longest=0   overlap=0.00
+ok   IF-7                             longest=0   overlap=0.00
+ok   IF-8                             longest=0   overlap=0.00
+ok   IF-9                             longest=0   overlap=0.02
+ok   IF-10                            longest=0   overlap=0.00
+ok   IF-11                            longest=0   overlap=0.02
+ok   IF-12                            longest=0   overlap=0.05
+ok   IF-13                            longest=0   overlap=0.00
+ok   IF-14                            longest=0   overlap=0.10
+ok   IF-15                            longest=0   overlap=0.06
+ok   IF-16                            longest=0   overlap=0.12
+ok   IF-17                            longest=0   overlap=0.04
+ok   IF-18                            longest=0   overlap=0.02
+ok   IF-19                            longest=0   overlap=0.06
+ok   IF-20                            longest=0   overlap=0.00
+ok   statements/if.md:Evidence        longest=0   overlap=0.00
+ok   statements/if.md:Divergences     longest=0   overlap=0.00
+
+0 flagged
