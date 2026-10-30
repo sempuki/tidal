@@ -25,6 +25,12 @@ current state only. The history of how it got here is in `git log`.
 | [The conditional operator](../spec/expressions/conditional.md) | 7 | 5 required, 2 reject | 23 |  | 0 flagged |
 | [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 22 | Q-0032 | 0 flagged |
 | [The comma operator](../spec/expressions/comma.md) | 6 | 4 required, 1 reject, 1 recommended | 12 |  | 0 flagged |
+| [Unary operators](../spec/expressions/unary.md) | 20 | 10 required, 6 reject, 2 undefined, 1 impl-defined, 1 recommended | 39 |  | 0 flagged |
+| [Postfix expressions](../spec/expressions/postfix.md) | 13 | 7 required, 4 reject, 2 undefined | 28 | Q-0034 | 0 flagged |
+| [Casts](../spec/expressions/casts.md) | 12 | 4 required, 6 reject, 1 undefined, 1 impl-defined | 25 |  | 0 flagged |
+| [Constant expressions](../spec/expressions/constant-expressions.md) | 13 | 2 required, 10 reject, 1 impl-defined | 32 | Q-0020, Q-0033 | 0 flagged |
+| [New and delete](../spec/expressions/new-delete.md) | 9 | 4 required, 3 reject, 2 undefined | 31 | Q-0035, Q-0036 | 0 flagged |
+| [Lambda expressions](../spec/expressions/lambdas.md) | 16 | 14 required, 2 reject | 36 | Q-0037 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 13 | 11 required, 2 reject | 40 | Q-0010 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 16 | 11 required, 3 reject, 2 no-diagnostic | 40 | Q-0011 | 0 flagged |
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 18 | 13 required, 3 reject, 1 undefined, 1 impl-defined | 61 | Q-0012 | 0 flagged |
@@ -46,11 +52,11 @@ converted. The latest similarity report, covering every page, is
 `reports/similarity/2026-10-30-format-conversion.txt`, and the constexpr page's
 is `reports/similarity/2026-10-30-constexpr.txt`, the statements'
 is `reports/similarity/2026-10-30-statements.txt`, and the latest is
-`reports/similarity/2026-10-30-expressions.txt`.
+`reports/similarity/2026-10-30-expressions-2.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 883/883 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1074/1074 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -66,7 +72,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Thirty-one questions are open for opinions, each with a provisional answer the
+Thirty-six questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -97,11 +103,11 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
-7. Draft the remaining expression topics in the order set by decision
-   0018: unary and postfix operators, casts, constant expressions, `new`
-   and `delete`, and lambdas.
+7. Triage the gap review (decision 0019, `AGENTS.md`): turn each item in
+   the summary into probes, and add or correct rules.
 8. Continue classes in the order set by decision 0017. Next: access
-   control and friends.
+   control and friends. Statements, expressions, and declarations in the
+   charter's scope all have pages.
 
 ## Size estimate
 
