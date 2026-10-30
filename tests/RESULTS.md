@@ -14,6 +14,46 @@ compilers affect the Status column.
 
 | Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
+| `declarations/auto/added-qualifiers.cpp` | AUTO-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/array-of-auto.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-empty.cpp` | AUTO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-multiple.cpp` | AUTO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-single.cpp` | AUTO-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/combined-type-specifier.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/const-lvalue-reference-to-rvalue.cpp` | AUTO-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/constexpr-adds-const.cpp` | AUTO-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/constrained-not-satisfied.cpp` | AUTO-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/constrained-satisfied.cpp` | AUTO-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/copy-list-deduces-initializer-list.cpp` | AUTO-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/copy-list-empty.cpp` | AUTO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/copy-list-mixed-types.cpp` | AUTO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/copy-list-without-library.cpp` | AUTO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/decays-arrays-and-functions.cpp` | AUTO-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-braced-multiple.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-braced.cpp` | AUTO-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-copy-list.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-function.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-keeps-cv.cpp` | AUTO-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-value-category.cpp` | AUTO-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-with-pointer.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-with-qualifier.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/drops-references-and-cv.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/forwarding-reference.cpp` | AUTO-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/in-conditions.cpp` | AUTO-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/keeps-pointee-cv.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/lvalue-reference-to-rvalue.cpp` | AUTO-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/lvalue-reference.cpp` | AUTO-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/no-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/nullptr.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/overloaded-function.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/own-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-braced.cpp` | AUTO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-multiple.cpp` | AUTO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-single.cpp` | AUTO-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/pointer-from-non-pointer.cpp` | AUTO-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/several-declarators-conflict.cpp` | AUTO-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
@@ -98,13 +138,167 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-83/83 tests pass on baseline compilers.
+123/123 tests pass on baseline compilers.
 
 ## Rejections
 
 First error from each compiler that rejected a test, so a reviewer can
 check that the rejection has the intended cause.
 
+- `declarations/auto/array-of-auto.cpp` (clang-host): error: cannot deduce actual type for variable 'a' with type 'auto[]' from initializer list
+- `declarations/auto/array-of-auto.cpp` (gcc-host): error: unable to deduce ‘std::initializer_list<auto> []’ from ‘{1, 2}’ / note:   mismatched types ‘std::initializer_list<auto>’ and ‘int’
+- `declarations/auto/array-of-auto.cpp` (edg-7.0): error: "auto" type cannot appear in top-level array type
+- `declarations/auto/array-of-auto.cpp` (gcc-14): error: unable to deduce 'std::initializer_list<auto> []' from '{1, 2}' / note:   mismatched types 'std::initializer_list<auto>' and 'int'
+- `declarations/auto/array-of-auto.cpp` (clang-18): error: cannot deduce actual type for variable 'a' with type 'auto[]' from initializer list
+- `declarations/auto/array-of-auto.cpp` (gcc-16): error: unable to deduce 'std::initializer_list<auto> []' from '{1, 2}' / note:   mismatched types 'std::initializer_list<auto>' and 'int'
+- `declarations/auto/array-of-auto.cpp` (clang-22): error: cannot deduce actual type for variable 'a' with type 'auto[]' from initializer list
+- `declarations/auto/braced-direct-empty.cpp` (clang-host): error: initializer for variable 'a' with type 'auto' is empty
+- `declarations/auto/braced-direct-empty.cpp` (gcc-host): error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] / note: for deduction to ‘std::initializer_list’, use copy-list-initialization (i.e. add ‘=’ before the ‘{’)
+- `declarations/auto/braced-direct-empty.cpp` (edg-7.0): error: braced initialization of a variable declared with a placeholder type but without "=" requires exactly one element inside the braces / error: cannot deduce "auto" type
+- `declarations/auto/braced-direct-empty.cpp` (gcc-14): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/braced-direct-empty.cpp` (clang-18): error: initializer for variable 'a' with type 'auto' is empty
+- `declarations/auto/braced-direct-empty.cpp` (gcc-16): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/braced-direct-empty.cpp` (clang-22): error: initializer for variable 'a' with type 'auto' is empty
+- `declarations/auto/braced-direct-multiple.cpp` (clang-host): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/braced-direct-multiple.cpp` (gcc-host): error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] / note: for deduction to ‘std::initializer_list’, use copy-list-initialization (i.e. add ‘=’ before the ‘{’)
+- `declarations/auto/braced-direct-multiple.cpp` (edg-7.0): error: braced initialization of a variable declared with a placeholder type but without "=" requires exactly one element inside the braces / error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+- `declarations/auto/braced-direct-multiple.cpp` (gcc-14): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/braced-direct-multiple.cpp` (clang-18): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/braced-direct-multiple.cpp` (gcc-16): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/braced-direct-multiple.cpp` (clang-22): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/combined-type-specifier.cpp` (clang-host): error: 'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases [-Werror,-Wauto-storage-class] / error: illegal storage class on file-scoped variable
+- `declarations/auto/combined-type-specifier.cpp` (gcc-host): error: two or more data types in declaration of ‘a’
+- `declarations/auto/combined-type-specifier.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `declarations/auto/combined-type-specifier.cpp` (gcc-14): error: two or more data types in declaration of 'a'
+- `declarations/auto/combined-type-specifier.cpp` (clang-18): error: 'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases [-Werror,-Wauto-storage-class] / error: illegal storage class on file-scoped variable
+- `declarations/auto/combined-type-specifier.cpp` (gcc-16): error: two or more data types in declaration of 'a'
+- `declarations/auto/combined-type-specifier.cpp` (clang-22): error: 'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases [-Werror,-Wauto-storage-class] / error: illegal storage class on file-scoped variable
+- `declarations/auto/constrained-not-satisfied.cpp` (clang-host): error: deduced type 'double' does not satisfy 'Int' / note: because 'same<double, int>' evaluated to false
+- `declarations/auto/constrained-not-satisfied.cpp` (gcc-host): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-not-satisfied.cpp` (edg-7.0): error: the deduced placeholder type "double" failed the type constraint / note: atomic constraint evaluates to false
+- `declarations/auto/constrained-not-satisfied.cpp` (gcc-14): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-not-satisfied.cpp` (clang-18): error: deduced type 'double' does not satisfy 'Int' / note: because 'same<double, int>' evaluated to false
+- `declarations/auto/constrained-not-satisfied.cpp` (gcc-16): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-not-satisfied.cpp` (clang-22): error: deduced type 'double' does not satisfy 'Int' / note: because 'same<double, int>' evaluated to false
+- `declarations/auto/copy-list-empty.cpp` (clang-host): error: cannot deduce actual type for variable 'a' with type 'auto' from initializer list
+- `declarations/auto/copy-list-empty.cpp` (gcc-host): error: unable to deduce ‘std::initializer_list<auto>’ from ‘<brace-enclosed initializer list>()’ / note:   couldn’t deduce template parameter ‘auto’
+- `declarations/auto/copy-list-empty.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/copy-list-empty.cpp` (gcc-14): error: unable to deduce 'std::initializer_list<auto>' from '<brace-enclosed initializer list>()' / note:   couldn't deduce template parameter 'auto'
+- `declarations/auto/copy-list-empty.cpp` (clang-18): error: cannot deduce actual type for variable 'a' with type 'auto' from initializer list
+- `declarations/auto/copy-list-empty.cpp` (gcc-16): error: unable to deduce 'std::initializer_list<auto>' from '<brace-enclosed initializer list>()' / note:   couldn't deduce template parameter 'auto'
+- `declarations/auto/copy-list-empty.cpp` (clang-22): error: cannot deduce actual type for variable 'a' with type 'auto' from initializer list
+- `declarations/auto/copy-list-mixed-types.cpp` (clang-host): error: deduced conflicting types ('int' vs 'double') for initializer list element type
+- `declarations/auto/copy-list-mixed-types.cpp` (gcc-host): error: unable to deduce ‘std::initializer_list<auto>’ from ‘{1, 2.0e+0}’ / note:   deduced conflicting types for parameter ‘auto’ (‘int’ and ‘double’)
+- `declarations/auto/copy-list-mixed-types.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/copy-list-mixed-types.cpp` (gcc-14): error: unable to deduce 'std::initializer_list<auto>' from '{1, 2.0e+0}' / note:   deduced conflicting types for parameter 'auto' ('int' and 'double')
+- `declarations/auto/copy-list-mixed-types.cpp` (clang-18): error: deduced conflicting types ('int' vs 'double') for initializer list element type
+- `declarations/auto/copy-list-mixed-types.cpp` (gcc-16): error: unable to deduce 'std::initializer_list<auto>' from '{1, 2.0e+0}' / note:   deduced conflicting types for parameter 'auto' ('int' and 'double')
+- `declarations/auto/copy-list-mixed-types.cpp` (clang-22): error: deduced conflicting types ('int' vs 'double') for initializer list element type
+- `declarations/auto/copy-list-without-library.cpp` (clang-host): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `declarations/auto/copy-list-without-library.cpp` (gcc-host): error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’
+- `declarations/auto/copy-list-without-library.cpp` (edg-7.0): error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use / error: cannot deduce "auto" type
+- `declarations/auto/copy-list-without-library.cpp` (gcc-14): error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `declarations/auto/copy-list-without-library.cpp` (clang-18): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `declarations/auto/copy-list-without-library.cpp` (gcc-16): error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `declarations/auto/copy-list-without-library.cpp` (clang-22): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (clang-host): error: initializer for variable 'a' with type 'decltype(auto)' contains multiple expressions
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (gcc-host): error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] / note: for deduction to ‘std::initializer_list’, use copy-list-initialization (i.e. add ‘=’ before the ‘{’)
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (edg-7.0): error: braced initialization of a variable declared with a placeholder type but without "=" requires exactly one element inside the braces / error: cannot deduce "decltype(auto)" type
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (gcc-14): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (clang-18): error: initializer for variable 'a' with type 'decltype(auto)' contains multiple expressions
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (gcc-16): error: direct-list-initialization of 'auto' requires exactly one element [-fpermissive] / note: for deduction to 'std::initializer_list', use copy-list-initialization (i.e. add '=' before the '{')
+- `declarations/auto/decltype-auto-braced-multiple.cpp` (clang-22): error: initializer for variable 'a' with type 'decltype(auto)' contains multiple expressions
+- `declarations/auto/decltype-auto-copy-list.cpp` (clang-host): error: cannot deduce 'decltype(auto)' from initializer list
+- `declarations/auto/decltype-auto-copy-list.cpp` (gcc-host): error: could not convert ‘{1}’ from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<<brace-enclosed initializer list> >’
+- `declarations/auto/decltype-auto-copy-list.cpp` (edg-7.0): error: cannot deduce "decltype(auto)" type
+- `declarations/auto/decltype-auto-copy-list.cpp` (gcc-14): error: could not convert '{1}' from '<brace-enclosed initializer list>' to 'std::initializer_list<<brace-enclosed initializer list> >'
+- `declarations/auto/decltype-auto-copy-list.cpp` (clang-18): error: cannot deduce 'decltype(auto)' from initializer list
+- `declarations/auto/decltype-auto-copy-list.cpp` (gcc-16): error: could not convert '{1}' from '<brace-enclosed initializer list>' to 'std::initializer_list<<brace-enclosed initializer list> >'
+- `declarations/auto/decltype-auto-copy-list.cpp` (clang-22): error: cannot deduce 'decltype(auto)' from initializer list
+- `declarations/auto/decltype-auto-function.cpp` (clang-host): error: cannot initialize a variable of type 'void ()' with an lvalue of type 'void ()'
+- `declarations/auto/decltype-auto-function.cpp` (gcc-host): error: initializer for ‘decltype(auto) f’ has function type; did you forget the ‘()’?
+- `declarations/auto/decltype-auto-function.cpp` (edg-7.0): error: a value of type "void (*)()" cannot be used to initialize an entity of type "void ()"
+- `declarations/auto/decltype-auto-function.cpp` (gcc-14): error: initializer for 'decltype(auto) f' has function type; did you forget the '()'?
+- `declarations/auto/decltype-auto-function.cpp` (clang-18): error: cannot initialize a variable of type 'void ()' with an lvalue of type 'void ()'
+- `declarations/auto/decltype-auto-function.cpp` (gcc-16): error: initializer for 'decltype(auto) f' has function type; did you forget the '()'?
+- `declarations/auto/decltype-auto-function.cpp` (clang-22): error: cannot initialize a variable of type 'void ()' with an lvalue of type 'void ()'
+- `declarations/auto/decltype-auto-with-pointer.cpp` (clang-host): error: cannot form pointer to 'decltype(auto)'
+- `declarations/auto/decltype-auto-with-pointer.cpp` (gcc-host): error: ‘decltype(auto)*’ as type rather than plain ‘decltype(auto)’
+- `declarations/auto/decltype-auto-with-pointer.cpp` (edg-7.0): error: "decltype(auto)" must be a placeholder for the complete type of the variable (not for a component of that type)
+- `declarations/auto/decltype-auto-with-pointer.cpp` (gcc-14): error: 'decltype(auto)*' as type rather than plain 'decltype(auto)'
+- `declarations/auto/decltype-auto-with-pointer.cpp` (clang-18): error: cannot form pointer to 'decltype(auto)'
+- `declarations/auto/decltype-auto-with-pointer.cpp` (gcc-16): error: 'decltype(auto)*' as type rather than plain 'decltype(auto)'
+- `declarations/auto/decltype-auto-with-pointer.cpp` (clang-22): error: cannot form pointer to 'decltype(auto)'
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (clang-host): error: 'decltype(auto)' cannot be combined with other type specifiers
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (gcc-host): error: ‘decltype(auto)’ cannot be cv-qualified
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (edg-7.0): error: decltype(auto) cannot have added type qualifiers
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (gcc-14): error: 'decltype(auto)' cannot be cv-qualified
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (clang-18): error: 'decltype(auto)' cannot be combined with other type specifiers
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (gcc-16): error: 'decltype(auto)' cannot be cv-qualified
+- `declarations/auto/decltype-auto-with-qualifier.cpp` (clang-22): error: 'decltype(auto)' cannot be combined with other type specifiers
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (clang-host): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (edg-7.0): error: initial value of reference to non-const must be an lvalue
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (clang-18): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `declarations/auto/lvalue-reference-to-rvalue.cpp` (clang-22): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/no-initializer.cpp` (clang-host): error: declaration of variable 'a' with deduced type 'auto' requires an initializer
+- `declarations/auto/no-initializer.cpp` (gcc-host): error: declaration of ‘auto a’ has no initializer
+- `declarations/auto/no-initializer.cpp` (edg-7.0): error: cannot deduce "auto" type (initializer required)
+- `declarations/auto/no-initializer.cpp` (gcc-14): error: declaration of 'auto a' has no initializer
+- `declarations/auto/no-initializer.cpp` (clang-18): error: declaration of variable 'a' with deduced type 'auto' requires an initializer
+- `declarations/auto/no-initializer.cpp` (gcc-16): error: declaration of 'auto a' has no initializer
+- `declarations/auto/no-initializer.cpp` (clang-22): error: declaration of variable 'a' with deduced type 'auto' requires an initializer
+- `declarations/auto/overloaded-function.cpp` (clang-host): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `declarations/auto/overloaded-function.cpp` (gcc-host): error: unable to deduce ‘auto’ from ‘f’ / note:   couldn’t deduce template parameter ‘auto’
+- `declarations/auto/overloaded-function.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/overloaded-function.cpp` (gcc-14): error: unable to deduce 'auto' from 'f' / note:   couldn't deduce template parameter 'auto'
+- `declarations/auto/overloaded-function.cpp` (clang-18): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `declarations/auto/overloaded-function.cpp` (gcc-16): error: unable to deduce 'auto' from 'f' / note:   couldn't deduce template parameter 'auto'
+- `declarations/auto/overloaded-function.cpp` (clang-22): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `declarations/auto/own-initializer.cpp` (clang-host): error: variable 'a' declared with deduced type 'auto' cannot appear in its own initializer
+- `declarations/auto/own-initializer.cpp` (gcc-host): error: use of ‘a’ before deduction of ‘auto’
+- `declarations/auto/own-initializer.cpp` (edg-7.0): error: a variable declared with an auto type specifier cannot appear in its own initializer
+- `declarations/auto/own-initializer.cpp` (gcc-14): error: use of 'a' before deduction of 'auto'
+- `declarations/auto/own-initializer.cpp` (clang-18): error: variable 'a' declared with deduced type 'auto' cannot appear in its own initializer
+- `declarations/auto/own-initializer.cpp` (gcc-16): error: use of 'a' before deduction of 'auto'
+- `declarations/auto/own-initializer.cpp` (clang-22): error: variable 'a' declared with deduced type 'auto' cannot appear in its own initializer
+- `declarations/auto/paren-braced.cpp` (clang-host): error: cannot deduce type for variable 'a' with type 'auto' from parenthesized initializer list
+- `declarations/auto/paren-braced.cpp` (gcc-host): error: list-initializer for non-class type must not be parenthesized / error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’
+- `declarations/auto/paren-braced.cpp` (edg-7.0): error: a parenthesized initializer must be an expression, not a brace-enclosed list / error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use
+- `declarations/auto/paren-braced.cpp` (gcc-14): error: list-initializer for non-class type must not be parenthesized / error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `declarations/auto/paren-braced.cpp` (clang-18): error: cannot deduce type for variable 'a' with type 'auto' from parenthesized initializer list
+- `declarations/auto/paren-braced.cpp` (gcc-16): error: list-initializer for non-class type must not be parenthesized / error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `declarations/auto/paren-braced.cpp` (clang-22): error: cannot deduce type for variable 'a' with type 'auto' from parenthesized initializer list
+- `declarations/auto/paren-multiple.cpp` (clang-host): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/paren-multiple.cpp` (gcc-host): error: expression list treated as compound expression in initializer [-fpermissive] / error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/auto/paren-multiple.cpp` (edg-7.0): error: too many initializer values
+- `declarations/auto/paren-multiple.cpp` (gcc-14): error: expression list treated as compound expression in initializer [-fpermissive] / error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/auto/paren-multiple.cpp` (clang-18): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/paren-multiple.cpp` (gcc-16): error: expression list treated as compound expression in initializer [-fpermissive] / error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/auto/paren-multiple.cpp` (clang-22): error: initializer for variable 'a' with type 'auto' contains multiple expressions
+- `declarations/auto/pointer-from-non-pointer.cpp` (clang-host): error: variable 'p' with type 'auto *' has incompatible initializer of type 'int'
+- `declarations/auto/pointer-from-non-pointer.cpp` (gcc-host): error: unable to deduce ‘auto*’ from ‘1’ / note:   mismatched types ‘auto*’ and ‘int’
+- `declarations/auto/pointer-from-non-pointer.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/pointer-from-non-pointer.cpp` (gcc-14): error: unable to deduce 'auto*' from '1' / note:   mismatched types 'auto*' and 'int'
+- `declarations/auto/pointer-from-non-pointer.cpp` (clang-18): error: variable 'p' with type 'auto *' has incompatible initializer of type 'int'
+- `declarations/auto/pointer-from-non-pointer.cpp` (gcc-16): error: unable to deduce 'auto*' from '1' / note:   mismatched types 'auto*' and 'int'
+- `declarations/auto/pointer-from-non-pointer.cpp` (clang-22): error: variable 'p' with type 'auto *' has incompatible initializer of type 'int'
+- `declarations/auto/several-declarators-conflict.cpp` (clang-host): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-conflict.cpp` (gcc-host): error: inconsistent deduction for ‘auto’: ‘int’ and then ‘double’
+- `declarations/auto/several-declarators-conflict.cpp` (edg-7.0): error: "auto" type is "double" for this entity, but was previously implied to be "int"
+- `declarations/auto/several-declarators-conflict.cpp` (gcc-14): error: inconsistent deduction for 'auto': 'int' and then 'double'
+- `declarations/auto/several-declarators-conflict.cpp` (clang-18): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-conflict.cpp` (gcc-16): error: inconsistent deduction for 'auto': 'int' and then 'double'
+- `declarations/auto/several-declarators-conflict.cpp` (clang-22): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/void-initializer.cpp` (clang-host): error: variable has incomplete type 'void'
+- `declarations/auto/void-initializer.cpp` (gcc-host): error: deduced type ‘void’ for ‘a’ is incomplete
+- `declarations/auto/void-initializer.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/void-initializer.cpp` (gcc-14): error: deduced type 'void' for 'a' is incomplete
+- `declarations/auto/void-initializer.cpp` (clang-18): error: variable has incomplete type 'void'
+- `declarations/auto/void-initializer.cpp` (gcc-16): error: deduced type 'void' for 'a' is incomplete
+- `declarations/auto/void-initializer.cpp` (clang-22): error: variable has incomplete type 'void'
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
