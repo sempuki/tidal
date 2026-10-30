@@ -1,0 +1,45 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   README.md:intro                  longest=0   overlap=0.03
+ok   expressions/multiplicative.md:intro longest=0   overlap=0.00
+ok   MUL-1                            longest=0   overlap=0.00
+ok   MUL-2                            longest=0   overlap=0.00
+ok   MUL-3                            longest=0   overlap=0.03
+ok   MUL-4                            longest=0   overlap=0.00
+ok   MUL-5                            longest=0   overlap=0.00
+ok   MUL-6                            longest=0   overlap=0.05
+ok   MUL-7                            longest=0   overlap=0.03
+FLAG MUL-8                            longest=10  overlap=0.31
+     shared run (Tidal text): 2 n where n is the number of bits in
+ok   MUL-9                            longest=0   overlap=0.00
+ok   MUL-10                           longest=0   overlap=0.03
+ok   MUL-11                           longest=0   overlap=0.00
+ok   MUL-12                           longest=0   overlap=0.00
+ok   MUL-13                           longest=0   overlap=0.00
+ok   MUL-14                           longest=0   overlap=0.03
+FLAG MUL-15                           longest=8   overlap=0.01
+     shared run (Tidal text): value is outside the range of representable values
+ok   glossary.md:intro                longest=0   overlap=0.01
+ok   statements/if.md:intro           longest=0   overlap=0.01
+ok   IF-1                             longest=0   overlap=0.04
+ok   IF-2                             longest=0   overlap=0.00
+ok   IF-3                             longest=0   overlap=0.00
+ok   IF-4                             longest=0   overlap=0.00
+ok   IF-5                             longest=0   overlap=0.00
+ok   IF-6                             longest=0   overlap=0.00
+ok   IF-7                             longest=0   overlap=0.00
+ok   IF-8                             longest=0   overlap=0.00
+ok   IF-9                             longest=0   overlap=0.02
+ok   IF-10                            longest=0   overlap=0.00
+ok   IF-11                            longest=0   overlap=0.02
+ok   IF-12                            longest=0   overlap=0.05
+ok   IF-13                            longest=0   overlap=0.00
+ok   IF-14                            longest=0   overlap=0.10
+ok   IF-15                            longest=0   overlap=0.06
+ok   IF-16                            longest=0   overlap=0.12
+ok   IF-17                            longest=0   overlap=0.04
+ok   IF-18                            longest=0   overlap=0.02
+ok   IF-19                            longest=0   overlap=0.06
+ok   IF-20                            longest=0   overlap=0.00
+
+2 flagged
