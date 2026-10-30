@@ -11,3 +11,4 @@ Draft. Sections are listed in the order they appear in the published PDF
 - Declarations
   - [Placeholder types in variable declarations](declarations/auto.md)
   - [Storage duration and linkage](declarations/storage-linkage.md)
+  - [Declarators and cv-qualifiers](declarations/declarators.md)

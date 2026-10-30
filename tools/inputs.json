@@ -106,6 +106,12 @@
       "repo": "edg",
       "path": "src/decls.c",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-type",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaType.cpp",
+      "class": "sanitized"
     }
   ]
 }

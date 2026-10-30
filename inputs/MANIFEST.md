@@ -30,3 +30,4 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | gcc-cp-decl | gcc | `gcc/cp/decl.cc` | sanitized | `33f719a5572008e9a7cc4194294d3971bdf62e23e2e2840115eaa09f301c6728` |
 | edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
 | edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
+| clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `17023d2296e5b1c0c4ad79f5f350189475432b8a4cf2f7ef0dfd494cfc379637` |
