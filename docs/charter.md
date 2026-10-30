@@ -2,7 +2,7 @@
 
 ## Goal
 
-Produce a specification for expressions and statements that
+Produce a specification for expressions, statements, and declarations that
 
 1. describes the same language as ISO C++23, so that a program's meaning under
    Tidal matches its meaning under ISO C++, and
@@ -30,19 +30,23 @@ In scope:
 - Expressions: value categories, the built-in operators, evaluation order and
   sequencing, conversions applied to operands, constant evaluation as far as
   it decides whether an expression is a constant expression.
+- Declarations: placeholder types (`auto`, `decltype(auto)`), storage
+  classes and linkage, declarators (pointers, references, arrays,
+  functions), cv-qualifiers, initialization, structured bindings,
+  enumerations, namespaces and `using`, standard attributes, function
+  definitions, and the `constexpr`, `consteval`, and `constinit`
+  specifiers. The order of work is in `docs/status.md`.
 
 Referenced but not specified:
 
-Expressions and statements depend on types, declarations, name lookup,
-overload resolution, classes, and templates. Tidal sections in this proof of
-concept refer to those concepts by name and list them in a "Depends on"
-block. They are not specified here.
+The in-scope topics depend on name lookup, overload resolution, classes,
+and templates. Tidal sections refer to those concepts by name and list them
+in a "Depends on" block. They are not specified here.
 
 Out of scope:
 
 - The preprocessor, lexical structure, modules.
-- Declarations, classes, templates, and overload resolution as topics of their
-  own.
+- Classes, templates, and overload resolution as topics of their own.
 - The standard library.
 - Coroutines (`co_await`, `co_yield`, `co_return`).
 - The memory model and threads.
