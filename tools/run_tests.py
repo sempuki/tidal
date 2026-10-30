@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matrix  # noqa: E402
 from matrix import BUILD, TESTS, Compiler  # noqa: E402
 
-EXPECTATIONS = {"accept", "reject", "link-fail", "run"}
+EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
@@ -62,7 +62,7 @@ class Test:
         e = self.overrides.get(c.id) or self.overrides.get(c.family) or self.default
         if e is None and c.role == "baseline":
             raise ValueError(f"{self.name}: no expectation for baseline compiler {c.id}")
-        if e in {"run", "link-fail"} and c.frontend_only:
+        if e in {"run", "run-fail", "link-fail"} and c.frontend_only:
             return "accept"
         return e
 
@@ -167,7 +167,7 @@ def multi_unit_outcome(test: Test, c: Compiler) -> tuple[str, str]:
     proc = c.run(c.argv(c.build, srcs, out, test.flags))
     if proc.returncode != 0:
         return "link-fail", failure(proc)
-    if test.expect(c) == "run":
+    if test.expect(c) in {"run", "run-fail"}:
         return run_binary(c, out)
     return "accept", ""
 
@@ -179,7 +179,7 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     if test.sources:
         return multi_unit_outcome(test, c)
     src, out, _ = c.paths(test.path)
-    wants_run = test.expect(c) == "run"
+    wants_run = test.expect(c) in {"run", "run-fail"}
     template = c.build if wants_run else c.check
     proc = c.run(c.argv(template, src, out, test.flags))
     if proc.returncode != 0:
