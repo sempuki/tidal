@@ -136,6 +136,12 @@
       "repo": "edg",
       "path": "src/decl_inits.c",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-declcxx",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaDeclCXX.cpp",
+      "class": "sanitized"
     }
   ]
 }

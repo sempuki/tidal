@@ -35,3 +35,4 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | gcc-cp-typeck2 | gcc | `gcc/cp/typeck2.cc` | sanitized | `5d5105026f1237b71eb90bf30ec6eb5eb66570c587d7bc6973e1c4bff9a71be4` |
 | gcc-cp-init | gcc | `gcc/cp/init.cc` | sanitized | `c47fdc358b897b835b2ccb80f67781e58fdb8625a134dc52d131229e06999862` |
 | edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `8d66e24839804eb5e636c960fde1598553b646179a199611ee1d38eca8277bc7` |
+| clang-sema-declcxx | llvm | `clang/lib/Sema/SemaDeclCXX.cpp` | sanitized | `7df48f0b089ba9a96e4d6db9e2d19ee8d6421f0b6154d073af78442986c9352e` |

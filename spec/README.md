@@ -17,3 +17,4 @@ Draft. Sections are listed in the order they appear in the published PDF
     - [List initialization and aggregates](declarations/initialization/list.md)
     - [Reference binding](declarations/initialization/references.md)
     - [Initialization of static and thread storage](declarations/initialization/static.md)
+  - [Structured bindings](declarations/structured-bindings.md)
