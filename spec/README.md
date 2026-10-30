@@ -19,3 +19,4 @@ Draft. Sections are listed in the order they appear in the published PDF
     - [Initialization of static and thread storage](declarations/initialization/static.md)
   - [Structured bindings](declarations/structured-bindings.md)
   - [Enumerations](declarations/enumerations.md)
+  - [Namespaces and using](declarations/namespaces.md)
