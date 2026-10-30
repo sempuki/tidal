@@ -18,3 +18,4 @@ Draft. Sections are listed in the order they appear in the published PDF
     - [Reference binding](declarations/initialization/references.md)
     - [Initialization of static and thread storage](declarations/initialization/static.md)
   - [Structured bindings](declarations/structured-bindings.md)
+  - [Enumerations](declarations/enumerations.md)
