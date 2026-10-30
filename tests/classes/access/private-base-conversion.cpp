@@ -1,4 +1,4 @@
-// tidal-rules: ACC-8
+// tidal-rules: ACC-12
 // tidal-expect: reject
 struct B {};
 class D : B {};
