@@ -5,6 +5,11 @@ source-compatible with ISO/IEC 14882 (C++). The specification text is written
 independently. It is derived from the observable behavior of open source C++
 implementations and their test suites, never from the ISO text.
 
+The [Ferrocene Language Specification](https://rust-lang.github.io/fls/)
+for Rust is the inspiration for Tidal's presentation: its fixed page
+segments, short identified rules, linked glossary terms, and informative
+examples. See Acknowledgements below.
+
 Repository: https://github.com/sempuki/tidal
 Specification site: https://sempuki.github.io/tidal/
 
