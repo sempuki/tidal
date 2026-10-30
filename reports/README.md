@@ -2,15 +2,16 @@
 
 ## Similarity reports (pipeline step 8)
 
-Run by the checker. The reference corpus must live outside this repository,
-and the tool refuses one that doesn't.
+Anyone may run the check, including the writer, because the report quotes
+only Tidal text (decision 0011). The reference corpus is WG21 document N4950,
+the C++23 working draft. It must live outside this repository, and the tool
+refuses one that doesn't. Nobody opens it.
 
-    git clone https://github.com/cplusplus/draft ~/tidal-reference/draft
-    git -C ~/tidal-reference/draft checkout n4950    # the C++23 draft
+    git clone --depth 1 --branch n4950 https://github.com/cplusplus/draft ~/tidal-reference/draft
     tools/similarity.py --reference ~/tidal-reference/draft/source \
         --out reports/similarity/<date>-<label>.txt
 
 Commit the report on its own, with a message that gives the reference
-revision and the Tidal commit that was checked. The report quotes only Tidal
-text, so the writer may read it and rewrite flagged rules (step 9). After a
+revision and the Tidal commit that was checked. Rewrite flagged rules
+(pipeline step 9). After a
 rewrite, run the tool again and commit the new report next to the old one.

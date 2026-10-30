@@ -8,7 +8,7 @@ the history shows the section being built in order.
                                     ▲                                  │
                                     └────────── new questions ─────────┤
                                                                        ▼
- 10. status ◄── 9. rewrite ◄── 8. similarity ◄── 7. adjudicate ◄── 6. draft
+ 10. status ◄── 9. rewrite ◄── 8. similarity ◄── 7. questions ◄── 6. draft
 ```
 
 ## 1. Topic card
@@ -86,19 +86,20 @@ Writing guidance:
 - Use the glossary's terms and add missing ones to it.
 - Prefer a short example to a long explanation.
 
-## 7. Adjudicate
+## 7. Questions
 
-For each test where compilers in the matrix disagree, the writer adds a
-note under the section's "Divergences" heading. The note lists the test,
-what each compiler does, the options, and a recommendation. The adjudicator
-records a decision and the reason. The decision may be that the behavior is
-`impl-defined`, that one compiler has a bug (with a bug tracker link if one
-exists), or that the question stays open.
+For every compiler disagreement or unclear classification, the writer adds
+a file to `questions/` from `questions/TEMPLATE.md`: the facts, the
+evidence, the options, and a provisional answer. The spec follows the
+provisional answer, and the section's "Divergences" heading links to the
+question. Work continues without waiting for anyone. Contributors change
+answers through pull requests (`questions/README.md`).
 
 ## 8. Similarity check
 
-Run by the checker, per `clean-room.md`. The report is committed to
-`reports/similarity/<section>-<n>.txt`.
+Run `tools/similarity.py` against the reference corpus and commit the report
+to `reports/similarity/` (`reports/README.md`). Anyone may run it, including
+the writer, because it prints only Tidal text.
 
 ## 9. Rewrite
 

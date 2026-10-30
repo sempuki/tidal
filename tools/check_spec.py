@@ -6,7 +6,8 @@ Fails when:
 - a rule has an unknown class,
 - a rule has no Tests line, or lists a test file that doesn't exist,
 - a test names a rule that doesn't exist,
-- a test is not listed by any of the rules it names.
+- a test is not listed by any of the rules it names,
+- a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/.
 """
 
 import re
@@ -70,6 +71,12 @@ def main() -> int:
                 errors.append(f"{test.name}: names unknown rule {rid}")
             elif rid not in listed.get(test.name, set()):
                 errors.append(f"{test.name}: names {rid}, but {rid} doesn't list it")
+
+    questions = {q.name[:6] for q in (ROOT / "questions").glob("Q-[0-9][0-9][0-9][0-9]-*.md")}
+    for f in [*SPEC.rglob("*.md"), *TESTS.rglob("*.cpp"), *(ROOT / "docs").rglob("*.md")]:
+        for ref in set(re.findall(r"\bQ-\d{4}\b", f.read_text())):
+            if ref not in questions:
+                errors.append(f"{f.relative_to(ROOT)}: refers to missing question {ref}")
 
     for e in errors:
         print(e)

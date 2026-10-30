@@ -8,15 +8,17 @@ This document says who may read which material and how the output is checked.
 **Writer.** Drafts rules and tests. In the target setup this is an LLM pipeline
 plus human reviewers who have not studied the ISO text.
 
-**Checker.** Has read the ISO text. Runs the similarity check against it and
-reports results to the writer. The checker never supplies wording.
+**Checker.** Compares Tidal text with the reference corpus. This role is
+filled by `tools/similarity.py` (decision 0011). The tool reads the corpus
+and reports only Tidal text, so anyone may run it, including the writer.
+Nobody needs to read the corpus.
 
-**Adjudicator.** Decides what Tidal says when implementations disagree. Works
-only from evidence the writer can also see (test programs and compiler
-output), and records the evidence with the decision.
-
-One person may hold the checker and adjudicator roles. Nobody may be both
-writer and checker on the same section.
+**Contributors.** Decide what Tidal says when implementations disagree or a
+classification is unclear. Each such question is a file in `questions/`
+with a provisional answer that the spec follows. Contributors change answers
+through pull requests that argue from evidence anyone can check (test
+programs, compiler output, implementation source), as described in
+`questions/README.md` (decision 0010).
 
 ## Inputs
 
@@ -60,19 +62,19 @@ The writer must not read these.
 
 ## Similarity check
 
-The checker runs `tools/similarity.py` with the Tidal spec and a local copy of
-the ISO draft. The draft copy lives outside this repository and is never
-committed.
+`tools/similarity.py` runs with the Tidal spec and a local copy of the ISO
+working draft (WG21 document N4950, the C++23 draft, from the
+`cplusplus/draft` repository). The copy lives outside this repository and is
+never committed or opened.
 
 The tool reports, for each Tidal rule, the longest run of words it shares with
 the draft and an overall overlap score. It prints only Tidal text and Tidal
-rule IDs. It never prints draft text, so the report can be handed to the
-writer without contaminating them.
+rule IDs, never draft text.
 
 A rule is flagged when it shares a run of 8 or more words with the draft
 (after normalization) or its overlap score exceeds the threshold in the tool.
-The writer rewrites flagged rules without help from the checker, and the
-checker runs the tool again. Both runs are committed.
+The writer rewrites flagged rules and runs the tool again. Both reports are
+committed.
 
 ## Records
 
@@ -82,15 +84,13 @@ For each section the repository holds:
 - the rules and tests, committed before the similarity check,
 - the similarity report,
 - any rewrites, committed separately with the report that triggered them,
-- adjudication notes for every compiler disagreement.
+- a question in `questions/` for every compiler disagreement or unclear
+  classification.
 
 ## Staffing
 
 | Role | Filled by |
 |---|---|
 | Writer | Claude (an LLM from Anthropic), working only inside this repository and `inputs/clean/` |
-| Checker | The project maintainer |
-| Adjudicator | The project maintainer |
-
-Contributors can take any role. The rule that nobody is both writer and
-checker on the same section applies to every contributor.
+| Checker | `tools/similarity.py` |
+| Contributors | Anyone, through pull requests to `questions/` and the spec |

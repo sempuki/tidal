@@ -1,7 +1,7 @@
 # 0003. Clean-room roles, input classes, and a blind similarity check
 
 Date: 2026-10-30
-Status: Accepted
+Status: Accepted. Roles amended by 0010 and 0011.
 
 ## Context
 
