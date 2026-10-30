@@ -230,6 +230,38 @@ compilers affect the Status column.
 | `declarations/initialization/static/dynamic-in-order.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/initialization/static/dynamic-reads-zero.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/initialization/static/maybe-static.cpp` | SINIT-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/namespaces/alias-conflict.cpp` | NS-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/alias.cpp` | NS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/block-scope-namespace.cpp` | NS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/define-and-qualify.cpp` | NS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/definition-in-unrelated-namespace.cpp` | NS-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/global-qualifier.cpp` | NS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/inline-namespace.cpp` | NS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/inline-on-reopen.cpp` | NS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/inline-then-reopen-plain.cpp` | NS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/name-conflict.cpp` | NS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/nested-definition.cpp` | NS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/nested-inline-definition.cpp` | NS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/out-of-namespace-definition.cpp` | NS-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/undeclared-qualified-definition.cpp` | NS-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/unnamed-namespace.cpp` | NS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/unqualified-outside.cpp` | NS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-conflict.cpp` | NS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-namespace.cpp` | NS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-overloads.cpp` | NS-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/namespaces/using-declaration-repeat-block.cpp` | NS-7 | accept | accept | accept | reject | reject | accept | accept | accept | pass |
+| `declarations/namespaces/using-declaration-repeat-namespace.cpp` | NS-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-declaration-snapshot.cpp` | NS-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/namespaces/using-declaration-then-conflict.cpp` | NS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-unqualified.cpp` | NS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration.cpp` | NS-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-ambiguous-unused.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-ambiguous-use.cpp` | NS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-block-scope.cpp` | NS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-local-hides.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-not-namespace.cpp` | NS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-transitive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/block-extern-after-local.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/block-extern-initializer.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -390,7 +422,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-375/375 tests pass on baseline compilers.
+407/407 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1181,6 +1213,106 @@ check that the rejection has the intended cause.
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-18): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `declarations/namespaces/alias-conflict.cpp` (clang-host): error: redefinition of 'L' as an alias for a different namespace / note: previously defined as an alias for 'A'
+- `declarations/namespaces/alias-conflict.cpp` (gcc-host): error: ‘namespace L = B;’ conflicts with a previous declaration / note: previous declaration ‘namespace L = A;’
+- `declarations/namespaces/alias-conflict.cpp` (edg-7.0): error: namespace "L" has already been defined
+- `declarations/namespaces/alias-conflict.cpp` (gcc-14): error: 'namespace L = B;' conflicts with a previous declaration / note: previous declaration 'namespace L = A;'
+- `declarations/namespaces/alias-conflict.cpp` (clang-18): error: redefinition of 'L' as an alias for a different namespace / note: previously defined as an alias for 'A'
+- `declarations/namespaces/alias-conflict.cpp` (gcc-16): error: 'namespace L = B;' conflicts with a previous declaration / note: previous declaration 'namespace L = A;'
+- `declarations/namespaces/alias-conflict.cpp` (clang-22): error: redefinition of 'L' as an alias for a different namespace / note: previously defined as an alias for 'A'
+- `declarations/namespaces/block-scope-namespace.cpp` (clang-host): error: namespaces can only be defined in global or namespace scope
+- `declarations/namespaces/block-scope-namespace.cpp` (gcc-host): error: ‘namespace’ definition is not allowed here
+- `declarations/namespaces/block-scope-namespace.cpp` (edg-7.0): error: namespace definition is not allowed
+- `declarations/namespaces/block-scope-namespace.cpp` (gcc-14): error: 'namespace' definition is not allowed here
+- `declarations/namespaces/block-scope-namespace.cpp` (clang-18): error: namespaces can only be defined in global or namespace scope
+- `declarations/namespaces/block-scope-namespace.cpp` (gcc-16): error: 'namespace' definition is not allowed here
+- `declarations/namespaces/block-scope-namespace.cpp` (clang-22): error: namespaces can only be defined in global or namespace scope
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (clang-host): error: cannot define or redeclare 'f' here because namespace 'M' does not enclose namespace 'N'
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (gcc-host): error: declaration of ‘int f()’ not in a namespace surrounding ‘N’
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (edg-7.0): error: function "N::f" cannot be defined in the current scope
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (gcc-14): error: declaration of 'int f()' not in a namespace surrounding 'N'
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (clang-18): error: cannot define or redeclare 'f' here because namespace 'M' does not enclose namespace 'N'
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (gcc-16): error: declaration of 'int f()' not in a namespace surrounding 'N'
+- `declarations/namespaces/definition-in-unrelated-namespace.cpp` (clang-22): error: cannot define or redeclare 'f' here because namespace 'M' does not enclose namespace 'N'
+- `declarations/namespaces/inline-on-reopen.cpp` (clang-host): error: non-inline namespace cannot be reopened as inline / note: previous definition is here
+- `declarations/namespaces/inline-on-reopen.cpp` (gcc-host): error: inline namespace must be specified at initial definition / note: ‘A::V’ defined here
+- `declarations/namespaces/inline-on-reopen.cpp` (edg-7.0): error: the previous declaration of namespace "A::V" was not declared inline
+- `declarations/namespaces/inline-on-reopen.cpp` (gcc-14): error: inline namespace must be specified at initial definition / note: 'A::V' defined here
+- `declarations/namespaces/inline-on-reopen.cpp` (clang-18): error: non-inline namespace cannot be reopened as inline / note: previous definition is here
+- `declarations/namespaces/inline-on-reopen.cpp` (gcc-16): error: inline namespace must be specified at initial definition / note: 'A::V' defined here
+- `declarations/namespaces/inline-on-reopen.cpp` (clang-22): error: non-inline namespace cannot be reopened as inline / note: previous definition is here
+- `declarations/namespaces/name-conflict.cpp` (clang-host): error: redefinition of 'N' as different kind of symbol / note: previous definition is here
+- `declarations/namespaces/name-conflict.cpp` (gcc-host): error: ‘namespace N { }’ redeclared as different kind of entity / note: previous declaration ‘int N’
+- `declarations/namespaces/name-conflict.cpp` (edg-7.0): error: "N" has already been declared in the current scope
+- `declarations/namespaces/name-conflict.cpp` (gcc-14): error: 'namespace N { }' redeclared as different kind of entity / note: previous declaration 'int N'
+- `declarations/namespaces/name-conflict.cpp` (clang-18): error: redefinition of 'N' as different kind of symbol / note: previous definition is here
+- `declarations/namespaces/name-conflict.cpp` (gcc-16): error: 'namespace N { }' redeclared as different kind of entity / note: previous declaration 'int N'
+- `declarations/namespaces/name-conflict.cpp` (clang-22): error: redefinition of 'N' as different kind of symbol / note: previous definition is here
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (clang-host): error: no member named 'x' in namespace 'N'
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (gcc-host): error: ‘N::x’ should have been declared inside ‘N’
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (edg-7.0): error: namespace "N" has no member "x"
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (gcc-14): error: 'N::x' should have been declared inside 'N'
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (clang-18): error: no member named 'x' in namespace 'N'
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (gcc-16): error: 'N::x' should have been declared inside 'N'
+- `declarations/namespaces/undeclared-qualified-definition.cpp` (clang-22): error: no member named 'x' in namespace 'N'
+- `declarations/namespaces/unqualified-outside.cpp` (clang-host): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/unqualified-outside.cpp` (gcc-host): error: ‘x’ was not declared in this scope; did you mean ‘N::x’?
+- `declarations/namespaces/unqualified-outside.cpp` (edg-7.0): error: identifier "x" is undefined
+- `declarations/namespaces/unqualified-outside.cpp` (gcc-14): error: 'x' was not declared in this scope; did you mean 'N::x'?
+- `declarations/namespaces/unqualified-outside.cpp` (clang-18): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/unqualified-outside.cpp` (gcc-16): error: 'x' was not declared in this scope; did you mean 'N::x'?
+- `declarations/namespaces/unqualified-outside.cpp` (clang-22): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/using-declaration-conflict.cpp` (clang-host): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-conflict.cpp` (gcc-host): error: ‘int N::x’ conflicts with a previous declaration / note: previous declaration ‘int x’
+- `declarations/namespaces/using-declaration-conflict.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `declarations/namespaces/using-declaration-conflict.cpp` (gcc-14): error: 'int N::x' conflicts with a previous declaration / note: previous declaration 'int x'
+- `declarations/namespaces/using-declaration-conflict.cpp` (clang-18): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-conflict.cpp` (gcc-16): error: 'int N::x' conflicts with a previous declaration / note: previous declaration 'int x'
+- `declarations/namespaces/using-declaration-conflict.cpp` (clang-22): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-namespace.cpp` (clang-host): error: using declaration cannot refer to a namespace / note: did you mean 'using namespace'?
+- `declarations/namespaces/using-declaration-namespace.cpp` (gcc-host): error: using-declaration may not name namespace ‘N::M’
+- `declarations/namespaces/using-declaration-namespace.cpp` (edg-7.0): error: a namespace name is not allowed
+- `declarations/namespaces/using-declaration-namespace.cpp` (gcc-14): error: using-declaration may not name namespace 'N::M'
+- `declarations/namespaces/using-declaration-namespace.cpp` (clang-18): error: using declaration cannot refer to a namespace
+- `declarations/namespaces/using-declaration-namespace.cpp` (gcc-16): error: using-declaration may not name namespace 'N::M'
+- `declarations/namespaces/using-declaration-namespace.cpp` (clang-22): error: using declaration cannot refer to a namespace / note: did you mean 'using namespace'?
+- `declarations/namespaces/using-declaration-repeat-block.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `declarations/namespaces/using-declaration-repeat-block.cpp` (gcc-14): error: redeclaration of 'int N::x' / note: previous declaration 'int N::x'
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (clang-host): error: declaration conflicts with target of using declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (gcc-host): error: ‘int x’ conflicts with a previous declaration / note: previous declaration ‘using N::x’
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (gcc-14): error: 'int x' conflicts with a previous declaration / note: previous declaration 'int N::x'
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (clang-18): error: declaration conflicts with target of using declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (gcc-16): error: 'int x' conflicts with a previous declaration / note: previous declaration 'using N::x'
+- `declarations/namespaces/using-declaration-then-conflict.cpp` (clang-22): error: declaration conflicts with target of using declaration already in scope / note: target of using declaration
+- `declarations/namespaces/using-declaration-unqualified.cpp` (clang-host): error: using declaration requires a qualified name
+- `declarations/namespaces/using-declaration-unqualified.cpp` (gcc-host): error: expected nested-name-specifier before ‘x’
+- `declarations/namespaces/using-declaration-unqualified.cpp` (edg-7.0): error: namespace-qualified name is required
+- `declarations/namespaces/using-declaration-unqualified.cpp` (gcc-14): error: expected nested-name-specifier before 'x'
+- `declarations/namespaces/using-declaration-unqualified.cpp` (clang-18): error: using declaration requires a qualified name
+- `declarations/namespaces/using-declaration-unqualified.cpp` (gcc-16): error: expected nested-name-specifier before 'x'
+- `declarations/namespaces/using-declaration-unqualified.cpp` (clang-22): error: using declaration requires a qualified name
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (clang-host): error: reference to 'x' is ambiguous / note: candidate found by name lookup is 'A::x'
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (gcc-host): error: reference to ‘x’ is ambiguous
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (edg-7.0): error: "x" is ambiguous
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (gcc-14): error: reference to 'x' is ambiguous / note: candidates are: 'int B::x'
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (clang-18): error: reference to 'x' is ambiguous / note: candidate found by name lookup is 'A::x'
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (gcc-16): error: reference to 'x' is ambiguous
+- `declarations/namespaces/using-directive-ambiguous-use.cpp` (clang-22): error: reference to 'x' is ambiguous / note: candidate found by name lookup is 'A::x'
+- `declarations/namespaces/using-directive-block-scope.cpp` (clang-host): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/using-directive-block-scope.cpp` (gcc-host): error: ‘x’ was not declared in this scope; did you mean ‘N::x’?
+- `declarations/namespaces/using-directive-block-scope.cpp` (edg-7.0): error: identifier "x" is undefined
+- `declarations/namespaces/using-directive-block-scope.cpp` (gcc-14): error: 'x' was not declared in this scope; did you mean 'N::x'?
+- `declarations/namespaces/using-directive-block-scope.cpp` (clang-18): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/using-directive-block-scope.cpp` (gcc-16): error: 'x' was not declared in this scope; did you mean 'N::x'?
+- `declarations/namespaces/using-directive-block-scope.cpp` (clang-22): error: use of undeclared identifier 'x'; did you mean 'N::x'?
+- `declarations/namespaces/using-directive-not-namespace.cpp` (clang-host): error: expected namespace name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (gcc-host): error: ‘S’ is not a namespace-name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (edg-7.0): error: name must be a namespace name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (gcc-14): error: 'S' is not a namespace-name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (clang-18): error: expected namespace name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (gcc-16): error: 'S' is not a namespace-name
+- `declarations/namespaces/using-directive-not-namespace.cpp` (clang-22): error: expected namespace name
 - `declarations/storage-linkage/block-extern-after-local.cpp` (clang-host): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
 - `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-host): error: ‘int x’ conflicts with a previous declaration / note: previous declaration ‘int x’
 - `declarations/storage-linkage/block-extern-after-local.cpp` (edg-7.0): error: "x" has already been declared in the current scope
