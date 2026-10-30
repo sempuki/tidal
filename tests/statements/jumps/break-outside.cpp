@@ -1,4 +1,4 @@
-// tidal-rules: JMP-1
+// tidal-rules: JMP-7
 // tidal-expect: reject
 void f() {
   break;

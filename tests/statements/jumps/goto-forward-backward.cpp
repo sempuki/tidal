@@ -1,4 +1,4 @@
-// tidal-rules: JMP-5
+// tidal-rules: JMP-8
 // tidal-expect: run
 int main() {
   int n = 0;

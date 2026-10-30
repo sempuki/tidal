@@ -1,4 +1,4 @@
-// tidal-rules: JMP-6
+// tidal-rules: JMP-9
 // tidal-expect: run
 int destroyed = 0;
 struct Note { ~Note() { ++destroyed; } };

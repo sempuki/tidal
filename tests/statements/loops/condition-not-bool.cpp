@@ -1,4 +1,4 @@
-// tidal-rules: LOOP-1
+// tidal-rules: LOOP-5
 // tidal-expect: reject
 struct S {};
 void f() {
