@@ -1,4 +1,4 @@
-// tidal-rules: CTOR-7
+// tidal-rules: CTOR-16
 // tidal-expect: reject
 struct S {
   int v;

@@ -1,4 +1,4 @@
-// tidal-rules: DTOR-2
+// tidal-rules: DTOR-5
 // tidal-expect: run
 int count = 0;
 struct M { ~M() { ++count; } };

@@ -1,4 +1,4 @@
-// tidal-rules: CTOR-5
+// tidal-rules: CTOR-15
 // tidal-expect: reject
 struct A { A(int) {} };
 struct B : A { B() : A(1) {} };
