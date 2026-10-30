@@ -172,6 +172,30 @@
       "repo": "edg",
       "path": "src/statements.c",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-access",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaAccess.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-class",
+      "repo": "gcc",
+      "path": "gcc/cp/class.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-method",
+      "repo": "gcc",
+      "path": "gcc/cp/method.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-class-decl",
+      "repo": "edg",
+      "path": "src/class_decl.c",
+      "class": "sanitized"
     }
   ]
 }

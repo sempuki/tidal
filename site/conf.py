@@ -25,7 +25,7 @@ exclude_patterns = []
 suppress_warnings = ["myst.header", "misc.highlighting_failure"]
 
 html_theme = "furo"
-html_title = "Tidal: Expressions, Statements, and Declarations"
+html_title = "Tidal: a C++-compatible specification"
 html_static_path = ["_static"]
 html_css_files = ["tidal.css"]
 html_show_sourcelink = False

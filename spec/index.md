@@ -26,5 +26,6 @@ ASD Simplified Technical English Maintenance Group maintains.
 statements/index
 expressions/index
 declarations/index
+classes/index
 glossary
 :::
