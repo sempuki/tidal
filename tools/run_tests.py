@@ -70,7 +70,7 @@ def parse_test(path: Path) -> Test:
             raise ValueError(f"{path}: unknown directive tidal-{key}")
     if not rules:
         raise ValueError(f"{path}: missing tidal-rules")
-    if default is None:
+    if default is None and set(overrides) != set(COMPILERS):
         raise ValueError(f"{path}: missing tidal-expect")
     expect = {c: overrides.get(c, default) for c in COMPILERS}
     for value in expect.values():
@@ -161,6 +161,19 @@ def main() -> int:
             cells = " | ".join(got[c][0] for c in COMPILERS)
             lines.append(f"| `{t.name}` | {' '.join(t.rules)} | {expected} | {cells} | {status} |")
         lines += ["", f"{len(tests) - failures}/{len(tests)} tests pass.", ""]
+        lines += [
+            "## Rejections",
+            "",
+            "First error from each compiler that rejected a test, so a reviewer can",
+            "check that the rejection has the intended cause.",
+            "",
+        ]
+        for t, got, _ in rows:
+            for c in COMPILERS:
+                if got[c][0] == "reject":
+                    detail = got[c][1].split(": error: ", 1)[-1].replace("|", "\\|")
+                    lines.append(f"- `{t.name}` ({c}): {detail}")
+        lines.append("")
         args.report.write_text("\n".join(lines))
 
     return 1 if failures else 0

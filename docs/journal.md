@@ -81,3 +81,27 @@ nothing to do because the compilers never disagreed.
 This section has no `undefined`, `unspecified`, or `impl-defined` behavior,
 so it did not test the hardest part of the pipeline. The second pilot should
 be an expression family that does.
+
+## 2026-10-30: Pilot 2, multiplicative operators
+
+Probes (steps 3 and 4): 27 probes. Undefined behavior was probed through
+constant evaluation, which both compilers must reject. Implementation-defined
+behavior was probed by compiling the same assertion for the default target
+(LP64) and for `-m32` (ILP32). Unsequenced modification was probed with
+`-Wall -Werror`, relying on each compiler's own warning.
+
+Before writing the tests, two quick probes found:
+
+- The first divergence. During constant evaluation, Clang accepts a floating
+  multiply that overflows to infinity and GCC rejects it. Both reject
+  floating division by zero.
+- No variation in operand order. Clang and GCC both evaluated `f() * g()`
+  left to right at `-O0` and `-O2`. GCC's sanitized source shows that its
+  strict-order option (`flag_strong_eval_order`) applies to subscripts and
+  shifts, and not to `*`, `/`, or `%`. That is the evidence used for
+  classifying operand order as `unspecified`.
+
+All 27 probes matched the writer's predictions. The writer then checked the
+first error of every `reject` test, because a test can be rejected for an
+unrelated mistake and still pass. All were rejected for the intended reason.
+The report now records these errors so reviewers can do the same check.
