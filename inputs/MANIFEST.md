@@ -36,3 +36,6 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | gcc-cp-init | gcc | `gcc/cp/init.cc` | sanitized | `c47fdc358b897b835b2ccb80f67781e58fdb8625a134dc52d131229e06999862` |
 | edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `8d66e24839804eb5e636c960fde1598553b646179a199611ee1d38eca8277bc7` |
 | clang-sema-declcxx | llvm | `clang/lib/Sema/SemaDeclCXX.cpp` | sanitized | `7df48f0b089ba9a96e4d6db9e2d19ee8d6421f0b6154d073af78442986c9352e` |
+| clang-sema-declattr | llvm | `clang/lib/Sema/SemaDeclAttr.cpp` | sanitized | `451b6439c5700437f06b3cfca5ebd8819fb988aee98ce12d074f445a7aff2ac5` |
+| clang-sema-stmtattr | llvm | `clang/lib/Sema/SemaStmtAttr.cpp` | sanitized | `466eb44b65a27dd10d7b8734f33d18e4b1e7cbe9ac10b7801f5215c144670ef1` |
+| edg-attribute | edg | `src/attribute.c` | sanitized | `2f8d8ca144761e1006726169029d98d4186936cc2350531af3b21f4a137c7b24` |

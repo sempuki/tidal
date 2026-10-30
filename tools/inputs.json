@@ -142,6 +142,24 @@
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaDeclCXX.cpp",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-declattr",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaDeclAttr.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-stmtattr",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaStmtAttr.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-attribute",
+      "repo": "edg",
+      "path": "src/attribute.c",
+      "class": "sanitized"
     }
   ]
 }

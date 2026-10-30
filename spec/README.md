@@ -20,3 +20,4 @@ Draft. Sections are listed in the order they appear in the published PDF
   - [Structured bindings](declarations/structured-bindings.md)
   - [Enumerations](declarations/enumerations.md)
   - [Namespaces and using](declarations/namespaces.md)
+  - [Standard attributes](declarations/attributes.md)

@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
 CLASSES = {
     "required", "reject", "no-diagnostic", "impl-defined",
-    "unspecified", "undefined", "withdrawn",
+    "unspecified", "undefined", "recommended", "withdrawn",
 }
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
 TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
