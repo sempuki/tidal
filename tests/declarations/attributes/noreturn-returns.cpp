@@ -1,4 +1,4 @@
-// tidal-rules: ATTR-3
+// tidal-rules: ATTR-14
 // tidal-expect: reject
 // tidal-flags: -Werror
 [[noreturn]] void stop(int code) {

@@ -1,4 +1,4 @@
-// tidal-rules: ATTR-10
+// tidal-rules: ATTR-15
 // tidal-expect: run
 int main() {
   int i = 1;
