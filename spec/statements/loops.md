@@ -17,14 +17,14 @@ again while a condition is true.
 
 :::{rule} LOOP-4
 :kind: required
-:tests: statements/loops/for-init-scope.cpp statements/loops/for-init-redeclare-body.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp
+:tests: statements/loops/for-init-scope.cpp statements/loops/for-init-redeclare-body.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/while-condition-redeclared.cpp
 
 The body of each loop has its own scope, also without braces. In a `for`
-statement:
+or `while` statement:
 
 - the condition can be a declaration,
 - a name that the initializer or condition declares is visible to the end
-  of the `for` statement only,
+  of the statement only,
 - that name must not be declared again in the outermost block of the body.
 :::
 
@@ -64,11 +64,13 @@ executes at least one time.
 
 :::{rule} LOOP-3
 :kind: required
-:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp
+:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp
 
 `for` executes its initializer one time. Each iteration evaluates the
-condition, executes the body, and then evaluates the iteration expression.
-Each part can be absent, and an absent condition is `true`.
+condition, executes the body, and then evaluates the iteration
+expression. A variable that the condition declares is destroyed after the
+iteration expression. Each part can be absent, and an absent condition is
+`true`.
 :::
 
 ## Examples
@@ -91,8 +93,10 @@ do {} while (int x = 0);      // rejected: do needs an expression
 
 ## Evidence
 
-All seven compilers agree on all tests in this page. The results are in
-`tests/RESULTS.md`.
+The results are in `tests/RESULTS.md`.
+
+- LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
+  expression. GCC 16, Clang, and EDG destroy it after ({question}`Q-0044`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
 gcc-cp-semantics, edg-statements.

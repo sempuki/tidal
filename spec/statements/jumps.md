@@ -26,12 +26,12 @@ loop.
 
 :::{rule} JMP-3
 :kind: required
-:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp statements/jumps/return-void-expression.cpp
+:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp statements/jumps/return-void-expression.cpp statements/jumps/destructor-return-value.cpp
 
 In a function that returns a value, `return` must have an expression. The
 value is converted to the return type, and a braced list initializes the
-result. In a `void` function, `return` must have no expression or an
-expression of type `void`.
+result. In a `void` function, a constructor, or a destructor, `return`
+must have no expression or an expression of type `void`.
 :::
 
 :::{rule} JMP-5
@@ -61,6 +61,16 @@ if the type is one of these:
 - an array of these types.
 
 A jump can also skip a `static` local variable ({question}`Q-0041`).
+:::
+
+:::{rule} JMP-10
+:kind: required
+:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-parameter-as-lvalue-ref.cpp
+
+If the expression of a `return` statement is the name of a local
+variable or a parameter of the function, the name is an xvalue (see
+{term}`value category`). A move-only object can be returned this way. Such
+a name does not bind to an lvalue reference return type.
 :::
 
 ## Dynamic Semantics
@@ -106,6 +116,17 @@ a point before a declaration destroys the variable. The declaration then
 creates the variable again.
 :::
 
+## Implementation Requirements
+
+:::{rule} JMP-11
+:kind: unspecified
+:tests: statements/jumps/copy-elision-named.cpp
+
+If a `return` statement names a local variable of the return type, it is
+unspecified if a copy or move constructor runs. A returned prvalue of the
+return type never runs one (VC-4).
+:::
+
 ## Examples
 
 ```cpp
@@ -135,6 +156,9 @@ skip:
 
 All seven compilers agree on every test. The results are in
 `tests/RESULTS.md`.
+
+- JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
+  accepts zero or one copy.
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
 gcc-cp-semantics, edg-statements.

@@ -27,6 +27,9 @@ A block opens a scope. In a block:
 - a declared name is visible from its declaration to the end of the block,
 - a name must not be declared twice,
 - a nested block can declare a name again, which hides the outer name.
+
+STO-1 and STO-2 give when the variables of a block are created and
+initialized.
 :::
 
 :::{rule} STMT-5
@@ -34,6 +37,14 @@ A block opens a scope. In a block:
 :tests: statements/blocks/label-at-end-of-block.cpp
 
 A label can be the last item of a block.
+:::
+
+:::{rule} STMT-6
+:kind: required
+:tests: statements/blocks/ambiguous-declaration.cpp
+
+If a statement can be read as an expression statement or as a
+declaration, it is a declaration.
 :::
 
 ## Dynamic Semantics

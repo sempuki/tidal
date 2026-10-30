@@ -29,10 +29,13 @@ The condition must have one of these types:
 
 :::{rule} SW-3
 :kind: reject
-:tests: statements/switch/case-not-constant.cpp statements/switch/case-narrowing.cpp statements/switch/case-duplicate.cpp statements/switch/case-duplicate-after-conversion.cpp statements/switch/two-defaults.cpp statements/switch/case-outside-switch.cpp
+:tests: statements/switch/case-not-constant.cpp statements/switch/case-narrowing.cpp statements/switch/case-duplicate.cpp statements/switch/case-duplicate-after-conversion.cpp statements/switch/two-defaults.cpp statements/switch/case-outside-switch.cpp statements/switch/case-out-of-char-range.cpp statements/switch/scoped-enum-int-case.cpp
 
 Each case value must be a constant expression that converts to the
-promoted type of the condition without narrowing. In one `switch`:
+promoted type of the condition without narrowing. For a scoped
+enumeration condition, each case value must have that enumeration type.
+A case value that the condition's own type cannot hold is valid and never
+matches. In one `switch`:
 
 - two case values must not be equal after conversion,
 - there must be at most one `default` label.
@@ -61,7 +64,7 @@ skip a whole block, or a scalar variable that has no initializer.
 
 :::{rule} SW-1
 :kind: required
-:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp
+:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp statements/switch/case-inside-loop.cpp statements/switch/nested-switch-labels.cpp
 
 The condition is evaluated one time. Control goes to the first of these
 that exists:
@@ -70,7 +73,9 @@ that exists:
 - the `default` label,
 - the end of the `switch`.
 
-Execution then continues through later labels until a `break`.
+Execution then continues through later labels until a `break`. A label can
+be inside a nested statement of the body, such as a loop. Each label
+belongs to the innermost `switch` that contains it.
 :::
 
 ## Examples

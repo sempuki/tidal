@@ -117,12 +117,13 @@ the first one.
 
 :::{rule} IF-13
 :kind: required
-:tests: statements/if/constexpr-discard-in-template.cpp
+:tests: statements/if/constexpr-discard-in-template.cpp statements/if/constexpr-template-nondependent-checked.cpp
 
 In the `if constexpr` form, the branch that the condition does not select
 is a {term}`discarded statement`. In a template, a discarded statement is
 not instantiated. It can contain code that is not valid for the template
-arguments.
+arguments. The implementation still checks the parts of it that are the
+same for every template argument.
 :::
 
 :::{rule} IF-14
@@ -224,12 +225,13 @@ initialization apply *(referenced)*.
 
 :::{rule} IF-18
 :kind: required
-:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp
+:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp
 
 The `if consteval` form executes its then branch during constant
 evaluation and its else branch at other times. The `if !consteval` form
 does the opposite. In a `consteval` function, the then branch of
-`if consteval` always executes.
+`if consteval` always executes. In a function that is not `constexpr` or
+`consteval`, the then branch never executes.
 :::
 
 ## Examples
