@@ -115,3 +115,47 @@ Adjudication (step 7): one divergence, MUL-D1 (floating overflow during
 constant evaluation). Under the protocol the writer doesn't adjudicate, so
 the section lists the options and a recommendation and leaves the decision
 to the adjudicator.
+
+## 2026-10-30: Retrospective after two pilots
+
+**Output.** Two sections, 35 rules, 83 tests, all passing on Clang 22.1.8
+and GCC 16.2.1, and one open divergence. The similarity check (step 8) is
+waiting for the checker. See `reports/README.md`.
+
+**What worked.**
+
+- Probes caught the writer's errors. Two of roughly 100 predictions were
+  wrong (narrowing in an `if constexpr` condition), and the compilers
+  corrected both before any rule was written.
+- Diagnostic notes are a good evidence source. The constant-evaluation
+  notes name the exact cause of undefined behavior, which made the
+  `undefined` classifications straightforward.
+- Sanitized source answered a question behavior could not. Operand order
+  showed no variation in testing, and GCC's source showed the order is not
+  fixed.
+- A second target (`-m32`) is a cheap way to show implementation-defined
+  behavior.
+
+**What needs work.**
+
+- `reject` tests can pass for the wrong reason. The report now records each
+  compiler's first error and note, but a reviewer still has to read them. A
+  future `tidal-error` directive could match an expected message pattern.
+- GCC's parser was not read for the `if` section. Both implementations
+  should be read for every section, even when probes agree.
+- Undefined behavior evidence relies on constant evaluation. That covers
+  arithmetic well but will not work for things constant evaluation can't
+  express (for example, some pointer and lifetime cases). GCC's UBSan
+  runtime should be installed so sanitizers can serve as a second source.
+- Two compilers are a thin oracle. Adding MSVC and EDG as black-box oracles
+  would catch cases where Clang and GCC share a behavior by accident.
+
+**Rough cost of the full scope.** Statements are about eight sections of
+the size of the `if` pilot. Expressions are larger: around 20 operator
+families similar to the multiplicative pilot, plus several large topics
+(value categories and sequencing, constant expressions, lambdas, casts,
+`new` and `delete`, function calls) that are each several times larger.
+Counting the large topics at four pilot-units each, the scope is about 50
+pilot-units. Each pilot here took one working session to draft. Adjudication
+and review are not included in that figure, and they will likely dominate
+once real reviewers are involved.
