@@ -79,6 +79,9 @@ def parse_spec():
                         errors.append(f"{f}:{n}: {directive} has no :kind:")
                     directive = None
                 continue
+            if HEADING.match(line):
+                errors.append(f"{f}:{n}: old rule heading; use a rule directive (docs/style-guide.md)")
+                continue
             if m := HEADING.match(line):
                 rid, cls = m.groups()
                 if rid in rules:
