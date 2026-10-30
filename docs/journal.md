@@ -22,3 +22,9 @@ terminology policy (decision 0004). The protocol bans the two best-organized
 test suites (Clang `test/CXX`, libc++ `test/std`) because they are arranged by
 ISO section and quote it. Tidal will have to write its own tests, which is
 probably the largest cost of the whole approach.
+
+Wrote `spec-format.md` and `pipeline.md` (decision 0005). The pipeline uses
+compiler diagnostics as the main checklist for `reject` rules, since a
+diagnostic's message is compiler output and is a clean input. Constant
+evaluation is the main evidence for `undefined`, because compilers must
+reject undefined behavior during constant evaluation.
