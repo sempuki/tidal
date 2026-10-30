@@ -111,5 +111,5 @@ void g(int v) {
 All seven compilers agree on all tests in this page. The results are in
 `tests/RESULTS.md`.
 
-Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
-gcc-cp-semantics, edg-statements.
+Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
+statements.

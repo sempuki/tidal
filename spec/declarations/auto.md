@@ -229,5 +229,5 @@ The tests for `auto x = { ... }` declare a small `std::initializer_list`,
 because tests include no headers. Without it, each compiler rejects the
 declaration and names the missing header.
 
-Inputs: clang-sema-deduction, clang-sema-decl, gcc-cp-pt, gcc-cp-decl,
-edg-overload, edg-decls (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-deduction, clang-sema-decl, edg-overload, edg-decls
+(see `inputs/MANIFEST.md`).

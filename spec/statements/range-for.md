@@ -113,5 +113,5 @@ The results are in `tests/RESULTS.md`.
 - RFOR-5: GCC 14 accepts a storage class on the loop variable. GCC 16,
   Clang, and EDG reject it ({question}`Q-0026`).
 
-Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
-gcc-cp-semantics, edg-statements.
+Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
+statements.

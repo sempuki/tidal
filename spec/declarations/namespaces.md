@@ -155,5 +155,5 @@ Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept it. GCC 14 and EDG 7.0 reject it. The
 provisional answer is that it is valid ({question}`Q-0019`).
 
-Inputs: clang-sema-declcxx, clang-diag-sema, gcc-cp-decl, edg-decls (see
+Inputs: clang-sema-declcxx, clang-diag-sema, edg-decls (see
 `inputs/MANIFEST.md`).

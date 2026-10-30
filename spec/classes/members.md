@@ -206,5 +206,5 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 38 of
   extension, and reject it only under `-pedantic-errors`.
 - CLS-11: the size is 1 on every compiler in the matrix.
 
-Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, gcc-cp-class,
-gcc-cp-decl, edg-class-decl.
+Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, edg-class-
+decl.

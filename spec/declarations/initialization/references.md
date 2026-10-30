@@ -126,5 +126,5 @@ All seven compilers agree on all 15 tests. The results are in
   storage"). Clang, GCC, and EDG also warn when a function returns a
   reference to a local variable.
 
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
+`inputs/MANIFEST.md`).

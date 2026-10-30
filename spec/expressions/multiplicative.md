@@ -138,7 +138,7 @@ apply if a function call separates the two accesses.
 
 :::{rule} MUL-13
 :kind: unspecified
-:tests: expressions/multiplicative/operand-order.cpp
+:tests: expressions/multiplicative/operand-order.cpp expressions/multiplicative/operand-order-overloaded.cpp
 
 The order of evaluation of the two operands is unspecified.
 :::
@@ -218,9 +218,8 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
   `INT_MAX * 2`. The provisional answer keeps MUL-10, and EDG's behavior is
   a possible defect ({question}`Q-0003`).
 - **MUL-13.** Clang and GCC evaluate the left operand first at `-O0` and at
-  `-O2`. GCC's option for left-to-right order applies to subscripts and
-  shifts only (`flag_strong_eval_order` in `typeck.cc`, sanitized source).
-  This indicates that the order for `*`, `/`, and `%` is not fixed. The test
+  `-O2`. For an overloaded `*`, GCC evaluates the right operand first.
+  This shows that the order for `*` is not fixed. The test
   accepts either order ({question}`Q-0005`).
 - **MUL-14.** Clang warns "unsequenced modification and access". GCC warns
   "operation ... may be undefined". The test changes these warnings into
@@ -228,4 +227,4 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
 - **MUL-15.** The result type on x86-64 (LP64) differs from the result type
   with `-m32` (ILP32). The tests depend on `sizeof(long)`.
 
-Inputs: clang-sema-expr, gcc-cp-typeck (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-expr.

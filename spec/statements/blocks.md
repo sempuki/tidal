@@ -104,5 +104,5 @@ All seven compilers agree on all tests in this page. The results are in
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement
   has no effect" under `-Wunused-value`. EDG skips these tests.
 
-Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
-gcc-cp-semantics, edg-statements.
+Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
+statements.

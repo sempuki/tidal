@@ -93,4 +93,4 @@ All seven compilers agree on all 9 tests. The results are in
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
   "operation may be undefined". The test makes these warnings errors.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck, gcc-cp-semantics.
+Inputs: clang-sema-expr, clang-diag-sema.

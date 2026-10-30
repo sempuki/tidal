@@ -170,4 +170,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 31 of
 - CE-13: Clang rejects the comparison of two string literal addresses.
   GCC and EDG accept it and fold it to a value ({question}`Q-0033`).
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck, gcc-cp-semantics.
+Inputs: clang-sema-expr, clang-diag-sema.

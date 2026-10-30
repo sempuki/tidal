@@ -118,4 +118,4 @@ tests.
 - SHF-9: Clang and GCC warn by default (`-Wshift-count-overflow`,
   `-Wshift-count-negative`). The tests use `-Werror`. EDG skips them.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

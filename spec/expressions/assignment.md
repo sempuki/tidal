@@ -119,4 +119,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 21 of
 - ASN-6: Clang 22 and 18 accept `x += {1}` for a scalar `x`. GCC and EDG
   reject it. This is an open divergence.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

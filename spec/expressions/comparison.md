@@ -259,4 +259,4 @@ even for integer operands.
 - CMP-20: Clang and GCC reject the comparison during constant evaluation.
   EDG accepts it ({question}`Q-0051`).
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

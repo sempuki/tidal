@@ -154,5 +154,5 @@ All seven compilers agree on most tests. The results are in
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 
-Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt,
-clang-diag-sema, gcc-cp-decl, gcc-cp-typeck, edg-func-def.
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt, clang-diag-
+sema, edg-func-def.

@@ -272,5 +272,5 @@ EDG checks each unit and does not link.
   defines a class as a pedantic warning. `-pedantic-errors` makes it an
   error. GCC and EDG reject it in each mode.
 
-Inputs: clang-sema-decl, gcc-cp-decl, edg-decls, clang-diag-sema (see
+Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

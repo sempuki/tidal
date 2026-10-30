@@ -135,4 +135,4 @@ All seven compilers agree on all 23 tests. The results are in
 - COND-3: operands of two different enumeration types give `int`. Clang
   and GCC warn that this use is deprecated.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

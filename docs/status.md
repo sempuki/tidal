@@ -16,7 +16,7 @@ current state only. The history of how it got here is in `git log`.
 | [Value categories and temporaries](../spec/expressions/value-categories.md) | 7 | 6 required, 1 unspecified | 19 |  | 0 flagged |
 | [Standard conversions](../spec/expressions/conversions.md) | 16 | 9 required, 4 reject, 1 undefined, 2 impl-defined | 34 | Q-0028 | 0 flagged |
 | [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 16 |  | 0 flagged |
-| [Multiplicative operators](../spec/expressions/multiplicative.md) | 16 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 28 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
+| [Multiplicative operators](../spec/expressions/multiplicative.md) | 16 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 29 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
 | [Additive operators](../spec/expressions/additive.md) | 15 | 7 required, 1 reject, 4 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 33 | Q-0005, Q-0031, Q-0049 | 0 flagged |
 | [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 20 |  | 0 flagged |
 | [Comparison operators](../spec/expressions/comparison.md) | 21 | 12 required, 3 reject, 2 unspecified, 4 recommended | 46 | Q-0029, Q-0030, Q-0050, Q-0051 | 0 flagged |
@@ -56,12 +56,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-access.txt`. The table above comes from
+`reports/similarity/2026-10-30-permissive-inputs.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1301/1301 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1302/1302 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -126,7 +126,7 @@ needs a page through the full pipeline.
    `reject` tests check their cause.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
-6. Read GCC's and EDG's sanitized source for the `if` section.
+6. Read EDG's sanitized source for the `if` section.
 7. Continue classes in the order set by decision 0017. Next: constructors
    and destructors. Statements, expressions, and declarations in the
    charter's scope all have pages.

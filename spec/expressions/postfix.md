@@ -160,4 +160,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
 - PFX-4, PFX-8: all compilers reject these during constant evaluation.
 - PFX-13: Clang rejects `++` on `bool` as a pedantic diagnostic.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

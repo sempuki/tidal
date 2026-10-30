@@ -157,5 +157,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of
   `constinit` that is only on an earlier declaration. GCC accepts it
   ({question}`Q-0025`).
 
-Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, gcc-cp-decl,
-edg-decls.
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

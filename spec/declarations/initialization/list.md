@@ -185,5 +185,5 @@ All seven compilers agree on all 38 tests. The results are in
   mix of designated and plain values as C99 extensions. It rejects them
   only under `-pedantic-errors`. GCC and EDG reject them.
 
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
+`inputs/MANIFEST.md`).

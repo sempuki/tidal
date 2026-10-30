@@ -169,5 +169,5 @@ All seven compilers agree on 34 of 36 tests. The results are in
   Clang and GCC reject it. The provisional answer is that it is rejected.
   See {question}`Q-0016`.
 
-Inputs: clang-sema-declcxx, gcc-cp-decl, edg-decls, clang-diag-sema (see
+Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

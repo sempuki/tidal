@@ -198,4 +198,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of
   ({question}`Q-0049`).
 - ADD-16, MUL-16: Clang and GCC warn about these operations as deprecated.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

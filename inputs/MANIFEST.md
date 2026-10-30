@@ -8,7 +8,6 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | Key | Repository | Ref | License |
 |---|---|---|---|
 | llvm | llvm/llvm-project | `llvmorg-22.1.8` | Apache-2.0 WITH LLVM-exception |
-| gcc | gcc-mirror/gcc | `releases/gcc-16.2.0` | GPL-3.0-or-later |
 | edg | edgcpp/compiler | `7.0` | Apache-2.0 WITH LLVM-exception |
 
 ## Files
@@ -21,19 +20,12 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `a644acb7cbeadf71a57c6061348168eec9a8b9c0459eb26d6877787cffa631c1` |
 | clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `e57a3ba7476665663ffc3d3961540a06bb062dcbecca92a1a293d74bf9baa5a6` |
 | clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `da146d0a392bc261867828d7da6eeb1a6247a01351dacef710b6b2541855fdd0` |
-| gcc-cp-parser | gcc | `gcc/cp/parser.cc` | sanitized | `ceafcd2ad836728eff4861eae016710dfefe8d83ec6539c47309d9b22871eb7e` |
-| gcc-cp-semantics | gcc | `gcc/cp/semantics.cc` | sanitized | `4d0dfcfb11e73a25f0719d5338d6285be25d1060f3d8fe600a1a8dab3441e1b5` |
-| gcc-cp-typeck | gcc | `gcc/cp/typeck.cc` | sanitized | `71aac1bc4db5590f21e7f0c738f12099fa7c842b4d77967373538de3f3b7390b` |
 | clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `1509b492df7bed0c7d4e5a1f15a9e7e478b5fd913ffa50c4a07475aba2152e70` |
 | clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
-| gcc-cp-pt | gcc | `gcc/cp/pt.cc` | sanitized | `d6232f9534b807d3d0368c1982c8995e0c1d5d1fe8009a2250eae51f8e7444c2` |
-| gcc-cp-decl | gcc | `gcc/cp/decl.cc` | sanitized | `33f719a5572008e9a7cc4194294d3971bdf62e23e2e2840115eaa09f301c6728` |
 | edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
 | edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
 | clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `17023d2296e5b1c0c4ad79f5f350189475432b8a4cf2f7ef0dfd494cfc379637` |
 | clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `eb0670eeaca76abb9dbc88f9a808d03d8854619b3fde6c6af8a422d7dacd97c1` |
-| gcc-cp-typeck2 | gcc | `gcc/cp/typeck2.cc` | sanitized | `5d5105026f1237b71eb90bf30ec6eb5eb66570c587d7bc6973e1c4bff9a71be4` |
-| gcc-cp-init | gcc | `gcc/cp/init.cc` | sanitized | `c47fdc358b897b835b2ccb80f67781e58fdb8625a134dc52d131229e06999862` |
 | edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `8d66e24839804eb5e636c960fde1598553b646179a199611ee1d38eca8277bc7` |
 | clang-sema-declcxx | llvm | `clang/lib/Sema/SemaDeclCXX.cpp` | sanitized | `7df48f0b089ba9a96e4d6db9e2d19ee8d6421f0b6154d073af78442986c9352e` |
 | clang-sema-declattr | llvm | `clang/lib/Sema/SemaDeclAttr.cpp` | sanitized | `451b6439c5700437f06b3cfca5ebd8819fb988aee98ce12d074f445a7aff2ac5` |
@@ -42,6 +34,4 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | edg-func-def | edg | `src/func_def.c` | sanitized | `b2a378a42cbfc99187de5998aa960e1a4c046c56c6cc26f81e53ddf25f4f175f` |
 | edg-statements | edg | `src/statements.c` | sanitized | `a4b9476b67189ea0ed2034239f4494bc32a4f50a885bb258ab01eb8e01bac703` |
 | clang-sema-access | llvm | `clang/lib/Sema/SemaAccess.cpp` | sanitized | `985ab07ab7873ebd7c951ac6c5efb61db2566664af35506df4c90a3f2534367b` |
-| gcc-cp-class | gcc | `gcc/cp/class.cc` | sanitized | `0135f647b3eb56012696bf53ae8fd842f71cfb2ccf33c67efcee5c274f2429a8` |
-| gcc-cp-method | gcc | `gcc/cp/method.cc` | sanitized | `4f34fa9d7df3908b6b980d92a4dd733ea3593188fb8578708efad19a77991944` |
 | edg-class-decl | edg | `src/class_decl.c` | sanitized | `9a014800a411bc25e6bb2395c3c68b0c61eef1a55ccb5b274dfd323e2d586ce3` |

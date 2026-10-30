@@ -155,4 +155,4 @@ All seven compilers agree on all 25 tests. The results are in
 - CAST-12: every compiler in the matrix accepts the conversion and the
   round trip works.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

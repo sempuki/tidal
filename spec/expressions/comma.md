@@ -94,4 +94,4 @@ All seven compilers agree on all 12 tests. The results are in
 - COMMA-6: GCC says that a top-level comma in a subscript "changed meaning
   in C++23".
 
-Inputs: clang-sema-expr, clang-diag-sema, clang-parse-expr, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema, clang-parse-expr.

@@ -18,8 +18,8 @@ constructs covered, and the "Depends on" list. No rules yet.
 
 ## 2. Inputs
 
-Fetch the implementation sources the section needs with
-`tools/fetch_inputs.py`. It downloads pinned files into `inputs/raw/`, writes
+Fetch the permissively licensed implementation sources (Clang and EDG)
+that the section needs with `tools/fetch_inputs.py`. It downloads pinned files into `inputs/raw/`, writes
 sanitized copies to `inputs/clean/`, and updates `inputs/MANIFEST.md` with the
 upstream commit, path, license, class, and SHA-256 of each file. The writer
 reads only `inputs/clean/`.
@@ -38,17 +38,17 @@ knowledge never reaches the spec without a test behind it.
 ## 4. Read source
 
 Read the sanitized parser and semantic-analysis code for the construct in
-every open source implementation (Clang, GCC, EDG), even when the probes
-agree. The
-goal is to find conditions the probes missed. The most useful thing to
+Clang and EDG, even when the probes agree. GCC is used through its
+behavior only. A source reader can summarize GCC's code under `AGENTS.md`.
+The goal is to find conditions the probes missed. The most useful thing to
 collect is the list of diagnostics the code can emit, because each error
 diagnostic usually corresponds to one `reject` rule. Diagnostic message text
 is compiler output, so it counts as a clean input.
 
 Source also answers questions that behavior can't. When compilers show no
 variation, source can show whether a behavior is fixed by design or only by
-current implementation choice. For example, GCC's strict evaluation order
-applies to subscripts and shifts and not to other binary operators.
+current implementation choice. For example, source can show that an option
+for strict evaluation order applies to some operators and not others.
 
 Every condition found in source becomes a new probe (back to step 3).
 

@@ -22,7 +22,7 @@ changes a file in the repository.
 classification is unclear. Each such question is a file in `questions/`
 with a provisional answer that the spec follows. Contributors change answers
 through pull requests that argue from evidence anyone can check (test
-programs, compiler output, implementation source), as described in
+programs, compiler output, permissively licensed implementation source), as described in
 `questions/README.md` (decision 0010).
 
 ## Inputs
@@ -42,10 +42,12 @@ The writer may use these directly.
 ### Sanitized
 
 The writer may use these only after they pass through `tools/sanitize.py`,
-which removes every comment and every string that cites the standard.
+which removes every comment and every string that cites the standard. Only
+permissively licensed sources are inputs (decision 0021).
 
-- Implementation source code (Clang `lib/Parse`, `lib/Sema`, `lib/AST`; GCC
-  `gcc/cp`).
+- Implementation source code: Clang `lib/Parse`, `lib/Sema`, `lib/AST`, and
+  the EDG front end. Both are under Apache-2.0 WITH LLVM-exception, the
+  license of Tidal.
 - Implementation test files outside the directories listed under Forbidden.
 
 Comments are removed because implementations quote the standard in comments,
@@ -64,6 +66,9 @@ The writer must not read these.
 - Clang's `clang/test/CXX/` and `clang/test/CXX/drs/` directories, and libc++'s
   `libcxx/test/std/`. They are organized by ISO section and quote it.
 - Language-lawyer answers on Q&A sites, which usually quote the standard.
+- Implementation sources that are not under a permissive license, such as
+  GCC. Tidal uses GCC through its behavior. A source reader can read GCC
+  source and give the writer a summary under `AGENTS.md`.
 
 ## Similarity check
 

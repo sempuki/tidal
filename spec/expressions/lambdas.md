@@ -189,5 +189,4 @@ The results are in `tests/RESULTS.md`.
 - LAM-13 and LAM-16: all seven compilers accept static lambdas and
   explicit object parameters in C++23 mode.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-semantics,
-gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

@@ -203,4 +203,4 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of
 - ACC-9: EDG 7.0 accepts a use of a member that a using-declaration makes
   private, if the member is public in the base ({question}`Q-0052`).
 
-Inputs: clang-sema-access, gcc-cp-class, edg-class-decl.
+Inputs: clang-sema-access, edg-class-decl.

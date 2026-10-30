@@ -193,5 +193,5 @@ All seven compilers agree on 39 of 41 tests. The results are in
   provisional answer is that the behavior is undefined. See
   {question}`Q-0017`.
 
-Inputs: clang-sema-decl, gcc-cp-decl, edg-decls, clang-diag-sema (see
+Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

@@ -5,11 +5,6 @@
       "ref": "llvmorg-22.1.8",
       "license": "Apache-2.0 WITH LLVM-exception"
     },
-    "gcc": {
-      "github": "gcc-mirror/gcc",
-      "ref": "releases/gcc-16.2.0",
-      "license": "GPL-3.0-or-later"
-    },
     "edg": {
       "github": "edgcpp/compiler",
       "ref": "7.0",
@@ -54,24 +49,6 @@
       "class": "sanitized"
     },
     {
-      "id": "gcc-cp-parser",
-      "repo": "gcc",
-      "path": "gcc/cp/parser.cc",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-semantics",
-      "repo": "gcc",
-      "path": "gcc/cp/semantics.cc",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-typeck",
-      "repo": "gcc",
-      "path": "gcc/cp/typeck.cc",
-      "class": "sanitized"
-    },
-    {
       "id": "clang-sema-deduction",
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaTemplateDeduction.cpp",
@@ -81,18 +58,6 @@
       "id": "clang-sema-decl",
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaDecl.cpp",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-pt",
-      "repo": "gcc",
-      "path": "gcc/cp/pt.cc",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-decl",
-      "repo": "gcc",
-      "path": "gcc/cp/decl.cc",
       "class": "sanitized"
     },
     {
@@ -117,18 +82,6 @@
       "id": "clang-sema-init",
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaInit.cpp",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-typeck2",
-      "repo": "gcc",
-      "path": "gcc/cp/typeck2.cc",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-init",
-      "repo": "gcc",
-      "path": "gcc/cp/init.cc",
       "class": "sanitized"
     },
     {
@@ -177,18 +130,6 @@
       "id": "clang-sema-access",
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaAccess.cpp",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-class",
-      "repo": "gcc",
-      "path": "gcc/cp/class.cc",
-      "class": "sanitized"
-    },
-    {
-      "id": "gcc-cp-method",
-      "repo": "gcc",
-      "path": "gcc/cp/method.cc",
       "class": "sanitized"
     },
     {

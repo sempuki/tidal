@@ -160,5 +160,5 @@ All seven compilers agree on every test. The results are in
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
   accepts zero or one copy.
 
-Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
-gcc-cp-semantics, edg-statements.
+Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
+statements.

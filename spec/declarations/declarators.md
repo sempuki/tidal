@@ -323,5 +323,5 @@ All seven compilers agree on 60 of 61 tests. The results are in
   A change to an object that is not `const`, through the same cast, is
   accepted and executes.
 
-Inputs: clang-sema-type, clang-sema-decl, gcc-cp-decl, edg-decls,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema (see
+`inputs/MANIFEST.md`).

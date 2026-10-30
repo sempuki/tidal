@@ -90,5 +90,5 @@ int k(int v = next());      // next() is called at each k()
 All seven compilers agree on all 14 tests. The results are in
 `tests/RESULTS.md`.
 
-Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema,
-gcc-cp-decl, edg-func-def.
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-func-
+def.

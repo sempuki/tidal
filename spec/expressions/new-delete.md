@@ -132,4 +132,4 @@ The results are in `tests/RESULTS.md`.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that it is
   undefined. Clang (pedantic) and EDG reject it ({question}`Q-0035`).
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck, gcc-cp-init.
+Inputs: clang-sema-expr, clang-diag-sema.

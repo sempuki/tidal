@@ -235,4 +235,4 @@ All seven compilers agree on all 39 tests. The results are in
   type as an extension. They reject it only under `-pedantic-errors`.
 - UN-19: Clang and GCC warn with `-Wsizeof-array-argument`.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

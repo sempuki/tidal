@@ -121,4 +121,4 @@ All seven compilers agree on all 11 tests. The results are in
 `tests/RESULTS.md`.
 - VC-7: the test accepts either result.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

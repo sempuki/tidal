@@ -15,8 +15,9 @@ close that text ends up to the ISO wording.
 ## Baseline
 
 - Language level: C++23, as implemented by `-std=c++23`.
-- Reference implementations: Clang and GCC (open source). MSVC and EDG may be
-  added later as black-box oracles.
+- Reference implementations: Clang, GCC, and EDG. Tidal reads the sanitized
+  source of Clang and EDG. It uses GCC through its behavior (decision 0021).
+  MSVC may be added later as a black-box oracle.
 - Versions used for this proof of concept are recorded in `inputs/MANIFEST.md`.
 
 ## Scope

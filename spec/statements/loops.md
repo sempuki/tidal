@@ -98,5 +98,5 @@ The results are in `tests/RESULTS.md`.
 - LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
   expression. GCC 16, Clang, and EDG destroy it after ({question}`Q-0044`).
 
-Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, gcc-cp-parser,
-gcc-cp-semantics, edg-statements.
+Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
+statements.

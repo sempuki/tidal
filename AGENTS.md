@@ -13,6 +13,8 @@ protected specification text. This material includes:
 - cppreference,
 - implementation sources and test suites that have not been sanitized
   (`docs/clean-room.md` lists them),
+- implementation sources that are not under a permissive license, such
+  as GCC, sanitized or not,
 - posts and answers that quote any of the above.
 
 A **writer** is an agent that has not read such material.
@@ -37,7 +39,8 @@ its session or context. It cannot become a writer again in that session.
    inputs:
    - summaries from source readers,
    - the behavior and diagnostics of implementations,
-   - sanitized implementation sources in `inputs/clean/`,
+   - sanitized, permissively licensed implementation sources in
+     `inputs/clean/`,
    - Tidal's own text and tests.
 6. Before a writer reads a summary, `tools/similarity.py` checks the
    summary against the reference corpus. A summary with a flagged passage

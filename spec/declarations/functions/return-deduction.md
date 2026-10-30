@@ -86,5 +86,4 @@ constexpr auto fact(int n) {
 All seven compilers agree on all 13 tests. The results are in
 `tests/RESULTS.md`.
 
-Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, gcc-cp-typeck,
-gcc-cp-decl, edg-func-def.
+Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, edg-func-def.

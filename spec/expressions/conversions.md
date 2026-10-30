@@ -186,4 +186,4 @@ The results are in `tests/RESULTS.md`.
 - CONV-11: Clang and GCC give infinity. EDG rejects the conversion during
   constant evaluation ({question}`Q-0028`).
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

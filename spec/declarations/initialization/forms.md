@@ -113,5 +113,5 @@ All seven compilers agree on 14 of 15 tests. The results are in
   answer is that INIT-1 applies to array elements and that EDG has a
   possible defect. See {question}`Q-0013`.
 
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
+`inputs/MANIFEST.md`).

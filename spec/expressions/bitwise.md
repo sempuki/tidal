@@ -123,4 +123,4 @@ All seven compilers agree on all 17 tests. The results are in
 - EDG doesn't take these warning flags and skips the recommended-practice
   tests.
 
-Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.
+Inputs: clang-sema-expr, clang-diag-sema.

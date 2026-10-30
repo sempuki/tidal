@@ -75,4 +75,4 @@ The results are in `tests/RESULTS.md`.
 - DEL-3: Clang and GCC accept a reason as a newer-standard extension.
   They reject it under `-pedantic-errors`.
 
-Inputs: clang-sema-declcxx, clang-diag-sema, gcc-cp-decl, edg-func-def.
+Inputs: clang-sema-declcxx, clang-diag-sema, edg-func-def.

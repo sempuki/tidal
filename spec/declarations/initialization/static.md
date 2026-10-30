@@ -85,5 +85,5 @@ All seven compilers agree on all 6 tests. The results are in
   GCC initializes `b` before the program starts, and the earlier reader
   gets 3. See {question}`Q-0014`.
 
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
+`inputs/MANIFEST.md`).
