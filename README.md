@@ -35,6 +35,7 @@ See [docs/charter.md](docs/charter.md).
     tools/run_tests.py --compilers clang-host,gcc-host   # host only, no containers
     tools/check_spec.py                     # rules and tests refer to each other
     tools/build_pdf.py                      # build/tidal.pdf
+    tools/check_all.sh                      # all of the above; run before pushing
 
 ## License
 
