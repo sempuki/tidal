@@ -51,3 +51,24 @@ test.
 A structured binding as a condition is rejected under `-pedantic-errors`.
 Both compilers describe it as a newer-standard extension and accept it
 with a warning otherwise.
+
+Source reading (step 4): read Clang's sanitized `ParseIfStatement` and the
+condition-checking path in Sema. Questions it raised:
+
+- The parser accepts `!` only before `consteval`. Probe added: `if !constexpr`
+  is rejected.
+- The else branch of `if !consteval` is parsed as an immediate function
+  context. Probe added.
+- A discarded branch is parsed in a "discarded statement" evaluation context
+  in all functions, not only templates. Probe added: return type deduction
+  ignores discarded returns in a non-template function.
+- The parser checks that both `if consteval` branches are compound statements
+  after parsing them. Already covered.
+
+Probing condition declarations further found that `static`, `extern`,
+`thread_local`, and class definitions are rejected in the condition but a
+`static` variable and a class definition are fine in the initializer. 14
+probes added. All 56 pass on both compilers with no disagreements.
+
+Reading GCC's parser was skipped for this section because Clang and GCC
+agreed on every probe. A full run should read both.
