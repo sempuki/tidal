@@ -24,12 +24,12 @@ storage duration and the storage class specifiers. Rules with the prefix
 
 :::{rule} STO-4
 :kind: required
-:tests: declarations/storage-linkage/thread-local-block.cpp declarations/storage-linkage/thread-local-combinations.cpp declarations/storage-linkage/thread-local-after-plain.cpp declarations/storage-linkage/plain-after-thread-local.cpp
+:tests: declarations/storage-linkage/thread-local-combinations.cpp declarations/storage-linkage/thread-local-after-plain.cpp declarations/storage-linkage/plain-after-thread-local.cpp
 
-A variable declared `thread_local` has thread storage, with one object for
-each thread *(threads referenced)*. `thread_local` can be combined with
-`static` or `extern`, and implies `static` in a block. All declarations of
-a variable must agree on `thread_local`.
+A variable declared `thread_local` has thread {term}`storage duration`.
+`thread_local` can be combined with `static` or `extern`. In a block, it
+implies `static`. All declarations of a variable must agree on
+`thread_local`.
 :::
 
 :::{rule} STO-5
@@ -158,6 +158,15 @@ occur.
 
 A variable at namespace scope has static storage. The storage of each
 variable with static storage is set to zero before other initialization.
+:::
+
+:::{rule} STO-8
+:kind: required
+:tests: declarations/storage-linkage/thread-local-block.cpp
+
+A `thread_local` variable has one object for each thread *(threads
+referenced)*. In a block, the object is initialized once in each thread,
+the first time control reaches its declaration.
 :::
 
 ## Implementation Requirements

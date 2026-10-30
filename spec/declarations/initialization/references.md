@@ -26,17 +26,16 @@ type, or the same type with fewer {term}`cv-qualifiers <cv-qualifier>`.
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-ref-temporary-other-type.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp
 
-A `const` lvalue reference can also bind to an rvalue. It can also bind to
-an expression of a different type that converts to its type. In these
-cases, the reference binds to a temporary object that holds the
-converted value.
+A `const` lvalue reference can also bind to an rvalue. It can also bind
+to an expression of a different type that converts to its type. In these
+cases, the reference binds to a temporary object.
 :::
 
 :::{rule} REF-3
 :kind: required
-:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp
+:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp
 
 An rvalue reference binds to an rvalue, including an xvalue. It can bind
 to an lvalue of a different type through a temporary object, as REF-2
@@ -62,6 +61,14 @@ If a reference variable binds to a temporary object, or to a member of
 one, the temporary lives as long as the reference. The temporary is
 destroyed when the reference goes out of scope. It is destroyed in order
 with the other objects of that scope.
+:::
+
+:::{rule} REF-7
+:kind: required
+:tests: declarations/initialization/references/const-ref-temporary-other-type.cpp declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp
+
+A temporary object that a reference binds to holds the converted value.
+A later change to the source expression does not change the temporary.
 :::
 
 ## Undefined Behavior

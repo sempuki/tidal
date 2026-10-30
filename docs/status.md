@@ -71,10 +71,6 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
 
-- Some rules mix a legality fact with a run-time fact, and sit in the
-  segment of the larger part: STO-4, DCL-3, SB-1, INIT-4, INIT-5, LIST-3,
-  REF-2, and REF-3. Each should be split into two rules with new IDs, as
-  ATTR-3, ATTR-10, FN-4, and FN-3 were.
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
 
@@ -101,12 +97,10 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
-7. Split the rules listed under "Known limits of the specification text"
-   so each fits one segment.
-8. Draft the remaining expression topics in the order set by decision
+7. Draft the remaining expression topics in the order set by decision
    0018: unary and postfix operators, casts, constant expressions, `new`
    and `delete`, and lambdas.
-9. Continue classes in the order set by decision 0017. Next: access
+8. Continue classes in the order set by decision 0017. Next: access
    control and friends.
 
 ## Size estimate

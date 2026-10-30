@@ -1,4 +1,4 @@
-// tidal-rules: LIST-3
+// tidal-rules: LIST-8
 // tidal-expect: accept
 struct S { int a; double b; int* p; };
 constexpr S s = {1};

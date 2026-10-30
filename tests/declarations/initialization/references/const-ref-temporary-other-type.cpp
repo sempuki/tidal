@@ -1,4 +1,4 @@
-// tidal-rules: REF-2
+// tidal-rules: REF-7
 // tidal-expect: run
 int main() {
   long l = 1;

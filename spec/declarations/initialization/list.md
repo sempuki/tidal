@@ -49,12 +49,11 @@ The same conversions are permitted in parentheses (INIT-4).
 
 :::{rule} LIST-3
 :kind: required
-:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/aggregate-paren-init.cpp
+:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/aggregate-paren-init.cpp
 
-An aggregate is initialized member by member in the order of declaration.
-The values can be in braces or in parentheses. A member without a value
-gets its default member initializer, or zero if it has none. The list
-must not have more values than the aggregate has members.
+An aggregate is initialized member by member in the order of
+declaration. The values can be in braces or in parentheses. The list must
+not have more values than the aggregate has members.
 :::
 
 :::{rule} LIST-4
@@ -104,6 +103,14 @@ without braces. These conditions apply:
 
 The values in a braced list are evaluated from left to right. Each value
 is evaluated completely before the next value starts.
+:::
+
+:::{rule} LIST-8
+:kind: required
+:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp
+
+A member without a value in the list gets its default member
+initializer. If it has none, it is set to zero.
 :::
 
 ## Examples

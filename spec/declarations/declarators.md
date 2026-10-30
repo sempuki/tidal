@@ -40,12 +40,10 @@ pointer. A pointer to a reference must not be declared.
 
 :::{rule} DCL-3
 :kind: required
-:tests: declarations/declarators/reference-binds-same-object.cpp declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp
+:tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp
 
-A reference refers to an existing object or function. Each use of the
-reference is a use of that object. A reference variable must have an
-initializer, except in an `extern` declaration. A program must not
-declare:
+A reference variable must have an initializer, except in an `extern`
+declaration. A program must not declare:
 
 - a reference to a reference,
 - an array of references,
@@ -181,6 +179,16 @@ A `const` variable of integer or enumeration type with a constant
 initializer can occur in a constant expression. A `const` variable with
 an initializer that is not constant cannot. A `const` floating-point
 variable cannot.
+:::
+
+## Dynamic Semantics
+
+:::{rule} DCL-11
+:kind: required
+:tests: declarations/declarators/reference-binds-same-object.cpp
+
+A reference refers to an existing object or function. Each use of the
+reference is a use of that object or function.
 :::
 
 ## Undefined Behavior

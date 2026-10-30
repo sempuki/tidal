@@ -1,4 +1,4 @@
-// tidal-rules: DCL-3
+// tidal-rules: DCL-11
 // tidal-expect: run
 int main() {
   int x = 1;

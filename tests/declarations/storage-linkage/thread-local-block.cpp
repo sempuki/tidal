@@ -1,4 +1,4 @@
-// tidal-rules: STO-4
+// tidal-rules: STO-8
 // tidal-expect: run
 int inits = 0;
 int make() { return ++inits; }
