@@ -89,10 +89,9 @@ def outcome(test: Test, compiler: str) -> tuple[str, str]:
         cmd.insert(1, "-c")
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
-        first_error = next(
-            (l for l in proc.stderr.splitlines() if "error" in l), proc.stderr.strip()[:200]
-        )
-        return "reject", first_error
+        diags = [l for l in proc.stderr.splitlines() if ": error: " in l or ": note: " in l]
+        diags = [l for l in diags if "in call to" not in l and "declared here" not in l]
+        return "reject", " / ".join(diags[:2]) or proc.stderr.strip()[:200]
     if not wants_run:
         return "accept", ""
     try:
@@ -171,7 +170,7 @@ def main() -> int:
         for t, got, _ in rows:
             for c in COMPILERS:
                 if got[c][0] == "reject":
-                    detail = got[c][1].split(": error: ", 1)[-1].replace("|", "\\|")
+                    detail = re.sub(r"\S+:\d+:\d+: ", "", got[c][1]).replace("|", "\\|")
                     lines.append(f"- `{t.name}` ({c}): {detail}")
         lines.append("")
         args.report.write_text("\n".join(lines))
