@@ -54,15 +54,17 @@ conversion.
 
 :::{rule} IF-6
 :kind: reject
-:tests: statements/if/condition-declaration-no-init.cpp statements/if/condition-declaration-two.cpp statements/if/condition-structured-binding.cpp statements/if/condition-declaration-array.cpp statements/if/condition-declaration-class.cpp statements/if/condition-declaration-static.cpp statements/if/condition-declaration-extern.cpp statements/if/condition-declaration-thread-local.cpp
+:tests: statements/if/condition-declaration-no-init.cpp statements/if/condition-declaration-two.cpp statements/if/condition-structured-binding.cpp statements/if/condition-declaration-array.cpp statements/if/condition-declaration-class.cpp statements/if/condition-declaration-static.cpp statements/if/condition-declaration-extern.cpp statements/if/condition-declaration-thread-local.cpp statements/if/condition-declaration-function.cpp statements/if/condition-declaration-inline.cpp statements/if/condition-declaration-typedef.cpp
 
 A condition declaration must:
 
 - have an initializer,
-- declare exactly one name, and not a structured binding,
+- declare exactly one variable, and not a structured binding or a
+  function,
 - not declare an array,
 - not define a class or an enumeration,
-- not use `static`, `extern`, or `thread_local`.
+- use no specifiers except type specifiers and `constexpr`. `static`,
+  `extern`, `thread_local`, `inline`, and `typedef` are not valid.
 :::
 
 :::{rule} IF-7

@@ -25,10 +25,13 @@ initializer must be a constant expression. Its type must be a literal type
 
 :::{rule} CX-2
 :kind: reject
-:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp
+:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp
 
-A `constexpr` reference, or a `constexpr` pointer that is not null,
-must refer to an object or function with static {term}`storage duration`.
+A `constexpr` reference, or a `constexpr` pointer that is not null, must
+refer to a function or to an object with static {term}`storage duration`. A
+pointer can also point one past the end of such an object. A static local
+variable can refer to another static local variable. A `constexpr`
+pointer or reference must not refer to an automatic variable.
 :::
 
 :::{rule} CX-3

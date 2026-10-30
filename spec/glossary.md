@@ -51,7 +51,11 @@ integer promotion
   The conversion of an integer operand that is narrower than `int`. These
   types are `bool`, the character types, `short`, and their signed and
   unsigned forms. If `int` can hold all values of the type, the result is
-  `int`. If not, the result is `unsigned int`. Unscoped enumerations and
+  `int`. If not, the result is `unsigned int`. The types `wchar_t`,
+  `char8_t`, `char16_t`, and `char32_t` promote to the narrowest standard
+  integer type that can hold all their values. The candidates are tried by
+  rank from `int` upward, the signed type of each rank before the unsigned
+  type. Unscoped enumerations and
   bit-fields also promote *(referenced)*.
 
 linkage
@@ -91,7 +95,9 @@ usual arithmetic conversions
 
   1. If one operand has a floating-point type, the other operand is
      converted to the floating-point type with the larger range. The order
-     is `float`, `double`, `long double`.
+     is `float`, `double`, `long double`. Extended floating-point types
+     have their own ranks *(referenced)*. If neither type's rank is greater
+     than the other's, the operation is not valid.
   2. If not, both operands go through {term}`integer promotion`. If the
      types are then the same, that type is the common type.
   3. If both types are signed, or both are unsigned, the narrower operand

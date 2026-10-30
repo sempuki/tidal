@@ -30,14 +30,15 @@ of elements is one of these:
 
 :::{rule} SB-3
 :kind: required
-:tests: declarations/structured-bindings/aggregate-members.cpp declarations/structured-bindings/members-in-base.cpp declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp
+:tests: declarations/structured-bindings/aggregate-members.cpp declarations/structured-bindings/members-in-base.cpp declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp declarations/structured-bindings/friend-binds-private.cpp
 
 If the hidden variable has class type and SB-5 does not apply, the names
 refer to its non-static data members in declaration order. These members
 must:
 
 - all be in the same class, which can be a base class,
-- all be public,
+- all be accessible at the declaration, for example in a member function
+  or a friend of the class *(access referenced)*,
 - not include an anonymous union.
 
 The type of the hidden variable must not be a union or a scalar type.
@@ -45,11 +46,12 @@ The type of the hidden variable must not be a union or a scalar type.
 
 :::{rule} SB-4
 :kind: required
-:tests: declarations/structured-bindings/binding-types.cpp
+:tests: declarations/structured-bindings/binding-types.cpp declarations/structured-bindings/reference-member-binding-type.cpp
 
 For an array element or a data member, `decltype` of a name gives the
 declared type of the element. The cv-qualifiers of the hidden variable are
-added. The result is never a reference type.
+added. If the data member has a reference type, the result is that
+reference type.
 :::
 
 :::{rule} SB-5

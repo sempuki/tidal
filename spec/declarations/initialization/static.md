@@ -19,10 +19,9 @@ runs. This includes the initializers of other variables.
 :kind: required
 :tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp
 
-Other namespace-scope variables are *dynamically initialized* before
-`main` runs. In one {term}`translation unit`, they are initialized in the
-order of their definitions. Before its initializer runs, a variable holds
-zero (STO-3).
+Other namespace-scope variables are *dynamically initialized*. In one
+{term}`translation unit`, they are initialized in the order of their
+definitions. Before its initializer runs, a variable holds zero (STO-3).
 :::
 
 ## Implementation Requirements
@@ -44,6 +43,16 @@ An implementation can do a dynamic initialization before the program
 starts, if the variable gets the same value. It is unspecified if this
 occurs. An earlier initializer that reads the variable gets zero or that
 value.
+:::
+
+:::{rule} SINIT-5
+:kind: impl-defined
+:tests: declarations/initialization/static/before-main-observed.cpp declarations/initialization/static/deferred-initialization.cpp
+
+It is implementation-defined if the dynamic initialization of a
+namespace-scope variable is complete before the first statement of
+`main`. An implementation can defer it until the first use of a function
+or variable of the same translation unit.
 :::
 
 ## Examples

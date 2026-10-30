@@ -35,15 +35,19 @@ A program must not take the address of a prvalue or assign to it.
 
 :::{rule} VC-3
 :kind: required
-:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/address-of-xvalue.cpp
+:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp
 
 These expressions are xvalues:
 
-- a cast to an rvalue reference type,
-- a call to a function that returns an rvalue reference,
-- a member of an xvalue or of a prvalue of class type.
+- a cast to an rvalue reference to an object type,
+- a call to a function that returns an rvalue reference to an object
+  type,
+- a non-static data member of an xvalue or of a class prvalue, if the
+  member is not a reference.
 
-A program must not take the address of an xvalue.
+A cast to an rvalue reference to a function type gives an lvalue. A
+reference member and a static data member give lvalues. A program must
+not take the address of an xvalue.
 :::
 
 ## Dynamic Semantics

@@ -4,8 +4,13 @@ List-initialization uses a braced list, as in `int x{1};` or
 `S s = {1, 2};`. This page covers scalars, aggregates, and character
 arrays.
 
-An *aggregate* is an array, or a class that has only public non-static
-data members and no user-declared constructors *(classes referenced)*.
+An *aggregate* is an array, or a class with these properties *(classes
+referenced)*:
+
+- no user-declared or inherited constructors,
+- no private or protected direct non-static data members,
+- no virtual functions,
+- base classes that are all public and not virtual.
 
 ## Syntax
 
@@ -49,11 +54,13 @@ The same conversions are permitted in parentheses (INIT-4).
 
 :::{rule} LIST-3
 :kind: required
-:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/aggregate-paren-init.cpp
+:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/aggregate-paren-init.cpp declarations/initialization/list/aggregate-with-base.cpp declarations/initialization/list/missing-reference-member.cpp
 
-An aggregate is initialized member by member in the order of
-declaration. The values can be in braces or in parentheses. The list must
-not have more values than the aggregate has members.
+An aggregate is initialized in the order of declaration. Its base
+classes are initialized first, then its members. The values can be in
+braces or in parentheses. The list must not have more values than the
+aggregate has bases and members. A reference member without a default
+member initializer must have a value in the list.
 :::
 
 :::{rule} LIST-4
@@ -107,10 +114,12 @@ is evaluated completely before the next value starts.
 
 :::{rule} LIST-8
 :kind: required
-:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp
+:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp
 
-A member without a value in the list gets its default member
-initializer. If it has none, it is set to zero.
+A member without a value in the list is initialized from its default
+member initializer. If it has none, it is initialized from an empty
+braced list. A scalar member becomes zero. A member of class type gets
+its default constructor *(classes referenced)*.
 :::
 
 ## Examples

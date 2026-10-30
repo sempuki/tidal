@@ -22,7 +22,7 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp
 
 The second and third operands give one result type and
 {term}`value category`:
@@ -31,8 +31,11 @@ The second and third operands give one result type and
   result is an lvalue of that type with the combined cv-qualifiers.
 - If both have arithmetic or enumeration type, the
   {term}`usual arithmetic conversions` give the type of a prvalue result.
-- If both are pointers or null pointer constants, the result is a pointer
-  prvalue with the combined cv-qualifiers.
+  Two integer literals `0` give `int`.
+- If one is a pointer and the other is a pointer or a null pointer
+  constant, the result is a pointer prvalue with the combined
+  cv-qualifiers.
+- If both are `nullptr`, the result has the type of `nullptr`.
 - If one class type converts to the other, the result has the other type.
 :::
 

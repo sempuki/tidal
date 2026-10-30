@@ -40,9 +40,11 @@ pointer. A pointer to a reference must not be declared.
 
 :::{rule} DCL-3
 :kind: required
-:tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp
+:tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp declarations/declarators/reference-parameter-no-initializer.cpp
 
 A reference variable must have an initializer, except in an `extern`
+declaration. A reference parameter, a reference return type, and a
+reference data member in a class need no initializer in their
 declaration. A program must not declare:
 
 - a reference to a reference,
@@ -63,12 +65,13 @@ alias has no effect.
 
 :::{rule} DCL-5
 :kind: required
-:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp
 
-An array bound must be a constant expression of integer or unscoped
-enumeration type. It is converted to the type of `sizeof` without loss of
-value. It must be greater than zero. The bound can be omitted in these
-cases:
+An array bound must be a constant expression that converts to the type of
+`sizeof` without loss of value. Integer types, unscoped enumerations, and
+class types with a `constexpr` conversion function to an integer type are
+valid. A scoped enumeration is not valid. The bound must be greater than
+zero. The bound can be omitted in these cases:
 
 - an initializer gives the number of elements,
 - the declaration does not define the array, for example an `extern`
@@ -88,13 +91,13 @@ be declared.
 
 :::{rule} DCL-7
 :kind: required
-:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp
+:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp
 
 A function can return a pointer or a reference to an array or a function.
 A function must not return an array or a function. A trailing return type
-gives the same type as the type at the start. The return type can be
-`const void`. A function that is not a class member must not have a
-cv-qualifier after its parameter list.
+requires `auto` at the start, and gives the return type. The return type
+can be `const void`. A function that is not a class member must not have
+a cv-qualifier after its parameter list.
 :::
 
 :::{rule} DCL-8

@@ -35,9 +35,9 @@ complete type, and it must have both `begin` and `end`.
 
 :::{rule} RFOR-5
 :kind: reject
-:tests: statements/range-for/storage-class.cpp statements/range-for/static-thread-local-declaration.cpp
+:tests: statements/range-for/storage-class.cpp statements/range-for/static-thread-local-declaration.cpp statements/range-for/extern-loop-variable.cpp
 
-The loop variable must not be `static` or `thread_local`
+The loop variable must not be `static`, `thread_local`, or `extern`
 ({question}`Q-0026`).
 :::
 

@@ -26,20 +26,22 @@ type, or the same type with fewer {term}`cv-qualifiers <cv-qualifier>`.
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-volatile-ref-rvalue.cpp
 
-A `const` lvalue reference can also bind to an rvalue. It can also bind
-to an expression of a different type that converts to its type. In these
-cases, the reference binds to a temporary object.
+A `const` lvalue reference that is not `volatile` can also bind to an
+rvalue. It can also bind to an expression of a different type that
+converts to its type. In these cases, the reference binds to a temporary
+object.
 :::
 
 :::{rule} REF-3
 :kind: required
-:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp
+:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp
 
-An rvalue reference binds to an rvalue, including an xvalue. It can bind
-to an lvalue of a different type through a temporary object, as REF-2
-gives. It must not bind to an lvalue of the same type.
+An rvalue reference to an object type binds to an rvalue, including an
+xvalue. It can bind to an lvalue of a different type through a temporary
+object, as REF-2 gives. It must not bind to an lvalue of the same type. An
+rvalue reference to a function type binds to a function.
 :::
 
 :::{rule} REF-6
@@ -55,12 +57,13 @@ conversion must not occur (LIST-2).
 
 :::{rule} REF-4
 :kind: required
-:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp
+:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp
 
 If a reference variable binds to a temporary object, or to a member of
-one, the temporary lives as long as the reference. The temporary is
-destroyed when the reference goes out of scope. It is destroyed in order
-with the other objects of that scope.
+one, the temporary lives as long as the reference. This also applies to a
+reference member of an aggregate initialized with braces. The temporary
+is destroyed when the reference goes out of scope, in order with the
+other objects of that scope.
 :::
 
 :::{rule} REF-7
@@ -75,11 +78,13 @@ A later change to the source expression does not change the temporary.
 
 :::{rule} REF-5
 :kind: undefined
-:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp
+:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp
 
-Only a direct binding to a variable extends the life of a temporary. A
-binding to a function parameter or a returned reference does not extend
-it. Use of a reference after the life of its object ends is undefined.
+Only the bindings in REF-4 extend the life of a temporary. A binding to a
+function parameter, a returned reference, or a reference member of an
+aggregate initialized with parentheses does not extend it
+({question}`Q-0040`). Use of a reference after the life of its object ends
+is undefined.
 :::
 
 ## Examples

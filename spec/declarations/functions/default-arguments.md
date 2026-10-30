@@ -17,7 +17,8 @@ argument uses the default argument.
 :tests: declarations/functions/default-arguments/basic.cpp declarations/functions/default-arguments/not-trailing.cpp declarations/functions/default-arguments/variadic-after-default.cpp
 
 After a parameter with a default argument, each later parameter must also
-have one. A `...` can follow parameters with default arguments.
+have one, in this declaration or in an earlier declaration in the same
+scope. A `...` can follow parameters with default arguments.
 :::
 
 :::{rule} DEFARG-2
@@ -32,11 +33,12 @@ default arguments.
 
 :::{rule} DEFARG-4
 :kind: reject
-:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp
+:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp
 
-A default argument must not use a parameter of the function. It must not
-use a local variable of an enclosing function, except in an operand that
-is not evaluated, such as the operand of `sizeof`.
+A default argument must not use `this`. It must not use a parameter of the
+function, or a local variable of an enclosing function, except in an
+operand that is not evaluated, such as the operand of `sizeof`
+({question}`Q-0038`).
 :::
 
 :::{rule} DEFARG-5

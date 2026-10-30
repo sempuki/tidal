@@ -35,11 +35,12 @@ version permits it ({question}`Q-0007`).
 
 :::{rule} DEL-4
 :kind: reject
-:tests: declarations/functions/deleted/default-non-member.cpp
+:tests: declarations/functions/deleted/default-non-member.cpp declarations/functions/deleted/defaulted-friend-comparison.cpp
 
 `= default` is permitted only on special member functions and
-comparison operators *(classes referenced)*. A function that is not a
-class member must not use it.
+comparison operators *(classes referenced)*. A defaulted comparison
+operator can be a friend that the class declares. Other functions that are
+not class members must not use `= default`.
 :::
 
 ## Examples

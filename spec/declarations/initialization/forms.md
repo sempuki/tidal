@@ -71,11 +71,13 @@ list also gets zero.
 
 :::{rule} INIT-1
 :kind: undefined
-:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp
+:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp
 
 A variable with {term}`automatic storage` and no initializer has no value
 until the program assigns one. A read of the variable before that time is
-undefined. This also applies to each element of an array.
+undefined. This also applies to each element of an array. A copy of such a
+value into an object of type `unsigned char` or `std::byte` is not
+undefined, and the copy also has no value ({question}`Q-0039`).
 :::
 
 ## Examples

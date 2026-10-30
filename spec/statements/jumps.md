@@ -48,12 +48,19 @@ before it or after it. These conditions apply:
 
 :::{rule} JMP-6
 :kind: reject
-:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp
+:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp
 
-A jump must not skip the initialization of a variable with
-{term}`automatic storage` that is in scope at the target. A jump can skip
-a scalar variable that has no initializer. A jump can also skip a
-`static` local variable.
+A jump must not skip the declaration of a variable with
+{term}`automatic storage` that is in scope at the target, if the declaration
+has an initializer. A jump can skip a declaration without an initializer
+if the type is one of these:
+
+- a scalar type,
+- a class type whose default constructor and destructor are both
+  trivial *(classes referenced)*,
+- an array of these types.
+
+A jump can also skip a `static` local variable ({question}`Q-0041`).
 :::
 
 ## Dynamic Semantics

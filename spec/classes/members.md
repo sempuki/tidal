@@ -35,15 +35,15 @@ places inside the definition, the class is not complete.
 
 :::{rule} CLS-3
 :kind: required
-:tests: classes/members/static-data-member.cpp classes/members/static-member-not-defined.cpp classes/members/inline-static-member.cpp classes/members/static-const-integral.cpp classes/members/static-non-const-in-class-init.cpp
+:tests: classes/members/static-data-member.cpp classes/members/static-member-not-defined.cpp classes/members/inline-static-member.cpp classes/members/static-const-integral.cpp classes/members/static-non-const-in-class-init.cpp classes/members/static-const-enum.cpp
 
 A static data member is one object for the program. These rules apply:
 
 - A static data member that is not `inline` needs one definition outside
   the class (LNK-6, LNK-7).
 - An `inline` or `constexpr` static data member is defined in the class.
-- A `const` static data member of integer type can have an initializer in
-  the class.
+- A `const` static data member of integer or enumeration type can have an
+  initializer in the class.
 - Other static data members must not have an initializer in the class.
 :::
 
@@ -95,36 +95,39 @@ members. Code outside the class names them as `S::name`.
 
 :::{rule} CLS-9
 :kind: reject
-:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp
+:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp
 
 A class must not declare:
 
 - two data members with the same name,
-- a data member with the name of the class, if the class declares a
-  constructor,
+- a static data member with the name of the class,
+- a non-static data member with the name of the class, if the class
+  declares a constructor,
 - a non-static data member with a {term}`placeholder type`,
-- an unnamed member of class type,
+- an unnamed member of class type, other than an anonymous union,
 - `= 0` on a member function that is not virtual.
 :::
 
 :::{rule} CLS-12
 :kind: required
-:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp
+:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp
 
 A class can be defined in a function. Such a local class must not have a
-static data member. Its member functions must not use the automatic
-variables of the function. They can use its static variables.
+static data member. Its member functions must not use an automatic
+variable of the function in an evaluated operand. They can use its static
+variables, and its `const` integer variables with constant initializers.
 :::
 
 ## Dynamic Semantics
 
 :::{rule} CLS-10
 :kind: required
-:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp
+:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp classes/members/member-order-mixed-access.cpp
 
-Non-static data members with the same access have increasing addresses in
-the order of their declarations. An object of an empty class has a size
-greater than zero. Two distinct objects have distinct addresses.
+Non-static data members of nonzero size have increasing addresses in the
+order of their declarations. Members of an anonymous union are not in
+this order. An object of an empty class has a size greater than zero. Two
+distinct objects have distinct addresses.
 :::
 
 ## Implementation Requirements
@@ -168,7 +171,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 38 of
   translation unit. The linker reports it.
 - CLS-6: GCC 16 accepts mixed ref-qualified overloads and reports
   ambiguity only at a call ({question}`Q-0027`).
-- CLS-9: Clang and GCC accept an unnamed member of class type as an
+- CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject it only under `-pedantic-errors`.
 - CLS-11: the size is 1 on every compiler in the matrix.
 

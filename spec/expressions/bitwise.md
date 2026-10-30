@@ -84,6 +84,14 @@ or `|` without parentheses.
 An implementation should warn if `~` applies to a `bool` operand.
 :::
 
+:::{rule} BIT-8
+:kind: recommended
+:tests: expressions/bitwise/mixed-enum-warns.cpp
+
+An implementation should warn when the operands of `&`, `^`, or `|` have
+two different enumeration types.
+:::
+
 ## Examples
 
 ```cpp

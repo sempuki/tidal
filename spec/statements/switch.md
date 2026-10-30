@@ -16,14 +16,15 @@ body. The value of its condition selects the label.
 
 :::{rule} SW-2
 :kind: reject
-:tests: statements/switch/condition-types.cpp statements/switch/condition-floating.cpp statements/switch/condition-pointer.cpp statements/switch/condition-two-conversions.cpp statements/switch/condition-explicit-conversion.cpp
+:tests: statements/switch/condition-types.cpp statements/switch/condition-floating.cpp statements/switch/condition-pointer.cpp statements/switch/condition-two-conversions.cpp statements/switch/condition-explicit-conversion.cpp statements/switch/condition-two-conversions-same-type.cpp
 
 The condition must have one of these types:
 
 - an integer type,
 - an enumeration type,
-- a class type with exactly one conversion function that is not
-  `explicit` and converts to an integer or enumeration type.
+- a class type whose conversion functions that are not `explicit`
+  convert to exactly one integer or enumeration type. Several of these
+  functions can convert to that one type.
 :::
 
 :::{rule} SW-3

@@ -55,12 +55,13 @@ for `op`. The result of `op` is converted to the type of `E1`. For
 
 :::{rule} ASN-6
 :kind: required
-:tests: expressions/assignment/braced-empty.cpp expressions/assignment/braced-narrowing.cpp expressions/assignment/braced-ok.cpp expressions/assignment/braced-compound.cpp
+:tests: expressions/assignment/braced-empty.cpp expressions/assignment/braced-narrowing.cpp expressions/assignment/braced-ok.cpp expressions/assignment/braced-compound.cpp expressions/assignment/braced-compound-class.cpp
 
 The right operand of `=` can be a braced list. For a scalar, the list
 must have zero or one value, and the conversion must not narrow (LIST-2).
-The right operand of a compound assignment must not be a braced list
-({question}`Q-0032`).
+The right operand of a compound assignment to a scalar must not be a
+braced list ({question}`Q-0032`). For a class type, the braced list is the
+argument of the operator function *(referenced)*.
 :::
 
 :::{rule} ASN-7

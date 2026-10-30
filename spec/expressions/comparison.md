@@ -64,20 +64,22 @@ different scoped enumerations must not be compared.
 
 :::{rule} CMP-11
 :kind: required
-:tests: expressions/comparison/array-comparison.cpp
+:tests: expressions/comparison/array-comparison.cpp expressions/comparison/three-way-arrays.cpp
 
-If both operands are arrays, each converts to a pointer to its first
-element. The comparison then compares the addresses.
+If both operands of `==`, `!=`, `<`, `>`, `<=`, or `>=` are arrays, each
+converts to a pointer to its first element. The comparison then compares
+the addresses. `<=>` must not have two array operands.
 :::
 
 :::{rule} CMP-12
 :kind: required
-:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-precedence.cpp
+:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-precedence.cpp expressions/comparison/three-way-function-pointers.cpp
 
-`<=>` on integer, enumeration, or pointer operands gives
+`<=>` on integer, enumeration, or object pointer operands gives
 `std::strong_ordering`. On floating-point operands it gives
 `std::partial_ordering`. These types come from the library *(referenced)*,
-and must be declared before `<=>` is used.
+and must be declared before `<=>` is used. `<=>` must not compare two
+function pointers.
 :::
 
 :::{rule} CMP-13
