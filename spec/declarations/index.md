@@ -12,4 +12,5 @@ enumerations
 namespaces
 attributes
 functions/index
+constexpr
 :::
