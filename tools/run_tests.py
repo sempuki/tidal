@@ -115,7 +115,7 @@ def test_files(paths: list[Path]) -> list[Path]:
 
 
 LINK_DIAG = re.compile(r"(multiple definition of|undefined reference to) \S+")
-DIAG = re.compile(r'^(?:\S+:\d+:\d+|"[^"]*", line \d+): (error|note): (.*)$')
+DIAG = re.compile(r'^(?:\S+:\d+:\d+|"[^"]*"\s*, line \d+): (error|note): (.*)$')
 
 
 def diagnostics(stderr: str) -> list[str]:
