@@ -115,6 +115,80 @@ compilers affect the Status column.
 | `declarations/declarators/void-parameter-list.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/void-parameter-named.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/void-parameter-with-others.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/array-from-array.cpp` | INIT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/copy-init-converts.cpp` | INIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/copy-init-explicit-rejected.cpp` | INIT-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/copy-init-no-conversion.cpp` | INIT-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/direct-init-multiple.cpp` | INIT-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/empty-parens-declares-function.cpp` | INIT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/incomplete-type.cpp` | INIT-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/paren-init-explicit-conversion.cpp` | INIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/read-uninitialized-array.cpp` | INIT-1 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/read-uninitialized.cpp` | INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/scalar-list-in-parens.cpp` | INIT-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/value-init-forms.cpp` | INIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/write-before-read.cpp` | INIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-default-member-initializer.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-members-in-order.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-missing-members-zero.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-paren-init.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-too-many.cpp` | LIST-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/brace-elision.cpp` | LIST-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/braced-order.cpp` | LIST-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/list/designated-array.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-mixed.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-nested-braces.cpp` | LIST-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/designated-nested.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-out-of-order.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-repeated.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated.cpp` | LIST-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/designator-on-scalar.cpp` | LIST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-constant-fits.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-constant-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-double-to-float-in-range.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-float-to-int-exact.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-float-to-int.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-in-aggregate.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-int-to-float-exact.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-nonconstant-int.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-not-in-parens.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-pointer-to-bool.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/scalar-braces-two-values.cpp` | LIST-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/scalar-braces.cpp` | LIST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-array.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-plain-to-char8.cpp` | LIST-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-too-long.cpp` | LIST-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-u8-to-char.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-u8-to-char8.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` | LIST-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-wrong-type.cpp` | LIST-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/dangling-local-return.cpp` | REF-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/lifetime-extended.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/lifetime-member-extended.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/lifetime-not-through-return.cpp` | REF-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/lvalue-ref-binds-lvalue.cpp` | REF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/lvalue-ref-drops-const.cpp` | REF-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/lvalue-ref-other-type.cpp` | REF-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/reference-multiple-values.cpp` | REF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/rvalue-ref-binds-rvalue.cpp` | REF-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp` | REF-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` | REF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/static/across-units-order.cpp` | SINIT-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/static/constant-before-dynamic.cpp` | SINIT-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/static/constexpr-constant-initialized.cpp` | SINIT-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/static/dynamic-in-order.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/static/dynamic-reads-zero.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/static/maybe-static.cpp` | SINIT-4 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/block-extern-after-local.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/block-extern-initializer.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -239,7 +313,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-224/224 tests pass on baseline compilers.
+298/298 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -625,6 +699,264 @@ check that the rejection has the intended cause.
 - `declarations/declarators/void-parameter-with-others.cpp` (clang-18): error: 'void' must be the first and only parameter if specified
 - `declarations/declarators/void-parameter-with-others.cpp` (gcc-16): error: invalid use of type 'void' in parameter declaration
 - `declarations/declarators/void-parameter-with-others.cpp` (clang-22): error: 'void' must be the first and only parameter if specified
+- `declarations/initialization/forms/array-from-array.cpp` (clang-host): error: array initializer must be an initializer list
+- `declarations/initialization/forms/array-from-array.cpp` (gcc-host): error: array must be initialized with a brace-enclosed initializer
+- `declarations/initialization/forms/array-from-array.cpp` (edg-7.0): error: initialization with "{...}" expected for aggregate object
+- `declarations/initialization/forms/array-from-array.cpp` (gcc-14): error: array must be initialized with a brace-enclosed initializer
+- `declarations/initialization/forms/array-from-array.cpp` (clang-18): error: array initializer must be an initializer list
+- `declarations/initialization/forms/array-from-array.cpp` (gcc-16): error: array must be initialized with a brace-enclosed initializer
+- `declarations/initialization/forms/array-from-array.cpp` (clang-22): error: array initializer must be an initializer list
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (clang-host): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (gcc-host): error: conversion from ‘int’ to non-scalar type ‘S’ requested / note: explicit conversion function was not considered
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (gcc-14): error: conversion from 'int' to non-scalar type 'S' requested
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (clang-18): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (gcc-16): error: conversion from 'int' to non-scalar type 'S' requested / note: explicit conversion function was not considered
+- `declarations/initialization/forms/copy-init-explicit-rejected.cpp` (clang-22): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "int *"
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (gcc-14): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (gcc-16): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `declarations/initialization/forms/copy-init-no-conversion.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `declarations/initialization/forms/direct-init-multiple.cpp` (clang-host): error: excess elements in scalar initializer
+- `declarations/initialization/forms/direct-init-multiple.cpp` (gcc-host): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/forms/direct-init-multiple.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/forms/direct-init-multiple.cpp` (gcc-14): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/forms/direct-init-multiple.cpp` (clang-18): error: excess elements in scalar initializer
+- `declarations/initialization/forms/direct-init-multiple.cpp` (gcc-16): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/forms/direct-init-multiple.cpp` (clang-22): error: excess elements in scalar initializer
+- `declarations/initialization/forms/incomplete-type.cpp` (clang-host): error: variable has incomplete type 'I' / note: forward declaration of 'I'
+- `declarations/initialization/forms/incomplete-type.cpp` (gcc-host): error: variable ‘I j’ has initializer but incomplete type
+- `declarations/initialization/forms/incomplete-type.cpp` (edg-7.0): error: incomplete type "I" is not allowed
+- `declarations/initialization/forms/incomplete-type.cpp` (gcc-14): error: variable 'I j' has initializer but incomplete type
+- `declarations/initialization/forms/incomplete-type.cpp` (clang-18): error: variable has incomplete type 'I' / note: forward declaration of 'I'
+- `declarations/initialization/forms/incomplete-type.cpp` (gcc-16): error: variable 'I j' has initializer but incomplete type
+- `declarations/initialization/forms/incomplete-type.cpp` (clang-22): error: variable has incomplete type 'I' / note: forward declaration of 'I'
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized array element
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing uninitialized array element
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized array element
+- `declarations/initialization/forms/read-uninitialized-array.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘x’ is not usable in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `declarations/initialization/forms/read-uninitialized.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'x' is not usable in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'x' is not usable in a constant expression
+- `declarations/initialization/forms/read-uninitialized.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (clang-host): error: cannot initialize non-class type 'int' with a parenthesized initializer list
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (gcc-host): error: list-initializer for non-class type must not be parenthesized
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (edg-7.0): error: a parenthesized initializer for a non-class entity must be an expression, not a brace-enclosed list
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (gcc-14): error: list-initializer for non-class type must not be parenthesized
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (clang-18): error: cannot initialize non-class type 'int' with a parenthesized initializer list
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (gcc-16): error: list-initializer for non-class type must not be parenthesized
+- `declarations/initialization/forms/scalar-list-in-parens.cpp` (clang-22): error: cannot initialize non-class type 'int' with a parenthesized initializer list
+- `declarations/initialization/list/aggregate-too-many.cpp` (clang-host): error: excess elements in struct initializer
+- `declarations/initialization/list/aggregate-too-many.cpp` (gcc-host): error: too many initializers for ‘S’
+- `declarations/initialization/list/aggregate-too-many.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/list/aggregate-too-many.cpp` (gcc-14): error: too many initializers for 'S'
+- `declarations/initialization/list/aggregate-too-many.cpp` (clang-18): error: excess elements in struct initializer
+- `declarations/initialization/list/aggregate-too-many.cpp` (gcc-16): error: too many initializers for 'S'
+- `declarations/initialization/list/aggregate-too-many.cpp` (clang-22): error: excess elements in struct initializer
+- `declarations/initialization/list/designated-array.cpp` (clang-host): error: array designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-array.cpp` (gcc-host): error: ISO C++ does not allow C99 designated initializers [-Wpedantic]
+- `declarations/initialization/list/designated-array.cpp` (edg-7.0): error: array designators are nonstandard in C++
+- `declarations/initialization/list/designated-array.cpp` (gcc-14): error: ISO C++ does not allow C99 designated initializers [-Wpedantic]
+- `declarations/initialization/list/designated-array.cpp` (clang-18): error: array designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-array.cpp` (gcc-16): error: ISO C++ does not allow C99 designated initializers [-Wpedantic]
+- `declarations/initialization/list/designated-array.cpp` (clang-22): error: array designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-mixed.cpp` (clang-host): error: mixture of designated and non-designated initializers in the same initializer list is a C99 extension [-Werror,-Wc99-designator] / note: first non-designated initializer is here
+- `declarations/initialization/list/designated-mixed.cpp` (gcc-host): error: either all initializer clauses should be designated or none of them should be
+- `declarations/initialization/list/designated-mixed.cpp` (edg-7.0): error: mixing designated and non-designated initializers is nonstandard in C++
+- `declarations/initialization/list/designated-mixed.cpp` (gcc-14): error: either all initializer clauses should be designated or none of them should be
+- `declarations/initialization/list/designated-mixed.cpp` (clang-18): error: mixture of designated and non-designated initializers in the same initializer list is a C99 extension [-Werror,-Wc99-designator] / note: first non-designated initializer is here
+- `declarations/initialization/list/designated-mixed.cpp` (gcc-16): error: either all initializer clauses should be designated or none of them should be
+- `declarations/initialization/list/designated-mixed.cpp` (clang-22): error: mixture of designated and non-designated initializers in the same initializer list is a C99 extension [-Werror,-Wc99-designator] / note: first non-designated initializer is here
+- `declarations/initialization/list/designated-nested.cpp` (clang-host): error: nested designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-nested.cpp` (gcc-host): error: expected primary-expression before ‘.’ token
+- `declarations/initialization/list/designated-nested.cpp` (edg-7.0): error: chained designators are nonstandard in C++
+- `declarations/initialization/list/designated-nested.cpp` (gcc-14): error: expected primary-expression before '.' token
+- `declarations/initialization/list/designated-nested.cpp` (clang-18): error: nested designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-nested.cpp` (gcc-16): error: expected primary-expression before '.' token
+- `declarations/initialization/list/designated-nested.cpp` (clang-22): error: nested designators are a C99 extension [-Werror,-Wc99-designator]
+- `declarations/initialization/list/designated-out-of-order.cpp` (clang-host): error: ISO C++ requires field designators to be specified in declaration order; field 'b' will be initialized after field 'a' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'b' is here
+- `declarations/initialization/list/designated-out-of-order.cpp` (gcc-host): error: designator order for field ‘S::a’ does not match declaration order in ‘S’
+- `declarations/initialization/list/designated-out-of-order.cpp` (edg-7.0): error: out-of-order initializers are nonstandard in C++
+- `declarations/initialization/list/designated-out-of-order.cpp` (gcc-14): error: designator order for field 'S::a' does not match declaration order in 'S'
+- `declarations/initialization/list/designated-out-of-order.cpp` (clang-18): error: ISO C++ requires field designators to be specified in declaration order; field 'b' will be initialized after field 'a' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'b' is here
+- `declarations/initialization/list/designated-out-of-order.cpp` (gcc-16): error: designator order for field 'S::a' does not match declaration order in 'S'
+- `declarations/initialization/list/designated-out-of-order.cpp` (clang-22): error: ISO C++ requires field designators to be specified in declaration order; field 'b' will be initialized after field 'a' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'b' is here
+- `declarations/initialization/list/designated-repeated.cpp` (clang-host): error: initializer overrides prior initialization of this subobject [-Werror,-Winitializer-overrides] / note: previous initialization is here
+- `declarations/initialization/list/designated-repeated.cpp` (gcc-host): error: ‘.a’ designator used multiple times in the same initializer list
+- `declarations/initialization/list/designated-repeated.cpp` (edg-7.0): error: duplicate designator is not allowed
+- `declarations/initialization/list/designated-repeated.cpp` (gcc-14): error: '.a' designator used multiple times in the same initializer list
+- `declarations/initialization/list/designated-repeated.cpp` (clang-18): error: initializer overrides prior initialization of this subobject [-Werror,-Winitializer-overrides] / note: previous initialization is here
+- `declarations/initialization/list/designated-repeated.cpp` (gcc-16): error: '.a' designator used multiple times in the same initializer list
+- `declarations/initialization/list/designated-repeated.cpp` (clang-22): error: initializer overrides prior initialization of this subobject [-Werror,-Winitializer-overrides] / note: previous initialization is here
+- `declarations/initialization/list/designator-on-scalar.cpp` (clang-host): error: initialization of non-aggregate type 'int' with a designated initializer list
+- `declarations/initialization/list/designator-on-scalar.cpp` (gcc-host): error: C99 designator ‘a’ outside aggregate initializer
+- `declarations/initialization/list/designator-on-scalar.cpp` (edg-7.0): error: a designator cannot be used with a non-aggregate type "int"
+- `declarations/initialization/list/designator-on-scalar.cpp` (gcc-14): error: C99 designator 'a' outside aggregate initializer
+- `declarations/initialization/list/designator-on-scalar.cpp` (clang-18): error: initialization of non-aggregate type 'int' with a designated initializer list
+- `declarations/initialization/list/designator-on-scalar.cpp` (gcc-16): error: C99 designator 'a' outside aggregate initializer
+- `declarations/initialization/list/designator-on-scalar.cpp` (clang-22): error: initialization of non-aggregate type 'int' with a designated initializer list
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (clang-host): error: constant expression evaluates to 300 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘char’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "char": constant value does not fit in destination type
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (gcc-14): error: narrowing conversion of '300' from 'int' to 'char' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (clang-18): error: constant expression evaluates to 300 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (gcc-16): error: narrowing conversion of '300' from 'int' to 'char' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-constant-out-of-range.cpp` (clang-22): error: constant expression evaluates to 300 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (clang-host): error: non-constant-expression cannot be narrowed from type 'double' to 'float' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘float’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "float"
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (gcc-14): error: narrowing conversion of 'd' from 'double' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (clang-18): error: non-constant-expression cannot be narrowed from type 'double' to 'float' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` (clang-22): error: non-constant-expression cannot be narrowed from type 'double' to 'float' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (clang-host): error: constant expression evaluates to 1.000000e+300 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (gcc-host): error: narrowing conversion of ‘1.0000000000000001e+300’ from ‘double’ to ‘float’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "float": constant value does not fit in destination type
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (gcc-14): error: narrowing conversion of '1.0000000000000001e+300' from 'double' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (clang-18): error: constant expression evaluates to 1.000000e+300 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (gcc-16): error: narrowing conversion of '1.0000000000000001e+300' from 'double' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` (clang-22): error: constant expression evaluates to 1.000000e+300 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (gcc-host): error: narrowing conversion of ‘1.0e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (gcc-14): error: narrowing conversion of '1.0e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (gcc-16): error: narrowing conversion of '1.0e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int-exact.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (gcc-host): error: narrowing conversion of ‘3.7000000000000002e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (gcc-14): error: narrowing conversion of '3.7000000000000002e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (gcc-16): error: narrowing conversion of '3.7000000000000002e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-float-to-int.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (gcc-host): error: narrowing conversion of ‘2.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (gcc-14): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (gcc-16): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-in-aggregate.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (clang-host): error: constant expression evaluates to 16777217 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (gcc-host): error: narrowing conversion of ‘16777217’ from ‘int’ to ‘float’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "float": constant value cannot be represented exactly in destination type
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (gcc-14): error: narrowing conversion of '16777217' from 'int' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (clang-18): error: constant expression evaluates to 16777217 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (gcc-16): error: narrowing conversion of '16777217' from 'int' to 'float' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` (clang-22): error: constant expression evaluates to 16777217 which cannot be narrowed to type 'float' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (clang-host): error: constant expression evaluates to -1 which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (gcc-host): error: narrowing conversion of ‘-1’ from ‘int’ to ‘unsigned int’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (gcc-14): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (clang-18): error: constant expression evaluates to -1 which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (gcc-16): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` (clang-22): error: constant expression evaluates to -1 which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (clang-host): error: non-constant-expression cannot be narrowed from type 'long' to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (gcc-host): error: narrowing conversion of ‘l’ from ‘long int’ to ‘int’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (edg-7.0): error: invalid narrowing conversion from "long" to "int"
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (gcc-14): error: narrowing conversion of 'l' from 'long int' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (clang-18): error: non-constant-expression cannot be narrowed from type 'long' to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (gcc-16): error: narrowing conversion of 'l' from 'long int' to 'int' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-nonconstant-int.cpp` (clang-22): error: non-constant-expression cannot be narrowed from type 'long' to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (clang-host): error: type 'int *' cannot be narrowed to 'bool' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (gcc-host): error: narrowing conversion of ‘& x’ from ‘int*’ to ‘bool’ [-Wnarrowing]
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (edg-7.0): error: invalid narrowing conversion from "int *" to "bool"
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (gcc-14): error: narrowing conversion of '& x' from 'int*' to 'bool' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (clang-18): error: type 'int *' cannot be narrowed to 'bool' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (gcc-16): error: narrowing conversion of '& x' from 'int*' to 'bool' [-Wnarrowing]
+- `declarations/initialization/list/narrowing-pointer-to-bool.cpp` (clang-22): error: type 'int *' cannot be narrowed to 'bool' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (clang-host): error: excess elements in scalar initializer
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (gcc-host): error: scalar object ‘x’ requires one element in initializer
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (gcc-14): error: scalar object 'x' requires one element in initializer
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (clang-18): error: excess elements in scalar initializer
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (gcc-16): error: scalar object 'x' requires one element in initializer
+- `declarations/initialization/list/scalar-braces-two-values.cpp` (clang-22): error: excess elements in scalar initializer
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (clang-host): error: initializing 'char8_t' array with plain string literal / note: add 'u8' prefix to form a 'char8_t' string literal
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (gcc-host): error: cannot initialize array of ‘char8_t’ from a string literal with type array of ‘char’
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (edg-7.0): error: a value of type "const char [2]" cannot be used to initialize an entity of type "char8_t []"
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (gcc-14): error: cannot initialize array of 'char8_t' from a string literal with type array of 'char'
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (clang-18): error: initializing 'char8_t' array with plain string literal / note: add 'u8' prefix to form a 'char8_t' string literal
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (gcc-16): error: cannot initialize array of 'char8_t' from a string literal with type array of 'char'
+- `declarations/initialization/list/string-literal-plain-to-char8.cpp` (clang-22): error: initializing 'char8_t' array with plain string literal / note: add 'u8' prefix to form a 'char8_t' string literal
+- `declarations/initialization/list/string-literal-too-long.cpp` (clang-host): error: initializer-string for char array is too long, array size is 2 but initializer has size 3 (including the null terminating character)
+- `declarations/initialization/list/string-literal-too-long.cpp` (gcc-host): error: initializer-string for ‘char [2]’ is too long [-fpermissive]
+- `declarations/initialization/list/string-literal-too-long.cpp` (edg-7.0): error: a value of type "const char [3]" cannot be used to initialize an entity of type "char [2]"
+- `declarations/initialization/list/string-literal-too-long.cpp` (gcc-14): error: initializer-string for 'char [2]' is too long [-fpermissive]
+- `declarations/initialization/list/string-literal-too-long.cpp` (clang-18): error: initializer-string for char array is too long, array size is 2 but initializer has size 3 (including the null terminating character)
+- `declarations/initialization/list/string-literal-too-long.cpp` (gcc-16): error: initializer-string for 'char [2]' is too long [-fpermissive]
+- `declarations/initialization/list/string-literal-too-long.cpp` (clang-22): error: initializer-string for char array is too long, array size is 2 but initializer has size 3 (including the null terminating character)
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (clang-host): error: initialization of char array with UTF-8 string literal is not permitted by C++20
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (gcc-host): error: cannot initialize array of ‘signed char’ from a string literal with type array of ‘char8_t’
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (edg-7.0): error: a value of type "const char8_t [2]" cannot be used to initialize an entity of type "signed char []"
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (gcc-14): error: cannot initialize array of 'signed char' from a string literal with type array of 'char8_t'
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (clang-18): error: initialization of char array with UTF-8 string literal is not permitted by C++20
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (gcc-16): error: cannot initialize array of 'signed char' from a string literal with type array of 'char8_t'
+- `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` (clang-22): error: initialization of char array with UTF-8 string literal is not permitted by C++20
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (clang-host): error: initializing char array with wide string literal
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (gcc-host): error: cannot initialize array of ‘char’ from a string literal with type array of ‘char16_t’
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (edg-7.0): error: a value of type "const char16_t [2]" cannot be used to initialize an entity of type "char []"
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (gcc-14): error: cannot initialize array of 'char' from a string literal with type array of 'char16_t'
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (clang-18): error: initializing char array with wide string literal
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (gcc-16): error: cannot initialize array of 'char' from a string literal with type array of 'char16_t'
+- `declarations/initialization/list/string-literal-wrong-type.cpp` (clang-22): error: initializing char array with wide string literal
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘2.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (gcc-14): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (gcc-16): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/references/dangling-local-return.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of variable whose lifetime has ended
+- `declarations/initialization/references/dangling-local-return.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘x’ outside its lifetime
+- `declarations/initialization/references/dangling-local-return.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access expired storage
+- `declarations/initialization/references/dangling-local-return.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'x' outside its lifetime
+- `declarations/initialization/references/dangling-local-return.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of variable whose lifetime has ended
+- `declarations/initialization/references/dangling-local-return.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'x' outside its lifetime
+- `declarations/initialization/references/dangling-local-return.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of variable whose lifetime has ended
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘<anonymous>’ outside its lifetime
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access expired storage
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing '<anonymous>' outside its lifetime
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing '<anonymous>' outside its lifetime
+- `declarations/initialization/references/lifetime-not-through-return.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (clang-host): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (gcc-host): error: binding reference of type ‘int&’ to ‘const int’ discards qualifiers
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (edg-7.0): error: qualifiers dropped in binding reference of type "int &" to initializer of type "const int"
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (gcc-14): error: binding reference of type 'int&' to 'const int' discards qualifiers
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (clang-18): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (gcc-16): error: binding reference of type 'int&' to 'const int' discards qualifiers
+- `declarations/initialization/references/lvalue-ref-drops-const.cpp` (clang-22): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (clang-host): error: non-const lvalue reference to type 'int' cannot bind to a value of unrelated type 'long'
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘int&’ to a value of type ‘long int’
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (edg-7.0): error: a reference of type "int &" (not const-qualified) cannot be initialized with a value of type "long"
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'int&' to a value of type 'long int'
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (clang-18): error: non-const lvalue reference to type 'int' cannot bind to a value of unrelated type 'long'
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'int&' to a value of type 'long int'
+- `declarations/initialization/references/lvalue-ref-other-type.cpp` (clang-22): error: non-const lvalue reference to type 'int' cannot bind to a value of unrelated type 'long'
+- `declarations/initialization/references/reference-multiple-values.cpp` (clang-host): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/reference-multiple-values.cpp` (gcc-host): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/references/reference-multiple-values.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/references/reference-multiple-values.cpp` (gcc-14): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/references/reference-multiple-values.cpp` (clang-18): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/reference-multiple-values.cpp` (gcc-16): error: expression list treated as compound expression in initializer [-fpermissive]
+- `declarations/initialization/references/reference-multiple-values.cpp` (clang-22): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-host): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (gcc-host): error: cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (edg-7.0): error: an rvalue reference cannot be bound to an lvalue
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (gcc-14): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-18): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `declarations/storage-linkage/block-extern-after-local.cpp` (clang-host): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
 - `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-host): error: ‘int x’ conflicts with a previous declaration / note: previous declaration ‘int x’
 - `declarations/storage-linkage/block-extern-after-local.cpp` (edg-7.0): error: "x" has already been declared in the current scope

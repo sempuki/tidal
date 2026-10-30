@@ -12,18 +12,20 @@ current state only. The history of how it got here is in `git log`.
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 13 | 11 required, 2 reject | 40 | Q-0010 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 16 | 11 required, 3 reject, 2 no-diagnostic | 40 | Q-0011 | 0 flagged |
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 18 | 13 required, 3 reject, 1 undefined, 1 impl-defined | 61 | Q-0012 | 0 flagged |
+| [Initialization](../spec/declarations/initialization/) (4 files) | 22 | 17 required, 1 reject, 2 undefined, 2 unspecified | 74 | Q-0013, Q-0014 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 14 terms | | | | 0 flagged |
 
 `tools/build_pdf.py` builds the whole specification as one PDF
 (decision 0009). The latest similarity reports are
 `reports/similarity/2026-10-30-pilots-2.txt`,
 `reports/similarity/2026-10-30-auto-2.txt`,
-`reports/similarity/2026-10-30-storage-linkage-2.txt`, and
-`reports/similarity/2026-10-30-declarators.txt`.
+`reports/similarity/2026-10-30-storage-linkage-2.txt`,
+`reports/similarity/2026-10-30-declarators.txt`, and
+`reports/similarity/2026-10-30-initialization-2.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 224/224 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 298/298 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -39,7 +41,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Eleven questions are open for opinions, each with a provisional answer the
+Thirteen questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
@@ -66,7 +68,7 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Continue declarations in the order set by decision 0013. Next:
-   initialization.
+   structured bindings.
 8. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements) and expression families in order
    of dependency.

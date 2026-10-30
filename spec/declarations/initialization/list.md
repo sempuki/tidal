@@ -122,7 +122,7 @@ Tests: declarations/initialization/list/braced-order.cpp
 
 ## Evidence
 
-All seven compilers agree on all 40 tests. Results are in
+All seven compilers agree on all 38 tests. Results are in
 `tests/RESULTS.md`.
 
 - **LIST-5.** Clang accepts array designators, chained designators, and

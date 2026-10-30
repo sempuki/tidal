@@ -85,7 +85,7 @@ Tests: declarations/initialization/forms/array-partial.cpp, declarations/initial
 
 ## Evidence
 
-All seven compilers agree on 19 of 20 tests. Results are in
+All seven compilers agree on 14 of 15 tests. Results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject reading an uninitialized scalar during
