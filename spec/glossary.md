@@ -50,6 +50,12 @@ original type, and an `unsigned int` otherwise. Unscoped enumerations and
 bit-fields promote as well. Their exact rules belong to those topics
 *(referenced)*.
 
+## Placeholder type
+
+`auto` or `decltype(auto)` written where a type is expected. The actual
+type is worked out later, from an initializer or a return statement. A
+concept name may come before the placeholder to constrain the type.
+
 ## Unsequenced
 
 Two evaluations are unsequenced when the language does not say which
