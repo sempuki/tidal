@@ -85,9 +85,12 @@ Tests: expressions/multiplicative/remainder-sign.cpp
 
 ### MUL-8 (required)
 
-When the common type is an unsigned integer type, the result is the
-mathematical result reduced modulo 2^N, where N is the number of bits in that
-type. Unsigned multiplication never overflows.
+When the common type is an unsigned integer type, results wrap around. If
+the mathematical result doesn't fit, the value kept is the one that differs
+from it by a multiple of one more than the type's largest value. Unsigned
+multiplication never overflows.
+
+    ~0u * 2u == ~0u - 1u
 
 Tests: expressions/multiplicative/unsigned-wraps.cpp
 
@@ -160,9 +163,8 @@ Tests: expressions/multiplicative/mixed-long-unsigned-lp64.cpp, expressions/mult
 Results for every compiler in the matrix are in `tests/RESULTS.md`.
 
 - **MUL-9, MUL-10, MUL-11.** Clang and GCC (all tested versions) reject each
-  case during constant evaluation. Their notes name the cause ("division by
-  zero", "value ... is outside the range of representable values",
-  "overflow in constant expression"). Compilers reject undefined operations
+  case during constant evaluation. Their notes name the cause: division by
+  zero, a result too large for `int`, or overflow. Compilers reject undefined operations
   during constant evaluation, and every case here is otherwise well formed.
   EDG agrees on integer division by zero and multiply overflow, and differs
   on the cases listed under MUL-D2 and MUL-D3.
