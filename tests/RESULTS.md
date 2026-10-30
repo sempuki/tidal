@@ -502,6 +502,16 @@ compilers affect the Status column.
 | `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/blocks/block-scope.cpp` | STMT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/blocks/declaration-anywhere.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/blocks/expression-statement.cpp` | STMT-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/blocks/label-at-end-of-block.cpp` | STMT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/blocks/null-statement.cpp` | STMT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/blocks/redeclare-same-block.cpp` | STMT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/blocks/statements-in-order.cpp` | STMT-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/blocks/unused-value-warns.cpp` | STMT-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/blocks/void-cast-silences.cpp` | STMT-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | run | run | run | run | pass |
 | `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | run | run | pass |
 | `statements/if/condition-assignment.cpp` | IF-3 | run | run | run | accept | run | run | run | run | pass |
@@ -558,8 +568,80 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-and-condition.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/break-innermost.cpp` | JMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/break-outside.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/continue-for.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/continue-in-switch.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/continue-outside.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/continue-while-condition.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/duplicate-label.cpp` | JMP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-back-recreates.cpp` | JMP-9 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/goto-forward-backward.cpp` | JMP-8 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/goto-other-function.cpp` | JMP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-out-destroys.cpp` | JMP-9 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/goto-past-class-object.cpp` | JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-initialization.cpp` | JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-static.cpp` | JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/jumps/goto-past-uninitialized-scalar.cpp` | JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/jumps/goto-undefined-label.cpp` | JMP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/label-function-scope.cpp` | JMP-5 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/label-separate-names.cpp` | JMP-5 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/return-braced.cpp` | JMP-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/return-converts.cpp` | JMP-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/return-destroys-locals.cpp` | JMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `statements/jumps/return-missing-value.cpp` | JMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/return-value-in-void.cpp` | JMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/loops/body-own-scope.cpp` | LOOP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/condition-not-bool.cpp` | LOOP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/do-basic.cpp` | LOOP-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/do-condition-declaration.cpp` | LOOP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/for-condition-declaration.cpp` | LOOP-4 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/for-init-redeclare-body.cpp` | LOOP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/for-init-scope.cpp` | LOOP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/for-order.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/for-parts-optional.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/for-sequence.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/while-basic.cpp` | LOOP-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/loops/while-condition-declaration.cpp` | LOOP-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/array.cpp` | RFOR-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/braced-list.cpp` | RFOR-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/free-begin-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/incomplete-element.cpp` | RFOR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/range-for/init-statement.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/member-begin-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/member-begin-only.cpp` | RFOR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/range-for/not-a-range.cpp` | RFOR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/range-for/range-evaluated-once.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/sentinel-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/static-thread-local-declaration.cpp` | RFOR-5 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `statements/range-for/storage-class.cpp` | RFOR-5 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `statements/range-for/structured-binding.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/range-for/temporary-in-range-expression.cpp` | RFOR-4 | run | run | run | accept | run-fail | run-fail | run | run | pass |
+| `statements/range-for/temporary-range-lives.cpp` | RFOR-4 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/break-exits.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/case-duplicate-after-conversion.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/case-duplicate.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/case-narrowing.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/case-not-constant.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/case-outside-switch.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/condition-declaration.cpp` | SW-4 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/condition-explicit-conversion.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/condition-floating.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/condition-once.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/condition-pointer.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/condition-two-conversions.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/condition-types.cpp` | SW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/switch/dispatch.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/fallthrough.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/init-statement.cpp` | SW-4 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/jump-past-block.cpp` | SW-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/switch/jump-past-initialization.cpp` | SW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/switch/jump-past-uninitialized.cpp` | SW-5 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-544/544 tests pass on baseline compilers.
+626/626 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -2384,6 +2466,26 @@ check that the rejection has the intended cause.
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-18): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
 - `expressions/multiplicative/unsequenced-modification.cpp` (gcc-16): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-22): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `statements/blocks/block-scope.cpp` (clang-host): error: use of undeclared identifier 'inner'
+- `statements/blocks/block-scope.cpp` (gcc-host): error: ‘inner’ was not declared in this scope
+- `statements/blocks/block-scope.cpp` (edg-7.0): error: identifier "inner" is undefined
+- `statements/blocks/block-scope.cpp` (gcc-14): error: 'inner' was not declared in this scope
+- `statements/blocks/block-scope.cpp` (clang-18): error: use of undeclared identifier 'inner'
+- `statements/blocks/block-scope.cpp` (gcc-16): error: 'inner' was not declared in this scope
+- `statements/blocks/block-scope.cpp` (clang-22): error: use of undeclared identifier 'inner'
+- `statements/blocks/redeclare-same-block.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
+- `statements/blocks/redeclare-same-block.cpp` (gcc-host): error: redeclaration of ‘int x’
+- `statements/blocks/redeclare-same-block.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `statements/blocks/redeclare-same-block.cpp` (gcc-14): error: redeclaration of 'int x'
+- `statements/blocks/redeclare-same-block.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/blocks/redeclare-same-block.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/blocks/redeclare-same-block.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
+- `statements/blocks/unused-value-warns.cpp` (clang-host): error: expression result unused [-Werror,-Wunused-value]
+- `statements/blocks/unused-value-warns.cpp` (gcc-host): error: statement has no effect [-Werror=unused-value]
+- `statements/blocks/unused-value-warns.cpp` (gcc-14): error: statement has no effect [-Werror=unused-value]
+- `statements/blocks/unused-value-warns.cpp` (clang-18): error: expression result unused [-Werror,-Wunused-value]
+- `statements/blocks/unused-value-warns.cpp` (gcc-16): error: statement has no effect [-Werror=unused-value]
+- `statements/blocks/unused-value-warns.cpp` (clang-22): error: expression result unused [-Werror,-Wunused-value]
 - `statements/if/condition-declaration-array.cpp` (clang-host): error: an array type is not allowed here
 - `statements/if/condition-declaration-array.cpp` (gcc-host): error: condition declares an array
 - `statements/if/condition-declaration-array.cpp` (edg-7.0): error: an array type is not allowed here
@@ -2566,3 +2668,211 @@ check that the rejection has the intended cause.
 - `statements/if/substatement-scope.cpp` (clang-18): error: use of undeclared identifier 'y'
 - `statements/if/substatement-scope.cpp` (gcc-16): error: 'y' was not declared in this scope
 - `statements/if/substatement-scope.cpp` (clang-22): error: use of undeclared identifier 'y'
+- `statements/jumps/break-outside.cpp` (clang-host): error: 'break' statement not in loop or switch statement
+- `statements/jumps/break-outside.cpp` (gcc-host): error: break statement not within loop or switch
+- `statements/jumps/break-outside.cpp` (edg-7.0): error: a break statement may only be used within a loop or switch
+- `statements/jumps/break-outside.cpp` (gcc-14): error: break statement not within loop or switch
+- `statements/jumps/break-outside.cpp` (clang-18): error: 'break' statement not in loop or switch statement
+- `statements/jumps/break-outside.cpp` (gcc-16): error: break statement not within loop or switch
+- `statements/jumps/break-outside.cpp` (clang-22): error: 'break' statement not in loop or switch statement
+- `statements/jumps/continue-outside.cpp` (clang-host): error: 'continue' statement not in loop statement
+- `statements/jumps/continue-outside.cpp` (gcc-host): error: continue statement not within a loop
+- `statements/jumps/continue-outside.cpp` (edg-7.0): error: a continue statement may only be used within a loop
+- `statements/jumps/continue-outside.cpp` (gcc-14): error: continue statement not within a loop
+- `statements/jumps/continue-outside.cpp` (clang-18): error: 'continue' statement not in loop statement
+- `statements/jumps/continue-outside.cpp` (gcc-16): error: continue statement not within a loop
+- `statements/jumps/continue-outside.cpp` (clang-22): error: 'continue' statement not in loop statement
+- `statements/jumps/duplicate-label.cpp` (clang-host): error: redefinition of label 'here' / note: previous definition is here
+- `statements/jumps/duplicate-label.cpp` (gcc-host): error: duplicate label ‘here’
+- `statements/jumps/duplicate-label.cpp` (edg-7.0): error: label "here" has already been defined (previous definition at line 4)
+- `statements/jumps/duplicate-label.cpp` (gcc-14): error: duplicate label 'here'
+- `statements/jumps/duplicate-label.cpp` (clang-18): error: redefinition of label 'here' / note: previous definition is here
+- `statements/jumps/duplicate-label.cpp` (gcc-16): error: duplicate label 'here'
+- `statements/jumps/duplicate-label.cpp` (clang-22): error: redefinition of label 'here' / note: previous definition is here
+- `statements/jumps/goto-other-function.cpp` (clang-host): error: use of undeclared label 'there'
+- `statements/jumps/goto-other-function.cpp` (gcc-host): error: label ‘there’ used but not defined
+- `statements/jumps/goto-other-function.cpp` (edg-7.0): error: label "there" was referenced but not defined
+- `statements/jumps/goto-other-function.cpp` (gcc-14): error: label 'there' used but not defined
+- `statements/jumps/goto-other-function.cpp` (clang-18): error: use of undeclared label 'there'
+- `statements/jumps/goto-other-function.cpp` (gcc-16): error: label 'there' used but not defined
+- `statements/jumps/goto-other-function.cpp` (clang-22): error: use of undeclared label 'there'
+- `statements/jumps/goto-past-class-object.cpp` (clang-host): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-past-class-object.cpp` (gcc-host): error: jump to label ‘skip’ / note:   from here
+- `statements/jumps/goto-past-class-object.cpp` (edg-7.0): error: transfer of control bypasses initialization of:
+- `statements/jumps/goto-past-class-object.cpp` (gcc-14): error: jump to label 'skip' / note:   from here
+- `statements/jumps/goto-past-class-object.cpp` (clang-18): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-past-class-object.cpp` (gcc-16): error: jump to label 'skip' / note:   from here
+- `statements/jumps/goto-past-class-object.cpp` (clang-22): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-past-initialization.cpp` (clang-host): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-past-initialization.cpp` (gcc-host): error: jump to label ‘skip’ / note:   from here
+- `statements/jumps/goto-past-initialization.cpp` (edg-7.0): error: transfer of control bypasses initialization of:
+- `statements/jumps/goto-past-initialization.cpp` (gcc-14): error: jump to label 'skip' / note:   from here
+- `statements/jumps/goto-past-initialization.cpp` (clang-18): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-past-initialization.cpp` (gcc-16): error: jump to label 'skip' / note:   from here
+- `statements/jumps/goto-past-initialization.cpp` (clang-22): error: cannot jump from this goto statement to its label / note: jump bypasses variable initialization
+- `statements/jumps/goto-undefined-label.cpp` (clang-host): error: use of undeclared label 'nowhere'
+- `statements/jumps/goto-undefined-label.cpp` (gcc-host): error: label ‘nowhere’ used but not defined
+- `statements/jumps/goto-undefined-label.cpp` (edg-7.0): error: label "nowhere" was referenced but not defined
+- `statements/jumps/goto-undefined-label.cpp` (gcc-14): error: label 'nowhere' used but not defined
+- `statements/jumps/goto-undefined-label.cpp` (clang-18): error: use of undeclared label 'nowhere'
+- `statements/jumps/goto-undefined-label.cpp` (gcc-16): error: label 'nowhere' used but not defined
+- `statements/jumps/goto-undefined-label.cpp` (clang-22): error: use of undeclared label 'nowhere'
+- `statements/jumps/return-missing-value.cpp` (clang-host): error: non-void function 'f' should return a value [-Wreturn-mismatch]
+- `statements/jumps/return-missing-value.cpp` (gcc-host): error: return-statement with no value, in function returning ‘int’ [-fpermissive]
+- `statements/jumps/return-missing-value.cpp` (edg-7.0): error: non-void function "f" should return a value
+- `statements/jumps/return-missing-value.cpp` (gcc-14): error: return-statement with no value, in function returning 'int' [-fpermissive]
+- `statements/jumps/return-missing-value.cpp` (clang-18): error: non-void function 'f' should return a value [-Wreturn-type]
+- `statements/jumps/return-missing-value.cpp` (gcc-16): error: return-statement with no value, in function returning 'int' [-fpermissive]
+- `statements/jumps/return-missing-value.cpp` (clang-22): error: non-void function 'f' should return a value [-Wreturn-mismatch]
+- `statements/jumps/return-value-in-void.cpp` (clang-host): error: void function 'f' should not return a value [-Wreturn-mismatch]
+- `statements/jumps/return-value-in-void.cpp` (gcc-host): error: return-statement with a value, in function returning ‘void’ [-fpermissive]
+- `statements/jumps/return-value-in-void.cpp` (edg-7.0): error: return value type does not match the function type
+- `statements/jumps/return-value-in-void.cpp` (gcc-14): error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `statements/jumps/return-value-in-void.cpp` (clang-18): error: void function 'f' should not return a value [-Wreturn-type]
+- `statements/jumps/return-value-in-void.cpp` (gcc-16): error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `statements/jumps/return-value-in-void.cpp` (clang-22): error: void function 'f' should not return a value [-Wreturn-mismatch]
+- `statements/loops/body-own-scope.cpp` (clang-host): error: use of undeclared identifier 'x'
+- `statements/loops/body-own-scope.cpp` (gcc-host): error: ‘x’ was not declared in this scope
+- `statements/loops/body-own-scope.cpp` (edg-7.0): error: identifier "x" is undefined
+- `statements/loops/body-own-scope.cpp` (gcc-14): error: 'x' was not declared in this scope
+- `statements/loops/body-own-scope.cpp` (clang-18): error: use of undeclared identifier 'x'
+- `statements/loops/body-own-scope.cpp` (gcc-16): error: 'x' was not declared in this scope
+- `statements/loops/body-own-scope.cpp` (clang-22): error: use of undeclared identifier 'x'
+- `statements/loops/condition-not-bool.cpp` (clang-host): error: value of type 'S' is not contextually convertible to 'bool'
+- `statements/loops/condition-not-bool.cpp` (gcc-host): error: could not convert ‘S()’ from ‘S’ to ‘bool’
+- `statements/loops/condition-not-bool.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `statements/loops/condition-not-bool.cpp` (gcc-14): error: could not convert 'S()' from 'S' to 'bool'
+- `statements/loops/condition-not-bool.cpp` (clang-18): error: value of type 'S' is not contextually convertible to 'bool'
+- `statements/loops/condition-not-bool.cpp` (gcc-16): error: could not convert 'S()' from 'S' to 'bool'
+- `statements/loops/condition-not-bool.cpp` (clang-22): error: value of type 'S' is not contextually convertible to 'bool'
+- `statements/loops/do-condition-declaration.cpp` (clang-host): error: expected '(' for function-style cast or type construction
+- `statements/loops/do-condition-declaration.cpp` (gcc-host): error: expected primary-expression before ‘int’ / error: expected ‘)’ before ‘int’
+- `statements/loops/do-condition-declaration.cpp` (edg-7.0): error: type name is not allowed / error: expected a ")"
+- `statements/loops/do-condition-declaration.cpp` (gcc-14): error: expected primary-expression before 'int' / error: expected ')' before 'int'
+- `statements/loops/do-condition-declaration.cpp` (clang-18): error: expected '(' for function-style cast or type construction
+- `statements/loops/do-condition-declaration.cpp` (gcc-16): error: expected primary-expression before 'int' / error: expected ')' before 'int'
+- `statements/loops/do-condition-declaration.cpp` (clang-22): error: expected '(' for function-style cast or type construction
+- `statements/loops/for-init-redeclare-body.cpp` (clang-host): error: redefinition of 'i' / note: previous definition is here
+- `statements/loops/for-init-redeclare-body.cpp` (gcc-host): error: redeclaration of ‘int i’
+- `statements/loops/for-init-redeclare-body.cpp` (edg-7.0): error: "i", declared in for-loop initialization, may not be redeclared in this scope
+- `statements/loops/for-init-redeclare-body.cpp` (gcc-14): error: redeclaration of 'int i'
+- `statements/loops/for-init-redeclare-body.cpp` (clang-18): error: redefinition of 'i' / note: previous definition is here
+- `statements/loops/for-init-redeclare-body.cpp` (gcc-16): error: redeclaration of 'int i'
+- `statements/loops/for-init-redeclare-body.cpp` (clang-22): error: redefinition of 'i' / note: previous definition is here
+- `statements/loops/for-init-scope.cpp` (clang-host): error: use of undeclared identifier 'i'
+- `statements/loops/for-init-scope.cpp` (gcc-host): error: ‘i’ was not declared in this scope
+- `statements/loops/for-init-scope.cpp` (edg-7.0): error: identifier "i" is undefined
+- `statements/loops/for-init-scope.cpp` (gcc-14): error: 'i' was not declared in this scope
+- `statements/loops/for-init-scope.cpp` (clang-18): error: use of undeclared identifier 'i'
+- `statements/loops/for-init-scope.cpp` (gcc-16): error: 'i' was not declared in this scope
+- `statements/loops/for-init-scope.cpp` (clang-22): error: use of undeclared identifier 'i'
+- `statements/range-for/incomplete-element.cpp` (clang-host): error: cannot use incomplete type 'Incomplete[]' as a range
+- `statements/range-for/incomplete-element.cpp` (gcc-host): error: range-based ‘for’ expression of type ‘Incomplete []’ has incomplete type
+- `statements/range-for/incomplete-element.cpp` (edg-7.0): error: a range-based "for" statement cannot operate on an array of unknown size or incomplete type "Incomplete []"
+- `statements/range-for/incomplete-element.cpp` (gcc-14): error: range-based 'for' expression of type 'Incomplete []' has incomplete type
+- `statements/range-for/incomplete-element.cpp` (clang-18): error: cannot use incomplete type 'Incomplete[]' as a range
+- `statements/range-for/incomplete-element.cpp` (gcc-16): error: range-based 'for' expression of type 'Incomplete []' has incomplete type
+- `statements/range-for/incomplete-element.cpp` (clang-22): error: cannot use incomplete type 'Incomplete[]' as a range
+- `statements/range-for/member-begin-only.cpp` (clang-host): error: invalid range expression of type 'R'; no viable 'begin' function available / note: member is not a candidate because range type 'R' has no 'end' member
+- `statements/range-for/member-begin-only.cpp` (gcc-host): error: ‘begin’ was not declared in this scope
+- `statements/range-for/member-begin-only.cpp` (edg-7.0): error: this range-based "for" statement requires a suitable "begin" function and none was found
+- `statements/range-for/member-begin-only.cpp` (gcc-14): error: 'begin' was not declared in this scope
+- `statements/range-for/member-begin-only.cpp` (clang-18): error: invalid range expression of type 'R'; no viable 'begin' function available / note: member is not a candidate because range type 'R' has no 'end' member
+- `statements/range-for/member-begin-only.cpp` (gcc-16): error: 'begin' was not declared in this scope
+- `statements/range-for/member-begin-only.cpp` (clang-22): error: invalid range expression of type 'R'; no viable 'begin' function available / note: member is not a candidate because range type 'R' has no 'end' member
+- `statements/range-for/not-a-range.cpp` (clang-host): error: invalid range expression of type 'int *'; no viable 'begin' function available
+- `statements/range-for/not-a-range.cpp` (gcc-host): error: ‘begin’ was not declared in this scope / error: ‘end’ was not declared in this scope
+- `statements/range-for/not-a-range.cpp` (edg-7.0): error: this range-based "for" statement requires a suitable "begin" function and none was found / error: this range-based "for" statement requires a suitable "end" function and none was found
+- `statements/range-for/not-a-range.cpp` (gcc-14): error: 'begin' was not declared in this scope / error: 'end' was not declared in this scope
+- `statements/range-for/not-a-range.cpp` (clang-18): error: invalid range expression of type 'int *'; no viable 'begin' function available
+- `statements/range-for/not-a-range.cpp` (gcc-16): error: 'begin' was not declared in this scope / error: 'end' was not declared in this scope
+- `statements/range-for/not-a-range.cpp` (clang-22): error: invalid range expression of type 'int *'; no viable 'begin' function available
+- `statements/range-for/static-thread-local-declaration.cpp` (clang-host): error: loop variable 'v' may not be declared 'thread_local'
+- `statements/range-for/static-thread-local-declaration.cpp` (gcc-host): error: for-range-declaration cannot be ‘thread_local’
+- `statements/range-for/static-thread-local-declaration.cpp` (edg-7.0): error: thread-local storage class is not valid here
+- `statements/range-for/static-thread-local-declaration.cpp` (clang-18): error: loop variable 'v' may not be declared 'thread_local'
+- `statements/range-for/static-thread-local-declaration.cpp` (gcc-16): error: for-range-declaration cannot be 'thread_local'
+- `statements/range-for/static-thread-local-declaration.cpp` (clang-22): error: loop variable 'v' may not be declared 'thread_local'
+- `statements/range-for/storage-class.cpp` (clang-host): error: loop variable 'v' may not be declared 'static'
+- `statements/range-for/storage-class.cpp` (gcc-host): error: for-range-declaration cannot be ‘static’
+- `statements/range-for/storage-class.cpp` (edg-7.0): error: a storage class may not be specified here
+- `statements/range-for/storage-class.cpp` (clang-18): error: loop variable 'v' may not be declared 'static'
+- `statements/range-for/storage-class.cpp` (gcc-16): error: for-range-declaration cannot be 'static'
+- `statements/range-for/storage-class.cpp` (clang-22): error: loop variable 'v' may not be declared 'static'
+- `statements/switch/case-duplicate-after-conversion.cpp` (clang-host): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-duplicate-after-conversion.cpp` (gcc-host): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate-after-conversion.cpp` (edg-7.0): error: case label value has already appeared in this switch at line 4
+- `statements/switch/case-duplicate-after-conversion.cpp` (gcc-14): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate-after-conversion.cpp` (clang-18): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-duplicate-after-conversion.cpp` (gcc-16): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate-after-conversion.cpp` (clang-22): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-duplicate.cpp` (clang-host): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-duplicate.cpp` (gcc-host): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate.cpp` (edg-7.0): error: case label value has already appeared in this switch at line 4
+- `statements/switch/case-duplicate.cpp` (gcc-14): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate.cpp` (clang-18): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-duplicate.cpp` (gcc-16): error: duplicate case value / note: previously used here
+- `statements/switch/case-duplicate.cpp` (clang-22): error: duplicate case value '1' / note: previous case defined here
+- `statements/switch/case-narrowing.cpp` (clang-host): error: case value evaluates to -1, which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing]
+- `statements/switch/case-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘-1’ from ‘int’ to ‘unsigned int’ [-Wnarrowing]
+- `statements/switch/case-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+- `statements/switch/case-narrowing.cpp` (gcc-14): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `statements/switch/case-narrowing.cpp` (clang-18): error: case value evaluates to -1, which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing]
+- `statements/switch/case-narrowing.cpp` (gcc-16): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `statements/switch/case-narrowing.cpp` (clang-22): error: case value evaluates to -1, which cannot be narrowed to type 'unsigned int' [-Wc++11-narrowing]
+- `statements/switch/case-not-constant.cpp` (clang-host): error: case value is not a constant expression / note: function parameter 'k' with unknown value cannot be used in a constant expression
+- `statements/switch/case-not-constant.cpp` (gcc-host): error: ‘k’ is not a constant expression / error: ‘k’ is not a constant expression
+- `statements/switch/case-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "k" (declared at line 3) cannot be used as a constant
+- `statements/switch/case-not-constant.cpp` (gcc-14): error: 'k' is not a constant expression / error: 'k' is not a constant expression
+- `statements/switch/case-not-constant.cpp` (clang-18): error: case value is not a constant expression / note: function parameter 'k' with unknown value cannot be used in a constant expression
+- `statements/switch/case-not-constant.cpp` (gcc-16): error: 'k' is not a constant expression / error: 'k' is not a constant expression
+- `statements/switch/case-not-constant.cpp` (clang-22): error: case value is not a constant expression / note: function parameter 'k' with unknown value cannot be used in a constant expression
+- `statements/switch/case-outside-switch.cpp` (clang-host): error: 'case' statement not in switch statement
+- `statements/switch/case-outside-switch.cpp` (gcc-host): error: case label ‘1’ not within a switch statement
+- `statements/switch/case-outside-switch.cpp` (edg-7.0): error: a case label may only be used within a switch
+- `statements/switch/case-outside-switch.cpp` (gcc-14): error: case label '1' not within a switch statement
+- `statements/switch/case-outside-switch.cpp` (clang-18): error: 'case' statement not in switch statement
+- `statements/switch/case-outside-switch.cpp` (gcc-16): error: case label '1' not within a switch statement
+- `statements/switch/case-outside-switch.cpp` (clang-22): error: 'case' statement not in switch statement
+- `statements/switch/condition-explicit-conversion.cpp` (clang-host): error: switch condition type 'S' requires explicit conversion to 'int' / note: conversion to integral type 'int'
+- `statements/switch/condition-explicit-conversion.cpp` (gcc-host): error: switch quantity not an integer
+- `statements/switch/condition-explicit-conversion.cpp` (edg-7.0): error: expression must have integral or enum type
+- `statements/switch/condition-explicit-conversion.cpp` (gcc-14): error: switch quantity not an integer
+- `statements/switch/condition-explicit-conversion.cpp` (clang-18): error: switch condition type 'S' requires explicit conversion to 'int' / note: conversion to integral type 'int'
+- `statements/switch/condition-explicit-conversion.cpp` (gcc-16): error: switch quantity not an integer
+- `statements/switch/condition-explicit-conversion.cpp` (clang-22): error: switch condition type 'S' requires explicit conversion to 'int' / note: conversion to integral type 'int'
+- `statements/switch/condition-floating.cpp` (clang-host): error: statement requires expression of integer type ('double' invalid)
+- `statements/switch/condition-floating.cpp` (gcc-host): error: switch quantity not an integer
+- `statements/switch/condition-floating.cpp` (edg-7.0): error: expression must have integral or enum type
+- `statements/switch/condition-floating.cpp` (gcc-14): error: switch quantity not an integer
+- `statements/switch/condition-floating.cpp` (clang-18): error: statement requires expression of integer type ('double' invalid)
+- `statements/switch/condition-floating.cpp` (gcc-16): error: switch quantity not an integer
+- `statements/switch/condition-floating.cpp` (clang-22): error: statement requires expression of integer type ('double' invalid)
+- `statements/switch/condition-pointer.cpp` (clang-host): error: statement requires expression of integer type ('int *' invalid)
+- `statements/switch/condition-pointer.cpp` (gcc-host): error: switch quantity not an integer
+- `statements/switch/condition-pointer.cpp` (edg-7.0): error: expression must have integral or enum type
+- `statements/switch/condition-pointer.cpp` (gcc-14): error: switch quantity not an integer
+- `statements/switch/condition-pointer.cpp` (clang-18): error: statement requires expression of integer type ('int *' invalid)
+- `statements/switch/condition-pointer.cpp` (gcc-16): error: switch quantity not an integer
+- `statements/switch/condition-pointer.cpp` (clang-22): error: statement requires expression of integer type ('int *' invalid)
+- `statements/switch/condition-two-conversions.cpp` (clang-host): error: multiple conversions from switch condition type 'S' to an integral or enumeration type / note: conversion to integral type 'int'
+- `statements/switch/condition-two-conversions.cpp` (gcc-host): error: ambiguous default type conversion from ‘S’ / note:   candidate conversions include ‘S::operator long int() const’ and ‘S::operator int() const’
+- `statements/switch/condition-two-conversions.cpp` (edg-7.0): error: more than one conversion function from "S" to a built-in type applies:
+- `statements/switch/condition-two-conversions.cpp` (gcc-14): error: ambiguous default type conversion from 'S' / note:   candidate conversions include 'S::operator long int() const' and 'S::operator int() const'
+- `statements/switch/condition-two-conversions.cpp` (clang-18): error: multiple conversions from switch condition type 'S' to an integral or enumeration type / note: conversion to integral type 'int'
+- `statements/switch/condition-two-conversions.cpp` (gcc-16): error: ambiguous default type conversion from 'S' / note:   candidate conversions include 'S::operator long int() const' and 'S::operator int() const'
+- `statements/switch/condition-two-conversions.cpp` (clang-22): error: multiple conversions from switch condition type 'S' to an integral or enumeration type / note: conversion to integral type 'int'
+- `statements/switch/jump-past-initialization.cpp` (clang-host): error: cannot jump from switch statement to this case label / note: jump bypasses variable initialization
+- `statements/switch/jump-past-initialization.cpp` (gcc-host): error: jump to case label / note:   crosses initialization of ‘int x’
+- `statements/switch/jump-past-initialization.cpp` (edg-7.0): error: transfer of control bypasses initialization of:
+- `statements/switch/jump-past-initialization.cpp` (gcc-14): error: jump to case label / note:   crosses initialization of 'int x'
+- `statements/switch/jump-past-initialization.cpp` (clang-18): error: cannot jump from switch statement to this case label / note: jump bypasses variable initialization
+- `statements/switch/jump-past-initialization.cpp` (gcc-16): error: jump to case label / note:   crosses initialization of 'int x'
+- `statements/switch/jump-past-initialization.cpp` (clang-22): error: cannot jump from switch statement to this case label / note: jump bypasses variable initialization
+- `statements/switch/two-defaults.cpp` (clang-host): error: multiple default labels in one switch / note: previous case defined here
+- `statements/switch/two-defaults.cpp` (gcc-host): error: multiple default labels in one switch / note: this is the first default label
+- `statements/switch/two-defaults.cpp` (edg-7.0): error: default label has already appeared in this switch
+- `statements/switch/two-defaults.cpp` (gcc-14): error: multiple default labels in one switch / note: this is the first default label
+- `statements/switch/two-defaults.cpp` (clang-18): error: multiple default labels in one switch / note: previous case defined here
+- `statements/switch/two-defaults.cpp` (gcc-16): error: multiple default labels in one switch / note: this is the first default label
+- `statements/switch/two-defaults.cpp` (clang-22): error: multiple default labels in one switch / note: previous case defined here

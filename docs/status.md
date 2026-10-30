@@ -7,7 +7,12 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
+| [Expression statements and blocks](../spec/statements/blocks.md) | 5 | 4 required, 1 recommended | 10 | | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 20 | 14 required, 6 reject | 56 | Q-0007 | 0 flagged |
+| [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 21 | | 0 flagged |
+| [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 12 | | 0 flagged |
+| [The range-based for statement](../spec/statements/range-for.md) | 5 | 4 required, 1 reject | 15 | Q-0020, Q-0026 | 0 flagged |
+| [Jump statements and labels](../spec/statements/jumps.md) | 9 | 7 required, 2 reject | 24 | | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 15 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined | 27 | Q-0001 to Q-0005 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 13 | 11 required, 2 reject | 40 | Q-0010 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 16 | 11 required, 3 reject, 2 no-diagnostic | 40 | Q-0011 | 0 flagged |
@@ -27,11 +32,12 @@ https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
 `reports/similarity/2026-10-30-format-conversion.txt`, and the constexpr page's
-is `reports/similarity/2026-10-30-constexpr.txt`.
+is `reports/similarity/2026-10-30-constexpr.txt`, and the statements'
+is `reports/similarity/2026-10-30-statements.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 544/544 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 626/626 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -47,7 +53,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Twenty-four questions are open for opinions, each with a provisional answer the
+Twenty-five questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -84,11 +90,9 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Split the rules listed under "Known limits of the specification text"
    so each fits one segment.
-8. Draft the remaining statements (`switch`, loops, jumps, labels,
-   expression and compound statements).
-9. Draft classes in the order set by decision 0017, starting with class
+8. Draft classes in the order set by decision 0017, starting with class
    definitions and members.
-10. Draft the remaining expression families in order of dependency.
+9. Draft the remaining expression families in order of dependency.
 
 ## Size estimate
 
