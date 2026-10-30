@@ -20,26 +20,38 @@ compilers affect the Status column.
 | `classes/access/enclosing-not-access-nested.cpp` | ACC-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/friend-class.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
 | `classes/access/friend-function.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/access/friend-ignores-label.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/access/friend-member-function-only.cpp` | ACC-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/friend-member-function.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
 | `classes/access/friend-not-inherited.cpp` | ACC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/friend-not-transitive.cpp` | ACC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/hidden-friend-not-visible.cpp` | ACC-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/hidden-friend.cpp` | ACC-7 | run | run | run | accept | run | run | run | run | pass |
 | `classes/access/labels.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/nested-accesses-enclosing.cpp` | ACC-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/private-base-conversion.cpp` | ACC-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/private-base-conversion.cpp` | ACC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/private-base-name-in-derived.cpp` | ACC-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/private-base.cpp` | ACC-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/private-in-member.cpp` | ACC-2 | run | run | run | accept | run | run | run | run | pass |
 | `classes/access/private-outside.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-type-named.cpp` | ACC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-type-via-auto.cpp` | ACC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/private-type-named.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/private-type-out-of-line.cpp` | ACC-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/private-type-via-auto.cpp` | ACC-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/protected-base-in-derived.cpp` | ACC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/protected-member-pointer-derived.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/protected-member-pointer.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/protected-outside.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/protected-static-through-base.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/protected-through-base.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/protected-through-derived.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/static-member-access.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/struct-base-default-public.cpp` | ACC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/struct-default-public.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/union-default-public.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/using-changes-access.cpp` | ACC-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/using-reduces-access.cpp` | ACC-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | run | run | run | run | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -967,6 +979,7 @@ compilers affect the Status column.
 | `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operand-order-overloaded.cpp` | MUL-13 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/multiplicative/operand-order.cpp` | MUL-13 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/multiplicative/operands-arithmetic.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/operands-class.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1304,7 +1317,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1289/1289 tests pass on baseline compilers.
+1302/1302 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1332,6 +1345,13 @@ check that the rejection has the intended cause.
 - `classes/access/enclosing-not-access-nested.cpp` (clang-18): error: 'secret' is a private member of 'Outer::Inner' / note: implicitly declared private here
 - `classes/access/enclosing-not-access-nested.cpp` (gcc-16): error: 'int Outer::Inner::secret' is private within this context / note: declared private here
 - `classes/access/enclosing-not-access-nested.cpp` (clang-22): error: 'secret' is a private member of 'Outer::Inner' / note: implicitly declared private here
+- `classes/access/friend-member-function-only.cpp` (clang-host): error: 'secret' is a private member of 'C' / note: implicitly declared private here
+- `classes/access/friend-member-function-only.cpp` (gcc-host): error: ‘int C::secret’ is private within this context / note: declared private here
+- `classes/access/friend-member-function-only.cpp` (edg-7.0): error: member "C::secret" (declared at line 6) is inaccessible
+- `classes/access/friend-member-function-only.cpp` (gcc-14): error: 'int C::secret' is private within this context / note: declared private here
+- `classes/access/friend-member-function-only.cpp` (clang-18): error: 'secret' is a private member of 'C' / note: implicitly declared private here
+- `classes/access/friend-member-function-only.cpp` (gcc-16): error: 'int C::secret' is private within this context / note: declared private here
+- `classes/access/friend-member-function-only.cpp` (clang-22): error: 'secret' is a private member of 'C' / note: implicitly declared private here
 - `classes/access/friend-not-inherited.cpp` (clang-host): error: 'secret' is a private member of 'C' / note: implicitly declared private here
 - `classes/access/friend-not-inherited.cpp` (gcc-host): error: ‘int C::secret’ is private within this context / note: declared private here
 - `classes/access/friend-not-inherited.cpp` (edg-7.0): error: member "C::secret" (declared at line 3) is inaccessible
@@ -1360,6 +1380,13 @@ check that the rejection has the intended cause.
 - `classes/access/private-base-conversion.cpp` (clang-18): error: cannot cast 'D' to its private base class 'B' / note: implicitly declared private here
 - `classes/access/private-base-conversion.cpp` (gcc-16): error: 'B' is an inaccessible base of 'D'
 - `classes/access/private-base-conversion.cpp` (clang-22): error: cannot cast 'D' to its private base class 'B' / note: implicitly declared private here
+- `classes/access/private-base-name-in-derived.cpp` (clang-host): error: 'v' is a private member of 'A' / note: constrained by private inheritance here
+- `classes/access/private-base-name-in-derived.cpp` (gcc-host): error: ‘int A::v’ is private within this context / note: declared private here
+- `classes/access/private-base-name-in-derived.cpp` (edg-7.0): error: member "A::v" (declared at line 3) is inaccessible
+- `classes/access/private-base-name-in-derived.cpp` (gcc-14): error: 'int A::v' is private within this context / note: declared private here
+- `classes/access/private-base-name-in-derived.cpp` (clang-18): error: 'v' is a private member of 'A' / note: constrained by private inheritance here
+- `classes/access/private-base-name-in-derived.cpp` (gcc-16): error: 'int A::v' is private within this context / note: declared private here
+- `classes/access/private-base-name-in-derived.cpp` (clang-22): error: 'v' is a private member of 'A' / note: constrained by private inheritance here
 - `classes/access/private-base.cpp` (clang-host): error: 'x' is a private member of 'B' / note: constrained by implicitly private inheritance here
 - `classes/access/private-base.cpp` (gcc-host): error: ‘int B::x’ is inaccessible within this context
 - `classes/access/private-base.cpp` (edg-7.0): error: member "B::x" (declared at line 3) is inaccessible
@@ -1381,6 +1408,13 @@ check that the rejection has the intended cause.
 - `classes/access/private-type-named.cpp` (clang-18): error: 'Hidden' is a private member of 'Outer' / note: implicitly declared private here
 - `classes/access/private-type-named.cpp` (gcc-16): error: 'struct Outer::Hidden' is private within this context / note: declared private here
 - `classes/access/private-type-named.cpp` (clang-22): error: 'Hidden' is a private member of 'Outer' / note: implicitly declared private here
+- `classes/access/protected-member-pointer.cpp` (clang-host): error: 'x' is a protected member of 'B' / note: must name member using the type of the current context 'D'
+- `classes/access/protected-member-pointer.cpp` (gcc-host): error: ‘int B::x’ is protected within this context / note: declared protected here
+- `classes/access/protected-member-pointer.cpp` (edg-7.0): error: protected member "B::x" (declared at line 3) is not accessible through a "B" pointer or object
+- `classes/access/protected-member-pointer.cpp` (gcc-14): error: 'int B::x' is protected within this context / note: declared protected here
+- `classes/access/protected-member-pointer.cpp` (clang-18): error: 'x' is a protected member of 'B' / note: must name member using the type of the current context 'D'
+- `classes/access/protected-member-pointer.cpp` (gcc-16): error: 'int B::x' is protected within this context / note: declared protected here
+- `classes/access/protected-member-pointer.cpp` (clang-22): error: 'x' is a protected member of 'B' / note: must name member using the type of the current context 'D'
 - `classes/access/protected-outside.cpp` (clang-host): error: 'x' is a protected member of 'B' / note: declared protected here
 - `classes/access/protected-outside.cpp` (gcc-host): error: ‘int B::x’ is protected within this context / note: declared protected here
 - `classes/access/protected-outside.cpp` (edg-7.0): error: member "B::x" (declared at line 3) is inaccessible
@@ -1402,6 +1436,19 @@ check that the rejection has the intended cause.
 - `classes/access/static-member-access.cpp` (clang-18): error: 'count' is a private member of 'C' / note: implicitly declared private here
 - `classes/access/static-member-access.cpp` (gcc-16): error: 'int C::count' is private within this context / note: declared private here
 - `classes/access/static-member-access.cpp` (clang-22): error: 'count' is a private member of 'C' / note: implicitly declared private here
+- `classes/access/using-private-base-member.cpp` (clang-host): error: 'x' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-private-base-member.cpp` (gcc-host): error: ‘int B::x’ is private within this context / note: declared private here
+- `classes/access/using-private-base-member.cpp` (edg-7.0): error: member "B::x" (declared at line 3) is inaccessible
+- `classes/access/using-private-base-member.cpp` (gcc-14): error: 'int B::x' is private within this context / note: declared private here
+- `classes/access/using-private-base-member.cpp` (clang-18): error: 'x' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-private-base-member.cpp` (gcc-16): error: 'int B::x' is private within this context / note: declared private here
+- `classes/access/using-private-base-member.cpp` (clang-22): error: 'x' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-reduces-access.cpp` (clang-host): error: 'x' is a private member of 'D' / note: declared private here
+- `classes/access/using-reduces-access.cpp` (gcc-host): error: ‘int B::x’ is inaccessible within this context
+- `classes/access/using-reduces-access.cpp` (gcc-14): error: 'int B::x' is inaccessible within this context
+- `classes/access/using-reduces-access.cpp` (clang-18): error: 'x' is a private member of 'D' / note: declared private here
+- `classes/access/using-reduces-access.cpp` (gcc-16): error: 'int B::x' is inaccessible within this context
+- `classes/access/using-reduces-access.cpp` (clang-22): error: 'x' is a private member of 'D' / note: declared private here
 - `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
 - `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
 - `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
