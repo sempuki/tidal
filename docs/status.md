@@ -19,17 +19,11 @@ current state only. The history of how it got here is in `git log`.
 | [Standard attributes](../spec/declarations/attributes.md) | 11 | 3 required, 1 reject, 2 undefined, 1 impl-defined, 4 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 14 terms | | | | 0 flagged |
 
-`tools/build_pdf.py` builds the whole specification as one PDF
-(decision 0009). The latest similarity reports are
-`reports/similarity/2026-10-30-pilots-2.txt`,
-`reports/similarity/2026-10-30-auto-2.txt`,
-`reports/similarity/2026-10-30-storage-linkage-2.txt`,
-`reports/similarity/2026-10-30-declarators.txt`,
-`reports/similarity/2026-10-30-initialization-2.txt`,
-`reports/similarity/2026-10-30-structured-bindings.txt`,
-`reports/similarity/2026-10-30-enumerations.txt`,
-`reports/similarity/2026-10-30-namespaces.txt`, and
-`reports/similarity/2026-10-30-attributes.txt`.
+`tools/build_site.py` builds the specification as a searchable HTML site
+(decision 0016). CI builds it on every change. It can publish the site to
+https://sempuki.github.io/tidal/ once GitHub Pages is enabled. Pages use
+the structure and writing rules in `docs/style-guide.md`. The `if`
+statement page is converted, and the other pages are being converted.
 
 ## Test matrix
 

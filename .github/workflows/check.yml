@@ -69,7 +69,9 @@ jobs:
   # Publishes the site to GitHub Pages after a push to main.
   deploy:
     needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Skipped until GitHub Pages is enabled and the repository variable
+    # TIDAL_PAGES is set to true.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.TIDAL_PAGES == 'true'
     runs-on: ubuntu-24.04
     permissions:
       pages: write
