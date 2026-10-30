@@ -1,7 +1,7 @@
 # 0009. The specification is published as a PDF built from Markdown
 
 Date: 2026-10-30
-Status: Accepted
+Status: Superseded by 0016
 
 ## Context
 

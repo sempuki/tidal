@@ -17,7 +17,8 @@ See [docs/charter.md](docs/charter.md).
 |---|---|
 | `docs/charter.md` | Goals, scope, and non-goals |
 | `docs/clean-room.md` | Who may read what, and how contamination is checked |
-| `docs/spec-format.md` | How rules and tests are written |
+| `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
+| `docs/spec-format.md` | Rule classes and test directives |
 | `docs/pipeline.md` | The step-by-step process for producing a section |
 | `docs/decisions/` | One file per design decision, numbered in order |
 | `docs/status.md` | Where the project stands and what comes next |
