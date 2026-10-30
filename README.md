@@ -22,6 +22,7 @@ See [docs/charter.md](docs/charter.md).
 | `spec/` | The Tidal specification text |
 | `tests/` | Conformance tests, each tied to one or more rules |
 | `tools/` | Test runner, input fetcher, similarity checker |
+| `reports/` | Similarity reports from the checker, see `reports/README.md` |
 | `inputs/` | Downloaded implementation sources (ignored by git, see `inputs/MANIFEST.md`) |
 
 ## History as a record
