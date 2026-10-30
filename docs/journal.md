@@ -16,3 +16,9 @@ participants can. The point is to test the mechanics and measure how close
 the output lands to ISO wording.
 
 Created the repository (decision 0001) and fixed the scope (decision 0002).
+
+Wrote the clean-room protocol (`clean-room.md`, decision 0003) and the
+terminology policy (decision 0004). The protocol bans the two best-organized
+test suites (Clang `test/CXX`, libc++ `test/std`) because they are arranged by
+ISO section and quote it. Tidal will have to write its own tests, which is
+probably the largest cost of the whole approach.
