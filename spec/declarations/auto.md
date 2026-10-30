@@ -77,9 +77,10 @@ Tests: declarations/auto/lvalue-reference.cpp, declarations/auto/lvalue-referenc
 
 ### AUTO-4 (required)
 
-`auto&&` gives an lvalue reference when the initializer is an lvalue and an
-rvalue reference otherwise. The initializer's `const` and `volatile` are
-kept.
+`auto&&` binds to any initializer. With an lvalue, such as a variable
+name, the variable becomes `T&`. With anything else, such as a literal or
+a function's returned value, it becomes `T&&`. `const` and `volatile` on
+the initializer are kept.
 
     auto&& a = i;        // int&
     auto&& b = 1;        // int&&
