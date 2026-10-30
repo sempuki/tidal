@@ -33,6 +33,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0020](Q-0020-unimplemented-features.md) | How should tests record a compiler that doesn't implement a feature yet? | provisional | per-compiler expectation naming this question |
 | [Q-0021](Q-0021-misplaced-standard-attribute.md) | Is a standard attribute applied to the wrong kind of entity rejected or ignored? | provisional | rejected |
 | [Q-0022](Q-0022-func-outside-function.md) | Is `__func__` outside a function rejected? | provisional | yes |
+| [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | provisional | yes; GCC 14's acceptance is fixed in GCC 16 |
 
 ## Status values
 
