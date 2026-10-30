@@ -31,7 +31,7 @@ def main() -> int:
         cmd.insert(1, "-W")
     result = subprocess.run(cmd).returncode
     if result == 0:
-        print(ROOT / "build" / "site" / "README.html")
+        print(ROOT / "build" / "site" / "index.html")
     return result
 
 

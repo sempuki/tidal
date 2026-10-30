@@ -28,7 +28,7 @@ See [docs/charter.md](docs/charter.md).
 | `docs/pipeline.md` | The step-by-step process for producing a section |
 | `docs/decisions/` | One file per design decision, numbered in order |
 | `docs/status.md` | Where the project stands and what comes next |
-| `spec/` | The Tidal specification text; `spec/README.md` sets section order |
+| `spec/` | The Tidal specification text; `spec/index.md` is the site front page and table of contents |
 | `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
 | `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, site build |
