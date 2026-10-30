@@ -7,6 +7,7 @@ derivation, and the operators that classes can define.
 :::{tidal-pages}
 members
 access
+constructors
 :::
 
 :::{toctree}
@@ -15,4 +16,5 @@ access
 
 members
 access
+constructors
 :::
