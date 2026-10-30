@@ -92,9 +92,10 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Split the rules listed under "Known limits of the specification text"
    so each fits one segment.
-8. Continue classes in the order set by decision 0017. Next: access
+8. Draft expressions in the order set by decision 0018: foundations,
+   then operator families, then the remaining expression topics.
+9. Continue classes in the order set by decision 0017. Next: access
    control and friends.
-9. Draft the remaining expression families in order of dependency.
 
 ## Size estimate
 
