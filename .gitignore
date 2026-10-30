@@ -1,0 +1,6 @@
+# Downloaded implementation sources. Only the manifest is tracked.
+inputs/*
+!inputs/MANIFEST.md
+# Test runner scratch output
+build/
+__pycache__/
