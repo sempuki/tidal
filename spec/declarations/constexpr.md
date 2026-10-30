@@ -36,7 +36,7 @@ pointer or reference must not refer to an automatic variable.
 
 :::{rule} CX-3
 :kind: required
-:tests: declarations/constexpr/function-compile-and-run.cpp declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-never-constant.cpp declarations/constexpr/function-loops-and-locals.cpp declarations/constexpr/function-static-local-unevaluated.cpp declarations/constexpr/function-static-local-evaluated.cpp declarations/constexpr/function-static-constexpr-local.cpp declarations/constexpr/function-goto-unevaluated.cpp declarations/constexpr/function-non-literal-param.cpp declarations/constexpr/function-non-literal-local-unevaluated.cpp
+:tests: declarations/constexpr/function-compile-and-run.cpp declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-never-constant.cpp declarations/constexpr/function-loops-and-locals.cpp declarations/constexpr/function-static-local-unevaluated.cpp declarations/constexpr/function-static-local-evaluated.cpp declarations/constexpr/function-static-constexpr-local.cpp declarations/constexpr/function-goto-unevaluated.cpp declarations/constexpr/function-non-literal-param.cpp declarations/constexpr/function-non-literal-local-unevaluated.cpp declarations/constexpr/non-literal-return.cpp
 
 A program can call a `constexpr` function during {term}`constant
 evaluation` and at run time. During constant evaluation, the call must
@@ -50,6 +50,9 @@ operations include:
 
 The body can contain these operations on paths that the call does not
 evaluate. A function that never gives a constant expression is valid.
+
+The return type and the parameter types of a `constexpr` function need
+not be literal types.
 :::
 
 :::{rule} CX-4
@@ -70,11 +73,15 @@ declarations of a function must agree on `constexpr`.
 
 :::{rule} CEV-1
 :kind: reject
-:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp
+:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp
 
 Each call to a `consteval` function must be a constant expression. This
 does not apply to a call in an {term}`immediate function context`, such
 as the body of another `consteval` function.
+
+A `constexpr` function template whose specialization calls a `consteval`
+function with arguments that are not constant becomes an immediate
+function itself *(templates referenced)*.
 :::
 
 :::{rule} CEV-2
@@ -110,6 +117,13 @@ A `constinit` variable must have static or thread {term}`storage
 duration`. A declaration must not have both `constinit` and `constexpr`.
 If a declaration of a variable has `constinit`, the initializing
 declaration must also have it ({question}`Q-0025`).
+:::
+
+:::{rule} CEV-4
+:kind: required
+:tests: declarations/constexpr/consteval-inline.cpp
+
+A `consteval` function is `inline` (LNK-4).
 :::
 
 ## Examples

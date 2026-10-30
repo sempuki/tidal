@@ -86,11 +86,14 @@ translation units cannot refer to it.
 
 :::{rule} LNK-3
 :kind: required
-:tests: declarations/storage-linkage/const-internal.cpp declarations/storage-linkage/extern-const-external.cpp declarations/storage-linkage/volatile-const-external.cpp
+:tests: declarations/storage-linkage/const-internal.cpp declarations/storage-linkage/extern-const-external.cpp declarations/storage-linkage/volatile-const-external.cpp declarations/storage-linkage/extern-then-const.cpp
 
 A `const` variable at namespace scope has internal linkage. This includes
 a `constexpr` variable. It does not apply if the variable is also
 `volatile`, `inline`, or `extern`.
+
+A `const` variable keeps external linkage if an earlier declaration of
+it is `extern`.
 :::
 
 :::{rule} LNK-4
@@ -122,12 +125,24 @@ external linkage.
 
 :::{rule} LNK-9
 :kind: required
-:tests: declarations/storage-linkage/block-function-declaration.cpp declarations/storage-linkage/block-variables-no-linkage.cpp
+:tests: declarations/storage-linkage/block-function-declaration.cpp declarations/storage-linkage/block-variables-no-linkage.cpp declarations/storage-linkage/block-extern-internal.cpp
 
 A block-scope variable without `extern` has no linkage. A block-scope
 function declaration, or a block-scope `extern` variable, refers to an
 entity at namespace scope. Another translation unit can define that
 entity.
+
+A block-scope `extern` declaration takes the linkage of an earlier
+namespace-scope declaration of the name that is visible, including
+internal linkage.
+:::
+
+:::{rule} STO-11
+:kind: reject
+:tests: declarations/storage-linkage/anonymous-union-namespace.cpp declarations/storage-linkage/anonymous-union-static.cpp declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp
+
+An anonymous union at namespace scope must be declared `static`. This
+also applies in an unnamed namespace ({question}`Q-0045`).
 :::
 
 ## Dynamic Semantics
@@ -167,6 +182,27 @@ variable with static storage is set to zero before other initialization.
 A `thread_local` variable has one object for each thread *(threads
 referenced)*. In a block, the object is initialized once in each thread,
 the first time control reaches its declaration.
+:::
+
+:::{rule} STO-10
+:kind: required
+:tests: declarations/storage-linkage/static-destruction-order.cpp
+
+When the program ends, objects with static storage duration are
+destroyed. The object whose initialization completed last is destroyed
+first. This includes block-scope `static` variables that the program
+reached.
+:::
+
+## Undefined Behavior
+
+:::{rule} STO-9
+:kind: undefined
+:tests: declarations/storage-linkage/recursive-static-init.cpp
+
+If control reaches the declaration of a block-scope `static` variable
+again while the variable's initialization is still running, the behavior
+is undefined.
 :::
 
 ## Implementation Requirements

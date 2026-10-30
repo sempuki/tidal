@@ -23,11 +23,14 @@ can apply at each level.
 
 :::{rule} DCL-1
 :kind: required
-:tests: declarations/declarators/star-binds-to-declarator.cpp declarations/declarators/nested-declarators.cpp
+:tests: declarations/declarators/star-binds-to-declarator.cpp declarations/declarators/nested-declarators.cpp declarations/declarators/redundant-parentheses.cpp
 
 A declarator applies to one name. `*`, `&`, and `&&` belong to the
 declarator that contains them. Suffixes (`[]` and `()`) bind more tightly
 than prefixes (`*` and `&`), and parentheses change the binding.
+
+Parentheses around the name in a declarator are permitted and have no
+effect.
 :::
 
 :::{rule} DCL-2
@@ -65,7 +68,7 @@ alias has no effect.
 
 :::{rule} DCL-5
 :kind: required
-:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/static-member-unknown-bound.cpp
 
 An array bound must be a constant expression that converts to the type of
 `sizeof` without loss of value. Integer types, unscoped enumerations, and
@@ -78,6 +81,9 @@ zero. The bound can be omitted in these cases:
   declaration.
 
 The initializer must not have more elements than the bound.
+
+A static data member declared in a class can have an array type without a
+bound. Its definition outside the class gives the bound.
 :::
 
 :::{rule} DCL-6
@@ -91,13 +97,16 @@ be declared.
 
 :::{rule} DCL-7
 :kind: required
-:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp
+:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp declarations/declarators/ref-qualified-free-function.cpp
 
 A function can return a pointer or a reference to an array or a function.
 A function must not return an array or a function. A trailing return type
 requires `auto` at the start, and gives the return type. The return type
 can be `const void`. A function that is not a class member must not have
 a cv-qualifier after its parameter list.
+
+A function that is not a member, and a static member function, must not
+have a ref-qualifier.
 :::
 
 :::{rule} DCL-8
@@ -184,6 +193,32 @@ an initializer that is not constant cannot. A `const` floating-point
 variable cannot.
 :::
 
+:::{rule} DCL-12
+:kind: required
+:tests: declarations/declarators/pointer-to-member.cpp declarations/declarators/pointer-to-reference-member.cpp declarations/declarators/pointer-to-void-member.cpp
+
+A declarator of the form `C::* name` declares a pointer to a member of
+class `C` *(classes referenced)*. The member type must not be a reference
+type or `void`.
+:::
+
+:::{rule} DCL-13
+:kind: required
+:tests: declarations/declarators/function-declaration-ambiguity.cpp
+
+A declaration that can be read as a function declaration is a function
+declaration. This includes a parenthesized initializer that has the form
+of a parameter list, such as a type name followed by `()`.
+:::
+
+:::{rule} DCL-14
+:kind: reject
+:tests: declarations/declarators/noexcept-in-type.cpp declarations/declarators/noexcept-redeclaration.cpp
+
+The `noexcept` specification is part of the type of a function. All
+declarations of a function must agree on it.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} DCL-11
@@ -215,6 +250,16 @@ The largest array that an implementation accepts is
 implementation-defined. The limit can depend on the target. An array
 whose size in bytes does not fit in the type of `sizeof` must not be
 declared.
+:::
+
+## Recommended Practice
+
+:::{rule} CV-9
+:kind: recommended
+:tests: declarations/declarators/volatile-return-deprecated.cpp
+
+An implementation should warn about a `volatile` return type and a
+`volatile` parameter type. These uses are deprecated.
 :::
 
 ## Examples

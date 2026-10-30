@@ -35,7 +35,7 @@ that it does not recognize.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -45,6 +45,13 @@ correct entity:
   ({question}`Q-0021`).
 - `fallthrough` is a statement on its own in a `switch`. It is
   immediately before a `case` or `default` label.
+
+These uses are also not valid:
+
+- `likely` and `unlikely` on the same statement or label ({question}`Q-0046`),
+- `noreturn` on a declaration of a function that was first declared
+  without it,
+- `nodiscard` on a variable ({question}`Q-0021`).
 :::
 
 :::{rule} ATTR-8
@@ -74,10 +81,13 @@ The body of a `noreturn` function can contain a `return` statement.
 
 :::{rule} ATTR-13
 :kind: reject
-:tests: declarations/attributes/assume-on-declaration.cpp
+:tests: declarations/attributes/assume-on-declaration.cpp declarations/attributes/assume-not-bool.cpp
 
 An assumption must be a statement on its own. It must not apply to a
 declaration.
+
+The expression of an assumption must be convertible to `bool` by
+{term}`contextual conversion`, although it is not evaluated.
 :::
 
 ## Dynamic Semantics
@@ -88,6 +98,14 @@ declaration.
 
 An assumption does not evaluate its expression. Side effects in the
 expression do not occur.
+:::
+
+:::{rule} ATTR-16
+:kind: required
+:tests: declarations/attributes/no-unique-address-same-type.cpp
+
+Two members of the same empty type have distinct addresses, even if both
+are declared `no_unique_address`.
 :::
 
 ## Undefined Behavior
@@ -123,16 +141,18 @@ own. This choice is implementation-defined.
 
 :::{rule} ATTR-4
 :kind: recommended
-:tests: declarations/attributes/deprecated-use-warns.cpp declarations/attributes/deprecated-declaration-only.cpp
+:tests: declarations/attributes/deprecated-use-warns.cpp declarations/attributes/deprecated-declaration-only.cpp declarations/attributes/deprecated-enumerator-warns.cpp
 
 `[[deprecated]]` marks an entity that programs should not use. An
 implementation should warn at each use of the entity, and show the reason
 if there is one. It should not warn at a declaration or definition.
+
+This also applies to an enumerator declared `deprecated`.
 :::
 
 :::{rule} ATTR-5
 :kind: recommended
-:tests: declarations/attributes/nodiscard-ignored-warns.cpp declarations/attributes/nodiscard-void-cast.cpp declarations/attributes/nodiscard-type.cpp
+:tests: declarations/attributes/nodiscard-ignored-warns.cpp declarations/attributes/nodiscard-void-cast.cpp declarations/attributes/nodiscard-type.cpp declarations/attributes/nodiscard-constructor-warns.cpp
 
 An implementation should warn if a program discards the result of these
 calls:
@@ -141,6 +161,9 @@ calls:
 - a call that returns a type with `[[nodiscard]]`.
 
 It should not warn if the program casts the result to `void`.
+
+This also applies to a temporary that a `nodiscard` constructor creates
+and the program discards.
 :::
 
 :::{rule} ATTR-6

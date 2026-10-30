@@ -109,11 +109,14 @@ A variable declared with `auto` must:
 
 :::{rule} AUTO-9
 :kind: required
-:tests: declarations/auto/several-declarators.cpp declarations/auto/several-declarators-conflict.cpp
+:tests: declarations/auto/several-declarators.cpp declarations/auto/several-declarators-conflict.cpp declarations/auto/later-declarator-uses-earlier.cpp
 
 One declaration can declare several variables with `auto`. Each
 {term}`declarator` gives its type separately, and can add `*` or `&`.
 `auto` must stand for the same type in all declarators.
+
+A later declarator can use a name that an earlier declarator in the same
+declaration introduced.
 :::
 
 :::{rule} AUTO-10
@@ -159,6 +162,15 @@ initializer statements, and in `for` initializer statements.
 
 A concept name can come before `auto` or `decltype(auto)` *(referenced)*.
 The deduced type must satisfy the concept.
+:::
+
+:::{rule} AUTO-14
+:kind: required
+:tests: declarations/auto/inline-static-member.cpp declarations/auto/static-member-no-initializer.cpp
+
+A static data member can have a {term}`placeholder type` if it is `inline` or
+`constexpr` and has an initializer in the class. The type comes from the
+initializer.
 :::
 
 ## Examples

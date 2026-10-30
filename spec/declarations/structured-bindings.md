@@ -56,13 +56,17 @@ reference type.
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-count-mismatch.cpp declarations/structured-bindings/tuple-element-missing.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-count-mismatch.cpp declarations/structured-bindings/tuple-element-missing.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable. Its `value` gives the number of
 elements. Element `i` comes from a call to `get<i>()` *(lookup
 referenced)*. Its type is `std::tuple_element<i, E>::type`, which must
 exist *(library referenced)*.
+
+The calls to `get` occur in the order of the elements. If
+`std::tuple_size<E>` is complete but has no `value` member, the names
+refer to data members, as SB-3 gives ({question}`Q-0048`).
 :::
 
 :::{rule} SB-7
@@ -91,6 +95,23 @@ not:
 The names in one declaration must all be different. This includes two `_`
 names. A name must not be declared already in the same scope. A name must
 not occur in the initializer of its own declaration.
+:::
+
+:::{rule} SB-9
+:kind: required
+:tests: declarations/structured-bindings/mutable-member.cpp
+
+A binding to a `mutable` member can be changed, even if the hidden
+variable is `const`.
+:::
+
+:::{rule} SB-10
+:kind: required
+:tests: declarations/structured-bindings/bit-field-address.cpp declarations/structured-bindings/bit-field-assign.cpp
+
+A binding to a bit-field member refers to the bit-field *(classes
+referenced)*. A program can assign to it. A program must not take its
+address.
 :::
 
 ## Dynamic Semantics

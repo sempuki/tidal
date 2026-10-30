@@ -63,11 +63,14 @@ A program must not:
 
 :::{rule} ENUM-4
 :kind: required
-:tests: declarations/enumerations/scoped-default-underlying-int.cpp declarations/enumerations/fixed-underlying.cpp declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp
+:tests: declarations/enumerations/scoped-default-underlying-int.cpp declarations/enumerations/fixed-underlying.cpp declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp declarations/enumerations/fixed-bool.cpp
 
 A scoped enumeration without `: type` has the underlying type `int`. A
 fixed underlying type after `:` must be an integer type. Each enumerator
 value must fit in the underlying type without narrowing.
+
+The fixed underlying type can be `bool` or a character type. A
+cv-qualifier on the underlying type is ignored.
 :::
 
 :::{rule} ENUM-7
@@ -82,22 +85,29 @@ the underlying type.
 
 :::{rule} ENUM-8
 :kind: required
-:tests: declarations/enumerations/list-init-fixed.cpp declarations/enumerations/list-init-no-fixed.cpp declarations/enumerations/list-init-narrowing.cpp
+:tests: declarations/enumerations/list-init-fixed.cpp declarations/enumerations/list-init-no-fixed.cpp declarations/enumerations/list-init-narrowing.cpp declarations/enumerations/copy-list-from-integer.cpp
 
 A variable of an enumeration type with a fixed underlying type can be
 initialized from an integer in braces. This includes all scoped
 enumerations. The conversion to the underlying type must not narrow. An
 enumeration without a fixed underlying type cannot be initialized this
 way.
+
+This applies only to direct-list-initialization. Initialization with `=`
+and a braced integer is not valid.
 :::
 
 :::{rule} ENUM-9
 :kind: required
-:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp
+:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-opaque.cpp
 
 `using enum E;` declares the enumerators of `E` in the current scope. `E`
 must be an enumeration. No enumerator name of `E` can be declared already
 in that scope.
+
+The enumeration must be complete at the `using enum` declaration. An
+opaque declaration is not enough ({question}`Q-0047`). A using declaration can
+also name one enumerator of a scoped enumeration, such as `using C::R;`.
 :::
 
 :::{rule} ENUM-10
@@ -114,12 +124,15 @@ type.
 
 :::{rule} ENUM-6
 :kind: undefined
-:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp
+:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp
 
 An enumeration with a fixed underlying type can hold all values of that
 type. An enumeration without one holds the values of the smallest set of
 bits that can represent all its enumerators. If a program converts a
 value outside that range to the enumeration, the behavior is undefined.
+
+An enumeration without enumerators and without a fixed type can hold the
+values 0 and 1.
 :::
 
 ## Implementation Requirements

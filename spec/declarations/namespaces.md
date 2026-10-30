@@ -39,28 +39,36 @@ A namespace must not have the name of another entity in the same scope.
 
 :::{rule} NS-2
 :kind: required
-:tests: declarations/namespaces/nested-definition.cpp declarations/namespaces/nested-inline-definition.cpp
+:tests: declarations/namespaces/nested-definition.cpp declarations/namespaces/nested-inline-definition.cpp declarations/namespaces/nested-first-inline.cpp
 
 `namespace A::B::C` defines or reopens each namespace in the path, in
 nested order. Each name after the first can have `inline`.
+
+The first name in the path must not be `inline`.
 :::
 
 :::{rule} NS-3
 :kind: required
-:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/inline-on-reopen.cpp
+:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/inline-on-reopen.cpp declarations/namespaces/inline-namespace-duplicate.cpp
 
 The members of an `inline` namespace are also members of the enclosing
 namespace. An inline namespace must have `inline` in its first definition.
 A later definition can omit `inline`. A namespace that is first defined
 without `inline` must not be defined with `inline` later.
+
+If a name is declared both in an inline namespace and in its enclosing
+namespace, a qualified use through the enclosing namespace is ambiguous.
 :::
 
 :::{rule} NS-4
 :kind: required
-:tests: declarations/namespaces/unnamed-namespace.cpp
+:tests: declarations/namespaces/unnamed-namespace.cpp declarations/namespaces/unnamed-namespace-duplicate.cpp
 
 The enclosing scope can use the members of an unnamed namespace without
 qualification. These members have internal {term}`linkage` (LNK-5).
+
+If a name is declared both in an unnamed namespace and in the enclosing
+namespace, an unqualified use is ambiguous.
 :::
 
 :::{rule} NS-5
@@ -97,7 +105,7 @@ the using declaration. A using declaration:
 
 :::{rule} NS-8
 :kind: required
-:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-block-scope.cpp declarations/namespaces/using-directive-not-namespace.cpp
+:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-block-scope.cpp declarations/namespaces/using-directive-not-namespace.cpp declarations/namespaces/using-directive-global-ambiguity.cpp
 
 `using namespace N;` makes the members of `N` visible to unqualified
 lookup until the current scope ends. The rules for this are:
@@ -108,6 +116,10 @@ lookup until the current scope ends. The rules for this are:
 - A name that the current scope declares hides these members.
 - If two such namespaces have a member with the same name, an unqualified
   use of that name is ambiguous. A program must not use an ambiguous name.
+
+Unqualified lookup finds the members at the level of the innermost
+namespace that contains both the directive and the named namespace. So a
+global variable with the same name gives an ambiguous use.
 :::
 
 ## Examples
