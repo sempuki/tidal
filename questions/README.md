@@ -19,6 +19,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0006](Q-0006-promoting-report-compilers.md) | When does a report compiler become a baseline compiler? | provisional | after one clean review of its results |
 | [Q-0007](Q-0007-language-version.md) | Which language version does Tidal track, and how are newer features handled? | provisional | C++23; newer features rejected under strict mode |
 | [Q-0008](Q-0008-similarity-thresholds.md) | Are the similarity thresholds (8-word run, 0.25 overlap) right? | provisional | keep for now |
+| [Q-0009](Q-0009-license.md) | Which license covers the specification, tests, and tools? | open | none yet |
 
 ## Status values
 

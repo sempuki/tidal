@@ -31,7 +31,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Eight questions are open for opinions, each with a provisional answer the
+Nine questions are open for opinions, each with a provisional answer the
 spec follows. See `questions/README.md`.
 
 ## Known limits of the tooling
@@ -49,18 +49,19 @@ spec follows. See `questions/README.md`.
 
 ## Next steps
 
-1. Publish the repository on GitHub, with continuous integration that runs
-   the matrix, the spec checks, and the similarity check, and builds the
-   PDF on every change.
-2. Write a contributor guide: roles, how to claim a section, and the steps
+1. Add a license (Q-0009). Until one is added, nobody has permission to
+   reuse the work or contribute under known terms.
+2. Add continuous integration on GitHub that runs the matrix, the spec
+   checks, and the similarity check, and builds the PDF on every change.
+3. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
-3. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-4. Add a `tidal-error` directive that matches the expected diagnostic, so
+4. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
+5. Add a `tidal-error` directive that matches the expected diagnostic, so
    `reject` tests check their cause.
-5. Add sanitizer-based tests that run in the container images.
-6. Add EDG's 32-bit configuration as a second EDG matrix entry.
-7. Read GCC's and EDG's sanitized source for the `if` section.
-8. Draft the remaining statements (`switch`, loops, jumps, labels,
+6. Add sanitizer-based tests that run in the container images.
+7. Add EDG's 32-bit configuration as a second EDG matrix entry.
+8. Read GCC's and EDG's sanitized source for the `if` section.
+9. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements), then expression families in order
    of dependency.
 

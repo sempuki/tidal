@@ -5,6 +5,8 @@ source-compatible with ISO/IEC 14882 (C++). The specification text is written
 independently. It is derived from the observable behavior of open source C++
 implementations and their test suites, never from the ISO text.
 
+Repository: https://github.com/sempuki/tidal
+
 **Status:** proof of concept. The scope is limited to expressions and statements.
 Pilot sections: `spec/statements/if.md` and `spec/expressions/multiplicative.md`.
 See [docs/charter.md](docs/charter.md).

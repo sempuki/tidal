@@ -17,5 +17,5 @@ from any WG21 papers repository.
 ## Consequences
 
 - Tidal's history contains only Tidal work and can be published as is.
-- Tidal needs its own public remote before contributors can join.
+- The public repository is https://github.com/sempuki/tidal.
 - The writer works only inside this repository and its `inputs/` directory.
