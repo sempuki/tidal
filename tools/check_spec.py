@@ -5,7 +5,9 @@ Fails when:
 - a rule ID appears twice,
 - a rule has an unknown class,
 - a rule has no Tests line, or lists a test file that doesn't exist,
-- a test names a rule that doesn't exist,
+- a test names a rule that doesn't exist (only a warning while no rule with
+  that prefix exists, which is the state of a section between pipeline
+  steps 3 and 6),
 - a test is not listed by any of the rules it names,
 - a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/.
 """
@@ -64,10 +66,14 @@ def main() -> int:
                 errors.append(f"{f}: {rid} lists missing test {t}")
             listed.setdefault(t, set()).add(rid)
 
+    prefixes = {rid.rsplit("-", 1)[0] for rid in rules}
+    warnings = []
     for path in sorted(TESTS.rglob("*.cpp")):
         test = parse_test(path)
         for rid in test.rules:
-            if rid not in rules:
+            if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
+                warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")
+            elif rid not in rules:
                 errors.append(f"{test.name}: names unknown rule {rid}")
             elif rid not in listed.get(test.name, set()):
                 errors.append(f"{test.name}: names {rid}, but {rid} doesn't list it")
@@ -78,6 +84,8 @@ def main() -> int:
             if ref not in questions:
                 errors.append(f"{f.relative_to(ROOT)}: refers to missing question {ref}")
 
+    for w in warnings:
+        print("warning: " + w)
     for e in errors:
         print(e)
     print(f"{len(rules)} rules, {len(errors)} problems")
