@@ -6,11 +6,9 @@ Status: Accepted
 ## Context
 
 The charter calls for one statement pilot and one expression pilot. The
-first plan for the expression pilot was the logical operators (`&&`, `||`,
-`!`). The `if` pilot produced only `required` and `reject` rules, so the
-pipeline's handling of `undefined`, `unspecified`, and `impl-defined`
-behavior is still untested. The logical operators are mostly `required` as
-well.
+`if` section has only `required` and `reject` rules. The expression pilot
+needs to exercise `undefined`, `unspecified`, and `impl-defined` behavior.
+The logical operators (`&&`, `||`, `!`) are mostly `required` and would not.
 
 ## Decision
 
@@ -23,7 +21,7 @@ and operands with no fixed evaluation order.
 - The pilot needs a second target (`-m32`) to show implementation-defined
   variation. Tests that need it carry `tidal-flags: -m32` and include no
   headers, so they compile without 32-bit libraries.
-- GCC's UBSan runtime is not installed on the author's machine, so
-  undefined-behavior evidence comes from constant evaluation and compiler
-  warnings, both of which work on both compilers.
+- Undefined-behavior evidence comes from constant evaluation and compiler
+  warnings, which work on every compiler in the matrix. The host GCC has no
+  UBSan runtime, so sanitizer evidence needs the container images.
 - Overloaded operators are out of scope and only referenced.

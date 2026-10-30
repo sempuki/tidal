@@ -84,9 +84,13 @@ For each section the repository holds:
 - any rewrites, committed separately with the report that triggered them,
 - adjudication notes for every compiler disagreement.
 
-## Staffing during the proof of concept
+## Staffing
 
-During the proof of concept the author serves as checker and adjudicator, and
-Claude (an LLM assistant from Anthropic) serves as writer. The writer works
-only inside this repository and `inputs/clean/`. Roles will be filled by
-separate team members as the project grows.
+| Role | Filled by |
+|---|---|
+| Writer | Claude (an LLM from Anthropic), working only inside this repository and `inputs/clean/` |
+| Checker | The project maintainer |
+| Adjudicator | The project maintainer |
+
+Contributors can take any role. The rule that nobody is both writer and
+checker on the same section applies to every contributor.

@@ -60,5 +60,5 @@ Out of scope:
    rules and passing conformance tests on Clang and GCC.
 2. A similarity report against the ISO draft for the pilot sections, produced
    under the protocol in [clean-room.md](clean-room.md).
-3. A retrospective in [journal.md](journal.md) estimating the cost of covering
-   the full expressions and statements scope.
+3. A size estimate for the full expressions and statements scope, kept in
+   [status.md](status.md).

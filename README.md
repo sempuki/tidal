@@ -18,15 +18,25 @@ See [docs/charter.md](docs/charter.md).
 | `docs/spec-format.md` | How rules and tests are written |
 | `docs/pipeline.md` | The step-by-step process for producing a section |
 | `docs/decisions/` | One file per design decision, numbered in order |
-| `docs/journal.md` | Dated log of what was done and what was learned |
-| `spec/` | The Tidal specification text |
+| `docs/status.md` | Where the project stands and what comes next |
+| `spec/` | The Tidal specification text; `spec/README.md` sets section order |
+| `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
-| `tools/` | Test runner, input fetcher, similarity checker |
+| `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, PDF build |
 | `reports/` | Similarity reports from the checker, see `reports/README.md` |
 | `inputs/` | Downloaded implementation sources (ignored by git, see `inputs/MANIFEST.md`) |
 
+## Common commands
+
+    tools/run_tests.py                      # baseline compilers on the host
+    tools/containers.py build               # build matrix images (docker or podman)
+    tools/run_tests.py --compilers all --report tests/RESULTS.md
+    tools/check_spec.py                     # rules and tests refer to each other
+    tools/build_pdf.py                      # build/tidal.pdf
+
 ## History as a record
 
-This repository's git history is part of the project's provenance record.
-Each design decision and each pipeline run is committed separately with a
-message that says what was done and why. Don't squash or rewrite history.
+Documents in this repository describe the current state and next steps.
+The history of how the project got there is the git log. Each design
+decision and each pipeline step is committed separately with a message
+that says what changed and why. Don't squash or rewrite history.
