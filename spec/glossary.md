@@ -26,6 +26,19 @@ ordinary implicit conversion would skip. Arithmetic values convert to
 `false` when zero and `true` otherwise. Pointers convert to `false` when null
 and `true` otherwise.
 
+## Cv-qualifier
+
+`const` or `volatile`, applied to a type. A `const` object can't be
+modified after initialization. Every read and write of a `volatile` object
+is an observable effect that the implementation must perform
+*(referenced)*.
+
+## Declarator
+
+The part of a declaration that names one entity and builds its type from
+the base type by adding pointers, references, arrays, and function
+parameters.
+
 ## Discarded statement
 
 The branch of an `if constexpr` statement that its condition did not select.
