@@ -7,41 +7,48 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
-| [Expression statements and blocks](../spec/statements/blocks.md) | 5 | 4 required, 1 recommended | 10 | | 0 flagged |
-| [The if statement](../spec/statements/if.md) | 20 | 14 required, 6 reject | 56 | Q-0007 | 0 flagged |
-| [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 21 | | 0 flagged |
-| [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 12 | | 0 flagged |
-| [The range-based for statement](../spec/statements/range-for.md) | 5 | 4 required, 1 reject | 15 | Q-0020, Q-0026 | 0 flagged |
-| [Jump statements and labels](../spec/statements/jumps.md) | 9 | 7 required, 2 reject | 24 | | 0 flagged |
-| [Value categories and temporaries](../spec/expressions/value-categories.md) | 4 | 4 required | 11 |  | 0 flagged |
-| [Standard conversions](../spec/expressions/conversions.md) | 12 | 5 required, 4 reject, 1 undefined, 2 impl-defined | 23 | Q-0028 | 0 flagged |
-| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 5 | 3 required, 1 undefined, 1 unspecified | 9 |  | 0 flagged |
-| [Multiplicative operators](../spec/expressions/multiplicative.md) | 15 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined | 27 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
-| [Additive operators](../spec/expressions/additive.md) | 13 | 7 required, 1 reject, 3 undefined, 1 unspecified, 1 impl-defined | 30 | Q-0005, Q-0031 | 0 flagged |
+| [Expression statements and blocks](../spec/statements/blocks.md) | 6 | 5 required, 1 recommended | 11 |  | 0 flagged |
+| [The if statement](../spec/statements/if.md) | 20 | 14 required, 6 reject | 61 |  | 0 flagged |
+| [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 26 |  | 0 flagged |
+| [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 14 | Q-0044 | 0 flagged |
+| [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 22 | Q-0020, Q-0026 | 0 flagged |
+| [Jump statements and labels](../spec/statements/jumps.md) | 11 | 8 required, 2 reject, 1 unspecified | 30 | Q-0041 | 0 flagged |
+| [Value categories and temporaries](../spec/expressions/value-categories.md) | 7 | 6 required, 1 unspecified | 19 |  | 0 flagged |
+| [Standard conversions](../spec/expressions/conversions.md) | 16 | 9 required, 4 reject, 1 undefined, 2 impl-defined | 34 | Q-0028 | 0 flagged |
+| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 16 |  | 0 flagged |
+| [Multiplicative operators](../spec/expressions/multiplicative.md) | 16 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 28 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
+| [Additive operators](../spec/expressions/additive.md) | 15 | 7 required, 1 reject, 4 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 33 | Q-0005, Q-0031, Q-0049 | 0 flagged |
 | [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 20 |  | 0 flagged |
-| [Comparison operators](../spec/expressions/comparison.md) | 17 | 11 required, 2 reject, 1 unspecified, 3 recommended | 34 | Q-0029, Q-0030 | 0 flagged |
-| [Bitwise operators](../spec/expressions/bitwise.md) | 7 | 4 required, 1 reject, 2 recommended | 17 |  | 0 flagged |
-| [Logical operators](../spec/expressions/logical.md) | 10 | 7 required, 1 reject, 2 recommended | 17 |  | 0 flagged |
-| [The conditional operator](../spec/expressions/conditional.md) | 7 | 5 required, 2 reject | 23 |  | 0 flagged |
-| [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 22 | Q-0032 | 0 flagged |
-| [The comma operator](../spec/expressions/comma.md) | 6 | 4 required, 1 reject, 1 recommended | 12 |  | 0 flagged |
+| [Comparison operators](../spec/expressions/comparison.md) | 21 | 12 required, 3 reject, 2 unspecified, 4 recommended | 46 | Q-0029, Q-0030, Q-0050, Q-0051 | 0 flagged |
+| [Bitwise operators](../spec/expressions/bitwise.md) | 8 | 4 required, 1 reject, 3 recommended | 18 |  | 0 flagged |
+| [Logical operators](../spec/expressions/logical.md) | 11 | 8 required, 1 reject, 2 recommended | 18 |  | 0 flagged |
+| [The conditional operator](../spec/expressions/conditional.md) | 10 | 6 required, 4 reject | 30 |  | 0 flagged |
+| [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 24 | Q-0032 | 0 flagged |
+| [The comma operator](../spec/expressions/comma.md) | 7 | 5 required, 1 reject, 1 recommended | 13 |  | 0 flagged |
 | [Unary operators](../spec/expressions/unary.md) | 20 | 10 required, 6 reject, 2 undefined, 1 impl-defined, 1 recommended | 39 |  | 0 flagged |
 | [Postfix expressions](../spec/expressions/postfix.md) | 13 | 7 required, 4 reject, 2 undefined | 28 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 12 | 4 required, 6 reject, 1 undefined, 1 impl-defined | 25 |  | 0 flagged |
 | [Constant expressions](../spec/expressions/constant-expressions.md) | 13 | 2 required, 10 reject, 1 impl-defined | 32 | Q-0020, Q-0033 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 9 | 4 required, 3 reject, 2 undefined | 31 | Q-0035, Q-0036 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 16 | 14 required, 2 reject | 36 | Q-0037 | 0 flagged |
-| [Placeholder types in variable declarations](../spec/declarations/auto.md) | 13 | 11 required, 2 reject | 40 | Q-0010 | 0 flagged |
-| [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 16 | 11 required, 3 reject, 2 no-diagnostic | 40 | Q-0011 | 0 flagged |
-| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 18 | 13 required, 3 reject, 1 undefined, 1 impl-defined | 61 | Q-0012 | 0 flagged |
-| [Initialization](../spec/declarations/initialization/) (4 files) | 22 | 17 required, 1 reject, 2 undefined, 2 unspecified | 74 | Q-0013, Q-0014 | 0 flagged |
-| [Structured bindings](../spec/declarations/structured-bindings.md) | 8 | 6 required, 2 reject | 36 | Q-0015, Q-0016 | 0 flagged |
-| [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 impl-defined, 1 undefined | 41 | Q-0017, Q-0018 | 0 flagged |
-| [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 32 | Q-0019 | 0 flagged |
-| [Standard attributes](../spec/declarations/attributes.md) | 15 | 5 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
-| [Functions](../spec/declarations/functions/) (4 pages) | 21 | 8 required, 10 reject, 1 undefined, 1 impl-defined, 1 recommended | 67 | Q-0022, Q-0023, Q-0024 | 0 flagged |
-| [constexpr, consteval, and constinit](../spec/declarations/constexpr.md) | 10 | 2 required, 8 reject | 41 | Q-0020, Q-0025 | 0 flagged |
-| [Class definitions and members](../spec/classes/members.md) | 12 | 8 required, 3 reject, 1 impl-defined | 39 | Q-0027 | 0 flagged |
+| [Placeholder types in variable declarations](../spec/declarations/auto.md) | 14 | 12 required, 2 reject | 43 | Q-0010 | 0 flagged |
+| [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 20 | 14 required, 3 reject, 1 undefined, 2 no-diagnostic | 47 | Q-0011, Q-0045 | 0 flagged |
+| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 23 | 16 required, 4 reject, 1 undefined, 1 impl-defined, 1 recommended | 75 | Q-0012 | 0 flagged |
+| [Forms of initialization](../spec/declarations/initialization/forms.md) | 5 | 4 required, 1 undefined | 18 | Q-0013, Q-0039 | 0 flagged |
+| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 10 | 8 required, 2 reject | 48 | Q-0042, Q-0043 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 7 | 6 required, 1 undefined | 24 | Q-0040 | 0 flagged |
+| [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 5 | 2 required, 2 unspecified, 1 impl-defined | 9 | Q-0014 | 0 flagged |
+| [Structured bindings](../spec/declarations/structured-bindings.md) | 10 | 8 required, 2 reject | 43 | Q-0007, Q-0015, Q-0016, Q-0048 | 0 flagged |
+| [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 undefined, 1 impl-defined | 46 | Q-0017, Q-0018, Q-0047 | 0 flagged |
+| [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 36 | Q-0019 | 0 flagged |
+| [Standard attributes](../spec/declarations/attributes.md) | 16 | 6 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 36 | Q-0020, Q-0021, Q-0046 | 0 flagged |
+| [Function definitions](../spec/declarations/functions/definitions.md) | 10 | 3 required, 3 reject, 1 undefined, 2 impl-defined, 1 recommended | 32 | Q-0022, Q-0024 | 0 flagged |
+| [Default arguments](../spec/declarations/functions/default-arguments.md) | 6 | 3 required, 3 reject | 18 | Q-0038 | 0 flagged |
+| [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | Q-0007, Q-0023 | 0 flagged |
+| [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 16 |  | 0 flagged |
+| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 46 | Q-0020, Q-0025 | 0 flagged |
+| [Class definitions and members](../spec/classes/members.md) | 15 | 11 required, 3 reject, 1 impl-defined | 59 | Q-0027 | 0 flagged |
+| [Access control and friends](../spec/classes/access.md) | 0 |  | 0 |  | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -49,14 +56,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-format-conversion.txt`, and the constexpr page's
-is `reports/similarity/2026-10-30-constexpr.txt`, the statements'
-is `reports/similarity/2026-10-30-statements.txt`, and the latest is
-`reports/similarity/2026-10-30-expressions-2.txt`.
+`reports/similarity/2026-10-30-gap-triage.txt`. The table above comes from
+`tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1074/1074 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1289/1289 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -72,7 +77,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Thirty-six questions are open for opinions, each with a provisional answer the
+Fifty questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -122,9 +127,7 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
-7. Triage the gap review (decision 0019, `AGENTS.md`): turn each item in
-   the summary into probes, and add or correct rules.
-8. Continue classes in the order set by decision 0017. Next: access
+7. Continue classes in the order set by decision 0017. Next: access
    control and friends. Statements, expressions, and declarations in the
    charter's scope all have pages.
 
