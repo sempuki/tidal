@@ -10,3 +10,4 @@ Draft. Sections are listed in the order they appear in the published PDF
   - [Multiplicative operators](expressions/multiplicative.md)
 - Declarations
   - [Placeholder types in variable declarations](declarations/auto.md)
+  - [Storage duration and linkage](declarations/storage-linkage.md)
