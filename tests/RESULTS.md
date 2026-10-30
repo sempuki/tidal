@@ -54,6 +54,67 @@ compilers affect the Status column.
 | `declarations/auto/several-declarators-conflict.cpp` | AUTO-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-4gib-ilp32.cpp` | DCL-10 | reject | reject | reject | skip | reject | reject | skip | reject | pass |
+| `declarations/declarators/array-4gib-lp64.cpp` | DCL-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-constant.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-deduced.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-floating.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-negative.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-runtime.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-zero.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-incomplete-extern.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-incomplete-no-init.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-functions.cpp` | DCL-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-references.cpp` | DCL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-void.cpp` | DCL-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-too-large.cpp` | DCL-10 | clang: reject, gcc: accept, edg: accept | reject | accept | accept | accept | reject | accept | reject | pass |
+| `declarations/declarators/array-too-many-initializers.cpp` | DCL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/assign-through-pointer-to-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/assign-to-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-floating-not-constant.cpp` | CV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-integral-constant.cpp` | CV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/const-integral-runtime.cpp` | CV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-requires-initializer.cpp` | CV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-void-return.cpp` | DCL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-duplicate-direct.cpp` | CV-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/cv-duplicate-through-alias.cpp` | CV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-array-applies-to-elements.cpp` | CV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-function-alias.cpp` | CV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-reference-alias-ignored.cpp` | DCL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-position.cpp` | CV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-qualified-reference.cpp` | DCL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/ellipsis-first.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/extern-const-declaration.cpp` | CV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/extern-reference-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/function-returning-array.cpp` | DCL-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/function-returning-function.cpp` | DCL-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/function-returning-pointers-ok.cpp` | DCL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/increment-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/modify-const-object-via-cast.cpp` | CV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/modify-nonconst-object-via-cast.cpp` | CV-5 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/declarators/multidim-inner-bound.cpp` | DCL-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/multidim-outer-omitted.cpp` | DCL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/nested-declarators.cpp` | DCL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/parameter-adjustment.cpp` | DCL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/parameter-array-is-pointer.cpp` | DCL-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/declarators/parameter-cv-same-function.cpp` | DCL-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/declarators/pointer-to-pointer-and-function.cpp` | DCL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/pointer-to-reference.cpp` | DCL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/pointer-to-void-ok.cpp` | DCL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualification-conversion-drops-const.cpp` | CV-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualification-conversion-ok.cpp` | CV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualification-conversion-unsafe.cpp` | CV-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualified-free-function.cpp` | DCL-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-binds-same-object.cpp` | DCL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/declarators/reference-collapsing.cpp` | DCL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/reference-requires-initializer.cpp` | DCL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-to-reference.cpp` | DCL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-to-void.cpp` | DCL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/star-binds-to-declarator.cpp` | DCL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/variadic.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/void-parameter-list.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/void-parameter-named.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/void-parameter-with-others.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/block-extern-after-local.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/block-extern-initializer.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -178,7 +239,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-163/163 tests pass on baseline compilers.
+224/224 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -339,6 +400,231 @@ check that the rejection has the intended cause.
 - `declarations/auto/void-initializer.cpp` (clang-18): error: variable has incomplete type 'void'
 - `declarations/auto/void-initializer.cpp` (gcc-16): error: deduced type 'void' for 'a' is incomplete
 - `declarations/auto/void-initializer.cpp` (clang-22): error: variable has incomplete type 'void'
+- `declarations/declarators/array-4gib-ilp32.cpp` (clang-host): error: array is too large (4'294'967'296 elements)
+- `declarations/declarators/array-4gib-ilp32.cpp` (gcc-host): error: narrowing conversion of ‘4294967296’ from ‘long long unsigned int’ to ‘unsigned int’ [-Wnarrowing] / error: size of array ‘big’ is not an integral constant-expression [-Wpedantic]
+- `declarations/declarators/array-4gib-ilp32.cpp` (gcc-14): error: narrowing conversion of '4294967296' from 'long long unsigned int' to 'unsigned int' [-Wnarrowing] / error: size of array 'big' is not an integral constant-expression [-Wpedantic]
+- `declarations/declarators/array-4gib-ilp32.cpp` (clang-18): error: array is too large (4294967296 elements)
+- `declarations/declarators/array-4gib-ilp32.cpp` (clang-22): error: array is too large (4'294'967'296 elements)
+- `declarations/declarators/array-bound-floating.cpp` (clang-host): error: conversion from 'double' to '__size_t' (aka 'unsigned long') is not allowed in a converted constant expression
+- `declarations/declarators/array-bound-floating.cpp` (gcc-host): error: conversion from ‘double’ to ‘long unsigned int’ in a converted constant expression / error: could not convert ‘2.0e+0’ from ‘double’ to ‘long unsigned int’
+- `declarations/declarators/array-bound-floating.cpp` (edg-7.0): error: this constant expression has type "double" instead of the required "unsigned long" type
+- `declarations/declarators/array-bound-floating.cpp` (gcc-14): error: conversion from 'double' to 'long unsigned int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'long unsigned int'
+- `declarations/declarators/array-bound-floating.cpp` (clang-18): error: conversion from 'double' to 'unsigned long' is not allowed in a converted constant expression
+- `declarations/declarators/array-bound-floating.cpp` (gcc-16): error: conversion from 'double' to 'long unsigned int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'long unsigned int'
+- `declarations/declarators/array-bound-floating.cpp` (clang-22): error: conversion from 'double' to '__size_t' (aka 'unsigned long') is not allowed in a converted constant expression
+- `declarations/declarators/array-bound-negative.cpp` (clang-host): error: 'a' declared as an array with a negative size
+- `declarations/declarators/array-bound-negative.cpp` (gcc-host): error: narrowing conversion of ‘-1’ from ‘int’ to ‘long unsigned int’ [-Wnarrowing] / error: size of array ‘a’ is not an integral constant-expression [-Wpedantic]
+- `declarations/declarators/array-bound-negative.cpp` (edg-7.0): error: the size of an array must be greater than zero
+- `declarations/declarators/array-bound-negative.cpp` (gcc-14): error: narrowing conversion of '-1' from 'int' to 'long unsigned int' [-Wnarrowing] / error: size of array 'a' is not an integral constant-expression [-Wpedantic]
+- `declarations/declarators/array-bound-negative.cpp` (clang-18): error: 'a' declared as an array with a negative size
+- `declarations/declarators/array-bound-negative.cpp` (gcc-16): error: narrowing conversion of '-1' from 'int' to 'long unsigned int' [-Wnarrowing] / error: size of array 'a' is not an integral constant-expression [-Wpedantic]
+- `declarations/declarators/array-bound-negative.cpp` (clang-22): error: 'a' declared as an array with a negative size
+- `declarations/declarators/array-bound-runtime.cpp` (clang-host): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'n' with unknown value cannot be used in a constant expression
+- `declarations/declarators/array-bound-runtime.cpp` (gcc-host): error: ISO C++ forbids variable length array ‘a’ [-Wvla]
+- `declarations/declarators/array-bound-runtime.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "n" (declared at line 3) cannot be used as a constant
+- `declarations/declarators/array-bound-runtime.cpp` (gcc-14): error: ISO C++ forbids variable length array 'a' [-Wvla]
+- `declarations/declarators/array-bound-runtime.cpp` (clang-18): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'n' with unknown value cannot be used in a constant expression
+- `declarations/declarators/array-bound-runtime.cpp` (gcc-16): error: ISO C++ forbids variable length array 'a' [-Wvla]
+- `declarations/declarators/array-bound-runtime.cpp` (clang-22): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'n' with unknown value cannot be used in a constant expression
+- `declarations/declarators/array-bound-zero.cpp` (clang-host): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/declarators/array-bound-zero.cpp` (gcc-host): error: ISO C++ forbids zero-size array ‘a’ [-Wpedantic]
+- `declarations/declarators/array-bound-zero.cpp` (edg-7.0): error: the size of an array must be greater than zero
+- `declarations/declarators/array-bound-zero.cpp` (gcc-14): error: ISO C++ forbids zero-size array 'a' [-Wpedantic]
+- `declarations/declarators/array-bound-zero.cpp` (clang-18): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/declarators/array-bound-zero.cpp` (gcc-16): error: ISO C++ forbids zero-size array 'a' [-Wpedantic]
+- `declarations/declarators/array-bound-zero.cpp` (clang-22): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/declarators/array-incomplete-no-init.cpp` (clang-host): error: definition of variable with array type needs an explicit size or an initializer
+- `declarations/declarators/array-incomplete-no-init.cpp` (gcc-host): error: storage size of ‘a’ isn’t known
+- `declarations/declarators/array-incomplete-no-init.cpp` (edg-7.0): error: incomplete type "int []" is not allowed
+- `declarations/declarators/array-incomplete-no-init.cpp` (gcc-14): error: storage size of 'a' isn't known
+- `declarations/declarators/array-incomplete-no-init.cpp` (clang-18): error: definition of variable with array type needs an explicit size or an initializer
+- `declarations/declarators/array-incomplete-no-init.cpp` (gcc-16): error: storage size of 'a' isn't known
+- `declarations/declarators/array-incomplete-no-init.cpp` (clang-22): error: definition of variable with array type needs an explicit size or an initializer
+- `declarations/declarators/array-of-functions.cpp` (clang-host): error: 'a' declared as array of functions of type 'void ()'
+- `declarations/declarators/array-of-functions.cpp` (gcc-host): error: declaration of ‘a’ as array of functions
+- `declarations/declarators/array-of-functions.cpp` (edg-7.0): error: array of functions is not allowed
+- `declarations/declarators/array-of-functions.cpp` (gcc-14): error: declaration of 'a' as array of functions
+- `declarations/declarators/array-of-functions.cpp` (clang-18): error: 'a' declared as array of functions of type 'void ()'
+- `declarations/declarators/array-of-functions.cpp` (gcc-16): error: declaration of 'a' as array of functions
+- `declarations/declarators/array-of-functions.cpp` (clang-22): error: 'a' declared as array of functions of type 'void ()'
+- `declarations/declarators/array-of-references.cpp` (clang-host): error: 'a' declared as array of references of type 'int &'
+- `declarations/declarators/array-of-references.cpp` (gcc-host): error: declaration of ‘a’ as array of references
+- `declarations/declarators/array-of-references.cpp` (edg-7.0): error: array of reference is not allowed
+- `declarations/declarators/array-of-references.cpp` (gcc-14): error: declaration of 'a' as array of references
+- `declarations/declarators/array-of-references.cpp` (clang-18): error: 'a' declared as array of references of type 'int &'
+- `declarations/declarators/array-of-references.cpp` (gcc-16): error: declaration of 'a' as array of references
+- `declarations/declarators/array-of-references.cpp` (clang-22): error: 'a' declared as array of references of type 'int &'
+- `declarations/declarators/array-of-void.cpp` (clang-host): error: array has incomplete element type 'void'
+- `declarations/declarators/array-of-void.cpp` (gcc-host): error: declaration of ‘a’ as array of void
+- `declarations/declarators/array-of-void.cpp` (edg-7.0): error: array of void is not allowed
+- `declarations/declarators/array-of-void.cpp` (gcc-14): error: declaration of 'a' as array of void
+- `declarations/declarators/array-of-void.cpp` (clang-18): error: array has incomplete element type 'void'
+- `declarations/declarators/array-of-void.cpp` (gcc-16): error: declaration of 'a' as array of void
+- `declarations/declarators/array-of-void.cpp` (clang-22): error: array has incomplete element type 'void'
+- `declarations/declarators/array-too-large.cpp` (clang-host): error: array is too large (4'611'686'018'427'387'904 elements)
+- `declarations/declarators/array-too-large.cpp` (clang-18): error: array is too large (4611686018427387904 elements)
+- `declarations/declarators/array-too-large.cpp` (clang-22): error: array is too large (4'611'686'018'427'387'904 elements)
+- `declarations/declarators/array-too-many-initializers.cpp` (clang-host): error: excess elements in array initializer
+- `declarations/declarators/array-too-many-initializers.cpp` (gcc-host): error: too many initializers for ‘int [2]’
+- `declarations/declarators/array-too-many-initializers.cpp` (edg-7.0): error: too many initializer values
+- `declarations/declarators/array-too-many-initializers.cpp` (gcc-14): error: too many initializers for 'int [2]'
+- `declarations/declarators/array-too-many-initializers.cpp` (clang-18): error: excess elements in array initializer
+- `declarations/declarators/array-too-many-initializers.cpp` (gcc-16): error: too many initializers for 'int [2]'
+- `declarations/declarators/array-too-many-initializers.cpp` (clang-22): error: excess elements in array initializer
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (clang-host): error: read-only variable is not assignable
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (gcc-host): error: assignment of read-only location ‘* p’
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (gcc-14): error: assignment of read-only location '* p'
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (clang-18): error: read-only variable is not assignable
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (gcc-16): error: assignment of read-only location '* p'
+- `declarations/declarators/assign-through-pointer-to-const.cpp` (clang-22): error: read-only variable is not assignable
+- `declarations/declarators/assign-to-const.cpp` (clang-host): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/assign-to-const.cpp` (gcc-host): error: assignment of read-only variable ‘x’
+- `declarations/declarators/assign-to-const.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `declarations/declarators/assign-to-const.cpp` (gcc-14): error: assignment of read-only variable 'x'
+- `declarations/declarators/assign-to-const.cpp` (clang-18): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/assign-to-const.cpp` (gcc-16): error: assignment of read-only variable 'x'
+- `declarations/declarators/assign-to-const.cpp` (clang-22): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/const-floating-not-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of non-constexpr variable 'd' is not allowed in a constant expression
+- `declarations/declarators/const-floating-not-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘d’ is not usable in a constant expression
+- `declarations/declarators/const-floating-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "d" (declared at line 3) cannot be used as a constant
+- `declarations/declarators/const-floating-not-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'd' is not usable in a constant expression
+- `declarations/declarators/const-floating-not-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of non-constexpr variable 'd' is not allowed in a constant expression
+- `declarations/declarators/const-floating-not-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'd' is not usable in a constant expression
+- `declarations/declarators/const-floating-not-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of non-constexpr variable 'd' is not allowed in a constant expression
+- `declarations/declarators/const-integral-runtime.cpp` (clang-host): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: initializer of 'm' is not a constant expression
+- `declarations/declarators/const-integral-runtime.cpp` (gcc-host): error: size of array ‘b’ is not an integral constant-expression
+- `declarations/declarators/const-integral-runtime.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "m" (declared at line 4) cannot be used as a constant
+- `declarations/declarators/const-integral-runtime.cpp` (gcc-14): error: size of array 'b' is not an integral constant-expression
+- `declarations/declarators/const-integral-runtime.cpp` (clang-18): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: initializer of 'm' is not a constant expression
+- `declarations/declarators/const-integral-runtime.cpp` (gcc-16): error: size of array 'b' is not an integral constant-expression
+- `declarations/declarators/const-integral-runtime.cpp` (clang-22): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: initializer of 'm' is not a constant expression
+- `declarations/declarators/const-requires-initializer.cpp` (clang-host): error: default initialization of an object of const type 'const int'
+- `declarations/declarators/const-requires-initializer.cpp` (gcc-host): error: uninitialized ‘const x’ [-fpermissive]
+- `declarations/declarators/const-requires-initializer.cpp` (edg-7.0): error: const variable "x" requires an initializer
+- `declarations/declarators/const-requires-initializer.cpp` (gcc-14): error: uninitialized 'const x' [-fpermissive]
+- `declarations/declarators/const-requires-initializer.cpp` (clang-18): error: default initialization of an object of const type 'const int'
+- `declarations/declarators/const-requires-initializer.cpp` (gcc-16): error: uninitialized 'const x' [-fpermissive]
+- `declarations/declarators/const-requires-initializer.cpp` (clang-22): error: default initialization of an object of const type 'const int'
+- `declarations/declarators/cv-duplicate-direct.cpp` (clang-host): error: duplicate 'const' declaration specifier [-Werror,-Wduplicate-decl-specifier]
+- `declarations/declarators/cv-duplicate-direct.cpp` (gcc-host): error: duplicate ‘const’
+- `declarations/declarators/cv-duplicate-direct.cpp` (edg-7.0): error: type qualifier specified more than once
+- `declarations/declarators/cv-duplicate-direct.cpp` (gcc-14): error: duplicate 'const'
+- `declarations/declarators/cv-duplicate-direct.cpp` (clang-18): error: duplicate 'const' declaration specifier [-Werror,-Wduplicate-decl-specifier]
+- `declarations/declarators/cv-duplicate-direct.cpp` (gcc-16): error: duplicate 'const'
+- `declarations/declarators/cv-duplicate-direct.cpp` (clang-22): error: duplicate 'const' declaration specifier [-Werror,-Wduplicate-decl-specifier]
+- `declarations/declarators/cv-qualified-reference.cpp` (clang-host): error: 'const' qualifier may not be applied to a reference
+- `declarations/declarators/cv-qualified-reference.cpp` (gcc-host): error: ‘const’ qualifiers cannot be applied to ‘int&’
+- `declarations/declarators/cv-qualified-reference.cpp` (edg-7.0): error: type qualifier on a reference type is not allowed
+- `declarations/declarators/cv-qualified-reference.cpp` (gcc-14): error: 'const' qualifiers cannot be applied to 'int&'
+- `declarations/declarators/cv-qualified-reference.cpp` (clang-18): error: 'const' qualifier may not be applied to a reference
+- `declarations/declarators/cv-qualified-reference.cpp` (gcc-16): error: 'const' qualifiers cannot be applied to 'int&'
+- `declarations/declarators/cv-qualified-reference.cpp` (clang-22): error: 'const' qualifier may not be applied to a reference
+- `declarations/declarators/ellipsis-first.cpp` (clang-host): error: variable has incomplete type 'void' / error: expected expression
+- `declarations/declarators/ellipsis-first.cpp` (gcc-host): error: variable or field ‘f’ declared void / error: expected primary-expression before ‘...’ token
+- `declarations/declarators/ellipsis-first.cpp` (edg-7.0): error: expected a ")"
+- `declarations/declarators/ellipsis-first.cpp` (gcc-14): error: variable or field 'f' declared void / error: expected primary-expression before '...' token
+- `declarations/declarators/ellipsis-first.cpp` (clang-18): error: variable has incomplete type 'void' / error: expected expression
+- `declarations/declarators/ellipsis-first.cpp` (gcc-16): error: variable or field 'f' declared void / error: expected primary-expression before '...' token
+- `declarations/declarators/ellipsis-first.cpp` (clang-22): error: variable has incomplete type 'void' / error: expected expression
+- `declarations/declarators/function-returning-array.cpp` (clang-host): error: function cannot return array type 'int[3]'
+- `declarations/declarators/function-returning-array.cpp` (gcc-host): error: ‘f’ declared as function returning an array
+- `declarations/declarators/function-returning-array.cpp` (edg-7.0): error: function returning array is not allowed
+- `declarations/declarators/function-returning-array.cpp` (gcc-14): error: 'f' declared as function returning an array
+- `declarations/declarators/function-returning-array.cpp` (clang-18): error: function cannot return array type 'int[3]'
+- `declarations/declarators/function-returning-array.cpp` (gcc-16): error: 'f' declared as function returning an array
+- `declarations/declarators/function-returning-array.cpp` (clang-22): error: function cannot return array type 'int[3]'
+- `declarations/declarators/function-returning-function.cpp` (clang-host): error: function cannot return function type 'int ()'
+- `declarations/declarators/function-returning-function.cpp` (gcc-host): error: ‘f’ declared as function returning a function
+- `declarations/declarators/function-returning-function.cpp` (edg-7.0): error: function returning function is not allowed
+- `declarations/declarators/function-returning-function.cpp` (gcc-14): error: 'f' declared as function returning a function
+- `declarations/declarators/function-returning-function.cpp` (clang-18): error: function cannot return function type 'int ()'
+- `declarations/declarators/function-returning-function.cpp` (gcc-16): error: 'f' declared as function returning a function
+- `declarations/declarators/function-returning-function.cpp` (clang-22): error: function cannot return function type 'int ()'
+- `declarations/declarators/increment-const.cpp` (clang-host): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/increment-const.cpp` (gcc-host): error: increment of read-only variable ‘x’
+- `declarations/declarators/increment-const.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `declarations/declarators/increment-const.cpp` (gcc-14): error: increment of read-only variable 'x'
+- `declarations/declarators/increment-const.cpp` (clang-18): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/increment-const.cpp` (gcc-16): error: increment of read-only variable 'x'
+- `declarations/declarators/increment-const.cpp` (clang-22): error: cannot assign to variable 'x' with const-qualified type 'const int' / note: variable 'x' declared const here
+- `declarations/declarators/modify-const-object-via-cast.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
+- `declarations/declarators/modify-const-object-via-cast.cpp` (gcc-host): error: non-constant condition for static assertion / error: modifying a const object ‘(int&)(& x)’ is not allowed in a constant expression
+- `declarations/declarators/modify-const-object-via-cast.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to modify const storage
+- `declarations/declarators/modify-const-object-via-cast.cpp` (gcc-14): error: non-constant condition for static assertion / error: modifying a const object '(int&)(& x)' is not allowed in a constant expression
+- `declarations/declarators/modify-const-object-via-cast.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
+- `declarations/declarators/modify-const-object-via-cast.cpp` (gcc-16): error: non-constant condition for static assertion / error: modifying a const object '(int&)(& x)' is not allowed in a constant expression
+- `declarations/declarators/modify-const-object-via-cast.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
+- `declarations/declarators/multidim-inner-bound.cpp` (clang-host): error: array has incomplete element type 'int[]'
+- `declarations/declarators/multidim-inner-bound.cpp` (gcc-host): error: declaration of ‘a’ as multidimensional array must have bounds for all dimensions except the first
+- `declarations/declarators/multidim-inner-bound.cpp` (edg-7.0): error: an array may not have elements of this type
+- `declarations/declarators/multidim-inner-bound.cpp` (gcc-14): error: declaration of 'a' as multidimensional array must have bounds for all dimensions except the first
+- `declarations/declarators/multidim-inner-bound.cpp` (clang-18): error: array has incomplete element type 'int[]'
+- `declarations/declarators/multidim-inner-bound.cpp` (gcc-16): error: declaration of 'a' as multidimensional array must have bounds for all dimensions except the first
+- `declarations/declarators/multidim-inner-bound.cpp` (clang-22): error: array has incomplete element type 'int[]'
+- `declarations/declarators/pointer-to-reference.cpp` (clang-host): error: 'p' declared as a pointer to a reference of type 'int &'
+- `declarations/declarators/pointer-to-reference.cpp` (gcc-host): error: cannot declare pointer to ‘int&’
+- `declarations/declarators/pointer-to-reference.cpp` (edg-7.0): error: pointer to reference is not allowed
+- `declarations/declarators/pointer-to-reference.cpp` (gcc-14): error: cannot declare pointer to 'int&'
+- `declarations/declarators/pointer-to-reference.cpp` (clang-18): error: 'p' declared as a pointer to a reference of type 'int &'
+- `declarations/declarators/pointer-to-reference.cpp` (gcc-16): error: cannot declare pointer to 'int&'
+- `declarations/declarators/pointer-to-reference.cpp` (clang-22): error: 'p' declared as a pointer to a reference of type 'int &'
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'const int *'
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (gcc-host): error: invalid conversion from ‘const int*’ to ‘int*’ [-fpermissive]
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (edg-7.0): error: a value of type "const int *" cannot be used to initialize an entity of type "int *"
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (gcc-14): error: invalid conversion from 'const int*' to 'int*' [-fpermissive]
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'const int *'
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (gcc-16): error: invalid conversion from 'const int*' to 'int*' [-fpermissive]
+- `declarations/declarators/qualification-conversion-drops-const.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'const int *'
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (clang-host): error: cannot initialize a variable of type 'const int **' with an lvalue of type 'int **'
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (gcc-host): error: invalid conversion from ‘int**’ to ‘const int**’ [-fpermissive]
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (edg-7.0): error: a value of type "int **" cannot be used to initialize an entity of type "const int **"
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (gcc-14): error: invalid conversion from 'int**' to 'const int**' [-fpermissive]
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (clang-18): error: cannot initialize a variable of type 'const int **' with an lvalue of type 'int **'
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (gcc-16): error: invalid conversion from 'int**' to 'const int**' [-fpermissive]
+- `declarations/declarators/qualification-conversion-unsafe.cpp` (clang-22): error: cannot initialize a variable of type 'const int **' with an lvalue of type 'int **'
+- `declarations/declarators/qualified-free-function.cpp` (clang-host): error: non-member function cannot have 'const' qualifier
+- `declarations/declarators/qualified-free-function.cpp` (gcc-host): error: non-member function ‘void f()’ cannot have cv-qualifier
+- `declarations/declarators/qualified-free-function.cpp` (edg-7.0): error: a type qualifier is not allowed on a nonmember function
+- `declarations/declarators/qualified-free-function.cpp` (gcc-14): error: non-member function 'void f()' cannot have cv-qualifier
+- `declarations/declarators/qualified-free-function.cpp` (clang-18): error: non-member function cannot have 'const' qualifier
+- `declarations/declarators/qualified-free-function.cpp` (gcc-16): error: non-member function 'void f()' cannot have cv-qualifier
+- `declarations/declarators/qualified-free-function.cpp` (clang-22): error: non-member function cannot have 'const' qualifier
+- `declarations/declarators/reference-requires-initializer.cpp` (clang-host): error: declaration of reference variable 'r' requires an initializer
+- `declarations/declarators/reference-requires-initializer.cpp` (gcc-host): error: ‘r’ declared as reference but not initialized
+- `declarations/declarators/reference-requires-initializer.cpp` (edg-7.0): error: reference variable "r" requires an initializer
+- `declarations/declarators/reference-requires-initializer.cpp` (gcc-14): error: 'r' declared as reference but not initialized
+- `declarations/declarators/reference-requires-initializer.cpp` (clang-18): error: declaration of reference variable 'r' requires an initializer
+- `declarations/declarators/reference-requires-initializer.cpp` (gcc-16): error: 'r' declared as reference but not initialized
+- `declarations/declarators/reference-requires-initializer.cpp` (clang-22): error: declaration of reference variable 'r' requires an initializer
+- `declarations/declarators/reference-to-reference.cpp` (clang-host): error: 'r' declared as a reference to a reference
+- `declarations/declarators/reference-to-reference.cpp` (gcc-host): error: cannot declare reference to ‘int&’, which is not a typedef or a template type argument
+- `declarations/declarators/reference-to-reference.cpp` (edg-7.0): error: reference to reference is not allowed
+- `declarations/declarators/reference-to-reference.cpp` (gcc-14): error: cannot declare reference to 'int&', which is not a typedef or a template type argument
+- `declarations/declarators/reference-to-reference.cpp` (clang-18): error: 'r' declared as a reference to a reference
+- `declarations/declarators/reference-to-reference.cpp` (gcc-16): error: cannot declare reference to 'int&', which is not a typedef or a template type argument
+- `declarations/declarators/reference-to-reference.cpp` (clang-22): error: 'r' declared as a reference to a reference
+- `declarations/declarators/reference-to-void.cpp` (clang-host): error: cannot form a reference to 'void'
+- `declarations/declarators/reference-to-void.cpp` (gcc-host): error: cannot declare reference to ‘void’ / error: variable or field ‘r’ declared void
+- `declarations/declarators/reference-to-void.cpp` (edg-7.0): error: reference to void is not allowed
+- `declarations/declarators/reference-to-void.cpp` (gcc-14): error: cannot declare reference to 'void' / error: variable or field 'r' declared void
+- `declarations/declarators/reference-to-void.cpp` (clang-18): error: cannot form a reference to 'void'
+- `declarations/declarators/reference-to-void.cpp` (gcc-16): error: cannot declare reference to 'void' / error: variable or field 'r' declared void
+- `declarations/declarators/reference-to-void.cpp` (clang-22): error: cannot form a reference to 'void'
+- `declarations/declarators/void-parameter-named.cpp` (clang-host): error: argument may not have 'void' type
+- `declarations/declarators/void-parameter-named.cpp` (gcc-host): error: invalid use of type ‘void’ in parameter declaration
+- `declarations/declarators/void-parameter-named.cpp` (edg-7.0): error: a parameter may not have void type
+- `declarations/declarators/void-parameter-named.cpp` (gcc-14): error: invalid use of type 'void' in parameter declaration
+- `declarations/declarators/void-parameter-named.cpp` (clang-18): error: argument may not have 'void' type
+- `declarations/declarators/void-parameter-named.cpp` (gcc-16): error: invalid use of type 'void' in parameter declaration
+- `declarations/declarators/void-parameter-named.cpp` (clang-22): error: argument may not have 'void' type
+- `declarations/declarators/void-parameter-with-others.cpp` (clang-host): error: 'void' must be the first and only parameter if specified
+- `declarations/declarators/void-parameter-with-others.cpp` (gcc-host): error: invalid use of type ‘void’ in parameter declaration
+- `declarations/declarators/void-parameter-with-others.cpp` (edg-7.0): error: a parameter may not have void type
+- `declarations/declarators/void-parameter-with-others.cpp` (gcc-14): error: invalid use of type 'void' in parameter declaration
+- `declarations/declarators/void-parameter-with-others.cpp` (clang-18): error: 'void' must be the first and only parameter if specified
+- `declarations/declarators/void-parameter-with-others.cpp` (gcc-16): error: invalid use of type 'void' in parameter declaration
+- `declarations/declarators/void-parameter-with-others.cpp` (clang-22): error: 'void' must be the first and only parameter if specified
 - `declarations/storage-linkage/block-extern-after-local.cpp` (clang-host): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
 - `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-host): error: ‘int x’ conflicts with a previous declaration / note: previous declaration ‘int x’
 - `declarations/storage-linkage/block-extern-after-local.cpp` (edg-7.0): error: "x" has already been declared in the current scope
