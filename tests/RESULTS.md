@@ -514,6 +514,184 @@ compilers affect the Status column.
 | `declarations/structured-bindings/underscore-twice.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/union-rejected.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/with-other-declarator.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/deref-one-past-end.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/function-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/grouping.cpp` | ADD-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/integer-minus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/null-plus-nonzero.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/null-plus-zero.cpp` | ADD-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/operand-order.cpp` | ADD-13 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/additive/operands-arithmetic.cpp` | ADD-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/operands-class.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/operands-scoped-enum.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-arith-runtime.cpp` | ADD-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/additive/pointer-before-array.cpp` | ADD-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `expressions/additive/pointer-beyond-array.cpp` | ADD-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `expressions/additive/pointer-difference-different-arrays.cpp` | ADD-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-difference-type-ilp32.cpp` | ADD-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `expressions/additive/pointer-difference-type-lp64.cpp` | ADD-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-difference.cpp` | ADD-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-minus-different-types.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-object-as-array.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-one-past-end.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-plus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-to-incomplete.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-within-array.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/result-prvalue.cpp` | ADD-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/result-types.cpp` | ADD-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/signed-overflow-add.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/signed-overflow-subtract.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/unsigned-wraps.cpp` | ADD-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/void-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/additive/void-pointer-difference.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/array-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/braced-compound.cpp` | ASN-6 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
+| `expressions/assignment/braced-empty.cpp` | ASN-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/braced-narrowing.cpp` | ASN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/braced-ok.cpp` | ASN-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/compound-converts.cpp` | ASN-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/compound-evaluates-once.cpp` | ASN-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/compound-float-modulo.cpp` | ASN-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/compound-operators.cpp` | ASN-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/assignment/compound-pointer.cpp` | ASN-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/const-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/converts-right.cpp` | ASN-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/function-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/no-conversion.cpp` | ASN-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/result-lvalue.cpp` | ASN-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/right-before-left.cpp` | ASN-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/right-to-left-grouping.cpp` | ASN-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/rvalue-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/self-assignment.cpp` | ASN-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/unsequenced-same-object.cpp` | ASN-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/assignment/volatile-compound.cpp` | ASN-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/assignment/volatile-simple.cpp` | ASN-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/complement-bool-warns.cpp` | BIT-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-bool.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/complement-floating.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-int-silent.cpp` | BIT-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/complement-pointer.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-promotes.cpp` | BIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/different-enum-types.cpp` | BIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/negative-values.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/operands-arithmetic.cpp` | BIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/operands-floating.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/operands-pointer.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/operands-scoped-enum.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/parentheses-silences.cpp` | BIT-6 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/parentheses-warns.cpp` | BIT-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/precedence.cpp` | BIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/result-types.cpp` | BIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/bitwise/values.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comma/argument-separator.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/constant-expression.cpp` | COMMA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comma/grouping.cpp` | COMMA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comma/initializer-separator.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/left-before-right.cpp` | COMMA-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/left-side-effects-complete.cpp` | COMMA-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/left-void.cpp` | COMMA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comma/result-category.cpp` | COMMA-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/subscript-comma.cpp` | COMMA-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comma/subscript-parenthesized.cpp` | COMMA-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comma/unused-left-void-cast.cpp` | COMMA-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/unused-left-warns.cpp` | COMMA-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/arithmetic-conversions.cpp` | CMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/array-comparison-warns.cpp` | CMP-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/array-comparison.cpp` | CMP-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/chained-comparison-warns.cpp` | CMP-14 | reject | reject | reject | skip | reject | accept | reject | reject | pass |
+| `expressions/comparison/chained-comparison.cpp` | CMP-1 | accept | reject | accept | accept | accept | accept | accept | reject | pass |
+| `expressions/comparison/function-pointer-order.cpp` | CMP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/function-pointer-void.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/grouping.cpp` | CMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/nan.cpp` | CMP-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comparison/pointer-array-order.cpp` | CMP-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-different-types.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-equality-constant.cpp` | CMP-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-equality.cpp` | CMP-15 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comparison/pointer-integer.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-member-order.cpp` | CMP-7 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comparison/pointer-qualification.cpp` | CMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-relational-zero.cpp` | CMP-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-unrelated-constant.cpp` | CMP-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-unrelated-run.cpp` | CMP-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comparison/pointer-void.cpp` | CMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/result-type.cpp` | CMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/scoped-enum-different.cpp` | CMP-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/scoped-enum-same.cpp` | CMP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/sign-compare-cast.cpp` | CMP-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/sign-compare-warns.cpp` | CMP-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/signed-unsigned.cpp` | CMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-bool-int.cpp` | CMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-floating.cpp` | CMP-17 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/comparison/three-way-integers.cpp` | CMP-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-narrowing.cpp` | CMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-no-library.cpp` | CMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-pointer-zero.cpp` | CMP-13 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-precedence.cpp` | CMP-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-type.cpp` | CMP-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/arithmetic-prvalue.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/bitfield-or-enum.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/class-ambiguous.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/class-one-way.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/condition-converted.cpp` | COND-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/condition-first.cpp` | COND-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conditional/condition-not-convertible.cpp` | COND-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/constant-selected-fails.cpp` | COND-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/constant-unselected-fails.cpp` | COND-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/cv-lvalues-and-strings.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/gnu-omitted-operand.cpp` | COND-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/grouping.cpp` | COND-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/lvalue-result.cpp` | COND-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conditional/mixed-category-prvalue.cpp` | COND-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/mixed-enum-types.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/no-common-type.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/only-selected-evaluated.cpp` | COND-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conditional/pointer-and-int.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/pointer-operands.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/precedence-assignment.cpp` | COND-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conditional/throw-operand.cpp` | COND-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conditional/void-and-value.cpp` | COND-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/void-operands.cpp` | COND-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/const-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-narrowing-out-of-range.cpp` | CONV-11 | clang: accept, gcc: accept, edg: reject | accept | accept | reject | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-to-integral-out-of-range.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/integer-variable-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/integral-promotion.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-exact.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-nearest.cpp` | CONV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-rounding.cpp` | CONV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/noexcept-function-pointer.cpp` | CONV-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/nonzero-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/null-pointer-constants.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/nullptr-to-bool-copy.cpp` | CONV-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/nullptr-to-bool-direct.cpp` | CONV-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/pointer-to-void-pointer.cpp` | CONV-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/potentially-throwing-to-noexcept.cpp` | CONV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/to-bool.cpp` | CONV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/to-signed-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/to-unsigned-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/void-pointer-to-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/logical/constant-evaluated-call.cpp` | LOG-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/logical/constant-unevaluated-call.cpp` | LOG-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/logical/constant-unevaluated-division.cpp` | LOG-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/logical/contextual-conversion.cpp` | LOG-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/logical/left-before-right.cpp` | LOG-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/logical/not-on-lhs-silences.cpp` | LOG-9 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/not-on-lhs-warns.cpp` | LOG-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/operand-not-convertible.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/logical/operand-scoped-enum.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/logical/operand-void.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/logical/parentheses-silences.cpp` | LOG-8 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/parentheses-warns.cpp` | LOG-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/precedence.cpp` | LOG-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/logical/result-type.cpp` | LOG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/logical/short-circuit-and.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/logical/short-circuit-or.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/logical/values.cpp` | LOG-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
@@ -541,6 +719,46 @@ compilers affect the Status column.
 | `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-floating.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-negative-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-negative.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-too-large-right.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-too-large.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-width-of-promoted.cpp` | SHF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/grouping.cpp` | SHF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-negative.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-overflow-signed.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-values.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/operand-floating.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/operand-order.cpp` | SHF-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/shift/operand-pointer.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/operand-scoped-enum.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/operands-integral.cpp` | SHF-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/result-prvalue.cpp` | SHF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/result-type.cpp` | SHF-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/right-shift-negative.cpp` | SHF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/right-shift-values.cpp` | SHF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/address-of-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/address-of-xvalue.cpp` | VC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/assign-to-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/guaranteed-elision.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/lvalues.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/materialization-binds.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/prvalue-no-object-until-needed.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/prvalues.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/rvalue-reference-name-binding.cpp` | VC-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/rvalue-reference-name-is-lvalue.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-scope.cpp` | STMT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/blocks/declaration-anywhere.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
@@ -680,7 +898,7 @@ compilers affect the Status column.
 | `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-665/665 tests pass on baseline compilers.
+883/883 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -2531,6 +2749,479 @@ check that the rejection has the intended cause.
 - `declarations/structured-bindings/with-other-declarator.cpp` (clang-18): error: decomposition declaration must be the only declaration in its group
 - `declarations/structured-bindings/with-other-declarator.cpp` (gcc-16): error: expected ';' before ',' token
 - `declarations/structured-bindings/with-other-declarator.cpp` (clang-22): error: structured binding declaration must be the only declaration in its group
+- `expressions/additive/deref-one-past-end.cpp` (clang-host): error: constexpr variable 'v' must be initialized by a constant expression / note: read of dereferenced one-past-the-end pointer is not allowed in a constant expression
+- `expressions/additive/deref-one-past-end.cpp` (gcc-host): error: array subscript value ‘3’ is outside the bounds of array ‘a’ of type ‘const int [3]’
+- `expressions/additive/deref-one-past-end.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access storage one position past the end of an array of 3 elements
+- `expressions/additive/deref-one-past-end.cpp` (gcc-14): error: array subscript value '3' is outside the bounds of array 'a' of type 'const int [3]'
+- `expressions/additive/deref-one-past-end.cpp` (clang-18): error: constexpr variable 'v' must be initialized by a constant expression / note: read of dereferenced one-past-the-end pointer is not allowed in a constant expression
+- `expressions/additive/deref-one-past-end.cpp` (gcc-16): error: array subscript value '3' is outside the bounds of array 'a' of type 'const int [3]'
+- `expressions/additive/deref-one-past-end.cpp` (clang-22): error: constexpr variable 'v' must be initialized by a constant expression / note: read of dereferenced one-past-the-end pointer is not allowed in a constant expression
+- `expressions/additive/function-pointer-arithmetic.cpp` (clang-host): error: arithmetic on a pointer to the function type 'void ()'
+- `expressions/additive/function-pointer-arithmetic.cpp` (gcc-host): error: pointer to a function used in arithmetic [-Wpointer-arith]
+- `expressions/additive/function-pointer-arithmetic.cpp` (edg-7.0): error: expression must be a pointer to a complete object type
+- `expressions/additive/function-pointer-arithmetic.cpp` (gcc-14): error: pointer to a function used in arithmetic [-Wpointer-arith]
+- `expressions/additive/function-pointer-arithmetic.cpp` (clang-18): error: arithmetic on a pointer to the function type 'void ()'
+- `expressions/additive/function-pointer-arithmetic.cpp` (gcc-16): error: pointer to a function used in arithmetic [-Wpointer-arith]
+- `expressions/additive/function-pointer-arithmetic.cpp` (clang-22): error: arithmetic on a pointer to the function type 'void ()'
+- `expressions/additive/integer-minus-pointer.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'int *')
+- `expressions/additive/integer-minus-pointer.cpp` (gcc-host): error: invalid operands of types ‘int’ and ‘int*’ to binary ‘operator-’
+- `expressions/additive/integer-minus-pointer.cpp` (edg-7.0): error: expression must have arithmetic or unscoped enum type
+- `expressions/additive/integer-minus-pointer.cpp` (gcc-14): error: invalid operands of types 'int' and 'int*' to binary 'operator-'
+- `expressions/additive/integer-minus-pointer.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'int *')
+- `expressions/additive/integer-minus-pointer.cpp` (gcc-16): error: invalid operands of types 'int' and 'int*' to binary 'operator-'
+- `expressions/additive/integer-minus-pointer.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'int *')
+- `expressions/additive/null-plus-nonzero.cpp` (clang-host): error: constexpr variable 'q' must be initialized by a constant expression / note: cannot perform pointer arithmetic on null pointer
+- `expressions/additive/null-plus-nonzero.cpp` (gcc-host): error: arithmetic involving a null pointer in ‘0’
+- `expressions/additive/null-plus-nonzero.cpp` (edg-7.0): error: expression must have a constant value / note: operation not allowed on null pointer
+- `expressions/additive/null-plus-nonzero.cpp` (gcc-14): error: arithmetic involving a null pointer in '0'
+- `expressions/additive/null-plus-nonzero.cpp` (clang-18): error: constexpr variable 'q' must be initialized by a constant expression / note: cannot perform pointer arithmetic on null pointer
+- `expressions/additive/null-plus-nonzero.cpp` (gcc-16): error: arithmetic involving a null pointer in '0'
+- `expressions/additive/null-plus-nonzero.cpp` (clang-22): error: constexpr variable 'q' must be initialized by a constant expression / note: cannot perform pointer arithmetic on null pointer
+- `expressions/additive/operands-class.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'int')
+- `expressions/additive/operands-class.cpp` (gcc-host): error: no match for ‘operator-’ (operand types are ‘S’ and ‘int’)
+- `expressions/additive/operands-class.cpp` (edg-7.0): error: no operator "-" matches these operands / note: built-in operator-(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `expressions/additive/operands-class.cpp` (gcc-14): error: no match for 'operator-' (operand types are 'S' and 'int')
+- `expressions/additive/operands-class.cpp` (clang-18): error: invalid operands to binary expression ('S' and 'int')
+- `expressions/additive/operands-class.cpp` (gcc-16): error: no match for 'operator-' (operand types are 'S' and 'int')
+- `expressions/additive/operands-class.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'int')
+- `expressions/additive/operands-scoped-enum.cpp` (clang-host): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/additive/operands-scoped-enum.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘E’ and ‘int’)
+- `expressions/additive/operands-scoped-enum.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `expressions/additive/operands-scoped-enum.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'E' and 'int')
+- `expressions/additive/operands-scoped-enum.cpp` (clang-18): error: invalid operands to binary expression ('E' and 'int')
+- `expressions/additive/operands-scoped-enum.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'E' and 'int')
+- `expressions/additive/operands-scoped-enum.cpp` (clang-22): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/additive/pointer-before-array.cpp` (clang-host): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element -1 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-before-array.cpp` (edg-7.0): error: expression must have a constant value / note: cannot set pointer before the first array element
+- `expressions/additive/pointer-before-array.cpp` (clang-18): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element -1 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-before-array.cpp` (clang-22): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element -1 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-beyond-array.cpp` (clang-host): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element 4 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-beyond-array.cpp` (edg-7.0): error: expression must have a constant value / note: cannot access position 4 in array of 3 elements
+- `expressions/additive/pointer-beyond-array.cpp` (clang-18): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element 4 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-beyond-array.cpp` (clang-22): error: constexpr variable 'p' must be initialized by a constant expression / note: cannot refer to element 4 of array of 3 elements in a constant expression
+- `expressions/additive/pointer-difference-different-arrays.cpp` (clang-host): error: constexpr variable 'd' must be initialized by a constant expression / note: arithmetic involving unrelated objects '&b[0]' and '&a[0]' has unspecified value
+- `expressions/additive/pointer-difference-different-arrays.cpp` (gcc-host): error: ‘(((& b[0]) - (& a[0])) <unknown operator> 4)’ is not a constant expression
+- `expressions/additive/pointer-difference-different-arrays.cpp` (edg-7.0): error: expression must have a constant value / note: invalid arithmetic on non-array pointer
+- `expressions/additive/pointer-difference-different-arrays.cpp` (gcc-14): error: '(((& b[0]) - (& a[0])) <unknown operator> 4)' is not a constant expression
+- `expressions/additive/pointer-difference-different-arrays.cpp` (clang-18): error: constexpr variable 'd' must be initialized by a constant expression
+- `expressions/additive/pointer-difference-different-arrays.cpp` (gcc-16): error: '(((& b[0]) - (& a[0])) <unknown operator> 4)' is not a constant expression
+- `expressions/additive/pointer-difference-different-arrays.cpp` (clang-22): error: constexpr variable 'd' must be initialized by a constant expression / note: arithmetic involving unrelated objects '&b[0]' and '&a[0]' has unspecified value
+- `expressions/additive/pointer-minus-different-types.cpp` (clang-host): error: 'int *' and 'long *' are not pointers to compatible types
+- `expressions/additive/pointer-minus-different-types.cpp` (gcc-host): error: invalid operands of types ‘int*’ and ‘long int*’ to binary ‘operator-’
+- `expressions/additive/pointer-minus-different-types.cpp` (edg-7.0): error: operand types are incompatible ("int *" and "long *")
+- `expressions/additive/pointer-minus-different-types.cpp` (gcc-14): error: invalid operands of types 'int*' and 'long int*' to binary 'operator-'
+- `expressions/additive/pointer-minus-different-types.cpp` (clang-18): error: 'int *' and 'long *' are not pointers to compatible types
+- `expressions/additive/pointer-minus-different-types.cpp` (gcc-16): error: invalid operands of types 'int*' and 'long int*' to binary 'operator-'
+- `expressions/additive/pointer-minus-different-types.cpp` (clang-22): error: 'int *' and 'long *' are not pointers to compatible types
+- `expressions/additive/pointer-plus-pointer.cpp` (clang-host): error: invalid operands to binary expression ('int *' and 'int *')
+- `expressions/additive/pointer-plus-pointer.cpp` (gcc-host): error: invalid operands of types ‘int*’ and ‘int*’ to binary ‘operator+’
+- `expressions/additive/pointer-plus-pointer.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/additive/pointer-plus-pointer.cpp` (gcc-14): error: invalid operands of types 'int*' and 'int*' to binary 'operator+'
+- `expressions/additive/pointer-plus-pointer.cpp` (clang-18): error: invalid operands to binary expression ('int *' and 'int *')
+- `expressions/additive/pointer-plus-pointer.cpp` (gcc-16): error: invalid operands of types 'int*' and 'int*' to binary 'operator+'
+- `expressions/additive/pointer-plus-pointer.cpp` (clang-22): error: invalid operands to binary expression ('int *' and 'int *')
+- `expressions/additive/pointer-to-incomplete.cpp` (clang-host): error: arithmetic on a pointer to an incomplete type 'Incomplete' / note: forward declaration of 'Incomplete'
+- `expressions/additive/pointer-to-incomplete.cpp` (gcc-host): error: invalid use of incomplete type ‘struct Incomplete’ / note: forward declaration of ‘struct Incomplete’
+- `expressions/additive/pointer-to-incomplete.cpp` (edg-7.0): error: expression must be a pointer to a complete object type
+- `expressions/additive/pointer-to-incomplete.cpp` (gcc-14): error: invalid use of incomplete type 'struct Incomplete' / note: forward declaration of 'struct Incomplete'
+- `expressions/additive/pointer-to-incomplete.cpp` (clang-18): error: arithmetic on a pointer to an incomplete type 'Incomplete' / note: forward declaration of 'Incomplete'
+- `expressions/additive/pointer-to-incomplete.cpp` (gcc-16): error: invalid use of incomplete type 'struct Incomplete' / note: forward declaration of 'struct Incomplete'
+- `expressions/additive/pointer-to-incomplete.cpp` (clang-22): error: arithmetic on a pointer to an incomplete type 'Incomplete' / note: forward declaration of 'Incomplete'
+- `expressions/additive/result-prvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `expressions/additive/result-prvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
+- `expressions/additive/result-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/additive/result-prvalue.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `expressions/additive/result-prvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/additive/result-prvalue.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/additive/result-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `expressions/additive/signed-overflow-add.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/additive/signed-overflow-add.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-add.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `expressions/additive/signed-overflow-add.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-add.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/additive/signed-overflow-add.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-add.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/additive/signed-overflow-subtract.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/additive/signed-overflow-subtract.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-subtract.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `expressions/additive/signed-overflow-subtract.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-subtract.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/additive/signed-overflow-subtract.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/additive/signed-overflow-subtract.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/additive/void-pointer-arithmetic.cpp` (clang-host): error: arithmetic on a pointer to void
+- `expressions/additive/void-pointer-arithmetic.cpp` (gcc-host): error: pointer of type ‘void *’ used in arithmetic [-Wpointer-arith]
+- `expressions/additive/void-pointer-arithmetic.cpp` (edg-7.0): error: expression must be a pointer to a complete object type
+- `expressions/additive/void-pointer-arithmetic.cpp` (gcc-14): error: pointer of type 'void *' used in arithmetic [-Wpointer-arith]
+- `expressions/additive/void-pointer-arithmetic.cpp` (clang-18): error: arithmetic on a pointer to void
+- `expressions/additive/void-pointer-arithmetic.cpp` (gcc-16): error: pointer of type 'void *' used in arithmetic [-Wpointer-arith]
+- `expressions/additive/void-pointer-arithmetic.cpp` (clang-22): error: arithmetic on a pointer to void
+- `expressions/additive/void-pointer-difference.cpp` (clang-host): error: arithmetic on pointers to void
+- `expressions/additive/void-pointer-difference.cpp` (gcc-host): error: invalid use of ‘void’
+- `expressions/additive/void-pointer-difference.cpp` (edg-7.0): error: expression must be a pointer to a complete object type
+- `expressions/additive/void-pointer-difference.cpp` (gcc-14): error: invalid use of 'void'
+- `expressions/additive/void-pointer-difference.cpp` (clang-18): error: arithmetic on pointers to void
+- `expressions/additive/void-pointer-difference.cpp` (gcc-16): error: invalid use of 'void'
+- `expressions/additive/void-pointer-difference.cpp` (clang-22): error: arithmetic on pointers to void
+- `expressions/assignment/array-left.cpp` (clang-host): error: array type 'int[2]' is not assignable
+- `expressions/assignment/array-left.cpp` (gcc-host): error: invalid array assignment
+- `expressions/assignment/array-left.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/assignment/array-left.cpp` (gcc-14): error: invalid array assignment
+- `expressions/assignment/array-left.cpp` (clang-18): error: array type 'int[2]' is not assignable
+- `expressions/assignment/array-left.cpp` (gcc-16): error: invalid array assignment
+- `expressions/assignment/array-left.cpp` (clang-22): error: array type 'int[2]' is not assignable
+- `expressions/assignment/braced-compound.cpp` (gcc-host): error: invalid use of brace-enclosed initializer list
+- `expressions/assignment/braced-compound.cpp` (edg-7.0): error: a brace-enclosed list is not allowed here
+- `expressions/assignment/braced-compound.cpp` (gcc-14): error: invalid use of brace-enclosed initializer list
+- `expressions/assignment/braced-compound.cpp` (gcc-16): error: invalid use of brace-enclosed initializer list
+- `expressions/assignment/braced-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `expressions/assignment/braced-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘2.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `expressions/assignment/braced-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `expressions/assignment/braced-narrowing.cpp` (gcc-14): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `expressions/assignment/braced-narrowing.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `expressions/assignment/braced-narrowing.cpp` (gcc-16): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `expressions/assignment/braced-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `expressions/assignment/compound-float-modulo.cpp` (clang-host): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-modulo.cpp` (gcc-host): error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator%’ / note:   in evaluation of ‘operator%=(double, int)’
+- `expressions/assignment/compound-float-modulo.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/assignment/compound-float-modulo.cpp` (gcc-14): error: invalid operands of types 'double' and 'int' to binary 'operator%' / note:   in evaluation of 'operator%=(double, int)'
+- `expressions/assignment/compound-float-modulo.cpp` (clang-18): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-modulo.cpp` (gcc-16): error: invalid operands of types 'double' and 'int' to binary 'operator%' / note:   in evaluation of 'operator%=(double, int)'
+- `expressions/assignment/compound-float-modulo.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/const-left.cpp` (clang-host): error: cannot assign to variable 'c' with const-qualified type 'const int' / note: variable 'c' declared const here
+- `expressions/assignment/const-left.cpp` (gcc-host): error: assignment of read-only variable ‘c’
+- `expressions/assignment/const-left.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/assignment/const-left.cpp` (gcc-14): error: assignment of read-only variable 'c'
+- `expressions/assignment/const-left.cpp` (clang-18): error: cannot assign to variable 'c' with const-qualified type 'const int' / note: variable 'c' declared const here
+- `expressions/assignment/const-left.cpp` (gcc-16): error: assignment of read-only variable 'c'
+- `expressions/assignment/const-left.cpp` (clang-22): error: cannot assign to variable 'c' with const-qualified type 'const int' / note: variable 'c' declared const here
+- `expressions/assignment/function-left.cpp` (clang-host): error: non-object type 'void ()' is not assignable
+- `expressions/assignment/function-left.cpp` (gcc-host): error: assignment of function ‘void g()’
+- `expressions/assignment/function-left.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/assignment/function-left.cpp` (gcc-14): error: assignment of function 'void g()'
+- `expressions/assignment/function-left.cpp` (clang-18): error: non-object type 'void ()' is not assignable
+- `expressions/assignment/function-left.cpp` (gcc-16): error: assignment of function 'void g()'
+- `expressions/assignment/function-left.cpp` (clang-22): error: non-object type 'void ()' is not assignable
+- `expressions/assignment/no-conversion.cpp` (clang-host): error: incompatible integer to pointer conversion assigning to 'int *' from 'int'
+- `expressions/assignment/no-conversion.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
+- `expressions/assignment/no-conversion.cpp` (edg-7.0): error: a value of type "int" cannot be assigned to an entity of type "int *"
+- `expressions/assignment/no-conversion.cpp` (gcc-14): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `expressions/assignment/no-conversion.cpp` (clang-18): error: incompatible integer to pointer conversion assigning to 'int *' from 'int'
+- `expressions/assignment/no-conversion.cpp` (gcc-16): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `expressions/assignment/no-conversion.cpp` (clang-22): error: incompatible integer to pointer conversion assigning to 'int *' from 'int'
+- `expressions/assignment/rvalue-left.cpp` (clang-host): error: expression is not assignable
+- `expressions/assignment/rvalue-left.cpp` (gcc-host): error: lvalue required as left operand of assignment
+- `expressions/assignment/rvalue-left.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/assignment/rvalue-left.cpp` (gcc-14): error: lvalue required as left operand of assignment
+- `expressions/assignment/rvalue-left.cpp` (clang-18): error: expression is not assignable
+- `expressions/assignment/rvalue-left.cpp` (gcc-16): error: lvalue required as left operand of assignment
+- `expressions/assignment/rvalue-left.cpp` (clang-22): error: expression is not assignable
+- `expressions/bitwise/complement-bool-warns.cpp` (clang-host): error: bitwise negation of a boolean expression; did you mean logical negation? [-Werror,-Wbool-operation]
+- `expressions/bitwise/complement-bool-warns.cpp` (gcc-host): error: ‘~’ on an expression of type ‘bool’ [-Werror=bool-operation] / note: did you mean to use logical not (‘!’)?
+- `expressions/bitwise/complement-bool-warns.cpp` (gcc-14): error: '~' on an expression of type 'bool' [-Werror=bool-operation] / note: did you mean to use logical not ('!')?
+- `expressions/bitwise/complement-bool-warns.cpp` (clang-18): error: bitwise negation of a boolean expression; did you mean logical negation? [-Werror,-Wbool-operation]
+- `expressions/bitwise/complement-bool-warns.cpp` (gcc-16): error: '~' on an expression of type 'bool' [-Werror=bool-operation] / note: did you mean to use logical not ('!')?
+- `expressions/bitwise/complement-bool-warns.cpp` (clang-22): error: bitwise negation of a boolean expression; did you mean logical negation? [-Werror,-Wbool-operation]
+- `expressions/bitwise/complement-floating.cpp` (clang-host): error: invalid argument type 'double' to unary expression
+- `expressions/bitwise/complement-floating.cpp` (gcc-host): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-floating.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/bitwise/complement-floating.cpp` (gcc-14): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-floating.cpp` (clang-18): error: invalid argument type 'double' to unary expression
+- `expressions/bitwise/complement-floating.cpp` (gcc-16): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-floating.cpp` (clang-22): error: invalid argument type 'double' to unary expression
+- `expressions/bitwise/complement-pointer.cpp` (clang-host): error: invalid argument type 'int *' to unary expression
+- `expressions/bitwise/complement-pointer.cpp` (gcc-host): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-pointer.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/bitwise/complement-pointer.cpp` (gcc-14): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-pointer.cpp` (clang-18): error: invalid argument type 'int *' to unary expression
+- `expressions/bitwise/complement-pointer.cpp` (gcc-16): error: wrong type argument to bit-complement
+- `expressions/bitwise/complement-pointer.cpp` (clang-22): error: invalid argument type 'int *' to unary expression
+- `expressions/bitwise/operands-floating.cpp` (clang-host): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/bitwise/operands-floating.cpp` (gcc-host): error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator&’
+- `expressions/bitwise/operands-floating.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/bitwise/operands-floating.cpp` (gcc-14): error: invalid operands of types 'double' and 'int' to binary 'operator&'
+- `expressions/bitwise/operands-floating.cpp` (clang-18): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/bitwise/operands-floating.cpp` (gcc-16): error: invalid operands of types 'double' and 'int' to binary 'operator&'
+- `expressions/bitwise/operands-floating.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/bitwise/operands-pointer.cpp` (clang-host): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/bitwise/operands-pointer.cpp` (gcc-host): error: invalid operands of types ‘int*’ and ‘int’ to binary ‘operator\|’
+- `expressions/bitwise/operands-pointer.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/bitwise/operands-pointer.cpp` (gcc-14): error: invalid operands of types 'int*' and 'int' to binary 'operator\|'
+- `expressions/bitwise/operands-pointer.cpp` (clang-18): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/bitwise/operands-pointer.cpp` (gcc-16): error: invalid operands of types 'int*' and 'int' to binary 'operator\|'
+- `expressions/bitwise/operands-pointer.cpp` (clang-22): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/bitwise/operands-scoped-enum.cpp` (clang-host): error: invalid operands to binary expression ('Flags' and 'Flags') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/bitwise/operands-scoped-enum.cpp` (gcc-host): error: no match for ‘operator\|’ (operand types are ‘Flags’ and ‘Flags’)
+- `expressions/bitwise/operands-scoped-enum.cpp` (edg-7.0): error: no operator "\|" matches these operands / note: built-in operator\|(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+- `expressions/bitwise/operands-scoped-enum.cpp` (gcc-14): error: no match for 'operator\|' (operand types are 'Flags' and 'Flags')
+- `expressions/bitwise/operands-scoped-enum.cpp` (clang-18): error: invalid operands to binary expression ('Flags' and 'Flags')
+- `expressions/bitwise/operands-scoped-enum.cpp` (gcc-16): error: no match for 'operator\|' (operand types are 'Flags' and 'Flags')
+- `expressions/bitwise/operands-scoped-enum.cpp` (clang-22): error: invalid operands to binary expression ('Flags' and 'Flags') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/bitwise/parentheses-warns.cpp` (clang-host): error: & has lower precedence than ==; == will be evaluated first [-Werror,-Wparentheses] / note: place parentheses around the '==' expression to silence this warning
+- `expressions/bitwise/parentheses-warns.cpp` (gcc-host): error: suggest parentheses around comparison in operand of ‘&’ [-Werror=parentheses]
+- `expressions/bitwise/parentheses-warns.cpp` (gcc-14): error: suggest parentheses around comparison in operand of '&' [-Werror=parentheses]
+- `expressions/bitwise/parentheses-warns.cpp` (clang-18): error: & has lower precedence than ==; == will be evaluated first [-Werror,-Wparentheses] / note: place parentheses around the '==' expression to silence this warning
+- `expressions/bitwise/parentheses-warns.cpp` (gcc-16): error: suggest parentheses around comparison in operand of '&' [-Werror=parentheses]
+- `expressions/bitwise/parentheses-warns.cpp` (clang-22): error: & has lower precedence than ==; == will be evaluated first [-Werror,-Wparentheses] / note: place parentheses around the '==' expression to silence this warning
+- `expressions/comma/subscript-comma.cpp` (clang-host): error: type 'int *' does not provide a subscript operator
+- `expressions/comma/subscript-comma.cpp` (gcc-host): error: top-level comma expression in array subscript changed meaning in C++23 [-Wcomma-subscript]
+- `expressions/comma/subscript-comma.cpp` (edg-7.0): error: too many array bounds
+- `expressions/comma/subscript-comma.cpp` (gcc-14): error: top-level comma expression in array subscript changed meaning in C++23 [-Wcomma-subscript]
+- `expressions/comma/subscript-comma.cpp` (clang-18): error: type 'int *' does not provide a subscript operator
+- `expressions/comma/subscript-comma.cpp` (gcc-16): error: top-level comma expression in array subscript changed meaning in C++23 [-Wcomma-subscript]
+- `expressions/comma/subscript-comma.cpp` (clang-22): error: type 'int *' does not provide a subscript operator
+- `expressions/comma/unused-left-warns.cpp` (clang-host): error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+- `expressions/comma/unused-left-warns.cpp` (gcc-host): error: left operand of comma operator has no effect [-Werror=unused-value]
+- `expressions/comma/unused-left-warns.cpp` (gcc-14): error: left operand of comma operator has no effect [-Werror=unused-value]
+- `expressions/comma/unused-left-warns.cpp` (clang-18): error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+- `expressions/comma/unused-left-warns.cpp` (gcc-16): error: left operand of comma operator has no effect [-Werror=unused-value]
+- `expressions/comma/unused-left-warns.cpp` (clang-22): error: left operand of comma operator has no effect [-Werror,-Wunused-value]
+- `expressions/comparison/array-comparison-warns.cpp` (clang-host): error: comparison between two arrays is deprecated; to compare array addresses, use unary '+' to decay operands to pointers [-Werror,-Wdeprecated-array-compare] / error: array comparison always evaluates to false [-Werror,-Wtautological-compare]
+- `expressions/comparison/array-comparison-warns.cpp` (gcc-host): error: comparison between two arrays is deprecated in C++20 [-Werror=array-compare] / note: use unary ‘+’ which decays operands to pointers or ‘&a[0] == &b[0]’ to compare the addresses
+- `expressions/comparison/array-comparison-warns.cpp` (gcc-14): error: comparison between two arrays is deprecated in C++20 [-Werror=array-compare] / note: use unary '+' which decays operands to pointers or '&a[0] == &b[0]' to compare the addresses
+- `expressions/comparison/array-comparison-warns.cpp` (clang-18): error: comparison between two arrays is deprecated; to compare array addresses, use unary '+' to decay operands to pointers [-Werror,-Wdeprecated-array-compare] / error: array comparison always evaluates to false [-Werror,-Wtautological-compare]
+- `expressions/comparison/array-comparison-warns.cpp` (gcc-16): error: comparison between two arrays is deprecated in C++20 [-Werror=array-compare] / note: use unary '+' which decays operands to pointers or '&a[0] == &b[0]' to compare the addresses
+- `expressions/comparison/array-comparison-warns.cpp` (clang-22): error: comparison between two arrays is deprecated; to compare array addresses, use unary '+' to decay operands to pointers [-Werror,-Wdeprecated-array-compare] / error: array comparison always evaluates to false [-Werror,-Wtautological-compare]
+- `expressions/comparison/chained-comparison-warns.cpp` (clang-host): error: chained comparison 'X < Y < Z' does not behave the same as a mathematical expression [-Wparentheses]
+- `expressions/comparison/chained-comparison-warns.cpp` (gcc-host): error: comparisons like ‘X<=Y<=Z’ do not have their mathematical meaning [-Werror=parentheses]
+- `expressions/comparison/chained-comparison-warns.cpp` (gcc-14): error: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Werror=parentheses]
+- `expressions/comparison/chained-comparison-warns.cpp` (gcc-16): error: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Werror=parentheses]
+- `expressions/comparison/chained-comparison-warns.cpp` (clang-22): error: chained comparison 'X < Y < Z' does not behave the same as a mathematical expression [-Wparentheses]
+- `expressions/comparison/chained-comparison.cpp` (clang-host): error: chained comparison 'X > Y > Z' does not behave the same as a mathematical expression [-Wparentheses]
+- `expressions/comparison/chained-comparison.cpp` (clang-22): error: chained comparison 'X > Y > Z' does not behave the same as a mathematical expression [-Wparentheses]
+- `expressions/comparison/function-pointer-void.cpp` (clang-host): error: equality comparison between function pointer and void pointer ('void (*)()' and 'void *') [-Werror,-Wpedantic]
+- `expressions/comparison/function-pointer-void.cpp` (gcc-host): error: ISO C++ forbids comparison between pointer of type ‘void *’ and pointer-to-function [-Wpedantic]
+- `expressions/comparison/function-pointer-void.cpp` (edg-7.0): error: operand types are incompatible ("void (*)()" and "void *")
+- `expressions/comparison/function-pointer-void.cpp` (gcc-14): error: ISO C++ forbids comparison between pointer of type 'void *' and pointer-to-function [-Wpedantic]
+- `expressions/comparison/function-pointer-void.cpp` (clang-18): error: equality comparison between function pointer and void pointer ('void (*)()' and 'void *') [-Werror,-Wpedantic]
+- `expressions/comparison/function-pointer-void.cpp` (gcc-16): error: ISO C++ forbids comparison between pointer of type 'void *' and pointer-to-function [-Wpedantic]
+- `expressions/comparison/function-pointer-void.cpp` (clang-22): error: equality comparison between function pointer and void pointer ('void (*)()' and 'void *') [-Werror,-Wpedantic]
+- `expressions/comparison/pointer-different-types.cpp` (clang-host): error: comparison of distinct pointer types ('int *' and 'double *')
+- `expressions/comparison/pointer-different-types.cpp` (gcc-host): error: comparison between distinct pointer types ‘int*’ and ‘double*’ lacks a cast
+- `expressions/comparison/pointer-different-types.cpp` (edg-7.0): error: operand types are incompatible ("int *" and "double *")
+- `expressions/comparison/pointer-different-types.cpp` (gcc-14): error: comparison between distinct pointer types 'int*' and 'double*' lacks a cast
+- `expressions/comparison/pointer-different-types.cpp` (clang-18): error: comparison of distinct pointer types ('int *' and 'double *')
+- `expressions/comparison/pointer-different-types.cpp` (gcc-16): error: comparison between distinct pointer types 'int*' and 'double*' lacks a cast
+- `expressions/comparison/pointer-different-types.cpp` (clang-22): error: comparison of distinct pointer types ('int *' and 'double *')
+- `expressions/comparison/pointer-integer.cpp` (clang-host): error: comparison between pointer and integer ('int *' and 'int')
+- `expressions/comparison/pointer-integer.cpp` (gcc-host): error: ISO C++ forbids comparison between pointer and integer [-fpermissive]
+- `expressions/comparison/pointer-integer.cpp` (edg-7.0): error: operand types are incompatible ("int *" and "int")
+- `expressions/comparison/pointer-integer.cpp` (gcc-14): error: ISO C++ forbids comparison between pointer and integer [-fpermissive]
+- `expressions/comparison/pointer-integer.cpp` (clang-18): error: comparison between pointer and integer ('int *' and 'int')
+- `expressions/comparison/pointer-integer.cpp` (gcc-16): error: ISO C++ forbids comparison between pointer and integer [-fpermissive]
+- `expressions/comparison/pointer-integer.cpp` (clang-22): error: comparison between pointer and integer ('int *' and 'int')
+- `expressions/comparison/pointer-relational-zero.cpp` (clang-host): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/comparison/pointer-relational-zero.cpp` (gcc-host): error: ordered comparison of pointer with integer zero (‘int*’ and ‘int’)
+- `expressions/comparison/pointer-relational-zero.cpp` (gcc-14): error: ordered comparison of pointer with integer zero ('int*' and 'int')
+- `expressions/comparison/pointer-relational-zero.cpp` (clang-18): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/comparison/pointer-relational-zero.cpp` (gcc-16): error: ordered comparison of pointer with integer zero ('int*' and 'int')
+- `expressions/comparison/pointer-relational-zero.cpp` (clang-22): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/comparison/pointer-unrelated-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
+- `expressions/comparison/pointer-unrelated-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘((& a) < (& b))’ is not a constant expression
+- `expressions/comparison/pointer-unrelated-constant.cpp` (edg-7.0): error: expression must have a constant value / note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+- `expressions/comparison/pointer-unrelated-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: '((& a) < (& b))' is not a constant expression
+- `expressions/comparison/pointer-unrelated-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: comparison between '&a' and '&b' has unspecified value
+- `expressions/comparison/pointer-unrelated-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: '((& a) < (& b))' is not a constant expression
+- `expressions/comparison/pointer-unrelated-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
+- `expressions/comparison/scoped-enum-different.cpp` (clang-host): error: invalid operands to binary expression ('E' and 'F') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/comparison/scoped-enum-different.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘E’ and ‘F’)
+- `expressions/comparison/scoped-enum-different.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `expressions/comparison/scoped-enum-different.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'E' and 'F') / note: candidate: 'operator==(F, F)' (built-in)
+- `expressions/comparison/scoped-enum-different.cpp` (clang-18): error: invalid operands to binary expression ('E' and 'F')
+- `expressions/comparison/scoped-enum-different.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'E' and 'F')
+- `expressions/comparison/scoped-enum-different.cpp` (clang-22): error: invalid operands to binary expression ('E' and 'F') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/comparison/sign-compare-warns.cpp` (clang-host): error: comparison of integers of different signs: 'int' and 'unsigned int' [-Werror,-Wsign-compare]
+- `expressions/comparison/sign-compare-warns.cpp` (gcc-host): error: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Werror=sign-compare]
+- `expressions/comparison/sign-compare-warns.cpp` (gcc-14): error: comparison of integer expressions of different signedness: 'int' and 'unsigned int' [-Werror=sign-compare]
+- `expressions/comparison/sign-compare-warns.cpp` (clang-18): error: comparison of integers of different signs: 'int' and 'unsigned int' [-Werror,-Wsign-compare]
+- `expressions/comparison/sign-compare-warns.cpp` (gcc-16): error: comparison of integer expressions of different signedness: 'int' and 'unsigned int' [-Werror=sign-compare]
+- `expressions/comparison/sign-compare-warns.cpp` (clang-22): error: comparison of integers of different signs: 'int' and 'unsigned int' [-Werror,-Wsign-compare]
+- `expressions/comparison/three-way-bool-int.cpp` (clang-host): error: invalid operands to binary expression ('bool' and 'int')
+- `expressions/comparison/three-way-bool-int.cpp` (gcc-host): error: invalid operands of types ‘bool’ and ‘int’ to binary ‘operator<=>’
+- `expressions/comparison/three-way-bool-int.cpp` (edg-7.0): error: invalid types ("bool" and "int") for built-in operator<=>
+- `expressions/comparison/three-way-bool-int.cpp` (gcc-14): error: invalid operands of types 'bool' and 'int' to binary 'operator<=>'
+- `expressions/comparison/three-way-bool-int.cpp` (clang-18): error: invalid operands to binary expression ('bool' and 'int')
+- `expressions/comparison/three-way-bool-int.cpp` (gcc-16): error: invalid operands of types 'bool' and 'int' to binary 'operator<=>'
+- `expressions/comparison/three-way-bool-int.cpp` (clang-22): error: invalid operands to binary expression ('bool' and 'int')
+- `expressions/comparison/three-way-narrowing.cpp` (clang-host): error: argument to 'operator<=>' evaluates to -1, which cannot be narrowed to type 'unsigned int'
+- `expressions/comparison/three-way-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘-1’ from ‘int’ to ‘unsigned int’ [-Wnarrowing]
+- `expressions/comparison/three-way-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned int": constant value does not fit in destination type
+- `expressions/comparison/three-way-narrowing.cpp` (gcc-14): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `expressions/comparison/three-way-narrowing.cpp` (clang-18): error: argument to 'operator<=>' evaluates to -1, which cannot be narrowed to type 'unsigned int'
+- `expressions/comparison/three-way-narrowing.cpp` (gcc-16): error: narrowing conversion of '-1' from 'int' to 'unsigned int' [-Wnarrowing]
+- `expressions/comparison/three-way-narrowing.cpp` (clang-22): error: argument to 'operator<=>' evaluates to -1, which cannot be narrowed to type 'unsigned int'
+- `expressions/comparison/three-way-no-library.cpp` (clang-host): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `expressions/comparison/three-way-no-library.cpp` (gcc-host): error: ‘strong_ordering’ is not a member of ‘std’ / note: ‘std::strong_ordering’ is defined in header ‘<compare>’; this is probably fixable by adding ‘#include <compare>’
+- `expressions/comparison/three-way-no-library.cpp` (edg-7.0): error: no valid std::strong_ordering type found (<compare> must be included)
+- `expressions/comparison/three-way-no-library.cpp` (gcc-14): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>'
+- `expressions/comparison/three-way-no-library.cpp` (clang-18): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `expressions/comparison/three-way-no-library.cpp` (gcc-16): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>'
+- `expressions/comparison/three-way-no-library.cpp` (clang-22): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `expressions/comparison/three-way-pointer-zero.cpp` (clang-host): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/comparison/three-way-pointer-zero.cpp` (gcc-host): error: ordered comparison of pointer with integer zero (‘int*’ and ‘int’)
+- `expressions/comparison/three-way-pointer-zero.cpp` (gcc-14): error: ordered comparison of pointer with integer zero ('int*' and 'int')
+- `expressions/comparison/three-way-pointer-zero.cpp` (clang-18): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/comparison/three-way-pointer-zero.cpp` (gcc-16): error: ordered comparison of pointer with integer zero ('int*' and 'int')
+- `expressions/comparison/three-way-pointer-zero.cpp` (clang-22): error: ordered comparison between pointer and zero ('int *' and 'int')
+- `expressions/conditional/class-ambiguous.cpp` (clang-host): error: conditional expression is ambiguous; 'A' can be converted to 'B' and vice versa
+- `expressions/conditional/class-ambiguous.cpp` (gcc-host): error: operands to ‘?:’ have different types ‘A’ and ‘B’ / note:   and each type can be converted to the other
+- `expressions/conditional/class-ambiguous.cpp` (edg-7.0): error: ambiguous "?" operation: second operand of type "A" can be converted to third operand type "B", and vice versa
+- `expressions/conditional/class-ambiguous.cpp` (gcc-14): error: operands to '?:' have different types 'A' and 'B' / note:   and each type can be converted to the other
+- `expressions/conditional/class-ambiguous.cpp` (clang-18): error: conditional expression is ambiguous; 'A' can be converted to 'B' and vice versa
+- `expressions/conditional/class-ambiguous.cpp` (gcc-16): error: operands to '?:' have different types 'A' and 'B' / note:   and each type can be converted to the other
+- `expressions/conditional/class-ambiguous.cpp` (clang-22): error: conditional expression is ambiguous; 'A' can be converted to 'B' and vice versa
+- `expressions/conditional/condition-not-convertible.cpp` (clang-host): error: value of type 'S' is not contextually convertible to 'bool'
+- `expressions/conditional/condition-not-convertible.cpp` (gcc-host): error: could not convert ‘S()’ from ‘S’ to ‘bool’
+- `expressions/conditional/condition-not-convertible.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `expressions/conditional/condition-not-convertible.cpp` (gcc-14): error: could not convert 'S()' from 'S' to 'bool'
+- `expressions/conditional/condition-not-convertible.cpp` (clang-18): error: value of type 'S' is not contextually convertible to 'bool'
+- `expressions/conditional/condition-not-convertible.cpp` (gcc-16): error: could not convert 'S()' from 'S' to 'bool'
+- `expressions/conditional/condition-not-convertible.cpp` (clang-22): error: value of type 'S' is not contextually convertible to 'bool'
+- `expressions/conditional/constant-selected-fails.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
+- `expressions/conditional/constant-selected-fails.cpp` (gcc-host): error: non-constant condition for static assertion / error: call to non-‘constexpr’ function ‘int runtime()’
+- `expressions/conditional/constant-selected-fails.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime" (declared at line 3)
+- `expressions/conditional/constant-selected-fails.cpp` (gcc-14): error: non-constant condition for static assertion / error: call to non-'constexpr' function 'int runtime()'
+- `expressions/conditional/constant-selected-fails.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
+- `expressions/conditional/constant-selected-fails.cpp` (gcc-16): error: non-constant condition for static assertion / error: call to non-'constexpr' function 'int runtime()'
+- `expressions/conditional/constant-selected-fails.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
+- `expressions/conditional/gnu-omitted-operand.cpp` (clang-host): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/gnu-omitted-operand.cpp` (gcc-host): error: ISO C++ does not allow ‘?:’ with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a ‘?:’ expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand.cpp` (edg-7.0): error: expected an expression / error: expected a ":"
+- `expressions/conditional/gnu-omitted-operand.cpp` (gcc-14): error: ISO C++ does not allow '?:' with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a '?:' expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand.cpp` (clang-18): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/gnu-omitted-operand.cpp` (gcc-16): error: ISO C++ does not allow '?:' with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a '?:' expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand.cpp` (clang-22): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/mixed-category-prvalue.cpp` (clang-host): error: expression is not assignable
+- `expressions/conditional/mixed-category-prvalue.cpp` (gcc-host): error: lvalue required as left operand of assignment
+- `expressions/conditional/mixed-category-prvalue.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/conditional/mixed-category-prvalue.cpp` (gcc-14): error: lvalue required as left operand of assignment
+- `expressions/conditional/mixed-category-prvalue.cpp` (clang-18): error: expression is not assignable
+- `expressions/conditional/mixed-category-prvalue.cpp` (gcc-16): error: lvalue required as left operand of assignment
+- `expressions/conditional/mixed-category-prvalue.cpp` (clang-22): error: expression is not assignable
+- `expressions/conditional/no-common-type.cpp` (clang-host): error: incompatible operand types ('A' and 'B')
+- `expressions/conditional/no-common-type.cpp` (gcc-host): error: operands to ‘?:’ have different types ‘A’ and ‘B’
+- `expressions/conditional/no-common-type.cpp` (edg-7.0): error: operand types are incompatible ("A" and "B")
+- `expressions/conditional/no-common-type.cpp` (gcc-14): error: operands to '?:' have different types 'A' and 'B'
+- `expressions/conditional/no-common-type.cpp` (clang-18): error: incompatible operand types ('A' and 'B')
+- `expressions/conditional/no-common-type.cpp` (gcc-16): error: operands to '?:' have different types 'A' and 'B'
+- `expressions/conditional/no-common-type.cpp` (clang-22): error: incompatible operand types ('A' and 'B')
+- `expressions/conditional/pointer-and-int.cpp` (clang-host): error: incompatible operand types ('int *' and 'int')
+- `expressions/conditional/pointer-and-int.cpp` (gcc-host): error: operands to ‘?:’ have different types ‘int*’ and ‘int’
+- `expressions/conditional/pointer-and-int.cpp` (edg-7.0): error: operand types are incompatible ("int *" and "int")
+- `expressions/conditional/pointer-and-int.cpp` (gcc-14): error: operands to '?:' have different types 'int*' and 'int'
+- `expressions/conditional/pointer-and-int.cpp` (clang-18): error: incompatible operand types ('int *' and 'int')
+- `expressions/conditional/pointer-and-int.cpp` (gcc-16): error: operands to '?:' have different types 'int*' and 'int'
+- `expressions/conditional/pointer-and-int.cpp` (clang-22): error: incompatible operand types ('int *' and 'int')
+- `expressions/conditional/void-and-value.cpp` (clang-host): error: left operand to ? is void, but right operand is of type 'int'
+- `expressions/conditional/void-and-value.cpp` (gcc-host): error: second operand to the conditional operator is of type ‘void’, but the third operand is neither a throw-expression nor of type ‘void’
+- `expressions/conditional/void-and-value.cpp` (edg-7.0): error: operand types are incompatible ("void" and "int")
+- `expressions/conditional/void-and-value.cpp` (gcc-14): error: second operand to the conditional operator is of type 'void', but the third operand is neither a throw-expression nor of type 'void'
+- `expressions/conditional/void-and-value.cpp` (clang-18): error: left operand to ? is void, but right operand is of type 'int'
+- `expressions/conditional/void-and-value.cpp` (gcc-16): error: second operand to the conditional operator is of type 'void', but the third operand is neither a throw-expression nor of type 'void'
+- `expressions/conditional/void-and-value.cpp` (clang-22): error: left operand to ? is void, but right operand is of type 'int'
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'void *' with an rvalue of type 'const int *'
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (gcc-host): error: invalid conversion from ‘const void*’ to ‘void*’ [-fpermissive]
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (edg-7.0): error: a value of type "const int *" cannot be used to initialize an entity of type "void *"
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (gcc-14): error: invalid conversion from 'const void*' to 'void*' [-fpermissive]
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'void *' with an rvalue of type 'const int *'
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (gcc-16): error: invalid conversion from 'const void*' to 'void*' [-fpermissive]
+- `expressions/conversions/const-pointer-to-void-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'void *' with an rvalue of type 'const int *'
+- `expressions/conversions/floating-narrowing-out-of-range.cpp` (edg-7.0): error: floating-point value does not fit in required floating-point type
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (clang-host): error: constexpr variable 'big' must be initialized by a constant expression / note: value 1.0E+10 is outside the range of representable values of type 'const int'
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (gcc-host): error: ‘(int)1.0e+10’ is not a constant expression
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (edg-7.0): error: floating-point value does not fit in required integral type
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (gcc-14): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (clang-18): error: constexpr variable 'big' must be initialized by a constant expression / note: value 1.0E+10 is outside the range of representable values of type 'const int'
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (gcc-16): error: '(int)1.0e+10' is not a constant expression
+- `expressions/conversions/floating-to-integral-out-of-range.cpp` (clang-22): error: constexpr variable 'big' must be initialized by a constant expression / note: value 1.0E+10 is outside the range of representable values of type 'const int'
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (clang-host): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (gcc-host): error: ‘(unsigned int)-1.0e+0’ is not a constant expression
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (edg-7.0): error: floating-point value does not fit in required integral type
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (gcc-14): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (clang-18): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (gcc-16): error: '(unsigned int)-1.0e+0' is not a constant expression
+- `expressions/conversions/floating-to-unsigned-negative.cpp` (clang-22): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'void *' with an lvalue of type 'void ()'
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (gcc-host): error: invalid conversion from ‘void (*)()’ to ‘void*’ [-fpermissive]
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (edg-7.0): error: a value of type "void (*)()" cannot be used to initialize an entity of type "void *"
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (gcc-14): error: invalid conversion from 'void (*)()' to 'void*' [-fpermissive]
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'void *' with an lvalue of type 'void ()'
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (gcc-16): error: invalid conversion from 'void (*)()' to 'void*' [-fpermissive]
+- `expressions/conversions/function-pointer-to-void-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'void *' with an lvalue of type 'void ()'
+- `expressions/conversions/integer-variable-to-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an lvalue of type 'int'
+- `expressions/conversions/integer-variable-to-pointer.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive] / note: possible fix: take the address with ‘&’
+- `expressions/conversions/integer-variable-to-pointer.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "int *"
+- `expressions/conversions/integer-variable-to-pointer.cpp` (gcc-14): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `expressions/conversions/integer-variable-to-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an lvalue of type 'int'
+- `expressions/conversions/integer-variable-to-pointer.cpp` (gcc-16): error: invalid conversion from 'int' to 'int*' [-fpermissive] / note: possible fix: take the address with '&'
+- `expressions/conversions/integer-variable-to-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an lvalue of type 'int'
+- `expressions/conversions/nonzero-to-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `expressions/conversions/nonzero-to-pointer.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
+- `expressions/conversions/nonzero-to-pointer.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "int *"
+- `expressions/conversions/nonzero-to-pointer.cpp` (gcc-14): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `expressions/conversions/nonzero-to-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `expressions/conversions/nonzero-to-pointer.cpp` (gcc-16): error: invalid conversion from 'int' to 'int*' [-fpermissive]
+- `expressions/conversions/nonzero-to-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (clang-host): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (gcc-host): error: converting to ‘bool’ from ‘std::nullptr_t’ requires direct-initialization [-fpermissive]
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (edg-7.0): error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (gcc-14): error: converting to 'bool' from 'std::nullptr_t' requires direct-initialization [-fpermissive]
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (clang-18): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (gcc-16): error: converting to 'bool' from 'std::nullptr_t' requires direct-initialization [-fpermissive]
+- `expressions/conversions/nullptr-to-bool-copy.cpp` (clang-22): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (clang-host): error: cannot initialize a variable of type 'void (*)() noexcept' with an lvalue of type 'void ()': different exception specifications
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (gcc-host): error: invalid conversion from ‘void (*)()’ to ‘void (*)() noexcept’ [-fpermissive]
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (edg-7.0): error: a value of type "void (*)()" cannot be used to initialize an entity of type "void (*)() noexcept"
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (gcc-14): error: invalid conversion from 'void (*)()' to 'void (*)() noexcept' [-fpermissive]
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (clang-18): error: cannot initialize a variable of type 'void (*)() noexcept' with an lvalue of type 'void ()': different exception specifications
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (gcc-16): error: invalid conversion from 'void (*)()' to 'void (*)() noexcept' [-fpermissive]
+- `expressions/conversions/potentially-throwing-to-noexcept.cpp` (clang-22): error: cannot initialize a variable of type 'void (*)() noexcept' with an lvalue of type 'void ()': different exception specifications
+- `expressions/conversions/void-pointer-to-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
+- `expressions/conversions/void-pointer-to-pointer.cpp` (gcc-host): error: invalid conversion from ‘void*’ to ‘int*’ [-fpermissive]
+- `expressions/conversions/void-pointer-to-pointer.cpp` (edg-7.0): error: a value of type "void *" cannot be used to initialize an entity of type "int *"
+- `expressions/conversions/void-pointer-to-pointer.cpp` (gcc-14): error: invalid conversion from 'void*' to 'int*' [-fpermissive]
+- `expressions/conversions/void-pointer-to-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
+- `expressions/conversions/void-pointer-to-pointer.cpp` (gcc-16): error: invalid conversion from 'void*' to 'int*' [-fpermissive]
+- `expressions/conversions/void-pointer-to-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
+- `expressions/logical/constant-evaluated-call.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime_only' cannot be used in a constant expression
+- `expressions/logical/constant-evaluated-call.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr bool h()’ called in a constant expression
+- `expressions/logical/constant-evaluated-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime_only" (declared at line 3)
+- `expressions/logical/constant-evaluated-call.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr bool h()' called in a constant expression
+- `expressions/logical/constant-evaluated-call.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: non-constexpr function 'runtime_only' cannot be used in a constant expression
+- `expressions/logical/constant-evaluated-call.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr bool h()' called in a constant expression
+- `expressions/logical/constant-evaluated-call.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime_only' cannot be used in a constant expression
+- `expressions/logical/not-on-lhs-warns.cpp` (clang-host): error: logical not is only applied to the left hand side of this comparison [-Werror,-Wlogical-not-parentheses] / note: add parentheses after the '!' to evaluate the comparison first
+- `expressions/logical/not-on-lhs-warns.cpp` (gcc-host): error: logical not is only applied to the left hand side of comparison [-Werror=logical-not-parentheses] / note: add parentheses around left hand side expression to silence this warning
+- `expressions/logical/not-on-lhs-warns.cpp` (gcc-14): error: logical not is only applied to the left hand side of comparison [-Werror=logical-not-parentheses] / note: add parentheses around left hand side expression to silence this warning
+- `expressions/logical/not-on-lhs-warns.cpp` (clang-18): error: logical not is only applied to the left hand side of this comparison [-Werror,-Wlogical-not-parentheses] / note: add parentheses after the '!' to evaluate the comparison first
+- `expressions/logical/not-on-lhs-warns.cpp` (gcc-16): error: logical not is only applied to the left hand side of comparison [-Werror=logical-not-parentheses] / note: add parentheses around left hand side expression to silence this warning
+- `expressions/logical/not-on-lhs-warns.cpp` (clang-22): error: logical not is only applied to the left hand side of this comparison [-Werror,-Wlogical-not-parentheses] / note: add parentheses after the '!' to evaluate the comparison first
+- `expressions/logical/operand-not-convertible.cpp` (clang-host): error: value of type 'S' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('S' and 'bool')
+- `expressions/logical/operand-not-convertible.cpp` (gcc-host): error: no match for ‘operator&&’ (operand types are ‘S’ and ‘bool’)
+- `expressions/logical/operand-not-convertible.cpp` (edg-7.0): error: no operator "&&" matches these operands / note: built-in operator&&(<bool>, <bool>) does not match because argument #1 does not match parameter
+- `expressions/logical/operand-not-convertible.cpp` (gcc-14): error: no match for 'operator&&' (operand types are 'S' and 'bool') / note: candidate: 'operator&&(bool, bool)' (built-in)
+- `expressions/logical/operand-not-convertible.cpp` (clang-18): error: value of type 'S' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('S' and 'bool')
+- `expressions/logical/operand-not-convertible.cpp` (gcc-16): error: no match for 'operator&&' (operand types are 'S' and 'bool')
+- `expressions/logical/operand-not-convertible.cpp` (clang-22): error: value of type 'S' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('S' and 'bool')
+- `expressions/logical/operand-scoped-enum.cpp` (clang-host): error: invalid argument type 'E' to unary expression
+- `expressions/logical/operand-scoped-enum.cpp` (gcc-host): error: no match for ‘operator!’ (operand type is ‘E’)
+- `expressions/logical/operand-scoped-enum.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `expressions/logical/operand-scoped-enum.cpp` (gcc-14): error: no match for 'operator!' (operand type is 'E') / note: candidate: 'operator!(bool)' (built-in)
+- `expressions/logical/operand-scoped-enum.cpp` (clang-18): error: invalid argument type 'E' to unary expression
+- `expressions/logical/operand-scoped-enum.cpp` (gcc-16): error: no match for 'operator!' (operand type is 'E')
+- `expressions/logical/operand-scoped-enum.cpp` (clang-22): error: invalid argument type 'E' to unary expression
+- `expressions/logical/operand-void.cpp` (clang-host): error: value of type 'void' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('void' and 'bool')
+- `expressions/logical/operand-void.cpp` (gcc-host): error: could not convert ‘g()’ from ‘void’ to ‘bool’
+- `expressions/logical/operand-void.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `expressions/logical/operand-void.cpp` (gcc-14): error: could not convert 'g()' from 'void' to 'bool'
+- `expressions/logical/operand-void.cpp` (clang-18): error: value of type 'void' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('void' and 'bool')
+- `expressions/logical/operand-void.cpp` (gcc-16): error: could not convert 'g()' from 'void' to 'bool'
+- `expressions/logical/operand-void.cpp` (clang-22): error: value of type 'void' is not contextually convertible to 'bool' / error: invalid operands to binary expression ('void' and 'bool')
+- `expressions/logical/parentheses-warns.cpp` (clang-host): error: '&&' within '\|\|' [-Werror,-Wlogical-op-parentheses] / note: place parentheses around the '&&' expression to silence this warning
+- `expressions/logical/parentheses-warns.cpp` (gcc-host): error: suggest parentheses around ‘&&’ within ‘\|\|’ [-Werror=parentheses]
+- `expressions/logical/parentheses-warns.cpp` (gcc-14): error: suggest parentheses around '&&' within '\|\|' [-Werror=parentheses]
+- `expressions/logical/parentheses-warns.cpp` (clang-18): error: '&&' within '\|\|' [-Werror,-Wlogical-op-parentheses] / note: place parentheses around the '&&' expression to silence this warning
+- `expressions/logical/parentheses-warns.cpp` (gcc-16): error: suggest parentheses around '&&' within '\|\|' [-Werror=parentheses]
+- `expressions/logical/parentheses-warns.cpp` (clang-22): error: '&&' within '\|\|' [-Werror,-Wlogical-op-parentheses] / note: place parentheses around the '&&' expression to silence this warning
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
@@ -2635,6 +3326,108 @@ check that the rejection has the intended cause.
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-18): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
 - `expressions/multiplicative/unsequenced-modification.cpp` (gcc-16): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-22): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-increments.cpp` (clang-host): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-increments.cpp` (gcc-host): error: operation on ‘i’ may be undefined [-Werror=sequence-point] / error: operation on ‘i’ may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-increments.cpp` (gcc-14): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-increments.cpp` (clang-18): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-increments.cpp` (gcc-16): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-increments.cpp` (clang-22): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
+- `expressions/shift/count-constant-warns.cpp` (clang-host): error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+- `expressions/shift/count-constant-warns.cpp` (gcc-host): error: left shift count >= width of type [-Werror=shift-count-overflow]
+- `expressions/shift/count-constant-warns.cpp` (gcc-14): error: left shift count >= width of type [-Werror=shift-count-overflow]
+- `expressions/shift/count-constant-warns.cpp` (clang-18): error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+- `expressions/shift/count-constant-warns.cpp` (gcc-16): error: left shift count >= width of type [-Werror=shift-count-overflow]
+- `expressions/shift/count-constant-warns.cpp` (clang-22): error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+- `expressions/shift/count-floating.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'double')
+- `expressions/shift/count-floating.cpp` (gcc-host): error: invalid operands of types ‘int’ and ‘double’ to binary ‘operator<<’
+- `expressions/shift/count-floating.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/shift/count-floating.cpp` (gcc-14): error: invalid operands of types 'int' and 'double' to binary 'operator<<'
+- `expressions/shift/count-floating.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'double')
+- `expressions/shift/count-floating.cpp` (gcc-16): error: invalid operands of types 'int' and 'double' to binary 'operator<<'
+- `expressions/shift/count-floating.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'double')
+- `expressions/shift/count-negative-warns.cpp` (clang-host): error: shift count is negative [-Werror,-Wshift-count-negative]
+- `expressions/shift/count-negative-warns.cpp` (gcc-host): error: left shift count is negative [-Werror=shift-count-negative]
+- `expressions/shift/count-negative-warns.cpp` (gcc-14): error: left shift count is negative [-Werror=shift-count-negative]
+- `expressions/shift/count-negative-warns.cpp` (clang-18): error: shift count is negative [-Werror,-Wshift-count-negative]
+- `expressions/shift/count-negative-warns.cpp` (gcc-16): error: left shift count is negative [-Werror=shift-count-negative]
+- `expressions/shift/count-negative-warns.cpp` (clang-22): error: shift count is negative [-Werror,-Wshift-count-negative]
+- `expressions/shift/count-negative.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: negative shift count -1
+- `expressions/shift/count-negative.cpp` (gcc-host): error: non-constant condition for static assertion / error: right operand of shift expression ‘(1 << -1)’ is negative [-fpermissive]
+- `expressions/shift/count-negative.cpp` (edg-7.0): error: expression must have a constant value / note: shift count is negative
+- `expressions/shift/count-negative.cpp` (gcc-14): error: non-constant condition for static assertion / error: right operand of shift expression '(1 << -1)' is negative [-fpermissive]
+- `expressions/shift/count-negative.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: negative shift count -1
+- `expressions/shift/count-negative.cpp` (gcc-16): error: non-constant condition for static assertion / error: right operand of shift expression '(1 << -1)' is negative [-fpermissive]
+- `expressions/shift/count-negative.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: negative shift count -1
+- `expressions/shift/count-too-large-right.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'unsigned int' (32 bits)
+- `expressions/shift/count-too-large-right.cpp` (gcc-host): error: non-constant condition for static assertion / error: right operand of shift expression ‘(1 >> 32)’ is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large-right.cpp` (edg-7.0): error: expression must have a constant value / note: shift count is too large
+- `expressions/shift/count-too-large-right.cpp` (gcc-14): error: non-constant condition for static assertion / error: right operand of shift expression '(1 >> 32)' is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large-right.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'unsigned int' (32 bits)
+- `expressions/shift/count-too-large-right.cpp` (gcc-16): error: non-constant condition for static assertion / error: right operand of shift expression '(1 >> 32)' is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large-right.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'unsigned int' (32 bits)
+- `expressions/shift/count-too-large.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'int' (32 bits)
+- `expressions/shift/count-too-large.cpp` (gcc-host): error: non-constant condition for static assertion / error: right operand of shift expression ‘(1 << 32)’ is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large.cpp` (edg-7.0): error: expression must have a constant value / note: shift count is too large
+- `expressions/shift/count-too-large.cpp` (gcc-14): error: non-constant condition for static assertion / error: right operand of shift expression '(1 << 32)' is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'int' (32 bits)
+- `expressions/shift/count-too-large.cpp` (gcc-16): error: non-constant condition for static assertion / error: right operand of shift expression '(1 << 32)' is greater than or equal to the precision 32 of the left operand [-fpermissive]
+- `expressions/shift/count-too-large.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: shift count 32 >= width of type 'int' (32 bits)
+- `expressions/shift/operand-floating.cpp` (clang-host): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/shift/operand-floating.cpp` (gcc-host): error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator<<’
+- `expressions/shift/operand-floating.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/shift/operand-floating.cpp` (gcc-14): error: invalid operands of types 'double' and 'int' to binary 'operator<<'
+- `expressions/shift/operand-floating.cpp` (clang-18): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/shift/operand-floating.cpp` (gcc-16): error: invalid operands of types 'double' and 'int' to binary 'operator<<'
+- `expressions/shift/operand-floating.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/shift/operand-pointer.cpp` (clang-host): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/shift/operand-pointer.cpp` (gcc-host): error: invalid operands of types ‘int*’ and ‘int’ to binary ‘operator<<’
+- `expressions/shift/operand-pointer.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/shift/operand-pointer.cpp` (gcc-14): error: invalid operands of types 'int*' and 'int' to binary 'operator<<'
+- `expressions/shift/operand-pointer.cpp` (clang-18): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/shift/operand-pointer.cpp` (gcc-16): error: invalid operands of types 'int*' and 'int' to binary 'operator<<'
+- `expressions/shift/operand-pointer.cpp` (clang-22): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/shift/operand-scoped-enum.cpp` (clang-host): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/shift/operand-scoped-enum.cpp` (gcc-host): error: no match for ‘operator<<’ (operand types are ‘E’ and ‘int’)
+- `expressions/shift/operand-scoped-enum.cpp` (edg-7.0): error: no operator "<<" matches these operands / note: built-in operator<<(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+- `expressions/shift/operand-scoped-enum.cpp` (gcc-14): error: no match for 'operator<<' (operand types are 'E' and 'int')
+- `expressions/shift/operand-scoped-enum.cpp` (clang-18): error: invalid operands to binary expression ('E' and 'int')
+- `expressions/shift/operand-scoped-enum.cpp` (gcc-16): error: no match for 'operator<<' (operand types are 'E' and 'int')
+- `expressions/shift/operand-scoped-enum.cpp` (clang-22): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `expressions/shift/result-prvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `expressions/shift/result-prvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
+- `expressions/shift/result-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/shift/result-prvalue.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `expressions/shift/result-prvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/shift/result-prvalue.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/shift/result-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-prvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-prvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
+- `expressions/value-categories/address-of-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/value-categories/address-of-prvalue.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `expressions/value-categories/address-of-prvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-prvalue.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/value-categories/address-of-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue.cpp` (gcc-host): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/value-categories/address-of-xvalue.cpp` (gcc-14): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue.cpp` (gcc-16): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/assign-to-prvalue.cpp` (clang-host): error: expression is not assignable
+- `expressions/value-categories/assign-to-prvalue.cpp` (gcc-host): error: lvalue required as left operand of assignment
+- `expressions/value-categories/assign-to-prvalue.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/value-categories/assign-to-prvalue.cpp` (gcc-14): error: lvalue required as left operand of assignment
+- `expressions/value-categories/assign-to-prvalue.cpp` (clang-18): error: expression is not assignable
+- `expressions/value-categories/assign-to-prvalue.cpp` (gcc-16): error: lvalue required as left operand of assignment
+- `expressions/value-categories/assign-to-prvalue.cpp` (clang-22): error: expression is not assignable
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-host): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-host): error: cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (edg-7.0): error: an rvalue reference cannot be bound to an lvalue
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-14): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-18): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `statements/blocks/block-scope.cpp` (clang-host): error: use of undeclared identifier 'inner'
 - `statements/blocks/block-scope.cpp` (gcc-host): error: ‘inner’ was not declared in this scope
 - `statements/blocks/block-scope.cpp` (edg-7.0): error: identifier "inner" is undefined

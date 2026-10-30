@@ -13,7 +13,18 @@ current state only. The history of how it got here is in `git log`.
 | [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 12 | | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 5 | 4 required, 1 reject | 15 | Q-0020, Q-0026 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 9 | 7 required, 2 reject | 24 | | 0 flagged |
-| [Multiplicative operators](../spec/expressions/multiplicative.md) | 15 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined | 27 | Q-0001 to Q-0005 | 0 flagged |
+| [Value categories and temporaries](../spec/expressions/value-categories.md) | 4 | 4 required | 11 |  | 0 flagged |
+| [Standard conversions](../spec/expressions/conversions.md) | 12 | 5 required, 4 reject, 1 undefined, 2 impl-defined | 23 | Q-0028 | 0 flagged |
+| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 5 | 3 required, 1 undefined, 1 unspecified | 9 |  | 0 flagged |
+| [Multiplicative operators](../spec/expressions/multiplicative.md) | 15 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined | 27 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
+| [Additive operators](../spec/expressions/additive.md) | 13 | 7 required, 1 reject, 3 undefined, 1 unspecified, 1 impl-defined | 30 | Q-0005, Q-0031 | 0 flagged |
+| [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 20 |  | 0 flagged |
+| [Comparison operators](../spec/expressions/comparison.md) | 17 | 11 required, 2 reject, 1 unspecified, 3 recommended | 34 | Q-0029, Q-0030 | 0 flagged |
+| [Bitwise operators](../spec/expressions/bitwise.md) | 7 | 4 required, 1 reject, 2 recommended | 17 |  | 0 flagged |
+| [Logical operators](../spec/expressions/logical.md) | 10 | 7 required, 1 reject, 2 recommended | 17 |  | 0 flagged |
+| [The conditional operator](../spec/expressions/conditional.md) | 7 | 5 required, 2 reject | 23 |  | 0 flagged |
+| [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 22 | Q-0032 | 0 flagged |
+| [The comma operator](../spec/expressions/comma.md) | 6 | 4 required, 1 reject, 1 recommended | 12 |  | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 13 | 11 required, 2 reject | 40 | Q-0010 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 16 | 11 required, 3 reject, 2 no-diagnostic | 40 | Q-0011 | 0 flagged |
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 18 | 13 required, 3 reject, 1 undefined, 1 impl-defined | 61 | Q-0012 | 0 flagged |
@@ -35,11 +46,11 @@ converted. The latest similarity report, covering every page, is
 `reports/similarity/2026-10-30-format-conversion.txt`, and the constexpr page's
 is `reports/similarity/2026-10-30-constexpr.txt`, the statements'
 is `reports/similarity/2026-10-30-statements.txt`, and the latest is
-`reports/similarity/2026-10-30-classes-members.txt`.
+`reports/similarity/2026-10-30-expressions.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 665/665 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 883/883 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -55,7 +66,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Twenty-six questions are open for opinions, each with a provisional answer the
+Thirty-one questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -92,8 +103,9 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Split the rules listed under "Known limits of the specification text"
    so each fits one segment.
-8. Draft expressions in the order set by decision 0018: foundations,
-   then operator families, then the remaining expression topics.
+8. Draft the remaining expression topics in the order set by decision
+   0018: unary and postfix operators, casts, constant expressions, `new`
+   and `delete`, and lambdas.
 9. Continue classes in the order set by decision 0017. Next: access
    control and friends.
 
