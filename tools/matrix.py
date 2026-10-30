@@ -70,7 +70,7 @@ class Compiler:
             elif a == "{src}":
                 args += srcs
             else:
-                args.append(a.replace("{src}", src).replace("{out}", out))
+                args.append(a.replace("{src}", srcs[0]).replace("{out}", out))
         return args
 
     def run(self, argv: list[str], timeout: float | None = None) -> subprocess.CompletedProcess:
