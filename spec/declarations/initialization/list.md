@@ -76,9 +76,9 @@ Inner braces around a member that is itself an array or aggregate may be
 left out. The values then fill that member's elements in order before
 moving to the next member.
 
-    int a[2][2] = {1, 2, 3, 4};      // {{1, 2}, {3, 4}}
+    int a[2][2] = {5, 6, 7, 8};      // {{5, 6}, {7, 8}}
     struct A { int v[2]; int w; };
-    A s = {1, 2, 3};                 // v = {1, 2}, w = 3
+    A s = {5, 6, 7};                 // v = {5, 6}, w = 7
 
 Tests: declarations/initialization/list/brace-elision.cpp
 

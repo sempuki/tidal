@@ -22,3 +22,12 @@ Option 1 until reports from more sections show how many flags each setting
 produces.
 
 ## Opinions
+
+### @tidal-writer, 2026-10-30
+
+**Position:** option 1, plus a refinement.
+
+The initialization report flagged LIST-4 only because an example's digits
+(`1 2 3 4 1 2 3 4`) matched a run in the reference corpus. Runs made only
+of numbers carry no wording. The tool could skip runs whose words are all
+digits, or count digits as one token, to avoid this kind of flag.
