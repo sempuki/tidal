@@ -14,6 +14,35 @@ compilers affect the Status column.
 
 | Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
+| `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-not-evaluated.cpp` | ATTR-10 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/attributes/assume-on-declaration.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-true-constant.cpp` | ATTR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/attribute-argument-not-string.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/attribute-too-many-arguments.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/attribute-unexpected-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/carries-dependency.cpp` | ATTR-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/deprecated-declaration-only.cpp` | ATTR-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/deprecated-use-warns.cpp` | ATTR-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-misplaced.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-not-before-case.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-on-declaration.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-silences.cpp` | ATTR-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/implicit-fallthrough-warns.cpp` | ATTR-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/likely-unlikely.cpp` | ATTR-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/attributes/maybe-unused-silences.cpp` | ATTR-6 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/no-unique-address.cpp` | ATTR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/nodiscard-ignored-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/nodiscard-type.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/nodiscard-void-cast.cpp` | ATTR-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-main.cpp` | ATTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/attributes/noreturn-return-statement.cpp` | ATTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-returns.cpp` | ATTR-3 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/auto/added-qualifiers.cpp` | AUTO-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/array-of-auto.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/braced-direct-empty.cpp` | AUTO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -422,13 +451,107 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-407/407 tests pass on baseline compilers.
+436/436 tests pass on baseline compilers.
 
 ## Rejections
 
 First error from each compiler that rejected a test, so a reviewer can
 check that the rejection has the intended cause.
 
+- `declarations/attributes/assume-false-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assumption evaluated to false
+- `declarations/attributes/assume-false-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: failed ‘assume’ attribute assumption
+- `declarations/attributes/assume-false-constant.cpp` (edg-7.0): error: expression must have a constant value / note: assumption failed
+- `declarations/attributes/assume-false-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: failed 'assume' attribute assumption
+- `declarations/attributes/assume-false-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: failed 'assume' attribute assumption
+- `declarations/attributes/assume-false-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: assumption evaluated to false
+- `declarations/attributes/assume-on-declaration.cpp` (clang-host): error: 'assume' attribute cannot be applied to a declaration
+- `declarations/attributes/assume-on-declaration.cpp` (gcc-host): error: ‘assume’ attribute ignored [-Wattributes]
+- `declarations/attributes/assume-on-declaration.cpp` (edg-7.0): error: attribute "assume" does not apply here
+- `declarations/attributes/assume-on-declaration.cpp` (gcc-14): error: 'assume' attribute ignored [-Wattributes]
+- `declarations/attributes/assume-on-declaration.cpp` (gcc-16): error: 'assume' attribute ignored [-Wattributes]
+- `declarations/attributes/assume-on-declaration.cpp` (clang-22): error: 'assume' attribute cannot be applied to a declaration
+- `declarations/attributes/attribute-argument-not-string.cpp` (clang-host): error: expected string literal as argument of 'deprecated' attribute
+- `declarations/attributes/attribute-argument-not-string.cpp` (gcc-host): error: deprecated message is not a string
+- `declarations/attributes/attribute-argument-not-string.cpp` (edg-7.0): error: expected a string literal
+- `declarations/attributes/attribute-argument-not-string.cpp` (gcc-14): error: deprecated message is not a string
+- `declarations/attributes/attribute-argument-not-string.cpp` (clang-18): error: expected string literal as argument of 'deprecated' attribute
+- `declarations/attributes/attribute-argument-not-string.cpp` (gcc-16): error: deprecated message is not a string
+- `declarations/attributes/attribute-argument-not-string.cpp` (clang-22): error: expected string literal as argument of 'deprecated' attribute
+- `declarations/attributes/attribute-too-many-arguments.cpp` (clang-host): error: 'nodiscard' attribute takes no more than 1 argument
+- `declarations/attributes/attribute-too-many-arguments.cpp` (gcc-host): error: wrong number of arguments specified for ‘nodiscard’ attribute / note: expected between 0 and 1, found 2
+- `declarations/attributes/attribute-too-many-arguments.cpp` (edg-7.0): error: expected a ")"
+- `declarations/attributes/attribute-too-many-arguments.cpp` (gcc-14): error: wrong number of arguments specified for 'nodiscard' attribute / note: expected between 0 and 1, found 2
+- `declarations/attributes/attribute-too-many-arguments.cpp` (clang-18): error: 'nodiscard' attribute takes no more than 1 argument
+- `declarations/attributes/attribute-too-many-arguments.cpp` (gcc-16): error: wrong number of arguments specified for 'nodiscard' attribute / note: expected between 0 and 1, found 2
+- `declarations/attributes/attribute-too-many-arguments.cpp` (clang-22): error: 'nodiscard' attribute takes no more than 1 argument
+- `declarations/attributes/attribute-unexpected-argument.cpp` (clang-host): error: attribute 'noreturn' cannot have an argument list
+- `declarations/attributes/attribute-unexpected-argument.cpp` (gcc-host): error: ‘noreturn’ attribute does not take any arguments
+- `declarations/attributes/attribute-unexpected-argument.cpp` (edg-7.0): error: attribute "noreturn" does not take arguments
+- `declarations/attributes/attribute-unexpected-argument.cpp` (gcc-14): error: 'noreturn' attribute does not take any arguments
+- `declarations/attributes/attribute-unexpected-argument.cpp` (clang-18): error: attribute 'noreturn' cannot have an argument list
+- `declarations/attributes/attribute-unexpected-argument.cpp` (gcc-16): error: 'noreturn' attribute does not take any arguments
+- `declarations/attributes/attribute-unexpected-argument.cpp` (clang-22): error: attribute 'noreturn' cannot have an argument list
+- `declarations/attributes/deprecated-use-warns.cpp` (clang-host): error: 'f' is deprecated: use g [-Werror,-Wdeprecated-declarations] / note: 'f' has been explicitly marked deprecated here
+- `declarations/attributes/deprecated-use-warns.cpp` (gcc-host): error: ‘int f()’ is deprecated: use g [-Werror=deprecated-declarations]
+- `declarations/attributes/deprecated-use-warns.cpp` (gcc-14): error: 'int f()' is deprecated: use g [-Werror=deprecated-declarations]
+- `declarations/attributes/deprecated-use-warns.cpp` (clang-18): error: 'f' is deprecated: use g [-Werror,-Wdeprecated-declarations] / note: 'f' has been explicitly marked deprecated here
+- `declarations/attributes/deprecated-use-warns.cpp` (gcc-16): error: 'int f()' is deprecated: use g [-Werror=deprecated-declarations]
+- `declarations/attributes/deprecated-use-warns.cpp` (clang-22): error: 'f' is deprecated: use g [-Werror,-Wdeprecated-declarations] / note: 'f' has been explicitly marked deprecated here
+- `declarations/attributes/fallthrough-misplaced.cpp` (clang-host): error: fallthrough annotation is outside switch statement
+- `declarations/attributes/fallthrough-misplaced.cpp` (gcc-host): error: invalid use of attribute ‘fallthrough’
+- `declarations/attributes/fallthrough-misplaced.cpp` (edg-7.0): error: the "fallthrough" attribute may only appear in an enclosing switch statement
+- `declarations/attributes/fallthrough-misplaced.cpp` (gcc-14): error: invalid use of attribute 'fallthrough'
+- `declarations/attributes/fallthrough-misplaced.cpp` (clang-18): error: fallthrough annotation is outside switch statement
+- `declarations/attributes/fallthrough-misplaced.cpp` (gcc-16): error: invalid use of attribute 'fallthrough'
+- `declarations/attributes/fallthrough-misplaced.cpp` (clang-22): error: fallthrough annotation is outside switch statement
+- `declarations/attributes/fallthrough-not-before-case.cpp` (clang-host): error: fallthrough annotation does not directly precede switch label
+- `declarations/attributes/fallthrough-not-before-case.cpp` (gcc-host): error: attribute ‘fallthrough’ not preceding a case label or default label
+- `declarations/attributes/fallthrough-not-before-case.cpp` (edg-7.0): error: fallthrough statement must precede switch case label or default
+- `declarations/attributes/fallthrough-not-before-case.cpp` (gcc-14): error: attribute 'fallthrough' not preceding a case label or default label
+- `declarations/attributes/fallthrough-not-before-case.cpp` (clang-18): error: fallthrough annotation does not directly precede switch label
+- `declarations/attributes/fallthrough-not-before-case.cpp` (gcc-16): error: attribute 'fallthrough' not preceding a case label or default label
+- `declarations/attributes/fallthrough-not-before-case.cpp` (clang-22): error: fallthrough annotation does not directly precede switch label
+- `declarations/attributes/fallthrough-on-declaration.cpp` (clang-host): error: 'fallthrough' attribute cannot be applied to a declaration
+- `declarations/attributes/fallthrough-on-declaration.cpp` (gcc-host): error: ‘fallthrough’ attribute ignored [-Wattributes]
+- `declarations/attributes/fallthrough-on-declaration.cpp` (edg-7.0): error: attribute "fallthrough" does not apply here
+- `declarations/attributes/fallthrough-on-declaration.cpp` (gcc-14): error: 'fallthrough' attribute ignored [-Wattributes]
+- `declarations/attributes/fallthrough-on-declaration.cpp` (clang-18): error: 'fallthrough' attribute cannot be applied to a declaration
+- `declarations/attributes/fallthrough-on-declaration.cpp` (gcc-16): error: 'fallthrough' attribute ignored [-Wattributes]
+- `declarations/attributes/fallthrough-on-declaration.cpp` (clang-22): error: 'fallthrough' attribute cannot be applied to a declaration
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (clang-host): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (gcc-host): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (gcc-14): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (clang-18): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (gcc-16): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/implicit-fallthrough-warns.cpp` (clang-22): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (clang-host): error: ignoring return value of function declared with 'nodiscard' attribute [-Werror,-Wunused-result]
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (gcc-host): error: ignoring return value of ‘int f()’, declared with attribute ‘nodiscard’ [-Werror=unused-result]
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (gcc-14): error: ignoring return value of 'int f()', declared with attribute 'nodiscard' [-Werror=unused-result]
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (clang-18): error: ignoring return value of function declared with 'nodiscard' attribute [-Werror,-Wunused-result]
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (gcc-16): error: ignoring return value of 'int f()', declared with attribute 'nodiscard' [-Werror=unused-result]
+- `declarations/attributes/nodiscard-ignored-warns.cpp` (clang-22): error: ignoring return value of function declared with 'nodiscard' attribute [-Werror,-Wunused-result]
+- `declarations/attributes/nodiscard-type.cpp` (clang-host): error: ignoring return value of type 'Error' declared with 'nodiscard' attribute [-Werror,-Wunused-value]
+- `declarations/attributes/nodiscard-type.cpp` (gcc-host): error: ignoring returned value of type ‘Error’, declared with attribute ‘nodiscard’ [-Werror=unused-result]
+- `declarations/attributes/nodiscard-type.cpp` (gcc-14): error: ignoring returned value of type 'Error', declared with attribute 'nodiscard' [-Werror=unused-result]
+- `declarations/attributes/nodiscard-type.cpp` (clang-18): error: ignoring return value of function declared with 'nodiscard' attribute [-Werror,-Wunused-result]
+- `declarations/attributes/nodiscard-type.cpp` (gcc-16): error: ignoring returned value of type 'Error', declared with attribute 'nodiscard' [-Werror=unused-result]
+- `declarations/attributes/nodiscard-type.cpp` (clang-22): error: ignoring return value of type 'Error' declared with 'nodiscard' attribute [-Werror,-Wunused-value]
+- `declarations/attributes/noreturn-on-variable.cpp` (clang-host): error: 'noreturn' attribute only applies to functions
+- `declarations/attributes/noreturn-on-variable.cpp` (edg-7.0): error: attribute "noreturn" does not apply here
+- `declarations/attributes/noreturn-on-variable.cpp` (clang-18): error: 'noreturn' attribute only applies to functions
+- `declarations/attributes/noreturn-on-variable.cpp` (clang-22): error: 'noreturn' attribute only applies to functions
+- `declarations/attributes/noreturn-returns.cpp` (clang-host): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/noreturn-returns.cpp` (gcc-host): error: ‘noreturn’ function does return [-Werror]
+- `declarations/attributes/noreturn-returns.cpp` (gcc-14): error: 'noreturn' function does return [-Werror]
+- `declarations/attributes/noreturn-returns.cpp` (clang-18): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/noreturn-returns.cpp` (gcc-16): error: 'noreturn' function does return [-Werror]
+- `declarations/attributes/noreturn-returns.cpp` (clang-22): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/unused-warns.cpp` (clang-host): error: unused variable 'local' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-warns.cpp` (gcc-host): error: unused variable ‘local’ [-Werror=unused-variable]
+- `declarations/attributes/unused-warns.cpp` (gcc-14): error: unused variable 'local' [-Werror=unused-variable]
+- `declarations/attributes/unused-warns.cpp` (clang-18): error: unused variable 'local' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-warns.cpp` (gcc-16): error: unused variable 'local' [-Werror=unused-variable]
+- `declarations/attributes/unused-warns.cpp` (clang-22): error: unused variable 'local' [-Werror,-Wunused-variable]
 - `declarations/auto/array-of-auto.cpp` (clang-host): error: cannot deduce actual type for variable 'a' with type 'auto[]' from initializer list
 - `declarations/auto/array-of-auto.cpp` (gcc-host): error: unable to deduce ‘std::initializer_list<auto> []’ from ‘{1, 2}’ / note:   mismatched types ‘std::initializer_list<auto>’ and ‘int’
 - `declarations/auto/array-of-auto.cpp` (edg-7.0): error: "auto" type cannot appear in top-level array type

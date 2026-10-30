@@ -16,6 +16,7 @@ current state only. The history of how it got here is in `git log`.
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 8 | 6 required, 2 reject | 36 | Q-0015, Q-0016 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 impl-defined, 1 undefined | 41 | Q-0017, Q-0018 | 0 flagged |
 | [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 32 | Q-0019 | 0 flagged |
+| [Standard attributes](../spec/declarations/attributes.md) | 11 | 3 required, 1 reject, 2 undefined, 1 impl-defined, 4 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 14 terms | | | | 0 flagged |
 
 `tools/build_pdf.py` builds the whole specification as one PDF
@@ -26,12 +27,13 @@ current state only. The history of how it got here is in `git log`.
 `reports/similarity/2026-10-30-declarators.txt`,
 `reports/similarity/2026-10-30-initialization-2.txt`,
 `reports/similarity/2026-10-30-structured-bindings.txt`,
-`reports/similarity/2026-10-30-enumerations.txt`, and
-`reports/similarity/2026-10-30-namespaces.txt`.
+`reports/similarity/2026-10-30-enumerations.txt`,
+`reports/similarity/2026-10-30-namespaces.txt`, and
+`reports/similarity/2026-10-30-attributes.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 407/407 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 436/436 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -47,7 +49,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Eighteen questions are open for opinions, each with a provisional answer the
+Twenty questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
@@ -74,7 +76,7 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Continue declarations in the order set by decision 0013. Next:
-   standard attributes.
+   function definitions.
 8. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements) and expression families in order
    of dependency.
