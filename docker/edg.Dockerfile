@@ -1,6 +1,7 @@
 # EDG C++ front end, built from the open source release.
 # Front end only: it checks programs but does not produce executables.
 ARG BASE=docker.io/library/ubuntu:24.04
+
 FROM ${BASE} AS build
 ARG EDG_REF=7.0
 RUN apt-get update \
@@ -12,3 +13,9 @@ WORKDIR /edg
 # Only the front end (cpfe) is needed, not the runtime library.
 RUN cmake --preset linux-gcc-release -DEDG_BUILD_LIB=OFF \
  && cmake --build build/gcc-release -j"$(nproc)"
+
+FROM ${BASE}
+COPY --from=build /edg/build/gcc-release/bin/cpfe /opt/edg/bin/cpfe
+# Target configuration (predefined macros, type sizes) for x86-64 Linux.
+COPY --from=build /edg/bases/docker/dev-env/gcc /opt/edg/base
+ENV EDG_BASE=/opt/edg/base PATH=/opt/edg/bin:$PATH

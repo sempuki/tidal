@@ -21,7 +21,8 @@ Inputs: clang-parse-stmt, clang-sema-stmt, clang-sema-expr (see
 
 ## Syntax
 
-    if-stmt     = "if" [ "constexpr" ] "(" [ if-init ] if-cond ")" branch [ "else" branch ]
+    if-stmt     = "if" [ "constexpr" ] "(" [ if-init ] if-cond ")"
+                    branch [ "else" branch ]
                 | "if" [ "!" ] "consteval" block [ "else" block ]
     if-init     = expression-stmt | simple-declaration | alias-declaration | ";"
     if-cond     = expression | cond-decl
@@ -249,9 +250,10 @@ Tests: statements/if/consteval-requires-braces.cpp, statements/if/consteval-else
 
 ## Evidence
 
-Every rule in this section is `required` or `reject`. Clang 22.1.8 and GCC
-16.2.1 agreed on all 56 tests.
+Every rule in this section is `required` or `reject`. All compilers in the
+matrix (Clang 22.1.8 and 18.1.3, GCC 16.2.1 and 14.2.0, EDG 7.0) agree on all
+56 tests. Results are in `tests/RESULTS.md`.
 
 ## Divergences
 
-None found.
+None.

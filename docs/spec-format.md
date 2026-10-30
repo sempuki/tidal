@@ -77,11 +77,12 @@ header of `//` directives at the top of the file controls the runner:
 |---|---|---|
 | `tidal-rules` | rule IDs | Rules this test supports. Required. |
 | `tidal-expect` | `accept`, `reject`, `run` | `accept`: compiles. `reject`: fails to compile. `run`: compiles, runs, and exits 0. |
-| `tidal-expect-clang`, `tidal-expect-gcc` | same | Overrides for one compiler. Use only with an adjudication note. |
+| `tidal-expect-<x>` | same | Override for a compiler family (`clang`, `gcc`, `edg`) or a compiler id from `tools/compilers.json`. Use only with an adjudication note. |
 | `tidal-flags` | compiler flags | Extra flags, for example `-fsanitize=undefined`. |
 | `tidal-note` | text | Free text, such as the adjudication reference. |
 
-Every compile uses `-std=c++23 -pedantic-errors`. Run tests should check their
+Every compile uses the compiler's strict C++23 mode (`-std=c++23 -pedantic-errors`
+for GCC and Clang, `--c++23 --strict` for EDG). Run tests should check their
 own results and return nonzero on failure. Prefer `static_assert` where the
 behavior can be observed at compile time.
 

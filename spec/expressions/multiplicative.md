@@ -157,25 +157,28 @@ Tests: expressions/multiplicative/mixed-long-unsigned-lp64.cpp, expressions/mult
 
 ## Evidence
 
-- **MUL-9, MUL-10, MUL-11.** Both compilers reject each case during constant
-  evaluation. Their notes name the cause ("division by zero", "value ... is
-  outside the range of representable values", "overflow in constant
-  expression"). Compilers reject undefined operations during constant
-  evaluation, and every case here is otherwise well formed.
-- **MUL-11.** At run time both compilers produce IEEE 754 infinity or NaN on
-  the tested target. Tidal does not require that result. A later revision
-  could make it `impl-defined` for implementations that document IEEE 754
-  arithmetic.
-- **MUL-13.** Both compilers evaluated the left operand first at `-O0` and
-  `-O2`, so no variation was seen. GCC has an option that forces left-to-right
-  evaluation for some operators. Its sanitized source applies that option to
-  subscripts and shifts only, which indicates that the order of `*`, `/`, and
-  `%` operands is not fixed. The test accepts either order.
+Results for every compiler in the matrix are in `tests/RESULTS.md`.
+
+- **MUL-9, MUL-10, MUL-11.** Clang and GCC (all tested versions) reject each
+  case during constant evaluation. Their notes name the cause ("division by
+  zero", "value ... is outside the range of representable values",
+  "overflow in constant expression"). Compilers reject undefined operations
+  during constant evaluation, and every case here is otherwise well formed.
+  EDG agrees on integer division by zero and multiply overflow, and differs
+  on the cases listed under MUL-D2 and MUL-D3.
+- **MUL-11.** At run time Clang and GCC produce IEEE 754 infinity or NaN on
+  x86-64. Tidal does not require that result. A later revision could make it
+  `impl-defined` for implementations that document IEEE 754 arithmetic.
+- **MUL-13.** Clang and GCC evaluate the left operand first at `-O0` and
+  `-O2`, so no variation is observed. GCC's option that forces left-to-right
+  evaluation applies to subscripts and shifts only (sanitized source,
+  `flag_strong_eval_order` in `typeck.cc`), which indicates that the order of
+  `*`, `/`, and `%` operands is not fixed. The test accepts either order.
 - **MUL-14.** Clang warns "unsequenced modification and access" and GCC warns
-  "operation ... may be undefined". The test turns those warnings into errors.
-- **MUL-15.** The same assertions hold on x86-64 (LP64) and `-m32` (ILP32)
-  only when written to depend on `sizeof(long)`. The result type differs
-  between the two targets.
+  "operation ... may be undefined". The test turns those warnings into
+  errors. EDG doesn't take these warning flags and skips the test.
+- **MUL-15.** The result type differs between x86-64 (LP64) and `-m32`
+  (ILP32). The tests are written to depend on `sizeof(long)`.
 
 ## Divergences
 
@@ -184,23 +187,47 @@ Tests: expressions/multiplicative/mixed-long-unsigned-lp64.cpp, expressions/mult
 **Test:** `expressions/multiplicative/floating-overflow-constant.cpp`
 evaluates `1e308 * 10.0` in a `constexpr` initializer.
 
-**Clang 22.1.8:** accepts. The value is positive infinity.
-**GCC 16.2.1:** rejects. "`(1.0e+308 * 1.0e+1)` is not a constant expression".
-
-Both compilers reject division by zero during constant evaluation (MUL-11),
-so they agree that some floating-point results are not allowed there. They
-disagree only on overflow.
+| Compiler | Result |
+|---|---|
+| Clang 22.1.8, 18.1.3 | accepts; the value is positive infinity |
+| GCC 16.2.1, 14.2.0 | rejects: "`(1.0e+308 * 1.0e+1)` is not a constant expression" |
+| EDG 7.0 | rejects: "floating-point error" |
 
 **Options:**
 
-1. Classify floating overflow as `undefined` (MUL-12 as drafted). GCC's
-   behavior matches. Clang's acceptance is then an extension.
-2. Classify it as `impl-defined`. Both compilers conform, and a program can't
-   rely on either outcome without checking the implementation's
-   documentation.
+1. Classify floating overflow as `undefined` (MUL-12 as drafted). GCC and
+   EDG match. Clang's acceptance is an extension.
+2. Classify it as `impl-defined`.
 
-**Writer's recommendation:** option 1. It is the conservative choice. A
-program that depends on overflow being accepted in constant evaluation is
-not portable today.
+**Writer's recommendation:** option 1. Two of three implementations reject,
+and a program that depends on acceptance is not portable.
+
+**Adjudicator's decision:** pending.
+
+### MUL-D2: EDG accepts floating-point division by zero during constant evaluation
+
+**Tests:** `expressions/multiplicative/floating-divide-by-zero.cpp`,
+`expressions/multiplicative/floating-zero-by-zero.cpp`.
+
+Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` during constant evaluation.
+EDG 7.0 accepts both. EDG does reject floating overflow (MUL-D1), so it
+treats some floating-point results as errors and not others.
+
+**Writer's recommendation:** keep MUL-11 as `undefined`. Report EDG's
+behavior to the EDG project as a possible defect.
+
+**Adjudicator's decision:** pending.
+
+### MUL-D3: EDG accepts the most negative int divided by -1 during constant evaluation
+
+**Tests:** `expressions/multiplicative/signed-overflow-divide.cpp`,
+`expressions/multiplicative/signed-overflow-remainder.cpp`.
+
+Clang and GCC reject `INT_MIN / -1` and `INT_MIN % -1` during constant
+evaluation. EDG 7.0 accepts both. EDG rejects `INT_MAX * 2`, so it detects
+signed overflow in multiplication but not in this division case.
+
+**Writer's recommendation:** keep MUL-10 as `undefined`. Report EDG's
+behavior to the EDG project as a possible defect.
 
 **Adjudicator's decision:** pending.
