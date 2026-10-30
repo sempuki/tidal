@@ -40,3 +40,4 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-sema-stmtattr | llvm | `clang/lib/Sema/SemaStmtAttr.cpp` | sanitized | `466eb44b65a27dd10d7b8734f33d18e4b1e7cbe9ac10b7801f5215c144670ef1` |
 | edg-attribute | edg | `src/attribute.c` | sanitized | `2f8d8ca144761e1006726169029d98d4186936cc2350531af3b21f4a137c7b24` |
 | edg-func-def | edg | `src/func_def.c` | sanitized | `b2a378a42cbfc99187de5998aa960e1a4c046c56c6cc26f81e53ddf25f4f175f` |
+| edg-statements | edg | `src/statements.c` | sanitized | `a4b9476b67189ea0ed2034239f4494bc32a4f50a885bb258ab01eb8e01bac703` |

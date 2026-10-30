@@ -166,6 +166,12 @@
       "repo": "edg",
       "path": "src/func_def.c",
       "class": "sanitized"
+    },
+    {
+      "id": "edg-statements",
+      "repo": "edg",
+      "path": "src/statements.c",
+      "class": "sanitized"
     }
   ]
 }
