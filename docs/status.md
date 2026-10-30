@@ -85,8 +85,10 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 7. Split the rules listed under "Known limits of the specification text"
    so each fits one segment.
 8. Draft the remaining statements (`switch`, loops, jumps, labels,
-   expression and compound statements) and expression families in order
-   of dependency.
+   expression and compound statements).
+9. Draft classes in the order set by decision 0017, starting with class
+   definitions and members.
+10. Draft the remaining expression families in order of dependency.
 
 ## Size estimate
 

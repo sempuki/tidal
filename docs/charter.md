@@ -36,17 +36,21 @@ In scope:
   enumerations, namespaces and `using`, standard attributes, function
   definitions, and the `constexpr`, `consteval`, and `constinit`
   specifiers. The order of work is in `docs/status.md`.
+- Classes: class definitions and members, access control, constructors
+  and destructors, copy and move, derived classes, virtual functions,
+  unions and bit-fields, conversion functions, operator overloading, and
+  defaulted comparisons (decision 0017).
 
 Referenced but not specified:
 
-The in-scope topics depend on name lookup, overload resolution, classes,
-and templates. Tidal sections refer to those concepts by name and list them
+The in-scope topics depend on name lookup, overload resolution, and
+templates. Tidal sections refer to those concepts by name and list them
 in a "Depends on" block. They are not specified here.
 
 Out of scope:
 
 - The preprocessor, lexical structure, modules.
-- Classes, templates, and overload resolution as topics of their own.
+- Templates and overload resolution as topics of their own.
 - The standard library.
 - Coroutines (`co_await`, `co_yield`, `co_return`).
 - The memory model and threads.
