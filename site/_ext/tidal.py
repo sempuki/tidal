@@ -8,6 +8,7 @@ Provides:
 See docs/style-guide.md for how rules are written.
 """
 
+import re
 from pathlib import Path
 
 from docutils import nodes
@@ -60,6 +61,81 @@ class RuleDirective(SphinxDirective):
         return [box]
 
 
+def page_facts(path: Path):
+    """Return (title, summary, rule count) from a spec page's source."""
+    text = path.read_text()
+    lines = text.splitlines()
+    title = next((l[2:].strip() for l in lines if l.startswith("# ")), path.stem)
+    summary, started = [], False
+    for l in lines[1:]:
+        if l.startswith("#") or l.startswith(":::") or l.startswith("```") or l.startswith("- "):
+            if started:
+                break
+            continue
+        if l.strip():
+            started = True
+            summary.append(l.strip())
+        elif started:
+            break
+    rules = sum(1 for l in lines if l.startswith(":::{rule}"))
+    sentences = re.split(r"(?<=[.:])\s+", " ".join(summary))
+    keep = [s for s in sentences
+            if not s.startswith("Rules are prefixed") and not s.endswith(":")]
+    return title, " ".join(keep), rules
+
+
+class PagesDirective(SphinxDirective):
+    """List the pages of a section with their summaries and rule counts.
+
+    Content lines are page names relative to the current document, as in a
+    toctree. The facts are read from the page sources, so they can't drift.
+    """
+    has_content = True
+
+    def run(self):
+        here = Path(self.env.doc2path(self.env.docname)).parent
+        table = nodes.table(classes=["tidal-pages"])
+        group = nodes.tgroup(cols=3)
+        table += group
+        for width in (30, 55, 15):
+            group += nodes.colspec(colwidth=width)
+        head = nodes.thead()
+        group += head
+        row = nodes.row()
+        for label in ("Page", "Summary", "Rules"):
+            row += nodes.entry("", nodes.paragraph(text=label))
+        head += row
+        body = nodes.tbody()
+        group += body
+        for name in (l.strip() for l in self.content if l.strip()):
+            src = here / f"{name}.md"
+            if not src.exists():
+                src = here / name / "index.md"
+            title, summary, rules = page_facts(src)
+            self.env.note_dependency(str(src))
+            link_target = f"{name}.html" if (here / f"{name}.md").exists() else f"{name}/index.html"
+            row = nodes.row()
+            link = nodes.paragraph()
+            link += nodes.reference("", title, refuri=link_target)
+            row += nodes.entry("", link)
+            row += nodes.entry("", *self.parse_text_to_nodes(summary))
+            count = str(rules) if rules else "in progress"
+            row += nodes.entry("", nodes.paragraph(text=count))
+            body += row
+        return [table]
+
+
+def in_progress_notice(app, docname, source):
+    """Put a notice at the top of a spec page that has no rules yet."""
+    text = source[0]
+    if docname.endswith("index") or docname == "glossary" or ":::{rule}" in text:
+        return
+    lines = text.split("\n", 1)
+    notice = (":::{note}\nThis page is in progress. Its tests exist, and its rules "
+              "are not written yet.\n:::\n")
+    source[0] = lines[0] + "\n\n" + notice + (lines[1] if len(lines) > 1 else "")
+
+
 def question_role(name, rawtext, text, lineno, inliner, options=None, content=None):
     env = inliner.document.settings.env
     root = Path(env.config.tidal_root) / "questions"
@@ -77,4 +153,6 @@ def setup(app):
     app.add_crossref_type("tidalrule", "rule")
     app.add_directive("rule", RuleDirective, override=True)
     app.add_role("question", question_role)
+    app.add_directive("tidal-pages", PagesDirective)
+    app.connect("source-read", in_progress_notice)
     return {"version": "1", "parallel_read_safe": True}
