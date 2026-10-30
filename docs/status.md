@@ -93,6 +93,25 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 - The `if` section draws on Clang's source only. GCC's and EDG's parsers
   are unread for it.
 
+## Topics in scope with no page yet
+
+From the gap review (`reports/review/2026-10-30-gap-review.md`). Each
+needs a page through the full pipeline.
+
+- Expressions: primary expressions (names, `this`, literals, parentheses),
+  the pointer-to-member operators, discarded-value expressions and
+  unevaluated operands, `decltype`, temporaries in general, and `throw`
+  expressions (or a recorded decision to exclude exceptions).
+- Declarations: `typedef` and alias declarations, `static_assert`, the
+  `inline` specifier, `alignas` and alignment, linkage specifications,
+  elaborated type specifiers and forward class declarations, the
+  `explicit` specifier, `noexcept` in function types, pointer-to-member
+  declarators, and `volatile`.
+- Classes: the sections of decision 0017, plus initialization by
+  constructors and initializer-list constructors.
+- Statements: the forward-progress rule belongs with threads, which are
+  out of scope.
+
 ## Next steps
 
 1. Write a contributor guide: roles, how to claim a section, and the steps
