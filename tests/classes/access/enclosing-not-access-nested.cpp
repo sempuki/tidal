@@ -1,0 +1,6 @@
+// tidal-rules: ACC-10
+// tidal-expect: reject
+class Outer {
+  class Inner { int secret = 1; };
+  int look(const Inner& i) { return i.secret; }
+};

@@ -6,6 +6,7 @@ derivation, and the operators that classes can define.
 
 :::{tidal-pages}
 members
+access
 :::
 
 :::{toctree}
@@ -13,4 +14,5 @@ members
 :maxdepth: 2
 
 members
+access
 :::
