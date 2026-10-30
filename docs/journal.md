@@ -32,3 +32,22 @@ Built the tools (decision 0006) and fetched nine source files for the pilots
 the Clang and GCC files contained section citations. After comment removal,
 none remained in code, so the citations all lived in comments. The
 diagnostic definition files had none.
+
+## 2026-10-30: Pilot 1, the if statement
+
+Probes (step 3): wrote 41 probe programs covering the ordinary form, the
+initializer, condition declarations, scopes, object lifetimes, jumps into
+branches, `if constexpr`, and `if consteval`. Each probe carried the
+writer's prediction.
+
+The compilers agreed with each other on every probe. They disagreed with
+the writer twice. The writer predicted that `if constexpr (2)` and
+`if constexpr (&g)` are rejected as narrowing conversions. Clang and GCC
+both accept them in C++23 mode. The writer's prediction matched an older
+language version. Probes exist to catch this kind of error, and the miss
+shows that the writer's background knowledge must not be trusted without a
+test.
+
+A structured binding as a condition is rejected under `-pedantic-errors`.
+Both compilers describe it as a newer-standard extension and accept it
+with a warning otherwise.

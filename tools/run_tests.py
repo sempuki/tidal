@@ -32,7 +32,7 @@ EXPECTATIONS = {"accept", "reject", "run"}
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z-]+):\s*(.*?)\s*$")
 
 
-@dataclass
+@dataclass(eq=False)
 class Test:
     path: Path
     rules: list[str]
