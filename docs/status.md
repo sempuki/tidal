@@ -17,12 +17,14 @@ current state only. The history of how it got here is in `git log`.
 
 ## Test matrix
 
-All compilers are baseline. 83/83 tests pass on each.
+All compilers are baseline. 83/83 tests pass on each. CI runs the
+containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
 |---|---|---|
-| Clang 22.1.8 | host | |
+| Clang 22.1.8 | host, and container (apt.llvm.org) | |
 | GCC 16.2.1 | host | |
+| GCC 16.2.0 | container (official image) | skips `-m32` tests |
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
 | EDG 7.0 | container | front end only; skips `-m32` and warning-flag tests; per-compiler expectations on 4 tests (Q-0002, Q-0003) |
@@ -49,17 +51,15 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Next steps
 
-1. Add continuous integration on GitHub that runs the matrix, the spec
-   checks, and the similarity check, and builds the PDF on every change.
-2. Write a contributor guide: roles, how to claim a section, and the steps
+1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
-3. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-4. Add a `tidal-error` directive that matches the expected diagnostic, so
+2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
+3. Add a `tidal-error` directive that matches the expected diagnostic, so
    `reject` tests check their cause.
-5. Add sanitizer-based tests that run in the container images.
-6. Add EDG's 32-bit configuration as a second EDG matrix entry.
-7. Read GCC's and EDG's sanitized source for the `if` section.
-8. Draft the remaining statements (`switch`, loops, jumps, labels,
+4. Add sanitizer-based tests that run in the container images.
+5. Add EDG's 32-bit configuration as a second EDG matrix entry.
+6. Read GCC's and EDG's sanitized source for the `if` section.
+7. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements), then expression families in order
    of dependency.
 

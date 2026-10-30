@@ -9,92 +9,94 @@ compilers affect the Status column.
 - `edg-7.0` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 30 2026 17:22:22)`
 - `gcc-14` (baseline): `g++-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0`
 - `clang-18` (baseline): `Ubuntu clang version 18.1.3 (1ubuntu1)`
+- `gcc-16` (baseline): `g++ (GCC) 16.2.0`
+- `clang-22` (baseline): `Ubuntu clang version 22.1.8 (++20260714014902+ca7933e47d3a-1~exp1~20260714135019.80)`
 
-| Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | Status |
-|---|---|---|---|---|---|---|---|---|
-| `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | pass |
-| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | reject | accept | pass |
-| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | pass |
-| `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | pass |
-| `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/operand-order.cpp` | MUL-13 | run | run | run | accept | run | run | pass |
-| `expressions/multiplicative/operands-arithmetic.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/operands-class.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/operands-enum-float.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/operands-pointer.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/operands-scoped-enum.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/remainder-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/remainder-floating.cpp` | MUL-4 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/remainder-integral.cpp` | MUL-4 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/remainder-sign.cpp` | MUL-7 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/result-prvalue-address.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | pass |
-| `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | pass |
-| `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | run | run | pass |
-| `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | pass |
-| `statements/if/condition-assignment.cpp` | IF-3 | run | run | run | accept | run | run | pass |
-| `statements/if/condition-converted-to-bool.cpp` | IF-3 | run | run | run | accept | run | run | pass |
-| `statements/if/condition-declaration-array.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-class.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-constexpr.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/condition-declaration-extern.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-function-pointer.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/condition-declaration-no-init.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-static.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-thread-local.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-two.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration.cpp` | IF-5 IF-9 | run | run | run | accept | run | run | pass |
-| `statements/if/condition-evaluated-once.cpp` | IF-1 | run | run | run | accept | run | run | pass |
-| `statements/if/condition-not-convertible.cpp` | IF-4 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-structured-binding.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-branches.cpp` | IF-18 | run | run | run | accept | run | run | pass |
-| `statements/if/consteval-else-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-immediate-context.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/consteval-immediate-outside.cpp` | IF-19 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-in-consteval.cpp` | IF-18 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/consteval-no-condition.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-case-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-condition-explicit-bool.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-condition-narrowing.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-condition-not-constant.cpp` | IF-16 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-condition-pointer.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-discard-in-template.cpp` | IF-13 | run | run | run | accept | run | run | pass |
-| `statements/if/constexpr-discard-return-type.cpp` | IF-14 | run | run | run | accept | run | run | pass |
-| `statements/if/constexpr-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-non-template-checked.cpp` | IF-15 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-non-template-no-definition.cpp` | IF-15 | run | run | run | accept | run | run | pass |
-| `statements/if/constexpr-non-template-return-type.cpp` | IF-14 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-with-init.cpp` | IF-7 IF-16 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/dangling-else.cpp` | IF-2 | run | run | run | accept | run | run | pass |
-| `statements/if/else-if-scope.cpp` | IF-9 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/goto-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | pass |
-| `statements/if/init-alias.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-declaration-kinds.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-declaration.cpp` | IF-7 IF-9 | run | run | run | accept | run | run | pass |
-| `statements/if/init-empty.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-expression.cpp` | IF-7 | run | run | run | accept | run | run | pass |
-| `statements/if/init-scope-ends.cpp` | IF-9 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/lifetimes.cpp` | IF-11 | run | run | run | accept | run | run | pass |
-| `statements/if/not-consteval-else-immediate.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/not-constexpr.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-else-statement.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-else.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-nested-block.cpp` | IF-10 | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/redeclare-init-and-condition.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | pass |
+| Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | reject | accept | reject | accept | pass |
+| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operand-order.cpp` | MUL-13 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/multiplicative/operands-arithmetic.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operands-class.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/operands-enum-float.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operands-pointer.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/operands-scoped-enum.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/remainder-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/remainder-floating.cpp` | MUL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/remainder-integral.cpp` | MUL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/remainder-sign.cpp` | MUL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/result-prvalue-address.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/condition-assignment.cpp` | IF-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/condition-converted-to-bool.cpp` | IF-3 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/condition-declaration-array.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-class.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-constexpr.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/condition-declaration-extern.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-function-pointer.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/condition-declaration-no-init.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-static.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-thread-local.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-two.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration.cpp` | IF-5 IF-9 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/condition-evaluated-once.cpp` | IF-1 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/condition-not-convertible.cpp` | IF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-structured-binding.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-branches.cpp` | IF-18 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/consteval-else-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-immediate-context.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/consteval-immediate-outside.cpp` | IF-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-in-consteval.cpp` | IF-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/consteval-no-condition.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-case-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-condition-explicit-bool.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-condition-narrowing.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-condition-not-constant.cpp` | IF-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-condition-pointer.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-discard-in-template.cpp` | IF-13 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/constexpr-discard-return-type.cpp` | IF-14 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/constexpr-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-non-template-checked.cpp` | IF-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-non-template-no-definition.cpp` | IF-15 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/constexpr-non-template-return-type.cpp` | IF-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-with-init.cpp` | IF-7 IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/dangling-else.cpp` | IF-2 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/else-if-scope.cpp` | IF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/goto-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/init-alias.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/init-declaration-kinds.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/init-declaration.cpp` | IF-7 IF-9 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/init-empty.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/init-expression.cpp` | IF-7 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/init-scope-ends.cpp` | IF-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/lifetimes.cpp` | IF-11 | run | run | run | accept | run | run | run | run | pass |
+| `statements/if/not-consteval-else-immediate.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/not-constexpr.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-else-statement.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-else.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-nested-block.cpp` | IF-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/redeclare-init-and-condition.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
 83/83 tests pass on baseline compilers.
 
@@ -108,201 +110,284 @@ check that the rejection has the intended cause.
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(1 / 0)' is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/multiplicative/divide-by-zero.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(1 / 0)' is not a constant expression
+- `expressions/multiplicative/divide-by-zero.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/floating-divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/floating-divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1.0e+0 / 0.0)’ is not a constant expression
 - `expressions/multiplicative/floating-divide-by-zero.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(1.0e+0 / 0.0)' is not a constant expression
 - `expressions/multiplicative/floating-divide-by-zero.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/multiplicative/floating-divide-by-zero.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(1.0e+0 / 0.0)' is not a constant expression
+- `expressions/multiplicative/floating-divide-by-zero.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/floating-overflow-constant.cpp` (gcc-host): error: ‘(1.0e+308 * 1.0e+1)’ is not a constant expression
 - `expressions/multiplicative/floating-overflow-constant.cpp` (edg-7.0): error: expression must have a constant value / note: floating-point error
 - `expressions/multiplicative/floating-overflow-constant.cpp` (gcc-14): error: '(1.0e+308 * 1.0e+1)' is not a constant expression
+- `expressions/multiplicative/floating-overflow-constant.cpp` (gcc-16): error: '(1.0e+308 * 1.0e+1)' is not a constant expression
 - `expressions/multiplicative/floating-zero-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/floating-zero-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(0.0 / 0.0)’ is not a constant expression
 - `expressions/multiplicative/floating-zero-by-zero.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(0.0 / 0.0)' is not a constant expression
 - `expressions/multiplicative/floating-zero-by-zero.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/multiplicative/floating-zero-by-zero.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(0.0 / 0.0)' is not a constant expression
+- `expressions/multiplicative/floating-zero-by-zero.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/operands-class.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'int')
 - `expressions/multiplicative/operands-class.cpp` (gcc-host): error: no match for ‘operator/’ (operand types are ‘S’ and ‘int’)
 - `expressions/multiplicative/operands-class.cpp` (edg-7.0): error: no operator "/" matches these operands / note: built-in operator/(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
 - `expressions/multiplicative/operands-class.cpp` (gcc-14): error: no match for 'operator/' (operand types are 'S' and 'int')
 - `expressions/multiplicative/operands-class.cpp` (clang-18): error: invalid operands to binary expression ('S' and 'int')
+- `expressions/multiplicative/operands-class.cpp` (gcc-16): error: no match for 'operator/' (operand types are 'S' and 'int')
+- `expressions/multiplicative/operands-class.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'int')
 - `expressions/multiplicative/operands-pointer.cpp` (clang-host): error: invalid operands to binary expression ('int *' and 'int')
 - `expressions/multiplicative/operands-pointer.cpp` (gcc-host): error: invalid operands of types ‘int*’ and ‘int’ to binary ‘operator*’
 - `expressions/multiplicative/operands-pointer.cpp` (edg-7.0): error: expression must have arithmetic or unscoped enum type
 - `expressions/multiplicative/operands-pointer.cpp` (gcc-14): error: invalid operands of types 'int*' and 'int' to binary 'operator*'
 - `expressions/multiplicative/operands-pointer.cpp` (clang-18): error: invalid operands to binary expression ('int *' and 'int')
+- `expressions/multiplicative/operands-pointer.cpp` (gcc-16): error: invalid operands of types 'int*' and 'int' to binary 'operator*'
+- `expressions/multiplicative/operands-pointer.cpp` (clang-22): error: invalid operands to binary expression ('int *' and 'int')
 - `expressions/multiplicative/operands-scoped-enum.cpp` (clang-host): error: invalid operands to binary expression ('Scoped' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
 - `expressions/multiplicative/operands-scoped-enum.cpp` (gcc-host): error: no match for ‘operator*’ (operand types are ‘Scoped’ and ‘int’)
 - `expressions/multiplicative/operands-scoped-enum.cpp` (edg-7.0): error: no operator "*" matches these operands / note: built-in operator*(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
 - `expressions/multiplicative/operands-scoped-enum.cpp` (gcc-14): error: no match for 'operator*' (operand types are 'Scoped' and 'int')
 - `expressions/multiplicative/operands-scoped-enum.cpp` (clang-18): error: invalid operands to binary expression ('Scoped' and 'int')
+- `expressions/multiplicative/operands-scoped-enum.cpp` (gcc-16): error: no match for 'operator*' (operand types are 'Scoped' and 'int')
+- `expressions/multiplicative/operands-scoped-enum.cpp` (clang-22): error: invalid operands to binary expression ('Scoped' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
 - `expressions/multiplicative/remainder-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/remainder-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 % 0)’ is not a constant expression
 - `expressions/multiplicative/remainder-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
 - `expressions/multiplicative/remainder-by-zero.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(1 % 0)' is not a constant expression
 - `expressions/multiplicative/remainder-by-zero.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/multiplicative/remainder-by-zero.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(1 % 0)' is not a constant expression
+- `expressions/multiplicative/remainder-by-zero.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/remainder-floating.cpp` (clang-host): error: invalid operands to binary expression ('double' and 'int')
 - `expressions/multiplicative/remainder-floating.cpp` (gcc-host): error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator%’
 - `expressions/multiplicative/remainder-floating.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
 - `expressions/multiplicative/remainder-floating.cpp` (gcc-14): error: invalid operands of types 'double' and 'int' to binary 'operator%'
 - `expressions/multiplicative/remainder-floating.cpp` (clang-18): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/multiplicative/remainder-floating.cpp` (gcc-16): error: invalid operands of types 'double' and 'int' to binary 'operator%'
+- `expressions/multiplicative/remainder-floating.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
 - `expressions/multiplicative/result-prvalue-address.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
 - `expressions/multiplicative/result-prvalue-address.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
 - `expressions/multiplicative/result-prvalue-address.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
 - `expressions/multiplicative/result-prvalue-address.cpp` (gcc-14): error: lvalue required as unary '&' operand
 - `expressions/multiplicative/result-prvalue-address.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/multiplicative/result-prvalue-address.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/multiplicative/result-prvalue-address.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
 - `expressions/multiplicative/result-prvalue-assign.cpp` (clang-host): error: expression is not assignable
 - `expressions/multiplicative/result-prvalue-assign.cpp` (gcc-host): error: lvalue required as left operand of assignment
 - `expressions/multiplicative/result-prvalue-assign.cpp` (edg-7.0): error: expression must be a modifiable lvalue
 - `expressions/multiplicative/result-prvalue-assign.cpp` (gcc-14): error: lvalue required as left operand of assignment
 - `expressions/multiplicative/result-prvalue-assign.cpp` (clang-18): error: expression is not assignable
+- `expressions/multiplicative/result-prvalue-assign.cpp` (gcc-16): error: lvalue required as left operand of assignment
+- `expressions/multiplicative/result-prvalue-assign.cpp` (clang-22): error: expression is not assignable
 - `expressions/multiplicative/signed-overflow-after-promotion.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 4294836225 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-after-promotion.cpp` (gcc-host): error: non-constant condition for static assertion
 - `expressions/multiplicative/signed-overflow-after-promotion.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
 - `expressions/multiplicative/signed-overflow-after-promotion.cpp` (gcc-14): error: non-constant condition for static assertion
 - `expressions/multiplicative/signed-overflow-after-promotion.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 4294836225 is outside the range of representable values of type 'int'
+- `expressions/multiplicative/signed-overflow-after-promotion.cpp` (gcc-16): error: non-constant condition for static assertion
+- `expressions/multiplicative/signed-overflow-after-promotion.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 4294836225 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-divide.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-divide.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-divide.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-divide.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/multiplicative/signed-overflow-divide.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/multiplicative/signed-overflow-divide.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-multiply.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 4294967294 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-multiply.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-multiply.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
 - `expressions/multiplicative/signed-overflow-multiply.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-multiply.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 4294967294 is outside the range of representable values of type 'int'
+- `expressions/multiplicative/signed-overflow-multiply.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/multiplicative/signed-overflow-multiply.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 4294967294 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-remainder.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/signed-overflow-remainder.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-remainder.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
 - `expressions/multiplicative/signed-overflow-remainder.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/multiplicative/signed-overflow-remainder.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `expressions/multiplicative/signed-overflow-remainder.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-host): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
 - `expressions/multiplicative/unsequenced-modification.cpp` (gcc-host): error: operation on ‘i’ may be undefined [-Werror=sequence-point] / error: operation on ‘i’ may be undefined [-Werror=sequence-point]
 - `expressions/multiplicative/unsequenced-modification.cpp` (gcc-14): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
 - `expressions/multiplicative/unsequenced-modification.cpp` (clang-18): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `expressions/multiplicative/unsequenced-modification.cpp` (gcc-16): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/multiplicative/unsequenced-modification.cpp` (clang-22): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
 - `statements/if/condition-declaration-array.cpp` (clang-host): error: an array type is not allowed here
 - `statements/if/condition-declaration-array.cpp` (gcc-host): error: condition declares an array
 - `statements/if/condition-declaration-array.cpp` (edg-7.0): error: an array type is not allowed here
 - `statements/if/condition-declaration-array.cpp` (gcc-14): error: condition declares an array
 - `statements/if/condition-declaration-array.cpp` (clang-18): error: an array type is not allowed here
+- `statements/if/condition-declaration-array.cpp` (gcc-16): error: condition declares an array
+- `statements/if/condition-declaration-array.cpp` (clang-22): error: an array type is not allowed here
 - `statements/if/condition-declaration-class.cpp` (clang-host): error: 'S' cannot be defined in a condition
 - `statements/if/condition-declaration-class.cpp` (gcc-host): error: types may not be defined in conditions
 - `statements/if/condition-declaration-class.cpp` (edg-7.0): error: type definition is not allowed
 - `statements/if/condition-declaration-class.cpp` (gcc-14): error: types may not be defined in conditions
 - `statements/if/condition-declaration-class.cpp` (clang-18): error: 'S' cannot be defined in a condition
+- `statements/if/condition-declaration-class.cpp` (gcc-16): error: types may not be defined in conditions
+- `statements/if/condition-declaration-class.cpp` (clang-22): error: 'S' cannot be defined in a condition
 - `statements/if/condition-declaration-extern.cpp` (clang-host): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-extern.cpp` (gcc-host): error: ‘extern’ invalid in condition / error: ‘x’ has both ‘extern’ and initializer
 - `statements/if/condition-declaration-extern.cpp` (edg-7.0): error: an initializer is not allowed on a local declaration of an extern variable / error: a storage class may not be specified here
 - `statements/if/condition-declaration-extern.cpp` (gcc-14): error: 'extern' invalid in condition / error: 'x' has both 'extern' and initializer
 - `statements/if/condition-declaration-extern.cpp` (clang-18): error: type name does not allow storage class to be specified
+- `statements/if/condition-declaration-extern.cpp` (gcc-16): error: 'extern' invalid in condition / error: 'x' has both 'extern' and initializer
+- `statements/if/condition-declaration-extern.cpp` (clang-22): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-no-init.cpp` (clang-host): error: variable declaration in condition must have an initializer
 - `statements/if/condition-declaration-no-init.cpp` (gcc-host): error: expected initializer before ‘)’ token
 - `statements/if/condition-declaration-no-init.cpp` (edg-7.0): error: a condition declaration must include an initializer
 - `statements/if/condition-declaration-no-init.cpp` (gcc-14): error: expected initializer before ')' token
 - `statements/if/condition-declaration-no-init.cpp` (clang-18): error: variable declaration in condition must have an initializer
+- `statements/if/condition-declaration-no-init.cpp` (gcc-16): error: expected initializer before ')' token
+- `statements/if/condition-declaration-no-init.cpp` (clang-22): error: variable declaration in condition must have an initializer
 - `statements/if/condition-declaration-static.cpp` (clang-host): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-static.cpp` (gcc-host): error: ‘static’ invalid in condition
 - `statements/if/condition-declaration-static.cpp` (edg-7.0): error: a storage class may not be specified here
 - `statements/if/condition-declaration-static.cpp` (gcc-14): error: 'static' invalid in condition
 - `statements/if/condition-declaration-static.cpp` (clang-18): error: type name does not allow storage class to be specified
+- `statements/if/condition-declaration-static.cpp` (gcc-16): error: 'static' invalid in condition
+- `statements/if/condition-declaration-static.cpp` (clang-22): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-thread-local.cpp` (clang-host): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-thread-local.cpp` (gcc-host): error: ‘thread_local’ invalid in condition
 - `statements/if/condition-declaration-thread-local.cpp` (edg-7.0): error: a storage class may not be specified here
 - `statements/if/condition-declaration-thread-local.cpp` (gcc-14): error: 'thread_local' invalid in condition
 - `statements/if/condition-declaration-thread-local.cpp` (clang-18): error: type name does not allow storage class to be specified
+- `statements/if/condition-declaration-thread-local.cpp` (gcc-16): error: 'thread_local' invalid in condition
+- `statements/if/condition-declaration-thread-local.cpp` (clang-22): error: type name does not allow storage class to be specified
 - `statements/if/condition-declaration-two.cpp` (clang-host): error: expected ')' / note: to match this '('
 - `statements/if/condition-declaration-two.cpp` (gcc-host): error: expected ‘)’ before ‘,’ token
 - `statements/if/condition-declaration-two.cpp` (edg-7.0): error: a condition declaration can only declare one variable
 - `statements/if/condition-declaration-two.cpp` (gcc-14): error: expected ')' before ',' token
 - `statements/if/condition-declaration-two.cpp` (clang-18): error: expected ')' / note: to match this '('
+- `statements/if/condition-declaration-two.cpp` (gcc-16): error: expected ')' before ',' token
+- `statements/if/condition-declaration-two.cpp` (clang-22): error: expected ')' / note: to match this '('
 - `statements/if/condition-not-convertible.cpp` (clang-host): error: value of type 'Empty' is not contextually convertible to 'bool'
 - `statements/if/condition-not-convertible.cpp` (gcc-host): error: could not convert ‘Empty()’ from ‘Empty’ to ‘bool’
 - `statements/if/condition-not-convertible.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
 - `statements/if/condition-not-convertible.cpp` (gcc-14): error: could not convert 'Empty()' from 'Empty' to 'bool'
 - `statements/if/condition-not-convertible.cpp` (clang-18): error: value of type 'Empty' is not contextually convertible to 'bool'
+- `statements/if/condition-not-convertible.cpp` (gcc-16): error: could not convert 'Empty()' from 'Empty' to 'bool'
+- `statements/if/condition-not-convertible.cpp` (clang-22): error: value of type 'Empty' is not contextually convertible to 'bool'
 - `statements/if/condition-structured-binding.cpp` (clang-host): error: structured binding declaration in a condition is a C++2c extension [-Werror,-Wc++26-extensions]
 - `statements/if/condition-structured-binding.cpp` (gcc-host): error: structured bindings in conditions only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
 - `statements/if/condition-structured-binding.cpp` (edg-7.0): error: structured binding is not allowed in a condition
 - `statements/if/condition-structured-binding.cpp` (gcc-14): error: expected unqualified-id before '[' token
 - `statements/if/condition-structured-binding.cpp` (clang-18): error: ISO C++17 does not permit structured binding declaration in a condition [-Werror,-Wbinding-in-condition]
+- `statements/if/condition-structured-binding.cpp` (gcc-16): error: structured bindings in conditions only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `statements/if/condition-structured-binding.cpp` (clang-22): error: structured binding declaration in a condition is a C++2c extension [-Werror,-Wc++26-extensions]
 - `statements/if/consteval-else-requires-braces.cpp` (clang-host): error: expected { after else
 - `statements/if/consteval-else-requires-braces.cpp` (gcc-host): error: ‘if consteval’ requires compound statement
 - `statements/if/consteval-else-requires-braces.cpp` (edg-7.0): error: "if consteval" and "if not consteval" require braced dependent statements
 - `statements/if/consteval-else-requires-braces.cpp` (gcc-14): error: 'if consteval' requires compound statement
 - `statements/if/consteval-else-requires-braces.cpp` (clang-18): error: expected { after else / error: no return statement in constexpr function
+- `statements/if/consteval-else-requires-braces.cpp` (gcc-16): error: 'if consteval' requires compound statement
+- `statements/if/consteval-else-requires-braces.cpp` (clang-22): error: expected { after else
 - `statements/if/consteval-goto-into.cpp` (clang-host): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of consteval if
 - `statements/if/consteval-goto-into.cpp` (gcc-host): error: jump to label ‘inside’ / note:   from here
 - `statements/if/consteval-goto-into.cpp` (edg-7.0): error: transfer of control into an "if consteval" or "if not consteval" statement is not allowed
 - `statements/if/consteval-goto-into.cpp` (gcc-14): error: jump to label 'inside' / note:   from here
 - `statements/if/consteval-goto-into.cpp` (clang-18): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of consteval if
+- `statements/if/consteval-goto-into.cpp` (gcc-16): error: jump to label 'inside' / note:   from here
+- `statements/if/consteval-goto-into.cpp` (clang-22): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of consteval if
 - `statements/if/consteval-immediate-outside.cpp` (clang-host): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (gcc-host): error: call to consteval function ‘twice(v)’ is not a constant expression / error: ‘v’ is not a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (edg-7.0): error: call to consteval function "twice" did not produce a valid constant expression / note: the value of parameter "v" (declared at line 4) cannot be used as a constant
 - `statements/if/consteval-immediate-outside.cpp` (gcc-14): error: call to consteval function 'twice(v)' is not a constant expression / error: 'v' is not a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (clang-18): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
+- `statements/if/consteval-immediate-outside.cpp` (gcc-16): error: call to consteval function 'twice(v)' is not a constant expression / error: 'v' is not a constant expression
+- `statements/if/consteval-immediate-outside.cpp` (clang-22): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `statements/if/consteval-no-condition.cpp` (clang-host): error: expected ';' after expression / error: expected { after consteval
 - `statements/if/consteval-no-condition.cpp` (gcc-host): error: expected ‘;’ before ‘{’ token / error: ‘if consteval’ requires compound statement
 - `statements/if/consteval-no-condition.cpp` (edg-7.0): error: "if consteval" and "if not consteval" require braced dependent statements / error: expected a ";"
 - `statements/if/consteval-no-condition.cpp` (gcc-14): error: expected ';' before '{' token / error: 'if consteval' requires compound statement
 - `statements/if/consteval-no-condition.cpp` (clang-18): error: expected ';' after expression / error: expected { after consteval
+- `statements/if/consteval-no-condition.cpp` (gcc-16): error: expected ';' before '{' token / error: 'if consteval' requires compound statement
+- `statements/if/consteval-no-condition.cpp` (clang-22): error: expected ';' after expression / error: expected { after consteval
 - `statements/if/consteval-requires-braces.cpp` (clang-host): error: expected { after consteval
 - `statements/if/consteval-requires-braces.cpp` (gcc-host): error: ‘if consteval’ requires compound statement
 - `statements/if/consteval-requires-braces.cpp` (edg-7.0): error: "if consteval" and "if not consteval" require braced dependent statements
 - `statements/if/consteval-requires-braces.cpp` (gcc-14): error: 'if consteval' requires compound statement
 - `statements/if/consteval-requires-braces.cpp` (clang-18): error: expected { after consteval
+- `statements/if/consteval-requires-braces.cpp` (gcc-16): error: 'if consteval' requires compound statement
+- `statements/if/consteval-requires-braces.cpp` (clang-22): error: expected { after consteval
 - `statements/if/constexpr-case-into.cpp` (clang-host): error: cannot jump from switch statement to this case label / note: jump enters controlled statement of constexpr if
 - `statements/if/constexpr-case-into.cpp` (gcc-host): error: jump to case label / note:   enters ‘constexpr if’ statement
 - `statements/if/constexpr-case-into.cpp` (edg-7.0): error: transfer of control into a constexpr if block is not allowed
 - `statements/if/constexpr-case-into.cpp` (gcc-14): error: jump to case label / note:   enters 'constexpr if' statement
 - `statements/if/constexpr-case-into.cpp` (clang-18): error: cannot jump from switch statement to this case label / note: jump enters controlled statement of constexpr if
+- `statements/if/constexpr-case-into.cpp` (gcc-16): error: jump to case label / note:   enters 'constexpr if' statement
+- `statements/if/constexpr-case-into.cpp` (clang-22): error: cannot jump from switch statement to this case label / note: jump enters controlled statement of constexpr if
 - `statements/if/constexpr-condition-not-constant.cpp` (clang-host): error: constexpr if condition is not a constant expression / note: function parameter 'b' with unknown value cannot be used in a constant expression
 - `statements/if/constexpr-condition-not-constant.cpp` (gcc-host): error: ‘b’ is not a constant expression
 - `statements/if/constexpr-condition-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "b" (declared at line 3) cannot be used as a constant
 - `statements/if/constexpr-condition-not-constant.cpp` (gcc-14): error: 'b' is not a constant expression
 - `statements/if/constexpr-condition-not-constant.cpp` (clang-18): error: constexpr if condition is not a constant expression / note: function parameter 'b' with unknown value cannot be used in a constant expression
+- `statements/if/constexpr-condition-not-constant.cpp` (gcc-16): error: 'b' is not a constant expression
+- `statements/if/constexpr-condition-not-constant.cpp` (clang-22): error: constexpr if condition is not a constant expression / note: function parameter 'b' with unknown value cannot be used in a constant expression
 - `statements/if/constexpr-goto-into.cpp` (clang-host): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of constexpr if
 - `statements/if/constexpr-goto-into.cpp` (gcc-host): error: jump to label ‘inside’ / note:   from here
 - `statements/if/constexpr-goto-into.cpp` (edg-7.0): error: transfer of control into a constexpr if block is not allowed
 - `statements/if/constexpr-goto-into.cpp` (gcc-14): error: jump to label 'inside' / note:   from here
 - `statements/if/constexpr-goto-into.cpp` (clang-18): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of constexpr if
+- `statements/if/constexpr-goto-into.cpp` (gcc-16): error: jump to label 'inside' / note:   from here
+- `statements/if/constexpr-goto-into.cpp` (clang-22): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of constexpr if
 - `statements/if/constexpr-non-template-checked.cpp` (clang-host): error: use of undeclared identifier 'undeclared_function'
 - `statements/if/constexpr-non-template-checked.cpp` (gcc-host): error: ‘undeclared_function’ was not declared in this scope
 - `statements/if/constexpr-non-template-checked.cpp` (edg-7.0): error: identifier "undeclared_function" is undefined
 - `statements/if/constexpr-non-template-checked.cpp` (gcc-14): error: 'undeclared_function' was not declared in this scope
 - `statements/if/constexpr-non-template-checked.cpp` (clang-18): error: use of undeclared identifier 'undeclared_function'
+- `statements/if/constexpr-non-template-checked.cpp` (gcc-16): error: 'undeclared_function' was not declared in this scope
+- `statements/if/constexpr-non-template-checked.cpp` (clang-22): error: use of undeclared identifier 'undeclared_function'
 - `statements/if/init-scope-ends.cpp` (clang-host): error: use of undeclared identifier 'a'
 - `statements/if/init-scope-ends.cpp` (gcc-host): error: ‘a’ was not declared in this scope
 - `statements/if/init-scope-ends.cpp` (edg-7.0): error: identifier "a" is undefined
 - `statements/if/init-scope-ends.cpp` (gcc-14): error: 'a' was not declared in this scope
 - `statements/if/init-scope-ends.cpp` (clang-18): error: use of undeclared identifier 'a'
+- `statements/if/init-scope-ends.cpp` (gcc-16): error: 'a' was not declared in this scope
+- `statements/if/init-scope-ends.cpp` (clang-22): error: use of undeclared identifier 'a'
 - `statements/if/not-constexpr.cpp` (clang-host): error: expected '(' after 'if'
 - `statements/if/not-constexpr.cpp` (gcc-host): error: expected ‘(’ before ‘!’ token
 - `statements/if/not-constexpr.cpp` (edg-7.0): error: expected a "("
 - `statements/if/not-constexpr.cpp` (gcc-14): error: expected '(' before '!' token
 - `statements/if/not-constexpr.cpp` (clang-18): error: expected '(' after 'if'
+- `statements/if/not-constexpr.cpp` (gcc-16): error: expected '(' before '!' token
+- `statements/if/not-constexpr.cpp` (clang-22): error: expected '(' after 'if'
 - `statements/if/redeclare-in-branch.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-in-branch.cpp` (gcc-host): error: redeclaration of ‘int x’
 - `statements/if/redeclare-in-branch.cpp` (edg-7.0): error: "x", declared in condition, may not be redeclared in this scope
 - `statements/if/redeclare-in-branch.cpp` (gcc-14): error: redeclaration of 'int x'
 - `statements/if/redeclare-in-branch.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/if/redeclare-in-branch.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/if/redeclare-in-branch.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-in-else-statement.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-in-else-statement.cpp` (gcc-host): error: redeclaration of ‘int x’
 - `statements/if/redeclare-in-else-statement.cpp` (edg-7.0): error: "x", declared in condition, may not be redeclared in this scope
 - `statements/if/redeclare-in-else-statement.cpp` (gcc-14): error: redeclaration of 'int x'
 - `statements/if/redeclare-in-else-statement.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/if/redeclare-in-else-statement.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/if/redeclare-in-else-statement.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-in-else.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-in-else.cpp` (gcc-host): error: redeclaration of ‘int x’
 - `statements/if/redeclare-in-else.cpp` (edg-7.0): error: "x", declared in condition, may not be redeclared in this scope
 - `statements/if/redeclare-in-else.cpp` (gcc-14): error: redeclaration of 'int x'
 - `statements/if/redeclare-in-else.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/if/redeclare-in-else.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/if/redeclare-in-else.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-init-and-condition.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-init-and-condition.cpp` (gcc-host): error: redeclaration of ‘int x’
 - `statements/if/redeclare-init-and-condition.cpp` (edg-7.0): error: "x" has already been declared in the current scope
 - `statements/if/redeclare-init-and-condition.cpp` (gcc-14): error: redeclaration of 'int x'
 - `statements/if/redeclare-init-and-condition.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/if/redeclare-init-and-condition.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/if/redeclare-init-and-condition.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-init-in-branch.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/redeclare-init-in-branch.cpp` (gcc-host): error: redeclaration of ‘int x’
 - `statements/if/redeclare-init-in-branch.cpp` (edg-7.0): error: "x", declared in condition, may not be redeclared in this scope
 - `statements/if/redeclare-init-in-branch.cpp` (gcc-14): error: redeclaration of 'int x'
 - `statements/if/redeclare-init-in-branch.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `statements/if/redeclare-init-in-branch.cpp` (gcc-16): error: redeclaration of 'int x'
+- `statements/if/redeclare-init-in-branch.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
 - `statements/if/substatement-scope.cpp` (clang-host): error: use of undeclared identifier 'y'
 - `statements/if/substatement-scope.cpp` (gcc-host): error: ‘y’ was not declared in this scope
 - `statements/if/substatement-scope.cpp` (edg-7.0): error: identifier "y" is undefined
 - `statements/if/substatement-scope.cpp` (gcc-14): error: 'y' was not declared in this scope
 - `statements/if/substatement-scope.cpp` (clang-18): error: use of undeclared identifier 'y'
+- `statements/if/substatement-scope.cpp` (gcc-16): error: 'y' was not declared in this scope
+- `statements/if/substatement-scope.cpp` (clang-22): error: use of undeclared identifier 'y'

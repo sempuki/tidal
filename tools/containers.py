@@ -4,8 +4,13 @@
 Usage:
     tools/containers.py list
     tools/containers.py build [ID ...]     # default: every containerized compiler
+
+$TIDAL_BUILD_FLAGS adds flags to each build command, with {id} replaced by
+the compiler id (CI uses this for layer caching).
 """
 
+import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -40,8 +45,9 @@ def main() -> int:
             args += ["--build-arg", f"{k}={v}"]
         dockerfile = matrix.ROOT / "docker" / c.image["dockerfile"]
         print(f"building {c.image_tag} from {dockerfile.name}", flush=True)
+        extra = shlex.split(os.environ.get("TIDAL_BUILD_FLAGS", "").replace("{id}", c.id))
         subprocess.run(
-            [e, "build", "-q", "-f", str(dockerfile), *args, "-t", c.image_tag,
+            [e, "build", "-q", *extra, "-f", str(dockerfile), *args, "-t", c.image_tag,
              str(dockerfile.parent)],
             check=True,
         )

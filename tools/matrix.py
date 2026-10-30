@@ -117,12 +117,15 @@ def load() -> list[Compiler]:
 
 
 def select(spec: str) -> list[Compiler]:
-    """Select compilers by role ("baseline", "all") or a comma-separated id list."""
+    """Select compilers by role ("baseline", "report"), "containers", "all",
+    or a comma-separated id list."""
     compilers = load()
     if spec == "all":
         return compilers
     if spec in {"baseline", "report"}:
         return [c for c in compilers if c.role == spec]
+    if spec == "containers":
+        return [c for c in compilers if c.image]
     wanted = spec.split(",")
     by_id = {c.id: c for c in compilers}
     missing = [w for w in wanted if w not in by_id]

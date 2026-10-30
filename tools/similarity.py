@@ -15,7 +15,7 @@ A unit is flagged when longest >= --run (default 8) or overlap > --overlap
 (default 0.25).
 
 Usage:
-    tools/similarity.py --reference DIR [--spec spec/] [--out FILE]
+    tools/similarity.py --reference DIR [--spec spec/] [--out FILE] [--fail-on-flag]
 """
 
 import argparse
@@ -95,6 +95,7 @@ def main() -> int:
     ap.add_argument("--run", type=int, default=8)
     ap.add_argument("--overlap", type=float, default=0.25)
     ap.add_argument("--out", type=Path)
+    ap.add_argument("--fail-on-flag", action="store_true", help="exit 1 if any unit is flagged")
     args = ap.parse_args()
 
     if args.reference.resolve().is_relative_to(ROOT):
@@ -126,7 +127,7 @@ def main() -> int:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(report)
     print(report, end="")
-    return 0
+    return 1 if args.fail_on_flag and flagged else 0
 
 
 if __name__ == "__main__":

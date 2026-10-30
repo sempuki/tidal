@@ -1,0 +1,71 @@
+# Runs every check on each push to main and each pull request.
+# The same checks run locally with tools/check_all.sh.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    env:
+      TIDAL_CONTAINER_ENGINE: docker
+      PANDOC_VERSION: "3.12"
+      TYPST_VERSION: "0.15.1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Spec cross-references
+        run: python3 -I tools/check_spec.py
+
+      # Compiler images are rebuilt from the layer cache, so only changed
+      # Dockerfiles cost real build time.
+      - uses: docker/setup-buildx-action@v3
+      - uses: crazy-max/ghaction-github-runtime@v3
+      - name: Build compiler images
+        env:
+          TIDAL_BUILD_FLAGS: >-
+            --load
+            --cache-from type=gha,scope={id}
+            --cache-to type=gha,mode=max,scope={id}
+        run: python3 -I tools/containers.py build
+
+      # The runner has no copy of the host compilers, so CI uses the
+      # containerized compilers, which include the same versions.
+      - name: Conformance tests
+        run: python3 -I tools/run_tests.py --compilers containers --report build/RESULTS.md
+
+      # The reference corpus is fetched outside the checkout and never printed.
+      - name: Similarity check
+        run: |
+          git clone --quiet --depth 1 --branch n4950 \
+            https://github.com/cplusplus/draft "$RUNNER_TEMP/reference"
+          python3 -I tools/similarity.py --reference "$RUNNER_TEMP/reference/source" \
+            --out build/similarity.txt --fail-on-flag
+
+      - name: Install pandoc and typst
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/pandoc.deb" \
+            "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb"
+          sudo dpkg -i "$RUNNER_TEMP/pandoc.deb"
+          curl -fsSL "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" \
+            | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/typst-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+
+      - name: Build PDF
+        run: python3 -I tools/build_pdf.py
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tidal
+          path: |
+            build/tidal.pdf
+            build/RESULTS.md
+            build/similarity.txt
+          if-no-files-found: ignore

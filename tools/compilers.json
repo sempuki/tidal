@@ -5,44 +5,224 @@
       "id": "clang-host",
       "family": "clang",
       "role": "baseline",
-      "check": ["clang++", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
-      "build": ["clang++", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
-      "version": ["clang++", "--version"]
+      "check": [
+        "clang++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "clang++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "clang++",
+        "--version"
+      ]
     },
     {
       "id": "gcc-host",
       "family": "gcc",
       "role": "baseline",
-      "check": ["g++", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
-      "build": ["g++", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
-      "version": ["g++", "--version"]
+      "check": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "g++",
+        "--version"
+      ]
     },
     {
       "id": "edg-7.0",
       "family": "edg",
       "role": "baseline",
-      "image": {"dockerfile": "edg.Dockerfile", "args": {"EDG_REF": "7.0"}},
-      "check": ["cpfe", "--c++23", "--strict", "--no_code_gen", "{flags}", "{src}"],
-      "version": ["cpfe", "--version"],
-      "unsupported_flags": ["-m32", "-Wall", "-Werror"]
+      "image": {
+        "dockerfile": "edg.Dockerfile",
+        "args": {
+          "EDG_REF": "7.0"
+        }
+      },
+      "check": [
+        "cpfe",
+        "--c++23",
+        "--strict",
+        "--no_code_gen",
+        "{flags}",
+        "{src}"
+      ],
+      "version": [
+        "cpfe",
+        "--version"
+      ],
+      "unsupported_flags": [
+        "-m32",
+        "-Wall",
+        "-Werror"
+      ]
     },
     {
       "id": "gcc-14",
       "family": "gcc",
       "role": "baseline",
-      "image": {"dockerfile": "apt.Dockerfile", "args": {"PACKAGES": "g++-14 g++-14-multilib"}},
-      "check": ["g++-14", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
-      "build": ["g++-14", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
-      "version": ["g++-14", "--version"]
+      "image": {
+        "dockerfile": "apt.Dockerfile",
+        "args": {
+          "PACKAGES": "g++-14 g++-14-multilib"
+        }
+      },
+      "check": [
+        "g++-14",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "g++-14",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "g++-14",
+        "--version"
+      ]
     },
     {
       "id": "clang-18",
       "family": "clang",
       "role": "baseline",
-      "image": {"dockerfile": "apt.Dockerfile", "args": {"PACKAGES": "clang-18 g++-multilib"}},
-      "check": ["clang++-18", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
-      "build": ["clang++-18", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
-      "version": ["clang++-18", "--version"]
+      "image": {
+        "dockerfile": "apt.Dockerfile",
+        "args": {
+          "PACKAGES": "clang-18 g++-multilib"
+        }
+      },
+      "check": [
+        "clang++-18",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "clang++-18",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "clang++-18",
+        "--version"
+      ]
+    },
+    {
+      "id": "gcc-16",
+      "family": "gcc",
+      "role": "baseline",
+      "image": {
+        "dockerfile": "official.Dockerfile",
+        "args": {
+          "IMAGE": "docker.io/library/gcc:16"
+        }
+      },
+      "check": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "g++",
+        "--version"
+      ],
+      "unsupported_flags": [
+        "-m32"
+      ]
+    },
+    {
+      "id": "clang-22",
+      "family": "clang",
+      "role": "baseline",
+      "image": {
+        "dockerfile": "llvm.Dockerfile",
+        "args": {
+          "LLVM_VERSION": "22"
+        }
+      },
+      "check": [
+        "clang++-22",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "clang++-22",
+        "-std=c++23",
+        "-pedantic-errors",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "clang++-22",
+        "--version"
+      ]
     }
   ]
 }
