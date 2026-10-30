@@ -72,3 +72,12 @@ probes added. All 56 pass on both compilers with no disagreements.
 
 Reading GCC's parser was skipped for this section because Clang and GCC
 agreed on every probe. A full run should read both.
+
+Classify and draft (steps 5 and 6): wrote 20 rules (13 `required`, 7
+`reject`) and four glossary entries. Every test is cited by the rules it
+names, and `check_spec.py` reports no problems. Adjudication (step 7) had
+nothing to do because the compilers never disagreed.
+
+This section has no `undefined`, `unspecified`, or `impl-defined` behavior,
+so it did not test the hardest part of the pipeline. The second pilot should
+be an expression family that does.
