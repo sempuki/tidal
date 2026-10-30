@@ -247,14 +247,15 @@ A constructor can change the members of a `const` object. The object is
 :kind: required
 :tests: classes/constructors/dtor-order-array.cpp classes/constructors/dtor-order-automatic.cpp classes/constructors/dtor-order-delete-array.cpp classes/constructors/dtor-order.cpp classes/constructors/implicit-dtor-runs-members.cpp
 
-A destructor destroys in this order:
+A destructor works in the opposite order to a constructor:
 
-1. the destructor body executes,
-2. non-static data members, in the reverse order of their declarations,
-3. direct bases, in the reverse order of the base list.
+1. its body executes,
+2. the data members are destroyed, last declared first,
+3. the direct bases are destroyed, last listed first.
 
-Objects in a block and elements of an array are destroyed in the reverse
-order of their construction. This includes `delete[]`.
+In a block, the variable constructed last is destroyed first. Array
+elements are destroyed from the last element to the first. This applies
+to `delete[]` too.
 :::
 
 :::{rule} DTOR-6
