@@ -15,3 +15,9 @@ Commit the report on its own, with a message that gives the reference
 revision and the Tidal commit that was checked. Rewrite flagged rules
 (pipeline step 9). After a
 rewrite, run the tool again and commit the new report next to the old one.
+
+## Review summaries (decision 0019, AGENTS.md)
+
+`reports/review/` holds summaries from reviewers, who are source readers.
+Each summary passed the similarity check before a writer read it. It holds
+suggestions to probe in prose only, with no code and no wording.
