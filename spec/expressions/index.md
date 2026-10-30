@@ -15,6 +15,12 @@ logical
 conditional
 assignment
 comma
+unary
+postfix
+casts
+constant-expressions
+new-delete
+lambdas
 :::
 
 :::{toctree}
@@ -33,4 +39,10 @@ logical
 conditional
 assignment
 comma
+unary
+postfix
+casts
+constant-expressions
+new-delete
+lambdas
 :::
