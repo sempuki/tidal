@@ -8,3 +8,5 @@ Draft. Sections are listed in the order they appear in the published PDF
   - [The if statement](statements/if.md)
 - Expressions
   - [Multiplicative operators](expressions/multiplicative.md)
+- Declarations
+  - [Placeholder types in variable declarations](declarations/auto.md)

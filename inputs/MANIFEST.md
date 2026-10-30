@@ -9,6 +9,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 |---|---|---|---|
 | llvm | llvm/llvm-project | `llvmorg-22.1.8` | Apache-2.0 WITH LLVM-exception |
 | gcc | gcc-mirror/gcc | `releases/gcc-16.2.0` | GPL-3.0-or-later |
+| edg | edgcpp/compiler | `7.0` | Apache-2.0 WITH LLVM-exception |
 
 ## Files
 
@@ -23,3 +24,9 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | gcc-cp-parser | gcc | `gcc/cp/parser.cc` | sanitized | `ceafcd2ad836728eff4861eae016710dfefe8d83ec6539c47309d9b22871eb7e` |
 | gcc-cp-semantics | gcc | `gcc/cp/semantics.cc` | sanitized | `4d0dfcfb11e73a25f0719d5338d6285be25d1060f3d8fe600a1a8dab3441e1b5` |
 | gcc-cp-typeck | gcc | `gcc/cp/typeck.cc` | sanitized | `71aac1bc4db5590f21e7f0c738f12099fa7c842b4d77967373538de3f3b7390b` |
+| clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `1509b492df7bed0c7d4e5a1f15a9e7e478b5fd913ffa50c4a07475aba2152e70` |
+| clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
+| gcc-cp-pt | gcc | `gcc/cp/pt.cc` | sanitized | `d6232f9534b807d3d0368c1982c8995e0c1d5d1fe8009a2250eae51f8e7444c2` |
+| gcc-cp-decl | gcc | `gcc/cp/decl.cc` | sanitized | `33f719a5572008e9a7cc4194294d3971bdf62e23e2e2840115eaa09f301c6728` |
+| edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
+| edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |

@@ -9,17 +9,103 @@
       "github": "gcc-mirror/gcc",
       "ref": "releases/gcc-16.2.0",
       "license": "GPL-3.0-or-later"
+    },
+    "edg": {
+      "github": "edgcpp/compiler",
+      "ref": "7.0",
+      "license": "Apache-2.0 WITH LLVM-exception"
     }
   },
   "inputs": [
-    {"id": "clang-parse-stmt", "repo": "llvm", "path": "clang/lib/Parse/ParseStmt.cpp", "class": "sanitized"},
-    {"id": "clang-parse-expr", "repo": "llvm", "path": "clang/lib/Parse/ParseExpr.cpp", "class": "sanitized"},
-    {"id": "clang-sema-stmt", "repo": "llvm", "path": "clang/lib/Sema/SemaStmt.cpp", "class": "sanitized"},
-    {"id": "clang-sema-expr", "repo": "llvm", "path": "clang/lib/Sema/SemaExpr.cpp", "class": "sanitized"},
-    {"id": "clang-diag-sema", "repo": "llvm", "path": "clang/include/clang/Basic/DiagnosticSemaKinds.td", "class": "sanitized"},
-    {"id": "clang-diag-parse", "repo": "llvm", "path": "clang/include/clang/Basic/DiagnosticParseKinds.td", "class": "sanitized"},
-    {"id": "gcc-cp-parser", "repo": "gcc", "path": "gcc/cp/parser.cc", "class": "sanitized"},
-    {"id": "gcc-cp-semantics", "repo": "gcc", "path": "gcc/cp/semantics.cc", "class": "sanitized"},
-    {"id": "gcc-cp-typeck", "repo": "gcc", "path": "gcc/cp/typeck.cc", "class": "sanitized"}
+    {
+      "id": "clang-parse-stmt",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseStmt.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-parse-expr",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseExpr.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-stmt",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaStmt.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-expr",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaExpr.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-diag-sema",
+      "repo": "llvm",
+      "path": "clang/include/clang/Basic/DiagnosticSemaKinds.td",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-diag-parse",
+      "repo": "llvm",
+      "path": "clang/include/clang/Basic/DiagnosticParseKinds.td",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-parser",
+      "repo": "gcc",
+      "path": "gcc/cp/parser.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-semantics",
+      "repo": "gcc",
+      "path": "gcc/cp/semantics.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-typeck",
+      "repo": "gcc",
+      "path": "gcc/cp/typeck.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-deduction",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaTemplateDeduction.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-decl",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaDecl.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-pt",
+      "repo": "gcc",
+      "path": "gcc/cp/pt.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-decl",
+      "repo": "gcc",
+      "path": "gcc/cp/decl.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-overload",
+      "repo": "edg",
+      "path": "src/overload.c",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-decls",
+      "repo": "edg",
+      "path": "src/decls.c",
+      "class": "sanitized"
+    }
   ]
 }
