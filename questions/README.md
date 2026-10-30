@@ -27,6 +27,8 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0014](Q-0014-early-dynamic-initialization.md) | May an implementation perform dynamic initialization before the program starts? | provisional | yes, unspecified |
 | [Q-0015](Q-0015-clang18-braced-structured-binding.md) | Is `auto [a, b]{arr};` valid when `arr` is an array? | provisional | yes; Clang 18's rejection is fixed in later versions |
 | [Q-0016](Q-0016-constrained-structured-binding.md) | May a structured binding use a constrained `auto`? | provisional | no; likely EDG defect |
+| [Q-0017](Q-0017-enum-value-out-of-range.md) | Is converting a value outside an enumeration's range undefined? | provisional | undefined |
+| [Q-0018](Q-0018-enum-no-standard-underlying-type.md) | What happens when no standard integer type holds all of an unscoped enumeration's values? | provisional | impl-defined |
 
 ## Status values
 
