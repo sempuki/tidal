@@ -50,11 +50,32 @@ original type, and an `unsigned int` otherwise. Unscoped enumerations and
 bit-fields promote as well. Their exact rules belong to those topics
 *(referenced)*.
 
+## Linkage
+
+Whether a name declared in one scope can refer to the same entity as the
+same name declared in another. *External* linkage connects names across
+translation units. *Internal* linkage connects names within one translation
+unit only. A name with no linkage refers only to the entity its own
+declaration introduces.
+
 ## Placeholder type
 
 `auto` or `decltype(auto)` written where a type is expected. The actual
 type is worked out later, from an initializer or a return statement. A
 concept name may come before the placeholder to constrain the type.
+
+## Storage duration
+
+How long the storage for an object exists. *Automatic* storage lasts from
+the object's declaration to the end of its block. *Static* storage lasts
+for the whole program run. *Thread* storage lasts for the life of a thread,
+with one object per thread. *Dynamic* storage is obtained and released with
+`new` and `delete` *(referenced)*.
+
+## Translation unit
+
+One source file after preprocessing, together with everything it includes.
+Translation units are compiled separately and then linked into a program.
 
 ## Unsequenced
 
