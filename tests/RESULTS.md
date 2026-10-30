@@ -83,6 +83,47 @@ compilers affect the Status column.
 | `declarations/auto/several-declarators-conflict.cpp` | AUTO-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-address-in-immediate.cpp` | CEV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-address-taken.cpp` | CEV-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-and-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-call-constant.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-call-runtime-arg.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-in-consteval.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-redeclare-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-ub-rejected.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-variable.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-class-only.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-parameter.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-added-late.cpp` | CINIT-2 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
+| `declarations/constexpr/constinit-automatic.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-block-static.cpp` | CINIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-dynamic.cpp` | CINIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-extern-declaration.cpp` | CINIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-not-const.cpp` | CINIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/constexpr/constinit-on-function.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-static.cpp` | CINIT-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/constexpr/constinit-with-constexpr.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-compile-and-run.cpp` | CX-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/constexpr/function-goto-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-implicitly-inline.cpp` | CX-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/constexpr/function-loops-and-locals.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-never-constant.cpp` | CX-3 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
+| `declarations/constexpr/function-non-literal-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-non-literal-param.cpp` | CX-3 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
+| `declarations/constexpr/function-not-constant-call.cpp` | CX-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-static-constexpr-local.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-static-local-evaluated.cpp` | CX-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-static-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/pointer-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/reference-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/reference-to-static.cpp` | CX-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-assign.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-const.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-no-initializer.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/array-4gib-ilp32.cpp` | DCL-10 | reject | reject | reject | skip | reject | reject | skip | reject | pass |
 | `declarations/declarators/array-4gib-lp64.cpp` | DCL-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/array-bound-constant.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -518,7 +559,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-503/503 tests pass on baseline compilers.
+544/544 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -773,6 +814,162 @@ check that the rejection has the intended cause.
 - `declarations/auto/void-initializer.cpp` (clang-18): error: variable has incomplete type 'void'
 - `declarations/auto/void-initializer.cpp` (gcc-16): error: deduced type 'void' for 'a' is incomplete
 - `declarations/auto/void-initializer.cpp` (clang-22): error: variable has incomplete type 'void'
+- `declarations/constexpr/consteval-address-taken.cpp` (clang-host): error: cannot take address of consteval function 'one' outside of an immediate invocation
+- `declarations/constexpr/consteval-address-taken.cpp` (gcc-host): error: taking address of an immediate function ‘consteval int one()’
+- `declarations/constexpr/consteval-address-taken.cpp` (edg-7.0): error: the address of a consteval function cannot be used here
+- `declarations/constexpr/consteval-address-taken.cpp` (gcc-14): error: taking address of an immediate function 'consteval int one()'
+- `declarations/constexpr/consteval-address-taken.cpp` (clang-18): error: cannot take address of consteval function 'one' outside of an immediate invocation
+- `declarations/constexpr/consteval-address-taken.cpp` (gcc-16): error: taking address of an immediate function 'consteval int one()'
+- `declarations/constexpr/consteval-address-taken.cpp` (clang-22): error: cannot take address of consteval function 'one' outside of an immediate invocation
+- `declarations/constexpr/consteval-and-constexpr.cpp` (clang-host): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/consteval-and-constexpr.cpp` (gcc-host): error: both ‘constexpr’ and ‘consteval’ specified
+- `declarations/constexpr/consteval-and-constexpr.cpp` (edg-7.0): error: only one of "constexpr", "consteval", and "constinit" can appear on a declaration
+- `declarations/constexpr/consteval-and-constexpr.cpp` (gcc-14): error: both 'constexpr' and 'consteval' specified
+- `declarations/constexpr/consteval-and-constexpr.cpp` (clang-18): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/consteval-and-constexpr.cpp` (gcc-16): error: both 'constexpr' and 'consteval' specified
+- `declarations/constexpr/consteval-and-constexpr.cpp` (clang-22): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (clang-host): error: call to consteval function 'square' is not a constant expression / note: function parameter 'x' with unknown value cannot be used in a constant expression
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (gcc-host): error: call to consteval function ‘square(x)’ is not a constant expression / error: ‘x’ is not a constant expression
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (edg-7.0): error: call to consteval function "square" did not produce a valid constant expression / note: the value of parameter "x" (declared at line 4) cannot be used as a constant
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (gcc-14): error: call to consteval function 'square(x)' is not a constant expression / error: 'x' is not a constant expression
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (clang-18): error: call to consteval function 'square' is not a constant expression / note: function parameter 'x' with unknown value cannot be used in a constant expression
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (gcc-16): error: call to consteval function 'square(x)' is not a constant expression / error: 'x' is not a constant expression
+- `declarations/constexpr/consteval-call-runtime-arg.cpp` (clang-22): error: call to consteval function 'square' is not a constant expression / note: function parameter 'x' with unknown value cannot be used in a constant expression
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (clang-host): error: constexpr declaration of 'f' follows consteval declaration / note: previous declaration is here
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (gcc-host): error: redeclaration ‘constexpr int f()’ differs in ‘consteval’ from previous declaration / note: previous declaration ‘consteval int f()’
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (edg-7.0): error: function "f" (declared at line 3) was previously declared consteval
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (gcc-14): error: redeclaration 'constexpr int f()' differs in 'consteval' from previous declaration / note: previous declaration 'consteval int f()'
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (clang-18): error: constexpr declaration of 'f' follows consteval declaration / note: previous declaration is here
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (gcc-16): error: redeclaration 'constexpr int f()' differs in 'consteval' from previous declaration / note: previous declaration 'consteval int f()'
+- `declarations/constexpr/consteval-redeclare-constexpr.cpp` (clang-22): error: constexpr declaration of 'f' follows consteval declaration / note: previous declaration is here
+- `declarations/constexpr/consteval-ub-rejected.cpp` (clang-host): error: call to consteval function 'divide' is not a constant expression / note: division by zero
+- `declarations/constexpr/consteval-ub-rejected.cpp` (gcc-host): error: call to consteval function ‘divide(1, 0)’ is not a constant expression / error: ‘(1 / 0)’ is not a constant expression
+- `declarations/constexpr/consteval-ub-rejected.cpp` (edg-7.0): error: call to consteval function "divide" did not produce a valid constant expression / note: division by zero
+- `declarations/constexpr/consteval-ub-rejected.cpp` (gcc-14): error: call to consteval function 'divide(1, 0)' is not a constant expression / error: '(1 / 0)' is not a constant expression
+- `declarations/constexpr/consteval-ub-rejected.cpp` (clang-18): error: call to consteval function 'divide' is not a constant expression / note: division by zero
+- `declarations/constexpr/consteval-ub-rejected.cpp` (gcc-16): error: call to consteval function 'divide(1, 0)' is not a constant expression / error: '(1 / 0)' is not a constant expression
+- `declarations/constexpr/consteval-ub-rejected.cpp` (clang-22): error: call to consteval function 'divide' is not a constant expression / note: division by zero
+- `declarations/constexpr/consteval-variable.cpp` (clang-host): error: consteval can only be used in function declarations
+- `declarations/constexpr/consteval-variable.cpp` (gcc-host): error: a variable cannot be declared ‘consteval’
+- `declarations/constexpr/consteval-variable.cpp` (edg-7.0): error: "consteval" is not permitted on the declaration of a variable or static data member
+- `declarations/constexpr/consteval-variable.cpp` (gcc-14): error: a variable cannot be declared 'consteval'
+- `declarations/constexpr/consteval-variable.cpp` (clang-18): error: consteval can only be used in function declarations
+- `declarations/constexpr/consteval-variable.cpp` (gcc-16): error: a variable cannot be declared 'consteval'
+- `declarations/constexpr/consteval-variable.cpp` (clang-22): error: consteval can only be used in function declarations
+- `declarations/constexpr/constexpr-class-only.cpp` (clang-host): error: struct cannot be marked constexpr
+- `declarations/constexpr/constexpr-class-only.cpp` (gcc-host): error: ‘constexpr’ cannot be used for type declarations
+- `declarations/constexpr/constexpr-class-only.cpp` (edg-7.0): error: "constexpr" is not valid here
+- `declarations/constexpr/constexpr-class-only.cpp` (gcc-14): error: 'constexpr' cannot be used for type declarations
+- `declarations/constexpr/constexpr-class-only.cpp` (clang-18): error: struct cannot be marked constexpr
+- `declarations/constexpr/constexpr-class-only.cpp` (gcc-16): error: 'constexpr' cannot be used for type declarations
+- `declarations/constexpr/constexpr-class-only.cpp` (clang-22): error: struct cannot be marked constexpr
+- `declarations/constexpr/constexpr-parameter.cpp` (clang-host): error: function parameter cannot be constexpr
+- `declarations/constexpr/constexpr-parameter.cpp` (gcc-host): error: a parameter cannot be declared ‘constexpr’
+- `declarations/constexpr/constexpr-parameter.cpp` (edg-7.0): error: invalid specifier on a parameter
+- `declarations/constexpr/constexpr-parameter.cpp` (gcc-14): error: a parameter cannot be declared 'constexpr'
+- `declarations/constexpr/constexpr-parameter.cpp` (clang-18): error: function parameter cannot be constexpr
+- `declarations/constexpr/constexpr-parameter.cpp` (gcc-16): error: a parameter cannot be declared 'constexpr'
+- `declarations/constexpr/constexpr-parameter.cpp` (clang-22): error: function parameter cannot be constexpr
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (clang-host): error: non-constexpr declaration of 'f' follows constexpr declaration / note: previous declaration is here
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (gcc-host): error: redeclaration ‘int f()’ differs in ‘constexpr’ from previous declaration / note: previous declaration ‘constexpr int f()’
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (edg-7.0): error: function "f" (declared at line 3) was previously declared constexpr
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (gcc-14): error: redeclaration 'int f()' differs in 'constexpr' from previous declaration / note: previous declaration 'constexpr int f()'
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (clang-18): error: non-constexpr declaration of 'f' follows constexpr declaration / note: previous declaration is here
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (gcc-16): error: redeclaration 'int f()' differs in 'constexpr' from previous declaration / note: previous declaration 'constexpr int f()'
+- `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` (clang-22): error: non-constexpr declaration of 'f' follows constexpr declaration / note: previous declaration is here
+- `declarations/constexpr/constinit-added-late.cpp` (clang-host): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-added-late.cpp` (clang-18): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-added-late.cpp` (clang-22): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-automatic.cpp` (clang-host): error: local variable cannot be declared 'constinit'
+- `declarations/constexpr/constinit-automatic.cpp` (gcc-host): error: ‘constinit’ can only be applied to a variable with static or thread storage duration
+- `declarations/constexpr/constinit-automatic.cpp` (edg-7.0): error: "constinit" is only valid for declarations of variables with static or thread storage duration
+- `declarations/constexpr/constinit-automatic.cpp` (gcc-14): error: 'constinit' can only be applied to a variable with static or thread storage duration
+- `declarations/constexpr/constinit-automatic.cpp` (clang-18): error: local variable cannot be declared 'constinit'
+- `declarations/constexpr/constinit-automatic.cpp` (gcc-16): error: 'constinit' can only be applied to a variable with static or thread storage duration
+- `declarations/constexpr/constinit-automatic.cpp` (clang-22): error: local variable cannot be declared 'constinit'
+- `declarations/constexpr/constinit-dynamic.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here
+- `declarations/constexpr/constinit-dynamic.cpp` (gcc-host): error: ‘constinit’ variable ‘value’ does not have a constant initializer / error: call to non-‘constexpr’ function ‘int read()’
+- `declarations/constexpr/constinit-dynamic.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "read" (declared at line 3)
+- `declarations/constexpr/constinit-dynamic.cpp` (gcc-14): error: 'constinit' variable 'value' does not have a constant initializer / error: call to non-'constexpr' function 'int read()'
+- `declarations/constexpr/constinit-dynamic.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here
+- `declarations/constexpr/constinit-dynamic.cpp` (gcc-16): error: 'constinit' variable 'value' does not have a constant initializer / error: call to non-'constexpr' function 'int read()'
+- `declarations/constexpr/constinit-dynamic.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here
+- `declarations/constexpr/constinit-on-declaration-only.cpp` (clang-host): error: 'constinit' specifier missing on initializing declaration of 'y' [-Werror,-Wmissing-constinit] / note: variable declared constinit here
+- `declarations/constexpr/constinit-on-declaration-only.cpp` (edg-7.0): error: variable was previously declared with "constinit" at line 5
+- `declarations/constexpr/constinit-on-declaration-only.cpp` (clang-18): error: 'constinit' specifier missing on initializing declaration of 'y' [-Werror,-Wmissing-constinit] / note: variable declared constinit here
+- `declarations/constexpr/constinit-on-declaration-only.cpp` (clang-22): error: 'constinit' specifier missing on initializing declaration of 'y' [-Werror,-Wmissing-constinit] / note: variable declared constinit here
+- `declarations/constexpr/constinit-on-function.cpp` (clang-host): error: constinit can only be used in variable declarations
+- `declarations/constexpr/constinit-on-function.cpp` (gcc-host): error: ‘constinit’ on function return type is not allowed
+- `declarations/constexpr/constinit-on-function.cpp` (edg-7.0): error: "constinit" is not valid here
+- `declarations/constexpr/constinit-on-function.cpp` (gcc-14): error: 'constinit' on function return type is not allowed
+- `declarations/constexpr/constinit-on-function.cpp` (clang-18): error: constinit can only be used in variable declarations
+- `declarations/constexpr/constinit-on-function.cpp` (gcc-16): error: 'constinit' on function return type is not allowed
+- `declarations/constexpr/constinit-on-function.cpp` (clang-22): error: constinit can only be used in variable declarations
+- `declarations/constexpr/constinit-with-constexpr.cpp` (clang-host): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/constinit-with-constexpr.cpp` (gcc-host): error: can use at most one of the ‘constinit’ and ‘constexpr’ specifiers
+- `declarations/constexpr/constinit-with-constexpr.cpp` (edg-7.0): error: only one of "constexpr", "consteval", and "constinit" can appear on a declaration
+- `declarations/constexpr/constinit-with-constexpr.cpp` (gcc-14): error: can use at most one of the 'constinit' and 'constexpr' specifiers
+- `declarations/constexpr/constinit-with-constexpr.cpp` (clang-18): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/constinit-with-constexpr.cpp` (gcc-16): error: can use at most one of the 'constinit' and 'constexpr' specifiers
+- `declarations/constexpr/constinit-with-constexpr.cpp` (clang-22): error: cannot combine with previous 'constexpr' declaration specifier
+- `declarations/constexpr/function-never-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/function-non-literal-param.cpp` (clang-18): error: constexpr function's 1st parameter type 'S' is not a literal type / note: 'S' is not literal because its destructor is not constexpr
+- `declarations/constexpr/function-not-constant-call.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/function-not-constant-call.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression
+- `declarations/constexpr/function-not-constant-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "read" (declared at line 3)
+- `declarations/constexpr/function-not-constant-call.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/constexpr/function-not-constant-call.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/function-not-constant-call.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/constexpr/function-not-constant-call.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/function-static-local-evaluated.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: control flows through the definition of a static variable
+- `declarations/constexpr/function-static-local-evaluated.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression
+- `declarations/constexpr/function-static-local-evaluated.cpp` (edg-7.0): error: expression must have a constant value / note: constant-evaluation cannot go through the declaration of a variable with static or thread storage duration
+- `declarations/constexpr/function-static-local-evaluated.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/constexpr/function-static-local-evaluated.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: control flows through the definition of a static variable
+- `declarations/constexpr/function-static-local-evaluated.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/constexpr/function-static-local-evaluated.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: control flows through the definition of a static variable
+- `declarations/constexpr/pointer-to-automatic.cpp` (clang-host): error: constexpr variable 'p' must be initialized by a constant expression / note: pointer to 'local' is not a constant expression
+- `declarations/constexpr/pointer-to-automatic.cpp` (gcc-host): error: ‘& local’ is not a constant expression
+- `declarations/constexpr/pointer-to-automatic.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 4) cannot be used as a constant
+- `declarations/constexpr/pointer-to-automatic.cpp` (gcc-14): error: '& local' is not a constant expression
+- `declarations/constexpr/pointer-to-automatic.cpp` (clang-18): error: constexpr variable 'p' must be initialized by a constant expression / note: pointer to 'local' is not a constant expression
+- `declarations/constexpr/pointer-to-automatic.cpp` (gcc-16): error: '& local' is not a constant expression
+- `declarations/constexpr/pointer-to-automatic.cpp` (clang-22): error: constexpr variable 'p' must be initialized by a constant expression / note: pointer to 'local' is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (clang-host): error: constexpr variable 'r' must be initialized by a constant expression / note: reference to 'local' is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (gcc-host): error: ‘local’ is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 4) cannot be used as a constant
+- `declarations/constexpr/reference-to-automatic.cpp` (gcc-14): error: 'local' is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (clang-18): error: constexpr variable 'r' must be initialized by a constant expression / note: reference to 'local' is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (gcc-16): error: 'local' is not a constant expression
+- `declarations/constexpr/reference-to-automatic.cpp` (clang-22): error: constexpr variable 'r' must be initialized by a constant expression / note: reference to 'local' is not a constant expression
+- `declarations/constexpr/variable-assign.cpp` (clang-host): error: cannot assign to variable 'n' with const-qualified type 'const int' / note: variable 'n' declared const here
+- `declarations/constexpr/variable-assign.cpp` (gcc-host): error: assignment of read-only variable ‘n’
+- `declarations/constexpr/variable-assign.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `declarations/constexpr/variable-assign.cpp` (gcc-14): error: assignment of read-only variable 'n'
+- `declarations/constexpr/variable-assign.cpp` (clang-18): error: cannot assign to variable 'n' with const-qualified type 'const int' / note: variable 'n' declared const here
+- `declarations/constexpr/variable-assign.cpp` (gcc-16): error: assignment of read-only variable 'n'
+- `declarations/constexpr/variable-assign.cpp` (clang-22): error: cannot assign to variable 'n' with const-qualified type 'const int' / note: variable 'n' declared const here
+- `declarations/constexpr/variable-no-initializer.cpp` (clang-host): error: constexpr variable 'n' must be initialized by a constant expression
+- `declarations/constexpr/variable-no-initializer.cpp` (gcc-host): error: uninitialized ‘const n’ [-fpermissive]
+- `declarations/constexpr/variable-no-initializer.cpp` (edg-7.0): error: missing initializer for constexpr variable
+- `declarations/constexpr/variable-no-initializer.cpp` (gcc-14): error: uninitialized 'const n' [-fpermissive]
+- `declarations/constexpr/variable-no-initializer.cpp` (clang-18): error: constexpr variable 'n' must be initialized by a constant expression
+- `declarations/constexpr/variable-no-initializer.cpp` (gcc-16): error: uninitialized 'const n' [-fpermissive]
+- `declarations/constexpr/variable-no-initializer.cpp` (clang-22): error: constexpr variable 'n' must be initialized by a constant expression
+- `declarations/constexpr/variable-non-literal.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const S' / note: 'S' is not literal because its destructor is not constexpr
+- `declarations/constexpr/variable-non-literal.cpp` (gcc-host): error: the type ‘const S’ of ‘constexpr’ variable ‘s’ is not literal / note: ‘S’ is not literal because:
+- `declarations/constexpr/variable-non-literal.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "S::~S" (declared at line 3)
+- `declarations/constexpr/variable-non-literal.cpp` (gcc-14): error: the type 'const S' of 'constexpr' variable 's' is not literal / note: 'S' is not literal because:
+- `declarations/constexpr/variable-non-literal.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const S' / note: 'S' is not literal because its destructor is not constexpr
+- `declarations/constexpr/variable-non-literal.cpp` (gcc-16): error: the type 'const S' of 'constexpr' variable 's' is not literal / note: 'S' is not literal because:
+- `declarations/constexpr/variable-non-literal.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const S' / note: 'S' is not literal because its destructor is not constexpr
+- `declarations/constexpr/variable-not-constant.cpp` (clang-host): error: constexpr variable 'n' must be initialized by a constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/variable-not-constant.cpp` (gcc-host): error: call to non-‘constexpr’ function ‘int read()’
+- `declarations/constexpr/variable-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "read" (declared at line 3)
+- `declarations/constexpr/variable-not-constant.cpp` (gcc-14): error: call to non-'constexpr' function 'int read()'
+- `declarations/constexpr/variable-not-constant.cpp` (clang-18): error: constexpr variable 'n' must be initialized by a constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
+- `declarations/constexpr/variable-not-constant.cpp` (gcc-16): error: call to non-'constexpr' function 'int read()'
+- `declarations/constexpr/variable-not-constant.cpp` (clang-22): error: constexpr variable 'n' must be initialized by a constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
 - `declarations/declarators/array-4gib-ilp32.cpp` (clang-host): error: array is too large (4'294'967'296 elements)
 - `declarations/declarators/array-4gib-ilp32.cpp` (gcc-host): error: narrowing conversion of ‘4294967296’ from ‘long long unsigned int’ to ‘unsigned int’ [-Wnarrowing] / error: size of array ‘big’ is not an integral constant-expression [-Wpedantic]
 - `declarations/declarators/array-4gib-ilp32.cpp` (gcc-14): error: narrowing conversion of '4294967296' from 'long long unsigned int' to 'unsigned int' [-Wnarrowing] / error: size of array 'big' is not an integral constant-expression [-Wpedantic]

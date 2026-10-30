@@ -18,6 +18,7 @@ current state only. The history of how it got here is in `git log`.
 | [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 32 | Q-0019 | 0 flagged |
 | [Standard attributes](../spec/declarations/attributes.md) | 15 | 5 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
 | [Functions](../spec/declarations/functions/) (4 pages) | 21 | 8 required, 10 reject, 1 undefined, 1 impl-defined, 1 recommended | 67 | Q-0022, Q-0023, Q-0024 | 0 flagged |
+| [constexpr, consteval, and constinit](../spec/declarations/constexpr.md) | 10 | 2 required, 8 reject | 41 | Q-0020, Q-0025 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -25,11 +26,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-format-conversion.txt`.
+`reports/similarity/2026-10-30-format-conversion.txt`, and the constexpr page's
+is `reports/similarity/2026-10-30-constexpr.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 503/503 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 544/544 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -45,7 +47,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Twenty-three questions are open for opinions, each with a provisional answer the
+Twenty-four questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -80,8 +82,8 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
-7. Continue declarations in the order set by decision 0013. Next:
-   the `constexpr`, `consteval`, and `constinit` specifiers.
+7. Split the rules listed under "Known limits of the specification text"
+   so each fits one segment.
 8. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements) and expression families in order
    of dependency.
