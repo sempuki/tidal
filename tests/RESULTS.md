@@ -229,6 +229,42 @@ compilers affect the Status column.
 | `declarations/storage-linkage/unused-missing-definition.cpp` | LNK-7 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/volatile-const-external.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/storage-linkage/zero-initialized.cpp` | STO-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/structured-bindings/aggregate-members.cpp` | SB-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/anonymous-union-member.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/array-copy.cpp` | SB-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/structured-bindings/array-reference.cpp` | SB-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/structured-bindings/as-class-member.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/as-parameter.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/binding-types.cpp` | SB-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/constexpr-binding.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/constrained.cpp` | SB-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/count-mismatch-array.cpp` | SB-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/count-mismatch-class.cpp` | SB-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/decltype-auto.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/duplicate-names.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/empty-bindings.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/explicit-type.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/initializer-braces.cpp` | SB-7 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
+| `declarations/structured-bindings/initializer-equals.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/initializer-parens.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/lifetime-extended.cpp` | SB-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/structured-bindings/members-in-base.cpp` | SB-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/members-split-across-bases.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/names-in-scope.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/no-initializer.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/own-initializer.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/parenthesized.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/pointer-declarator.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/private-member.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/scalar-rejected.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/static-and-thread-local.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/template.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-count-mismatch.cpp` | SB-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-element-missing.cpp` | SB-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-protocol.cpp` | SB-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/underscore-twice.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/union-rejected.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/with-other-declarator.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
@@ -313,7 +349,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-298/298 tests pass on baseline compilers.
+334/334 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1093,6 +1129,181 @@ check that the rejection has the intended cause.
 - `declarations/storage-linkage/two-storage-classes.cpp` (clang-18): error: cannot combine with previous 'static' declaration specifier
 - `declarations/storage-linkage/two-storage-classes.cpp` (gcc-16): error: 'extern' specifier conflicts with 'static'
 - `declarations/storage-linkage/two-storage-classes.cpp` (clang-22): error: cannot combine with previous 'static' declaration specifier
+- `declarations/structured-bindings/anonymous-union-member.cpp` (clang-host): error: cannot bind class type 'S' because it has an anonymous union member
+- `declarations/structured-bindings/anonymous-union-member.cpp` (gcc-host): error: cannot decompose class type ‘S’ because it has an anonymous union member
+- `declarations/structured-bindings/anonymous-union-member.cpp` (edg-7.0): error: type "S" has no components to bind to
+- `declarations/structured-bindings/anonymous-union-member.cpp` (gcc-14): error: cannot decompose class type 'S' because it has an anonymous union member
+- `declarations/structured-bindings/anonymous-union-member.cpp` (clang-18): error: cannot decompose class type 'S' because it has an anonymous union member
+- `declarations/structured-bindings/anonymous-union-member.cpp` (gcc-16): error: cannot decompose class type 'S' because it has an anonymous union member
+- `declarations/structured-bindings/anonymous-union-member.cpp` (clang-22): error: cannot bind class type 'S' because it has an anonymous union member
+- `declarations/structured-bindings/as-class-member.cpp` (clang-host): error: structured binding declaration not permitted in this context
+- `declarations/structured-bindings/as-class-member.cpp` (gcc-host): error: expected unqualified-id before ‘[’ token
+- `declarations/structured-bindings/as-class-member.cpp` (edg-7.0): error: expected an identifier / error: identifier "x" is undefined
+- `declarations/structured-bindings/as-class-member.cpp` (gcc-14): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/as-class-member.cpp` (clang-18): error: decomposition declaration not permitted in this context
+- `declarations/structured-bindings/as-class-member.cpp` (gcc-16): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/as-class-member.cpp` (clang-22): error: structured binding declaration not permitted in this context
+- `declarations/structured-bindings/as-parameter.cpp` (clang-host): error: use of undeclared identifier 'x'
+- `declarations/structured-bindings/as-parameter.cpp` (gcc-host): error: ‘x’ was not declared in this scope / error: expected ‘]’ before ‘,’ token
+- `declarations/structured-bindings/as-parameter.cpp` (edg-7.0): error: identifier "x" is undefined / error: expected a "]"
+- `declarations/structured-bindings/as-parameter.cpp` (gcc-14): error: 'x' was not declared in this scope / error: expected ']' before ',' token
+- `declarations/structured-bindings/as-parameter.cpp` (clang-18): error: use of undeclared identifier 'x'
+- `declarations/structured-bindings/as-parameter.cpp` (gcc-16): error: 'x' was not declared in this scope / error: expected ']' before ',' token
+- `declarations/structured-bindings/as-parameter.cpp` (clang-22): error: use of undeclared identifier 'x'
+- `declarations/structured-bindings/constexpr-binding.cpp` (clang-host): error: structured binding declaration cannot be declared 'constexpr'
+- `declarations/structured-bindings/constexpr-binding.cpp` (gcc-host): error: structured binding declaration can be ‘constexpr’ only with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
+- `declarations/structured-bindings/constexpr-binding.cpp` (edg-7.0): error: a structured binding cannot be declared "constexpr"
+- `declarations/structured-bindings/constexpr-binding.cpp` (gcc-14): error: structured binding declaration cannot be 'constexpr'
+- `declarations/structured-bindings/constexpr-binding.cpp` (clang-18): error: decomposition declaration cannot be declared 'constexpr'
+- `declarations/structured-bindings/constexpr-binding.cpp` (gcc-16): error: structured binding declaration can be 'constexpr' only with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/structured-bindings/constexpr-binding.cpp` (clang-22): error: structured binding declaration cannot be declared 'constexpr'
+- `declarations/structured-bindings/constrained.cpp` (clang-host): error: structured binding declaration cannot be declared with constrained 'auto' / error: cannot bind non-class, non-array type 'int *'
+- `declarations/structured-bindings/constrained.cpp` (gcc-host): error: structured binding declaration cannot have constrained ‘auto’ type ‘auto [requires ::Any<<placeholder>, >]’ [-Wpedantic]
+- `declarations/structured-bindings/constrained.cpp` (gcc-14): error: structured binding declaration cannot have constrained 'auto' type 'auto [requires ::Any<<placeholder>, >]' [-Wpedantic]
+- `declarations/structured-bindings/constrained.cpp` (clang-18): error: decomposition declaration cannot be declared with constrained 'auto' / error: cannot decompose non-class, non-array type 'int *'
+- `declarations/structured-bindings/constrained.cpp` (gcc-16): error: structured binding declaration cannot have constrained 'auto' type 'auto [requires ::Any<<placeholder>, >]' [-Wpedantic]
+- `declarations/structured-bindings/constrained.cpp` (clang-22): error: structured binding declaration cannot be declared with constrained 'auto' / error: cannot bind non-class, non-array type 'int *'
+- `declarations/structured-bindings/count-mismatch-array.cpp` (clang-host): error: type 'int[3]' binds to 3 elements, but only 2 names were provided
+- `declarations/structured-bindings/count-mismatch-array.cpp` (gcc-host): error: only 2 names provided for structured binding / note: while ‘int [3]’ decomposes into 3 elements
+- `declarations/structured-bindings/count-mismatch-array.cpp` (edg-7.0): error: there are more elements than there are binding names
+- `declarations/structured-bindings/count-mismatch-array.cpp` (gcc-14): error: only 2 names provided for structured binding / note: while 'int [3]' decomposes into 3 elements
+- `declarations/structured-bindings/count-mismatch-array.cpp` (clang-18): error: type 'int[3]' decomposes into 3 elements, but only 2 names were provided
+- `declarations/structured-bindings/count-mismatch-array.cpp` (gcc-16): error: only 2 names provided for structured binding / note: while 'int [3]' decomposes into 3 elements
+- `declarations/structured-bindings/count-mismatch-array.cpp` (clang-22): error: type 'int[3]' binds to 3 elements, but only 2 names were provided
+- `declarations/structured-bindings/count-mismatch-class.cpp` (clang-host): error: type 'S' binds to 2 elements, but only 1 name was provided
+- `declarations/structured-bindings/count-mismatch-class.cpp` (gcc-host): error: only 1 name provided for structured binding / note: while ‘S’ decomposes into 2 elements
+- `declarations/structured-bindings/count-mismatch-class.cpp` (edg-7.0): error: there are more elements than there are binding names
+- `declarations/structured-bindings/count-mismatch-class.cpp` (gcc-14): error: only 1 name provided for structured binding / note: while 'S' decomposes into 2 elements
+- `declarations/structured-bindings/count-mismatch-class.cpp` (clang-18): error: type 'S' decomposes into 2 elements, but only 1 name was provided
+- `declarations/structured-bindings/count-mismatch-class.cpp` (gcc-16): error: only 1 name provided for structured binding / note: while 'S' decomposes into 2 elements
+- `declarations/structured-bindings/count-mismatch-class.cpp` (clang-22): error: type 'S' binds to 2 elements, but only 1 name was provided
+- `declarations/structured-bindings/decltype-auto.cpp` (clang-host): error: structured binding declaration cannot be declared with type 'decltype(auto)'; declared type must be 'auto' or reference to 'auto'
+- `declarations/structured-bindings/decltype-auto.cpp` (gcc-host): error: structured binding declaration cannot have type ‘decltype(auto)’ / note: type must be cv-qualified ‘auto’ or reference to cv-qualified ‘auto’
+- `declarations/structured-bindings/decltype-auto.cpp` (edg-7.0): error: invalid specifier for structured binding declaration / error: initialization with "{...}" expected for aggregate object
+- `declarations/structured-bindings/decltype-auto.cpp` (gcc-14): error: structured binding declaration cannot have type 'decltype(auto)' / note: type must be cv-qualified 'auto' or reference to cv-qualified 'auto'
+- `declarations/structured-bindings/decltype-auto.cpp` (clang-18): error: decomposition declaration cannot be declared with type 'decltype(auto)'; declared type must be 'auto' or reference to 'auto'
+- `declarations/structured-bindings/decltype-auto.cpp` (gcc-16): error: structured binding declaration cannot have type 'decltype(auto)' / note: type must be cv-qualified 'auto' or reference to cv-qualified 'auto'
+- `declarations/structured-bindings/decltype-auto.cpp` (clang-22): error: structured binding declaration cannot be declared with type 'decltype(auto)'; declared type must be 'auto' or reference to 'auto'
+- `declarations/structured-bindings/duplicate-names.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
+- `declarations/structured-bindings/duplicate-names.cpp` (gcc-host): error: redefinition of ‘auto x’
+- `declarations/structured-bindings/duplicate-names.cpp` (edg-7.0): error: declaration is incompatible with structured binding "x" (declared at line 4)
+- `declarations/structured-bindings/duplicate-names.cpp` (gcc-14): error: redefinition of 'auto x'
+- `declarations/structured-bindings/duplicate-names.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `declarations/structured-bindings/duplicate-names.cpp` (gcc-16): error: redefinition of 'auto x'
+- `declarations/structured-bindings/duplicate-names.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
+- `declarations/structured-bindings/empty-bindings.cpp` (clang-host): error: ISO C++17 does not allow a structured binding group to be empty [-Werror,-Wempty-decomposition]
+- `declarations/structured-bindings/empty-bindings.cpp` (gcc-host): error: empty structured binding declaration
+- `declarations/structured-bindings/empty-bindings.cpp` (edg-7.0): error: expected an identifier / error: expected a "]"
+- `declarations/structured-bindings/empty-bindings.cpp` (gcc-14): error: empty structured binding declaration
+- `declarations/structured-bindings/empty-bindings.cpp` (clang-18): error: ISO C++17 does not allow a decomposition group to be empty [-Werror,-Wempty-decomposition]
+- `declarations/structured-bindings/empty-bindings.cpp` (gcc-16): error: empty structured binding declaration
+- `declarations/structured-bindings/empty-bindings.cpp` (clang-22): error: ISO C++17 does not allow a structured binding group to be empty [-Werror,-Wempty-decomposition]
+- `declarations/structured-bindings/explicit-type.cpp` (clang-host): error: structured binding declaration cannot be declared with type 'int'; declared type must be 'auto' or reference to 'auto' / error: cannot initialize a variable of type 'int' with an lvalue of type 'int[2]'
+- `declarations/structured-bindings/explicit-type.cpp` (gcc-host): error: structured binding declaration cannot have type ‘int’ / note: type must be cv-qualified ‘auto’ or reference to cv-qualified ‘auto’
+- `declarations/structured-bindings/explicit-type.cpp` (edg-7.0): error: invalid specifier for structured binding declaration / error: a value of type "int *" cannot be used to initialize an entity of type "int"
+- `declarations/structured-bindings/explicit-type.cpp` (gcc-14): error: structured binding declaration cannot have type 'int' / note: type must be cv-qualified 'auto' or reference to cv-qualified 'auto'
+- `declarations/structured-bindings/explicit-type.cpp` (clang-18): error: decomposition declaration cannot be declared with type 'int'; declared type must be 'auto' or reference to 'auto' / error: cannot initialize a variable of type 'int' with an lvalue of type 'int[2]'
+- `declarations/structured-bindings/explicit-type.cpp` (gcc-16): error: structured binding declaration cannot have type 'int' / note: type must be cv-qualified 'auto' or reference to cv-qualified 'auto'
+- `declarations/structured-bindings/explicit-type.cpp` (clang-22): error: structured binding declaration cannot be declared with type 'int'; declared type must be 'auto' or reference to 'auto' / error: cannot initialize a variable of type 'int' with an lvalue of type 'int[2]'
+- `declarations/structured-bindings/initializer-braces.cpp` (clang-18): error: cannot initialize an array element of type 'int' with an lvalue of type 'int[2]'
+- `declarations/structured-bindings/members-split-across-bases.cpp` (clang-host): error: cannot bind class type 'D': both it and its base class 'B' have non-static data members
+- `declarations/structured-bindings/members-split-across-bases.cpp` (gcc-host): error: cannot decompose class type ‘D’: both it and its base class ‘B’ have non-static data members
+- `declarations/structured-bindings/members-split-across-bases.cpp` (edg-7.0): error: type "D" has no components to bind to
+- `declarations/structured-bindings/members-split-across-bases.cpp` (gcc-14): error: cannot decompose class type 'D': both it and its base class 'B' have non-static data members
+- `declarations/structured-bindings/members-split-across-bases.cpp` (clang-18): error: cannot decompose class type 'D': both it and its base class 'B' have non-static data members
+- `declarations/structured-bindings/members-split-across-bases.cpp` (gcc-16): error: cannot decompose class type 'D': both it and its base class 'B' have non-static data members
+- `declarations/structured-bindings/members-split-across-bases.cpp` (clang-22): error: cannot bind class type 'D': both it and its base class 'B' have non-static data members
+- `declarations/structured-bindings/names-in-scope.cpp` (clang-host): error: redefinition of 'x' as different kind of symbol / note: previous definition is here
+- `declarations/structured-bindings/names-in-scope.cpp` (gcc-host): error: redefinition of ‘int x’
+- `declarations/structured-bindings/names-in-scope.cpp` (edg-7.0): error: declaration is incompatible with structured binding "x" (declared at line 4)
+- `declarations/structured-bindings/names-in-scope.cpp` (gcc-14): error: redefinition of 'int x'
+- `declarations/structured-bindings/names-in-scope.cpp` (clang-18): error: redefinition of 'x' as different kind of symbol / note: previous definition is here
+- `declarations/structured-bindings/names-in-scope.cpp` (gcc-16): error: redefinition of 'int x'
+- `declarations/structured-bindings/names-in-scope.cpp` (clang-22): error: redefinition of 'x' as different kind of symbol / note: previous definition is here
+- `declarations/structured-bindings/no-initializer.cpp` (clang-host): error: structured binding declaration '[x, y]' requires an initializer
+- `declarations/structured-bindings/no-initializer.cpp` (gcc-host): error: expected initializer before ‘;’ token
+- `declarations/structured-bindings/no-initializer.cpp` (edg-7.0): error: missing initializer / error: cannot deduce "auto" type (initializer required)
+- `declarations/structured-bindings/no-initializer.cpp` (gcc-14): error: expected initializer before ';' token
+- `declarations/structured-bindings/no-initializer.cpp` (clang-18): error: decomposition declaration '[x, y]' requires an initializer
+- `declarations/structured-bindings/no-initializer.cpp` (gcc-16): error: expected initializer before ';' token
+- `declarations/structured-bindings/no-initializer.cpp` (clang-22): error: structured binding declaration '[x, y]' requires an initializer
+- `declarations/structured-bindings/own-initializer.cpp` (clang-host): error: binding 'x' cannot appear in the initializer of its own structured binding declaration
+- `declarations/structured-bindings/own-initializer.cpp` (gcc-host): error: use of ‘x’ before deduction of ‘auto’
+- `declarations/structured-bindings/own-initializer.cpp` (edg-7.0): error: a variable declared with an auto type specifier cannot appear in its own initializer
+- `declarations/structured-bindings/own-initializer.cpp` (gcc-14): error: use of 'x' before deduction of 'auto'
+- `declarations/structured-bindings/own-initializer.cpp` (clang-18): error: binding 'x' cannot appear in the initializer of its own decomposition declaration
+- `declarations/structured-bindings/own-initializer.cpp` (gcc-16): error: use of 'x' before deduction of 'auto'
+- `declarations/structured-bindings/own-initializer.cpp` (clang-22): error: binding 'x' cannot appear in the initializer of its own structured binding declaration
+- `declarations/structured-bindings/parenthesized.cpp` (clang-host): error: structured binding declaration cannot be declared with parentheses
+- `declarations/structured-bindings/parenthesized.cpp` (gcc-host): error: expected unqualified-id before ‘[’ token / error: expected ‘)’ before ‘[’ token
+- `declarations/structured-bindings/parenthesized.cpp` (edg-7.0): error: expected an identifier / error: identifier "x" is undefined
+- `declarations/structured-bindings/parenthesized.cpp` (gcc-14): error: expected unqualified-id before '[' token / error: expected ')' before '[' token
+- `declarations/structured-bindings/parenthesized.cpp` (clang-18): error: decomposition declaration cannot be declared with parentheses
+- `declarations/structured-bindings/parenthesized.cpp` (gcc-16): error: expected unqualified-id before '[' token / error: expected ')' before '[' token
+- `declarations/structured-bindings/parenthesized.cpp` (clang-22): error: structured binding declaration cannot be declared with parentheses
+- `declarations/structured-bindings/pointer-declarator.cpp` (clang-host): error: structured binding declaration cannot be declared with type 'auto *'; declared type must be 'auto' or reference to 'auto' / error: cannot bind non-class, non-array type 'int *'
+- `declarations/structured-bindings/pointer-declarator.cpp` (gcc-host): error: expected unqualified-id before ‘[’ token
+- `declarations/structured-bindings/pointer-declarator.cpp` (edg-7.0): error: invalid structured binding syntax / error: type "int *" has no components to bind to
+- `declarations/structured-bindings/pointer-declarator.cpp` (gcc-14): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/pointer-declarator.cpp` (clang-18): error: decomposition declaration cannot be declared with type 'auto *'; declared type must be 'auto' or reference to 'auto' / error: cannot decompose non-class, non-array type 'int *'
+- `declarations/structured-bindings/pointer-declarator.cpp` (gcc-16): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/pointer-declarator.cpp` (clang-22): error: structured binding declaration cannot be declared with type 'auto *'; declared type must be 'auto' or reference to 'auto' / error: cannot bind non-class, non-array type 'int *'
+- `declarations/structured-bindings/private-member.cpp` (clang-host): error: cannot bind private member 'a' of 'S' / note: implicitly declared private here
+- `declarations/structured-bindings/private-member.cpp` (gcc-host): error: cannot decompose inaccessible member ‘S::a’ of ‘S’ / note: declared private here
+- `declarations/structured-bindings/private-member.cpp` (edg-7.0): error: cannot bind to non-public member "S::a"
+- `declarations/structured-bindings/private-member.cpp` (gcc-14): error: cannot decompose inaccessible member 'S::a' of 'S' / note: declared private here
+- `declarations/structured-bindings/private-member.cpp` (clang-18): error: cannot decompose private member 'a' of 'S' / note: implicitly declared private here
+- `declarations/structured-bindings/private-member.cpp` (gcc-16): error: cannot decompose inaccessible member 'S::a' of 'S' / note: declared private here
+- `declarations/structured-bindings/private-member.cpp` (clang-22): error: cannot bind private member 'a' of 'S' / note: implicitly declared private here
+- `declarations/structured-bindings/scalar-rejected.cpp` (clang-host): error: cannot bind non-class, non-array type 'int'
+- `declarations/structured-bindings/scalar-rejected.cpp` (gcc-host): error: cannot decompose non-array non-class type ‘int’
+- `declarations/structured-bindings/scalar-rejected.cpp` (edg-7.0): error: type "int" has no components to bind to
+- `declarations/structured-bindings/scalar-rejected.cpp` (gcc-14): error: cannot decompose non-array non-class type 'int'
+- `declarations/structured-bindings/scalar-rejected.cpp` (clang-18): error: cannot decompose non-class, non-array type 'int'
+- `declarations/structured-bindings/scalar-rejected.cpp` (gcc-16): error: cannot decompose non-array non-class type 'int'
+- `declarations/structured-bindings/scalar-rejected.cpp` (clang-22): error: cannot bind non-class, non-array type 'int'
+- `declarations/structured-bindings/template.cpp` (clang-host): error: structured binding declaration cannot be a template
+- `declarations/structured-bindings/template.cpp` (gcc-host): error: expected unqualified-id before ‘[’ token
+- `declarations/structured-bindings/template.cpp` (edg-7.0): error: structured binding templates are not permitted
+- `declarations/structured-bindings/template.cpp` (gcc-14): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/template.cpp` (clang-18): error: decomposition declaration template not supported
+- `declarations/structured-bindings/template.cpp` (gcc-16): error: expected unqualified-id before '[' token
+- `declarations/structured-bindings/template.cpp` (clang-22): error: structured binding declaration cannot be a template
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (clang-host): error: type 'Pair' binds to 2 elements, but 3 names were provided
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (gcc-host): error: 3 names provided for structured binding / note: while ‘Pair’ decomposes into 2 elements
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (edg-7.0): error: too many identifiers
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (gcc-14): error: 3 names provided for structured binding / note: while 'Pair' decomposes into 2 elements
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (clang-18): error: type 'Pair' decomposes into 2 elements, but 3 names were provided
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (gcc-16): error: 3 names provided for structured binding / note: while 'Pair' decomposes into 2 elements
+- `declarations/structured-bindings/tuple-count-mismatch.cpp` (clang-22): error: type 'Pair' binds to 2 elements, but 3 names were provided
+- `declarations/structured-bindings/tuple-element-missing.cpp` (clang-host): error: implicit instantiation of undefined template 'std::tuple_element<0, P>' / note: in implicit initialization of binding declaration 'x'
+- `declarations/structured-bindings/tuple-element-missing.cpp` (gcc-host): error: invalid use of incomplete type ‘struct std::tuple_element<0, P>’ / note: declaration of ‘struct std::tuple_element<0, P>’
+- `declarations/structured-bindings/tuple-element-missing.cpp` (edg-7.0): error: cannot instantiate "std::tuple_element" for <0, "P">
+- `declarations/structured-bindings/tuple-element-missing.cpp` (gcc-14): error: invalid use of incomplete type 'struct std::tuple_element<0, P>' / note: declaration of 'struct std::tuple_element<0, P>'
+- `declarations/structured-bindings/tuple-element-missing.cpp` (clang-18): error: implicit instantiation of undefined template 'std::tuple_element<0, P>' / note: in implicit initialization of binding declaration 'x'
+- `declarations/structured-bindings/tuple-element-missing.cpp` (gcc-16): error: invalid use of incomplete type 'struct std::tuple_element<0, P>' / note: declaration of 'struct std::tuple_element<0, P>'
+- `declarations/structured-bindings/tuple-element-missing.cpp` (clang-22): error: implicit instantiation of undefined template 'std::tuple_element<0, P>' / note: in implicit initialization of binding declaration 'x'
+- `declarations/structured-bindings/underscore-twice.cpp` (clang-host): error: placeholder variables are a C++2c extension [-Werror,-Wc++26-extensions]
+- `declarations/structured-bindings/underscore-twice.cpp` (gcc-host): error: name-independent declarations only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
+- `declarations/structured-bindings/underscore-twice.cpp` (edg-7.0): error: "_" has already been declared in the current scope
+- `declarations/structured-bindings/underscore-twice.cpp` (gcc-14): error: name-independent declarations only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/structured-bindings/underscore-twice.cpp` (clang-18): error: placeholder variables are a C++2c extension [-Werror,-Wc++26-extensions]
+- `declarations/structured-bindings/underscore-twice.cpp` (gcc-16): error: name-independent declarations only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/structured-bindings/underscore-twice.cpp` (clang-22): error: placeholder variables are a C++2c extension [-Werror,-Wc++26-extensions]
+- `declarations/structured-bindings/union-rejected.cpp` (clang-host): error: cannot bind union type 'U'
+- `declarations/structured-bindings/union-rejected.cpp` (gcc-host): error: cannot decompose union type ‘U’
+- `declarations/structured-bindings/union-rejected.cpp` (edg-7.0): error: type "U" has no components to bind to
+- `declarations/structured-bindings/union-rejected.cpp` (gcc-14): error: cannot decompose union type 'U'
+- `declarations/structured-bindings/union-rejected.cpp` (clang-18): error: cannot decompose union type 'U'
+- `declarations/structured-bindings/union-rejected.cpp` (gcc-16): error: cannot decompose union type 'U'
+- `declarations/structured-bindings/union-rejected.cpp` (clang-22): error: cannot bind union type 'U'
+- `declarations/structured-bindings/with-other-declarator.cpp` (clang-host): error: structured binding declaration must be the only declaration in its group
+- `declarations/structured-bindings/with-other-declarator.cpp` (gcc-host): error: expected ‘;’ before ‘,’ token
+- `declarations/structured-bindings/with-other-declarator.cpp` (edg-7.0): error: a structured binding cannot be combined with other declarators
+- `declarations/structured-bindings/with-other-declarator.cpp` (gcc-14): error: expected ';' before ',' token
+- `declarations/structured-bindings/with-other-declarator.cpp` (clang-18): error: decomposition declaration must be the only declaration in its group
+- `declarations/structured-bindings/with-other-declarator.cpp` (gcc-16): error: expected ';' before ',' token
+- `declarations/structured-bindings/with-other-declarator.cpp` (clang-22): error: structured binding declaration must be the only declaration in its group
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
