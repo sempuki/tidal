@@ -50,14 +50,23 @@ to a function has none. A call through the pointer must give each
 argument.
 :::
 
+:::{rule} DEFARG-6
+:kind: reject
+:tests: declarations/functions/default-arguments/operator-default-argument.cpp
+
+An operator function other than `operator()` must not have default
+arguments *(operator overloading referenced)*.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} DEFARG-3
 :kind: required
-:tests: declarations/functions/default-arguments/evaluated-each-call.cpp declarations/functions/default-arguments/uses-global-at-call.cpp
+:tests: declarations/functions/default-arguments/evaluated-each-call.cpp declarations/functions/default-arguments/uses-global-at-call.cpp declarations/functions/default-arguments/name-bound-at-declaration.cpp
 
 A default argument is evaluated at each call that uses it. It reads the
-current values of the variables that it names.
+current values of the variables that it names. Its names refer to the
+entities that are visible at the function declaration, not at the call.
 :::
 
 ## Examples

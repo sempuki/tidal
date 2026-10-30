@@ -37,10 +37,30 @@ a `return` statement that gives the type.
 
 :::{rule} RET-4
 :kind: reject
-:tests: declarations/functions/return-deduction/redeclare-with-type.cpp declarations/functions/return-deduction/redeclare-with-auto.cpp
+:tests: declarations/functions/return-deduction/redeclare-with-type.cpp declarations/functions/return-deduction/redeclare-with-auto.cpp declarations/functions/return-deduction/redeclare-after-definition.cpp
 
 Each declaration of the function must use the same placeholder as its
-return type.
+return type. A later declaration must not write the deduced type in place
+of the placeholder.
+:::
+
+:::{rule} RET-5
+:kind: reject
+:tests: declarations/functions/return-deduction/virtual-auto.cpp
+
+A virtual function must not have a deduced return type *(virtual
+functions referenced)*.
+:::
+
+## Undefined Behavior
+
+:::{rule} RET-6
+:kind: undefined
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp
+
+If a function with `decltype(auto)` returns a parenthesized local
+variable, its return type is an lvalue reference to that variable. A use
+of the result is undefined, because the variable no longer exists.
 :::
 
 ## Examples

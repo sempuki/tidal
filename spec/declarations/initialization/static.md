@@ -17,11 +17,12 @@ runs. This includes the initializers of other variables.
 
 :::{rule} SINIT-2
 :kind: required
-:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp
+:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp declarations/initialization/static/inline-variables-ordered.cpp
 
 Other namespace-scope variables are *dynamically initialized*. In one
 {term}`translation unit`, they are initialized in the order of their
-definitions. Before its initializer runs, a variable holds zero (STO-3).
+definitions. This includes `inline` variables. Before its initializer
+runs, a variable holds zero (STO-3).
 :::
 
 ## Implementation Requirements

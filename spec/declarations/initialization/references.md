@@ -17,31 +17,33 @@ accepts, when a temporary object is created, and how long it lives.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp
 
 A non-`const` lvalue reference binds directly to an lvalue. The reference
 and the lvalue are then the same object. The lvalue must have the same
-type, or the same type with fewer {term}`cv-qualifiers <cv-qualifier>`.
+type, or the same type with fewer {term}`cv-qualifiers <cv-qualifier>`. A
+non-`const` lvalue reference must not bind to a bit-field.
 :::
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-volatile-ref-rvalue.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-volatile-ref-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp
 
 A `const` lvalue reference that is not `volatile` can also bind to an
 rvalue. It can also bind to an expression of a different type that
-converts to its type. In these cases, the reference binds to a temporary
-object.
+converts to its type, and to a bit-field. In these cases, the reference
+binds to a temporary object that holds a copy of the value.
 :::
 
 :::{rule} REF-3
 :kind: required
-:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp
+:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp
 
 An rvalue reference to an object type binds to an rvalue, including an
 xvalue. It can bind to an lvalue of a different type through a temporary
-object, as REF-2 gives. It must not bind to an lvalue of the same type. An
-rvalue reference to a function type binds to a function.
+object, as REF-2 gives. It must not bind to an lvalue of the same type, or
+of a class derived from that type. An rvalue reference to a function type
+binds to a function.
 :::
 
 :::{rule} REF-6
@@ -57,13 +59,15 @@ conversion must not occur (LIST-2).
 
 :::{rule} REF-4
 :kind: required
-:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp
+:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp
 
 If a reference variable binds to a temporary object, or to a member of
 one, the temporary lives as long as the reference. This also applies to a
-reference member of an aggregate initialized with braces. The temporary
-is destroyed when the reference goes out of scope, in order with the
-other objects of that scope.
+reference member of an aggregate initialized with braces, and through
+parentheses, the selected operand of `?:`, and the right operand of a
+comma. The temporary is destroyed when the reference goes out of scope,
+in order with the other objects of that scope. A reference with static
+storage keeps its temporary until the program ends.
 :::
 
 :::{rule} REF-7

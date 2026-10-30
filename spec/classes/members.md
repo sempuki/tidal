@@ -26,11 +26,11 @@ own type. A pointer to its own type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/sizeof-in-class-incomplete.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/sizeof-in-class-incomplete.cpp classes/members/complete-in-default-argument.cpp
 
-The class is complete inside member function bodies and default member
-initializers. These can use members that are declared later. At other
-places inside the definition, the class is not complete.
+The class is complete inside member function bodies, default arguments,
+and default member initializers. These can use members that are declared
+later. At other places inside the definition, the class is not complete.
 :::
 
 :::{rule} CLS-3
@@ -79,10 +79,11 @@ the same parameters must all have ref-qualifiers, or none
 
 :::{rule} CLS-7
 :kind: required
-:tests: classes/members/static-member-function.cpp classes/members/static-uses-this.cpp classes/members/static-member-function-const.cpp
+:tests: classes/members/static-member-function.cpp classes/members/static-uses-this.cpp classes/members/static-member-function-const.cpp classes/members/static-ref-qualified.cpp classes/members/static-virtual.cpp
 
 A static member function has no `this`. A program can call it through the
-class name or through an object. It must not have a cv-qualifier.
+class name or through an object. It must not have a cv-qualifier or a
+ref-qualifier, and it must not be virtual.
 :::
 
 :::{rule} CLS-8
@@ -95,27 +96,57 @@ members. Code outside the class names them as `S::name`.
 
 :::{rule} CLS-9
 :kind: reject
-:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp
+:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp classes/members/member-function-declared-twice.cpp classes/members/mutable-const.cpp classes/members/mutable-reference.cpp classes/members/mutable-static.cpp classes/members/paren-default-member-init.cpp
 
 A class must not declare:
 
 - two data members with the same name,
+- the same member function two times,
 - a static data member with the name of the class,
 - a non-static data member with the name of the class, if the class
   declares a constructor,
 - a non-static data member with a {term}`placeholder type`,
+- a default member initializer in parentheses,
+- `mutable` on a `const`, reference, or static member,
 - an unnamed member of class type, other than an anonymous union,
 - `= 0` on a member function that is not virtual.
 :::
 
 :::{rule} CLS-12
 :kind: required
-:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp
+:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp
 
 A class can be defined in a function. Such a local class must not have a
-static data member. Its member functions must not use an automatic
-variable of the function in an evaluated operand. They can use its static
-variables, and its `const` integer variables with constant initializers.
+static data member or a member template. Its member functions must be
+defined in the class. They must not use an automatic variable of the
+function in an evaluated operand. They can use its static variables, and
+its `const` integer variables with constant initializers.
+:::
+
+:::{rule} CLS-13
+:kind: required
+:tests: classes/members/explicit-object-parameter.cpp
+
+A member function can declare its first parameter as an explicit object
+parameter, written `this T self`. The object of the call initializes that
+parameter.
+:::
+
+:::{rule} CLS-14
+:kind: reject
+:tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp
+
+A member function with an explicit object parameter has no `this`. It
+must not be static, and it must not have a cv-qualifier or a
+ref-qualifier.
+:::
+
+:::{rule} CLS-15
+:kind: required
+:tests: classes/members/static-call-operator.cpp
+
+`operator()` and `operator[]` can be static member functions. `operator[]`
+can have any number of parameters *(operator overloading referenced)*.
 :::
 
 ## Dynamic Semantics

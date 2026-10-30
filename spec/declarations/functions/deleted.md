@@ -43,6 +43,14 @@ operator can be a friend that the class declares. Other functions that are
 not class members must not use `= default`.
 :::
 
+:::{rule} DEL-5
+:kind: required
+:tests: declarations/functions/deleted/deleted-in-two-units.cpp
+
+A deleted function is `inline`. Several translation units can contain
+the same deleted definition.
+:::
+
 ## Examples
 
 ```cpp

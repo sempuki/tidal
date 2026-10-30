@@ -34,11 +34,11 @@ translation unit. All declarations must have the same return type.
 
 :::{rule} FN-4
 :kind: reject
-:tests: declarations/functions/definitions/main-wrong-return-type.cpp declarations/functions/definitions/main-inline.cpp declarations/functions/definitions/main-constexpr.cpp declarations/functions/definitions/main-consteval.cpp declarations/functions/definitions/main-template.cpp declarations/functions/definitions/main-global-variable.cpp declarations/functions/definitions/main-call.cpp declarations/functions/definitions/main-address.cpp declarations/functions/definitions/main-in-namespace.cpp
+:tests: declarations/functions/definitions/main-wrong-return-type.cpp declarations/functions/definitions/main-inline.cpp declarations/functions/definitions/main-constexpr.cpp declarations/functions/definitions/main-consteval.cpp declarations/functions/definitions/main-template.cpp declarations/functions/definitions/main-global-variable.cpp declarations/functions/definitions/main-call.cpp declarations/functions/definitions/main-address.cpp declarations/functions/definitions/main-in-namespace.cpp declarations/functions/definitions/main-auto.cpp
 
 The function `main` in the global namespace:
 
-- must return `int`,
+- must have the return type `int`, written out and not deduced,
 - must not be `inline`, `constexpr`, `consteval`, or a template,
 - must not be called or have its address taken by the program.
 
@@ -53,6 +53,14 @@ another namespace is an ordinary function.
 In a function body, `__func__` is a static array of `const char`. It
 holds the name of the function. `__func__` must not occur outside a
 function body ({question}`Q-0022`).
+:::
+
+:::{rule} FN-9
+:kind: reject
+:tests: declarations/functions/definitions/nested-function-definition.cpp
+
+A function definition must be at namespace scope or in a class. It must
+not be inside a function body.
 :::
 
 ## Dynamic Semantics
@@ -86,6 +94,16 @@ that returns `void` returns normally at the end.
 An implementation accepts `main` with the parameter lists `()` and
 `(int, char**)`. It is implementation-defined if it accepts other
 parameter lists ({question}`Q-0024`).
+:::
+
+:::{rule} FN-10
+:kind: impl-defined
+:tests: declarations/functions/definitions/parameter-destruction-order.cpp
+
+Each implementation chooses the time at which a parameter object ends:
+either as the called function returns, or later, when the caller finishes
+the statement or expression that holds the call. The choice is
+implementation-defined.
 :::
 
 ## Recommended Practice
@@ -133,6 +151,8 @@ All seven compilers agree on most tests. The results are in
   `(double)` and four parameters. All compilers accept three parameters
   ({question}`Q-0024`).
 - FN-7: Clang and GCC warn with `-Wreturn-type`.
+- FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
+  the caller's full expression, after the next operand of a comma.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt,
 clang-diag-sema, gcc-cp-decl, gcc-cp-typeck, edg-func-def.

@@ -35,7 +35,7 @@ empty braces (INIT-2). The braces must not hold more than one expression.
 
 :::{rule} LIST-2
 :kind: reject
-:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp
+:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp
 
 In braces, a value must not go through a *narrowing* conversion. These
 conversions are narrowing:
@@ -47,9 +47,12 @@ conversions are narrowing:
   the value is a constant in the range of the target type;
 - integer to an integer type that cannot hold all its values, unless the
   value is a constant that fits;
-- pointer to `bool`.
+- pointer or pointer to member to `bool`.
 
-The same conversions are permitted in parentheses (INIT-4).
+An unscoped enumeration without a fixed type counts as an integer source.
+A bit-field counts by its width, so a bit-field whose values all fit in
+the target is not narrowing ({question}`Q-0042`). The same conversions are
+permitted in parentheses (INIT-4).
 :::
 
 :::{rule} LIST-3
@@ -74,7 +77,7 @@ next values go to the next member.
 
 :::{rule} LIST-5
 :kind: required
-:tests: declarations/initialization/list/designated.cpp declarations/initialization/list/designated-nested-braces.cpp declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp
+:tests: declarations/initialization/list/designated.cpp declarations/initialization/list/designated-nested-braces.cpp declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp declarations/initialization/list/union-designator.cpp
 
 A braced list for a class aggregate can name members with `.member =` or
 `.member {...}`. Members without a designator get values as LIST-3 gives.
@@ -86,6 +89,9 @@ The designators must obey these conditions:
 - A designator must name one member, without a chain such as `.a.b`.
 - A designator must not name an array element, such as `[1] =`.
 - The initializer of a scalar must not use a designator.
+
+For a union, one designator selects the member to initialize. Without a
+designator, the first member of the union is initialized.
 :::
 
 :::{rule} LIST-6
@@ -100,6 +106,15 @@ without braces. These conditions apply:
 - The character type of the literal must match the element type.
 - A UTF-8 literal (`u8"..."`) can also initialize a `char` or
   `unsigned char` array.
+:::
+
+:::{rule} LIST-9
+:kind: reject
+:tests: declarations/initialization/list/paren-nested-ok.cpp declarations/initialization/list/paren-no-brace-elision.cpp
+
+In parenthesized aggregate initialization, each value initializes one
+whole member or base. The values must not be split across the members of
+a nested aggregate ({question}`Q-0043`).
 :::
 
 ## Dynamic Semantics
@@ -120,6 +135,14 @@ A member without a value in the list is initialized from its default
 member initializer. If it has none, it is initialized from an empty
 braced list. A scalar member becomes zero. A member of class type gets
 its default constructor *(classes referenced)*.
+:::
+
+:::{rule} LIST-10
+:kind: required
+:tests: declarations/initialization/list/single-same-class-copies.cpp
+
+If a braced list for an aggregate has one element of the same class
+type, the aggregate is copied from that element.
 :::
 
 ## Examples
