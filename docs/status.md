@@ -49,6 +49,7 @@ current state only. The history of how it got here is in `git log`.
 | [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 46 | Q-0020, Q-0025 | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 15 | 11 required, 3 reject, 1 impl-defined | 59 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 13 | 7 required, 6 reject | 38 | Q-0052 | 0 flagged |
+| [Constructors and destructors](../spec/classes/constructors.md) | 24 | 11 required, 9 reject, 2 undefined, 1 no-diagnostic, 1 recommended | 110 | Q-0053, Q-0054 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -56,12 +57,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-permissive-inputs.txt`. The table above comes from
+`reports/similarity/2026-10-30-constructors-rewrite.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1302/1302 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1412/1412 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -77,7 +78,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Fifty-one questions are open for opinions, each with a provisional answer the
+Fifty-three questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -127,8 +128,8 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
-7. Continue classes in the order set by decision 0017. Next: constructors
-   and destructors. Statements, expressions, and declarations in the
+7. Continue classes in the order set by decision 0017. Next: copy and
+   move. Statements, expressions, and declarations in the
    charter's scope all have pages.
 
 ## Size estimate

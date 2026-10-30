@@ -52,6 +52,116 @@ compilers affect the Status column.
 | `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/using-reduces-access.cpp` | ACC-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/body-after-members.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/const-object-defaulted-in-class.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-empty.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-member-init.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-modified-in-ctor.cpp` | CTOR-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/const-object-no-init.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-user-ctor.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/converting-ctor-multi-arg-list.cpp` | CTOR-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/converting-ctor.cpp` | CTOR-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/ctor-address.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-const-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-explicit-object.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-on-const-this-type.cpp` | CTOR-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/ctor-out-of-line.cpp` | CTOR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/ctor-redeclared.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-ref-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-return-type.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-specifiers.cpp` | CTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/ctor-static.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-virtual.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-volatile.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/defaulted-default-restores.cpp` | CTOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/defaulted-leaves-members.cpp` | CTOR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-cycle.cpp` | CTOR-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `classes/constructors/delegating-ignores-default-member-init.cpp` | CTOR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/delegating-self.cpp` | CTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-with-member.cpp` | CTOR-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating.cpp` | CTOR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/deleted-default-base.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-const-aggregate-member.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-const-class-member.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-const-member.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-member-no-default.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-member-private.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-only-if-used.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-reference-init.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-reference.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-delete.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-new.cpp` | DTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-address.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-call-via-alias.cpp` | DTOR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-call-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-const.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-explicit-object.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-member-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-on-const-object.cpp` | DTOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-order-array.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/dtor-order-automatic.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/dtor-order-delete-array.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/dtor-order.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/dtor-out-of-line.cpp` | DTOR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/dtor-params.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-ref-qualified.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-return-type.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-specifiers.cpp` | DTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-static.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-two.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-variadic.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-void-param.cpp` | DTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-without-call.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-wrong-name.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-argument.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-bool-false.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/explicit-bool-not-constant.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-bool-true.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-copy-init.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-copy-list-init.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-default-copy-list.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-direct-init.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/explicit-dtor-call.cpp` | DTOR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/explicit-non-ctor.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-out-of-line.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-return.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-static-cast.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/explicitly-defaulted-but-deleted.cpp` | CTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/implicit-default.cpp` | CTOR-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/implicit-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/implicit-dtor-runs-members.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/implicitly-deleted-dtor-member.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/init-order-declaration.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/init-order-reads-later.cpp` | CTOR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/init-order-same-order.cpp` | CTOR-13 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/init-order-uses-earlier.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/init-order-warns.cpp` | CTOR-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-base-and-member.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/mem-init-braces-narrowing.cpp` | CTOR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-braces.cpp` | CTOR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/mem-init-duplicate.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-in-declaration-only.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-indirect-base.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-not-member.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-overrides-default.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/mem-init-pack-of-reference.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-static-member.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-type-alias-base.cpp` | CTOR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/mem-init-uses-param.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/constructors/no-implicit-default-with-copy-ctor.cpp` | CTOR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/no-implicit-default-with-ctor.cpp` | CTOR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/one-user-conversion-plus-standard.cpp` | CTOR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/one-user-conversion.cpp` | CTOR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/private-dtor-member.cpp` | DTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/private-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/pseudo-dtor-scalar.cpp` | DTOR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1317,7 +1427,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1302/1302 tests pass on baseline compilers.
+1412/1412 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1449,6 +1559,442 @@ check that the rejection has the intended cause.
 - `classes/access/using-reduces-access.cpp` (clang-18): error: 'x' is a private member of 'D' / note: declared private here
 - `classes/access/using-reduces-access.cpp` (gcc-16): error: 'int B::x' is inaccessible within this context
 - `classes/access/using-reduces-access.cpp` (clang-22): error: 'x' is a private member of 'D' / note: declared private here
+- `classes/constructors/const-object-defaulted-in-class.cpp` (clang-host): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (gcc-host): error: uninitialized ‘const s’ [-fpermissive] / note: ‘const struct S’ has no user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (edg-7.0): error: const variable "s" requires an initializer -- class "S" has no user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (gcc-14): error: uninitialized 'const s' [-fpermissive] / note: 'const struct S' has no user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (clang-18): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (gcc-16): error: uninitialized 'const s' [-fpermissive] / note: 'const struct S' has no user-provided default constructor
+- `classes/constructors/const-object-defaulted-in-class.cpp` (clang-22): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (clang-host): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (gcc-host): error: uninitialized ‘const s’ [-fpermissive] / note: ‘const struct S’ has no user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (edg-7.0): error: const variable "s" requires an initializer -- class "S" has no user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (gcc-14): error: uninitialized 'const s' [-fpermissive] / note: 'const struct S' has no user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (clang-18): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (gcc-16): error: uninitialized 'const s' [-fpermissive] / note: 'const struct S' has no user-provided default constructor
+- `classes/constructors/const-object-no-init.cpp` (clang-22): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/ctor-address.cpp` (clang-host): error: qualified reference to 'S' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `classes/constructors/ctor-address.cpp` (gcc-host): error: taking address of constructor ‘constexpr S::S(S&&)’
+- `classes/constructors/ctor-address.cpp` (edg-7.0): error: a constructor or destructor may not have its address taken
+- `classes/constructors/ctor-address.cpp` (gcc-14): error: taking address of constructor 'constexpr S::S(S&&)'
+- `classes/constructors/ctor-address.cpp` (clang-18): error: qualified reference to 'S' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `classes/constructors/ctor-address.cpp` (gcc-16): error: taking address of constructor 'constexpr S::S(S&&)'
+- `classes/constructors/ctor-address.cpp` (clang-22): error: qualified reference to 'S' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `classes/constructors/ctor-const-qualified.cpp` (clang-host): error: 'const' qualifier is not allowed on a constructor
+- `classes/constructors/ctor-const-qualified.cpp` (gcc-host): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-const-qualified.cpp` (edg-7.0): error: a type qualifier is not allowed on a constructor or destructor
+- `classes/constructors/ctor-const-qualified.cpp` (gcc-14): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-const-qualified.cpp` (clang-18): error: 'const' qualifier is not allowed on a constructor
+- `classes/constructors/ctor-const-qualified.cpp` (gcc-16): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-const-qualified.cpp` (clang-22): error: 'const' qualifier is not allowed on a constructor
+- `classes/constructors/ctor-explicit-object.cpp` (clang-host): error: an explicit object parameter cannot appear in a constructor
+- `classes/constructors/ctor-explicit-object.cpp` (gcc-host): error: expected unqualified-id before ‘this’ / error: expected ‘)’ before ‘this’
+- `classes/constructors/ctor-explicit-object.cpp` (edg-7.0): error: expected an identifier
+- `classes/constructors/ctor-explicit-object.cpp` (gcc-14): error: expected unqualified-id before 'this' / error: expected ')' before 'this'
+- `classes/constructors/ctor-explicit-object.cpp` (clang-18): error: an explicit object parameter cannot appear in a constructor
+- `classes/constructors/ctor-explicit-object.cpp` (gcc-16): error: expected unqualified-id before 'this' / error: expected ')' before 'this'
+- `classes/constructors/ctor-explicit-object.cpp` (clang-22): error: an explicit object parameter cannot appear in a constructor
+- `classes/constructors/ctor-redeclared.cpp` (clang-host): error: constructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/ctor-redeclared.cpp` (gcc-host): error: ‘S::S()’ cannot be overloaded with ‘S::S()’ / note: previous declaration ‘S::S()’
+- `classes/constructors/ctor-redeclared.cpp` (edg-7.0): error: invalid redeclaration of member function "S::S()" (declared at line 3)
+- `classes/constructors/ctor-redeclared.cpp` (gcc-14): error: 'S::S()' cannot be overloaded with 'S::S()' / note: previous declaration 'S::S()'
+- `classes/constructors/ctor-redeclared.cpp` (clang-18): error: constructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/ctor-redeclared.cpp` (gcc-16): error: 'S::S()' cannot be overloaded with 'S::S()' / note: previous declaration 'S::S()'
+- `classes/constructors/ctor-redeclared.cpp` (clang-22): error: constructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/ctor-ref-qualified.cpp` (clang-host): error: ref-qualifier '&' is not allowed on a constructor
+- `classes/constructors/ctor-ref-qualified.cpp` (gcc-host): error: constructors may not be ref-qualified
+- `classes/constructors/ctor-ref-qualified.cpp` (edg-7.0): error: a ref-qualifier is not allowed here
+- `classes/constructors/ctor-ref-qualified.cpp` (gcc-14): error: constructors may not be ref-qualified
+- `classes/constructors/ctor-ref-qualified.cpp` (clang-18): error: ref-qualifier '&' is not allowed on a constructor
+- `classes/constructors/ctor-ref-qualified.cpp` (gcc-16): error: constructors may not be ref-qualified
+- `classes/constructors/ctor-ref-qualified.cpp` (clang-22): error: ref-qualifier '&' is not allowed on a constructor
+- `classes/constructors/ctor-return-type.cpp` (clang-host): error: constructor cannot have a return type
+- `classes/constructors/ctor-return-type.cpp` (gcc-host): error: return type specification for constructor invalid
+- `classes/constructors/ctor-return-type.cpp` (edg-7.0): error: member function with the same name as its class must be a constructor
+- `classes/constructors/ctor-return-type.cpp` (gcc-14): error: return type specification for constructor invalid
+- `classes/constructors/ctor-return-type.cpp` (clang-18): error: constructor cannot have a return type
+- `classes/constructors/ctor-return-type.cpp` (gcc-16): error: return type specification for constructor invalid
+- `classes/constructors/ctor-return-type.cpp` (clang-22): error: constructor cannot have a return type
+- `classes/constructors/ctor-static.cpp` (clang-host): error: constructor cannot be declared 'static'
+- `classes/constructors/ctor-static.cpp` (gcc-host): error: constructor cannot be static member function
+- `classes/constructors/ctor-static.cpp` (edg-7.0): error: "static" is not allowed
+- `classes/constructors/ctor-static.cpp` (gcc-14): error: constructor cannot be static member function
+- `classes/constructors/ctor-static.cpp` (clang-18): error: constructor cannot be declared 'static'
+- `classes/constructors/ctor-static.cpp` (gcc-16): error: constructor cannot be static member function
+- `classes/constructors/ctor-static.cpp` (clang-22): error: constructor cannot be declared 'static'
+- `classes/constructors/ctor-virtual.cpp` (clang-host): error: constructor cannot be declared 'virtual'
+- `classes/constructors/ctor-virtual.cpp` (gcc-host): error: constructors cannot be declared ‘virtual’ [-fpermissive]
+- `classes/constructors/ctor-virtual.cpp` (edg-7.0): error: "virtual" is not allowed
+- `classes/constructors/ctor-virtual.cpp` (gcc-14): error: constructors cannot be declared 'virtual' [-fpermissive]
+- `classes/constructors/ctor-virtual.cpp` (clang-18): error: constructor cannot be declared 'virtual'
+- `classes/constructors/ctor-virtual.cpp` (gcc-16): error: constructors cannot be declared 'virtual' [-fpermissive]
+- `classes/constructors/ctor-virtual.cpp` (clang-22): error: constructor cannot be declared 'virtual'
+- `classes/constructors/ctor-volatile.cpp` (clang-host): error: 'volatile' qualifier is not allowed on a constructor
+- `classes/constructors/ctor-volatile.cpp` (gcc-host): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-volatile.cpp` (edg-7.0): error: a type qualifier is not allowed on a constructor or destructor
+- `classes/constructors/ctor-volatile.cpp` (gcc-14): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-volatile.cpp` (clang-18): error: 'volatile' qualifier is not allowed on a constructor
+- `classes/constructors/ctor-volatile.cpp` (gcc-16): error: constructors may not be cv-qualified
+- `classes/constructors/ctor-volatile.cpp` (clang-22): error: 'volatile' qualifier is not allowed on a constructor
+- `classes/constructors/defaulted-leaves-members.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/constructors/defaulted-leaves-members.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized member ‘S::v’
+- `classes/constructors/defaulted-leaves-members.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `classes/constructors/defaulted-leaves-members.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing uninitialized member 'S::v'
+- `classes/constructors/defaulted-leaves-members.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/constructors/defaulted-leaves-members.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized member 'S::v'
+- `classes/constructors/defaulted-leaves-members.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/constructors/delegating-cycle.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to
+- `classes/constructors/delegating-cycle.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
+- `classes/constructors/delegating-cycle.cpp` (clang-18): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to
+- `classes/constructors/delegating-cycle.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to
+- `classes/constructors/delegating-self.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-self.cpp` (gcc-host): error: constructor delegates to itself
+- `classes/constructors/delegating-self.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
+- `classes/constructors/delegating-self.cpp` (gcc-14): error: constructor delegates to itself
+- `classes/constructors/delegating-self.cpp` (clang-18): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-self.cpp` (gcc-16): error: constructor delegates to itself
+- `classes/constructors/delegating-self.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-with-member.cpp` (clang-host): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/delegating-with-member.cpp` (gcc-host): error: mem-initializer for ‘S::w’ follows constructor delegation
+- `classes/constructors/delegating-with-member.cpp` (edg-7.0): error: a delegating constructor cannot have other mem-initializers
+- `classes/constructors/delegating-with-member.cpp` (gcc-14): error: mem-initializer for 'S::w' follows constructor delegation
+- `classes/constructors/delegating-with-member.cpp` (clang-18): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/delegating-with-member.cpp` (gcc-16): error: mem-initializer for 'S::w' follows constructor delegation
+- `classes/constructors/delegating-with-member.cpp` (clang-22): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/deleted-default-base.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because base class 'B' has no default constructor
+- `classes/constructors/deleted-default-base.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-base.cpp` (edg-7.0): error: the default constructor of "S" cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-default-base.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-base.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because base class 'B' has no default constructor
+- `classes/constructors/deleted-default-base.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-base.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because base class 'B' has no default constructor
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' of const-qualified type 'const M' would not be initialized
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (edg-7.0): error: variable "s" has an uninitialized const or reference member
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' of const-qualified type 'const M' would not be initialized
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-aggregate-member.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' of const-qualified type 'const M' would not be initialized
+- `classes/constructors/deleted-default-const-member.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'c' of const-qualified type 'const int' would not be initialized
+- `classes/constructors/deleted-default-const-member.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-member.cpp` (edg-7.0): error: variable "s" has an uninitialized const or reference member
+- `classes/constructors/deleted-default-const-member.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-member.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'c' of const-qualified type 'const int' would not be initialized
+- `classes/constructors/deleted-default-const-member.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-const-member.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'c' of const-qualified type 'const int' would not be initialized
+- `classes/constructors/deleted-default-member-no-default.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has no default constructor
+- `classes/constructors/deleted-default-member-no-default.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-no-default.cpp` (edg-7.0): error: the default constructor of "S" cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-default-member-no-default.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-no-default.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has no default constructor
+- `classes/constructors/deleted-default-member-no-default.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-no-default.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has no default constructor
+- `classes/constructors/deleted-default-member-private.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has an inaccessible default constructor
+- `classes/constructors/deleted-default-member-private.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-private.cpp` (edg-7.0): error: the default constructor of "S" cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-default-member-private.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-private.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has an inaccessible default constructor
+- `classes/constructors/deleted-default-member-private.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-member-private.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has an inaccessible default constructor
+- `classes/constructors/deleted-default-reference.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized
+- `classes/constructors/deleted-default-reference.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-reference.cpp` (edg-7.0): error: the default constructor of "S" cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-default-reference.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-reference.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized
+- `classes/constructors/deleted-default-reference.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/deleted-default-reference.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized
+- `classes/constructors/deleted-dtor-delete.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-delete.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-delete.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-delete.cpp` (gcc-14): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-delete.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-delete.cpp` (gcc-16): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-delete.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-temporary.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-temporary.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-temporary.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-temporary.cpp` (gcc-14): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-temporary.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-temporary.cpp` (gcc-16): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-temporary.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variable.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variable.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-variable.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-variable.cpp` (gcc-14): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-variable.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variable.cpp` (gcc-16): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-variable.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/double-destroy-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: destroying object 's' whose lifetime has already ended
+- `classes/constructors/double-destroy-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: destroying ‘s’ outside its lifetime
+- `classes/constructors/double-destroy-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: destroying 's' outside its lifetime
+- `classes/constructors/double-destroy-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: destroying object 's' whose lifetime has already ended
+- `classes/constructors/double-destroy-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: destroying 's' outside its lifetime
+- `classes/constructors/double-destroy-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: destroying object 's' whose lifetime has already ended
+- `classes/constructors/dtor-address.cpp` (clang-host): error: taking the address of a destructor
+- `classes/constructors/dtor-address.cpp` (gcc-host): error: taking address of destructor ‘S::~S()’
+- `classes/constructors/dtor-address.cpp` (edg-7.0): error: a constructor or destructor may not have its address taken
+- `classes/constructors/dtor-address.cpp` (gcc-14): error: taking address of destructor 'S::~S()'
+- `classes/constructors/dtor-address.cpp` (clang-18): error: taking the address of a destructor
+- `classes/constructors/dtor-address.cpp` (gcc-16): error: taking address of destructor 'S::~S()'
+- `classes/constructors/dtor-address.cpp` (clang-22): error: taking the address of a destructor
+- `classes/constructors/dtor-call-wrong-type.cpp` (clang-host): error: destructor type 'T' in object destruction expression does not match the type 'S' of the object being destroyed / note: type 'T' found by destructor name lookup
+- `classes/constructors/dtor-call-wrong-type.cpp` (gcc-host): error: the type being destroyed is ‘S’, but the destructor refers to ‘T’
+- `classes/constructors/dtor-call-wrong-type.cpp` (edg-7.0): error: invalid destructor name for type "S"
+- `classes/constructors/dtor-call-wrong-type.cpp` (gcc-14): error: the type being destroyed is 'S', but the destructor refers to 'T'
+- `classes/constructors/dtor-call-wrong-type.cpp` (clang-18): error: destructor type 'T' in object destruction expression does not match the type 'S' of the object being destroyed / note: type 'T' found by destructor name lookup
+- `classes/constructors/dtor-call-wrong-type.cpp` (gcc-16): error: the type being destroyed is 'S', but the destructor refers to 'T'
+- `classes/constructors/dtor-call-wrong-type.cpp` (clang-22): error: destructor type 'T' in object destruction expression does not match the type 'S' of the object being destroyed / note: type 'T' found by destructor name lookup
+- `classes/constructors/dtor-const.cpp` (clang-host): error: 'const' qualifier is not allowed on a destructor
+- `classes/constructors/dtor-const.cpp` (gcc-host): error: destructors may not be cv-qualified
+- `classes/constructors/dtor-const.cpp` (edg-7.0): error: a type qualifier is not allowed on a constructor or destructor
+- `classes/constructors/dtor-const.cpp` (gcc-14): error: destructors may not be cv-qualified
+- `classes/constructors/dtor-const.cpp` (clang-18): error: 'const' qualifier is not allowed on a destructor
+- `classes/constructors/dtor-const.cpp` (gcc-16): error: destructors may not be cv-qualified
+- `classes/constructors/dtor-const.cpp` (clang-22): error: 'const' qualifier is not allowed on a destructor
+- `classes/constructors/dtor-explicit-object.cpp` (clang-host): error: an explicit object parameter cannot appear in a destructor / error: destructor cannot have any parameters
+- `classes/constructors/dtor-explicit-object.cpp` (gcc-host): error: destructors may not have parameters
+- `classes/constructors/dtor-explicit-object.cpp` (edg-7.0): error: a destructor may not have parameters
+- `classes/constructors/dtor-explicit-object.cpp` (gcc-14): error: destructors may not have parameters
+- `classes/constructors/dtor-explicit-object.cpp` (clang-18): error: an explicit object parameter cannot appear in a destructor / error: destructor cannot have any parameters
+- `classes/constructors/dtor-explicit-object.cpp` (gcc-16): error: destructors may not have parameters
+- `classes/constructors/dtor-explicit-object.cpp` (clang-22): error: an explicit object parameter cannot appear in a destructor / error: destructor cannot have any parameters
+- `classes/constructors/dtor-params.cpp` (clang-host): error: destructor cannot have any parameters
+- `classes/constructors/dtor-params.cpp` (gcc-host): error: destructors may not have parameters
+- `classes/constructors/dtor-params.cpp` (edg-7.0): error: a destructor may not have parameters
+- `classes/constructors/dtor-params.cpp` (gcc-14): error: destructors may not have parameters
+- `classes/constructors/dtor-params.cpp` (clang-18): error: destructor cannot have any parameters
+- `classes/constructors/dtor-params.cpp` (gcc-16): error: destructors may not have parameters
+- `classes/constructors/dtor-params.cpp` (clang-22): error: destructor cannot have any parameters
+- `classes/constructors/dtor-ref-qualified.cpp` (clang-host): error: ref-qualifier '&' is not allowed on a destructor
+- `classes/constructors/dtor-ref-qualified.cpp` (gcc-host): error: destructors may not be ref-qualified
+- `classes/constructors/dtor-ref-qualified.cpp` (edg-7.0): error: a ref-qualifier is not allowed here
+- `classes/constructors/dtor-ref-qualified.cpp` (gcc-14): error: destructors may not be ref-qualified
+- `classes/constructors/dtor-ref-qualified.cpp` (clang-18): error: ref-qualifier '&' is not allowed on a destructor
+- `classes/constructors/dtor-ref-qualified.cpp` (gcc-16): error: destructors may not be ref-qualified
+- `classes/constructors/dtor-ref-qualified.cpp` (clang-22): error: ref-qualifier '&' is not allowed on a destructor
+- `classes/constructors/dtor-return-type.cpp` (clang-host): error: destructor cannot have a return type
+- `classes/constructors/dtor-return-type.cpp` (gcc-host): error: return type specification for destructor invalid
+- `classes/constructors/dtor-return-type.cpp` (edg-7.0): error: return type may not be specified on a destructor
+- `classes/constructors/dtor-return-type.cpp` (gcc-14): error: return type specification for destructor invalid
+- `classes/constructors/dtor-return-type.cpp` (clang-18): error: destructor cannot have a return type
+- `classes/constructors/dtor-return-type.cpp` (gcc-16): error: return type specification for destructor invalid
+- `classes/constructors/dtor-return-type.cpp` (clang-22): error: destructor cannot have a return type
+- `classes/constructors/dtor-static.cpp` (clang-host): error: destructor cannot be declared 'static'
+- `classes/constructors/dtor-static.cpp` (gcc-host): error: destructor cannot be static member function
+- `classes/constructors/dtor-static.cpp` (edg-7.0): error: "static" is not allowed
+- `classes/constructors/dtor-static.cpp` (gcc-14): error: destructor cannot be static member function
+- `classes/constructors/dtor-static.cpp` (clang-18): error: destructor cannot be declared 'static'
+- `classes/constructors/dtor-static.cpp` (gcc-16): error: destructor cannot be static member function
+- `classes/constructors/dtor-static.cpp` (clang-22): error: destructor cannot be declared 'static'
+- `classes/constructors/dtor-two.cpp` (clang-host): error: destructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/dtor-two.cpp` (gcc-host): error: ‘S::~S()’ cannot be overloaded with ‘S::~S()’ / note: previous declaration ‘S::~S()’
+- `classes/constructors/dtor-two.cpp` (edg-7.0): error: invalid redeclaration of member function "S::~S()" (declared at line 3)
+- `classes/constructors/dtor-two.cpp` (gcc-14): error: 'S::~S()' cannot be overloaded with 'S::~S()' / note: previous declaration 'S::~S()'
+- `classes/constructors/dtor-two.cpp` (clang-18): error: destructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/dtor-two.cpp` (gcc-16): error: 'S::~S()' cannot be overloaded with 'S::~S()' / note: previous declaration 'S::~S()'
+- `classes/constructors/dtor-two.cpp` (clang-22): error: destructor cannot be redeclared / note: previous declaration is here
+- `classes/constructors/dtor-variadic.cpp` (clang-host): error: destructor cannot be variadic
+- `classes/constructors/dtor-variadic.cpp` (gcc-host): error: destructors may not have parameters
+- `classes/constructors/dtor-variadic.cpp` (edg-7.0): error: a destructor may not have parameters
+- `classes/constructors/dtor-variadic.cpp` (gcc-14): error: destructors may not have parameters
+- `classes/constructors/dtor-variadic.cpp` (clang-18): error: destructor cannot be variadic
+- `classes/constructors/dtor-variadic.cpp` (gcc-16): error: destructors may not have parameters
+- `classes/constructors/dtor-variadic.cpp` (clang-22): error: destructor cannot be variadic
+- `classes/constructors/dtor-without-call.cpp` (clang-host): error: reference to destructor must be called; did you mean to call it with no arguments?
+- `classes/constructors/dtor-without-call.cpp` (gcc-host): error: invalid use of non-static member function ‘S::~S()’
+- `classes/constructors/dtor-without-call.cpp` (edg-7.0): error: a pointer to a bound function may only be used to call the function
+- `classes/constructors/dtor-without-call.cpp` (gcc-14): error: invalid use of non-static member function 'S::~S()'
+- `classes/constructors/dtor-without-call.cpp` (clang-18): error: reference to destructor must be called; did you mean to call it with no arguments?
+- `classes/constructors/dtor-without-call.cpp` (gcc-16): error: invalid use of non-static member function 'S::~S()'
+- `classes/constructors/dtor-without-call.cpp` (clang-22): error: reference to destructor must be called; did you mean to call it with no arguments?
+- `classes/constructors/dtor-wrong-name.cpp` (clang-host): error: undeclared identifier 'T' in destructor name
+- `classes/constructors/dtor-wrong-name.cpp` (gcc-host): error: expected class-name before ‘(’ token
+- `classes/constructors/dtor-wrong-name.cpp` (edg-7.0): error: invalid destructor declaration
+- `classes/constructors/dtor-wrong-name.cpp` (gcc-14): error: expected class-name before '(' token
+- `classes/constructors/dtor-wrong-name.cpp` (clang-18): error: undeclared identifier 'T' in destructor name
+- `classes/constructors/dtor-wrong-name.cpp` (gcc-16): error: expected class-name before '(' token
+- `classes/constructors/dtor-wrong-name.cpp` (clang-22): error: undeclared identifier 'T' in destructor name
+- `classes/constructors/explicit-argument.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'S' for 1st argument
+- `classes/constructors/explicit-argument.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘S’ / note: explicit conversion function was not considered
+- `classes/constructors/explicit-argument.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
+- `classes/constructors/explicit-argument.cpp` (gcc-14): error: could not convert '1' from 'int' to 'S'
+- `classes/constructors/explicit-argument.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'S' for 1st argument
+- `classes/constructors/explicit-argument.cpp` (gcc-16): error: could not convert '1' from 'int' to 'S' / note: explicit conversion function was not considered
+- `classes/constructors/explicit-argument.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'S' for 1st argument
+- `classes/constructors/explicit-bool-not-constant.cpp` (clang-host): error: explicit specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `classes/constructors/explicit-bool-not-constant.cpp` (gcc-host): error: the value of ‘flag’ is not usable in a constant expression / note: ‘bool flag’ is not const
+- `classes/constructors/explicit-bool-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "flag" (declared at line 3) cannot be used as a constant
+- `classes/constructors/explicit-bool-not-constant.cpp` (gcc-14): error: the value of 'flag' is not usable in a constant expression / note: 'bool flag' is not const
+- `classes/constructors/explicit-bool-not-constant.cpp` (clang-18): error: explicit specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `classes/constructors/explicit-bool-not-constant.cpp` (gcc-16): error: the value of 'flag' is not usable in a constant expression / note: 'bool flag' is not const
+- `classes/constructors/explicit-bool-not-constant.cpp` (clang-22): error: explicit specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `classes/constructors/explicit-bool-true.cpp` (clang-host): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-bool-true.cpp` (gcc-host): error: conversion from ‘int’ to non-scalar type ‘S’ requested / note: explicit conversion function was not considered
+- `classes/constructors/explicit-bool-true.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
+- `classes/constructors/explicit-bool-true.cpp` (gcc-14): error: conversion from 'int' to non-scalar type 'S' requested
+- `classes/constructors/explicit-bool-true.cpp` (clang-18): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-bool-true.cpp` (gcc-16): error: conversion from 'int' to non-scalar type 'S' requested / note: explicit conversion function was not considered
+- `classes/constructors/explicit-bool-true.cpp` (clang-22): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-copy-init.cpp` (clang-host): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-copy-init.cpp` (gcc-host): error: conversion from ‘int’ to non-scalar type ‘S’ requested / note: explicit conversion function was not considered
+- `classes/constructors/explicit-copy-init.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
+- `classes/constructors/explicit-copy-init.cpp` (gcc-14): error: conversion from 'int' to non-scalar type 'S' requested
+- `classes/constructors/explicit-copy-init.cpp` (clang-18): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-copy-init.cpp` (gcc-16): error: conversion from 'int' to non-scalar type 'S' requested / note: explicit conversion function was not considered
+- `classes/constructors/explicit-copy-init.cpp` (clang-22): error: no viable conversion from 'int' to 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-copy-list-init.cpp` (clang-host): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-copy-list-init.cpp` (gcc-host): error: converting to ‘S’ from initializer list would use explicit constructor ‘S::S(int)’
+- `classes/constructors/explicit-copy-list-init.cpp` (edg-7.0): error: copy-list-initialization cannot use a constructor marked "explicit"
+- `classes/constructors/explicit-copy-list-init.cpp` (gcc-14): error: converting to 'S' from initializer list would use explicit constructor 'S::S(int)'
+- `classes/constructors/explicit-copy-list-init.cpp` (clang-18): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-copy-list-init.cpp` (gcc-16): error: converting to 'S' from initializer list would use explicit constructor 'S::S(int)'
+- `classes/constructors/explicit-copy-list-init.cpp` (clang-22): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-default-copy-list.cpp` (clang-host): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-default-copy-list.cpp` (gcc-host): error: converting to ‘S’ from initializer list would use explicit constructor ‘S::S()’
+- `classes/constructors/explicit-default-copy-list.cpp` (edg-7.0): error: no default constructor exists for class "S"
+- `classes/constructors/explicit-default-copy-list.cpp` (gcc-14): error: converting to 'S' from initializer list would use explicit constructor 'S::S()'
+- `classes/constructors/explicit-default-copy-list.cpp` (clang-18): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-default-copy-list.cpp` (gcc-16): error: converting to 'S' from initializer list would use explicit constructor 'S::S()'
+- `classes/constructors/explicit-default-copy-list.cpp` (clang-22): error: chosen constructor is explicit in copy-initialization
+- `classes/constructors/explicit-non-ctor.cpp` (clang-host): error: 'explicit' can only be applied to a constructor or conversion function
+- `classes/constructors/explicit-non-ctor.cpp` (gcc-host): error: only declarations of constructors and conversion operators can be ‘explicit’
+- `classes/constructors/explicit-non-ctor.cpp` (edg-7.0): error: "explicit" is not allowed
+- `classes/constructors/explicit-non-ctor.cpp` (gcc-14): error: only declarations of constructors and conversion operators can be 'explicit'
+- `classes/constructors/explicit-non-ctor.cpp` (clang-18): error: 'explicit' can only be applied to a constructor or conversion function
+- `classes/constructors/explicit-non-ctor.cpp` (gcc-16): error: only declarations of constructors and conversion operators can be 'explicit'
+- `classes/constructors/explicit-non-ctor.cpp` (clang-22): error: 'explicit' can only be applied to a constructor or conversion function
+- `classes/constructors/explicit-out-of-line.cpp` (clang-host): error: 'explicit' can only be specified inside the class definition
+- `classes/constructors/explicit-out-of-line.cpp` (gcc-host): error: ‘explicit’ outside class declaration
+- `classes/constructors/explicit-out-of-line.cpp` (edg-7.0): error: "explicit" is not allowed
+- `classes/constructors/explicit-out-of-line.cpp` (gcc-14): error: 'explicit' outside class declaration
+- `classes/constructors/explicit-out-of-line.cpp` (clang-18): error: 'explicit' can only be specified inside the class definition
+- `classes/constructors/explicit-out-of-line.cpp` (gcc-16): error: 'explicit' outside class declaration
+- `classes/constructors/explicit-out-of-line.cpp` (clang-22): error: 'explicit' can only be specified inside the class definition
+- `classes/constructors/explicit-return.cpp` (clang-host): error: no viable conversion from returned value of type 'int' to function return type 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-return.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘S’ / note: explicit conversion function was not considered
+- `classes/constructors/explicit-return.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
+- `classes/constructors/explicit-return.cpp` (gcc-14): error: could not convert '1' from 'int' to 'S'
+- `classes/constructors/explicit-return.cpp` (clang-18): error: no viable conversion from returned value of type 'int' to function return type 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicit-return.cpp` (gcc-16): error: could not convert '1' from 'int' to 'S' / note: explicit conversion function was not considered
+- `classes/constructors/explicit-return.cpp` (clang-22): error: no viable conversion from returned value of type 'int' to function return type 'S' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const S &' for 1st argument
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (clang-host): note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized / note: replace 'default' with 'delete'
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (edg-7.0): error: the default constructor of "S" cannot be referenced -- it is a deleted function
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (clang-18): note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized / note: replace 'default' with 'delete'
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/explicitly-defaulted-but-deleted.cpp` (clang-22): note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized / note: replace 'default' with 'delete'
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has a deleted destructor
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (gcc-host): error: use of deleted function ‘S::S()’ / note: ‘S::S()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (edg-7.0): error: no default constructor exists for class "S" / error: function "S::~S() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (gcc-14): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has a deleted destructor
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/constructors/implicitly-deleted-dtor-member.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'm' has a deleted destructor
+- `classes/constructors/init-order-reads-later.cpp` (clang-host): error: constexpr variable 's' must be initialized by a constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/init-order-reads-later.cpp` (gcc-host): error: accessing uninitialized member ‘S::b’
+- `classes/constructors/init-order-reads-later.cpp` (edg-7.0): error: initialization is not constant / note: access to uninitialized object
+- `classes/constructors/init-order-reads-later.cpp` (gcc-14): error: accessing uninitialized member 'S::b'
+- `classes/constructors/init-order-reads-later.cpp` (clang-18): error: constexpr variable 's' must be initialized by a constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/init-order-reads-later.cpp` (gcc-16): error: accessing uninitialized member 'S::b'
+- `classes/constructors/init-order-reads-later.cpp` (clang-22): error: constexpr variable 's' must be initialized by a constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/init-order-warns.cpp` (clang-host): error: field 'b' will be initialized after field 'a' [-Werror,-Wreorder-ctor]
+- `classes/constructors/init-order-warns.cpp` (gcc-host): error: ‘S::b’ will be initialized after [-Werror=reorder] / error:   ‘int S::a’ [-Werror=reorder]
+- `classes/constructors/init-order-warns.cpp` (gcc-14): error: 'S::b' will be initialized after [-Werror=reorder] / error:   'int S::a' [-Werror=reorder]
+- `classes/constructors/init-order-warns.cpp` (clang-18): error: field 'b' will be initialized after field 'a' [-Werror,-Wreorder-ctor]
+- `classes/constructors/init-order-warns.cpp` (gcc-16): error: 'S::b' will be initialized after [-Werror=reorder] / error:   'int S::a' [-Werror=reorder]
+- `classes/constructors/init-order-warns.cpp` (clang-22): error: field 'b' will be initialized after field 'a' [-Werror,-Wreorder-ctor]
+- `classes/constructors/mem-init-braces-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-braces-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/constructors/mem-init-braces-narrowing.cpp` (gcc-14): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-braces-narrowing.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-duplicate.cpp` (clang-host): error: multiple initializations given for non-static member 'a' / note: previous initialization is here
+- `classes/constructors/mem-init-duplicate.cpp` (gcc-host): error: multiple initializations given for ‘S::a’
+- `classes/constructors/mem-init-duplicate.cpp` (edg-7.0): error: member "S::a" has already been initialized
+- `classes/constructors/mem-init-duplicate.cpp` (gcc-14): error: multiple initializations given for 'S::a'
+- `classes/constructors/mem-init-duplicate.cpp` (clang-18): error: multiple initializations given for non-static member 'a' / note: previous initialization is here
+- `classes/constructors/mem-init-duplicate.cpp` (gcc-16): error: multiple initializations given for 'S::a'
+- `classes/constructors/mem-init-duplicate.cpp` (clang-22): error: multiple initializations given for non-static member 'a' / note: previous initialization is here
+- `classes/constructors/mem-init-in-declaration-only.cpp` (clang-host): error: expected '{' or ','
+- `classes/constructors/mem-init-in-declaration-only.cpp` (gcc-host): error: expected ‘{’ at end of input
+- `classes/constructors/mem-init-in-declaration-only.cpp` (edg-7.0): error: expected a "{" / error: expected a "}"
+- `classes/constructors/mem-init-in-declaration-only.cpp` (gcc-14): error: expected '{' at end of input
+- `classes/constructors/mem-init-in-declaration-only.cpp` (clang-18): error: expected '{' or ','
+- `classes/constructors/mem-init-in-declaration-only.cpp` (gcc-16): error: expected '{' at end of input
+- `classes/constructors/mem-init-in-declaration-only.cpp` (clang-22): error: expected '{' or ','
+- `classes/constructors/mem-init-indirect-base.cpp` (clang-host): error: type 'A' is not a direct or virtual base of 'C'
+- `classes/constructors/mem-init-indirect-base.cpp` (gcc-host): error: type ‘A’ is not a direct base of ‘C’
+- `classes/constructors/mem-init-indirect-base.cpp` (edg-7.0): error: indirect nonvirtual base class is not allowed
+- `classes/constructors/mem-init-indirect-base.cpp` (gcc-14): error: type 'A' is not a direct base of 'C'
+- `classes/constructors/mem-init-indirect-base.cpp` (clang-18): error: type 'A' is not a direct or virtual base of 'C'
+- `classes/constructors/mem-init-indirect-base.cpp` (gcc-16): error: type 'A' is not a direct base of 'C'
+- `classes/constructors/mem-init-indirect-base.cpp` (clang-22): error: type 'A' is not a direct or virtual base of 'C'
+- `classes/constructors/mem-init-not-member.cpp` (clang-host): error: member initializer 'b' does not name a non-static data member or base class
+- `classes/constructors/mem-init-not-member.cpp` (gcc-host): error: class ‘S’ does not have any field named ‘b’
+- `classes/constructors/mem-init-not-member.cpp` (edg-7.0): error: "b" is not a nonstatic data member or base class of class "S"
+- `classes/constructors/mem-init-not-member.cpp` (gcc-14): error: class 'S' does not have any field named 'b'
+- `classes/constructors/mem-init-not-member.cpp` (clang-18): error: member initializer 'b' does not name a non-static data member or base class
+- `classes/constructors/mem-init-not-member.cpp` (gcc-16): error: class 'S' does not have any field named 'b'
+- `classes/constructors/mem-init-not-member.cpp` (clang-22): error: member initializer 'b' does not name a non-static data member or base class
+- `classes/constructors/mem-init-pack-of-reference.cpp` (clang-host): error: reference to type 'int' requires an initializer
+- `classes/constructors/mem-init-pack-of-reference.cpp` (gcc-host): error: value-initialization of reference type ‘int&’
+- `classes/constructors/mem-init-pack-of-reference.cpp` (edg-7.0): error: default-initialization of reference is not allowed
+- `classes/constructors/mem-init-pack-of-reference.cpp` (gcc-14): error: value-initialization of reference type 'int&'
+- `classes/constructors/mem-init-pack-of-reference.cpp` (clang-18): error: reference to type 'int' requires an initializer
+- `classes/constructors/mem-init-pack-of-reference.cpp` (gcc-16): error: value-initialization of reference type 'int&'
+- `classes/constructors/mem-init-pack-of-reference.cpp` (clang-22): error: reference to type 'int' requires an initializer
+- `classes/constructors/mem-init-static-member.cpp` (clang-host): error: member initializer 'n' does not name a non-static data member or base class
+- `classes/constructors/mem-init-static-member.cpp` (gcc-host): error: ‘int S::n’ is a static data member; it can only be initialized at its definition
+- `classes/constructors/mem-init-static-member.cpp` (edg-7.0): error: "n" is not a nonstatic data member or base class of class "S"
+- `classes/constructors/mem-init-static-member.cpp` (gcc-14): error: 'int S::n' is a static data member; it can only be initialized at its definition
+- `classes/constructors/mem-init-static-member.cpp` (clang-18): error: member initializer 'n' does not name a non-static data member or base class
+- `classes/constructors/mem-init-static-member.cpp` (gcc-16): error: 'int S::n' is a static data member; it can only be initialized at its definition
+- `classes/constructors/mem-init-static-member.cpp` (clang-22): error: member initializer 'n' does not name a non-static data member or base class
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (gcc-host): error: no matching function for call to ‘S::S()’
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (edg-7.0): error: no default constructor exists for class "S"
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (gcc-14): error: no matching function for call to 'S::S()' / note: candidate: 'S::S(const S&)'
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (clang-18): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (gcc-16): error: no matching function for call to 'S::S()'
+- `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (gcc-host): error: no matching function for call to ‘S::S()’
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (edg-7.0): error: no default constructor exists for class "S"
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (gcc-14): error: no matching function for call to 'S::S()' / note: candidate: 'S::S(int)'
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (clang-18): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (gcc-16): error: no matching function for call to 'S::S()'
+- `classes/constructors/no-implicit-default-with-ctor.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/one-user-conversion.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
+- `classes/constructors/one-user-conversion.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘B’
+- `classes/constructors/one-user-conversion.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "B"
+- `classes/constructors/one-user-conversion.cpp` (gcc-14): error: could not convert '1' from 'int' to 'B'
+- `classes/constructors/one-user-conversion.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
+- `classes/constructors/one-user-conversion.cpp` (gcc-16): error: could not convert '1' from 'int' to 'B'
+- `classes/constructors/one-user-conversion.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
+- `classes/constructors/private-dtor-variable.cpp` (clang-host): error: variable of type 'S' has private destructor / note: implicitly declared private here
+- `classes/constructors/private-dtor-variable.cpp` (gcc-host): error: ‘S::~S()’ is private within this context / note: declared private here
+- `classes/constructors/private-dtor-variable.cpp` (edg-7.0): error: "S::~S() noexcept" (declared at line 3) is inaccessible
+- `classes/constructors/private-dtor-variable.cpp` (gcc-14): error: 'S::~S()' is private within this context / note: declared private here
+- `classes/constructors/private-dtor-variable.cpp` (clang-18): error: variable of type 'S' has private destructor / note: implicitly declared private here
+- `classes/constructors/private-dtor-variable.cpp` (gcc-16): error: 'S::~S()' is private within this context / note: declared private here
+- `classes/constructors/private-dtor-variable.cpp` (clang-22): error: variable of type 'S' has private destructor / note: implicitly declared private here
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (clang-host): error: the type of object expression ('int') does not match the type being destroyed ('L' (aka 'long')) in pseudo-destructor expression
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (gcc-host): error: ‘i’ is not of type ‘L’ {aka ‘long int’}
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (edg-7.0): error: invalid destructor name for type "int"
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (gcc-14): error: 'i' is not of type 'L' {aka 'long int'}
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (clang-18): error: the type of object expression ('int') does not match the type being destroyed ('L' (aka 'long')) in pseudo-destructor expression
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (gcc-16): error: 'i' is not of type 'L' {aka 'long int'}
+- `classes/constructors/pseudo-dtor-wrong-type.cpp` (clang-22): error: the type of object expression ('int') does not match the type being destroyed ('L' (aka 'long')) in pseudo-destructor expression
+- `classes/constructors/use-after-dtor-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/use-after-dtor-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression
+- `classes/constructors/use-after-dtor-constant.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `classes/constructors/use-after-dtor-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `classes/constructors/use-after-dtor-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/use-after-dtor-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `classes/constructors/use-after-dtor-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
 - `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
 - `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
 - `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
