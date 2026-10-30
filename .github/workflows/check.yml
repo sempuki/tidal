@@ -29,6 +29,7 @@ jobs:
       - uses: crazy-max/ghaction-github-runtime@v3
       - name: Build compiler images
         env:
+          TIDAL_BUILD_COMMAND: docker buildx build
           TIDAL_BUILD_FLAGS: >-
             --load
             --cache-from type=gha,scope={id}
