@@ -36,6 +36,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | provisional | yes; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0024](Q-0024-main-parameter-lists.md) | Which parameter lists may `main` have? | provisional | () and (int, char**) everywhere; others implementation-defined |
 | [Q-0025](Q-0025-constinit-placement.md) | Which declarations of a variable must carry `constinit`? | provisional | the initializing declaration, if any declaration does |
+| [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | provisional | no; GCC 14's acceptance is fixed in GCC 16 |
 
 ## Status values
 
