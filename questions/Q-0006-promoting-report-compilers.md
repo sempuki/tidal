@@ -18,8 +18,7 @@ divergences block changes until expectations or questions account for them.
 
 ## Provisional answer
 
-Option 1. GCC 14 and Clang 18 already have no differences and can be
-promoted. EDG can be promoted once its differing tests carry per-compiler
-expectations that reference Q-0002 and Q-0003.
+Option 1. All five compilers in the matrix are baseline. EDG's differing
+tests carry per-compiler expectations that reference Q-0002 and Q-0003.
 
 ## Opinions
