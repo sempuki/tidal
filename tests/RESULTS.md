@@ -14,6 +14,45 @@ compilers affect the Status column.
 
 | Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
+| `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/bound-member-function.cpp` | CLS-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/complete-in-default-member-init.cpp` | CLS-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/complete-in-member-bodies.cpp` | CLS-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/const-member-modifies.cpp` | CLS-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/define-outside-class.cpp` | CLS-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/define-undeclared-member.cpp` | CLS-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/distinct-addresses.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/duplicate-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/empty-class-size-one.cpp` | CLS-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/empty-class-size.cpp` | CLS-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/incomplete-member.cpp` | CLS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/inline-static-member.cpp` | CLS-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/local-class-static-member.cpp` | CLS-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/local-class-uses-local.cpp` | CLS-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/local-class-uses-static-local.cpp` | CLS-12 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/local-class.cpp` | CLS-12 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/member-function-initialized.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/member-function-inline.cpp` | CLS-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/member-named-as-class-with-constructor.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/member-named-as-class.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/member-of-own-type.cpp` | CLS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/member-order.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/mutable-member.cpp` | CLS-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/nested-types.cpp` | CLS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/non-const-on-const-object.cpp` | CLS-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/pointer-to-own-type.cpp` | CLS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/ref-qualified-mixed.cpp` | CLS-6 | reject | reject | accept | reject | reject | reject | accept | reject | pass |
+| `classes/members/ref-qualified.cpp` | CLS-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/sizeof-in-class-incomplete.cpp` | CLS-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-const-integral.cpp` | CLS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/static-data-member.cpp` | CLS-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/static-member-function-const.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-member-function.cpp` | CLS-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/members/static-member-not-defined.cpp` | CLS-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/members/static-non-const-in-class-init.cpp` | CLS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-uses-this.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/attributes/assume-on-declaration.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
@@ -641,13 +680,143 @@ compilers affect the Status column.
 | `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-626/626 tests pass on baseline compilers.
+665/665 tests pass on baseline compilers.
 
 ## Rejections
 
 First error from each compiler that rejected a test, so a reviewer can
 check that the rejection has the intended cause.
 
+- `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+- `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
+- `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
+- `classes/members/anonymous-struct.cpp` (gcc-14): error: ISO C++ prohibits anonymous structs [-Wpedantic]
+- `classes/members/anonymous-struct.cpp` (clang-18): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+- `classes/members/anonymous-struct.cpp` (gcc-16): error: ISO C++ prohibits anonymous structs [-Wpedantic]
+- `classes/members/anonymous-struct.cpp` (clang-22): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+- `classes/members/auto-data-member.cpp` (clang-host): error: 'auto' not allowed in non-static struct member
+- `classes/members/auto-data-member.cpp` (gcc-host): error: non-static data member declared with placeholder ‘auto’
+- `classes/members/auto-data-member.cpp` (edg-7.0): error: "auto" is not allowed here
+- `classes/members/auto-data-member.cpp` (gcc-14): error: non-static data member declared with placeholder 'auto'
+- `classes/members/auto-data-member.cpp` (clang-18): error: 'auto' not allowed in non-static struct member
+- `classes/members/auto-data-member.cpp` (gcc-16): error: non-static data member declared with placeholder 'auto'
+- `classes/members/auto-data-member.cpp` (clang-22): error: 'auto' not allowed in non-static struct member
+- `classes/members/bound-member-function.cpp` (clang-host): error: reference to non-static member function must be called; did you mean to call it with no arguments? / error: reference to non-static member function must be called; did you mean to call it with no arguments?
+- `classes/members/bound-member-function.cpp` (gcc-host): error: cannot convert ‘S::f’ from type ‘int (S::)()’ to type ‘int (S::*)()’
+- `classes/members/bound-member-function.cpp` (edg-7.0): error: a pointer to a bound function may only be used to call the function
+- `classes/members/bound-member-function.cpp` (gcc-14): error: cannot convert 'S::f' from type 'int (S::)()' to type 'int (S::*)()'
+- `classes/members/bound-member-function.cpp` (clang-18): error: reference to non-static member function must be called; did you mean to call it with no arguments? / error: reference to non-static member function must be called; did you mean to call it with no arguments?
+- `classes/members/bound-member-function.cpp` (gcc-16): error: cannot convert 'S::f' from type 'int (S::)()' to type 'int (S::*)()'
+- `classes/members/bound-member-function.cpp` (clang-22): error: reference to non-static member function must be called; did you mean to call it with no arguments? / error: reference to non-static member function must be called; did you mean to call it with no arguments?
+- `classes/members/const-member-modifies.cpp` (clang-host): error: cannot assign to non-static data member within const member function 'set' / note: member function 'S::set' is declared const here
+- `classes/members/const-member-modifies.cpp` (gcc-host): error: assignment of member ‘S::v’ in read-only object
+- `classes/members/const-member-modifies.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `classes/members/const-member-modifies.cpp` (gcc-14): error: assignment of member 'S::v' in read-only object
+- `classes/members/const-member-modifies.cpp` (clang-18): error: cannot assign to non-static data member within const member function 'set' / note: member function 'S::set' is declared const here
+- `classes/members/const-member-modifies.cpp` (gcc-16): error: assignment of member 'S::v' in read-only object
+- `classes/members/const-member-modifies.cpp` (clang-22): error: cannot assign to non-static data member within const member function 'set' / note: member function 'S::set' is declared const here
+- `classes/members/define-undeclared-member.cpp` (clang-host): error: out-of-line definition of 'f' does not match any declaration in 'S' / note: S defined here
+- `classes/members/define-undeclared-member.cpp` (gcc-host): error: no declaration matches ‘void S::f()’ / note: no functions named ‘void S::f()’
+- `classes/members/define-undeclared-member.cpp` (edg-7.0): error: class "S" has no member "f"
+- `classes/members/define-undeclared-member.cpp` (gcc-14): error: no declaration matches 'void S::f()' / note: no functions named 'void S::f()'
+- `classes/members/define-undeclared-member.cpp` (clang-18): error: out-of-line definition of 'f' does not match any declaration in 'S'
+- `classes/members/define-undeclared-member.cpp` (gcc-16): error: no declaration matches 'void S::f()' / note: no functions named 'void S::f()'
+- `classes/members/define-undeclared-member.cpp` (clang-22): error: out-of-line definition of 'f' does not match any declaration in 'S' / note: S defined here
+- `classes/members/duplicate-member.cpp` (clang-host): error: duplicate member 'a' / note: previous declaration is here
+- `classes/members/duplicate-member.cpp` (gcc-host): error: redeclaration of ‘double S::a’ / note: previous declaration ‘int S::a’
+- `classes/members/duplicate-member.cpp` (edg-7.0): error: "a" has already been declared in the current scope
+- `classes/members/duplicate-member.cpp` (gcc-14): error: redeclaration of 'double S::a' / note: previous declaration 'int S::a'
+- `classes/members/duplicate-member.cpp` (clang-18): error: duplicate member 'a' / note: previous declaration is here
+- `classes/members/duplicate-member.cpp` (gcc-16): error: redeclaration of 'double S::a' / note: previous declaration 'int S::a'
+- `classes/members/duplicate-member.cpp` (clang-22): error: duplicate member 'a' / note: previous declaration is here
+- `classes/members/incomplete-member.cpp` (clang-host): error: field has incomplete type 'Later' / note: forward declaration of 'Later'
+- `classes/members/incomplete-member.cpp` (gcc-host): error: field ‘l’ has incomplete type ‘Later’ / note: forward declaration of ‘struct Later’
+- `classes/members/incomplete-member.cpp` (edg-7.0): error: incomplete type "Later" is not allowed
+- `classes/members/incomplete-member.cpp` (gcc-14): error: field 'l' has incomplete type 'Later' / note: forward declaration of 'struct Later'
+- `classes/members/incomplete-member.cpp` (clang-18): error: field has incomplete type 'Later' / note: forward declaration of 'Later'
+- `classes/members/incomplete-member.cpp` (gcc-16): error: field 'l' has incomplete type 'Later' / note: forward declaration of 'struct Later'
+- `classes/members/incomplete-member.cpp` (clang-22): error: field has incomplete type 'Later' / note: forward declaration of 'Later'
+- `classes/members/local-class-static-member.cpp` (clang-host): error: static data member 'count' not allowed in local struct 'S'
+- `classes/members/local-class-static-member.cpp` (gcc-host): error: local class ‘struct f()::S’ shall not have static data member ‘int f()::S::count’ [-fpermissive]
+- `classes/members/local-class-static-member.cpp` (edg-7.0): error: static data member declaration is not allowed in this class
+- `classes/members/local-class-static-member.cpp` (gcc-14): error: local class 'struct f()::S' shall not have static data member 'int f()::S::count' [-fpermissive]
+- `classes/members/local-class-static-member.cpp` (clang-18): error: static data member 'count' not allowed in local struct 'S'
+- `classes/members/local-class-static-member.cpp` (gcc-16): error: local class 'struct f()::S' shall not have static data member 'int f()::S::count' [-fpermissive]
+- `classes/members/local-class-static-member.cpp` (clang-22): error: static data member 'count' not allowed in local struct 'S'
+- `classes/members/local-class-uses-local.cpp` (clang-host): error: reference to local variable 'local' declared in enclosing function 'f'
+- `classes/members/local-class-uses-local.cpp` (gcc-host): error: use of local variable with automatic storage from containing function
+- `classes/members/local-class-uses-local.cpp` (edg-7.0): error: reference to local variable of enclosing function is not allowed
+- `classes/members/local-class-uses-local.cpp` (gcc-14): error: use of local variable with automatic storage from containing function
+- `classes/members/local-class-uses-local.cpp` (clang-18): error: reference to local variable 'local' declared in enclosing function 'f'
+- `classes/members/local-class-uses-local.cpp` (gcc-16): error: use of local variable with automatic storage from containing function
+- `classes/members/local-class-uses-local.cpp` (clang-22): error: reference to local variable 'local' declared in enclosing function 'f'
+- `classes/members/member-function-initialized.cpp` (clang-host): error: 'f' is not virtual and cannot be declared pure
+- `classes/members/member-function-initialized.cpp` (gcc-host): error: initializer specified for non-virtual method ‘void S::f()’
+- `classes/members/member-function-initialized.cpp` (edg-7.0): error: pure specifier ("= 0") allowed only on virtual functions
+- `classes/members/member-function-initialized.cpp` (gcc-14): error: initializer specified for non-virtual method 'void S::f()'
+- `classes/members/member-function-initialized.cpp` (clang-18): error: 'f' is not virtual and cannot be declared pure
+- `classes/members/member-function-initialized.cpp` (gcc-16): error: initializer specified for non-virtual method 'void S::f()'
+- `classes/members/member-function-initialized.cpp` (clang-22): error: 'f' is not virtual and cannot be declared pure
+- `classes/members/member-named-as-class-with-constructor.cpp` (clang-host): error: member 'S' has the same name as its class
+- `classes/members/member-named-as-class-with-constructor.cpp` (gcc-host): error: field ‘int S::S’ with same name as class [-fpermissive]
+- `classes/members/member-named-as-class-with-constructor.cpp` (edg-7.0): error: declaration of a member with the same name as its class
+- `classes/members/member-named-as-class-with-constructor.cpp` (gcc-14): error: field 'int S::S' with same name as class [-fpermissive]
+- `classes/members/member-named-as-class-with-constructor.cpp` (clang-18): error: member 'S' has the same name as its class
+- `classes/members/member-named-as-class-with-constructor.cpp` (gcc-16): error: field 'int S::S' with same name as class [-fpermissive]
+- `classes/members/member-named-as-class-with-constructor.cpp` (clang-22): error: member 'S' has the same name as its class
+- `classes/members/member-of-own-type.cpp` (clang-host): error: field has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/member-of-own-type.cpp` (gcc-host): error: field ‘inner’ has incomplete type ‘S’ / note: definition of ‘struct S’ is not complete until the closing brace
+- `classes/members/member-of-own-type.cpp` (edg-7.0): error: incomplete type "S" is not allowed
+- `classes/members/member-of-own-type.cpp` (gcc-14): error: field 'inner' has incomplete type 'S' / note: definition of 'struct S' is not complete until the closing brace
+- `classes/members/member-of-own-type.cpp` (clang-18): error: field has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/member-of-own-type.cpp` (gcc-16): error: field 'inner' has incomplete type 'S' / note: definition of 'struct S' is not complete until the closing brace
+- `classes/members/member-of-own-type.cpp` (clang-22): error: field has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/non-const-on-const-object.cpp` (clang-host): error: 'this' argument to member function 'change' has type 'const S', but function is not marked const
+- `classes/members/non-const-on-const-object.cpp` (gcc-host): error: passing ‘const S’ as ‘this’ argument discards qualifiers [-fpermissive]
+- `classes/members/non-const-on-const-object.cpp` (edg-7.0): error: the object has type qualifiers that are not compatible with the member function "S::change"
+- `classes/members/non-const-on-const-object.cpp` (gcc-14): error: passing 'const S' as 'this' argument discards qualifiers [-fpermissive]
+- `classes/members/non-const-on-const-object.cpp` (clang-18): error: 'this' argument to member function 'change' has type 'const S', but function is not marked const
+- `classes/members/non-const-on-const-object.cpp` (gcc-16): error: passing 'const S' as 'this' argument discards qualifiers [-fpermissive]
+- `classes/members/non-const-on-const-object.cpp` (clang-22): error: 'this' argument to member function 'change' has type 'const S', but function is not marked const
+- `classes/members/ref-qualified-mixed.cpp` (clang-host): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/ref-qualified-mixed.cpp` (edg-7.0): error: overloading two member functions with the same parameter types requires that they both have ref-qualifiers or both lack ref-qualifiers
+- `classes/members/ref-qualified-mixed.cpp` (gcc-14): error: 'void S::f()' cannot be overloaded with 'void S::f() &' / note: previous declaration 'void S::f() &'
+- `classes/members/ref-qualified-mixed.cpp` (clang-18): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/ref-qualified-mixed.cpp` (clang-22): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/sizeof-in-class-incomplete.cpp` (clang-host): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/sizeof-in-class-incomplete.cpp` (gcc-host): error: invalid application of ‘sizeof’ to incomplete type ‘S’
+- `classes/members/sizeof-in-class-incomplete.cpp` (edg-7.0): error: incomplete type "S" is not allowed
+- `classes/members/sizeof-in-class-incomplete.cpp` (gcc-14): error: invalid application of 'sizeof' to incomplete type 'S'
+- `classes/members/sizeof-in-class-incomplete.cpp` (clang-18): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/sizeof-in-class-incomplete.cpp` (gcc-16): error: invalid application of 'sizeof' to incomplete type 'S'
+- `classes/members/sizeof-in-class-incomplete.cpp` (clang-22): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `classes/members/static-member-function-const.cpp` (clang-host): error: static member function cannot have 'const' qualifier
+- `classes/members/static-member-function-const.cpp` (gcc-host): error: static member function ‘static void S::f()’ cannot have cv-qualifier
+- `classes/members/static-member-function-const.cpp` (edg-7.0): error: a type qualifier is not allowed on a static member function
+- `classes/members/static-member-function-const.cpp` (gcc-14): error: static member function 'static void S::f()' cannot have cv-qualifier
+- `classes/members/static-member-function-const.cpp` (clang-18): error: static member function cannot have 'const' qualifier
+- `classes/members/static-member-function-const.cpp` (gcc-16): error: static member function 'static void S::f()' cannot have cv-qualifier
+- `classes/members/static-member-function-const.cpp` (clang-22): error: static member function cannot have 'const' qualifier
+- `classes/members/static-member-not-defined.cpp` (clang-host): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-member-not-defined.cpp` (gcc-host): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-member-not-defined.cpp` (gcc-14): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-member-not-defined.cpp` (clang-18): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-member-not-defined.cpp` (gcc-16): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-member-not-defined.cpp` (clang-22): link: undefined reference to `Counter::count' / link: undefined reference to `Counter::count'
+- `classes/members/static-non-const-in-class-init.cpp` (clang-host): error: non-const static data member must be initialized out of line
+- `classes/members/static-non-const-in-class-init.cpp` (gcc-host): error: ISO C++ forbids in-class initialization of non-const static member ‘S::n’
+- `classes/members/static-non-const-in-class-init.cpp` (edg-7.0): error: a member with an in-class initializer must be const
+- `classes/members/static-non-const-in-class-init.cpp` (gcc-14): error: ISO C++ forbids in-class initialization of non-const static member 'S::n'
+- `classes/members/static-non-const-in-class-init.cpp` (clang-18): error: non-const static data member must be initialized out of line
+- `classes/members/static-non-const-in-class-init.cpp` (gcc-16): error: ISO C++ forbids in-class initialization of non-const static member 'S::n'
+- `classes/members/static-non-const-in-class-init.cpp` (clang-22): error: non-const static data member must be initialized out of line
+- `classes/members/static-uses-this.cpp` (clang-host): error: invalid use of 'this' outside of a non-static member function
+- `classes/members/static-uses-this.cpp` (gcc-host): error: ‘this’ is unavailable for static member functions
+- `classes/members/static-uses-this.cpp` (edg-7.0): error: "this" may only be used inside a nonstatic member function
+- `classes/members/static-uses-this.cpp` (gcc-14): error: 'this' is unavailable for static member functions
+- `classes/members/static-uses-this.cpp` (clang-18): error: invalid use of 'this' outside of a non-static member function
+- `classes/members/static-uses-this.cpp` (gcc-16): error: 'this' is unavailable for static member functions
+- `classes/members/static-uses-this.cpp` (clang-22): error: invalid use of 'this' outside of a non-static member function
 - `declarations/attributes/assume-false-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assumption evaluated to false
 - `declarations/attributes/assume-false-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: failed ‘assume’ attribute assumption
 - `declarations/attributes/assume-false-constant.cpp` (edg-7.0): error: expression must have a constant value / note: assumption failed
