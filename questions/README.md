@@ -38,6 +38,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0025](Q-0025-constinit-placement.md) | Which declarations of a variable must carry `constinit`? | provisional | the initializing declaration, if any declaration does |
 | [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | provisional | no; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0027](Q-0027-mixed-ref-qualifiers.md) | May a member function with a ref-qualifier be overloaded with one without? | provisional | no; the declarations are rejected |
+| [Q-0028](Q-0028-float-narrowing-out-of-range.md) | Is converting a floating value above the target's finite range implementation-defined or undefined? | provisional | implementation-defined |
 
 ## Status values
 
