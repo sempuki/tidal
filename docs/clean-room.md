@@ -13,6 +13,10 @@ filled by `tools/similarity.py` (decision 0011). The tool reads the corpus
 and reports only Tidal text, so anyone may run it, including the writer.
 Nobody needs to read the corpus.
 
+**Reviewer.** Reads the reference material and Tidal, and reports gaps and
+possible errors to the writer as facts and self-written test programs
+(decision 0019). A reviewer is never the writer of the same section.
+
 **Contributors.** Decide what Tidal says when implementations disagree or a
 classification is unclear. Each such question is a file in `questions/`
 with a provisional answer that the spec follows. Contributors change answers
@@ -93,4 +97,5 @@ For each section the repository holds:
 |---|---|
 | Writer | Claude (an LLM from Anthropic), working only inside this repository and `inputs/clean/` |
 | Checker | `tools/similarity.py` |
+| Reviewer | A separate agent or person that does not write the sections it reviews |
 | Contributors | Anyone, through pull requests to `questions/` and the spec |
