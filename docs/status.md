@@ -21,8 +21,8 @@ current state only. The history of how it got here is in `git log`.
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
-(decision 0016). CI builds it on every change. It can publish the site to
-https://sempuki.github.io/tidal/ once GitHub Pages is enabled. Pages use
+(decision 0016). CI builds it on every change and publishes it to
+https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
 `reports/similarity/2026-10-30-format-conversion.txt`.

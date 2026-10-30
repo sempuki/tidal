@@ -6,6 +6,7 @@ independently. It is derived from the observable behavior of open source C++
 implementations and their test suites, never from the ISO text.
 
 Repository: https://github.com/sempuki/tidal
+Specification site: https://sempuki.github.io/tidal/
 
 **Status:** proof of concept. The scope is limited to expressions and statements.
 Pilot sections: `spec/statements/if.md` and `spec/expressions/multiplicative.md`.
