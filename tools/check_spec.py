@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from run_tests import TESTS, parse_test  # noqa: E402
+from run_tests import TESTS, parse_test, test_files  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
@@ -68,7 +68,7 @@ def main() -> int:
 
     prefixes = {rid.rsplit("-", 1)[0] for rid in rules}
     warnings = []
-    for path in sorted(TESTS.rglob("*.cpp")):
+    for path in test_files([TESTS]):
         test = parse_test(path)
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:

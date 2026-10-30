@@ -59,11 +59,16 @@ class Compiler:
             return f"{MOUNT}/tests/{rel}", f"{MOUNT}/build/{rel.with_suffix('')}", host_out
         return str(test), str(host_out), host_out
 
-    def argv(self, template: list[str], src: str, out: str, flags: list[str]) -> list[str]:
+    def argv(self, template: list[str], src: str | list[str], out: str,
+             flags: list[str]) -> list[str]:
+        """Expand a command template. {src} may stand for several sources."""
+        srcs = [src] if isinstance(src, str) else src
         args = []
         for a in template:
             if a == "{flags}":
                 args += flags
+            elif a == "{src}":
+                args += srcs
             else:
                 args.append(a.replace("{src}", src).replace("{out}", out))
         return args

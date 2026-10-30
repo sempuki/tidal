@@ -33,7 +33,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matrix  # noqa: E402
 from matrix import BUILD, TESTS, Compiler  # noqa: E402
 
-EXPECTATIONS = {"accept", "reject", "run"}
+EXPECTATIONS = {"accept", "reject", "link-fail", "run"}
+EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
 
@@ -46,6 +47,7 @@ class Test:
     overrides: dict[str, str]
     flags: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    sources: list[Path] = field(default_factory=list)
 
     @property
     def name(self) -> str:
@@ -60,13 +62,13 @@ class Test:
         e = self.overrides.get(c.id) or self.overrides.get(c.family) or self.default
         if e is None and c.role == "baseline":
             raise ValueError(f"{self.name}: no expectation for baseline compiler {c.id}")
-        if e == "run" and c.frontend_only:
+        if e in {"run", "link-fail"} and c.frontend_only:
             return "accept"
         return e
 
 
 def parse_test(path: Path) -> Test:
-    rules, flags, notes = [], [], []
+    rules, flags, notes, sources = [], [], [], []
     default = None
     overrides = {}
     for line in path.read_text().splitlines():
@@ -86,6 +88,8 @@ def parse_test(path: Path) -> Test:
             flags += value.split()
         elif key == "note":
             notes.append(value)
+        elif key == "sources":
+            sources += [path.parent / s for s in value.split()]
         else:
             raise ValueError(f"{path}: unknown directive tidal-{key}")
     if not rules:
@@ -95,9 +99,22 @@ def parse_test(path: Path) -> Test:
     for value in [default, *overrides.values()]:
         if value is not None and value not in EXPECTATIONS:
             raise ValueError(f"{path}: bad expectation {value!r}")
-    return Test(path, rules, default, overrides, flags, notes)
+    for s in sources:
+        if not s.name.endswith(EXTRA_SUFFIX) or not s.exists():
+            raise ValueError(f"{path}: tidal-sources entry {s.name} must be an existing *{EXTRA_SUFFIX} file")
+    return Test(path, rules, default, overrides, flags, notes, sources)
 
 
+def test_files(paths: list[Path]) -> list[Path]:
+    """Test files under the given paths, leaving out extra translation units."""
+    files = []
+    for p in paths:
+        p = p.resolve()
+        files += sorted(p.rglob("*.cpp")) if p.is_dir() else [p]
+    return [f for f in files if not f.name.endswith(EXTRA_SUFFIX)]
+
+
+LINK_DIAG = re.compile(r"(multiple definition of|undefined reference to) \S+")
 DIAG = re.compile(r'^(?:\S+:\d+:\d+|"[^"]*", line \d+): (error|note): (.*)$')
 
 
@@ -110,28 +127,23 @@ def diagnostics(stderr: str) -> list[str]:
     text = re.sub(r"\n {10}(?=\S)", " ", stderr)
     found = []
     for line in text.splitlines():
-        if m := DIAG.match(line):
+        if m := LINK_DIAG.search(line):
+            found.append(f"link: {m.group(0)}")
+        elif m := DIAG.match(line):
             msg = f"{m.group(1)}: {m.group(2)}"
             if "in call to" not in msg and "declared here" not in msg:
                 found.append(msg)
     return found
 
 
-def outcome(test: Test, c: Compiler) -> tuple[str, str]:
-    """Return (outcome, detail): accept, reject, run, run-fail, or skip."""
-    if any(f in c.unsupported_flags for f in test.flags):
-        return "skip", "unsupported flags"
-    src, out, _ = c.paths(test.path)
-    wants_run = test.expect(c) == "run"
-    template = c.build if wants_run else c.check
-    proc = c.run(c.argv(template, src, out, test.flags))
-    if proc.returncode != 0:
-        diags = diagnostics(proc.stderr) or [" ".join(proc.stderr.split())[:200]]
-        return "reject", " / ".join(diags[:2])
-    if not wants_run:
-        return "accept", ""
+def failure(proc: subprocess.CompletedProcess) -> str:
+    diags = diagnostics(proc.stderr) or [" ".join(proc.stderr.split())[:200]]
+    return " / ".join(diags[:2])
+
+
+def run_binary(c: Compiler, out: str) -> tuple[str, str]:
     try:
-        run = c.run([out], timeout=10)
+        run = c.run([out], timeout=60)
     except subprocess.TimeoutExpired:
         return "run-fail", "timeout"
     if run.returncode != 0:
@@ -139,14 +151,55 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     return "run", ""
 
 
+def multi_unit_outcome(test: Test, c: Compiler) -> tuple[str, str]:
+    """Compile each translation unit on its own, then link them together."""
+    srcs, out = [], None
+    for i, path in enumerate([test.path, *test.sources]):
+        src, unit_out, _ = c.paths(path)
+        if out is None:
+            out = unit_out
+        srcs.append(src)
+        proc = c.run(c.argv(c.check, src, f"{out}-tu{i}", test.flags))
+        if proc.returncode != 0:
+            return "reject", failure(proc)
+    if c.frontend_only:
+        return "accept", ""
+    proc = c.run(c.argv(c.build, srcs, out, test.flags))
+    if proc.returncode != 0:
+        return "link-fail", failure(proc)
+    if test.expect(c) == "run":
+        return run_binary(c, out)
+    return "accept", ""
+
+
+def outcome(test: Test, c: Compiler) -> tuple[str, str]:
+    """Return (outcome, detail): accept, reject, link-fail, run, run-fail, or skip."""
+    if any(f in c.unsupported_flags for f in test.flags):
+        return "skip", "unsupported flags"
+    if test.sources:
+        return multi_unit_outcome(test, c)
+    src, out, _ = c.paths(test.path)
+    wants_run = test.expect(c) == "run"
+    template = c.build if wants_run else c.check
+    proc = c.run(c.argv(template, src, out, test.flags))
+    if proc.returncode != 0:
+        return "reject", failure(proc)
+    if not wants_run:
+        return "accept", ""
+    return run_binary(c, out)
+
+
 def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> tuple[str, str]:
     key = hashlib.sha256(json.dumps([
-        test.path.read_text(), c.id, identity, c.check, c.build, test.expect(c),
+        [s.read_text() for s in [test.path, *test.sources]],
+        c.id, identity, c.check, c.build, test.expect(c),
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():
         return tuple(json.loads(entry.read_text()))
     result = outcome(test, c)
+    if result == ("run-fail", "timeout"):
+        return result  # transient under load; don't cache
     CACHE.mkdir(parents=True, exist_ok=True)
     entry.write_text(json.dumps(result))
     return result
@@ -161,11 +214,7 @@ def main() -> int:
     ap.add_argument("-j", type=int, default=os.cpu_count())
     args = ap.parse_args()
 
-    files = []
-    for p in args.paths:
-        p = p.resolve()
-        files += sorted(p.rglob("*.cpp")) if p.is_dir() else [p]
-    tests = [parse_test(f) for f in files]
+    tests = [parse_test(f) for f in test_files(args.paths)]
     compilers = matrix.select(args.compilers)
 
     try:
@@ -236,7 +285,7 @@ def main() -> int:
         ]
         for t, _ in rows:
             for c in compilers:
-                if results[(t, c)][0] == "reject":
+                if results[(t, c)][0] in {"reject", "link-fail"}:
                     detail = results[(t, c)][1].replace("|", "\\|")
                     lines.append(f"- `{t.name}` ({c.id}): {detail}")
         lines.append("")

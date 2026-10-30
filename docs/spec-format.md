@@ -76,9 +76,10 @@ header of `//` directives at the top of the file controls the runner:
 | Directive | Values | Meaning |
 |---|---|---|
 | `tidal-rules` | rule IDs | Rules this test supports. Required. |
-| `tidal-expect` | `accept`, `reject`, `run` | `accept`: compiles. `reject`: fails to compile. `run`: compiles, runs, and exits 0. |
+| `tidal-expect` | `accept`, `reject`, `link-fail`, `run` | `accept`: compiles. `reject`: fails to compile. `link-fail`: every translation unit compiles, but linking them fails. `run`: compiles, links, runs, and exits 0. |
 | `tidal-expect-<x>` | same | Override for a compiler family (`clang`, `gcc`, `edg`) or a compiler id from `tools/compilers.json`. Use only with a `tidal-note` naming the question in `questions/`. |
 | `tidal-flags` | compiler flags | Extra flags, for example `-fsanitize=undefined`. |
+| `tidal-sources` | file names | Extra translation units for this test, named `*.tu.cpp` and kept next to it. Each unit is compiled on its own, then all are linked together. |
 | `tidal-note` | text | Free text, such as the question ID (`Q-0001`) behind an override. |
 
 Every compile uses the compiler's strict C++23 mode (`-std=c++23 -pedantic-errors`
