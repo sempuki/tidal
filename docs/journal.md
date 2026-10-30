@@ -26,3 +26,9 @@ compiler diagnostics as the main checklist for `reject` rules, since a
 diagnostic's message is compiler output and is a clean input. Constant
 evaluation is the main evidence for `undefined`, because compilers must
 reject undefined behavior during constant evaluation.
+
+Built the tools (decision 0006) and fetched nine source files for the pilots
+(about 134,000 lines after sanitizing). Before sanitizing, 291 lines across
+the Clang and GCC files contained section citations. After comment removal,
+none remained in code, so the citations all lived in comments. The
+diagnostic definition files had none.

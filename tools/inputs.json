@@ -1,0 +1,25 @@
+{
+  "repos": {
+    "llvm": {
+      "github": "llvm/llvm-project",
+      "ref": "llvmorg-22.1.8",
+      "license": "Apache-2.0 WITH LLVM-exception"
+    },
+    "gcc": {
+      "github": "gcc-mirror/gcc",
+      "ref": "releases/gcc-16.2.0",
+      "license": "GPL-3.0-or-later"
+    }
+  },
+  "inputs": [
+    {"id": "clang-parse-stmt", "repo": "llvm", "path": "clang/lib/Parse/ParseStmt.cpp", "class": "sanitized"},
+    {"id": "clang-parse-expr", "repo": "llvm", "path": "clang/lib/Parse/ParseExpr.cpp", "class": "sanitized"},
+    {"id": "clang-sema-stmt", "repo": "llvm", "path": "clang/lib/Sema/SemaStmt.cpp", "class": "sanitized"},
+    {"id": "clang-sema-expr", "repo": "llvm", "path": "clang/lib/Sema/SemaExpr.cpp", "class": "sanitized"},
+    {"id": "clang-diag-sema", "repo": "llvm", "path": "clang/include/clang/Basic/DiagnosticSemaKinds.td", "class": "sanitized"},
+    {"id": "clang-diag-parse", "repo": "llvm", "path": "clang/include/clang/Basic/DiagnosticParseKinds.td", "class": "sanitized"},
+    {"id": "gcc-cp-parser", "repo": "gcc", "path": "gcc/cp/parser.cc", "class": "sanitized"},
+    {"id": "gcc-cp-semantics", "repo": "gcc", "path": "gcc/cp/semantics.cc", "class": "sanitized"},
+    {"id": "gcc-cp-typeck", "repo": "gcc", "path": "gcc/cp/typeck.cc", "class": "sanitized"}
+  ]
+}
