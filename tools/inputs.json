@@ -112,6 +112,30 @@
       "repo": "llvm",
       "path": "clang/lib/Sema/SemaType.cpp",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-init",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaInit.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-typeck2",
+      "repo": "gcc",
+      "path": "gcc/cp/typeck2.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "gcc-cp-init",
+      "repo": "gcc",
+      "path": "gcc/cp/init.cc",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-decl-inits",
+      "repo": "edg",
+      "path": "src/decl_inits.c",
+      "class": "sanitized"
     }
   ]
 }

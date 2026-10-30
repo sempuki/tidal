@@ -31,3 +31,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
 | edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
 | clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `17023d2296e5b1c0c4ad79f5f350189475432b8a4cf2f7ef0dfd494cfc379637` |
+| clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `eb0670eeaca76abb9dbc88f9a808d03d8854619b3fde6c6af8a422d7dacd97c1` |
+| gcc-cp-typeck2 | gcc | `gcc/cp/typeck2.cc` | sanitized | `5d5105026f1237b71eb90bf30ec6eb5eb66570c587d7bc6973e1c4bff9a71be4` |
+| gcc-cp-init | gcc | `gcc/cp/init.cc` | sanitized | `c47fdc358b897b835b2ccb80f67781e58fdb8625a134dc52d131229e06999862` |
+| edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `8d66e24839804eb5e636c960fde1598553b646179a199611ee1d38eca8277bc7` |
