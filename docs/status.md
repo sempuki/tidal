@@ -16,18 +16,20 @@ current state only. The history of how it got here is in `git log`.
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 8 | 6 required, 2 reject | 36 | Q-0015, Q-0016 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 impl-defined, 1 undefined | 41 | Q-0017, Q-0018 | 0 flagged |
 | [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 32 | Q-0019 | 0 flagged |
-| [Standard attributes](../spec/declarations/attributes.md) | 11 | 3 required, 1 reject, 2 undefined, 1 impl-defined, 4 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
-| [Glossary](../spec/glossary.md) | 14 terms | | | | 0 flagged |
+| [Standard attributes](../spec/declarations/attributes.md) | 15 | 5 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 29 | Q-0020, Q-0021 | 0 flagged |
+| [Functions](../spec/declarations/functions/) (4 pages) | 21 | 8 required, 10 reject, 1 undefined, 1 impl-defined, 1 recommended | 67 | Q-0022, Q-0023, Q-0024 | 0 flagged |
+| [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change. It can publish the site to
 https://sempuki.github.io/tidal/ once GitHub Pages is enabled. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
-converted.
+converted. The latest similarity report, covering every page, is
+`reports/similarity/2026-10-30-format-conversion.txt`.
 
 ## Test matrix
 
-All compilers are baseline. 436/436 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 503/503 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -43,7 +45,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Twenty questions are open for opinions, each with a provisional answer the
+Twenty-three questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -79,7 +81,7 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read GCC's and EDG's sanitized source for the `if` section.
 7. Continue declarations in the order set by decision 0013. Next:
-   function definitions.
+   the `constexpr`, `consteval`, and `constinit` specifiers.
 8. Draft the remaining statements (`switch`, loops, jumps, labels,
    expression and compound statements) and expression families in order
    of dependency.
