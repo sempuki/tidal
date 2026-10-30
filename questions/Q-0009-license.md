@@ -1,13 +1,13 @@
 # Q-0009: Which license covers the specification, tests, and tools?
 
-**Status:** open
+**Status:** settled
 **Affects:** the whole repository
 
 ## Context
 
-The repository has no license file, so no one has permission to copy,
-modify, or redistribute the work, and contributions have no stated terms.
-The repository owner adds the license.
+A repository needs a license before anyone may copy, modify, or
+redistribute it, and before contributions have stated terms. The
+repository owner chooses it.
 
 The project mixes three kinds of material:
 
@@ -26,8 +26,10 @@ and are not committed.
 3. CC0 or another public-domain dedication for everything, so the
    specification can be adopted anywhere without conditions.
 
-## Provisional answer
+## Answer
 
-None. A license only takes effect when the repository owner adds it.
+Option 1, added by the repository owner in `LICENSE.txt`. Contributions are
+accepted under the same license. The specification, tests, and tools share
+one license with LLVM and EDG, the main implementations Tidal draws on.
 
 ## Opinions

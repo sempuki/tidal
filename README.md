@@ -36,6 +36,14 @@ See [docs/charter.md](docs/charter.md).
     tools/check_spec.py                     # rules and tests refer to each other
     tools/build_pdf.py                      # build/tidal.pdf
 
+## License
+
+Tidal is licensed under the Apache License v2.0 with LLVM Exceptions
+(SPDX: `Apache-2.0 WITH LLVM-exception`). See [LICENSE.txt](LICENSE.txt).
+Contributions are accepted under the same license.
+
+Copyright the Tidal contributors.
+
 ## History as a record
 
 Documents in this repository describe the current state and next steps.
