@@ -21,6 +21,7 @@ See [docs/charter.md](docs/charter.md).
 
 | Path | Contents |
 |---|---|
+| `AGENTS.md` | Rules for all agents: source readers give writers summaries only |
 | `docs/charter.md` | Goals, scope, and non-goals |
 | `docs/clean-room.md` | Who may read what, and how contamination is checked |
 | `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |

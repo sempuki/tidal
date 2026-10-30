@@ -14,8 +14,9 @@ and reports only Tidal text, so anyone may run it, including the writer.
 Nobody needs to read the corpus.
 
 **Reviewer.** Reads the reference material and Tidal, and reports gaps and
-possible errors to the writer as facts and self-written test programs
-(decision 0019). A reviewer is never the writer of the same section.
+possible errors to the writer as prose summaries only (decisions 0019 and
+0020). A reviewer is a source reader under `AGENTS.md` and never writes or
+changes a file in the repository.
 
 **Contributors.** Decide what Tidal says when implementations disagree or a
 classification is unclear. Each such question is a file in `questions/`

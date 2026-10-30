@@ -1,7 +1,7 @@
 # 0019. Gap review by a separate reviewer
 
 Date: 2026-10-30
-Status: Accepted. Amends 0003.
+Status: Accepted. Amends 0003. Amended by 0020.
 
 ## Context
 
