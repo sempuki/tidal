@@ -9,7 +9,8 @@ Fails when:
   that prefix exists, which is the state of a section between pipeline
   steps 3 and 6),
 - a test is not listed by any of the rules it names,
-- a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/.
+- a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/,
+- a tidal-expect-<x> override names no compiler id or family.
 """
 
 import re
@@ -68,8 +69,13 @@ def main() -> int:
 
     prefixes = {rid.rsplit("-", 1)[0] for rid in rules}
     warnings = []
+    import matrix
+    known = {c.id for c in matrix.load()} | {c.family for c in matrix.load()}
     for path in test_files([TESTS]):
         test = parse_test(path)
+        for key in test.overrides:
+            if key not in known:
+                errors.append(f"{test.name}: tidal-expect-{key} names no compiler or family")
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")

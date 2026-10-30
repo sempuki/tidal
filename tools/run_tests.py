@@ -35,7 +35,7 @@ from matrix import BUILD, TESTS, Compiler  # noqa: E402
 
 EXPECTATIONS = {"accept", "reject", "link-fail", "run"}
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
-DIRECTIVE = re.compile(r"^//\s*tidal-([a-z-]+):\s*(.*?)\s*$")
+DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
 
 
