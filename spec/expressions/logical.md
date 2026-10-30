@@ -89,6 +89,14 @@ The left operand is evaluated completely, with all its side effects,
 before the right operand starts.
 :::
 
+:::{rule} LOG-11
+:kind: required
+:tests: expressions/logical/overloaded-and-evaluates-both.cpp
+
+An overloaded `&&` or `||` *(referenced)* evaluates both operands. The
+left operand is evaluated before the right operand.
+:::
+
 ## Recommended Practice
 
 :::{rule} LOG-8

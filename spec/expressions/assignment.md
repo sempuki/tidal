@@ -46,11 +46,12 @@ from right to left, so `a = b = c` assigns `c` to `b` and then to `a`.
 
 :::{rule} ASN-5
 :kind: required
-:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-float-modulo.cpp expressions/assignment/compound-converts.cpp
+:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-float-modulo.cpp expressions/assignment/compound-converts.cpp expressions/assignment/bool-compound.cpp
 
 `E1 op= E2` has the effect of `E1 = E1 op E2`. The operands must be valid
-for `op`. The result of `op` is converted to the type of `E1`. For
-`+=` and `-=`, `E1` can be a pointer and `E2` an integer.
+for `op`. The result of `op` is converted to the type of `E1`, so a
+`bool` operand becomes `true` or `false`. For `+=` and `-=`, `E1` can be
+a pointer and `E2` an integer.
 :::
 
 :::{rule} ASN-6

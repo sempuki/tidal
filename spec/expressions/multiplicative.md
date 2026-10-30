@@ -151,6 +151,17 @@ The common type, and so the result type, can depend on the sizes of the
 integer types. The sizes of the integer types are implementation-defined.
 :::
 
+## Recommended Practice
+
+:::{rule} MUL-16
+:kind: recommended
+:tests: expressions/multiplicative/enum-float-warns.cpp
+
+An implementation should warn about `*`, `/`, or `%` between an
+enumeration and a floating-point value, or between two different
+enumeration types.
+:::
+
 ## Examples
 
 ```cpp

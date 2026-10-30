@@ -44,12 +44,12 @@ conversion can add {term}`cv-qualifiers <cv-qualifier>` or convert to
 
 :::{rule} CMP-9
 :kind: reject
-:tests: expressions/comparison/pointer-integer.cpp expressions/comparison/pointer-relational-zero.cpp expressions/comparison/pointer-different-types.cpp expressions/comparison/function-pointer-void.cpp
+:tests: expressions/comparison/pointer-integer.cpp expressions/comparison/pointer-relational-zero.cpp expressions/comparison/pointer-different-types.cpp expressions/comparison/function-pointer-void.cpp expressions/comparison/pointer-relational-nullptr.cpp
 
 A comparison must not have these operands:
 
 - a pointer and an integer other than a literal `0` for equality,
-- a pointer and the literal `0` for a relational operator,
+- a pointer and the literal `0` or `nullptr` for a relational operator,
 - pointers to unrelated types,
 - a pointer to a function and `void*`.
 :::
@@ -89,6 +89,29 @@ function pointers.
 The operands of `<=>` must not need a narrowing conversion. A `bool` must
 not be compared with another type. A pointer must not be compared with the
 literal `0`.
+:::
+
+:::{rule} CMP-18
+:kind: reject
+:tests: expressions/comparison/three-way-different-enums.cpp expressions/comparison/three-way-enum-float.cpp expressions/comparison/three-way-enum-int.cpp
+
+`<=>` must not compare two different unscoped enumeration types, or an
+unscoped enumeration and a floating-point value. An unscoped enumeration
+and an integer are valid ({question}`Q-0050` for the floating-point case).
+:::
+
+:::{rule} CMP-19
+:kind: required
+:tests: expressions/comparison/derived-base-pointer-equality.cpp expressions/comparison/multilevel-qualification.cpp expressions/comparison/null-pointer-equality.cpp
+
+Equality comparison is valid for these pointer operands:
+
+- pointers whose types differ in cv-qualifiers at any level. The
+  comparison uses a type that adds `const` where it is needed.
+- a pointer to a derived class and a pointer to its base class, after
+  CONV-14,
+- two values of the type of `nullptr`, which compare equal,
+- two pointers to members, where two null values compare equal.
 :::
 
 ## Dynamic Semantics
@@ -147,6 +170,16 @@ functions is unspecified. One of `a < b` and `a > b` is true. During
 {term}`constant evaluation`, this comparison is not a constant expression.
 :::
 
+:::{rule} CMP-20
+:kind: unspecified
+:tests: expressions/comparison/one-past-end-adjacent-constant.cpp expressions/comparison/one-past-end-adjacent.cpp
+
+A pointer one past the end of one object can compare equal or not equal
+to a pointer to another object that follows it in memory. The result is
+unspecified. During constant evaluation, the comparison is rejected
+({question}`Q-0051`).
+:::
+
 ## Recommended Practice
 
 :::{rule} CMP-4
@@ -170,6 +203,14 @@ An implementation should warn about a chained comparison such as
 :tests: expressions/comparison/array-comparison-warns.cpp
 
 An implementation should warn when a comparison has two array operands.
+:::
+
+:::{rule} CMP-21
+:kind: recommended
+:tests: expressions/comparison/different-enums-warns.cpp
+
+An implementation should warn about a comparison between two different
+enumeration types.
 :::
 
 ## Examples
@@ -211,5 +252,11 @@ even for integer operands.
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
   `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives no
   warning for a chained comparison of variables ({question}`Q-0029`).
+- CMP-9: EDG accepts a relational comparison of a pointer with `nullptr`,
+  as with `0` ({question}`Q-0030`).
+- CMP-18: EDG accepts `<=>` between an unscoped enumeration and a
+  floating-point value. Clang and GCC reject it ({question}`Q-0050`).
+- CMP-20: Clang and GCC reject the comparison during constant evaluation.
+  EDG accepts it ({question}`Q-0051`).
 
 Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.

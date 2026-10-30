@@ -55,6 +55,14 @@ The left operand is evaluated first, and its value is discarded. All its
 side effects complete before the right operand is evaluated.
 :::
 
+:::{rule} COMMA-7
+:kind: required
+:tests: expressions/comma/overloaded-comma-order.cpp
+
+An overloaded comma operator *(referenced)* evaluates its left operand
+before its right operand.
+:::
+
 ## Recommended Practice
 
 :::{rule} COMMA-5

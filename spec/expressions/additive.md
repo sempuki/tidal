@@ -103,7 +103,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that is:
 
@@ -111,6 +111,7 @@ The behavior is undefined if pointer arithmetic gives a position that is:
 - after the position one past the last element,
 - not zero distance from a null pointer.
 
+Each row of a multidimensional array is a separate array for this rule.
 Reading through a pointer one past the last element is also undefined.
 :::
 
@@ -119,6 +120,16 @@ Reading through a pointer one past the last element is also undefined.
 :tests: expressions/additive/pointer-difference-different-arrays.cpp
 
 If two pointers do not point into the same array, `p - q` is undefined.
+:::
+
+:::{rule} ADD-14
+:kind: undefined
+:tests: expressions/additive/base-pointer-derived-array.cpp
+
+Pointer arithmetic is undefined if the pointer's element type differs
+from the type of the array elements, apart from cv-qualifiers. An example
+is a base class pointer into an array of a derived class (question
+pending).
 :::
 
 ## Implementation Requirements
@@ -136,6 +147,16 @@ chooses. The library names it `std::ptrdiff_t` *(referenced)*.
 :tests: expressions/additive/operand-order.cpp
 
 The order in which the two operands are evaluated is unspecified.
+:::
+
+## Recommended Practice
+
+:::{rule} ADD-16
+:kind: recommended
+:tests: expressions/additive/mixed-enum-warns.cpp
+
+An implementation should warn about `+` or `-` between two different
+enumeration types, or between an enumeration and a floating-point value.
 :::
 
 ## Examples
@@ -172,5 +193,9 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of
   `-m32` (ILP32).
 - ADD-13: Clang and GCC evaluate the left operand first. No variation is
   observed (compare {question}`Q-0005`).
+- ADD-14: Clang and EDG reject arithmetic on a base class pointer into an
+  array of a derived class during constant evaluation. GCC accepts it
+  ({question}`Q-0049`).
+- ADD-16, MUL-16: Clang and GCC warn about these operations as deprecated.
 
 Inputs: clang-sema-expr, clang-diag-sema, gcc-cp-typeck.

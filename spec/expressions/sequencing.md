@@ -18,18 +18,33 @@ expression.
 
 :::{rule} SEQ-3
 :kind: required
-:tests: expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp
+:tests: expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp
 
-In `a[b]`, `a` is evaluated before `b`. In an assignment, the right
-operand is evaluated before the left operand, with all its side effects.
+These operands are evaluated in a fixed order:
+
+- In `a[b]`, `a` before `b`.
+- In an assignment or a compound assignment, the right operand before the
+  left operand, with all its side effects.
+- In `a.*b` and `a->*b`, `a` before `b`.
+- In a braced list, the elements from left to right (LIST-7).
 :::
 
 :::{rule} SEQ-5
 :kind: required
-:tests: expressions/sequencing/full-expression-side-effects.cpp
+:tests: expressions/sequencing/full-expression-side-effects.cpp expressions/sequencing/default-argument-temporary.cpp
 
 All side effects of a full expression are complete before the next full
-expression is evaluated.
+expression is evaluated. Default arguments of a call, and temporaries
+that they create, belong to the full expression that contains the call.
+:::
+
+:::{rule} SEQ-6
+:kind: required
+:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp
+
+An overloaded operator *(referenced)* keeps the order of the built-in
+operator for shifts, assignment, compound assignment, subscripts, the
+comma operator, and the pointer-to-member operators.
 :::
 
 ## Undefined Behavior
@@ -47,11 +62,12 @@ undefined.
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp
+:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp
 
 The arguments of a function call are evaluated in an unspecified order.
 Each argument is evaluated completely before the evaluation of another
-argument starts.
+argument starts. The body of a called function also does not overlap with
+other evaluations in the caller.
 :::
 
 ## Examples

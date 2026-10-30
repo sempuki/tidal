@@ -9,21 +9,26 @@ types.
 
 :::{rule} CONV-1
 :kind: required
-:tests: expressions/conversions/integral-promotion.cpp
+:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp
 
-An operand of type `bool`, a character type, `short`, or `unsigned
-short` goes through {term}`integer promotion` in arithmetic. A `float`
-operand does not change to `double`.
+These operands go through {term}`integer promotion` in arithmetic:
+
+- `bool`, the character types, `short`, and `unsigned short`,
+- a bit-field narrower than `int` *(referenced)*,
+- an unscoped enumeration. With a fixed underlying type, the value
+  converts to that type first.
+
+A `float` operand does not change to `double` in arithmetic.
 :::
 
 :::{rule} CONV-8
 :kind: reject
-:tests: expressions/conversions/null-pointer-constants.cpp expressions/conversions/nonzero-to-pointer.cpp expressions/conversions/integer-variable-to-pointer.cpp
+:tests: expressions/conversions/null-pointer-constants.cpp expressions/conversions/nonzero-to-pointer.cpp expressions/conversions/integer-variable-to-pointer.cpp expressions/conversions/false-not-null-pointer.cpp
 
 `nullptr` and an integer literal with the value zero convert to a null
-pointer of any pointer type. Other integer values must not convert to a
-pointer type implicitly. This includes an integer variable with the value
-zero.
+pointer of any pointer type. Other values must not convert to a pointer
+type implicitly. This includes an integer variable with the value zero and
+the literal `false`.
 :::
 
 :::{rule} CONV-9
@@ -55,6 +60,40 @@ without `noexcept`. The opposite conversion must not occur implicitly.
 parentheses or braces. It gives `false`.
 :::
 
+:::{rule} CONV-13
+:kind: required
+:tests: expressions/conversions/array-function-to-pointer.cpp
+
+An array lvalue can be used as a pointer to element zero of the array.
+A function name can be used as a pointer that calls that function.
+:::
+
+:::{rule} CONV-14
+:kind: required
+:tests: expressions/conversions/ambiguous-base.cpp expressions/conversions/derived-to-base.cpp
+
+A pointer or reference to a derived class converts implicitly to a pointer
+or reference to a base class *(classes referenced)*. The base must be
+unambiguous and accessible *(referenced)*.
+:::
+
+:::{rule} CONV-15
+:kind: required
+:tests: expressions/conversions/member-pointer-base-to-derived.cpp expressions/conversions/member-pointer-derived-to-base.cpp
+
+A pointer to a member of a base class converts implicitly to a pointer to
+the same member of a derived class. The opposite direction is not
+implicit.
+:::
+
+:::{rule} CONV-16
+:kind: required
+:tests: expressions/conversions/array-pointer-unknown-bound.cpp
+
+A pointer to an array with a known bound converts implicitly to a pointer
+to an array of the same element type with no bound.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} CONV-2
@@ -68,10 +107,11 @@ or unsigned. Signed types use two's complement.
 
 :::{rule} CONV-3
 :kind: required
-:tests: expressions/conversions/to-bool.cpp
+:tests: expressions/conversions/to-bool.cpp expressions/conversions/member-pointer-to-bool.cpp expressions/conversions/nan-to-bool.cpp
 
-A conversion to `bool` gives `false` for zero, negative zero, and a null
-pointer. It gives `true` for other values.
+A conversion to `bool` gives `false` for zero, negative zero, a null
+pointer, and a null pointer to member. It gives `true` for other values,
+including a NaN.
 :::
 
 :::{rule} CONV-4

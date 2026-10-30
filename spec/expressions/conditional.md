@@ -22,13 +22,15 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp
 
 The second and third operands give one result type and
 {term}`value category`:
 
 - If both are lvalues of the same type, apart from cv-qualifiers, the
-  result is an lvalue of that type with the combined cv-qualifiers.
+  result is an lvalue of that type with the combined cv-qualifiers. If
+  both are xvalues, the result is an xvalue. If one is an lvalue and the
+  other an xvalue, the result is a prvalue.
 - If both have arithmetic or enumeration type, the
   {term}`usual arithmetic conversions` give the type of a prvalue result.
   Two integer literals `0` give `int`.
@@ -36,6 +38,7 @@ The second and third operands give one result type and
   constant, the result is a pointer prvalue with the combined
   cv-qualifiers.
 - If both are `nullptr`, the result has the type of `nullptr`.
+- A pointer to member and `nullptr` give a pointer to member.
 - If one class type converts to the other, the result has the other type.
 :::
 
@@ -75,14 +78,39 @@ constant expression. The operand that is not selected can contain any
 expression.
 :::
 
+:::{rule} COND-8
+:kind: reject
+:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp
+
+If one operand is an lvalue and the other a prvalue of the same class
+type, the result is a prvalue copied from the selected operand. The copy
+must be valid, so a class with a deleted copy constructor is rejected.
+:::
+
+:::{rule} COND-9
+:kind: reject
+:tests: expressions/conditional/bitfield-address.cpp
+
+An lvalue result that refers to a bit-field operand *(referenced)* has
+the limits of a bit-field. A program must not apply `&` to it.
+:::
+
+:::{rule} COND-10
+:kind: required
+:tests: expressions/conditional/comma-in-middle.cpp
+
+The second operand can be a comma expression without parentheses.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} COND-2
 :kind: required
-:tests: expressions/conditional/only-selected-evaluated.cpp expressions/conditional/condition-first.cpp
+:tests: expressions/conditional/only-selected-evaluated.cpp expressions/conditional/condition-first.cpp expressions/conditional/condition-side-effects-first.cpp
 
-The condition is evaluated first. Then exactly one of the other operands is
-evaluated. The operand that is not selected is not evaluated.
+The condition is evaluated first, with all its side effects. Then exactly
+one of the other operands is evaluated. The operand that is not selected
+is not evaluated.
 :::
 
 ## Examples
