@@ -28,9 +28,9 @@ See [docs/charter.md](docs/charter.md).
 
 ## Common commands
 
-    tools/run_tests.py                      # baseline compilers on the host
     tools/containers.py build               # build matrix images (docker or podman)
-    tools/run_tests.py --compilers all --report tests/RESULTS.md
+    tools/run_tests.py --report tests/RESULTS.md   # full matrix
+    tools/run_tests.py --compilers clang-host,gcc-host   # host only, no containers
     tools/check_spec.py                     # rules and tests refer to each other
     tools/build_pdf.py                      # build/tidal.pdf
 

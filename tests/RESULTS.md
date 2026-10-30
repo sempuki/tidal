@@ -6,17 +6,17 @@ compilers affect the Status column.
 
 - `clang-host` (baseline): `clang version 22.1.8 (Fedora 22.1.8-4.fc44)`
 - `gcc-host` (baseline): `g++ (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)`
-- `edg-7.0` (report): `Edison Design Group C/C++ Front End, version 7.0 (Oct 30 2026 17:22:22)`
-- `gcc-14` (report): `g++-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0`
-- `clang-18` (report): `Ubuntu clang version 18.1.3 (1ubuntu1)`
+- `edg-7.0` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 30 2026 17:22:22)`
+- `gcc-14` (baseline): `g++-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0`
+- `clang-18` (baseline): `Ubuntu clang version 18.1.3 (1ubuntu1)`
 
 | Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | Status |
 |---|---|---|---|---|---|---|---|---|
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept ✗ | reject | reject | pass |
-| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject | accept | reject | reject | reject | accept | pass |
-| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept ✗ | reject | reject | pass |
+| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | pass |
+| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | reject | accept | pass |
+| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | pass |
 | `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | pass |
 | `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | accept | accept | pass |
@@ -34,9 +34,9 @@ compilers affect the Status column.
 | `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept ✗ | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | pass |
 | `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept ✗ | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | pass |
 | `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | pass |
 | `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | pass |
 | `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | run | run | pass |

@@ -20,7 +20,7 @@
     {
       "id": "edg-7.0",
       "family": "edg",
-      "role": "report",
+      "role": "baseline",
       "image": {"dockerfile": "edg.Dockerfile", "args": {"EDG_REF": "7.0"}},
       "check": ["cpfe", "--c++23", "--strict", "--no_code_gen", "{flags}", "{src}"],
       "version": ["cpfe", "--version"],
@@ -29,7 +29,7 @@
     {
       "id": "gcc-14",
       "family": "gcc",
-      "role": "report",
+      "role": "baseline",
       "image": {"dockerfile": "apt.Dockerfile", "args": {"PACKAGES": "g++-14 g++-14-multilib"}},
       "check": ["g++-14", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
       "build": ["g++-14", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
@@ -38,7 +38,7 @@
     {
       "id": "clang-18",
       "family": "clang",
-      "role": "report",
+      "role": "baseline",
       "image": {"dockerfile": "apt.Dockerfile", "args": {"PACKAGES": "clang-18 g++-multilib"}},
       "check": ["clang++-18", "-std=c++23", "-pedantic-errors", "{flags}", "-c", "{src}", "-o", "{out}.o"],
       "build": ["clang++-18", "-std=c++23", "-pedantic-errors", "{flags}", "{src}", "-o", "{out}"],
