@@ -115,6 +115,47 @@ compilers affect the Status column.
 | `declarations/declarators/void-parameter-list.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/void-parameter-named.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/void-parameter-with-others.cpp` | DCL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-in-range.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
+| `declarations/enumerations/distinct-types.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/duplicate-enumerator.cpp` | ENUM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/duplicate-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/fixed-underlying-narrowing.cpp` | ENUM-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/fixed-underlying-non-integral.cpp` | ENUM-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/fixed-underlying.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/implicit-value-overflow-scoped.cpp` | ENUM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/implicit-value-overflow-unscoped.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/increment-enum.cpp` | ENUM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/int-to-unscoped-rejected.cpp` | ENUM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/list-init-fixed.cpp` | ENUM-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/list-init-narrowing.cpp` | ENUM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/list-init-no-fixed.cpp` | ENUM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/mixed-enum-arithmetic.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/opaque-declaration.cpp` | ENUM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/opaque-mismatch.cpp` | ENUM-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/opaque-unscoped-without-type.cpp` | ENUM-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` | ENUM-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-compare-int.cpp` | ENUM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-compare-same-type.cpp` | ENUM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-default-underlying-int.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-explicit-conversion.cpp` | ENUM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-names-scoped.cpp` | ENUM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-no-arithmetic.cpp` | ENUM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-no-conversion.cpp` | ENUM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-value-too-large.cpp` | ENUM-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/unscoped-converts-to-int.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-name-conflict.cpp` | ENUM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/unscoped-names-in-enclosing-scope.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-size-lp64.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-underlying-holds-values.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-value-too-large.cpp` | ENUM-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/enumerations/using-enum-conflict.cpp` | ENUM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/using-enum-not-enum.cpp` | ENUM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/using-enum.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-from-array.cpp` | INIT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -349,7 +390,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-334/334 tests pass on baseline compilers.
+375/375 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -735,6 +776,153 @@ check that the rejection has the intended cause.
 - `declarations/declarators/void-parameter-with-others.cpp` (clang-18): error: 'void' must be the first and only parameter if specified
 - `declarations/declarators/void-parameter-with-others.cpp` (gcc-16): error: invalid use of type 'void' in parameter declaration
 - `declarations/declarators/void-parameter-with-others.cpp` (clang-22): error: 'void' must be the first and only parameter if specified
+- `declarations/enumerations/cast-out-of-range.cpp` (clang-host): error: constexpr variable 'e' must be initialized by a constant expression / note: integer value 8 is outside the valid range of values [0, 7] for the enumeration type 'E'
+- `declarations/enumerations/cast-out-of-range.cpp` (clang-18): error: integer value 8 is outside the valid range of values [0, 7] for the enumeration type 'E' [-Wenum-constexpr-conversion]
+- `declarations/enumerations/cast-out-of-range.cpp` (clang-22): error: constexpr variable 'e' must be initialized by a constant expression / note: integer value 8 is outside the valid range of values [0, 7] for the enumeration type 'E'
+- `declarations/enumerations/duplicate-enumerator.cpp` (clang-host): error: redefinition of enumerator 'A' / note: previous definition is here
+- `declarations/enumerations/duplicate-enumerator.cpp` (gcc-host): error: redefinition of ‘A’ / note: ‘A’ previously defined here
+- `declarations/enumerations/duplicate-enumerator.cpp` (edg-7.0): error: "A" has already been declared in the current scope
+- `declarations/enumerations/duplicate-enumerator.cpp` (gcc-14): error: redefinition of 'A' / note: 'A' previously defined here
+- `declarations/enumerations/duplicate-enumerator.cpp` (clang-18): error: redefinition of enumerator 'A' / note: previous definition is here
+- `declarations/enumerations/duplicate-enumerator.cpp` (gcc-16): error: redefinition of 'A' / note: 'A' previously defined here
+- `declarations/enumerations/duplicate-enumerator.cpp` (clang-22): error: redefinition of enumerator 'A' / note: previous definition is here
+- `declarations/enumerations/enumerator-not-constant.cpp` (clang-host): error: expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/enumerations/enumerator-not-constant.cpp` (gcc-host): error: the value of ‘n’ is not usable in a constant expression / note: ‘int n’ is not const
+- `declarations/enumerations/enumerator-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 3) cannot be used as a constant
+- `declarations/enumerations/enumerator-not-constant.cpp` (gcc-14): error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
+- `declarations/enumerations/enumerator-not-constant.cpp` (clang-18): error: expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/enumerations/enumerator-not-constant.cpp` (gcc-16): error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
+- `declarations/enumerations/enumerator-not-constant.cpp` (clang-22): error: expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (clang-host): error: enumerator value evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (gcc-host): error: enumerator value ‘300’ is outside the range of underlying type ‘unsigned char’
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (edg-7.0): error: enumeration value is outside the range of its underlying type ("unsigned char")
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (gcc-14): error: enumerator value '300' is outside the range of underlying type 'unsigned char'
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (clang-18): error: enumerator value evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (gcc-16): error: enumerator value '300' is outside the range of underlying type 'unsigned char'
+- `declarations/enumerations/fixed-underlying-narrowing.cpp` (clang-22): error: enumerator value evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (clang-host): error: non-integral type 'double' is an invalid underlying type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (gcc-host): error: underlying type ‘double’ of ‘E’ must be an integral type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (edg-7.0): error: underlying type of enum type must be an integral type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (gcc-14): error: underlying type 'double' of 'E' must be an integral type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (clang-18): error: non-integral type 'double' is an invalid underlying type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (gcc-16): error: underlying type 'double' of 'E' must be an integral type
+- `declarations/enumerations/fixed-underlying-non-integral.cpp` (clang-22): error: non-integral type 'double' is an invalid underlying type
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (clang-host): error: enumerator value 2147483648 is not representable in the underlying type 'int'
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (gcc-host): error: enumerator value ‘2147483648’ is outside the range of underlying type ‘int’
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (edg-7.0): error: enumeration value is outside the range of its underlying type ("int")
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (gcc-14): error: enumerator value '2147483648' is outside the range of underlying type 'int'
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (clang-18): error: enumerator value 2147483648 is not representable in the underlying type 'int'
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (gcc-16): error: enumerator value '2147483648' is outside the range of underlying type 'int'
+- `declarations/enumerations/implicit-value-overflow-scoped.cpp` (clang-22): error: enumerator value 2147483648 is not representable in the underlying type 'int'
+- `declarations/enumerations/increment-enum.cpp` (clang-host): error: cannot increment expression of enum type 'E'
+- `declarations/enumerations/increment-enum.cpp` (gcc-host): error: no match for ‘operator++’ (operand type is ‘E’)
+- `declarations/enumerations/increment-enum.cpp` (edg-7.0): error: this operation on an enumerated type requires an applicable user-defined operator function
+- `declarations/enumerations/increment-enum.cpp` (gcc-14): error: no match for 'operator++' (operand type is 'E')
+- `declarations/enumerations/increment-enum.cpp` (clang-18): error: cannot increment expression of enum type 'E'
+- `declarations/enumerations/increment-enum.cpp` (gcc-16): error: no match for 'operator++' (operand type is 'E')
+- `declarations/enumerations/increment-enum.cpp` (clang-22): error: cannot increment expression of enum type 'E'
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (clang-host): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘E’ [-fpermissive]
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "E"
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (gcc-14): error: invalid conversion from 'int' to 'E' [-fpermissive]
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (clang-18): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (gcc-16): error: invalid conversion from 'int' to 'E' [-fpermissive]
+- `declarations/enumerations/int-to-unscoped-rejected.cpp` (clang-22): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/list-init-narrowing.cpp` (clang-host): error: constant expression evaluates to 300 which cannot be narrowed to type 'F' [-Wc++11-narrowing]
+- `declarations/enumerations/list-init-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘unsigned char’ [-Wnarrowing]
+- `declarations/enumerations/list-init-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "F": constant value does not fit in destination type
+- `declarations/enumerations/list-init-narrowing.cpp` (gcc-14): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
+- `declarations/enumerations/list-init-narrowing.cpp` (clang-18): error: constant expression evaluates to 300 which cannot be narrowed to type 'F' [-Wc++11-narrowing]
+- `declarations/enumerations/list-init-narrowing.cpp` (gcc-16): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
+- `declarations/enumerations/list-init-narrowing.cpp` (clang-22): error: constant expression evaluates to 300 which cannot be narrowed to type 'F' [-Wc++11-narrowing]
+- `declarations/enumerations/list-init-no-fixed.cpp` (clang-host): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/list-init-no-fixed.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘E’ [-fpermissive]
+- `declarations/enumerations/list-init-no-fixed.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "E"
+- `declarations/enumerations/list-init-no-fixed.cpp` (gcc-14): error: invalid conversion from 'int' to 'E' [-fpermissive]
+- `declarations/enumerations/list-init-no-fixed.cpp` (clang-18): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/list-init-no-fixed.cpp` (gcc-16): error: invalid conversion from 'int' to 'E' [-fpermissive]
+- `declarations/enumerations/list-init-no-fixed.cpp` (clang-22): error: cannot initialize a variable of type 'E' with an rvalue of type 'int'
+- `declarations/enumerations/opaque-mismatch.cpp` (clang-host): error: enumeration redeclared with different underlying type 'int' (was 'short') / note: previous declaration is here
+- `declarations/enumerations/opaque-mismatch.cpp` (gcc-host): error: different underlying type in enum ‘enum class F’ / note: previous definition here
+- `declarations/enumerations/opaque-mismatch.cpp` (edg-7.0): error: enum "F" (declared at line 3) was previously declared with a different base type
+- `declarations/enumerations/opaque-mismatch.cpp` (gcc-14): error: different underlying type in enum 'enum class F' / note: previous definition here
+- `declarations/enumerations/opaque-mismatch.cpp` (clang-18): error: enumeration redeclared with different underlying type 'int' (was 'short') / note: previous declaration is here
+- `declarations/enumerations/opaque-mismatch.cpp` (gcc-16): error: different underlying type in enum 'enum class F' / note: previous definition here
+- `declarations/enumerations/opaque-mismatch.cpp` (clang-22): error: enumeration redeclared with different underlying type 'int' (was 'short') / note: previous declaration is here
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (clang-host): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (gcc-host): error: use of enum ‘E’ without previous declaration
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (edg-7.0): error: forward declaration of enum type is nonstandard
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (gcc-14): error: use of enum 'E' without previous declaration
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (clang-18): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (gcc-16): error: use of enum 'E' without previous declaration
+- `declarations/enumerations/opaque-unscoped-without-type.cpp` (clang-22): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (clang-host): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (gcc-host): error: scoped/unscoped mismatch in enum ‘enum class E’ / note: previous definition here
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (edg-7.0): error: enum "E" (declared at line 3) was previously declared as a different kind of enum type
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (gcc-14): error: scoped/unscoped mismatch in enum 'enum class E' / note: previous definition here
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (clang-18): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (gcc-16): error: scoped/unscoped mismatch in enum 'enum class E' / note: previous definition here
+- `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` (clang-22): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/enumerations/scoped-compare-int.cpp` (clang-host): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `declarations/enumerations/scoped-compare-int.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘E’ and ‘int’)
+- `declarations/enumerations/scoped-compare-int.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `declarations/enumerations/scoped-compare-int.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'E' and 'int')
+- `declarations/enumerations/scoped-compare-int.cpp` (clang-18): error: invalid operands to binary expression ('E' and 'int')
+- `declarations/enumerations/scoped-compare-int.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'E' and 'int')
+- `declarations/enumerations/scoped-compare-int.cpp` (clang-22): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `declarations/enumerations/scoped-names-scoped.cpp` (clang-host): error: use of undeclared identifier 'Red'
+- `declarations/enumerations/scoped-names-scoped.cpp` (gcc-host): error: ‘Red’ was not declared in this scope; did you mean ‘Color::Red’?
+- `declarations/enumerations/scoped-names-scoped.cpp` (edg-7.0): error: identifier "Red" is undefined
+- `declarations/enumerations/scoped-names-scoped.cpp` (gcc-14): error: 'Red' was not declared in this scope; did you mean 'Color::Red'?
+- `declarations/enumerations/scoped-names-scoped.cpp` (clang-18): error: use of undeclared identifier 'Red'
+- `declarations/enumerations/scoped-names-scoped.cpp` (gcc-16): error: 'Red' was not declared in this scope; did you mean 'Color::Red'?
+- `declarations/enumerations/scoped-names-scoped.cpp` (clang-22): error: use of undeclared identifier 'Red'
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (clang-host): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘E’ and ‘int’)
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'E' and 'int')
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (clang-18): error: invalid operands to binary expression ('E' and 'int')
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'E' and 'int')
+- `declarations/enumerations/scoped-no-arithmetic.cpp` (clang-22): error: invalid operands to binary expression ('E' and 'int') / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `declarations/enumerations/scoped-no-conversion.cpp` (clang-host): error: cannot initialize a variable of type 'int' with an rvalue of type 'E'
+- `declarations/enumerations/scoped-no-conversion.cpp` (gcc-host): error: cannot convert ‘E’ to ‘int’ in initialization
+- `declarations/enumerations/scoped-no-conversion.cpp` (edg-7.0): error: a value of type "E" cannot be used to initialize an entity of type "int"
+- `declarations/enumerations/scoped-no-conversion.cpp` (gcc-14): error: cannot convert 'E' to 'int' in initialization
+- `declarations/enumerations/scoped-no-conversion.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an rvalue of type 'E'
+- `declarations/enumerations/scoped-no-conversion.cpp` (gcc-16): error: cannot convert 'E' to 'int' in initialization
+- `declarations/enumerations/scoped-no-conversion.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an rvalue of type 'E'
+- `declarations/enumerations/scoped-value-too-large.cpp` (clang-host): error: enumerator value evaluates to 1099511627776, which cannot be narrowed to type 'int' [-Wc++11-narrowing]
+- `declarations/enumerations/scoped-value-too-large.cpp` (gcc-host): error: enumerator value ‘1099511627776’ is outside the range of underlying type ‘int’
+- `declarations/enumerations/scoped-value-too-large.cpp` (edg-7.0): error: enumeration value is outside the range of its underlying type ("int")
+- `declarations/enumerations/scoped-value-too-large.cpp` (gcc-14): error: enumerator value '1099511627776' is outside the range of underlying type 'int'
+- `declarations/enumerations/scoped-value-too-large.cpp` (clang-18): error: enumerator value evaluates to 1099511627776, which cannot be narrowed to type 'int' [-Wc++11-narrowing]
+- `declarations/enumerations/scoped-value-too-large.cpp` (gcc-16): error: enumerator value '1099511627776' is outside the range of underlying type 'int'
+- `declarations/enumerations/scoped-value-too-large.cpp` (clang-22): error: enumerator value evaluates to 1099511627776, which cannot be narrowed to type 'int' [-Wc++11-narrowing]
+- `declarations/enumerations/unscoped-name-conflict.cpp` (clang-host): error: redefinition of 'Red' / note: previous definition is here
+- `declarations/enumerations/unscoped-name-conflict.cpp` (gcc-host): error: ‘Red’ redeclared as different kind of entity / note: previous declaration ‘int Red’
+- `declarations/enumerations/unscoped-name-conflict.cpp` (edg-7.0): error: "Red" has already been declared in the current scope
+- `declarations/enumerations/unscoped-name-conflict.cpp` (gcc-14): error: 'Red' redeclared as different kind of entity / note: previous declaration 'int Red'
+- `declarations/enumerations/unscoped-name-conflict.cpp` (clang-18): error: redefinition of 'Red' / note: previous definition is here
+- `declarations/enumerations/unscoped-name-conflict.cpp` (gcc-16): error: 'Red' redeclared as different kind of entity / note: previous declaration 'int Red'
+- `declarations/enumerations/unscoped-name-conflict.cpp` (clang-22): error: redefinition of 'Red' / note: previous definition is here
+- `declarations/enumerations/unscoped-value-too-large.cpp` (clang-host): error: enumeration values exceed range of largest integer [-Werror,-Wenum-too-large]
+- `declarations/enumerations/unscoped-value-too-large.cpp` (edg-7.0): error: some enumerator values cannot be represented by the integral type underlying the enum type
+- `declarations/enumerations/unscoped-value-too-large.cpp` (clang-18): error: enumeration values exceed range of largest integer [-Werror,-Wenum-too-large]
+- `declarations/enumerations/unscoped-value-too-large.cpp` (clang-22): error: enumeration values exceed range of largest integer [-Werror,-Wenum-too-large]
+- `declarations/enumerations/using-enum-conflict.cpp` (clang-host): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/enumerations/using-enum-conflict.cpp` (gcc-host): error: ‘Color Color::Red’ conflicts with a previous declaration / note: previous declaration ‘int Red’
+- `declarations/enumerations/using-enum-conflict.cpp` (edg-7.0): error: enumerator "Color::Red" conflicts with variable "Red"
+- `declarations/enumerations/using-enum-conflict.cpp` (gcc-14): error: 'Color Color::Red' conflicts with a previous declaration / note: previous declaration 'int Red'
+- `declarations/enumerations/using-enum-conflict.cpp` (clang-18): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/enumerations/using-enum-conflict.cpp` (gcc-16): error: 'Color Color::Red' conflicts with a previous declaration / note: previous declaration 'int Red'
+- `declarations/enumerations/using-enum-conflict.cpp` (clang-22): error: target of using declaration conflicts with declaration already in scope / note: target of using declaration
+- `declarations/enumerations/using-enum-not-enum.cpp` (clang-host): error: 'S' is not an enumerated type
+- `declarations/enumerations/using-enum-not-enum.cpp` (gcc-host): error: ‘using enum’ of non-enumeration type ‘struct S’
+- `declarations/enumerations/using-enum-not-enum.cpp` (edg-7.0): error: class "S" is not an enum type
+- `declarations/enumerations/using-enum-not-enum.cpp` (gcc-14): error: 'using enum' of non-enumeration type 'struct S'
+- `declarations/enumerations/using-enum-not-enum.cpp` (clang-18): error: 'S' is not an enumerated type
+- `declarations/enumerations/using-enum-not-enum.cpp` (gcc-16): error: 'using enum' of non-enumeration type 'struct S'
+- `declarations/enumerations/using-enum-not-enum.cpp` (clang-22): error: 'S' is not an enumerated type
 - `declarations/initialization/forms/array-from-array.cpp` (clang-host): error: array initializer must be an initializer list
 - `declarations/initialization/forms/array-from-array.cpp` (gcc-host): error: array must be initialized with a brace-enclosed initializer
 - `declarations/initialization/forms/array-from-array.cpp` (edg-7.0): error: initialization with "{...}" expected for aggregate object
