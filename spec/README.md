@@ -21,3 +21,8 @@ Draft. Sections are listed in the order they appear in the published PDF
   - [Enumerations](declarations/enumerations.md)
   - [Namespaces and using](declarations/namespaces.md)
   - [Standard attributes](declarations/attributes.md)
+  - Functions
+    - [Function definitions](declarations/functions/definitions.md)
+    - [Default arguments](declarations/functions/default-arguments.md)
+    - [Deleted and defaulted functions](declarations/functions/deleted.md)
+    - [Return type deduction](declarations/functions/return-deduction.md)
