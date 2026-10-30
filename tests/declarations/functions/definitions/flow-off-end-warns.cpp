@@ -1,4 +1,4 @@
-// tidal-rules: FN-3
+// tidal-rules: FN-7
 // tidal-expect: reject
 // tidal-flags: -Werror -Wreturn-type
 int f(bool b) {
