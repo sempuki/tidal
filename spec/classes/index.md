@@ -8,6 +8,7 @@ derivation, and the operators that classes can define.
 members
 access
 constructors
+copy-move
 :::
 
 :::{toctree}
@@ -17,4 +18,5 @@ constructors
 members
 access
 constructors
+copy-move
 :::
