@@ -15,8 +15,8 @@ compilers affect the Status column.
 | Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
-| `declarations/attributes/assume-not-evaluated.cpp` | ATTR-10 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/attributes/assume-on-declaration.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/attributes/assume-on-declaration.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-true-constant.cpp` | ATTR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/attribute-argument-not-string.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/attribute-too-many-arguments.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -35,11 +35,11 @@ compilers affect the Status column.
 | `declarations/attributes/nodiscard-ignored-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/nodiscard-type.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/nodiscard-void-cast.cpp` | ATTR-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-main.cpp` | ATTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-main.cpp` | ATTR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/attributes/noreturn-return-statement.cpp` | ATTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-returns.cpp` | ATTR-3 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -185,6 +185,73 @@ compilers affect the Status column.
 | `declarations/enumerations/using-enum-conflict.cpp` | ENUM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/using-enum-not-enum.cpp` | ENUM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/using-enum.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/added-later.cpp` | DEFARG-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/basic.cpp` | DEFARG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/block-scope-declaration.cpp` | DEFARG-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/default-arguments/evaluated-each-call.cpp` | DEFARG-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/default-arguments/function-pointer-no-default.cpp` | DEFARG-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/local-unevaluated.cpp` | DEFARG-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/not-trailing.cpp` | DEFARG-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/pointer-declaration-default.cpp` | DEFARG-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/redefined-different.cpp` | DEFARG-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/redefined.cpp` | DEFARG-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/refers-to-local.cpp` | DEFARG-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/refers-to-parameter.cpp` | DEFARG-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/uses-global-at-call.cpp` | DEFARG-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/default-arguments/variadic-after-default.cpp` | DEFARG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/flow-off-end-not-reached.cpp` | FN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/flow-off-end-value.cpp` | FN-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/flow-off-end-void.cpp` | FN-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/flow-off-end-warns.cpp` | FN-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
+| `declarations/functions/definitions/func-predefined.cpp` | FN-5 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-address.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-call.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-consteval.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-constexpr.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-four-params.cpp` | FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-global-variable.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-in-namespace.cpp` | FN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-inline.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-one-param.cpp` | FN-6 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
+| `declarations/functions/definitions/main-parameters.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-return-value.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-returns-zero.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-template.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-three-params.cpp` | FN-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-wrong-return-type.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/parameter-duplicate.cpp` | FN-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/parameter-nested-block.cpp` | FN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/parameter-scope-redeclare.cpp` | FN-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/redeclaration-ok.cpp` | FN-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/definitions/redefinition.cpp` | FN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/return-type-mismatch.cpp` | FN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/unnamed-parameters.cpp` | FN-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/deleted/address-of-deleted.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/call-deleted.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/declare-deleted-unused.cpp` | DEL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/deleted/default-non-member.cpp` | DEL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/delete-not-first.cpp` | DEL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/delete-then-define.cpp` | DEL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-main.cpp` | DEL-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-overload-not-selected.cpp` | DEL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/functions/deleted/deleted-overload-selected.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-unevaluated.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-with-message.cpp` | DEL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/auto-strips.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/basic.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/braced-return.cpp` | RET-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/conflicting-returns.cpp` | RET-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/decltype-auto.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/recursion-after-return.cpp` | RET-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/recursion-before-return.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/redeclare-with-auto.cpp` | RET-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/redeclare-with-type.cpp` | RET-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/trailing-auto.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/use-after-definition.cpp` | RET-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/use-before-definition.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/void-and-value.cpp` | RET-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-from-array.cpp` | INIT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -451,7 +518,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-436/436 tests pass on baseline compilers.
+503/503 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1078,6 +1145,275 @@ check that the rejection has the intended cause.
 - `declarations/enumerations/using-enum-not-enum.cpp` (clang-18): error: 'S' is not an enumerated type
 - `declarations/enumerations/using-enum-not-enum.cpp` (gcc-16): error: 'using enum' of non-enumeration type 'struct S'
 - `declarations/enumerations/using-enum-not-enum.cpp` (clang-22): error: 'S' is not an enumerated type
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-host): error: too few arguments to function call, expected 1, have 0
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (gcc-host): error: too few arguments to function
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (edg-7.0): error: too few arguments in function call
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (gcc-14): error: too few arguments to function
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-18): error: too few arguments to function call, expected 1, have 0
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (gcc-16): error: too few arguments to function
+- `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-22): error: too few arguments to function call, expected 1, have 0
+- `declarations/functions/default-arguments/not-trailing.cpp` (clang-host): error: missing default argument on parameter 'b'
+- `declarations/functions/default-arguments/not-trailing.cpp` (gcc-host): error: default argument missing for parameter 2 of ‘int f(int, int)’ / note: ...following parameter 1 which has a default argument
+- `declarations/functions/default-arguments/not-trailing.cpp` (edg-7.0): error: default argument not at end of parameter list
+- `declarations/functions/default-arguments/not-trailing.cpp` (gcc-14): error: default argument missing for parameter 2 of 'int f(int, int)' / note: ...following parameter 1 which has a default argument
+- `declarations/functions/default-arguments/not-trailing.cpp` (clang-18): error: missing default argument on parameter 'b'
+- `declarations/functions/default-arguments/not-trailing.cpp` (gcc-16): error: default argument missing for parameter 2 of 'int f(int, int)' / note: ...following parameter 1 which has a default argument
+- `declarations/functions/default-arguments/not-trailing.cpp` (clang-22): error: missing default argument on parameter 'b'
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (clang-host): error: default arguments can only be specified for parameters in a function declaration
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (gcc-host): error: default arguments are only permitted for function parameters [-fpermissive]
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (edg-7.0): error: specifying a default argument on this declaration is nonstandard
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (gcc-14): error: default arguments are only permitted for function parameters [-fpermissive]
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (clang-18): error: default arguments can only be specified for parameters in a function declaration
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (gcc-16): error: default arguments are only permitted for function parameters [-fpermissive]
+- `declarations/functions/default-arguments/pointer-declaration-default.cpp` (clang-22): error: default arguments can only be specified for parameters in a function declaration
+- `declarations/functions/default-arguments/redefined-different.cpp` (clang-host): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/redefined-different.cpp` (gcc-host): error: default argument given for parameter 1 of ‘int f(int)’ / note: previous specification in ‘int f(int)’ here
+- `declarations/functions/default-arguments/redefined-different.cpp` (edg-7.0): error: redefinition of default argument
+- `declarations/functions/default-arguments/redefined-different.cpp` (gcc-14): error: default argument given for parameter 1 of 'int f(int)' / note: previous specification in 'int f(int)' here
+- `declarations/functions/default-arguments/redefined-different.cpp` (clang-18): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/redefined-different.cpp` (gcc-16): error: default argument given for parameter 1 of 'int f(int)' / note: previous specification in 'int f(int)' here
+- `declarations/functions/default-arguments/redefined-different.cpp` (clang-22): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/redefined.cpp` (clang-host): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/redefined.cpp` (gcc-host): error: default argument given for parameter 1 of ‘int f(int)’ [-fpermissive] / note: previous specification in ‘int f(int)’ here
+- `declarations/functions/default-arguments/redefined.cpp` (edg-7.0): error: redefinition of default argument
+- `declarations/functions/default-arguments/redefined.cpp` (gcc-14): error: default argument given for parameter 1 of 'int f(int)' [-fpermissive] / note: previous specification in 'int f(int)' here
+- `declarations/functions/default-arguments/redefined.cpp` (clang-18): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/redefined.cpp` (gcc-16): error: default argument given for parameter 1 of 'int f(int)' [-fpermissive] / note: previous specification in 'int f(int)' here
+- `declarations/functions/default-arguments/redefined.cpp` (clang-22): error: redefinition of default argument / note: previous definition is here
+- `declarations/functions/default-arguments/refers-to-local.cpp` (clang-host): error: default argument references local variable 'local' of enclosing function
+- `declarations/functions/default-arguments/refers-to-local.cpp` (gcc-host): error: local variable ‘local’ may not appear in this context
+- `declarations/functions/default-arguments/refers-to-local.cpp` (edg-7.0): error: reference to local variable of enclosing function is not allowed
+- `declarations/functions/default-arguments/refers-to-local.cpp` (gcc-14): error: local variable 'local' may not appear in this context
+- `declarations/functions/default-arguments/refers-to-local.cpp` (clang-18): error: default argument references local variable 'local' of enclosing function
+- `declarations/functions/default-arguments/refers-to-local.cpp` (gcc-16): error: local variable 'local' may not appear in this context
+- `declarations/functions/default-arguments/refers-to-local.cpp` (clang-22): error: default argument references local variable 'local' of enclosing function
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (clang-host): error: default argument references parameter 'a'
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (gcc-host): error: parameter ‘a’ may not appear in this context
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (edg-7.0): error: a parameter is not allowed
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (gcc-14): error: parameter 'a' may not appear in this context
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (clang-18): error: default argument references parameter 'a'
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (gcc-16): error: parameter 'a' may not appear in this context
+- `declarations/functions/default-arguments/refers-to-parameter.cpp` (clang-22): error: default argument references parameter 'a'
+- `declarations/functions/definitions/flow-off-end-value.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: control reached end of constexpr function
+- `declarations/functions/definitions/flow-off-end-value.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr’ call flows off the end of the function
+- `declarations/functions/definitions/flow-off-end-value.cpp` (edg-7.0): error: expression must have a constant value / note: missing return value
+- `declarations/functions/definitions/flow-off-end-value.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr' call flows off the end of the function
+- `declarations/functions/definitions/flow-off-end-value.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: control reached end of constexpr function
+- `declarations/functions/definitions/flow-off-end-value.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr' call flows off the end of the function
+- `declarations/functions/definitions/flow-off-end-value.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: control reached end of constexpr function
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (clang-host): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (gcc-host): error: control reaches end of non-void function [-Werror=return-type]
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (gcc-14): error: control reaches end of non-void function [-Werror=return-type]
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (clang-18): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (gcc-16): error: control reaches end of non-void function [-Werror=return-type]
+- `declarations/functions/definitions/flow-off-end-warns.cpp` (clang-22): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `declarations/functions/definitions/func-outside-function.cpp` (gcc-host): error: ‘__func__’ is not defined outside of function scope
+- `declarations/functions/definitions/func-outside-function.cpp` (edg-7.0): error: the reserved identifier "__func__" may only be used inside a function
+- `declarations/functions/definitions/func-outside-function.cpp` (gcc-14): error: '__func__' is not defined outside of function scope
+- `declarations/functions/definitions/func-outside-function.cpp` (gcc-16): error: '__func__' is not defined outside of function scope
+- `declarations/functions/definitions/main-address.cpp` (clang-host): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `declarations/functions/definitions/main-address.cpp` (gcc-host): error: ISO C++ forbids taking address of function ‘::main’ [-Wpedantic]
+- `declarations/functions/definitions/main-address.cpp` (edg-7.0): error: function "main" may not be called or have its address taken
+- `declarations/functions/definitions/main-address.cpp` (gcc-14): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `declarations/functions/definitions/main-address.cpp` (clang-18): error: ISO C++ does not allow 'main' to be used by a program [-Werror,-Wmain]
+- `declarations/functions/definitions/main-address.cpp` (gcc-16): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `declarations/functions/definitions/main-address.cpp` (clang-22): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `declarations/functions/definitions/main-call.cpp` (clang-host): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `declarations/functions/definitions/main-call.cpp` (gcc-host): error: ISO C++ forbids taking address of function ‘::main’ [-Wpedantic]
+- `declarations/functions/definitions/main-call.cpp` (edg-7.0): error: function "main" may not be called or have its address taken
+- `declarations/functions/definitions/main-call.cpp` (gcc-14): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `declarations/functions/definitions/main-call.cpp` (clang-18): error: ISO C++ does not allow 'main' to be used by a program [-Werror,-Wmain]
+- `declarations/functions/definitions/main-call.cpp` (gcc-16): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `declarations/functions/definitions/main-call.cpp` (clang-22): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `declarations/functions/definitions/main-consteval.cpp` (clang-host): error: 'main' is not allowed to be declared consteval
+- `declarations/functions/definitions/main-consteval.cpp` (gcc-host): error: cannot declare ‘::main’ to be ‘consteval’
+- `declarations/functions/definitions/main-consteval.cpp` (edg-7.0): error: function "main" may not be declared consteval
+- `declarations/functions/definitions/main-consteval.cpp` (gcc-14): error: cannot declare '::main' to be 'consteval'
+- `declarations/functions/definitions/main-consteval.cpp` (clang-18): error: 'main' is not allowed to be declared consteval
+- `declarations/functions/definitions/main-consteval.cpp` (gcc-16): error: cannot declare '::main' to be 'consteval'
+- `declarations/functions/definitions/main-consteval.cpp` (clang-22): error: 'main' is not allowed to be declared consteval
+- `declarations/functions/definitions/main-constexpr.cpp` (clang-host): error: 'main' is not allowed to be declared constexpr
+- `declarations/functions/definitions/main-constexpr.cpp` (gcc-host): error: cannot declare ‘::main’ to be ‘constexpr’
+- `declarations/functions/definitions/main-constexpr.cpp` (edg-7.0): error: function "main" may not be declared constexpr
+- `declarations/functions/definitions/main-constexpr.cpp` (gcc-14): error: cannot declare '::main' to be 'constexpr'
+- `declarations/functions/definitions/main-constexpr.cpp` (clang-18): error: 'main' is not allowed to be declared constexpr
+- `declarations/functions/definitions/main-constexpr.cpp` (gcc-16): error: cannot declare '::main' to be 'constexpr'
+- `declarations/functions/definitions/main-constexpr.cpp` (clang-22): error: 'main' is not allowed to be declared constexpr
+- `declarations/functions/definitions/main-four-params.cpp` (clang-host): error: too many parameters (4) for 'main': must be 0, 2, or 3
+- `declarations/functions/definitions/main-four-params.cpp` (gcc-host): error: ‘int main(int, char**, char**, char**)’ takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-four-params.cpp` (gcc-14): error: 'int main(int, char**, char**, char**)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-four-params.cpp` (clang-18): error: too many parameters (4) for 'main': must be 0, 2, or 3
+- `declarations/functions/definitions/main-four-params.cpp` (gcc-16): error: 'int main(int, char**, char**, char**)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-four-params.cpp` (clang-22): error: too many parameters (4) for 'main': must be 0, 2, or 3
+- `declarations/functions/definitions/main-global-variable.cpp` (clang-host): error: main cannot be declared as a variable in the global scope
+- `declarations/functions/definitions/main-global-variable.cpp` (gcc-host): error: cannot declare ‘::main’ to be a global variable
+- `declarations/functions/definitions/main-global-variable.cpp` (edg-7.0): error: "main" cannot be used as a global variable name or given C language linkage
+- `declarations/functions/definitions/main-global-variable.cpp` (gcc-14): error: cannot declare '::main' to be a global variable
+- `declarations/functions/definitions/main-global-variable.cpp` (clang-18): error: main cannot be declared as global variable
+- `declarations/functions/definitions/main-global-variable.cpp` (gcc-16): error: cannot declare '::main' to be a global variable
+- `declarations/functions/definitions/main-global-variable.cpp` (clang-22): error: main cannot be declared as a variable in the global scope
+- `declarations/functions/definitions/main-inline.cpp` (clang-host): error: 'main' is not allowed to be declared inline
+- `declarations/functions/definitions/main-inline.cpp` (gcc-host): error: cannot declare ‘::main’ to be inline
+- `declarations/functions/definitions/main-inline.cpp` (edg-7.0): error: function "main" may not be declared inline
+- `declarations/functions/definitions/main-inline.cpp` (gcc-14): error: cannot declare '::main' to be inline
+- `declarations/functions/definitions/main-inline.cpp` (clang-18): error: 'main' is not allowed to be declared inline
+- `declarations/functions/definitions/main-inline.cpp` (gcc-16): error: cannot declare '::main' to be inline
+- `declarations/functions/definitions/main-inline.cpp` (clang-22): error: 'main' is not allowed to be declared inline
+- `declarations/functions/definitions/main-one-param.cpp` (gcc-host): error: ‘int main(int)’ takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-one-param.cpp` (gcc-14): error: 'int main(int)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-one-param.cpp` (gcc-16): error: 'int main(int)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-template.cpp` (clang-host): error: 'main' cannot be a template
+- `declarations/functions/definitions/main-template.cpp` (gcc-host): error: cannot declare ‘::main’ to be a template
+- `declarations/functions/definitions/main-template.cpp` (edg-7.0): error: "main" is not a valid name for a function template
+- `declarations/functions/definitions/main-template.cpp` (gcc-14): error: cannot declare '::main' to be a template
+- `declarations/functions/definitions/main-template.cpp` (clang-18): error: 'main' cannot be a template
+- `declarations/functions/definitions/main-template.cpp` (gcc-16): error: cannot declare '::main' to be a template
+- `declarations/functions/definitions/main-template.cpp` (clang-22): error: 'main' cannot be a template
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (clang-host): error: first parameter of 'main' (argument count) must be of type 'int'
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (gcc-host): error: first argument of ‘int main(double)’ should be ‘int’ [-Wmain] / error: ‘int main(double)’ takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (gcc-14): error: first argument of 'int main(double)' should be 'int' [-Wmain] / error: 'int main(double)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (clang-18): error: first parameter of 'main' (argument count) must be of type 'int'
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (gcc-16): error: first argument of 'int main(double)' should be 'int' [-Wmain] / error: 'int main(double)' takes only zero or two arguments [-Wmain]
+- `declarations/functions/definitions/main-wrong-first-param.cpp` (clang-22): error: first parameter of 'main' (argument count) must be of type 'int'
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (clang-host): error: 'main' must return 'int'
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (gcc-host): error: ‘::main’ must return ‘int’
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (edg-7.0): error: return type of function "main" must be "int"
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (gcc-14): error: '::main' must return 'int'
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (clang-18): error: 'main' must return 'int'
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (gcc-16): error: '::main' must return 'int'
+- `declarations/functions/definitions/main-wrong-return-type.cpp` (clang-22): error: 'main' must return 'int'
+- `declarations/functions/definitions/parameter-duplicate.cpp` (clang-host): error: redefinition of parameter 'a' / note: previous declaration is here
+- `declarations/functions/definitions/parameter-duplicate.cpp` (gcc-host): error: redefinition of ‘int a’
+- `declarations/functions/definitions/parameter-duplicate.cpp` (edg-7.0): error: duplicate parameter name
+- `declarations/functions/definitions/parameter-duplicate.cpp` (gcc-14): error: redefinition of 'int a'
+- `declarations/functions/definitions/parameter-duplicate.cpp` (clang-18): error: redefinition of parameter 'a' / note: previous declaration is here
+- `declarations/functions/definitions/parameter-duplicate.cpp` (gcc-16): error: redefinition of 'int a'
+- `declarations/functions/definitions/parameter-duplicate.cpp` (clang-22): error: redefinition of parameter 'a' / note: previous declaration is here
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (clang-host): error: redefinition of 'x' / note: previous definition is here
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (gcc-host): error: declaration of ‘int x’ shadows a parameter
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (gcc-14): error: declaration of 'int x' shadows a parameter
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (clang-18): error: redefinition of 'x' / note: previous definition is here
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (gcc-16): error: declaration of 'int x' shadows a parameter
+- `declarations/functions/definitions/parameter-scope-redeclare.cpp` (clang-22): error: redefinition of 'x' / note: previous definition is here
+- `declarations/functions/definitions/redefinition.cpp` (clang-host): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/definitions/redefinition.cpp` (gcc-host): error: redefinition of ‘int f()’ / note: ‘int f()’ previously defined here
+- `declarations/functions/definitions/redefinition.cpp` (edg-7.0): error: function "f" has already been defined (previous definition at line 3)
+- `declarations/functions/definitions/redefinition.cpp` (gcc-14): error: redefinition of 'int f()' / note: 'int f()' previously defined here
+- `declarations/functions/definitions/redefinition.cpp` (clang-18): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/definitions/redefinition.cpp` (gcc-16): error: redefinition of 'int f()' / note: 'int f()' previously defined here
+- `declarations/functions/definitions/redefinition.cpp` (clang-22): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/definitions/return-type-mismatch.cpp` (clang-host): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/definitions/return-type-mismatch.cpp` (gcc-host): error: ambiguating new declaration of ‘long int f()’ / note: old declaration ‘int f()’
+- `declarations/functions/definitions/return-type-mismatch.cpp` (edg-7.0): error: cannot overload functions distinguished by return type alone
+- `declarations/functions/definitions/return-type-mismatch.cpp` (gcc-14): error: ambiguating new declaration of 'long int f()' / note: old declaration 'int f()'
+- `declarations/functions/definitions/return-type-mismatch.cpp` (clang-18): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/definitions/return-type-mismatch.cpp` (gcc-16): error: ambiguating new declaration of 'long int f()' / note: old declaration 'int f()'
+- `declarations/functions/definitions/return-type-mismatch.cpp` (clang-22): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/deleted/address-of-deleted.cpp` (clang-host): error: attempt to use a deleted function / note: 'f' has been explicitly marked deleted here
+- `declarations/functions/deleted/address-of-deleted.cpp` (gcc-host): error: use of deleted function ‘void f()’
+- `declarations/functions/deleted/address-of-deleted.cpp` (edg-7.0): error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function
+- `declarations/functions/deleted/address-of-deleted.cpp` (gcc-14): error: use of deleted function 'void f()'
+- `declarations/functions/deleted/address-of-deleted.cpp` (clang-18): error: attempt to use a deleted function / note: 'f' has been explicitly marked deleted here
+- `declarations/functions/deleted/address-of-deleted.cpp` (gcc-16): error: use of deleted function 'void f()'
+- `declarations/functions/deleted/address-of-deleted.cpp` (clang-22): error: attempt to use a deleted function / note: 'f' has been explicitly marked deleted here
+- `declarations/functions/deleted/call-deleted.cpp` (clang-host): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/call-deleted.cpp` (gcc-host): error: use of deleted function ‘void f()’
+- `declarations/functions/deleted/call-deleted.cpp` (edg-7.0): error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function
+- `declarations/functions/deleted/call-deleted.cpp` (gcc-14): error: use of deleted function 'void f()'
+- `declarations/functions/deleted/call-deleted.cpp` (clang-18): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/call-deleted.cpp` (gcc-16): error: use of deleted function 'void f()'
+- `declarations/functions/deleted/call-deleted.cpp` (clang-22): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/default-non-member.cpp` (clang-host): error: only special member functions and comparison operators may be defaulted
+- `declarations/functions/deleted/default-non-member.cpp` (gcc-host): error: ‘void f()’ cannot be defaulted
+- `declarations/functions/deleted/default-non-member.cpp` (edg-7.0): error: "= default" can only appear on default constructors, copy/move constructors, copy/move assignment operators, and destructors
+- `declarations/functions/deleted/default-non-member.cpp` (gcc-14): error: 'void f()' cannot be defaulted
+- `declarations/functions/deleted/default-non-member.cpp` (clang-18): error: only special member functions and comparison operators may be defaulted
+- `declarations/functions/deleted/default-non-member.cpp` (gcc-16): error: 'void f()' cannot be defaulted
+- `declarations/functions/deleted/default-non-member.cpp` (clang-22): error: only special member functions and comparison operators may be defaulted
+- `declarations/functions/deleted/delete-not-first.cpp` (clang-host): error: deleted definition must be first declaration / note: previous declaration is here
+- `declarations/functions/deleted/delete-not-first.cpp` (gcc-host): error: deleted definition of ‘void f()’ is not first declaration / note: previous declaration of ‘void f()’
+- `declarations/functions/deleted/delete-not-first.cpp` (edg-7.0): error: "= delete" can only appear on the first declaration of a function
+- `declarations/functions/deleted/delete-not-first.cpp` (gcc-14): error: deleted definition of 'void f()' is not first declaration / note: previous declaration of 'void f()'
+- `declarations/functions/deleted/delete-not-first.cpp` (clang-18): error: deleted definition must be first declaration / note: previous declaration is here
+- `declarations/functions/deleted/delete-not-first.cpp` (gcc-16): error: deleted definition of 'void f()' is not first declaration / note: previous declaration of 'void f()'
+- `declarations/functions/deleted/delete-not-first.cpp` (clang-22): error: deleted definition must be first declaration / note: previous declaration is here
+- `declarations/functions/deleted/delete-then-define.cpp` (clang-host): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/deleted/delete-then-define.cpp` (gcc-host): error: redefinition of ‘void f()’ / note: ‘void f()’ previously defined here
+- `declarations/functions/deleted/delete-then-define.cpp` (edg-7.0): error: function "f" has already been defined (previous definition at line 3)
+- `declarations/functions/deleted/delete-then-define.cpp` (gcc-14): error: redefinition of 'void f()' / note: 'void f()' previously defined here
+- `declarations/functions/deleted/delete-then-define.cpp` (clang-18): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/deleted/delete-then-define.cpp` (gcc-16): error: redefinition of 'void f()' / note: 'void f()' previously defined here
+- `declarations/functions/deleted/delete-then-define.cpp` (clang-22): error: redefinition of 'f' / note: previous definition is here
+- `declarations/functions/deleted/deleted-main.cpp` (clang-host): error: 'main' is not allowed to be deleted
+- `declarations/functions/deleted/deleted-main.cpp` (gcc-host): error: ‘::main’ cannot be deleted
+- `declarations/functions/deleted/deleted-main.cpp` (edg-7.0): error: function "main" cannot be deleted
+- `declarations/functions/deleted/deleted-main.cpp` (clang-18): error: 'main' is not allowed to be deleted
+- `declarations/functions/deleted/deleted-main.cpp` (gcc-16): error: '::main' cannot be deleted
+- `declarations/functions/deleted/deleted-main.cpp` (clang-22): error: 'main' is not allowed to be deleted
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (clang-host): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (gcc-host): error: use of deleted function ‘void f(double)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (edg-7.0): error: function "f(double)" (declared at line 4) cannot be referenced -- it is a deleted function
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (gcc-14): error: use of deleted function 'void f(double)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (clang-18): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (gcc-16): error: use of deleted function 'void f(double)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `declarations/functions/deleted/deleted-overload-selected.cpp` (clang-22): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (clang-host): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (gcc-host): error: use of deleted function ‘int f()’ / error: use of deleted function ‘int f()’
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (edg-7.0): error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function / error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (gcc-14): error: use of deleted function 'int f()' / error: use of deleted function 'int f()'
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (clang-18): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (gcc-16): error: use of deleted function 'int f()' / error: use of deleted function 'int f()'
+- `declarations/functions/deleted/deleted-unevaluated.cpp` (clang-22): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `declarations/functions/deleted/deleted-with-message.cpp` (clang-host): error: '= delete' with a message is a C++2c extension [-Werror,-Wc++26-extensions] / error: call to deleted function 'f': use g
+- `declarations/functions/deleted/deleted-with-message.cpp` (gcc-host): error: ‘delete’ reason only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions] / error: use of deleted function ‘void f()’: use g
+- `declarations/functions/deleted/deleted-with-message.cpp` (edg-7.0): error: expected a ";" / error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function
+- `declarations/functions/deleted/deleted-with-message.cpp` (gcc-14): error: expected ',' or ';' before '(' token / error: use of deleted function 'void f()'
+- `declarations/functions/deleted/deleted-with-message.cpp` (clang-18): error: expected ';' after delete / error: call to deleted function 'f'
+- `declarations/functions/deleted/deleted-with-message.cpp` (gcc-16): error: 'delete' reason only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions] / error: use of deleted function 'void f()': use g
+- `declarations/functions/deleted/deleted-with-message.cpp` (clang-22): error: '= delete' with a message is a C++2c extension [-Werror,-Wc++26-extensions] / error: call to deleted function 'f': use g
+- `declarations/functions/return-deduction/braced-return.cpp` (clang-host): error: cannot deduce return type from initializer list
+- `declarations/functions/return-deduction/braced-return.cpp` (gcc-host): error: returning initializer list
+- `declarations/functions/return-deduction/braced-return.cpp` (edg-7.0): error: a brace-enclosed list does not provide a return type
+- `declarations/functions/return-deduction/braced-return.cpp` (gcc-14): error: returning initializer list
+- `declarations/functions/return-deduction/braced-return.cpp` (clang-18): error: cannot deduce return type from initializer list
+- `declarations/functions/return-deduction/braced-return.cpp` (gcc-16): error: returning initializer list
+- `declarations/functions/return-deduction/braced-return.cpp` (clang-22): error: cannot deduce return type from initializer list
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (clang-host): error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (gcc-host): error: inconsistent deduction for auto return type: ‘int’ and then ‘double’
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (edg-7.0): error: deduced return type "double" conflicts with previously deduced type "int"
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (gcc-14): error: inconsistent deduction for auto return type: 'int' and then 'double'
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (clang-18): error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (gcc-16): error: inconsistent deduction for auto return type: 'int' and then 'double'
+- `declarations/functions/return-deduction/conflicting-returns.cpp` (clang-22): error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (clang-host): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (gcc-host): error: use of ‘auto f(int)’ before deduction of ‘auto’
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (edg-7.0): error: cannot deduce the return type of function "f" (declared at line 3); it has not been defined
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (gcc-14): error: use of 'auto f(int)' before deduction of 'auto'
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (clang-18): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (gcc-16): error: use of 'auto f(int)' before deduction of 'auto'
+- `declarations/functions/return-deduction/recursion-before-return.cpp` (clang-22): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (clang-host): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (gcc-host): error: ambiguating new declaration of ‘int f()’ / note: old declaration ‘auto f()’
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (edg-7.0): error: cannot overload functions distinguished by return type alone
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (gcc-14): error: ambiguating new declaration of 'int f()' / note: old declaration 'auto f()'
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (clang-18): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (gcc-16): error: ambiguating new declaration of 'int f()' / note: old declaration 'auto f()'
+- `declarations/functions/return-deduction/redeclare-with-type.cpp` (clang-22): error: functions that differ only in their return type cannot be overloaded / note: previous declaration is here
+- `declarations/functions/return-deduction/use-before-definition.cpp` (clang-host): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/use-before-definition.cpp` (gcc-host): error: use of ‘auto f()’ before deduction of ‘auto’
+- `declarations/functions/return-deduction/use-before-definition.cpp` (edg-7.0): error: cannot deduce the return type of function "f" (declared at line 3); it has not been defined / error: cannot overload functions distinguished by return type alone
+- `declarations/functions/return-deduction/use-before-definition.cpp` (gcc-14): error: use of 'auto f()' before deduction of 'auto'
+- `declarations/functions/return-deduction/use-before-definition.cpp` (clang-18): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/use-before-definition.cpp` (gcc-16): error: use of 'auto f()' before deduction of 'auto'
+- `declarations/functions/return-deduction/use-before-definition.cpp` (clang-22): error: function 'f' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/void-and-value.cpp` (clang-host): error: 'auto' in return type deduced as 'int' here but deduced as 'void' in earlier return statement
+- `declarations/functions/return-deduction/void-and-value.cpp` (gcc-host): error: inconsistent deduction for auto return type: ‘void’ and then ‘int’ / error: return-statement with a value, in function returning ‘void’ [-fpermissive]
+- `declarations/functions/return-deduction/void-and-value.cpp` (edg-7.0): error: deduced return type "int" conflicts with previously deduced type "void"
+- `declarations/functions/return-deduction/void-and-value.cpp` (gcc-14): error: inconsistent deduction for auto return type: 'void' and then 'int' / error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `declarations/functions/return-deduction/void-and-value.cpp` (clang-18): error: 'auto' in return type deduced as 'int' here but deduced as 'void' in earlier return statement
+- `declarations/functions/return-deduction/void-and-value.cpp` (gcc-16): error: inconsistent deduction for auto return type: 'void' and then 'int' / error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `declarations/functions/return-deduction/void-and-value.cpp` (clang-22): error: 'auto' in return type deduced as 'int' here but deduced as 'void' in earlier return statement
 - `declarations/initialization/forms/array-from-array.cpp` (clang-host): error: array initializer must be an initializer list
 - `declarations/initialization/forms/array-from-array.cpp` (gcc-host): error: array must be initialized with a brace-enclosed initializer
 - `declarations/initialization/forms/array-from-array.cpp` (edg-7.0): error: initialization with "{...}" expected for aggregate object

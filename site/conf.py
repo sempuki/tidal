@@ -21,7 +21,8 @@ extensions = ["myst_parser", "tidal"]
 myst_enable_extensions = ["colon_fence", "deflist"]
 root_doc = "README"
 exclude_patterns = []
-suppress_warnings = ["myst.header"]
+# Pygments retries C++ it can't lex (such as [[assume(...)]]) in relaxed mode.
+suppress_warnings = ["myst.header", "misc.highlighting_failure"]
 
 html_theme = "furo"
 html_title = "Tidal: Expressions, Statements, and Declarations"

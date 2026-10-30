@@ -11,4 +11,4 @@ if [ -n "$TIDAL_REFERENCE" ]; then
 else
   echo "similarity: skipped (set TIDAL_REFERENCE to the reference corpus)"
 fi
-python3 -I tools/build_site.py
+python3 -I tools/build_site.py --strict

@@ -1,99 +1,114 @@
 # Reference binding
 
-How a reference is bound by its initializer: which expressions each kind of
-reference accepts, when a temporary object is created for it, and how long
-that temporary lives. Rules are prefixed `REF`.
+The initializer of a reference binds the reference to an object or a
+function. This page covers which expressions each kind of reference
+accepts, when a temporary object is created, and how long it lives.
 
-Depends on: [declarators](../declarators.md), [storage duration](../storage-linkage.md),
-[value category](../../glossary.md#value-category), conversions *(referenced)*,
-classes *(referenced)*, [constant evaluation](../../glossary.md#constant-evaluation).
+## Syntax
 
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+```{eval-rst}
+.. productionlist:: init_references
+   ref_init: "=" `expression`
+           : | "(" `expression` ")"
+           : | "{" `expression` "}"
+```
 
-## Rules
+## Legality Rules
 
-### REF-1 (required)
+:::{rule} REF-1
+:kind: required
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp
 
-A non-`const` lvalue reference binds only to an lvalue of the same type,
-or of the same type with fewer qualifiers. It binds directly, so the
-reference and the lvalue are the same object. A program is rejected if the
-initializer is an lvalue of another type or would lose a `const`.
+A non-`const` lvalue reference binds directly to an lvalue. The reference
+and the lvalue are then the same object. The lvalue must have the same
+type, or the same type with fewer {term}`cv-qualifiers <cv-qualifier>`.
+:::
 
-    long l = 1;
-    int& r = l;           // rejected
-    const int c = 1;
-    int& s = c;           // rejected
+:::{rule} REF-2
+:kind: required
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-ref-temporary-other-type.cpp
 
-Tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp, declarations/initialization/references/lvalue-ref-other-type.cpp, declarations/initialization/references/lvalue-ref-drops-const.cpp
+A `const` lvalue reference can also bind to an rvalue. It can also bind to
+an expression of a different type that converts to its type. In these
+cases, the reference binds to a temporary object that holds the
+converted value.
+:::
 
-### REF-2 (required)
+:::{rule} REF-3
+:kind: required
+:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp
 
-A `const` lvalue reference also binds to an rvalue, and to an expression of
-another type that converts to its type. In those cases a temporary object
-holding the converted value is created, and the reference binds to that
-temporary. Later changes to the original don't affect it.
+An rvalue reference binds to an rvalue, including an xvalue. It can bind
+to an lvalue of a different type through a temporary object, as REF-2
+gives. It must not bind to an lvalue of the same type.
+:::
 
-    long l = 1;
-    const int& r = l;     // r refers to a temporary int
-    l = 2;                // r is still 1
+:::{rule} REF-6
+:kind: required
+:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp
 
-Tests: declarations/initialization/references/const-ref-binds-rvalue.cpp, declarations/initialization/references/const-ref-temporary-other-type.cpp
+A reference can be initialized with `=`, parentheses, or braces. The
+initializer must hold exactly one expression. In braces, a narrowing
+conversion must not occur (LIST-2).
+:::
 
-### REF-3 (required)
+## Dynamic Semantics
 
-An rvalue reference binds to an rvalue, including an xvalue such as
-`static_cast<int&&>(x)`, which refers to `x` itself. It also binds to an
-lvalue of another type through a temporary, as in REF-2. A program is
-rejected if it binds an rvalue reference to an lvalue of the same type.
+:::{rule} REF-4
+:kind: required
+:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp
 
-Tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp, declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp, declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp
+If a reference variable binds to a temporary object, or to a member of
+one, the temporary lives as long as the reference. The temporary is
+destroyed when the reference goes out of scope. It is destroyed in order
+with the other objects of that scope.
+:::
 
-### REF-4 (required)
+## Undefined Behavior
 
-When a reference variable is bound to a temporary, or to a member of a
-temporary, the temporary lives as long as the reference. It is destroyed
-when the reference goes out of scope, in the reverse order of creation
-along with the other objects there.
+:::{rule} REF-5
+:kind: undefined
+:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp
 
-    {
-      const Note& a = make('a');
-      Note&& b = make('b');
-    }   // ~b, then ~a
+Only a direct binding to a variable extends the life of a temporary. A
+binding to a function parameter or a returned reference does not extend
+it. Use of a reference after the life of its object ends is undefined.
+:::
 
-Tests: declarations/initialization/references/lifetime-extended.cpp, declarations/initialization/references/lifetime-member-extended.cpp
+## Examples
 
-### REF-5 (undefined)
+```cpp
+long l = 1;
+int& r = l;                  // rejected: different type
+const int c = 1;
+int& s = c;                  // rejected: loses const
 
-A temporary's lifetime is extended only by binding it directly to the
-variable. Binding it to a function parameter, or returning a reference to
-it or to a local variable, doesn't extend anything. Using such a reference
-after the object is gone has undefined behavior.
+const int& t = l;            // t refers to a temporary int
+l = 2;                       // t is still 1
 
-    const int& pass(const int& v) { return v; }
-    const int& r = pass(1);   // the temporary ends here; r dangles
+int x = 0;
+int&& u = static_cast<int&&>(x);   // u refers to x
+int&& v = x;                 // rejected: lvalue of the same type
 
-Tests: declarations/initialization/references/lifetime-not-through-return.cpp, declarations/initialization/references/dangling-local-return.cpp
+{
+  const Note& a = make('a');
+  Note&& b = make('b');
+}                            // ~b, then ~a
 
-### REF-6 (required)
-
-A reference may be initialized with `=`, parentheses, or braces holding
-one expression. In braces, conversions that narrow are rejected as in
-LIST-2. A program is rejected if the initializer holds more than one
-expression.
-
-Tests: declarations/initialization/references/braced-reference.cpp, declarations/initialization/references/braced-reference-narrowing.cpp, declarations/initialization/references/reference-multiple-values.cpp
+const int& pass(const int& v) { return v; }
+const int& w = pass(1);      // the temporary ends here; w dangles
+```
 
 ## Evidence
 
-All seven compilers agree on all 15 tests. Results are in
+All seven compilers agree on all 15 tests. The results are in
 `tests/RESULTS.md`.
 
-- **REF-5.** All compilers reject the dangling reads during constant
-  evaluation ("read of object outside its lifetime", "accessing ...
-  outside its lifetime", "attempt to access expired storage"). Clang, GCC,
-  and EDG also warn about returning a reference to a local variable.
+- **REF-5.** All compilers reject the dangling reads during
+  {term}`constant evaluation` ("read of object outside its lifetime",
+  "accessing ... outside its lifetime", "attempt to access expired
+  storage"). Clang, GCC, and EDG also warn when a function returns a
+  reference to a local variable.
 
-## Divergences
-
-None.
+Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
+clang-diag-sema (see `inputs/MANIFEST.md`).

@@ -1,54 +1,15 @@
 # Specification format
 
-## Sections
+## Pages and rules
 
-Each topic is one Markdown file under `spec/`, grouped by area:
+Each topic is one MyST Markdown page under `spec/`. `docs/style-guide.md`
+gives the page structure, the `rule` directive, the writing rules, and the
+grammar notation (Sphinx `productionlist`). Rule IDs are an uppercase
+prefix and a number, such as `IF-3`. IDs are never reused. A withdrawn
+rule keeps its directive with the class `withdrawn` and a sentence that
+says why.
 
-```
-spec/
-  glossary.md
-  statements/if.md
-  expressions/logical.md
-```
-
-A section file has this shape:
-
-```markdown
-# The if statement
-
-Depends on: [condition](../glossary.md#condition), [scope](../glossary.md#scope)
-Inputs: clang-parse-stmt, clang-sema-stmt (see inputs/MANIFEST.md)
-
-## Syntax
-
-    if-stmt  = "if" [ "constexpr" ] "(" [ init ] cond ")" stmt [ "else" stmt ]
-
-## Rules
-
-### IF-1 (required)
-
-Rule text.
-
-Tests: statements/if/basic-true.cpp, statements/if/basic-false.cpp
-```
-
-## Syntax notation
-
-Grammar uses plain EBNF with Tidal's own nonterminal names:
-`[ x ]` is optional, `{ x }` is zero or more, `a | b` is a choice, and quoted
-text is a literal token. Nonterminals are lowercase with hyphens.
-
-## Rules
-
-A rule heading is `### <ID> (<class>)`. IDs are an uppercase prefix for the
-section plus a number, such as `IF-3` or `LOG-7`. IDs are never reused. A
-withdrawn rule keeps its heading with the class `withdrawn` and a sentence
-saying why.
-
-Every rule ends with a `Tests:` line listing at least one test file, relative
-to `tests/`.
-
-### Rule classes
+## Rule classes
 
 | Class | Meaning | Typical evidence |
 |---|---|---|

@@ -1,102 +1,114 @@
 # Forms of initialization
 
-How a variable gets its first value. An initializer may be written after
-`=`, in parentheses, or in braces, or left out. Without one, an object is
-*default-initialized*. With empty parentheses or braces, it is
-*value-initialized*. Objects with static or thread storage are
-*zero-initialized* first (STO-3).
-
-This part covers scalars and arrays. Initialization by constructors belongs
-to classes *(referenced)*. Rules are prefixed `INIT`.
-
-Depends on: [declarators](../declarators.md), [storage duration](../storage-linkage.md),
-[value category](../../glossary.md#value-category), conversions *(referenced)*,
-classes *(referenced)*, [constant evaluation](../../glossary.md#constant-evaluation).
-
-Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+An initializer gives a variable its first value. This page covers scalars
+and arrays. Initialization by constructors belongs to classes
+*(referenced)*.
 
 ## Syntax
 
-    init = "=" expression          // copy-initialization
-         | "(" expression-list ")" // direct-initialization
-         | braced                  // list-initialization (list.md)
-         | "=" braced
+```{eval-rst}
+.. productionlist:: init_forms
+   init: "=" `expression`
+       : | "(" `expression_list` ")"
+       : | `braced`
+       : | "=" `braced`
+```
 
-## Rules
+An initializer after `=` is *copy-initialization*. An initializer in
+parentheses is *direct-initialization*. A braced initializer is
+*list-initialization*. A variable without an initializer is
+*default-initialized*. Empty parentheses or braces give
+*value-initialization*. Objects with static or thread storage are
+*zero-initialized* first (STO-3).
 
-### INIT-1 (undefined)
+## Legality Rules
 
-A variable with automatic storage and no initializer has no value until one
-is assigned. Reading it before then has undefined behavior. This applies to
-each element of an array as well.
+:::{rule} INIT-3
+:kind: required
+:tests: declarations/initialization/forms/empty-parens-declares-function.cpp
 
-    int x;
-    int y = x;     // undefined
-    x = 3;         // fine; x now has a value
+A declaration with empty parentheses after the name declares a function.
+It never declares a variable.
+:::
 
-Tests: declarations/initialization/forms/read-uninitialized.cpp, declarations/initialization/forms/read-uninitialized-array.cpp, declarations/initialization/forms/write-before-read.cpp
+:::{rule} INIT-4
+:kind: required
+:tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp
 
-### INIT-2 (required)
+An initializer after `=` or in parentheses is converted to the type of the
+variable by implicit conversion *(referenced)*. A conversion that loses
+information is permitted. These conditions apply:
 
-Empty braces, `= {}`, and `T()` give a scalar the value zero: `0` for
-integers, `0.0` for floating-point types, `false` for `bool`, and a null
-pointer for pointers. `int a[3]{}` makes every element zero.
+- The expression must be convertible to the type of the variable.
+- For a scalar, the parentheses must hold exactly one expression.
+- For a scalar, the expression in parentheses must not be a braced list.
+- The type of the variable must be complete.
+- An `explicit` constructor *(referenced)* must not be used with `=`.
+:::
 
-Tests: declarations/initialization/forms/value-init-forms.cpp
+:::{rule} INIT-5
+:kind: required
+:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/array-from-array.cpp
 
-### INIT-3 (required)
+An array is initialized from a list of values in braces or in parentheses.
+In parentheses, a conversion that loses information is permitted. An
+array must not be initialized from another array.
+:::
 
-A declaration with empty parentheses, such as `int x();`, declares a
-function, never a variable.
+## Dynamic Semantics
 
-Tests: declarations/initialization/forms/empty-parens-declares-function.cpp
+:::{rule} INIT-2
+:kind: required
+:tests: declarations/initialization/forms/value-init-forms.cpp
 
-### INIT-4 (required)
+Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is `0`
+for an integer, `0.0` for a floating-point type, `false` for `bool`, and
+a null pointer for a pointer. An array element without a value in the
+list also gets zero.
+:::
 
-An initializer after `=` or in parentheses holds one expression, which is
-converted to the variable's type by the implicit conversions *(referenced)*.
-Conversions that lose information are allowed in these forms. A
-constructor marked `explicit` *(classes referenced)* is used by the
-parenthesized form and by braces, but not by `=`. A program is rejected if
-the expression can't be converted, if a parenthesized initializer for a
-scalar holds more than one expression or a braced list, or if the
-variable's type is incomplete.
+## Undefined Behavior
 
-    int a = 3.7;      // 3
-    int b(3.7);       // 3
-    int* p = 1;       // rejected
-    int c(1, 2);      // rejected
+:::{rule} INIT-1
+:kind: undefined
+:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp
 
-Tests: declarations/initialization/forms/copy-init-converts.cpp, declarations/initialization/forms/copy-init-no-conversion.cpp, declarations/initialization/forms/direct-init-multiple.cpp, declarations/initialization/forms/paren-init-explicit-conversion.cpp, declarations/initialization/forms/copy-init-explicit-rejected.cpp, declarations/initialization/forms/scalar-list-in-parens.cpp, declarations/initialization/forms/incomplete-type.cpp
+A variable with {term}`automatic storage` and no initializer has no value
+until the program assigns one. A read of the variable before that time is
+undefined. This also applies to each element of an array.
+:::
 
-### INIT-5 (required)
+## Examples
 
-An array is initialized from a list of values, in braces or in parentheses.
-Elements without a value become zero (INIT-2). In parentheses, conversions
-that lose information are allowed. An array can't be initialized from
-another array.
+```cpp
+int x;
+int y = x;           // undefined: x has no value
+x = 3;               // x now has a value
 
-    int a[4] = {1, 2};   // 1, 2, 0, 0
-    int b[3](1, 2);      // 1, 2, 0
-    int c[2] = a;        // rejected
+int z();             // a function declaration
 
-Tests: declarations/initialization/forms/array-partial.cpp, declarations/initialization/forms/array-paren-init.cpp, declarations/initialization/forms/array-from-array.cpp
+int a = 3.7;         // 3
+int b(3.7);          // 3
+int* p = 1;          // rejected
+int c(1, 2);         // rejected
+
+int d[4] = {1, 2};   // 1, 2, 0, 0
+int e[3](1, 2);      // 1, 2, 0
+int f[2] = d;        // rejected
+```
 
 ## Evidence
 
-All seven compilers agree on 14 of 15 tests. Results are in
+All seven compilers agree on 14 of 15 tests. The results are in
 `tests/RESULTS.md`.
 
-- **INIT-1.** All compilers reject reading an uninitialized scalar during
-  constant evaluation ("read of uninitialized object", "access to
-  uninitialized object"). For an array element, Clang and GCC reject and
-  EDG accepts. See INIT-D1.
+- **INIT-1.** All compilers reject a read of an uninitialized scalar during
+  {term}`constant evaluation` ("read of uninitialized object", "access to
+  uninitialized object").
+- **INIT-1 divergence.** For an array element, Clang and GCC reject the
+  read during constant evaluation. EDG 7.0 accepts it. The provisional
+  answer is that INIT-1 applies to array elements and that EDG has a
+  possible defect. See {question}`Q-0013`.
 
-## Divergences
-
-### INIT-D1: uninitialized array element during constant evaluation
-
-EDG 7.0 accepts reading an uninitialized array element during constant
-evaluation. **Provisional answer:** INIT-1 applies to array elements, and
-EDG's behavior is a possible defect. See question Q-0013.
+Inputs: clang-sema-init, gcc-cp-typeck2, gcc-cp-init, edg-decl-inits,
+clang-diag-sema (see `inputs/MANIFEST.md`).

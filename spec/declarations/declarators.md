@@ -1,266 +1,271 @@
 # Declarators and cv-qualifiers
 
-A declaration names a base type (`int`, a class, a placeholder) and then
-one or more *declarators*. Each declarator gives a name and wraps the base
-type in pointers, references, arrays, and functions. The *cv-qualifiers*
-`const` and `volatile` may be applied at each level.
-
-This section covers how declarators build types, the limits on which
-combinations are allowed, and what `const` and `volatile` mean for objects.
-Pointers to members and member function qualifiers belong to classes
-*(referenced)*. Default arguments belong to function definitions.
-
-Rules prefixed `DCL` cover declarators. Rules prefixed `CV` cover
-cv-qualifiers.
-
-Depends on: types *(referenced)*, [placeholder types](auto.md),
-initialization *(referenced)*, [constant evaluation](../glossary.md#constant-evaluation),
-classes *(referenced)*.
-
-Inputs: clang-sema-type, clang-sema-decl, gcc-cp-decl, edg-decls,
-clang-diag-sema (see `inputs/MANIFEST.md`).
+A declaration gives a base type and one or more {term}`declarators
+<declarator>`. Each declarator gives a name and adds pointers, references,
+arrays, and function parameters to the base type. A {term}`cv-qualifier`
+can apply at each level.
 
 ## Syntax
 
-    declarator  = ptr-part declarator
-                | direct
-    ptr-part    = "*" { cv } | "&" | "&&"
-    direct      = name
-                | "(" declarator ")"
-                | direct "[" [ constant ] "]"
-                | direct "(" params ")" { cv } [ "->" type ]
-    params      = [ param { "," param } [ [ "," ] "..." ] ] | "void"
-    cv          = "const" | "volatile"
+```{eval-rst}
+.. productionlist:: declarators
+   declarator: `ptr_part` `declarator` | `direct`
+   ptr_part: "*" {`cv`} | "&" | "&&"
+   direct: `name`
+         : | "(" `declarator` ")"
+         : | `direct` "[" [`constant`] "]"
+         : | `direct` "(" `params` ")" {`cv`} ["->" `type`]
+   params: [`param` {"," `param`} [[","] "..."]] | "void"
+   cv: "const" | "volatile"
+```
 
-## Rules
+## Legality Rules
 
-### DCL-1 (required)
+:::{rule} DCL-1
+:kind: required
+:tests: declarations/declarators/star-binds-to-declarator.cpp declarations/declarators/nested-declarators.cpp
 
 A declarator applies to one name. `*`, `&`, and `&&` belong to the
-declarator they're written in, so `int *p, q;` declares a pointer `p` and
-an `int` `q`. Suffixes (`[]` and `()`)
-bind more tightly than prefixes (`*`, `&`), and parentheses override that.
-A declarator is read from the name outward, suffixes first.
+declarator that contains them. Suffixes (`[]` and `()`) bind more tightly
+than prefixes (`*` and `&`), and parentheses change the binding.
+:::
 
-    int* a[3];        // array of 3 pointers to int
-    int (*b)[3];      // pointer to array of 3 int
-    int (*c)(int);    // pointer to function taking int, returning int
-    int (*(*d)(char))(double);
-                      // pointer to function taking char, returning
-                      // pointer to function taking double, returning int
+:::{rule} DCL-2
+:kind: required
+:tests: declarations/declarators/pointer-to-pointer-and-function.cpp declarations/declarators/pointer-to-void-ok.cpp declarations/declarators/pointer-to-reference.cpp
 
-Tests: declarations/declarators/star-binds-to-declarator.cpp, declarations/declarators/nested-declarators.cpp
+A pointer can point to an object type, `void`, a function type, or a
+pointer. A pointer to a reference must not be declared.
+:::
 
-### DCL-2 (required)
+:::{rule} DCL-3
+:kind: required
+:tests: declarations/declarators/reference-binds-same-object.cpp declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp
 
-A pointer may point to an object type, `void`, a function type, or
-another pointer. A pointer to a reference is rejected.
+A reference refers to an existing object or function. Each use of the
+reference is a use of that object. A reference variable must have an
+initializer, except in an `extern` declaration. A program must not
+declare:
 
-Tests: declarations/declarators/pointer-to-pointer-and-function.cpp, declarations/declarators/pointer-to-void-ok.cpp, declarations/declarators/pointer-to-reference.cpp
+- a reference to a reference,
+- an array of references,
+- a reference to `void`,
+- a reference with a {term}`cv-qualifier` applied directly to it.
+:::
 
-### DCL-3 (required)
+:::{rule} DCL-4
+:kind: required
+:tests: declarations/declarators/reference-collapsing.cpp declarations/declarators/cv-on-reference-alias-ignored.cpp
 
-A reference names an existing object or function, and every use of the
-reference is a use of that object. A reference variable must be
-initialized, except in a declaration with `extern`. A program is rejected
-if it declares a reference to a reference, an array of references, a
-reference to `void`, or applies `const` or `volatile` directly to a
-reference.
+A reference added to a reference type from an alias or a template argument
+collapses into one reference. The result is an rvalue reference only if
+both references are rvalue references. A cv-qualifier applied to such an
+alias has no effect.
+:::
 
-    int x = 1;
-    int& r = x;       // r and x are the same object
-    int& s;           // rejected
-    int& const t = x; // rejected
+:::{rule} DCL-5
+:kind: required
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp
 
-Tests: declarations/declarators/reference-binds-same-object.cpp, declarations/declarators/extern-reference-no-initializer.cpp, declarations/declarators/reference-requires-initializer.cpp, declarations/declarators/reference-to-reference.cpp, declarations/declarators/array-of-references.cpp, declarations/declarators/reference-to-void.cpp, declarations/declarators/cv-qualified-reference.cpp
+An array bound must be a constant expression of integer or unscoped
+enumeration type. It is converted to the type of `sizeof` without loss of
+value. It must be greater than zero. The bound can be omitted in these
+cases:
 
-### DCL-4 (required)
+- an initializer gives the number of elements,
+- the declaration does not define the array, for example an `extern`
+  declaration.
 
-When a reference type comes from an alias or a template argument, adding
-another reference collapses them into one. The result is an rvalue
-reference only when both are rvalue references. `const` or `volatile`
-applied to such an alias is ignored.
+The initializer must not have more elements than the bound.
+:::
 
-    using L = int&;
-    using R = int&&;
-    L&   // int&      L&&  // int&
-    R&   // int&      R&&  // int&&
-    const L          // int&
+:::{rule} DCL-6
+:kind: required
+:tests: declarations/declarators/multidim-outer-omitted.cpp declarations/declarators/multidim-inner-bound.cpp declarations/declarators/array-of-functions.cpp declarations/declarators/array-of-void.cpp
 
-Tests: declarations/declarators/reference-collapsing.cpp, declarations/declarators/cv-on-reference-alias-ignored.cpp
+An array of arrays can omit only its first bound. An array element must
+have a complete object type. An array of functions or of `void` must not
+be declared.
+:::
 
-### DCL-5 (required)
+:::{rule} DCL-7
+:kind: required
+:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp
 
-An array bound is a constant expression of integer or unscoped enumeration
-type, converted to the type of `sizeof` without loss. It must be greater
-than zero. The bound may be left out when an initializer supplies it, or in
-a declaration that doesn't define the array, such as one with `extern`. A
-program is rejected if the bound is not a constant, is zero or negative, is
-not an integer, is missing where it is needed, or if the initializer has
-more elements than the bound.
+A function can return a pointer or a reference to an array or a function.
+A function must not return an array or a function. A trailing return type
+gives the same type as the type at the start. The return type can be
+`const void`. A function that is not a class member must not have a
+cv-qualifier after its parameter list.
+:::
 
-    int a[] = {1, 2, 3};   // int[3]
-    char s[] = "abc";      // char[4]
-    void f(int n) { int b[n]; }   // rejected
+:::{rule} DCL-8
+:kind: required
+:tests: declarations/declarators/parameter-adjustment.cpp declarations/declarators/parameter-cv-same-function.cpp declarations/declarators/parameter-array-is-pointer.cpp
 
-Tests: declarations/declarators/array-bound-deduced.cpp, declarations/declarators/array-bound-constant.cpp, declarations/declarators/array-bound-runtime.cpp, declarations/declarators/array-bound-zero.cpp, declarations/declarators/array-bound-negative.cpp, declarations/declarators/array-bound-floating.cpp, declarations/declarators/array-incomplete-extern.cpp, declarations/declarators/array-incomplete-no-init.cpp, declarations/declarators/array-too-many-initializers.cpp
+A parameter declared as an array of `T` has the type pointer to `T`. A
+parameter declared as a function has the type pointer to that function.
+The bound of an array parameter has no effect. A top-level cv-qualifier
+of a parameter is not part of the function type.
+:::
 
-### DCL-6 (required)
+:::{rule} DCL-9
+:kind: required
+:tests: declarations/declarators/void-parameter-list.cpp declarations/declarators/void-parameter-named.cpp declarations/declarators/void-parameter-with-others.cpp declarations/declarators/variadic.cpp declarations/declarators/ellipsis-first.cpp
 
-An array of arrays may leave out only its first bound. Array elements must
-be complete object types, so a program is rejected if it declares an array
-of functions or of `void`.
+The parameter list `(void)` declares no parameters, as `()` does. `void`
+must not occur in a parameter list in other forms. `...` must be the last
+item in the list, and the comma before it is optional.
+:::
 
-    int a[][2] = {{1, 2}, {3, 4}, {5, 6}};   // int[3][2]
-    int b[][] = {{1}, {2}};                  // rejected
+:::{rule} CV-1
+:kind: required
+:tests: declarations/declarators/cv-position.cpp
 
-Tests: declarations/declarators/multidim-outer-omitted.cpp, declarations/declarators/multidim-inner-bound.cpp, declarations/declarators/array-of-functions.cpp, declarations/declarators/array-of-void.cpp
+A cv-qualifier applies to the type on its left. If there is no type on
+its left, it applies to the type on its right. In a pointer declarator, a
+cv-qualifier before `*` applies to the pointed-to type. A cv-qualifier
+after `*` applies to the pointer.
+:::
 
-### DCL-7 (required)
+:::{rule} CV-2
+:kind: reject
+:tests: declarations/declarators/cv-duplicate-direct.cpp declarations/declarators/cv-duplicate-through-alias.cpp
 
-A function may return a pointer or reference to an array or function, but
-not an array or function. A trailing return type (`auto f() -> T`) gives
-the same type as writing `T` first. `const void` is an accepted return
-type. A program is rejected if a function returns an array or function, or
-if a function that is not a class member has a `const` or `volatile`
-qualifier after its parameter list.
+The same cv-qualifier must not occur two times directly in one type. A
+cv-qualifier that an alias repeats is permitted and counts one time.
+:::
 
-Tests: declarations/declarators/function-returning-pointers-ok.cpp, declarations/declarators/function-returning-array.cpp, declarations/declarators/function-returning-function.cpp, declarations/declarators/const-void-return.cpp, declarations/declarators/qualified-free-function.cpp
+:::{rule} CV-3
+:kind: reject
+:tests: declarations/declarators/const-requires-initializer.cpp declarations/declarators/extern-const-declaration.cpp
 
-### DCL-8 (required)
+A definition of a `const` variable of scalar type must have an
+initializer. An `extern` declaration that is not a definition needs no
+initializer. Class types have a separate rule *(referenced)*.
+:::
 
-A parameter declared as an array is a pointer to its element type, and a
-parameter declared as a function is a pointer to that function type. Any
-array bound on the parameter is ignored. `const` and `volatile` at the
-top level of a parameter are not part of the function's type, so `void
-f(int)` and `void f(const int)` declare the same function.
+:::{rule} CV-4
+:kind: reject
+:tests: declarations/declarators/assign-to-const.cpp declarations/declarators/assign-through-pointer-to-const.cpp declarations/declarators/increment-const.cpp
 
-    void f(int a[3], void g(), const int n);
-    // type: void(int*, void (*)(), int)
+A program must not assign to, increment, or decrement an lvalue of `const`
+type. This applies to a `const` variable and to an access through a
+pointer or reference to `const`.
+:::
 
-Tests: declarations/declarators/parameter-adjustment.cpp, declarations/declarators/parameter-cv-same-function.cpp, declarations/declarators/parameter-array-is-pointer.cpp
+:::{rule} CV-6
+:kind: required
+:tests: declarations/declarators/cv-on-array-applies-to-elements.cpp declarations/declarators/cv-on-function-alias.cpp
 
-### DCL-9 (required)
+A cv-qualifier applied to an array type through an alias applies to the
+elements. A cv-qualifier applied to a function type through an alias has
+no effect.
+:::
 
-A parameter list of `(void)` means no parameters, the same as `()`.
-`void` is allowed only in that form, so a program is rejected if it names
-a `void` parameter or lists `void` with other parameters. A trailing
-`...` accepts any further arguments, and the comma before it is optional.
-`...` must come last.
+:::{rule} CV-7
+:kind: required
+:tests: declarations/declarators/qualification-conversion-ok.cpp declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp
 
-Tests: declarations/declarators/void-parameter-list.cpp, declarations/declarators/void-parameter-named.cpp, declarations/declarators/void-parameter-with-others.cpp, declarations/declarators/variadic.cpp, declarations/declarators/ellipsis-first.cpp
+A pointer converts implicitly to a pointer with more cv-qualifiers on the
+pointed-to type. Across several levels of pointers, `const` added at one
+level needs `const` at each higher level except the outermost. No
+implicit conversion removes a cv-qualifier.
+:::
 
-### DCL-10 (impl-defined)
+:::{rule} CV-8
+:kind: required
+:tests: declarations/declarators/const-integral-constant.cpp declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp
 
-Each implementation sets the largest array it accepts, and the limit can
-depend on the target. An array whose size in bytes does not fit the type of
-`sizeof` is rejected (question Q-0012).
+A `const` variable of integer or enumeration type with a constant
+initializer can occur in a constant expression. A `const` variable with
+an initializer that is not constant cannot. A `const` floating-point
+variable cannot.
+:::
 
-Tests: declarations/declarators/array-too-large.cpp, declarations/declarators/array-4gib-lp64.cpp, declarations/declarators/array-4gib-ilp32.cpp
+## Undefined Behavior
 
-### CV-1 (required)
+:::{rule} CV-5
+:kind: undefined
+:tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp
 
-`const` and `volatile` apply to the type to their left, or to the type
-on their right when nothing is on their left. `const int` and `int const`
-are the same type. In a pointer, a qualifier before `*` applies to the
-pointed-to type, and a qualifier after `*` applies to the pointer.
+If a program changes an object that is defined `const`, the behavior is
+undefined. This is also true when a cast removes `const`. A program can
+change an object that is not defined `const` through such a cast.
+:::
 
-    const int* a;        // pointer to const int
-    int* const b = &x;   // const pointer to int
+## Implementation Requirements
 
-Tests: declarations/declarators/cv-position.cpp
+:::{rule} DCL-10
+:kind: impl-defined
+:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp declarations/declarators/array-4gib-ilp32.cpp
 
-### CV-2 (reject)
+The largest array that an implementation accepts is
+implementation-defined. The limit can depend on the target. An array
+whose size in bytes does not fit in the type of `sizeof` must not be
+declared.
+:::
 
-A program is rejected if the same qualifier is written twice directly in
-one type. A qualifier repeated through an alias is accepted and counts once.
+## Examples
 
-    const const int x = 1;   // rejected
-    using C = const int;
-    const C y = 1;           // const int
+```cpp
+int *p, q;                     // p is int*, q is int
+int* a[3];                     // array of 3 pointers to int
+int (*b)[3];                   // pointer to array of 3 int
+int (*c)(int);                 // pointer to function (int) returning int
+int (*(*d)(char))(double);     // pointer to function (char) returning
+                               // pointer to function (double) returning int
 
-Tests: declarations/declarators/cv-duplicate-direct.cpp, declarations/declarators/cv-duplicate-through-alias.cpp
+int x = 1;
+int& r = x;                    // r and x are the same object
+int& s;                        // rejected: no initializer
+int& const t = x;              // rejected
 
-### CV-3 (reject)
+using L = int&;
+using R = int&&;
+// L& is int&, L&& is int&, R& is int&, R&& is int&&, const L is int&
 
-A program is rejected if it defines a `const` variable of a scalar type
-without an initializer. A declaration with `extern` that isn't a
-definition needs none. Class types *(referenced)* have their own rule.
+int e[] = {1, 2, 3};           // int[3]
+char w[] = "abc";              // char[4]
+void f(int n) { int g[n]; }    // rejected: bound is not constant
+int m[][2] = {{1, 2}, {3, 4}}; // int[2][2]
+int k[][] = {{1}, {2}};        // rejected
 
-Tests: declarations/declarators/const-requires-initializer.cpp, declarations/declarators/extern-const-declaration.cpp
+void h(int a[3], void g(), const int n);
+                               // type: void(int*, void (*)(), int)
 
-### CV-4 (reject)
+const int* pc;                 // pointer to const int
+int* const cp = &x;            // const pointer to int
+const const int y = 1;         // rejected
+using C = const int;
+const C z = 1;                 // const int
 
-A program is rejected if it assigns to, increments, or decrements an
-lvalue whose type is `const`, whether it names a `const` variable or is
-reached through a pointer or reference to `const`.
+using A = int[2];
+const A arr = {1, 2};          // const int[2]
 
-Tests: declarations/declarators/assign-to-const.cpp, declarations/declarators/assign-through-pointer-to-const.cpp, declarations/declarators/increment-const.cpp
-
-### CV-5 (undefined)
-
-Modifying an object that was defined `const` has undefined behavior, even
-when a cast removes `const` from the path to it. Removing `const` with a
-cast and modifying an object that was not defined `const` is allowed.
-
-    const int x = 1;
-    const_cast<int&>(x) = 2;     // undefined
-    int y = 1;
-    const int& r = y;
-    const_cast<int&>(r) = 2;     // fine: y is 2
-
-Tests: declarations/declarators/modify-const-object-via-cast.cpp, declarations/declarators/modify-nonconst-object-via-cast.cpp
-
-### CV-6 (required)
-
-`const` or `volatile` applied to an array type, through an alias, applies
-to its elements. Applied to a function type through an alias, it is
-ignored.
-
-    using A = int[2];
-    const A a = {1, 2};      // const int[2]
-
-Tests: declarations/declarators/cv-on-array-applies-to-elements.cpp, declarations/declarators/cv-on-function-alias.cpp
-
-### CV-7 (required)
-
-A pointer converts implicitly to a pointer with more qualifiers on the
-pointed-to type, as in `int*` to `const int*`. Through several levels of
-pointers, adding `const` at one level requires `const` at every level
-above it except the outermost, so `int**` converts to `const int* const*`
-but not to `const int**`. Removing a qualifier is never implicit.
-
-Tests: declarations/declarators/qualification-conversion-ok.cpp, declarations/declarators/qualification-conversion-unsafe.cpp, declarations/declarators/qualification-conversion-drops-const.cpp
-
-### CV-8 (required)
-
-A `const` variable of integer or enumeration type whose initializer is a
-constant expression may be used in constant expressions, for example as an
-array bound. A `const` variable initialized at run time can't be, and
-neither can a `const` floating-point variable. Use `constexpr` for those
-cases *(referenced)*.
-
-Tests: declarations/declarators/const-integral-constant.cpp, declarations/declarators/const-integral-runtime.cpp, declarations/declarators/const-floating-not-constant.cpp
+const int ci = 1;
+const_cast<int&>(ci) = 2;      // undefined
+int v = 1;
+const int& cr = v;
+const_cast<int&>(cr) = 2;      // v is 2
+```
 
 ## Evidence
 
-All seven compilers agree on 60 of 61 tests. Results are in
+All seven compilers agree on 60 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
-- **DCL-5.** Clang and GCC accept variable-length arrays and zero-size
-  arrays as extensions and reject them only under `-pedantic-errors`. EDG
-  rejects both in every mode.
-- **DCL-10.** Limits differ by implementation and target. See DCL-D1.
-- **CV-5.** All compilers reject the modification during constant
-  evaluation and name the cause ("modification of object of const-qualified
+- **DCL-5.** Clang and GCC accept variable-length arrays and arrays of size
+  zero as extensions. They reject them only under `-pedantic-errors`. EDG
+  rejects both in all modes.
+- **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16 and
+  14 and EDG 7.0 accept it. The provisional answer is that the limit is
+  implementation-defined. See {question}`Q-0012`.
+- **CV-5.** All compilers reject the change during constant evaluation.
+  Their notes give the cause ("modification of object of const-qualified
   type", "modifying a const object", "attempt to modify const storage").
-  Modifying a non-`const` object through the same cast is accepted and
-  runs.
+  A change to an object that is not `const`, through the same cast, is
+  accepted and executes.
 
-## Divergences
-
-### DCL-D1: largest array
-
-`char huge[1ull << 62];` is rejected by Clang 22 and 18 and accepted by GCC
-16 and 14 and EDG 7.0. **Provisional answer:** the limit is
-implementation-defined (DCL-10). See question Q-0012.
+Inputs: clang-sema-type, clang-sema-decl, gcc-cp-decl, edg-decls,
+clang-diag-sema (see `inputs/MANIFEST.md`).

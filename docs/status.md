@@ -22,8 +22,8 @@ current state only. The history of how it got here is in `git log`.
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change. It can publish the site to
 https://sempuki.github.io/tidal/ once GitHub Pages is enabled. Pages use
-the structure and writing rules in `docs/style-guide.md`. The `if`
-statement page is converted, and the other pages are being converted.
+the structure and writing rules in `docs/style-guide.md`. All pages are
+converted.
 
 ## Test matrix
 
@@ -45,6 +45,15 @@ Full results are in `tests/RESULTS.md`.
 
 Twenty questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
+
+## Known limits of the specification text
+
+- Some rules mix a legality fact with a run-time fact, and sit in the
+  segment of the larger part: STO-4, DCL-3, SB-1, INIT-4, INIT-5, LIST-3,
+  REF-2, and REF-3. Each should be split into two rules with new IDs, as
+  ATTR-3, ATTR-10, FN-4, and FN-3 were.
+- The glossary covers the terms used so far. Terms marked *(referenced)*
+  belong to topics that Tidal does not specify yet.
 
 ## Known limits of the tooling
 

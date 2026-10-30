@@ -1,211 +1,221 @@
 # Placeholder types in variable declarations
 
-A variable declaration may use `auto` or `decltype(auto)` in place of a
-type. The variable's type is then worked out from its initializer. `auto`
-may be combined with `const`, `volatile`, `*`, `&`, and `&&` to shape the
-deduced type.
+A variable declaration can use a {term}`placeholder type`, `auto` or
+`decltype(auto)`, in the position of a type. The type of the variable then
+comes from its initializer.
 
-This section covers variables only, including variables declared in
-conditions and initializer statements. Placeholders in function return
-types, parameters, and template parameters belong to function definitions
-and templates *(referenced)*.
-
-Depends on: declarators *(referenced)*, initialization *(referenced)*,
-[value category](../glossary.md#value-category), template argument
-deduction *(referenced)*, `std::initializer_list` *(library, referenced)*.
-
-Inputs: clang-sema-deduction, clang-sema-decl, gcc-cp-pt, gcc-cp-decl,
-edg-overload, edg-decls (see `inputs/MANIFEST.md`).
+This page covers variables, including variables in conditions and
+initializer statements. Placeholders in return types, parameters, and
+template parameters are on other pages *(referenced)*.
 
 ## Syntax
 
-    placeholder   = [ type-constraint ] ( "auto" | "decltype" "(" "auto" ")" )
-    auto-var-decl = { decl-specifier } placeholder { decl-specifier }
-                      auto-declarator { "," auto-declarator } ";"
-    auto-declarator = declarator auto-init
-    auto-init     = "=" expression
-                  | "=" "{" [ expression { "," expression } ] "}"
-                  | "(" expression ")"
-                  | "{" expression "}"
+```{eval-rst}
+.. productionlist:: auto
+   placeholder: [`type_constraint`] ("auto" | "decltype" "(" "auto" ")")
+   auto_var_decl: `decl_specifier`* `placeholder` `decl_specifier`*
+                : `auto_declarator` ("," `auto_declarator`)* ";"
+   auto_declarator: `declarator` `auto_init`
+   auto_init: "=" `expression`
+            : | "=" "{" [`expression` ("," `expression`)*] "}"
+            : | "(" `expression` ")"
+            : | "{" `expression` "}"
+```
 
-`decl-specifier` covers `const`, `volatile`, `static`, `constexpr`, and the
-other specifiers *(referenced)*. `type-constraint` names a concept
+`decl_specifier` includes `const`, `volatile`, `static`, `constexpr`, and
+the other specifiers *(referenced)*. `type_constraint` names a concept
 *(referenced)*.
 
-## Rules
+## Legality Rules
 
-### AUTO-1 (required)
+:::{rule} AUTO-1
+:kind: required
+:tests: declarations/auto/drops-references-and-cv.cpp declarations/auto/keeps-pointee-cv.cpp declarations/auto/nullptr.cpp
 
-For a variable declared `auto` with `= expression`, the type is the
-initializer's type with any reference removed and then any top-level
-`const` or `volatile` removed. Qualifiers below the top level stay, so a
-pointer to `const` remains a pointer to `const`. `auto n = nullptr;` has the
-type of `nullptr`.
+For `auto` with `= expression`, the type is the type of the initializer
+without its reference. Then the top-level `const` and `volatile` are
+removed. Qualifiers below the top level stay.
+:::
 
-    const int& r = ...;
-    auto a = r;           // int
-    const int* const p = ...;
-    auto b = p;           // const int*
+:::{rule} AUTO-2
+:kind: required
+:tests: declarations/auto/decays-arrays-and-functions.cpp
 
-Tests: declarations/auto/drops-references-and-cv.cpp, declarations/auto/keeps-pointee-cv.cpp, declarations/auto/nullptr.cpp
-
-### AUTO-2 (required)
-
-An initializer of array type gives a pointer to the array's first element,
-and a function gives a pointer to the function. A string literal gives
+An initializer of array type gives a pointer to its first element. A
+function gives a pointer to the function. A string literal gives
 `const char*`.
+:::
 
-    int arr[3];
-    auto p = arr;        // int*
-    auto s = "hi";       // const char*
+:::{rule} AUTO-3
+:kind: required
+:tests: declarations/auto/lvalue-reference.cpp declarations/auto/lvalue-reference-to-rvalue.cpp declarations/auto/const-lvalue-reference-to-rvalue.cpp
 
-Tests: declarations/auto/decays-arrays-and-functions.cpp
+`auto&` gives an lvalue reference to the type of the initializer. The
+type keeps its `const` and `volatile`, and arrays and functions do not
+decay. The initializer must be an lvalue, unless the declaration adds
+`const`.
+:::
 
-### AUTO-3 (required)
+:::{rule} AUTO-4
+:kind: required
+:tests: declarations/auto/forwarding-reference.cpp
 
-`auto&` makes the variable an lvalue reference to the initializer's type.
-The initializer's `const` and `volatile` are kept, and arrays and functions
-don't decay. The initializer must be an lvalue unless the declaration adds
-`const`, as in `const auto& r = 1;`.
+`auto&&` accepts any initializer. An lvalue initializer gives `T&`. Any
+other initializer gives `T&&`. The type keeps the `const` and `volatile`
+of the initializer.
+:::
 
-    const int ci = 1;
-    auto& a = ci;        // const int&
-    auto& b = arr;       // int (&)[3]
-    auto& c = 1;         // rejected
+:::{rule} AUTO-5
+:kind: required
+:tests: declarations/auto/added-qualifiers.cpp declarations/auto/pointer-from-non-pointer.cpp declarations/auto/constexpr-adds-const.cpp
 
-Tests: declarations/auto/lvalue-reference.cpp, declarations/auto/lvalue-reference-to-rvalue.cpp, declarations/auto/const-lvalue-reference-to-rvalue.cpp
+`const`, `volatile`, and `*` written with `auto` apply to the deduced
+type. With `auto*`, the initializer must have pointer type. `constexpr`
+makes the variable `const`.
+:::
 
-### AUTO-4 (required)
+:::{rule} AUTO-6
+:kind: required
+:tests: declarations/auto/braced-direct-single.cpp declarations/auto/braced-direct-multiple.cpp declarations/auto/braced-direct-empty.cpp declarations/auto/paren-single.cpp declarations/auto/paren-multiple.cpp declarations/auto/paren-braced.cpp
 
-`auto&&` binds to any initializer. With an lvalue, such as a variable
-name, the variable becomes `T&`. With anything else, such as a literal or
-a function's returned value, it becomes `T&&`. `const` and `volatile` on
-the initializer are kept.
+An initializer in parentheses, or in braces without `=`, must contain
+exactly one expression. That expression gives the type, as it does after
+`=`. A braced list in parentheses is not permitted.
+:::
 
-    auto&& a = i;        // int&
-    auto&& b = 1;        // int&&
+:::{rule} AUTO-7
+:kind: required
+:tests: declarations/auto/copy-list-deduces-initializer-list.cpp declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp
 
-Tests: declarations/auto/forwarding-reference.cpp
+`auto x = { ... };` gives `x` the type `std::initializer_list<T>`. Each
+element must give the same `T`, and the list must not be empty. A
+declaration of `std::initializer_list` must come first *(library
+referenced)*.
+:::
 
-### AUTO-5 (required)
+:::{rule} AUTO-8
+:kind: reject
+:tests: declarations/auto/no-initializer.cpp declarations/auto/own-initializer.cpp declarations/auto/void-initializer.cpp declarations/auto/overloaded-function.cpp declarations/auto/combined-type-specifier.cpp declarations/auto/array-of-auto.cpp
 
-`const`, `volatile`, `*`, and `* const` written with `auto` apply to the
-deduced type. `auto*` requires an initializer of pointer type and is
-rejected otherwise. `constexpr` makes the variable `const`.
+A variable declared with `auto` must:
 
-    const auto a = i;    // const int
-    auto* const p = &i;  // int* const
-    auto* q = 1;         // rejected
-    constexpr auto n = 1;  // const int
+- have an initializer,
+- not occur in its own initializer,
+- not have an initializer of type `void`,
+- not have the name of an overloaded function as its initializer,
+- not combine `auto` with another type specifier,
+- not be an array of `auto`.
+:::
 
-Tests: declarations/auto/added-qualifiers.cpp, declarations/auto/pointer-from-non-pointer.cpp, declarations/auto/constexpr-adds-const.cpp
+:::{rule} AUTO-9
+:kind: required
+:tests: declarations/auto/several-declarators.cpp declarations/auto/several-declarators-conflict.cpp
 
-### AUTO-6 (required)
+One declaration can declare several variables with `auto`. Each
+{term}`declarator` gives its type separately, and can add `*` or `&`.
+`auto` must stand for the same type in all declarators.
+:::
 
-An initializer in parentheses or in braces without `=` must hold exactly one
-expression. The type is deduced from that expression as if it were written
-after `=`. More than one expression, an empty pair of braces, or a braced
-list inside parentheses is rejected.
+:::{rule} AUTO-10
+:kind: required
+:tests: declarations/auto/decltype-auto-value-category.cpp declarations/auto/decltype-auto-keeps-cv.cpp
 
-    auto a{1};           // int
-    auto b(1);           // int
-    auto c{1, 2};        // rejected
-    auto d({1});         // rejected
+`decltype(auto)` gives the type that `decltype` gives the initializer
+*(referenced)*. The {term}`value category` of the initializer controls the
+result:
 
-Tests: declarations/auto/braced-direct-single.cpp, declarations/auto/braced-direct-multiple.cpp, declarations/auto/braced-direct-empty.cpp, declarations/auto/paren-single.cpp, declarations/auto/paren-multiple.cpp, declarations/auto/paren-braced.cpp
+- a name gives its declared type, including `const`,
+- a parenthesized lvalue gives an lvalue reference,
+- an xvalue gives an rvalue reference,
+- a prvalue gives a type that is not a reference.
+:::
 
-### AUTO-7 (required)
+:::{rule} AUTO-11
+:kind: reject
+:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp
 
-`auto x = { ... };` gives `x` the type `std::initializer_list<T>`, where `T`
-is the type deduced from every element. All elements must deduce the same
-`T`, and the list must not be empty. `std::initializer_list` comes from the
-library *(referenced)* and must be declared before this form is used.
+`decltype(auto)` must not:
 
-    auto a = {1, 2};     // std::initializer_list<int>
-    auto b = {1};        // std::initializer_list<int>
-    auto c = {1, 2.0};   // rejected
+- be combined with `const`, `volatile`, `*`, or `&`,
+- have an initializer of the form `= { ... }`,
+- have a function name as its initializer,
+- have braces with more than one expression.
 
-Tests: declarations/auto/copy-list-deduces-initializer-list.cpp, declarations/auto/copy-list-mixed-types.cpp, declarations/auto/copy-list-without-library.cpp, declarations/auto/copy-list-empty.cpp
+Braces without `=` that contain one expression are permitted
+({question}`Q-0010`).
+:::
 
-### AUTO-8 (reject)
+:::{rule} AUTO-12
+:kind: required
+:tests: declarations/auto/in-conditions.cpp
 
-A program is rejected if a variable declared with `auto`
+These rules also apply to variables in `if` conditions, in `if`
+initializer statements, and in `for` initializer statements.
+:::
 
-- has no initializer,
-- is used in its own initializer,
-- is initialized from an expression of type `void`,
-- is initialized from the name of an overloaded function,
-- combines `auto` with another type specifier, as in `auto int`, or
-- is declared as an array of `auto`.
+:::{rule} AUTO-13
+:kind: required
+:tests: declarations/auto/constrained-satisfied.cpp declarations/auto/constrained-not-satisfied.cpp
 
-Tests: declarations/auto/no-initializer.cpp, declarations/auto/own-initializer.cpp, declarations/auto/void-initializer.cpp, declarations/auto/overloaded-function.cpp, declarations/auto/combined-type-specifier.cpp, declarations/auto/array-of-auto.cpp
+A concept name can come before `auto` or `decltype(auto)` *(referenced)*.
+The deduced type must satisfy the concept.
+:::
 
-### AUTO-9 (required)
+## Examples
 
-One declaration may declare several variables with `auto`. Each declarator
-is deduced on its own, and `auto` must stand for the same type in all of
-them. Declarators may add `*` or `&`.
+```cpp
+const int& r = ci;
+auto a = r;                     // int
+const int* const p = &ci;
+auto b = p;                     // const int*
+auto n = nullptr;               // decltype(nullptr)
 
-    auto a = 1, *p = &a, &r = a;   // int, int*, int&
-    auto x = 1, y = 2.0;           // rejected
+int arr[3];
+auto q = arr;                   // int*
+auto s = "hi";                  // const char*
 
-Tests: declarations/auto/several-declarators.cpp, declarations/auto/several-declarators-conflict.cpp
+auto& c = ci;                   // const int&
+auto& d = arr;                  // int (&)[3]
+auto& e = 1;                    // rejected
+const auto& f = 1;              // const int&
 
-### AUTO-10 (required)
+auto&& g = i;                   // int&
+auto&& h = 1;                   // int&&
 
-`decltype(auto)` gives the variable the type that `decltype` gives its
-initializer *(referenced)*. A name gives its declared type, including
-`const`. A parenthesized lvalue gives an lvalue reference. An xvalue gives
-an rvalue reference. A prvalue gives a plain type.
+const auto j = i;               // const int
+auto* const k = &i;             // int* const
+auto* m = 1;                    // rejected
+constexpr auto t = 1;           // const int
 
-    decltype(auto) a = i;      // int
-    decltype(auto) b = (i);    // int&
-    decltype(auto) c = static_cast<int&&>(i);  // int&&
+auto u{1};                      // int
+auto v(1);                      // int
+auto w{1, 2};                   // rejected
+auto x({1});                    // rejected
 
-Tests: declarations/auto/decltype-auto-value-category.cpp, declarations/auto/decltype-auto-keeps-cv.cpp
+auto y = {1, 2};                // std::initializer_list<int>
+auto z = {1, 2.0};              // rejected
 
-### AUTO-11 (reject)
+auto aa = 1, *pa = &aa, &ra = aa;   // int, int*, int&
+auto bb = 1, cc = 2.0;              // rejected
 
-A program is rejected if `decltype(auto)`
+decltype(auto) da = i;          // int
+decltype(auto) db = (i);        // int&
+decltype(auto) dc = static_cast<int&&>(i);   // int&&
+decltype(auto) dd{(i)};         // int&
 
-- is combined with `const`, `volatile`, `*`, or `&`,
-- is initialized with `= { ... }`,
-- is initialized from a function name, which would give a function type, or
-- has a braced initializer with more than one expression.
-
-A braced initializer without `=` holding one expression is accepted, and
-deduces as if the braces were absent (question Q-0010).
-
-Tests: declarations/auto/decltype-auto-with-qualifier.cpp, declarations/auto/decltype-auto-with-pointer.cpp, declarations/auto/decltype-auto-copy-list.cpp, declarations/auto/decltype-auto-function.cpp, declarations/auto/decltype-auto-braced-multiple.cpp, declarations/auto/decltype-auto-braced.cpp
-
-### AUTO-12 (required)
-
-The same rules apply to variables declared in `if` conditions and
-initializer statements and in `for` initializer statements.
-
-Tests: declarations/auto/in-conditions.cpp
-
-### AUTO-13 (required)
-
-A concept name may come before `auto` or `decltype(auto)`. The type is
-deduced as usual and then checked against the concept *(referenced)*. The
-program is rejected if the deduced type does not satisfy it.
-
-    template <class T> concept Int = same<T, int>;
-    Int auto a = 1;      // int
-    Int auto b = 1.0;    // rejected
-
-Tests: declarations/auto/constrained-satisfied.cpp, declarations/auto/constrained-not-satisfied.cpp
+template <class T> concept Int = same<T, int>;
+Int auto ia = 1;                // int
+Int auto ib = 1.0;              // rejected
+```
 
 ## Evidence
 
-Every rule in this section is `required` or `reject`. All seven compilers
-in the matrix agree on all 40 tests. Results are in `tests/RESULTS.md`.
+All rules on this page are `required` or `reject`. All seven compilers in
+the matrix agree on all 40 tests. The results are in `tests/RESULTS.md`.
 
-Tests that use `auto x = { ... }` declare a minimal `std::initializer_list`
-themselves, because tests include no headers. Without it, each compiler
-rejects the declaration and names the missing header.
+The tests for `auto x = { ... }` declare a small `std::initializer_list`,
+because tests include no headers. Without it, each compiler rejects the
+declaration and names the missing header.
 
-## Divergences
-
-None.
+Inputs: clang-sema-deduction, clang-sema-decl, gcc-cp-pt, gcc-cp-decl,
+edg-overload, edg-decls (see `inputs/MANIFEST.md`).

@@ -51,7 +51,7 @@ jobs:
         run: |
           python3 -m venv build/venv
           build/venv/bin/pip install --quiet -r tools/requirements-site.txt
-          python3 -I tools/build_site.py
+          python3 -I tools/build_site.py --strict
 
       - uses: actions/upload-pages-artifact@v3
         with:
