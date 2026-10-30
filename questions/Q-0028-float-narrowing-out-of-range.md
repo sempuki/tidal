@@ -29,3 +29,14 @@ Option 1. It matches the run-time behavior of every compiler on IEEE
 targets, and two of three implementations during constant evaluation.
 
 ## Opinions
+
+### Gap review summary, 2026-10-30
+
+**Position:** option 2.
+
+A reviewer who read the reference (`reports/review/2026-10-30-gap-review.md`)
+says the reference treats a value outside the target's range as undefined,
+and allows an implementation's choice only between two neighboring values.
+The reviewer notes that counting infinity as a neighbor is a reading the
+reference doesn't clearly support. The writer keeps option 1 provisional
+until a contributor settles which reading applies.
