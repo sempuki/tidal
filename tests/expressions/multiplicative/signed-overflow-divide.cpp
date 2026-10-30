@@ -1,4 +1,5 @@
 // tidal-rules: MUL-10
 // tidal-expect: reject
+constexpr int int_max = int(~0u >> 1);
 constexpr int q(int a, int b) { return a / b; }
-static_assert(q(-__INT_MAX__ - 1, -1) != 0);
+static_assert(q(-int_max - 1, -1) != 0);

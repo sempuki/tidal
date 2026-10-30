@@ -86,3 +86,10 @@ own results and return nonzero on failure. Prefer `static_assert` where the
 behavior can be observed at compile time.
 
 Test code is written fresh. Don't adapt examples from any source.
+
+Tests use only standard C++. Compiler built-ins such as `__is_same` or
+`__INT_MAX__` are not allowed, because a test must mean the same thing to
+every implementation in the matrix. Avoid standard library headers too.
+Front-end-only implementations such as EDG have no library, and a small
+helper written in the test (a `same<A, B>` variable template, for example)
+is enough for most checks.
