@@ -40,6 +40,14 @@ See [docs/charter.md](docs/charter.md).
     tools/build_site.py                     # build/site (HTML, searchable)
     tools/check_all.sh                      # all of the above; run before pushing
 
+## Acknowledgements
+
+Tidal's page structure follows the
+[Ferrocene Language Specification](https://rust-lang.github.io/fls/) for
+Rust: fixed segments, short identified rules, linked glossary terms, and
+informative examples (decision 0016). Tidal does not copy FLS text or
+tooling. The writing rules adapt ASD-STE100 Simplified Technical English.
+
 ## License
 
 Tidal is licensed under the Apache License v2.0 with LLVM Exceptions
