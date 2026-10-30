@@ -6,8 +6,8 @@ directory of .tex, .md, .txt, or .html files kept outside this repository.
 The report names Tidal rules and quotes Tidal text only. It never prints
 reference text, so it can be handed to the writer.
 
-For each unit of Tidal text (a rule, or the prose before the first rule in
-a section) the report gives:
+For each unit of Tidal text (a rule, or any other headed part of a section)
+the report gives:
 - longest: the longest run of words shared with the reference,
 - overlap: the fraction of the unit's 5-word sequences found in the reference.
 
@@ -52,7 +52,11 @@ def load_reference(root: Path, n: int) -> tuple[set, set]:
 
 
 def units(spec: Path):
-    """Yield (label, text) for each rule and each section's leading prose."""
+    """Yield (label, text) for each rule and each other headed part of a section.
+
+    A unit ends at the next heading of any level, so a rule's unit holds only
+    that rule, and Evidence or Divergences text is checked on its own.
+    """
     for f in sorted(spec.rglob("*.md")):
         label = f"{f.relative_to(spec)}:intro"
         buf = []
@@ -60,6 +64,9 @@ def units(spec: Path):
             if m := HEADING.match(line):
                 yield label, "\n".join(buf)
                 label, buf = m.group(1), []
+            elif line.startswith("#"):
+                yield label, "\n".join(buf)
+                label, buf = f"{f.relative_to(spec)}:{line.lstrip('#').strip()[:40]}", []
             elif not line.startswith("Tests:"):
                 buf.append(line)
         yield label, "\n".join(buf)
