@@ -1,7 +1,7 @@
 #!/bin/sh
 # Run every check before pushing: spec cross-references, the full compiler
 # matrix, the similarity check (when TIDAL_REFERENCE points at the reference
-# corpus, see reports/README.md), and the PDF build.
+# corpus, see reports/README.md), and the HTML site build.
 set -e
 cd "$(dirname "$0")/.."
 python3 -I tools/check_spec.py
@@ -11,4 +11,4 @@ if [ -n "$TIDAL_REFERENCE" ]; then
 else
   echo "similarity: skipped (set TIDAL_REFERENCE to the reference corpus)"
 fi
-python3 -I tools/build_pdf.py
+python3 -I tools/build_site.py

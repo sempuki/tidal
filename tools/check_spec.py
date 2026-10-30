@@ -28,6 +28,17 @@ CLASSES = {
 }
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
 TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
+DIRECTIVE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
+OPTION = re.compile(r"^:(kind|tests):\s*(.*)$")
+SEGMENT = re.compile(r"^## (.+?)\s*$")
+# Which classes each segment may hold (docs/style-guide.md, decision 0016).
+SEGMENT_KINDS = {
+    "Legality Rules": {"required", "reject", "withdrawn"},
+    "Dynamic Semantics": {"required", "withdrawn"},
+    "Undefined Behavior": {"undefined", "withdrawn"},
+    "Implementation Requirements": {"impl-defined", "unspecified", "no-diagnostic", "withdrawn"},
+    "Recommended Practice": {"recommended", "withdrawn"},
+}
 
 
 def parse_spec():
@@ -36,7 +47,38 @@ def parse_spec():
     errors = []
     for f in sorted(SPEC.rglob("*.md")):
         current = None
+        segment = None
+        directive = None
         for n, line in enumerate(f.read_text().splitlines(), 1):
+            if m := SEGMENT.match(line):
+                segment = m.group(1)
+            if m := DIRECTIVE.match(line):
+                directive = m.group(1)
+                if directive in rules:
+                    errors.append(f"{f}:{n}: duplicate rule {directive}")
+                rules[directive] = (f, None, None)
+                if segment not in SEGMENT_KINDS:
+                    errors.append(f"{f}:{n}: {directive} is outside a rule segment ({segment})")
+                continue
+            if directive:
+                if m := OPTION.match(line):
+                    key, value = m.groups()
+                    f0, cls, tests = rules[directive]
+                    if key == "kind":
+                        cls = value
+                        if cls not in CLASSES:
+                            errors.append(f"{f}:{n}: {directive} has unknown class {cls}")
+                        elif segment in SEGMENT_KINDS and cls not in SEGMENT_KINDS[segment]:
+                            errors.append(f"{f}:{n}: {directive} ({cls}) doesn't belong in {segment}")
+                    else:
+                        tests = value.split()
+                    rules[directive] = (f0, cls, tests)
+                    continue
+                if line.startswith(":::"):
+                    if rules[directive][1] is None:
+                        errors.append(f"{f}:{n}: {directive} has no :kind:")
+                    directive = None
+                continue
             if m := HEADING.match(line):
                 rid, cls = m.groups()
                 if rid in rules:

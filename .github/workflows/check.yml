@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       TIDAL_CONTAINER_ENGINE: docker
-      PANDOC_VERSION: "3.12"
-      TYPST_VERSION: "0.15.1"
     steps:
       - uses: actions/checkout@v4
 
@@ -49,24 +47,39 @@ jobs:
           python3 -I tools/similarity.py --reference "$RUNNER_TEMP/reference/source" \
             --out build/similarity.txt --fail-on-flag
 
-      - name: Install pandoc and typst
+      - name: Build site
         run: |
-          curl -fsSL -o "$RUNNER_TEMP/pandoc.deb" \
-            "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb"
-          sudo dpkg -i "$RUNNER_TEMP/pandoc.deb"
-          curl -fsSL "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" \
-            | tar -xJ -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/typst-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+          python3 -m venv build/venv
+          build/venv/bin/pip install --quiet -r tools/requirements-site.txt
+          python3 -I tools/build_site.py
 
-      - name: Build PDF
-        run: python3 -I tools/build_pdf.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: tidal
           path: |
-            build/tidal.pdf
             build/RESULTS.md
             build/similarity.txt
           if-no-files-found: ignore
+
+  # Publishes the site to GitHub Pages after a push to main.
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

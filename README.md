@@ -25,7 +25,8 @@ See [docs/charter.md](docs/charter.md).
 | `spec/` | The Tidal specification text; `spec/README.md` sets section order |
 | `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
-| `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, PDF build |
+| `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, site build |
+| `site/` | Sphinx configuration, the `rule` directive extension, and the stylesheet |
 | `reports/` | Similarity reports from the checker, see `reports/README.md` |
 | `inputs/` | Downloaded implementation sources (ignored by git, see `inputs/MANIFEST.md`) |
 
@@ -35,7 +36,7 @@ See [docs/charter.md](docs/charter.md).
     tools/run_tests.py --report tests/RESULTS.md   # full matrix
     tools/run_tests.py --compilers clang-host,gcc-host   # host only, no containers
     tools/check_spec.py                     # rules and tests refer to each other
-    tools/build_pdf.py                      # build/tidal.pdf
+    tools/build_site.py                     # build/site (HTML, searchable)
     tools/check_all.sh                      # all of the above; run before pushing
 
 ## License

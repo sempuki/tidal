@@ -1,131 +1,118 @@
 # Glossary
 
-Definitions of terms used across Tidal sections. Terms are listed
-alphabetically. Each entry gives Tidal's own definition.
+This glossary defines the terms that Tidal pages use. Each page links a
+term to its entry here. An entry marked *(referenced)* is about a topic
+that Tidal does not specify yet.
 
-Terms marked *(referenced)* belong to topics outside the current scope.
-Their entries describe enough to read the in-scope sections and will be
-replaced when those topics are specified.
+:::{glossary}
+automatic storage
+  Storage that exists from the declaration of an object to the end of its
+  block. See {term}`storage duration`.
 
-## Constant evaluation
+constant evaluation
+  *(referenced)* Evaluation of an expression during translation, before
+  the program runs. It occurs where translation needs a value. Examples
+  are an array bound, a `static_assert`, the condition of `if constexpr`,
+  and a call to a `consteval` function. An implementation rejects a
+  program if constant evaluation reaches an operation that has undefined
+  behavior.
 
-*(referenced)* Evaluation of an expression by the translator, while the
-program is being compiled, instead of at run time. It happens wherever a
-value is needed during translation (an array bound, a `static_assert`, a
-template argument, the condition of `if constexpr`, the initializer of a
-`constexpr` variable) and for every call to a `consteval` function. A
-program is rejected if constant evaluation is required and reaches an
-operation with undefined behavior.
+contextual conversion
+  The conversion of a value to `bool` where a true or false value is
+  necessary, for example in an `if` condition. The value `e` is converted
+  as `bool t(e);` converts it. This form uses `explicit` conversion
+  functions. A zero value or a null pointer gives `false`. Other values
+  give `true`.
 
-## Contextual conversion to bool
+cv-qualifier
+  `const` or `volatile` applied to a type. A program cannot change a
+  `const` object after its initialization. Each access to a `volatile`
+  object is an observable effect *(referenced)*.
 
-The conversion applied to a value that must be read as true or false, such
-as an `if` condition. The value `e` is converted as if by the declaration
-`bool t(e);`. That form permits `explicit` conversion functions, which an
-ordinary implicit conversion would skip. Arithmetic values convert to
-`false` when zero and `true` otherwise. Pointers convert to `false` when null
-and `true` otherwise.
+declarator
+  The part of a declaration that gives one name and makes its type. A
+  declarator adds pointers, references, arrays, and function parameters
+  to the base type.
 
-## Cv-qualifier
+discarded statement
+  The branch of an `if constexpr` statement that the condition does not
+  select. A discarded statement does not execute. Its `return` statements
+  do not take part in return type deduction. A function or variable that
+  only a discarded statement uses needs no definition. In a template, a
+  discarded statement is not instantiated.
 
-`const` or `volatile`, applied to a type. A `const` object can't be
-modified after initialization. Every read and write of a `volatile` object
-is an observable effect that the implementation must perform
-*(referenced)*.
+immediate function context
+  A part of a program where a call to a `consteval` function need not be a
+  constant expression by itself. Examples are the body of a `consteval`
+  function and the branch of `if consteval` that executes during
+  {term}`constant evaluation`.
 
-## Declarator
+integer promotion
+  The conversion of an integer operand that is narrower than `int`. These
+  types are `bool`, the character types, `short`, and their signed and
+  unsigned forms. If `int` can hold all values of the type, the result is
+  `int`. If not, the result is `unsigned int`. Unscoped enumerations and
+  bit-fields also promote *(referenced)*.
 
-The part of a declaration that names one entity and builds its type from
-the base type by adding pointers, references, arrays, and function
-parameters.
+linkage
+  The property that controls if two declarations of a name refer to the
+  same entity. A name with *external* linkage refers to the same entity in
+  all {term}`translation units <translation unit>`. A name with *internal*
+  linkage refers to the same entity in one translation unit only. A name
+  with no linkage refers only to the entity of its own declaration.
 
-## Discarded statement
+placeholder type
+  `auto` or `decltype(auto)` in the position of a type. The actual type
+  comes from an initializer or from `return` statements. A concept name can
+  come before the placeholder to constrain the type.
 
-The branch of an `if constexpr` statement that its condition did not select.
-Code in a discarded statement is never run, does not take part in return type
-deduction, and does not create a need for any function or variable to be
-defined. In a template it is also not instantiated.
+storage duration
+  The time for which the storage of an object exists. *Automatic* storage
+  exists until the end of the block. *Static* storage exists for all of the
+  program run. *Thread* storage exists for the life of a thread, with one
+  object for each thread. *Dynamic* storage comes from `new` and goes back
+  with `delete` *(referenced)*.
 
-## Immediate function context
+translation unit
+  One source file after preprocessing, with all the files that it
+  includes. Each translation unit is compiled separately. Then the
+  translation units are linked into one program.
 
-A place where a call to a `consteval` function does not have to be a
-constant expression by itself, because the surrounding code is already
-guaranteed to run only during constant evaluation. The body of a `consteval`
-function is one. The branch of `if consteval` that runs during constant
-evaluation is another.
+unsequenced
+  The relation between two evaluations when the language does not set an
+  order and the evaluations can overlap. The operands of most binary
+  operators are unsequenced. A function call in one operand does not
+  overlap with work in the other operand. The two can still occur in
+  either order.
 
-## Integer promotion
+usual arithmetic conversions
+  The conversions that give the two operands of a binary arithmetic
+  operator a common type. The steps are:
 
-A conversion applied to an integer operand whose type is narrower than `int`
-(`bool`, the character types, `short`, and their signed and unsigned
-variants). The value becomes an `int` if `int` can hold every value of the
-original type, and an `unsigned int` otherwise. Unscoped enumerations and
-bit-fields promote as well. Their exact rules belong to those topics
-*(referenced)*.
+  1. If one operand has a floating-point type, the other operand is
+     converted to the floating-point type with the larger range. The order
+     is `float`, `double`, `long double`.
+  2. If not, both operands go through {term}`integer promotion`. If the
+     types are then the same, that type is the common type.
+  3. If both types are signed, or both are unsigned, the narrower operand
+     is converted to the wider type.
+  4. If the unsigned type is at least as wide as the signed type, the
+     signed operand is converted to the unsigned type.
+  5. If the signed type can hold all values of the unsigned type, the
+     unsigned operand is converted to the signed type.
+  6. If not, both operands are converted to the unsigned type that has the
+     width of the signed type.
 
-## Linkage
+  Width means the conversion rank *(referenced)*. For the standard integer
+  types the order is `char`, `short`, `int`, `long`, `long long`.
 
-Whether a name declared in one scope can refer to the same entity as the
-same name declared in another. *External* linkage connects names across
-translation units. *Internal* linkage connects names within one translation
-unit only. A name with no linkage refers only to the entity its own
-declaration introduces.
+value category
+  The kind of an expression. There are three kinds:
 
-## Placeholder type
-
-`auto` or `decltype(auto)` written where a type is expected. The actual
-type is worked out later, from an initializer or a return statement. A
-concept name may come before the placeholder to constrain the type.
-
-## Storage duration
-
-How long the storage for an object exists. *Automatic* storage lasts from
-the object's declaration to the end of its block. *Static* storage lasts
-for the whole program run. *Thread* storage lasts for the life of a thread,
-with one object per thread. *Dynamic* storage is obtained and released with
-`new` and `delete` *(referenced)*.
-
-## Translation unit
-
-One source file after preprocessing, together with everything it includes.
-Translation units are compiled separately and then linked into a program.
-
-## Unsequenced
-
-Two evaluations are unsequenced when the language does not say which
-happens first and allows them to overlap. The operands of most binary
-operators are unsequenced with respect to each other. A function call in
-one operand is not interleaved with work in the other operand, but the
-two may still run in either order.
-
-## Usual arithmetic conversions
-
-The conversions that bring the two operands of a binary arithmetic operator
-to a common type:
-
-1. If either operand has floating-point type, the other is converted to the
-   floating-point type that has the greater range, in the order `float`,
-   `double`, `long double`. Extended floating-point types *(referenced)* have
-   their own ordering.
-2. Otherwise both operands undergo [integer promotion](#integer-promotion).
-   If the types now match, that is the common type.
-3. If both are signed or both are unsigned, the narrower one is converted to
-   the wider one.
-4. If the unsigned operand's type is at least as wide as the signed one's,
-   the signed operand is converted to the unsigned type.
-5. If the signed type can hold every value of the unsigned type, the unsigned
-   operand is converted to the signed type.
-6. Otherwise both are converted to the unsigned type with the same width as
-   the signed type.
-
-Width means the type's conversion rank *(referenced)*, which for the
-standard integer types follows `char`, `short`, `int`, `long`, `long long`.
-
-## Value category
-
-Every expression is one of three kinds. An *lvalue* names an object or
-function that has an identity and can have its address taken. An *xvalue*
-names an object whose resources may be reused, such as the result of
-`std::move`. A *prvalue* computes a value, such as `a * b` or `42`, and has
-no identity of its own. The full rules belong to the expressions overview
-*(referenced)*.
+  - An *lvalue* refers to an object or function that has an identity. A
+    program can take its address.
+  - An *xvalue* refers to an object whose resources a program can reuse,
+    for example the result of `std::move`.
+  - A *prvalue* computes a value, for example `a * b` or `42`. It has no
+    identity.
+:::
