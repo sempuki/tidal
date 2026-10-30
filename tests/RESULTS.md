@@ -54,6 +54,46 @@ compilers affect the Status column.
 | `declarations/auto/several-declarators-conflict.cpp` | AUTO-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/block-extern-after-local.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/block-extern-initializer.cpp` | STO-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/block-extern-same-unit.cpp` | STO-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/block-function-declaration.cpp` | LNK-9 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/block-static-not-reached.cpp` | STO-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/block-static-once.cpp` | STO-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/block-variables-no-linkage.cpp` | LNK-9 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/const-internal.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/duplicate-function.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/duplicate-variable.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/extern-const-external.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/extern-parameter.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/extern-then-static.cpp` | LNK-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/extern-with-initializer.cpp` | STO-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/external-default.cpp` | LNK-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/function-then-static.cpp` | LNK-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/inline-different-bodies.cpp` | LNK-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/inline-one-entity.cpp` | LNK-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/missing-definition.cpp` | LNK-7 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/mutable-namespace.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/plain-after-thread-local.cpp` | STO-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/register.cpp` | STO-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-block-function.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-internal.cpp` | LNK-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/static-main.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-not-visible.cpp` | LNK-2 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/static-parameter.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-then-extern.cpp` | LNK-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/storage-class-on-class.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/storage-class-on-typedef.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-after-plain.cpp` | STO-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-block.cpp` | STO-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/thread-local-combinations.cpp` | STO-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/storage-linkage/thread-local-function.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/two-storage-classes.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/unnamed-namespace-internal.cpp` | LNK-5 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/unused-missing-definition.cpp` | LNK-7 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/volatile-const-external.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/storage-linkage/zero-initialized.cpp` | STO-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
@@ -138,7 +178,7 @@ compilers affect the Status column.
 | `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-123/123 tests pass on baseline compilers.
+163/163 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -299,6 +339,142 @@ check that the rejection has the intended cause.
 - `declarations/auto/void-initializer.cpp` (clang-18): error: variable has incomplete type 'void'
 - `declarations/auto/void-initializer.cpp` (gcc-16): error: deduced type 'void' for 'a' is incomplete
 - `declarations/auto/void-initializer.cpp` (clang-22): error: variable has incomplete type 'void'
+- `declarations/storage-linkage/block-extern-after-local.cpp` (clang-host): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
+- `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-host): error: ‘int x’ conflicts with a previous declaration / note: previous declaration ‘int x’
+- `declarations/storage-linkage/block-extern-after-local.cpp` (edg-7.0): error: "x" has already been declared in the current scope
+- `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-14): error: 'int x' conflicts with a previous declaration / note: previous declaration 'int x'
+- `declarations/storage-linkage/block-extern-after-local.cpp` (clang-18): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
+- `declarations/storage-linkage/block-extern-after-local.cpp` (gcc-16): error: 'int x' conflicts with a previous declaration / note: previous declaration 'int x'
+- `declarations/storage-linkage/block-extern-after-local.cpp` (clang-22): error: extern declaration of 'x' follows non-extern declaration / note: previous definition is here
+- `declarations/storage-linkage/block-extern-initializer.cpp` (clang-host): error: declaration of block scope identifier with linkage cannot have an initializer
+- `declarations/storage-linkage/block-extern-initializer.cpp` (gcc-host): error: ‘x’ has both ‘extern’ and initializer
+- `declarations/storage-linkage/block-extern-initializer.cpp` (edg-7.0): error: an initializer is not allowed on a local declaration of an extern variable
+- `declarations/storage-linkage/block-extern-initializer.cpp` (gcc-14): error: 'x' has both 'extern' and initializer
+- `declarations/storage-linkage/block-extern-initializer.cpp` (clang-18): error: declaration of block scope identifier with linkage cannot have an initializer
+- `declarations/storage-linkage/block-extern-initializer.cpp` (gcc-16): error: 'x' has both 'extern' and initializer
+- `declarations/storage-linkage/block-extern-initializer.cpp` (clang-22): error: declaration of block scope identifier with linkage cannot have an initializer
+- `declarations/storage-linkage/duplicate-function.cpp` (clang-host): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-function.cpp` (gcc-host): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-function.cpp` (gcc-14): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-function.cpp` (clang-18): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-function.cpp` (gcc-16): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-function.cpp` (clang-22): link: multiple definition of `duplicated()';
+- `declarations/storage-linkage/duplicate-variable.cpp` (clang-host): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/duplicate-variable.cpp` (gcc-host): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/duplicate-variable.cpp` (gcc-14): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/duplicate-variable.cpp` (clang-18): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/duplicate-variable.cpp` (gcc-16): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/duplicate-variable.cpp` (clang-22): link: multiple definition of `duplicated';
+- `declarations/storage-linkage/extern-parameter.cpp` (clang-host): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/extern-parameter.cpp` (gcc-host): error: storage class specified for parameter ‘x’
+- `declarations/storage-linkage/extern-parameter.cpp` (edg-7.0): error: invalid storage class for a parameter
+- `declarations/storage-linkage/extern-parameter.cpp` (gcc-14): error: storage class specified for parameter 'x'
+- `declarations/storage-linkage/extern-parameter.cpp` (clang-18): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/extern-parameter.cpp` (gcc-16): error: storage class specified for parameter 'x'
+- `declarations/storage-linkage/extern-parameter.cpp` (clang-22): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/extern-then-static.cpp` (clang-host): error: static declaration of 'y' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/extern-then-static.cpp` (gcc-host): error: ‘y’ was declared ‘extern’ and later ‘static’ [-fpermissive] / note: previous declaration of ‘y’
+- `declarations/storage-linkage/extern-then-static.cpp` (edg-7.0): error: external/internal linkage conflict with previous declaration at line 3
+- `declarations/storage-linkage/extern-then-static.cpp` (gcc-14): error: 'y' was declared 'extern' and later 'static' [-fpermissive] / note: previous declaration of 'y'
+- `declarations/storage-linkage/extern-then-static.cpp` (clang-18): error: static declaration of 'y' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/extern-then-static.cpp` (gcc-16): error: 'y' was declared 'extern' and later 'static' [-fpermissive] / note: previous declaration of 'y'
+- `declarations/storage-linkage/extern-then-static.cpp` (clang-22): error: static declaration of 'y' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/function-then-static.cpp` (clang-host): error: static declaration of 'g' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/function-then-static.cpp` (gcc-host): error: ‘int g()’ was declared ‘extern’ and later ‘static’ [-fpermissive] / note: previous declaration of ‘int g()’
+- `declarations/storage-linkage/function-then-static.cpp` (edg-7.0): error: external/internal linkage conflict with previous declaration at line 3
+- `declarations/storage-linkage/function-then-static.cpp` (gcc-14): error: 'int g()' was declared 'extern' and later 'static' [-fpermissive] / note: previous declaration of 'int g()'
+- `declarations/storage-linkage/function-then-static.cpp` (clang-18): error: static declaration of 'g' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/function-then-static.cpp` (gcc-16): error: 'int g()' was declared 'extern' and later 'static' [-fpermissive] / note: previous declaration of 'int g()'
+- `declarations/storage-linkage/function-then-static.cpp` (clang-22): error: static declaration of 'g' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/missing-definition.cpp` (clang-host): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/missing-definition.cpp` (gcc-host): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/missing-definition.cpp` (gcc-14): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/missing-definition.cpp` (clang-18): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/missing-definition.cpp` (gcc-16): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/missing-definition.cpp` (clang-22): link: undefined reference to `declared_only()'
+- `declarations/storage-linkage/mutable-namespace.cpp` (clang-host): error: 'mutable' can only be applied to member variables
+- `declarations/storage-linkage/mutable-namespace.cpp` (gcc-host): error: non-member ‘x’ cannot be declared ‘mutable’
+- `declarations/storage-linkage/mutable-namespace.cpp` (edg-7.0): error: mutable is not allowed
+- `declarations/storage-linkage/mutable-namespace.cpp` (gcc-14): error: non-member 'x' cannot be declared 'mutable'
+- `declarations/storage-linkage/mutable-namespace.cpp` (clang-18): error: 'mutable' can only be applied to member variables
+- `declarations/storage-linkage/mutable-namespace.cpp` (gcc-16): error: non-member 'x' cannot be declared 'mutable'
+- `declarations/storage-linkage/mutable-namespace.cpp` (clang-22): error: 'mutable' can only be applied to member variables
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (clang-host): error: non-thread-local declaration of 'u' follows thread-local declaration / note: previous definition is here
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (gcc-host): error: non-thread-local declaration of ‘int u’ follows thread-local declaration
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (edg-7.0): error: non-thread-local declaration follows thread-local declaration (declared at line 3)
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (gcc-14): error: non-thread-local declaration of 'int u' follows thread-local declaration
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (clang-18): error: non-thread-local declaration of 'u' follows thread-local declaration / note: previous definition is here
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (gcc-16): error: non-thread-local declaration of 'int u' follows thread-local declaration
+- `declarations/storage-linkage/plain-after-thread-local.cpp` (clang-22): error: non-thread-local declaration of 'u' follows thread-local declaration / note: previous definition is here
+- `declarations/storage-linkage/register.cpp` (clang-host): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register.cpp` (gcc-host): error: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]
+- `declarations/storage-linkage/register.cpp` (edg-7.0): error: use of the "register" storage class specifier is not allowed
+- `declarations/storage-linkage/register.cpp` (gcc-14): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register.cpp` (clang-18): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register.cpp` (gcc-16): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register.cpp` (clang-22): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/static-block-function.cpp` (clang-host): error: function declared in block scope cannot have 'static' storage class
+- `declarations/storage-linkage/static-block-function.cpp` (gcc-host): error: ‘static’ specifier invalid for function ‘g’ declared out of global scope [-Wpedantic] / error: cannot declare static function inside another function
+- `declarations/storage-linkage/static-block-function.cpp` (edg-7.0): error: a block-scope function may only have extern storage class
+- `declarations/storage-linkage/static-block-function.cpp` (gcc-14): error: 'static' specifier invalid for function 'g' declared out of global scope [-Wpedantic] / error: cannot declare static function inside another function
+- `declarations/storage-linkage/static-block-function.cpp` (clang-18): error: function declared in block scope cannot have 'static' storage class
+- `declarations/storage-linkage/static-block-function.cpp` (gcc-16): error: 'static' specifier invalid for function 'g' declared out of global scope [-Wpedantic] / error: cannot declare static function inside another function
+- `declarations/storage-linkage/static-block-function.cpp` (clang-22): error: function declared in block scope cannot have 'static' storage class
+- `declarations/storage-linkage/static-main.cpp` (clang-host): error: 'main' is not allowed to be declared static
+- `declarations/storage-linkage/static-main.cpp` (gcc-host): error: cannot declare ‘::main’ to be static
+- `declarations/storage-linkage/static-main.cpp` (edg-7.0): error: "static" is not allowed
+- `declarations/storage-linkage/static-main.cpp` (gcc-14): error: cannot declare '::main' to be static
+- `declarations/storage-linkage/static-main.cpp` (clang-18): error: 'main' is not allowed to be declared static
+- `declarations/storage-linkage/static-main.cpp` (gcc-16): error: cannot declare '::main' to be static
+- `declarations/storage-linkage/static-main.cpp` (clang-22): error: 'main' is not allowed to be declared static
+- `declarations/storage-linkage/static-not-visible.cpp` (clang-host): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-not-visible.cpp` (gcc-host): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-not-visible.cpp` (gcc-14): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-not-visible.cpp` (clang-18): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-not-visible.cpp` (gcc-16): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-not-visible.cpp` (clang-22): link: undefined reference to `hidden()'
+- `declarations/storage-linkage/static-parameter.cpp` (clang-host): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/static-parameter.cpp` (gcc-host): error: storage class specified for parameter ‘x’
+- `declarations/storage-linkage/static-parameter.cpp` (edg-7.0): error: invalid storage class for a parameter
+- `declarations/storage-linkage/static-parameter.cpp` (gcc-14): error: storage class specified for parameter 'x'
+- `declarations/storage-linkage/static-parameter.cpp` (clang-18): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/static-parameter.cpp` (gcc-16): error: storage class specified for parameter 'x'
+- `declarations/storage-linkage/static-parameter.cpp` (clang-22): error: invalid storage class specifier in function declarator
+- `declarations/storage-linkage/storage-class-on-class.cpp` (clang-host): error: 'static' is not permitted on a declaration of a type [-Werror,-Wmissing-declarations]
+- `declarations/storage-linkage/storage-class-on-class.cpp` (gcc-host): error: a storage class can only be specified for objects and functions
+- `declarations/storage-linkage/storage-class-on-class.cpp` (edg-7.0): error: a storage class may not be specified here
+- `declarations/storage-linkage/storage-class-on-class.cpp` (gcc-14): error: a storage class can only be specified for objects and functions
+- `declarations/storage-linkage/storage-class-on-class.cpp` (clang-18): error: 'static' is not permitted on a declaration of a type [-Werror,-Wmissing-declarations]
+- `declarations/storage-linkage/storage-class-on-class.cpp` (gcc-16): error: a storage class can only be specified for objects and functions
+- `declarations/storage-linkage/storage-class-on-class.cpp` (clang-22): error: 'static' is not permitted on a declaration of a type [-Werror,-Wmissing-declarations]
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (clang-host): error: cannot combine with previous 'static' declaration specifier
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (gcc-host): error: ‘typedef’ specifier conflicts with ‘static’
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (edg-7.0): error: more than one storage class may not be specified
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (gcc-14): error: 'typedef' specifier conflicts with 'static'
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (clang-18): error: cannot combine with previous 'static' declaration specifier
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (gcc-16): error: 'typedef' specifier conflicts with 'static'
+- `declarations/storage-linkage/storage-class-on-typedef.cpp` (clang-22): error: cannot combine with previous 'static' declaration specifier
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (clang-host): error: thread-local declaration of 't' follows non-thread-local declaration / note: previous declaration is here
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (gcc-host): error: thread-local declaration of ‘int t’ follows non-thread-local declaration
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (edg-7.0): error: thread-local declaration follows non-thread-local declaration (declared at line 3)
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (gcc-14): error: thread-local declaration of 'int t' follows non-thread-local declaration
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (clang-18): error: thread-local declaration of 't' follows non-thread-local declaration / note: previous declaration is here
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (gcc-16): error: thread-local declaration of 'int t' follows non-thread-local declaration
+- `declarations/storage-linkage/thread-local-after-plain.cpp` (clang-22): error: thread-local declaration of 't' follows non-thread-local declaration / note: previous declaration is here
+- `declarations/storage-linkage/thread-local-function.cpp` (clang-host): error: 'thread_local' is only allowed on variable declarations
+- `declarations/storage-linkage/thread-local-function.cpp` (gcc-host): error: storage class ‘thread_local’ invalid for function ‘f’
+- `declarations/storage-linkage/thread-local-function.cpp` (edg-7.0): error: thread-local storage class is not valid here
+- `declarations/storage-linkage/thread-local-function.cpp` (gcc-14): error: storage class 'thread_local' invalid for function 'f'
+- `declarations/storage-linkage/thread-local-function.cpp` (clang-18): error: 'thread_local' is only allowed on variable declarations
+- `declarations/storage-linkage/thread-local-function.cpp` (gcc-16): error: storage class 'thread_local' invalid for function 'f'
+- `declarations/storage-linkage/thread-local-function.cpp` (clang-22): error: 'thread_local' is only allowed on variable declarations
+- `declarations/storage-linkage/two-storage-classes.cpp` (clang-host): error: cannot combine with previous 'static' declaration specifier
+- `declarations/storage-linkage/two-storage-classes.cpp` (gcc-host): error: ‘extern’ specifier conflicts with ‘static’
+- `declarations/storage-linkage/two-storage-classes.cpp` (edg-7.0): error: more than one storage class may not be specified
+- `declarations/storage-linkage/two-storage-classes.cpp` (gcc-14): error: 'extern' specifier conflicts with 'static'
+- `declarations/storage-linkage/two-storage-classes.cpp` (clang-18): error: cannot combine with previous 'static' declaration specifier
+- `declarations/storage-linkage/two-storage-classes.cpp` (gcc-16): error: 'extern' specifier conflicts with 'static'
+- `declarations/storage-linkage/two-storage-classes.cpp` (clang-22): error: cannot combine with previous 'static' declaration specifier
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
