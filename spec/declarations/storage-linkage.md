@@ -36,16 +36,16 @@ belongs to class members *(referenced)*.
 A variable declared in a block without `static`, `thread_local`, or
 `extern` has *automatic* storage. Each time control reaches its
 declaration, a new object is created. It is destroyed when control leaves
-the block, and objects in the same block are destroyed in the reverse order
-of their creation. Each active call of a function, including a recursive
+the block. Within a block, the last object created is the first one
+destroyed. Each active call of a function, including a recursive
 call, has its own objects.
 
 Tests: declarations/storage-linkage/automatic-lifetime.cpp
 
 ### STO-2 (required)
 
-A variable declared `static` in a block has *static* storage: there is one
-object for the whole program run. It is initialized the first time control
+A variable declared `static` in a block has *static* storage, so there is
+one object for the whole program run. It is initialized the first time control
 reaches its declaration, and never if control never reaches it. Later
 passes through the declaration skip the initializer, and the variable keeps
 its value between calls.
@@ -68,8 +68,8 @@ Tests: declarations/storage-linkage/zero-initialized.cpp
 
 ### STO-4 (required)
 
-A variable declared `thread_local` has *thread* storage: each thread has
-its own object *(threads referenced)*. `thread_local` may be combined with
+A variable declared `thread_local` has *thread* storage, so each thread
+has its own object *(threads referenced)*. `thread_local` may be combined with
 `static` or `extern`, and in a block it implies `static`, so within one
 thread it behaves as STO-2 describes. Every declaration of a variable must
 agree on whether it is `thread_local`. A program where they disagree is
@@ -195,7 +195,7 @@ Tests: declarations/storage-linkage/static-then-extern.cpp, declarations/storage
 
 ### LNK-9 (required)
 
-Variables declared in a block without `extern` have no linkage: they are
+Variables declared in a block without `extern` have no linkage. They are
 unrelated to any other entity with the same name. A function declared in a
 block, and a variable declared `extern` in a block, refer to an entity
 with linkage at namespace scope, which may be defined in another
