@@ -108,7 +108,8 @@ give the limits on bases and virtual functions.
 :kind: required
 :tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
 
-If a variant member has one of these non-trivial functions, the matching
+If a variant member has one of these non-trivial functions (CTOR-23,
+DTOR-9, CPY-27), the matching
 special member of the union is deleted:
 
 - a default constructor,
@@ -122,7 +123,7 @@ constructor.
 
 :::{rule} UNI-11
 :kind: reject
-:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
 
 A program must not use a special member function that UNI-3 deletes. The
 union must then declare that function itself.
@@ -280,8 +281,7 @@ UNI-10 describes.
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
-*(class properties referenced)*. A copy of a union copies its active
-member. Constant
+({rule}`CPY-27`). A copy of a union copies its active member. Constant
 evaluation follows these rules.
 :::
 
@@ -373,7 +373,7 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 84 of 87 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 98 of 101 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject it ({question}`Q-0057`).

@@ -31,7 +31,7 @@ the object is gone.
 :::
 
 :::{principle} CTOR-P2
-:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4 CTOR-19 CTOR-20
+:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4 CTOR-19 CTOR-20 CTOR-23 DTOR-9
 
 The implementation writes a default constructor and a destructor for a
 class that writes none, because building and ending the parts is right
@@ -41,7 +41,9 @@ constructor. When a part cannot be default-constructed or destroyed, the
 synthesized function is deleted and only a use fails. A `const` object
 with no initializer needs a class that gives every part a value, because
 nothing can give it one later. The `noexcept` of a destructor follows
-from its parts.
+from its parts. A synthesized function that does nothing beyond the
+parts' own trivial work is *trivial*, and some rules permit more for
+it, such as a jump past a declaration (JMP-6).
 :::
 
 :::{principle} CTOR-P3
@@ -339,6 +341,35 @@ enclosing class must not use it, for example with empty braces (question
 pending).
 :::
 
+:::{rule} CTOR-23
+:kind: required
+:tests: classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp
+
+Each of these makes a default constructor non-trivial:
+
+- The program provides its body. A function defaulted after its first
+  declaration counts.
+- The class has a virtual function or a virtual base.
+- A member gets its value from a default member initializer.
+- A base or a member of class type is built by a non-trivial one.
+
+With none of them, the default constructor is *trivial*.
+:::
+
+:::{rule} DTOR-9
+:kind: required
+:tests: classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp
+
+Each of these makes a destructor non-trivial:
+
+- The program provides its body. A function defaulted after its first
+  declaration counts.
+- It is virtual.
+- A base or a member of class type is ended by a non-trivial one.
+
+With none of them, the destructor is *trivial*.
+:::
+
 ## Runtime Behavior
 
 :::{rule} CTOR-6
@@ -476,8 +507,15 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 114
-of 120 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 127
+of 133 tests.
+
+- CTOR-23 and DTOR-9: the tests observe triviality through two rules
+  that depend on it. A jump past a declaration is valid only for a
+  trivial default constructor and destructor (JMP-6), and a union's
+  special member is deleted when a member's is not trivial (UNI-3). The
+  destructor tests use the union, because GCC accepts the jump for any
+  destructor ({question}`Q-0041`).
 
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).

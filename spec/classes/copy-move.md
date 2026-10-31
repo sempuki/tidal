@@ -103,10 +103,11 @@ The implementation has two choices and two recommended warnings:
 :::
 
 :::{principle} CPY-P6
-:rules: CPY-19
+:rules: CPY-19 CPY-27
 
-A class whose copying is part-by-part all the way down, with nothing
-virtual and nothing user-provided, is *trivially copyable*. Copying its
+A copy or move function that copies part by part, with nothing virtual
+and nothing user-provided, is *trivial*. A class whose copying is
+trivial all the way down is *trivially copyable*. Copying its
 bytes copies its value.
 :::
 
@@ -362,6 +363,23 @@ classifies it. An xvalue name cannot bind to an lvalue reference return
 type. An lvalue name needs a usable copy constructor.
 :::
 
+:::{rule} CPY-27
+:kind: required
+:tests: classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
+
+This rule covers the copy and move constructors and the copy and move
+assignment operators. Each of these makes such a function non-trivial:
+
+- The program provides its body. A function defaulted after its first
+  declaration counts.
+- The class has a virtual function or a virtual base.
+- A base or a member of class type is copied or moved by a non-trivial
+  one.
+
+With none of them, the function is *trivial*. Default member
+initializers play no part.
+:::
+
 ## Runtime Behavior
 
 :::{rule} CPY-8
@@ -472,7 +490,7 @@ struct Owner {                     // owns an array, so it writes its copies
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 85 of 87 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 95 of 97 tests.
 
 - CPY-14: GCC 14 rejects a defaulted constructor whose parameter type
   differs from the implicit one. GCC 16, Clang, and EDG accept it and

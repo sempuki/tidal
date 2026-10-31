@@ -20,7 +20,7 @@ current state only. The history of how it got here is in `git log`.
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 9 | Q-0097 | 0 flagged |
 | [Iteration statements](../spec/statements/loops.md) | 8 | 4 required, 4 reject | 19 | 3 | 1 | 2 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 7 | 4 required, 3 reject | 26 | 1 | 5 | 5 | Q-0020, Q-0026, Q-0098 | 0 flagged |
-| [Jump statements and labels](../spec/statements/jumps.md) | 15 | 8 required, 6 reject, 1 unspecified | 40 | 3 | 2 | 15 | Q-0041, Q-0097 | 0 flagged |
+| [Jump statements and labels](../spec/statements/jumps.md) | 15 | 8 required, 6 reject, 1 unspecified | 49 | 3 | 2 | 15 | Q-0041, Q-0097 | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 25 | 9 required, 8 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | 6 | 4 | 9 | Q-0033, Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 49 | 4 | 3 | 5 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 19 | 7 required, 3 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 38 | 9 | 5 | 17 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
@@ -63,19 +63,19 @@ current state only. The history of how it got here is in `git log`.
 | [Static assertions](../spec/declarations/static-assert.md) | 8 | 4 required, 4 reject | 28 | 0 | 0 | 4 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 27 | 14 required, 11 reject, 1 impl-defined, 1 no-diagnostic | 84 | 12 | 1 | 16 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 19 | 8 required, 11 reject | 48 | 9 | 1 | 4 | Q-0052 | 0 flagged |
-| [Constructors and destructors](../spec/classes/constructors.md) | 30 | 11 required, 14 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 122 | 7 | 6 | 18 | Q-0053, Q-0054, Q-0082, Q-0083, Q-0084 | 0 flagged |
+| [Constructors and destructors](../spec/classes/constructors.md) | 32 | 13 required, 14 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 135 | 7 | 6 | 18 | Q-0041, Q-0053, Q-0054, Q-0082, Q-0083, Q-0084 | 0 flagged |
 | [List initialization of classes](../spec/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 30 | 1 | 1 | 7 | Q-0081 | 0 flagged |
-| [Copy and move](../spec/classes/copy-move.md) | 26 | 13 required, 10 reject, 2 unspecified, 1 recommended | 88 | 3 | 2 | 21 | Q-0055 | 0 flagged |
+| [Copy and move](../spec/classes/copy-move.md) | 27 | 14 required, 10 reject, 2 unspecified, 1 recommended | 98 | 3 | 2 | 21 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 22 | 9 required, 12 reject, 1 undefined | 73 | 4 | 1 | 4 | Q-0085 | 0 flagged |
 | [Virtual functions and abstract classes](../spec/classes/virtual.md) | 20 | 7 required, 9 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 107 | 3 | 3 | 5 | Q-0056, Q-0086, Q-0087 | 0 flagged |
-| [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 86 | 5 | 3 | 9 | Q-0057, Q-0058, Q-0088 | 0 flagged |
+| [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 100 | 5 | 3 | 9 | Q-0057, Q-0058, Q-0088 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 60 | 1 | 1 | 2 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 89 | 3 | 1 | 19 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 63 | 2 | 2 | 5 | Q-0061, Q-0062 | 0 flagged |
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 12 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 8 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 9 |  | 0 flagged |
-| [Glossary](../spec/glossary.md) | 19 terms | | | | | | | 0 flagged |
+| [Glossary](../spec/glossary.md) | 20 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
@@ -88,7 +88,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3176/3176 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3199/3199 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -120,7 +120,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2581 of 3176 tests, with no false
+- The clean-room front end passes 2589 of 3199 tests, with no false
   rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -153,15 +153,14 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Item S1: definitions of the trivial special member functions.
-2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+1. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
    which builds EDG itself as a 32-bit program.
-3. Item F: a grammar notation, then one grammar in which every
+2. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-4. Item G1: keywords, reserved names, and the literal suffix grammar.
-5. Item K: the language-support types, then the task-level guides.
-6. Propose exercises X1 to X4, after item Y.
+3. Item G1: keywords, reserved names, and the literal suffix grammar.
+4. Item K: the language-support types, then the task-level guides.
+5. Propose exercises X1 to X4 (running).
 
 Waiting on the maintainer:
 

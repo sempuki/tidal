@@ -127,6 +127,12 @@ storage duration
   - *Dynamic* storage comes from `new` and goes back with `delete`
     ({rule}`NEW-9`).
 
+trivial
+  A special member function that is not user-provided and does only
+  the work of the class's parts, so that nothing virtual and no default
+  member initializer is involved ({rule}`CTOR-23`, {rule}`DTOR-9`,
+  {rule}`CPY-27`).
+
 translation unit
   One source file after preprocessing, with all the files that it
   includes. Each translation unit is compiled separately. Then the

@@ -127,7 +127,7 @@ These conditions apply to labels (JMP-5):
 
 :::{rule} JMP-6
 :kind: reject
-:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp
+:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp
 
 A jump must not skip the declaration of a variable with
 {term}`automatic storage` that is in scope at the target. The one
@@ -136,7 +136,7 @@ these:
 
 - a scalar type,
 - a class type whose default constructor and destructor are both
-  trivial *(class properties referenced)*,
+  trivial ({rule}`CTOR-23`, {rule}`DTOR-9`),
 - an array of these types.
 
 A jump can skip the declaration of a `static` local variable.

@@ -105,7 +105,8 @@ skip a whole block. It can also skip a declaration without an
 initializer whose type JMP-6 permits ({question}`Q-0097`):
 
 - a scalar,
-- a class whose default constructor and destructor are both trivial,
+- a class whose default constructor and destructor are both trivial
+  ({rule}`CTOR-23`, {rule}`DTOR-9`),
 - an array of these.
 :::
 
