@@ -98,20 +98,39 @@ empty.
 .. productionlist:: tidal
    include_directive: "#" "include" '"' `header_name` '"'
    header_name: any characters other than a double quote or a line break
+   guarded_header: {`blank_line`} `include_guard` {`blank_line`}
    include_guard: "#" "ifndef" `identifier`
-                : "#" "define" `identifier`
-                : any text
+                : "#" "define" `identifier` [`guard_value`]
+                : {`guarded_line`}
                 : "#" "endif"
+   guard_value: any tokens up to the end of the line
+   guarded_line: `text_line` | `conditional_group`
+   conditional_group: `if_line` {`guarded_line`}
+                    : {`else_line` {`guarded_line`}}
+                    : "#" "endif"
+   if_line: "#" ( "if" | "ifdef" | "ifndef" ) any tokens up to the end of the line
+   else_line: "#" ( "elif" | "elifdef" | "elifndef" ) any tokens up to the end of the line
+            : | "#" "else"
+   text_line: any line that does not start with "#" and one of the words above
+   blank_line: a line that holds only white space and comments
+   pragma_once: "#" "pragma" "once"
 ```
 
-Each directive is on a line of its own. The two identifiers of an
-`include_guard` are the same name, which no other header uses.
+Each directive is on a line of its own. The rules for these lines are:
+
+- A `guarded_header` is a whole file. Only blank lines and comments
+  come before the `#ifndef` line and after the `#endif` line.
+- The two identifiers of an `include_guard` are the same name, which no
+  other header uses.
+- Each `if_line` pairs with the first `#endif` after it that no later
+  `if_line` takes. The `#endif` that ends the `include_guard` pairs
+  with its `#ifndef`.
 
 ## Constraints
 
 :::{rule} ODR-1
 :kind: reject
-:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp
+:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/guard-text-after-endif.cpp
 
 A translation unit must not define a variable, a function, a class, or
 an enumeration more than once. The rule also applies to `inline`
@@ -220,11 +239,13 @@ replacement.
 
 :::{rule} INC-4
 :kind: required
-:tests: foundations/odr/guarded-header-twice.cpp foundations/odr/header-class-shared.cpp foundations/odr/header-enumeration-shared.cpp
+:tests: foundations/odr/guarded-header-twice.cpp foundations/odr/header-class-shared.cpp foundations/odr/header-enumeration-shared.cpp foundations/odr/guard-comments-outside.cpp foundations/odr/guard-nested-conditionals.cpp foundations/odr/guard-define-with-value.cpp foundations/odr/guard-text-after-endif.cpp
 
-If a file has the form of an `include_guard`, its first inclusion in a
+If a file has the form of a `guarded_header`, its first inclusion in a
 translation unit defines the guard name. Every later inclusion of the
-file in that unit adds no text ({question}`Q-0127`).
+file in that unit adds no text ({question}`Q-0127`). A `guard_value`
+does not change this rule. Text after the `#endif` of the guard is added
+at every inclusion.
 :::
 
 ## Implementation Requirements
@@ -274,11 +295,13 @@ gives.
 
 :::{rule} INC-5
 :kind: impl-defined
-:tests: foundations/odr/pragma-once-header-twice.cpp
+:tests: foundations/odr/pragma-once-header-twice.cpp foundations/odr/pragma-once-after-comment.cpp foundations/odr/pragma-once-after-text.cpp
 
-The effect of `#pragma once` is implementation-defined. On the matrix
-compilers, a file that starts with `#pragma once` adds its text only at
-its first inclusion in a translation unit ({question}`Q-0127`).
+The effect of a `pragma_once` line is implementation-defined. On the
+matrix compilers, a file that holds the line adds its text only at its
+first inclusion in a translation unit ({question}`Q-0127`). The line
+can come after comments or other text, and later inclusions add none of
+that text either.
 :::
 
 ## Recommended Practice
@@ -323,7 +346,7 @@ struct Guarded { int v; };
 
 ## Evidence
 
-All eight compilers agree on 40 of 44 tests. EDG checks each unit and
+All eight compilers agree on 46 of 50 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -346,7 +369,9 @@ the units are valid.
   warning an error. EDG reports an error. GCC gives no diagnostic when
   the only use is in an `inline` function that nothing calls, and Clang
   18 only warns ({question}`Q-0128`). The rule needs no diagnostic, and
-  ODR-11 asks for the warning.
+  ODR-11 asks for the warning. With `-Wall` or `-Wunused-function`, GCC
+  16 gives a `-Wunused-function` warning in place of that warning, and
+  `-pedantic-errors` leaves the new warning a warning.
 - ODR-10: Different definitions in two units link and run. The tests
   accept the result of either definition.
 - INC-2: The search order is each implementation's choice. Clang, GCC,
@@ -354,7 +379,10 @@ the units are valid.
   before a header of the same name in the directory of the test.
 - INC-4, INC-5: Clang, GCC, and EDG skip the second inclusion for both
   an include guard and `#pragma once`, also under strict flags
-  ({question}`Q-0127`).
+  ({question}`Q-0127`). The result is the same with comments before the
+  guard, nested conditional directives in it, and a value in its
+  `#define`. All three compilers skip the whole file at a later
+  inclusion when `#pragma once` follows a definition.
 - The tests keep their headers as `*.h` files next to them.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

@@ -313,6 +313,18 @@ results come from the rule's tests, compiled with no flag, with
 `-Werror` makes each warning an error. Older versions can differ. For
 example, Clang 18 gives no warning for CMP-14 ({question}`Q-0029`).
 
+Every test passes `-pedantic-errors`. On both Clang 22 and GCC 16, that
+flag makes the warnings of two rules errors, DCMP-7 and ODR-11. The
+table says "an error under `-pedantic-errors`" in both rows. On these
+two compilers, a test of the two rules fails to compile with no
+`-Werror`. The other
+warnings in the table stay warnings under `-pedantic-errors`. Clang 22
+reports two further cases as errors with no flag at all:
+
+- the chained comparison of CMP-14,
+- the literal operator of the OPR-9 test, which has no space between
+  `""` and the suffix (`-Wreserved-user-defined-literal`).
+
 A test of a warning passes `-Werror` and a flag that turns the warning
 on in both compilers, so the two columns give one result. The flag is
 the warning's own flag, or a group that holds the warning in both
@@ -346,7 +358,8 @@ and Clang warns with no flag.
 | {rule}`LOG-8` | `-Wall`: `-Wlogical-op-parentheses` | `-Wall`: `-Wparentheses` |
 | {rule}`LOG-9` | on: `-Wlogical-not-parentheses` | `-Wall`: `-Wlogical-not-parentheses` |
 | {rule}`MUL-16` | on: `-Wdeprecated-enum-float-conversion` | on: `-Wdeprecated-enum-float-conversion` |
-| {rule}`OPR-9` | on: `-Wuser-defined-literals` | on: `-Wliteral-suffix` |
+| {rule}`ODR-11` | on: `-Wundefined-internal`, an error under `-pedantic-errors` | on, with no flag name, an error under `-pedantic-errors`; `-Wall` or `-Wunused-function` replaces the warning with a `-Wunused-function` warning, which stays a warning |
+| {rule}`OPR-9` | on: `-Wuser-defined-literals`; with no space after `""`, also an error with no flag: `-Wreserved-user-defined-literal` | on: `-Wliteral-suffix` |
 | {rule}`PRIM-13` | on: `-Wmultichar`, `-Wliteral-range` | on: `-Wmultichar`, `-Woverflow` |
 | {rule}`SEQ-7` | on: `-Wunsequenced` | `-Wall`: `-Wsequence-point` |
 | {rule}`SHF-9` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` |

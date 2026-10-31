@@ -10,7 +10,7 @@ function. This page covers:
 ## Principles
 
 :::{principle} REF-P1
-:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
+:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-14 REF-11
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives the reference that object.
@@ -23,7 +23,11 @@ may do with its referent.
 | `const` lvalue reference | Nothing | Also rvalues and values of other types, through a temporary object when there is no object to bind to |
 | Rvalue reference | Take from an object that is going away | Rvalues, and never an lvalue of its own type |
 
-In every form the initializer is one expression.
+In parentheses and after `=`, the initializer is one expression. In
+braces, the initializer is one expression when that expression can
+initialize the reference by itself. Any other braced list holds the
+values of a new object. The list then makes a temporary of the
+referenced type, and the reference binds to the temporary.
 :::
 
 :::{principle} REF-P2
@@ -93,7 +97,7 @@ the value. REF-9 lists what is not valid.
 
 :::{rule} REF-9
 :kind: reject
-:tests: declarations/initialization/references/const-volatile-ref-rvalue.cpp
+:tests: declarations/initialization/references/const-volatile-ref-rvalue.cpp declarations/initialization/references/braced-list-nonconst-lvalue.cpp
 
 An lvalue reference that is `volatile`, or that is not `const`, must not
 bind to an rvalue.
@@ -120,25 +124,53 @@ drop a cv-qualifier of the object.
 
 :::{rule} REF-6
 :kind: required
-:tests: declarations/initialization/references/braced-reference.cpp
+:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp
 
-A reference can be initialized with `=`, parentheses, or braces. REF-11
-lists what is not valid.
+A reference can be initialized with `=`, parentheses, or braces. A
+braced list that holds one expression initializes the reference from
+that expression, as `=` does, in these cases:
+
+- The referenced type is not a class or an array.
+- The expression has the referenced class type, or a class derived
+  from it.
+
+REF-14 gives the other braced lists. REF-11 lists what is not valid.
+:::
+
+:::{rule} REF-14
+:kind: required
+:tests: declarations/initialization/references/braced-list-array-temporary.cpp declarations/initialization/references/braced-list-class-temporary.cpp declarations/initialization/references/braced-list-unknown-bound.cpp declarations/initialization/references/braced-list-unknown-bound-values.cpp
+
+A braced list that REF-6 does not cover initializes a temporary object
+of the referenced type from the list ({rule}`LIST-3`, {rule}`ILC-2`).
+The reference binds to the temporary as REF-2 and REF-3 give. For a
+reference to an array of unknown bound, the temporary has one element
+for each value, and the reference keeps its declared type
+({question}`Q-0149`).
 :::
 
 :::{rule} REF-11
 :kind: reject
-:tests: declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp
+:tests: declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp declarations/initialization/references/parenthesized-list-aggregate.cpp declarations/initialization/references/braced-list-scalar-two-values.cpp declarations/initialization/references/braced-list-array-too-many.cpp declarations/initialization/references/braced-list-unknown-bound-empty.cpp declarations/initialization/references/braced-list-explicit-constructor.cpp
 
-The initializer of a reference must hold exactly one expression. In
-braces, a narrowing conversion must not occur (LIST-2).
+These conditions apply to the initializer of a reference:
+
+- In parentheses, the initializer must hold exactly one expression
+  ({question}`Q-0151`).
+- In braces, a narrowing conversion must not occur ({rule}`LIST-2`).
+- A braced list for a temporary (REF-14) must be valid for the
+  referenced type, for example under {rule}`LIST-11` and
+  {rule}`LIST-12`. An array must not have zero elements
+  ({question}`Q-0149`).
+- The temporary must not need an `explicit` constructor
+  ({question}`Q-0150`).
 :::
 
 ## Runtime Behavior
 
 :::{rule} REF-4
 :kind: required
-:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp declarations/initialization/references/reference-member-not-extended.cpp declarations/initialization/references/extended-temporary-unwinding.cpp
+:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp declarations/initialization/references/reference-member-not-extended.cpp declarations/initialization/references/extended-temporary-unwinding.cpp declarations/initialization/references/braced-list-class-temporary.cpp
 
 If a reference variable binds to a temporary object, or to a member of
 one, the temporary lives as long as the reference. The rule also applies
@@ -213,11 +245,17 @@ int&& v = x;                 // rejected: lvalue of the same type
 
 const int& pass(const int& v) { return v; }
 const int& w = pass(1);      // the temporary ends here; w dangles
+
+struct Point { int x, y; };
+const int (&row)[3]{1, 2};   // row refers to a temporary {1, 2, 0}
+const Point& corner{0, 4};   // corner refers to a temporary Point
+Point& moved{0, 4};          // rejected: a temporary needs const or &&
+const int& pair{1, 2};       // rejected: two values for an int
 ```
 
 ## Evidence
 
-All eight compilers agree on 32 of 35 tests. The results are in
+All eight compilers agree on 39 of 46 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
@@ -231,6 +269,15 @@ All eight compilers agree on 32 of 35 tests. The results are in
 - **REF-5.** GCC and Clang 22 reject a reference bound through a null
   pointer during constant evaluation. EDG 7.0 and Clang 18 accept the
   reference ({question}`Q-0110`).
+- **REF-14.** For a braced list and a reference to an array of unknown
+  bound, Clang gives the reference the bound of the list. GCC and EDG
+  keep the declared type. For empty braces, Clang and EDG reject the
+  array of zero elements, and GCC accepts it ({question}`Q-0149`).
+- **REF-11.** GCC and EDG reject a braced list whose temporary needs an
+  `explicit` constructor. Clang accepts the list ({question}`Q-0150`).
+- **REF-11.** GCC accepts a parenthesized list of several values for a
+  reference to an aggregate, and initializes a temporary from it. Clang
+  and EDG reject the list ({question}`Q-0151`).
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).
