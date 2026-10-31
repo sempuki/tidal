@@ -1,7 +1,7 @@
 // tidal-rules: CMP-15
 // tidal-expect: accept
 // tidal-expect-edg: reject
-// tidal-note: Q-PENDING: EDG evaluates the address comparison of a struct and its first member to false. Clang and GCC give true.
+// tidal-note: Q-0104. EDG evaluates the address comparison of a struct and its first member to false. Clang and GCC give true.
 // tidal-note: Gap review 2026-10-31 (third).
 struct S { int first; int second; };
 constexpr S s{};
