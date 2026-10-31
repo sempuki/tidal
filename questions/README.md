@@ -87,6 +87,8 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0074](Q-0074-language-linkage-in-function-type.md) | Is language linkage part of a function type? | provisional | option 1 |
 | [Q-0075](Q-0075-c-linkage-conflicts-global.md) | Can a name with C language linkage match a global variable? | provisional | option 1 |
 | [Q-0076](Q-0076-c-linkage-variable-main.md) | Can main, or a variable named main, have C language linkage? | provisional | option 1 |
+| [Q-0077](Q-0077-throw-empty-specification.md) | Is throw() a valid exception specification? | provisional | option 1 |
+| [Q-0078](Q-0078-noexcept-operand-narrowing.md) | Can the operand of noexcept narrow when it is converted to bool? | provisional | option 1 |
 
 ## Status values
 
