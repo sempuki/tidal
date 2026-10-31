@@ -99,6 +99,9 @@ Write each rule in a `rule` directive:
 - Link each defined term with `` {term}`...` `` the first time it occurs in
   a rule.
 - Do not explain a rule in prose. Put an example in `Examples`.
+- An `impl-defined` rule can give the matrix targets' choices in a table,
+  one row per type and one column per target (decision 0036). A test
+  backs each cell.
 - Link a rule on another page with `` {rule}`ID` ``. Mark a topic that
   Tidal does not specify yet with *(TOPIC referenced)*, for example
   *(templates referenced)*. TOPIC is one of `REFERENCED_TOPICS` in
