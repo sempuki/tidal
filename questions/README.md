@@ -122,6 +122,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0109](Q-0109-extend-through-array-member.md) | Does a reference bound to an element of an array member of a temporary extend the temporary? | provisional | option 1 |
 | [Q-0110](Q-0110-null-dereference-reference-constant.md) | Is a reference bound through a null pointer rejected during constant evaluation? | provisional | option 1 |
 | [Q-0111](Q-0111-using-sees-later-default.md) | Does a using declaration see a default argument that a later namespace declaration adds? | provisional | option 1 |
+| [Q-0112](Q-0112-main-parameter-types.md) | Must the parameters of main have the types int and char**? | provisional | option 1 |
 
 ## Status values
 
