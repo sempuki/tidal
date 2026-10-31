@@ -16,7 +16,8 @@ comparison sees the converted values, so a negative `int` compared with
 an `unsigned` has become a large unsigned value. The relational
 operators bind more tightly than the equality operators, and `<=>` more
 tightly than both, and each group associates to the left, which is why
-`a < b < c` compares a `bool` with `c`.
+`a < b < c` compares a `bool` with `c`. The two operands are not ordered
+with respect to each other ({rule}`SEQ-8`).
 :::
 
 :::{principle} CMP-P2

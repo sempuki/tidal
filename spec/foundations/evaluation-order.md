@@ -34,7 +34,7 @@ replaces, because the program reads the same either way.
 :::
 
 :::{principle} SEQ-P2
-:rules: SEQ-1 SEQ-4 SEQ-7
+:rules: SEQ-1 SEQ-4 SEQ-7 SEQ-8
 
 Everywhere else, the order is the implementation's choice, and the
 choice can differ from one call to the next. The one promise is that
@@ -121,6 +121,15 @@ argument starts. The body of a called function also does not overlap with
 other evaluations in the caller.
 :::
 
+:::{rule} SEQ-8
+:kind: unspecified
+:tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp
+
+The operands of a built-in operator that SEQ-3 does not list are
+{term}`unsequenced`, so their order is unspecified. A function called in
+one operand still does not overlap with the other operand (SEQ-1).
+:::
+
 ## Recommended Practice
 
 :::{rule} SEQ-7
@@ -147,7 +156,7 @@ pair(i++, i++);       // fine: the order is unspecified
 
 ## Evidence
 
-All seven compilers agree on all 18 tests. The results are in
+All seven compilers agree on all 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang 22 evaluates function arguments from left to right and GCC

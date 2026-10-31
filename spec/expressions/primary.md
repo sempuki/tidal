@@ -155,7 +155,8 @@ These requirements apply to an integer literal:
 
 - A base prefix must have at least one digit after it.
 - Each digit must be valid for the base of the literal.
-- A suffix must be one of the forms in the syntax.
+- A suffix must be one of the forms in the syntax, or the suffix of a
+  literal operator ({rule}`OPR-8`).
 
 In an integer or floating literal, a digit separator must have a digit
 on each side.

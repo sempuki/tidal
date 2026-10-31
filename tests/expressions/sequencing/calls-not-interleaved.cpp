@@ -1,4 +1,4 @@
-// tidal-rules: SEQ-1
+// tidal-rules: SEQ-1 SEQ-8
 // tidal-expect: run
 // tidal-note: Gap review 2026-10-30.
 int counter = 0;

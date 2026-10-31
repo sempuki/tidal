@@ -56,7 +56,8 @@ the arithmetic counts in that type's size.
 :::{principle} ADD-P4
 :rules: ADD-13
 
-The two operands are not ordered with respect to each other (SEQ-1).
+The two operands are not ordered with respect to each other
+({rule}`SEQ-8`).
 :::
 
 :::{principle} ADD-P5

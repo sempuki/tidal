@@ -167,7 +167,7 @@ destroyed before the program ends.
 
 :::{rule} UNW-8
 :kind: recommended
-:tests: exceptions/unwinding/throw-in-noexcept-warns.cpp exceptions/unwinding/call-in-noexcept-no-warning.cpp
+:tests: exceptions/unwinding/throw-in-noexcept-warns.cpp exceptions/unwinding/call-in-noexcept-no-warning.cpp exceptions/throw/throw-in-noexcept-warns.cpp
 
 An implementation should warn about a `throw` expression written
 directly in a `noexcept` function outside any try block that can catch
@@ -203,7 +203,7 @@ void closed() noexcept { throw 2; }   // ends the program
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All seven compilers agree on all
-29 tests. EDG runs no programs, so its results say only that the
+30 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a

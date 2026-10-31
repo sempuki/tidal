@@ -1848,8 +1848,8 @@ compilers affect the Status column.
 | `exceptions/throw/abstract-operand-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/throw/array-operand-decays.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
 | `exceptions/throw/catch-by-value-copies.cpp` | THR-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/constant-evaluation-throw-not-taken.cpp` | THR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/throw/constant-evaluation-throw-rejected.cpp` | THR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `exceptions/throw/constant-evaluation-throw-not-taken.cpp` | CE-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `exceptions/throw/constant-evaluation-throw-rejected.cpp` | CE-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/throw/constexpr-throw-at-runtime.cpp` | THR-10 | run | run | run | accept | run | run | run | run | pass |
 | `exceptions/throw/cv-qualifiers-dropped.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
 | `exceptions/throw/deleted-copy-lvalue-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1873,7 +1873,7 @@ compilers affect the Status column.
 | `exceptions/throw/string-literal-decays.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
 | `exceptions/throw/throw-expression-type-void.cpp` | THR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `exceptions/throw/throw-in-noexcept-terminates.cpp` | THR-9 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/throw/throw-in-noexcept-warns.cpp` | THR-11 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `exceptions/throw/throwing-destructor-accepted.cpp` | THR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `exceptions/unwinding/array-element-throws-built-destroyed.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
 | `exceptions/unwinding/base-built-before-member-throws.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
@@ -2705,15 +2705,18 @@ compilers affect the Status column.
 | `expressions/primary/this-type.cpp` | PRIM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/adjacent-bitfields-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/bitwise-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/braced-list-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 SEQ-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/multiplicative-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-assignment-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
@@ -3177,7 +3180,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3162/3162 tests pass on baseline compilers.
+3165/3165 tests pass on baseline compilers.
 
 ## Rejections
 

@@ -38,7 +38,7 @@ implementation should warn when it can see the count.
 :rules: SHF-8
 
 The left operand is evaluated before the right one. This is an
-exception to the usual freedom (SEQ-1), and it holds for the
+exception to the usual freedom ({rule}`SEQ-8`), and it holds for the
 overloaded operators too (OPR-7).
 :::
 

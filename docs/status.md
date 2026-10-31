@@ -13,8 +13,8 @@ current state only. The history of how it got here is in `git log`.
 | [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 48 | 6 | 1 | 13 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 23 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
-| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 7 | 4 required, 1 undefined, 1 unspecified, 1 recommended | 18 | 1 | 0 | 10 |  | 0 flagged |
-| [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 72 | 7 | 6 | 72 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
+| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 8 | 4 required, 1 undefined, 2 unspecified, 1 recommended | 21 | 1 | 0 | 10 |  | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 74 | 7 | 6 | 72 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 8 | 6 required, 1 reject, 1 recommended | 15 | 3 | 2 | 2 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 65 | 9 | 0 | 12 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 9 | Q-0097 | 0 flagged |
@@ -72,9 +72,9 @@ current state only. The history of how it got here is in `git log`.
 | [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 60 | 1 | 1 | 2 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 89 | 3 | 1 | 19 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 63 | 2 | 2 | 5 | Q-0061, Q-0062 | 0 flagged |
-| [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 8 required, 2 reject, 1 recommended | 30 | 4 | 0 | 12 |  | 0 flagged |
+| [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 12 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 8 |  | 0 flagged |
-| [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 29 | 1 | 0 | 9 |  | 0 flagged |
+| [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 9 |  | 0 flagged |
 | [Glossary](../spec/glossary.md) | 18 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -88,7 +88,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3162/3162 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3165/3165 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -120,7 +120,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2567 of 3162 tests, with no false
+- The clean-room front end passes 2570 of 3165 tests, with no false
   rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -153,23 +153,15 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Repairs from the front-end and designer reports
-   (`reports/clean-room/rust-frontend/report-2.md`,
-   `reports/clean-room/roadmap/designer.md`):
-   - D2: PRIM-16 and the literal grammar allow only built-in suffixes,
-     and OPR-8 accepts user-defined ones.
-   - D7, D8: ADD-P4 and MUL-P4 cite SEQ-1 for operand order, and the
-     comparison and bitwise pages have no operand-order rule.
-   - D26: CE-8 and THR-10, and THR-11 and UNW-8, state one rule twice.
-2. Add the designer's view to the roadmap. It ranks cross-page
+1. Add the designer's view to the roadmap. It ranks cross-page
    inventories on the Foundations pages first, and disagrees with
    deferring items G and S.
-3. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
    which builds EDG itself as a 32-bit program.
-4. Item F: a grammar notation, then one grammar in which every
+3. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-5. Item K: the language-support types, then the task-level guides.
+4. Item K: the language-support types, then the task-level guides.
 
 Waiting on the maintainer:
 

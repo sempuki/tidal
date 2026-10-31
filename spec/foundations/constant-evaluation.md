@@ -163,7 +163,7 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp
 
 Constant evaluation must not evaluate a throw-expression. A
 throw-expression on a path that the evaluation does not take is valid.
@@ -391,7 +391,7 @@ void use() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 61 of 67 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 63 of 69 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000 and
   a loop of 100000000 steps by default. All accept a depth of 400.

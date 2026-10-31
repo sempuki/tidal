@@ -17,6 +17,8 @@ and the operand of `~` is promoted. The result has that type and is a
 prvalue ({principle}`VC-P1`). `&` binds more tightly than `^`, which
 binds more tightly than `|`, and all three bind less tightly than the
 equality operators, which is why `a & b == c` compares before it masks.
+The two operands of a binary bitwise operator are not ordered with
+respect to each other ({rule}`SEQ-8`).
 :::
 
 :::{principle} BIT-P2

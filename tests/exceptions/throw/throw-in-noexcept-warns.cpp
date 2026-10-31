@@ -1,4 +1,4 @@
-// tidal-rules: THR-11
+// tidal-rules: UNW-8
 // tidal-expect: reject
 // tidal-error-clang: non-throwing exception specification but can still throw
 // tidal-error-gcc: will always call .terminate

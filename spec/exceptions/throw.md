@@ -59,7 +59,7 @@ result type (COND-4).
 :::
 
 :::{principle} THR-P4
-:rules: THR-7 THR-9 THR-11
+:rules: THR-7 THR-9
 
 A `throw` with no operand passes on the exception that a handler is
 handling. When there is no such exception, or when an exception leaves
@@ -109,13 +109,12 @@ of the conditional operator (COND-4).
 :::
 
 :::{rule} THR-10
-:kind: reject
-:tests: exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp exceptions/throw/constexpr-throw-at-runtime.cpp
+:kind: required
+:tests: exceptions/throw/constexpr-throw-at-runtime.cpp
 
-A constant evaluation that reaches a `throw` is not a constant
-expression. A `throw` on a path that the evaluation does not take has no
-effect on it. A `constexpr` function that contains a `throw` can be
-called at run time and throws then.
+A `constexpr` function that contains a `throw` can be called at run
+time, and it throws then. Constant evaluation of the `throw` follows
+{rule}`CE-8`.
 :::
 
 ## Runtime Behavior
@@ -191,11 +190,9 @@ terminates. No handler in a caller catches it.
 ## Recommended Practice
 
 :::{rule} THR-11
-:kind: recommended
-:tests: exceptions/throw/throw-in-noexcept-warns.cpp
+:kind: withdrawn
 
-An implementation should warn about a `throw` in a function declared
-`noexcept` when it can see that the exception leaves the function.
+{rule}`UNW-8` states this recommendation.
 :::
 
 ## Examples
@@ -221,11 +218,10 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All seven compilers agree on all
-30 tests. EDG runs no programs, so its results for the run and
+27 tests. EDG runs no programs, so its results for the run and
 run-fail tests say only that the programs are valid. A `run-fail` test
 shows that the program ended with a nonzero status or a signal; the
 harness cannot see that termination was the reason.
 
-- THR-11: Clang warns under `-Wall`; GCC's warning is in the same group.
 
 Inputs: clang-sema-expr, clang-diag-sema, clang-diag-ast, edg-statements.

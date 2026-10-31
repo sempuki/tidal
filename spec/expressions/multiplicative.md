@@ -60,7 +60,8 @@ Constant evaluation rejects each of these ({principle}`TR-P4`).
 :::{principle} MUL-P4
 :rules: MUL-13 MUL-14
 
-The two operands are not ordered with respect to each other (SEQ-1).
+The two operands are not ordered with respect to each other
+({rule}`SEQ-8`).
 So a program must not write a scalar in one operand and touch it in the
 other, unless a function call separates the two accesses.
 :::
