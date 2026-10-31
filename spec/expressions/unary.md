@@ -83,15 +83,17 @@ For prefix `++` and `--`, these conditions apply:
 
 :::{rule} UN-11
 :kind: reject
-:tests: expressions/unary/increment-bool.cpp expressions/unary/decrement-bool.cpp expressions/unary/increment-enum.cpp expressions/unary/increment-const.cpp expressions/unary/increment-rvalue.cpp
+:tests: expressions/unary/increment-bool.cpp expressions/unary/decrement-bool.cpp expressions/unary/increment-enum.cpp expressions/unary/increment-const.cpp expressions/unary/increment-rvalue.cpp expressions/unary/increment-incomplete-pointer.cpp expressions/unary/increment-function-pointer.cpp
 
 The operand of prefix `++` or `--` must not have type `bool` or an
-enumeration type. It must not be `const` or an rvalue.
+enumeration type. It must not be `const` or an rvalue. A pointer operand
+must point to a complete object type, so a pointer to a function or to
+an incomplete class is not valid.
 :::
 
 :::{rule} UN-12
 :kind: required
-:tests: expressions/unary/sizeof-basic.cpp
+:tests: expressions/unary/sizeof-basic.cpp expressions/unary/sizeof-at-least-one.cpp
 
 `sizeof` gives the size in bytes of a type or of the type of an
 expression. These rules apply:
@@ -100,6 +102,8 @@ expression. These rules apply:
 - An array has the size of all its elements.
 - A reference type gives the size of the referenced type.
 - The result has the type of `sizeof 0`, an unsigned integer type.
+- The size of a complete object type is at least 1, also for an empty
+  class. The size of a class includes padding.
 :::
 
 :::{rule} UN-14
@@ -112,29 +116,35 @@ type, or the type `void`.
 
 :::{rule} UN-16
 :kind: required
-:tests: expressions/unary/alignof-basic.cpp
+:tests: expressions/unary/alignof-basic.cpp expressions/unary/alignof-unknown-bound.cpp
 
 `alignof` gives the alignment of a type, as a power of two. `char` has
 alignment 1. An array has the alignment of its element type. A reference
-type gives the alignment of the referenced type.
+type gives the alignment of the referenced type. An array of unknown
+bound has the alignment of its element type.
 :::
 
 :::{rule} UN-17
 :kind: reject
-:tests: expressions/unary/alignof-expression.cpp expressions/unary/alignof-function.cpp
+:tests: expressions/unary/alignof-expression.cpp expressions/unary/alignof-function.cpp expressions/unary/alignof-incomplete.cpp expressions/unary/alignof-void.cpp
 
-The operand of `alignof` must be a type, and must not be a function type.
+The operand of `alignof` must be a complete object type or a reference.
+It must not be a function type, `void`, or an incomplete class.
 :::
 
 :::{rule} UN-18
 :kind: required
-:tests: expressions/unary/noexcept-operator.cpp
+:tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp
 
 `noexcept(e)` is a constant of type `bool`. It is `false` if `e`
 contains:
 
-- a call to a function that is not `noexcept`,
-- a throw-expression.
+- a call to a function that is not `noexcept`, also an implicit call such
+  as the constructor of a temporary or a conversion function,
+- a `new` expression whose allocation function is not `noexcept`, such
+  as the default one,
+- a `dynamic_cast` to a reference type that can fail,
+- a throw-expression *(referenced)*.
 
 Otherwise it is `true`.
 :::
@@ -177,9 +187,23 @@ fit in that type, the behavior is undefined.
 
 :::{rule} UN-7
 :kind: undefined
-:tests: expressions/unary/indirection-null.cpp
+:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp
 
-If the operand of `*` is a null pointer, the behavior is undefined.
+If the operand of `*` does not point to an object or a function, and the
+program uses the result, the behavior is undefined. This includes a null
+pointer, a pointer past the end of an array, and a pointer to an object
+whose lifetime has ended.
+:::
+
+:::{rule} UN-21
+:kind: undefined
+:tests: expressions/unary/increment-overflow-constant.cpp expressions/unary/decrement-overflow-constant.cpp expressions/unary/increment-pointer-past-end-constant.cpp
+
+The behavior of prefix `++` and `--` is undefined in these cases:
+
+- The result for a signed integer is outside the range of its type.
+- A pointer moves outside its array, other than to one past the last
+  element ({question}`Q-0031`).
 :::
 
 ## Implementation Requirements
@@ -224,8 +248,11 @@ alignof(char);          // 1
 
 ## Evidence
 
-All seven compilers agree on all 39 tests. The results are in
+All seven compilers agree on 53 of 54 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
+
+- UN-21: GCC accepts a pointer moved two past the end of an array during
+  constant evaluation. Clang and EDG reject it ({question}`Q-0031`).
 
 - UN-4, UN-7: all compilers reject the operation during
   {term}`constant evaluation`.

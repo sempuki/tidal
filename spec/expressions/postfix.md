@@ -71,11 +71,14 @@ are prvalues.
 
 :::{rule} PFX-10
 :kind: required
-:tests: expressions/postfix/member-access.cpp expressions/postfix/member-of-prvalue.cpp
+:tests: expressions/postfix/member-access.cpp expressions/postfix/member-of-prvalue.cpp expressions/postfix/static-member-object-evaluated.cpp expressions/postfix/mutable-and-reference-member-of-const.cpp
 
 `E.m` names the member `m` of the class object `E`. `E->m` is the same as
-`(*E).m`. A static member can be named through an object. A member of a
-prvalue is an xvalue.
+`(*E).m`. A static member can be named through an object, and the
+object expression is still evaluated. A member of a prvalue is an
+xvalue. A `mutable` member of a `const` object can be changed. A reference
+member of a `const` object gives an lvalue of the referenced type,
+without `const`.
 :::
 
 :::{rule} PFX-11
@@ -88,10 +91,23 @@ a pointer to a class. The class must have the named member.
 
 :::{rule} PFX-13
 :kind: reject
-:tests: expressions/postfix/postfix-result-prvalue.cpp expressions/postfix/postfix-not-lvalue.cpp expressions/postfix/postfix-on-const.cpp expressions/postfix/postfix-on-bool.cpp expressions/postfix/postfix-decrement-bool.cpp expressions/postfix/postfix-on-void-pointer.cpp
+:tests: expressions/postfix/postfix-result-prvalue.cpp expressions/postfix/postfix-not-lvalue.cpp expressions/postfix/postfix-on-const.cpp expressions/postfix/postfix-on-bool.cpp expressions/postfix/postfix-decrement-bool.cpp expressions/postfix/postfix-on-void-pointer.cpp expressions/postfix/increment-enum.cpp expressions/postfix/increment-incomplete-pointer.cpp expressions/postfix/increment-function-pointer.cpp
 
 The operand of postfix `++` or `--` must be a modifiable lvalue. It must
-not have type `bool` or be a pointer to `void`. The result is a prvalue.
+not have type `bool` or an enumeration type. A pointer operand must
+point to a complete object type. The result is a prvalue.
+:::
+
+:::{rule} PFX-14
+:kind: reject
+:tests: expressions/postfix/member-function-not-value.cpp expressions/postfix/call-incomplete-return.cpp expressions/postfix/call-incomplete-parameter.cpp
+
+A program must not:
+
+- use the name of a non-static member function, reached through member
+  access, other than to call it,
+- call a function whose return type or parameter type is an incomplete
+  class, except in the operand of `decltype` (UNEV-1).
 :::
 
 ## Dynamic Semantics
@@ -117,9 +133,11 @@ element.
 
 :::{rule} PFX-4
 :kind: undefined
-:tests: expressions/postfix/subscript-out-of-range.cpp
+:tests: expressions/postfix/subscript-out-of-range.cpp expressions/postfix/subscript-write-past-end-constant.cpp expressions/postfix/subscript-form-beyond-end-constant.cpp
 
-A subscript that reads an element outside the array is undefined.
+If a subscript reads or writes an element outside the array, the
+behavior is undefined. Forming the address of an element more than one
+past the end is also undefined.
 :::
 
 :::{rule} PFX-8
@@ -127,6 +145,17 @@ A subscript that reads an element outside the array is undefined.
 :tests: expressions/postfix/call-null-pointer.cpp
 
 A call through a null function pointer is undefined.
+:::
+
+## Implementation Requirements
+
+:::{rule} PFX-15
+:kind: impl-defined
+:tests: expressions/postfix/ellipsis-nontrivial-class.cpp
+
+Passing an object of a class with a non-trivial copy constructor, move
+constructor, or destructor to an ellipsis parameter is conditionally
+supported. GCC and EDG accept it. Clang rejects it.
 :::
 
 ## Examples
@@ -152,12 +181,14 @@ int old = i++;    // old is 5, i is 6
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
-28 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of 39 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these during constant evaluation.
 - PFX-13: Clang rejects `++` on `bool` as a pedantic diagnostic.
+- PFX-15: GCC and EDG accept a class with a non-trivial copy
+  constructor as an ellipsis argument. Clang rejects it. Support is
+  conditional.
 
 Inputs: clang-sema-expr, clang-diag-sema.

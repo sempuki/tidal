@@ -87,21 +87,22 @@ expression go away in the reverse order of their creation.
 
 :::{rule} VC-8
 :kind: required
-:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp
+:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp
 
 A prvalue becomes a temporary object in these cases, in addition to
 VC-4 and VC-5:
 
 - a member function call or member access on a class prvalue,
 - a subscript of an array prvalue,
-- the conversion of an array prvalue to a pointer.
+- the conversion of an array prvalue to a pointer,
+- `.*` applied to a class prvalue.
 
 Constant evaluation creates temporaries in the same cases.
 :::
 
 :::{rule} VC-9
 :kind: required
-:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp
+:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp
 
 Each of these is a separate full expression, so its temporaries end with
 it:
@@ -113,7 +114,9 @@ it:
 
 A temporary in a function argument or a default argument lives until
 the end of the full expression that contains the call. All initializers
-of one aggregate are one full expression.
+of one aggregate are one full expression. If a constructor with a
+default argument initializes each element of an array, the temporaries
+of one element end before the next element is initialized.
 :::
 
 ## Implementation Requirements
@@ -158,7 +161,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All seven compilers agree on all 31 tests. The results are in
+All seven compilers agree on all 33 tests. The results are in
 `tests/RESULTS.md`.
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the

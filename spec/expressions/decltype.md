@@ -64,11 +64,12 @@ reference. A prvalue of a non-class type has no cv-qualifiers.
 
 :::{rule} DTY-3
 :kind: required
-:tests: expressions/decltype/as-type-specifier.cpp expressions/decltype/base-specifier.cpp expressions/decltype/decltype-auto-function.cpp expressions/decltype/nested-name.cpp expressions/decltype/trailing-return.cpp
+:tests: expressions/decltype/as-type-specifier.cpp expressions/decltype/base-specifier.cpp expressions/decltype/decltype-auto-function.cpp expressions/decltype/nested-name.cpp expressions/decltype/trailing-return.cpp expressions/decltype/destructor-call.cpp
 
 `decltype` can occur where a type name can occur. This includes a
 variable or function type, a trailing return type, a base list, and the
-qualified name of a member, such as `decltype(s)::type`.
+qualified name of a member, such as `decltype(s)::type`, and the name
+after `~` in an explicit destructor call.
 :::
 
 :::{rule} DTY-5
@@ -82,7 +83,7 @@ the name of a member function defined outside its class
 
 :::{rule} UNEV-1
 :kind: required
-:tests: expressions/decltype/abstract-prvalue-decltype.cpp expressions/decltype/constexpr-not-needed.cpp expressions/decltype/deleted-function-in-unevaluated.cpp expressions/decltype/incomplete-return-prvalue.cpp expressions/decltype/incomplete-return-sizeof.cpp expressions/decltype/lambda-in-unevaluated.cpp expressions/decltype/member-without-object.cpp expressions/decltype/nested-class-member-evaluated.cpp expressions/decltype/nested-class-member-unevaluated.cpp expressions/decltype/no-definition-needed.cpp expressions/decltype/no-side-effects.cpp expressions/decltype/odr-use-not-counted.cpp expressions/decltype/private-access-still-checked.cpp expressions/decltype/template-instantiation-not-needed.cpp expressions/decltype/ub-not-evaluated.cpp
+:tests: expressions/decltype/abstract-prvalue-decltype.cpp expressions/decltype/constexpr-not-needed.cpp expressions/decltype/deleted-function-in-unevaluated.cpp expressions/decltype/incomplete-return-prvalue.cpp expressions/decltype/incomplete-return-sizeof.cpp expressions/decltype/lambda-in-unevaluated.cpp expressions/decltype/member-without-object.cpp expressions/decltype/nested-class-member-evaluated.cpp expressions/decltype/nested-class-member-unevaluated.cpp expressions/decltype/no-definition-needed.cpp expressions/decltype/no-side-effects.cpp expressions/decltype/odr-use-not-counted.cpp expressions/decltype/private-access-still-checked.cpp expressions/decltype/template-instantiation-not-needed.cpp expressions/decltype/ub-not-evaluated.cpp expressions/decltype/deleted-destructor-decltype.cpp expressions/decltype/deleted-destructor-sizeof.cpp expressions/decltype/incomplete-member-access.cpp
 
 The operands of `decltype`, `sizeof`, and `noexcept` are not evaluated.
 These rules apply to them:
@@ -97,8 +98,10 @@ These rules apply to them:
 - A function call does not need the definition of a template that only
   its return type names.
 
-For `decltype`, a prvalue of class type can have an incomplete or
-abstract type. Name lookup, access control, and deleted functions are
+For `decltype`, a function call that gives a prvalue of class type can
+have an incomplete or abstract type, and the class needs no usable
+destructor. `sizeof` needs a usable destructor. A member access on such
+a call needs a complete class. Name lookup, access control, and deleted functions are
 still checked.
 :::
 
@@ -106,13 +109,18 @@ still checked.
 
 :::{rule} UNEV-2
 :kind: required
-:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp
+:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp
 
 A discarded-value expression is evaluated, and its value is not used. A
 prvalue of class type creates a temporary object, which is then
 destroyed. A glvalue is not copied. A cast to `void` makes any
 expression a discarded-value expression and stops warnings about an
 unused result. Constant evaluation follows these rules.
+
+If the expression is a name, a member access, a subscript, or an
+indirection that refers to a volatile object, the program reads that
+object. A volatile operand of an operator is read too. Constant
+evaluation rejects both.
 :::
 
 ## Recommended Practice
@@ -154,11 +162,12 @@ auto n = sizeof(log_once()); // log_once is not called
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 42 of
-43 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 46 of 49 tests.
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject it ({question}`Q-0065`).
 - UNEV-4: Clang warns by default. GCC gives no warning.
+- DTY-3: GCC rejects `decltype` after `~` in an explicit destructor call.
+  Clang and EDG accept it ({question}`Q-0089`).
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

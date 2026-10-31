@@ -73,9 +73,10 @@ can come before or after the length suffix.
 
 :::{rule} PRIM-16
 :kind: reject
-:tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp
+:tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp expressions/primary/int-prefix-no-digits-hex.cpp expressions/primary/int-prefix-no-digits-binary.cpp
 
-Each digit must be valid for the base of the literal. A digit separator
+A base prefix must have at least one digit after it. Each digit must be
+valid for the base of the literal. A digit separator
 must have a digit on each side. A suffix must be one of the forms in the
 syntax.
 :::
@@ -100,7 +101,7 @@ have digits. A floating literal must not have an integer suffix.
 
 :::{rule} PRIM-5
 :kind: required
-:tests: expressions/primary/char-escapes.cpp expressions/primary/char-types.cpp expressions/primary/char-ucn-basic.cpp expressions/primary/char-ucn-control.cpp
+:tests: expressions/primary/char-escapes.cpp expressions/primary/char-types.cpp expressions/primary/char-ucn-basic.cpp expressions/primary/char-ucn-control.cpp expressions/primary/char-named-escape.cpp
 
 The prefix of a character literal sets its type:
 
@@ -115,12 +116,13 @@ The prefix of a character literal sets its type:
 An escape sequence gives one code unit or character. The forms are simple
 escapes such as `\n`, octal `\101` or `\o{101}`, hexadecimal `\x41` or
 `\x{41}`, and universal character names `\u00e9` and `\U0001F600`. A
-universal character name can name a basic or a control character.
+universal character name can name a basic or a control character. A
+named escape `\N{...}` gives the character with that Unicode name.
 :::
 
 :::{rule} PRIM-18
 :kind: reject
-:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp
+:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp expressions/primary/char-named-escape-unknown.cpp expressions/primary/char-prefixed-not-single-unit.cpp
 
 A character literal must contain at least one character. It must not
 have:
@@ -129,7 +131,9 @@ have:
 - an octal or hexadecimal escape too large for the type,
 - a universal character name for a surrogate,
 - more than one character with a `u8`, `u`, `U`, or `L` prefix,
-- a character that does not fit in one code unit of its type.
+- a prefix and a character that does not fit in one code unit of its
+  type,
+- a named escape with a name that Unicode does not define.
 :::
 
 :::{rule} PRIM-7
@@ -145,12 +149,13 @@ each character as written.
 
 :::{rule} PRIM-19
 :kind: reject
-:tests: expressions/primary/string-concat-mixed.cpp expressions/primary/string-raw-bad-delimiter.cpp expressions/primary/string-to-nonconst-pointer.cpp expressions/primary/string-raw-delimiter-too-long.cpp expressions/primary/string-raw-delimiter-backslash.cpp expressions/primary/string-concat-u8-u.cpp
+:tests: expressions/primary/string-concat-mixed.cpp expressions/primary/string-raw-bad-delimiter.cpp expressions/primary/string-to-nonconst-pointer.cpp expressions/primary/string-raw-delimiter-too-long.cpp expressions/primary/string-raw-delimiter-backslash.cpp expressions/primary/string-concat-u8-u.cpp expressions/primary/string-raw-delimiter-paren.cpp expressions/primary/string-raw-delimiter-tab.cpp
 
 If two adjacent string literals both have a prefix, the prefixes must be
 the same. A string literal does not convert to a pointer to non-const
 characters. A raw string delimiter must have at most 16 characters and
-must not contain a space or a backslash.
+must not contain a space, a parenthesis, a backslash, or a control
+character such as a tab.
 :::
 
 :::{rule} PRIM-10
@@ -165,25 +170,25 @@ not convert to an integer.
 
 :::{rule} PRIM-11
 :kind: required
-:tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp
+:tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp expressions/primary/this-trailing-return.cpp
 
 In a member function of class `C`, `this` is a prvalue that points to
 the object. Its type is pointer to `C` with the cv-qualifiers of the
 member function. A program can also use `this` in a default member
-initializer.
+initializer and in the trailing return type of a member function.
 :::
 
 :::{rule} PRIM-20
 :kind: reject
-:tests: expressions/primary/this-namespace.cpp expressions/primary/this-static.cpp
+:tests: expressions/primary/this-namespace.cpp expressions/primary/this-static.cpp expressions/primary/this-explicit-object.cpp
 
-A program must not use `this` in a static member function or outside a
-class.
+A program must not use `this` in a static member function, in a member
+function with an explicit object parameter, or outside a class.
 :::
 
 :::{rule} PRIM-12
 :kind: required
-:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp
+:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp
 
 A name refers to the entity that lookup finds *(referenced)*. Its value
 category is:
@@ -192,6 +197,8 @@ category is:
 - a prvalue for an enumerator.
 
 In a member function, the name of a non-static member means `this->m`.
+A data member then has the cv-qualifiers of the object, unless it is
+`mutable` or a reference.
 Elsewhere, such a name is valid only in an unevaluated operand. `::x`
 names `x` in the global namespace. `N::x` names `x` in the namespace or
 class `N`.
@@ -230,11 +237,11 @@ matrix, `'ab'` is `0x6162` and `char` is signed.
 
 :::{rule} PRIM-9
 :kind: unspecified
-:tests: expressions/primary/string-compare-constant.cpp expressions/primary/string-same-object-either.cpp
+:tests: expressions/primary/string-compare-constant.cpp expressions/primary/string-same-object-either.cpp expressions/primary/string-same-literal-two-evaluations.cpp
 
 It is unspecified if two string literals with the same characters are
-the same object. Constant evaluation rejects a comparison of their
-addresses.
+the same object. This also applies to two evaluations of one string
+literal. Constant evaluation rejects a comparison of their addresses.
 :::
 
 :::{rule} PRIM-15
@@ -244,6 +251,35 @@ addresses.
 The value of a floating literal outside the range of its type is
 implementation-defined. An implementation can reject it
 ({question}`Q-0063`).
+:::
+
+:::{rule} PRIM-21
+:kind: impl-defined
+:tests: expressions/primary/float-nearest-value.cpp
+
+If the value of a floating literal is in the range of its type but has no
+exact representation, the result is one of the two nearest values that
+the type can represent. The implementation chooses which one. On the
+x86-64 Linux targets in the matrix, it is the nearer value.
+:::
+
+:::{rule} PRIM-22
+:kind: impl-defined
+:tests: expressions/primary/float-extended-suffix.cpp
+
+The suffixes `f16`, `f32`, `f64`, `f128`, and `bf16`, in either case,
+give the extended floating-point types *(referenced)*. Their support is
+conditional. GCC and EDG accept them. Clang rejects them.
+:::
+
+:::{rule} PRIM-23
+:kind: impl-defined
+:tests: expressions/primary/char-unprefixed-not-single-unit.cpp
+
+A character literal without a prefix that contains one character with
+no single code unit in the ordinary encoding is conditionally supported.
+If an implementation accepts it, its type is `int` and its value is
+implementation-defined. No implementation in the matrix accepts it.
 :::
 
 ## Recommended Practice
@@ -276,14 +312,15 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 77 of
-79 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 91 of 94 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
   ({question}`Q-0064`).
 - PRIM-15: Clang and GCC accept `1e999f` with a warning and give
   infinity. EDG rejects it ({question}`Q-0063`).
+- PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
+  rejects them. Support is conditional.
 
 Inputs: clang-lex-literal, clang-diag-lex, clang-sema-expr,
 clang-diag-sema, edg-decls.

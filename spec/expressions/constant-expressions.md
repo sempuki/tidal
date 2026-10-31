@@ -30,11 +30,12 @@ During constant evaluation, the program can call only `constexpr` and
 
 :::{rule} CE-3
 :kind: reject
-:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp
+:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp
 
 Constant evaluation must not read the value of a variable that is not
 usable in constant expressions. A variable is usable if it is `constexpr`,
-or if it is a `const` integer variable with a constant initializer (CV-8).
+or if it is a `const` variable of integer or enumeration type with a
+constant initializer (CV-8). A `const volatile` variable is not usable.
 A function parameter is usable only during an evaluation that called the
 function.
 :::
@@ -94,12 +95,14 @@ behavior. MUL-9, ADD-10, REF-5, INIT-1, and CV-5 give such operations.
 
 :::{rule} CE-11
 :kind: required
-:tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/integral-constant-array-bound.cpp
+:tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/integral-constant-array-bound.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
 
 An array bound, an enumerator value, and a case label need a constant
 expression of integer or enumeration type. Where a constant converts to
-another type for such a use, the conversion must not narrow. The condition
-of `if constexpr` is an exception (IF-16).
+another type for such a use, the conversion must not narrow. This also
+applies to the condition of `explicit(...)` and to the operand of a
+`noexcept` specifier (EXS-1). The condition of `if constexpr` is an
+exception (IF-16).
 :::
 
 :::{rule} CE-12
@@ -115,6 +118,50 @@ Constant evaluation must not read an object through a `volatile` lvalue.
 
 Constant evaluation must not compare the addresses of two string literals
 for equality. It is unspecified if two equal literals share storage.
+:::
+
+:::{rule} CE-14
+:kind: reject
+:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp
+
+A pointer or reference that is the value of a constant expression must
+not refer to an object with automatic storage duration or to a temporary
+object. It can refer to an object with static storage duration.
+:::
+
+:::{rule} CE-15
+:kind: reject
+:tests: expressions/constant-expressions/relational-unrelated-pointers.cpp
+
+Constant evaluation must not compare pointers to unrelated objects with
+`<`, `>`, `<=`, or `>=`, because the result is unspecified.
+:::
+
+:::{rule} CE-16
+:kind: reject
+:tests: expressions/constant-expressions/call-before-definition.cpp
+
+Constant evaluation must not call a `constexpr` function that is not yet
+defined at the point of the evaluation.
+:::
+
+:::{rule} CE-17
+:kind: required
+:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp
+
+A `constexpr` function can contain a `goto`, a `static` or `thread_local`
+variable, and a variable of a type that is not a literal type. Constant
+evaluation rejects a call only if the evaluation reaches one of them.
+:::
+
+:::{rule} CE-18
+:kind: required
+:tests: expressions/constant-expressions/unknown-reference-not-read.cpp
+
+A reference whose object is not known during constant evaluation can
+still occur in a constant expression if the evaluation does not read
+through it. An example is a call of a `constexpr` member function that
+does not use the object.
 :::
 
 ## Implementation Requirements
@@ -156,8 +203,7 @@ static_assert(h(-1) == 0);            // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 31 of
-32 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 43 of 46 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000 and
   a loop of 100000000 steps by default. Clang stops at a depth of 512
@@ -169,5 +215,9 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 31 of
   (compare {question}`Q-0020`).
 - CE-13: Clang rejects the comparison of two string literal addresses.
   GCC and EDG accept it and fold it to a value ({question}`Q-0033`).
+- CE-11: EDG accepts `explicit(2)` and converts the condition to `bool`
+  ({question}`Q-0078`).
+- CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
+  EDG accept it ({question}`Q-0090`).
 
 Inputs: clang-sema-expr, clang-diag-sema.
