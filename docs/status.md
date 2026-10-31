@@ -7,9 +7,9 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
-| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 0 |  | 0 |  | 0 flagged |
+| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 6 | 3 required, 2 reject, 1 recommended | 21 | Q-0112 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 27 |  | 0 flagged |
-| [Names, scopes, and lookup](../spec/foundations/names.md) | 0 |  | 0 |  | 0 flagged |
+| [Names, scopes, and lookup](../spec/foundations/names.md) | 7 | 6 required, 1 reject | 26 |  | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 7 | 6 required, 1 recommended | 15 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 21 | 14 required, 7 reject | 65 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 32 | Q-0097 | 0 flagged |
@@ -78,12 +78,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-all-pages.txt`. The table above comes from
+`reports/similarity/2026-10-31-all-pages-2.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 2841/2841 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 2888/2888 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -99,7 +99,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and ten questions are open for opinions, each with a provisional answer the
+One hundred and eleven questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -128,9 +128,9 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 0. Continue the Foundations chapter in the principles-first format
-   (decision 0024). The objects page is drafted; translation and names
-   come next, then values, conversions, evaluation order, and constant
-   evaluation move here from Expressions. After that, add a Principles
+   (decision 0024). The objects, translation, and names pages are
+   drafted. Next: move values, conversions, evaluation order, and
+   constant evaluation here from Expressions, and add a Principles
    segment to every other page.
 1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.

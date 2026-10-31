@@ -2631,6 +2631,32 @@ compilers affect the Status column.
 | `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-plus-ordinary.cpp` | NAM-5 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/class-member-type-needs-order.cpp` | NAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/class-members-any-order.cpp` | NAM-6 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/function-not-later-global.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/hiding-ignores-kind.cpp` | NAM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/label-and-variable-same-name.cpp` | NAM-7 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/label-duplicate.cpp` | NAM-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/label-scope-function.cpp` | NAM-7 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/namespace-member-defined-outside.cpp` | NAM-4 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/namespace-qualified-use.cpp` | NAM-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/namespace-reopened.cpp` | NAM-4 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/parameter-hides-global.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/qualified-reaches-hidden-global.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/redeclare-different-kind.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/redeclare-function-ok.cpp` | NAM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/redeclare-same-scope.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/scope-ends-with-block.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/use-before-declaration.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/visible-from-declaration.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/names/visible-in-own-initializer.cpp` | NAM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/objects/address-stable.cpp` | OBJ-7 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/array-elements-order.cpp` | OBJ-6 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/block-reverse-order.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
@@ -2658,6 +2684,27 @@ compilers affect the Status column.
 | `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/if-consteval-selects.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/ill-formed-in-unused-function.cpp` | TR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-address.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-called.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-exit-status.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/main-falls-off-end.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/main-no-definition.cpp` | TR-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/translation/main-nonzero-status.cpp` | TR-2 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-with-args.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `foundations/translation/undefined-at-link.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/translation/unit-sees-own-declarations-only.cpp` | TR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/units-translated-separately.cpp` | TR-4 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/warning-not-error.cpp` | TR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-scope.cpp` | STMT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2856,7 +2903,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-2841/2841 tests pass on baseline compilers.
+2888/2888 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -11301,6 +11348,90 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/names/adl-not-for-fundamental.cpp` (clang-host): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/adl-not-for-fundamental.cpp` (gcc-host): error: ‘twice’ was not declared in this scope; did you mean ‘n::twice’?
+- `foundations/names/adl-not-for-fundamental.cpp` (edg-7.0): error: identifier "twice" is undefined
+- `foundations/names/adl-not-for-fundamental.cpp` (gcc-14): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
+- `foundations/names/adl-not-for-fundamental.cpp` (clang-18): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/adl-not-for-fundamental.cpp` (gcc-16): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
+- `foundations/names/adl-not-for-fundamental.cpp` (clang-22): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/class-member-type-needs-order.cpp` (clang-host): error: unknown type name 'T'
+- `foundations/names/class-member-type-needs-order.cpp` (gcc-host): error: ‘T’ does not name a type
+- `foundations/names/class-member-type-needs-order.cpp` (edg-7.0): error: identifier "T" is undefined
+- `foundations/names/class-member-type-needs-order.cpp` (gcc-14): error: 'T' does not name a type
+- `foundations/names/class-member-type-needs-order.cpp` (clang-18): error: unknown type name 'T'
+- `foundations/names/class-member-type-needs-order.cpp` (gcc-16): error: 'T' does not name a type
+- `foundations/names/class-member-type-needs-order.cpp` (clang-22): error: unknown type name 'T'
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-host): error: use of undeclared identifier 'n'; did you mean 'S::n'?
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (gcc-host): error: ‘n’ was not declared in this scope
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (edg-7.0): error: identifier "n" is undefined
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (gcc-14): error: 'n' was not declared in this scope
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-18): error: use of undeclared identifier 'n'; did you mean 'S::n'?
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (gcc-16): error: 'n' was not declared in this scope
+- `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-22): error: use of undeclared identifier 'n'; did you mean 'S::n'?
+- `foundations/names/function-not-later-global.cpp` (clang-host): error: use of undeclared identifier 'later'
+- `foundations/names/function-not-later-global.cpp` (gcc-host): error: ‘later’ was not declared in this scope
+- `foundations/names/function-not-later-global.cpp` (edg-7.0): error: identifier "later" is undefined
+- `foundations/names/function-not-later-global.cpp` (gcc-14): error: 'later' was not declared in this scope
+- `foundations/names/function-not-later-global.cpp` (clang-18): error: use of undeclared identifier 'later'
+- `foundations/names/function-not-later-global.cpp` (gcc-16): error: 'later' was not declared in this scope
+- `foundations/names/function-not-later-global.cpp` (clang-22): error: use of undeclared identifier 'later'
+- `foundations/names/hiding-ignores-kind.cpp` (clang-host): error: called object type 'int' is not a function or function pointer
+- `foundations/names/hiding-ignores-kind.cpp` (gcc-host): error: ‘f’ cannot be used as a function
+- `foundations/names/hiding-ignores-kind.cpp` (edg-7.0): error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+- `foundations/names/hiding-ignores-kind.cpp` (gcc-14): error: 'f' cannot be used as a function
+- `foundations/names/hiding-ignores-kind.cpp` (clang-18): error: called object type 'int' is not a function or function pointer
+- `foundations/names/hiding-ignores-kind.cpp` (gcc-16): error: 'f' cannot be used as a function
+- `foundations/names/hiding-ignores-kind.cpp` (clang-22): error: called object type 'int' is not a function or function pointer
+- `foundations/names/label-duplicate.cpp` (clang-host): error: redefinition of label 'a' / note: previous definition is here
+- `foundations/names/label-duplicate.cpp` (gcc-host): error: duplicate label ‘a’
+- `foundations/names/label-duplicate.cpp` (edg-7.0): error: label "a" has already been defined (previous definition at line 3)
+- `foundations/names/label-duplicate.cpp` (gcc-14): error: duplicate label 'a'
+- `foundations/names/label-duplicate.cpp` (clang-18): error: redefinition of label 'a' / note: previous definition is here
+- `foundations/names/label-duplicate.cpp` (gcc-16): error: duplicate label 'a'
+- `foundations/names/label-duplicate.cpp` (clang-22): error: redefinition of label 'a' / note: previous definition is here
+- `foundations/names/namespace-qualified-use.cpp` (clang-host): error: use of undeclared identifier 'a'; did you mean 'n::a'?
+- `foundations/names/namespace-qualified-use.cpp` (gcc-host): error: ‘a’ was not declared in this scope; did you mean ‘n::a’?
+- `foundations/names/namespace-qualified-use.cpp` (edg-7.0): error: identifier "a" is undefined
+- `foundations/names/namespace-qualified-use.cpp` (gcc-14): error: 'a' was not declared in this scope; did you mean 'n::a'?
+- `foundations/names/namespace-qualified-use.cpp` (clang-18): error: use of undeclared identifier 'a'; did you mean 'n::a'?
+- `foundations/names/namespace-qualified-use.cpp` (gcc-16): error: 'a' was not declared in this scope; did you mean 'n::a'?
+- `foundations/names/namespace-qualified-use.cpp` (clang-22): error: use of undeclared identifier 'a'; did you mean 'n::a'?
+- `foundations/names/redeclare-different-kind.cpp` (clang-host): error: redefinition of 'a' as different kind of symbol / note: previous definition is here
+- `foundations/names/redeclare-different-kind.cpp` (gcc-host): error: ‘void a()’ redeclared as different kind of entity / note: previous declaration ‘int a’
+- `foundations/names/redeclare-different-kind.cpp` (edg-7.0): error: declaration is incompatible with "int a" (declared at line 3)
+- `foundations/names/redeclare-different-kind.cpp` (gcc-14): error: 'void a()' redeclared as different kind of entity / note: previous declaration 'int a'
+- `foundations/names/redeclare-different-kind.cpp` (clang-18): error: redefinition of 'a' as different kind of symbol / note: previous definition is here
+- `foundations/names/redeclare-different-kind.cpp` (gcc-16): error: 'void a()' redeclared as different kind of entity / note: previous declaration 'int a'
+- `foundations/names/redeclare-different-kind.cpp` (clang-22): error: redefinition of 'a' as different kind of symbol / note: previous definition is here
+- `foundations/names/redeclare-parameter-in-body.cpp` (clang-host): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/redeclare-parameter-in-body.cpp` (gcc-host): error: declaration of ‘int a’ shadows a parameter
+- `foundations/names/redeclare-parameter-in-body.cpp` (edg-7.0): error: "a" has already been declared in the current scope
+- `foundations/names/redeclare-parameter-in-body.cpp` (gcc-14): error: declaration of 'int a' shadows a parameter
+- `foundations/names/redeclare-parameter-in-body.cpp` (clang-18): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/redeclare-parameter-in-body.cpp` (gcc-16): error: declaration of 'int a' shadows a parameter
+- `foundations/names/redeclare-parameter-in-body.cpp` (clang-22): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/redeclare-same-scope.cpp` (clang-host): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/redeclare-same-scope.cpp` (gcc-host): error: redeclaration of ‘int a’
+- `foundations/names/redeclare-same-scope.cpp` (edg-7.0): error: "a" has already been declared in the current scope
+- `foundations/names/redeclare-same-scope.cpp` (gcc-14): error: redeclaration of 'int a'
+- `foundations/names/redeclare-same-scope.cpp` (clang-18): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/redeclare-same-scope.cpp` (gcc-16): error: redeclaration of 'int a'
+- `foundations/names/redeclare-same-scope.cpp` (clang-22): error: redefinition of 'a' / note: previous definition is here
+- `foundations/names/scope-ends-with-block.cpp` (clang-host): error: use of undeclared identifier 'a'
+- `foundations/names/scope-ends-with-block.cpp` (gcc-host): error: ‘a’ was not declared in this scope
+- `foundations/names/scope-ends-with-block.cpp` (edg-7.0): error: identifier "a" is undefined
+- `foundations/names/scope-ends-with-block.cpp` (gcc-14): error: 'a' was not declared in this scope
+- `foundations/names/scope-ends-with-block.cpp` (clang-18): error: use of undeclared identifier 'a'
+- `foundations/names/scope-ends-with-block.cpp` (gcc-16): error: 'a' was not declared in this scope
+- `foundations/names/scope-ends-with-block.cpp` (clang-22): error: use of undeclared identifier 'a'
+- `foundations/names/use-before-declaration.cpp` (clang-host): error: use of undeclared identifier 'a'
+- `foundations/names/use-before-declaration.cpp` (gcc-host): error: ‘a’ was not declared in this scope
+- `foundations/names/use-before-declaration.cpp` (edg-7.0): error: identifier "a" is undefined
+- `foundations/names/use-before-declaration.cpp` (gcc-14): error: 'a' was not declared in this scope
+- `foundations/names/use-before-declaration.cpp` (clang-18): error: use of undeclared identifier 'a'
+- `foundations/names/use-before-declaration.cpp` (gcc-16): error: 'a' was not declared in this scope
+- `foundations/names/use-before-declaration.cpp` (clang-22): error: use of undeclared identifier 'a'
 - `foundations/objects/deleted-object-read-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of heap allocated object that has been deleted
 - `foundations/objects/deleted-object-read-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: use of allocated storage after deallocation in a constant expression
 - `foundations/objects/deleted-object-read-constant.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access expired storage
@@ -11350,6 +11481,86 @@ check that the rejection has the intended cause.
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `foundations/objects/uninitialized-member-read-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized member 'P::y'
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(1 / 0)' is not a constant expression
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(1 / 0)' is not a constant expression
+- `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
+- `foundations/translation/ill-formed-diagnosed.cpp` (clang-host): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/ill-formed-diagnosed.cpp` (gcc-host): error: invalid conversion from ‘const char*’ to ‘int’ [-fpermissive]
+- `foundations/translation/ill-formed-diagnosed.cpp` (edg-7.0): error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+- `foundations/translation/ill-formed-diagnosed.cpp` (gcc-14): error: invalid conversion from 'const char*' to 'int' [-fpermissive]
+- `foundations/translation/ill-formed-diagnosed.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/ill-formed-diagnosed.cpp` (gcc-16): error: invalid conversion from 'const char*' to 'int' [-fpermissive]
+- `foundations/translation/ill-formed-diagnosed.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/ill-formed-in-unused-function.cpp` (clang-host): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/ill-formed-in-unused-function.cpp` (gcc-host): error: invalid conversion from ‘const char*’ to ‘int’ [-fpermissive]
+- `foundations/translation/ill-formed-in-unused-function.cpp` (edg-7.0): error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+- `foundations/translation/ill-formed-in-unused-function.cpp` (gcc-14): error: invalid conversion from 'const char*' to 'int' [-fpermissive]
+- `foundations/translation/ill-formed-in-unused-function.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/ill-formed-in-unused-function.cpp` (gcc-16): error: invalid conversion from 'const char*' to 'int' [-fpermissive]
+- `foundations/translation/ill-formed-in-unused-function.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/main-address.cpp` (clang-host): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `foundations/translation/main-address.cpp` (gcc-host): error: ISO C++ forbids taking address of function ‘::main’ [-Wpedantic]
+- `foundations/translation/main-address.cpp` (edg-7.0): error: function "main" may not be called or have its address taken
+- `foundations/translation/main-address.cpp` (gcc-14): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `foundations/translation/main-address.cpp` (clang-18): error: ISO C++ does not allow 'main' to be used by a program [-Werror,-Wmain]
+- `foundations/translation/main-address.cpp` (gcc-16): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `foundations/translation/main-address.cpp` (clang-22): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `foundations/translation/main-called.cpp` (clang-host): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `foundations/translation/main-called.cpp` (gcc-host): error: ISO C++ forbids taking address of function ‘::main’ [-Wpedantic]
+- `foundations/translation/main-called.cpp` (edg-7.0): error: function "main" may not be called or have its address taken
+- `foundations/translation/main-called.cpp` (gcc-14): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `foundations/translation/main-called.cpp` (clang-18): error: ISO C++ does not allow 'main' to be used by a program [-Werror,-Wmain]
+- `foundations/translation/main-called.cpp` (gcc-16): error: ISO C++ forbids taking address of function '::main' [-Wpedantic]
+- `foundations/translation/main-called.cpp` (clang-22): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
+- `foundations/translation/main-no-definition.cpp` (clang-host): link: undefined reference to `main'
+- `foundations/translation/main-no-definition.cpp` (gcc-host): link: undefined reference to `main'
+- `foundations/translation/main-no-definition.cpp` (gcc-14): link: undefined reference to `main'
+- `foundations/translation/main-no-definition.cpp` (clang-18): link: undefined reference to `main'
+- `foundations/translation/main-no-definition.cpp` (gcc-16): link: undefined reference to `main'
+- `foundations/translation/main-no-definition.cpp` (clang-22): link: undefined reference to `main'
+- `foundations/translation/main-return-type-not-int.cpp` (clang-host): error: 'main' must return 'int'
+- `foundations/translation/main-return-type-not-int.cpp` (gcc-host): error: ‘::main’ must return ‘int’
+- `foundations/translation/main-return-type-not-int.cpp` (edg-7.0): error: return type of function "main" must be "int"
+- `foundations/translation/main-return-type-not-int.cpp` (gcc-14): error: '::main' must return 'int'
+- `foundations/translation/main-return-type-not-int.cpp` (clang-18): error: 'main' must return 'int'
+- `foundations/translation/main-return-type-not-int.cpp` (gcc-16): error: '::main' must return 'int'
+- `foundations/translation/main-return-type-not-int.cpp` (clang-22): error: 'main' must return 'int'
+- `foundations/translation/main-template.cpp` (clang-host): error: 'main' cannot be a template
+- `foundations/translation/main-template.cpp` (gcc-host): error: cannot declare ‘::main’ to be a template
+- `foundations/translation/main-template.cpp` (edg-7.0): error: "main" is not a valid name for a function template
+- `foundations/translation/main-template.cpp` (gcc-14): error: cannot declare '::main' to be a template
+- `foundations/translation/main-template.cpp` (clang-18): error: 'main' cannot be a template
+- `foundations/translation/main-template.cpp` (gcc-16): error: cannot declare '::main' to be a template
+- `foundations/translation/main-template.cpp` (clang-22): error: 'main' cannot be a template
+- `foundations/translation/main-wrong-parameter-types.cpp` (clang-host): error: first parameter of 'main' (argument count) must be of type 'int'
+- `foundations/translation/main-wrong-parameter-types.cpp` (gcc-host): error: first argument of ‘int main(long int, char**)’ should be ‘int’ [-Wmain]
+- `foundations/translation/main-wrong-parameter-types.cpp` (gcc-14): error: first argument of 'int main(long int, char**)' should be 'int' [-Wmain]
+- `foundations/translation/main-wrong-parameter-types.cpp` (clang-18): error: first parameter of 'main' (argument count) must be of type 'int'
+- `foundations/translation/main-wrong-parameter-types.cpp` (gcc-16): error: first argument of 'int main(long int, char**)' should be 'int' [-Wmain]
+- `foundations/translation/main-wrong-parameter-types.cpp` (clang-22): error: first parameter of 'main' (argument count) must be of type 'int'
+- `foundations/translation/undefined-at-link.cpp` (clang-host): link: undefined reference to `declared_only()'
+- `foundations/translation/undefined-at-link.cpp` (gcc-host): link: undefined reference to `declared_only()'
+- `foundations/translation/undefined-at-link.cpp` (gcc-14): link: undefined reference to `declared_only()'
+- `foundations/translation/undefined-at-link.cpp` (clang-18): link: undefined reference to `declared_only()'
+- `foundations/translation/undefined-at-link.cpp` (gcc-16): link: undefined reference to `declared_only()'
+- `foundations/translation/undefined-at-link.cpp` (clang-22): link: undefined reference to `declared_only()'
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (clang-host): error: use of undeclared identifier 'defined_elsewhere'
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (gcc-host): error: ‘defined_elsewhere’ was not declared in this scope
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (edg-7.0): error: identifier "defined_elsewhere" is undefined
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (gcc-14): error: 'defined_elsewhere' was not declared in this scope
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (clang-18): error: use of undeclared identifier 'defined_elsewhere'
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (gcc-16): error: 'defined_elsewhere' was not declared in this scope
+- `foundations/translation/unit-sees-own-declarations-only.cpp` (clang-22): error: use of undeclared identifier 'defined_elsewhere'
+- `foundations/translation/warning-as-error-with-flag.cpp` (clang-host): error: unused variable 'unused' [-Werror,-Wunused-variable]
+- `foundations/translation/warning-as-error-with-flag.cpp` (gcc-host): error: unused variable ‘unused’ [-Werror=unused-variable]
+- `foundations/translation/warning-as-error-with-flag.cpp` (gcc-14): error: unused variable 'unused' [-Werror=unused-variable]
+- `foundations/translation/warning-as-error-with-flag.cpp` (clang-18): error: unused variable 'unused' [-Werror,-Wunused-variable]
+- `foundations/translation/warning-as-error-with-flag.cpp` (gcc-16): error: unused variable 'unused' [-Werror=unused-variable]
+- `foundations/translation/warning-as-error-with-flag.cpp` (clang-22): error: unused variable 'unused' [-Werror,-Wunused-variable]
 - `statements/blocks/block-scope.cpp` (clang-host): error: use of undeclared identifier 'inner'
 - `statements/blocks/block-scope.cpp` (gcc-host): error: ‘inner’ was not declared in this scope
 - `statements/blocks/block-scope.cpp` (edg-7.0): error: identifier "inner" is undefined
