@@ -20,7 +20,7 @@ current state only. The history of how it got here is in `git log`.
 | [Iteration statements](../spec/statements/loops.md) | 7 | 4 required, 3 reject | 19 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 26 | Q-0020, Q-0026, Q-0098 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 12 | 8 required, 3 reject, 1 unspecified | 40 | Q-0041, Q-0097 | 0 flagged |
-| [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 5 impl-defined, 1 recommended | 94 | Q-0063, Q-0064 | 0 flagged |
+| [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 9 | 5 required, 2 reject, 2 recommended | 49 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 18 | 7 required, 2 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 34 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
 | [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 38 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
@@ -33,7 +33,7 @@ current state only. The history of how it got here is in `git log`.
 | [The comma operator](../spec/expressions/comma.md) | 8 | 5 required, 2 reject, 1 recommended | 17 |  | 0 flagged |
 | [Unary operators](../spec/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 54 | Q-0031 | 0 flagged |
 | [Pointers to members](../spec/expressions/member-pointers.md) | 11 | 5 required, 4 reject, 1 undefined, 1 unspecified | 66 |  | 0 flagged |
-| [Postfix expressions](../spec/expressions/postfix.md) | 15 | 7 required, 5 reject, 2 undefined, 1 impl-defined | 39 | Q-0034 | 0 flagged |
+| [Postfix expressions](../spec/expressions/postfix.md) | 15 | 7 required, 5 reject, 2 undefined, 1 conditionally-supported | 39 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 18 | 8 required, 6 reject, 2 undefined, 2 impl-defined | 45 | Q-0017 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 15 | 8 required, 4 reject, 2 undefined, 1 unspecified | 46 | Q-0035, Q-0036, Q-0091 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 21 | 15 required, 3 reject, 1 undefined, 1 unspecified, 1 recommended | 55 | Q-0037, Q-0092 | 0 flagged |
@@ -71,9 +71,9 @@ current state only. The history of how it got here is in `git log`.
 | [Conversion functions](../spec/classes/conversion-functions.md) | 8 | 5 required, 2 reject, 1 recommended | 60 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 12 | 8 required, 2 reject, 1 unspecified, 1 recommended | 89 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 63 | Q-0061, Q-0062 | 0 flagged |
-| [Throw expressions and the exception object](../spec/exceptions/throw.md) | 0 |  | 0 |  | 0 flagged |
-| [Try blocks and handlers](../spec/exceptions/handlers.md) | 0 |  | 0 |  | 0 flagged |
-| [Unwinding and termination](../spec/exceptions/unwinding.md) | 0 |  | 0 |  | 0 flagged |
+| [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 8 required, 2 reject, 1 recommended | 30 |  | 0 flagged |
+| [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 |  | 0 flagged |
+| [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 29 |  | 0 flagged |
 | [Glossary](../spec/glossary.md) | 16 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -135,8 +135,6 @@ forward-progress rule belongs with threads, which are out of scope.
    handlers, unwinding. Then ask the reviewer who prompted the
    principles-first change to read the Foundations chapter and two topic
    pages, and decide whether rules also want short annotations.
-1. Write a contributor guide: roles, how to claim a section, and the steps
-   a section passes before it counts as drafted.
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
 3. Add a `tidal-error` directive that matches the expected diagnostic, so
    `reject` tests check their cause.
