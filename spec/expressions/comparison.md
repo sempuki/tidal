@@ -201,7 +201,7 @@ the addresses.
 `<=>` on integer, enumeration, or object pointer operands gives
 `std::strong_ordering`. On floating-point operands it gives
 `std::partial_ordering`. These types come from the library
-*(library referenced)*.
+({rule}`LSUP-2`).
 :::
 
 :::{rule} CMP-25

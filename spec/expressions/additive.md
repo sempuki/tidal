@@ -236,8 +236,7 @@ the range of its type, the behavior is undefined, as for MUL-12
 :tests: expressions/additive/pointer-difference-type-lp64.cpp expressions/additive/pointer-difference-type-ilp32.cpp
 
 The type of `p - q` is a signed integer type that the implementation
-chooses. The library names it `std::ptrdiff_t`
-*(library referenced)*.
+chooses. The library names it `std::ptrdiff_t` ({rule}`LSUP-4`).
 :::
 
 :::{rule} ADD-13

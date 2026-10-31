@@ -61,7 +61,7 @@ elements that the braces create.
 An *initializer-list constructor* is a constructor whose first parameter
 is `std::initializer_list<E>` or a reference to that type, and whose
 other parameters have default arguments. `std::initializer_list` comes
-from the standard library *(library referenced)*.
+from the standard library ({rule}`LSUP-1`).
 
 ## Constraints
 

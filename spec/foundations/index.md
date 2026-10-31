@@ -9,6 +9,7 @@ model is checked in its simplest setting.
 :::{tidal-pages}
 translation
 types
+language-support
 objects
 values
 conversions
@@ -23,6 +24,7 @@ constant-evaluation
 
 translation
 types
+language-support
 objects
 values
 conversions

@@ -204,7 +204,7 @@ In `auto x = { ... };` (AUTO-7):
 - each element must give the same `T`,
 - the list must not be empty,
 - a declaration of `std::initializer_list` must come first
-  *(library referenced)*.
+  ({rule}`LSUP-1`).
 :::
 
 :::{rule} AUTO-8

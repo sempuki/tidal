@@ -10,6 +10,7 @@ current state only. The history of how the project got here is in
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 30 | Q-0112 | 0 flagged |
 | [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 2 | 4 | Q-0120 | 0 flagged |
+| [Language-support types](../spec/foundations/language-support.md) | 4 | 2 required, 2 reject | 9 | 2 | 0 | 0 |  | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 34 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 52 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 29 | Q-0028, Q-0100 | 0 flagged |
@@ -90,7 +91,7 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3218/3218 tests pass on each. Tests may
+All compilers are baseline. 3230/3230 tests pass on each. Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
@@ -159,7 +160,9 @@ forward-progress rule belongs with threads, which are out of scope.
 current phase is phase 2, foundations that later pages need:
 
 1. Item G1: keywords, reserved names, and the literal suffix grammar.
-2. Item K: the language-support types, then the task-level guides.
+2. The task-level guides of phase 2: a class that owns a resource, error
+   handling, integer arithmetic without undefined behavior, enumerations
+   in switches, and reading the spec.
 3. Act on the remaining findings of exercises X1 to X4
    (`reports/clean-room/X1/` to `X4/`). The most cited gaps, the orders
    that no rule gave, default initialization, skipped declarations, and

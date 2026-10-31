@@ -56,6 +56,7 @@ Every rule ID starts with the prefix of its page.
 | `LNK` | `declarations/storage-linkage.md` |
 | `LOG` | `expressions/logical.md` |
 | `LOOP` | `statements/loops.md` |
+| `LSUP` | `foundations/language-support.md` |
 | `LSP` | `declarations/linkage-specifications.md` |
 | `MPTR` | `expressions/member-pointers.md` |
 | `MUL` | `expressions/multiplicative.md` |

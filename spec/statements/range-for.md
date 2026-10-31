@@ -113,7 +113,7 @@ outermost block of the body.
 
 The body executes once for each element of the range, in order. Each
 element initializes the loop variable. A braced list gives a
-`std::initializer_list` *(library referenced)*.
+`std::initializer_list` ({rule}`LSUP-1`).
 :::
 
 :::{rule} RFOR-3

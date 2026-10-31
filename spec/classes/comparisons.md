@@ -55,7 +55,7 @@ The *comparison category types* are:
 - `std::partial_ordering`.
 
 A program that uses a defaulted `<=>` must declare these types, usually
-through the standard library *(library referenced)*.
+through the standard library ({rule}`LSUP-2`).
 
 ## Constraints
 
