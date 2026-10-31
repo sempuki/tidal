@@ -37,3 +37,5 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | edg-class-decl | edg | `src/class_decl.c` | sanitized | `9a014800a411bc25e6bb2395c3c68b0c61eef1a55ccb5b274dfd323e2d586ce3` |
 | clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `4c0dcf0757557885412a691c9ea716d4cfd7f8a796ce85aeffee7da7c7cfdd28` |
 | clang-diag-lex | llvm | `clang/include/clang/Basic/DiagnosticLexKinds.td` | sanitized | `9af1667ed59e8d7c9e5ec7abb3acbcff57ad6f4148517a4bf21631d0f186e720` |
+| clang-ast-exprconstant | llvm | `clang/lib/AST/ExprConstant.cpp` | sanitized | `50c474805f9914a2c54d75f2ddd56d82dc20c128069855155f3c37db26e5bcf9` |
+| clang-diag-ast | llvm | `clang/include/clang/Basic/DiagnosticASTKinds.td` | sanitized | `08b4b3233bf2cb43846ad96ed80390419a28a432bf07d2cee0627149f1e9ebca` |

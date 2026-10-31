@@ -149,6 +149,18 @@
       "repo": "llvm",
       "path": "clang/include/clang/Basic/DiagnosticLexKinds.td",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-ast-exprconstant",
+      "repo": "llvm",
+      "path": "clang/lib/AST/ExprConstant.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-diag-ast",
+      "repo": "llvm",
+      "path": "clang/include/clang/Basic/DiagnosticASTKinds.td",
+      "class": "sanitized"
     }
   ]
 }
