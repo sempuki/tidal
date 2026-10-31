@@ -179,3 +179,40 @@ Do not use `shall`, `may`, `might`, or `will` in rules.
 The `Evidence` segment is informative. The segment records compiler results, links
 to questions in `questions/`, and notes divergences. Each divergence names
 the compilers and the question that holds the provisional answer.
+
+## 8. Grammar
+
+A Syntax segment holds a `productionlist` with the group `tidal`
+(decision 0040):
+
+    ```{eval-rst}
+    .. productionlist:: tidal
+       if_stmt: "if" ["constexpr"] "(" [`init_stmt`] `condition` ")"
+              :    `statement` ["else" `statement`]
+    ```
+
+| Form | Meaning |
+|---|---|
+| `"if"` | the terminal `if` |
+| `` `condition` `` | a nonterminal, defined once in the whole spec |
+| `[x]` | `x` is optional |
+| `{x}` | `x` repeats zero or more times |
+| `( x )` | grouping |
+| `x \| y` | `x` or `y` |
+| a line that starts with `:` | continues the right-hand side above; `: \|` starts a new alternative |
+
+Shared nonterminals have these names and defining pages:
+
+| Nonterminal | Page |
+|---|---|
+| `statement`, `labeled_stmt`, `compound_stmt`, `expression_stmt` | `statements/index.md`, `statements/blocks.md` |
+| `init_stmt`, `condition` | `statements/if.md` |
+| `declaration`, `block_decl`, `simple_decl`, `decl_specifiers`, `decl_specifier`, `type_specifier` | `declarations/index.md` |
+| `declarator`, `type_id`, `cv`, `ref_qualifier`, `parameters`, `parameter` | `declarations/declarators.md`, `declarations/functions/default-arguments.md` |
+| `init`, `braced_init` | `declarations/initialization/forms.md`, `declarations/initialization/list.md` |
+| `expression`, `constant_expr` | `expressions/comma.md`, `foundations/constant-evaluation.md` |
+| `primary`, `literal`, `identifier`, `id_expression`, `qualified_name`, `nested_name` | `expressions/primary.md` |
+| one level of the expression chain each: `postfix_expr`, `unary_expr`, `cast_expr`, `pm_expr`, `mul_expr`, `add_expr`, `shift_expr`, `three_way_expr`, `relational_expr`, `equality_expr`, `and_expr`, `xor_expr`, `or_expr`, `logical_and_expr`, `logical_or_expr`, `conditional_expr`, `assignment_expr` | the page of that operator |
+| `class_def`, `member_decl`, `class_name` | `classes/members.md` |
+| `attribute_spec` | `declarations/attributes.md` |
+
