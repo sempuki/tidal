@@ -4,6 +4,34 @@ An initializer gives a variable its first value. This page covers scalars
 and arrays. Initialization by constructors belongs to classes
 *(referenced)*.
 
+## Principles
+
+:::{principle} INIT-P1
+:rules: INIT-2 INIT-4 INIT-5
+
+An initializer gives an object its first value by converting the
+initializer to the object's type ({principle}`VC-P2`). `=` and
+parentheses mean the same conversion, with one difference: `=` is
+copy-initialization, so it does not use an `explicit` constructor. An
+array takes a list of values, one per element. Empty braces and `T()`
+mean the zero of the type.
+:::
+
+:::{principle} INIT-P2
+:rules: INIT-1
+
+An automatic object with no initializer has no value until the program
+assigns one ({principle}`OBJ-P4`).
+:::
+
+:::{principle} INIT-P3
+:rules: INIT-3 INIT-6
+
+Two facts about form. Empty parentheses after a name declare a function,
+because the grammar reads them as a parameter list. Declarators in one
+declaration are initialized from left to right.
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -12,6 +12,42 @@ entity with one address.
 Depends on: storage duration and linkage, function definitions, class
 definitions and members.
 
+## Principles
+
+:::{principle} INL-P1
+:rules: INL-1 INL-5 INL-6 INL-7
+
+`inline` means that each translation unit that uses an entity defines
+it, and that all the definitions are one entity ({principle}`STO-P4`).
+Everything else follows. A unit that uses the entity must define it,
+because no other unit's definition is promised. A unit that does not use
+it need not. Every unit must agree that the entity is `inline`, and the
+definitions must match, because a static local variable inside an
+inline function is still one object for the program. An entity with
+internal linkage is never shared, so `inline` on it changes nothing
+across units.
+:::
+
+:::{principle} INL-P2
+:rules: INL-2
+
+`inline` has a meaning only for a function or a variable with static
+storage, so it belongs nowhere else. It is a promise about definitions,
+so it must come no later than the definition, and a unit defines an
+inline function once.
+:::
+
+:::{principle} INL-P3
+:rules: INL-3 INL-4
+
+What is defined inside a class body is meant to be seen in every unit
+that sees the class, so it is inline without the keyword: member and
+friend functions defined there, `constexpr` members, and the special
+members the implementation writes. A static data member can join them by
+being declared `inline` in the class, and then needs no definition
+outside it.
+:::
+
 ## Syntax
 
 `inline` is a declaration specifier. It occurs with other specifiers

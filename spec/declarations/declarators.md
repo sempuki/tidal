@@ -5,6 +5,64 @@ A declaration gives a base type and one or more {term}`declarators
 arrays, and function parameters to the base type. A {term}`cv-qualifier`
 can apply at each level.
 
+## Principles
+
+:::{principle} DCL-P1
+:rules: DCL-1 DCL-13 CV-1 CV-2
+
+A declarator builds a type around one name, from the inside out, and it
+reads as an expression does. Suffixes bind before prefixes, and
+parentheses regroup. A qualifier attaches to the type on its left, or to
+the type on its right when nothing is on its left. A declaration that
+can be read as a function declaration is one, because the grammar
+prefers that reading. Saying the same qualifier twice is a mistake,
+unless an alias repeats it.
+:::
+
+:::{principle} DCL-P2
+:rules: DCL-2 DCL-3 DCL-4 DCL-11 DCL-5 DCL-6 DCL-7 DCL-12 DCL-10
+
+Each compound type has the shape that its purpose requires. A pointer
+holds the address of anything that has one. A reference is another name
+for an existing object or function, so it must be bound when it is
+created, it cannot refer to nothing or to another reference, and a
+reference to a reference collapses into one. An array holds a known,
+positive number of complete elements, so its bound is a constant, or
+comes from the initializer or from a definition elsewhere, and its
+elements cannot be functions or references. A function returns a value,
+so it cannot return an array or a function, though it can return a
+pointer or a reference to one. The largest array is a limit of the
+implementation.
+:::
+
+:::{principle} DCL-P3
+:rules: DCL-8 DCL-9 DCL-14 DCL-15 DCL-16
+
+A function type is its parameter types, its return type, and its
+qualifiers. Parameters are passed as values, so an array or a function
+parameter is a pointer, and a top-level qualifier on a parameter is the
+function body's business and not part of the type. `noexcept` is part
+of the type, so all declarations agree on it. A function type with a
+cv-qualifier or a ref-qualifier describes a member function, so it can
+be named and used for member functions and pointers to members, and for
+nothing else.
+:::
+
+:::{principle} DCL-P4
+:rules: CV-3 CV-4 CV-5 CV-6 CV-7 CV-8 CV-9
+
+`const` is a promise that an object does not change after
+initialization. The promise is kept at both ends. A `const` scalar must
+get its value when it is defined, no assignment goes through a `const`
+path, and a conversion can add `const` to what a pointer reaches but
+never remove it. Changing an object that was defined `const` breaks the
+promise, so the behavior is undefined. A `const` integer with a constant
+initializer is a constant that the program can use at translation time.
+An alias carries a qualifier to the elements of an array and to nothing
+in a function type. `volatile` on a parameter or a return type is
+deprecated.
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -4,6 +4,35 @@ The initializer of a reference binds the reference to an object or a
 function. This page covers which expressions each kind of reference
 accepts, when a temporary object is created, and how long it lives.
 
+## Principles
+
+:::{principle} REF-P1
+:rules: REF-1 REF-2 REF-3 REF-6
+
+A reference is a name for an existing object or function
+({principle}`OBJ-P3`), and the binding gives it that object. What a
+reference accepts follows from what it may do with its referent. A
+reference that can change the object binds only to an lvalue of that
+type or a derived type. A `const` lvalue reference changes nothing, so
+it also binds to rvalues and to values of other types, through a
+temporary object when there is no object to bind to. An rvalue
+reference exists to take from an object that is going away, so it binds
+to rvalues and never to an lvalue of its own type. In every form the
+initializer is one expression.
+:::
+
+:::{principle} REF-P2
+:rules: REF-4 REF-7 REF-5
+
+A temporary made for a reference holds the converted value and lives as
+long as the reference variable, because a reference to nothing would be
+useless. This extension belongs to the variable's binding, including
+bindings through a member, a subscript, or a plain cast. It does not
+reach a function parameter or a returned reference. A reference used
+after its object has ended, or bound through a null pointer, has no
+defined meaning.
+:::
+
 ## Syntax
 
 ```{eval-rst}

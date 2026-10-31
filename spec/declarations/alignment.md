@@ -11,6 +11,34 @@ alignment.
 Depends on: declarators, class definitions and members, unary operators,
 `new` and `delete`.
 
+## Principles
+
+:::{principle} ALN-P1
+:rules: ALN-1 ALN-2 ALN-4
+
+Every type has an alignment, and every object of the type sits at an
+address that is a multiple of it, in every kind of storage. `alignas`
+can make the alignment stricter and never weaker, because the natural
+alignment is the type's own need. A power of two is the only shape an
+alignment can have, and the strictest requirement wins. A class is as
+aligned as its most demanding part, and its size is a multiple of its
+alignment so that an array of it keeps every element aligned.
+:::
+
+:::{principle} ALN-P2
+:rules: ALN-3 ALN-6
+
+Alignment is a property of the entity, so every declaration of it
+agrees, within a unit and across units.
+:::
+
+:::{principle} ALN-P3
+:rules: ALN-5
+
+The alignments of the fundamental types and the largest alignment that
+can be asked for depend on the target.
+:::
+
 ## Syntax
 
 ```{eval-rst}

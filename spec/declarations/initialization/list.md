@@ -12,6 +12,39 @@ referenced)*:
 - no virtual functions,
 - base classes that are all public and not virtual.
 
+## Principles
+
+:::{principle} LIST-P1
+:rules: LIST-1 LIST-2 LIST-7
+
+Braces are the careful form of initialization. A value in braces must
+not lose information on its way to the target type, so a narrowing
+conversion is rejected, unless the value is a constant that fits. The
+values are evaluated from left to right, each one complete before the
+next. A scalar takes one value, and no nesting.
+:::
+
+:::{principle} LIST-P2
+:rules: LIST-3 LIST-4 LIST-5 LIST-8 LIST-9 LIST-10
+
+An aggregate is a class or array with nothing to hide, so a braced list
+initializes its parts directly, in the order they are declared, bases
+first. Inner braces can be left out where the values fill a member
+without ambiguity. A member with no value in the list gets its default
+member initializer or an empty list. A designator names the member that
+a value goes to, in declaration order. A list of one value of the
+aggregate's own type copies it. Parentheses give the same
+initialization with one value per part and no elision.
+:::
+
+:::{principle} LIST-P3
+:rules: LIST-6
+
+A character array is an aggregate of characters, so a string literal
+of the matching character type initializes it, with the terminating
+null included.
+:::
+
 ## Syntax
 
 ```{eval-rst}

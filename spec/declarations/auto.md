@@ -8,6 +8,64 @@ This page covers variables, including variables in conditions and
 initializer statements. Placeholders in return types, parameters, and
 template parameters are on other pages *(referenced)*.
 
+## Principles
+
+:::{principle} AUTO-P1
+:rules: AUTO-1 AUTO-2
+
+A variable declared with `auto` holds a value, so its type is the type
+of the value that the initializer produces. A reference in the
+initializer's type is dropped, because the variable is a new object and
+does not refer to the old one. The top-level `const` and `volatile` are
+dropped for the same reason: they belonged to the old object. An array
+or a function cannot be held as a value, so the variable gets the
+pointer that the initializer converts to ({principle}`VC-P1`).
+:::
+
+:::{principle} AUTO-P2
+:rules: AUTO-3 AUTO-4 AUTO-5 AUTO-13
+
+What the declaration writes around `auto` applies to the deduced type.
+`auto&` makes a reference, so it keeps the initializer's type whole,
+with its qualifiers and without decay, and it needs something to refer
+to. `auto&&` binds to anything and becomes an lvalue or an rvalue
+reference as the initializer is one or the other. `const`, `volatile`,
+and `*` add to the deduced type as they would to a written one, and a
+concept before `auto` is a check on the result.
+:::
+
+:::{principle} AUTO-P3
+:rules: AUTO-6 AUTO-7 AUTO-10
+
+The form of the initializer sets how the type is read from it.
+Parentheses and braces without `=` hold one expression and read its
+type. A braced list after `=` is a list, so the variable becomes a
+`std::initializer_list`. `decltype(auto)` reads the initializer as
+`decltype` does, so a name gives its declared type and the value
+category of any other expression decides between a reference and a
+plain type.
+:::
+
+:::{principle} AUTO-P4
+:rules: AUTO-8 AUTO-9 AUTO-11 AUTO-15
+
+Deduction must have exactly one answer. The constraints follow from
+that. The variable needs an initializer, the initializer must have a
+type to give (so no `void`, no overloaded name, and no use of the
+variable itself), and `auto` cannot be mixed with another type or
+spread over an array. Several declarators in one declaration must agree
+on what `auto` stands for. `decltype(auto)` takes no decoration and no
+list, and it can name an array type, which no initializer can copy.
+:::
+
+:::{principle} AUTO-P5
+:rules: AUTO-12 AUTO-14
+
+A placeholder means the same thing wherever a variable is declared: in a
+condition, in the initializer statement of `if`, `switch`, or `for`, and
+in a static data member that carries its initializer in the class.
+:::
+
 ## Syntax
 
 ```{eval-rst}

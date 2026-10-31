@@ -9,6 +9,40 @@ operations on volatile objects that implementations warn about.
 Depends on: declarators and cv-qualifiers, reference binding, standard
 conversions, copy and move.
 
+## Principles
+
+:::{principle} VOL-P1
+:rules: VOL-1 VOL-6
+
+`volatile` marks an object whose accesses the program can observe, so
+each read and each write through a volatile path is performed as
+written. The mark holds only on volatile paths, so an access through a
+path that is not volatile has no defined meaning. The value read from
+such an object is an ordinary value, so arithmetic on it is not
+volatile, and constant evaluation cannot read it, because the read is an
+observable effect.
+:::
+
+:::{principle} VOL-P2
+:rules: VOL-2 VOL-3 VOL-4 VOL-7
+
+`volatile` is a qualifier, and it follows the rules that `const`
+follows ({principle}`DCL-P4`). A conversion can add it and cannot
+remove it, so a volatile object is reached only through volatile
+references, pointers, and member functions. The implicit copy functions
+take a `const` reference, which does not bind to a volatile object, so
+a class that wants to be copied while volatile declares functions that
+say so. A constructor and a destructor are never volatile: the object is
+volatile only once it exists.
+:::
+
+:::{principle} VOL-P3
+:rules: VOL-5
+
+Some uses of a volatile object are deprecated, and an implementation
+should warn about them.
+:::
+
 ## Syntax
 
 `volatile` is a {term}`cv-qualifier`. It can follow a member function's

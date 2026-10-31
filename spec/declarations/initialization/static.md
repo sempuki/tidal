@@ -4,6 +4,31 @@ Variables with static or thread {term}`storage duration` get their first
 values in two steps. Some values are set before the program runs. Others
 are set at run time, in an order that this page gives.
 
+## Principles
+
+:::{principle} SINIT-P1
+:rules: SINIT-1 SINIT-2
+
+Static storage is initialized in two steps. First, every variable is
+zero, and every variable whose initializer is a constant gets its value
+before any code runs. Then, at run time, the remaining variables of a
+translation unit are initialized in the order of their definitions. So a
+later initializer in the same unit can read an earlier variable and get
+its final value.
+:::
+
+:::{principle} SINIT-P2
+:rules: SINIT-3 SINIT-4 SINIT-5 SINIT-6
+
+Across translation units there is no order, so an initializer that reads
+a variable from another unit may get its final value or zero. An
+`inline` variable is defined in several units, so its place in any one
+unit's order is only partly known. An implementation may do a dynamic
+initialization early, when the value is the same, or late, up to the
+first use of something in that unit, and a `thread_local` variable may
+wait for its first use.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} SINIT-1

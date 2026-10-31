@@ -9,6 +9,50 @@ and enumerations.
 
 Depends on: declarators, enumerations, class definitions and members.
 
+## Principles
+
+:::{principle} TYN-P1
+:rules: TYN-1 TYN-2 TYN-3
+
+An alias is a second name for a type that already exists. It makes no
+new type, so it makes no new overload, and a qualifier applied to it
+applies to what it names. It is an ordinary name in an ordinary scope
+({principle}`NAM-P1`), so it hides outer names, is declared once per
+scope, and can be declared again only to say the same thing. The one
+thing an alias can give a type is a name for linkage, when the type is
+an unnamed class with nothing in it that needs a name of its own.
+:::
+
+:::{principle} TYN-P2
+:rules: TYN-4
+
+A class key before a name restricts lookup to classes and enumerations,
+so a function or a variable with the same spelling does not get in the
+way. If the restricted lookup finds nothing, the name is a new class,
+declared in the nearest namespace or block. The key has to match the
+kind of thing it finds, with `class` and `struct` counting as one kind.
+:::
+
+:::{principle} TYN-P3
+:rules: TYN-6 TYN-7
+
+A class exists from its first declaration and is complete only after
+its definition. Anything that needs only the existence of the type, such
+as a pointer, a reference, or a function declaration, works after a
+declaration. Anything that needs the size or the members waits for the
+definition. A definition happens once. An enumeration with no body
+needs a fixed underlying type, because its size is all that a use can
+ask of it.
+:::
+
+:::{principle} TYN-P4
+:rules: TYN-5
+
+A name used in a class body means one thing throughout that body. A
+member that changes its meaning after a use makes the class not valid,
+and an implementation need not notice ({principle}`NAM-P4`).
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -11,6 +11,57 @@ are on other pages *(referenced)*. Rules with the prefix `STO` are about
 storage duration and the storage class specifiers. Rules with the prefix
 `LNK` are about linkage.
 
+## Principles
+
+:::{principle} STO-P1
+:rules: STO-1 STO-2 STO-3 STO-4 STO-8 STO-9 STO-10
+
+The place of a declaration and its storage class decide the storage
+duration of the variable ({principle}`OBJ-P2`). A block gives automatic
+storage, with a new object each time control passes the declaration. A
+namespace, or `static` in a block, gives one object for the program. A
+block `static` is initialized the first time control reaches it, so a
+second arrival during that initialization has no defined meaning.
+`thread_local` gives one object per thread. Static storage starts at
+zero before any initializer runs, and the program ends static objects in
+the reverse of the order in which their initialization completed.
+:::
+
+:::{principle} STO-P2
+:rules: STO-5 STO-6 STO-7 STO-11
+
+A storage class is one word in one place, and only on things that have
+storage. So two storage classes do not combine, except `thread_local`
+with the one that says where the object lives, and a function, a
+parameter, a type alias, or a class definition takes none. `extern` says
+that the object lives outside the current declaration, so in a block it
+cannot carry an initializer, and an anonymous union at namespace scope,
+which has no name to share, must be `static`.
+:::
+
+:::{principle} STO-P3
+:rules: LNK-1 LNK-2 LNK-3 LNK-5 LNK-8 LNK-9
+
+Linkage says whether declarations in different scopes or translation
+units name one entity. A name at namespace scope is shared across the
+program unless something keeps it private: `static`, an unnamed
+namespace, or `const` on a variable, which marks it as a local constant
+rather than a shared object. A block-scope variable is shared with
+nothing, unless `extern` says that it is the namespace-scope entity of
+that name. The first declaration settles the linkage, and later
+declarations inherit it, which is why `static` cannot come second.
+:::
+
+:::{principle} STO-P4
+:rules: LNK-4 LNK-6 LNK-7
+
+A shared entity has one definition in the program. An `inline` entity
+can be defined in every unit that needs it, provided the definitions
+say the same thing, and they are then one entity with one address. A
+unit is translated alone ({principle}`TR-P2`), so a missing or
+duplicated definition is found when the program is linked, if at all.
+:::
+
 ## Syntax
 
 ```{eval-rst}
