@@ -163,7 +163,8 @@ string.
 Each implementation chooses the time at which a parameter object ends:
 either as the called function returns, or later, when the caller finishes
 the statement or expression that holds the call. The choice is
-implementation-defined.
+implementation-defined. VC-10 states the same choice from the caller's
+side.
 :::
 
 :::{rule} FN-11

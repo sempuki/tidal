@@ -116,7 +116,8 @@ A declaration must not:
 A block-scope `extern` declaration refers to a variable with linkage
 outside the block. It must not have an initializer, or follow a local
 variable of the same name in the same block. At namespace scope, `extern`
-with an initializer is a definition.
+with an initializer is a definition. LNK-9 says which entity a block-scope
+`extern` declaration refers to.
 :::
 
 :::{rule} LNK-1

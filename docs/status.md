@@ -140,9 +140,6 @@ forward-progress rule belongs with threads, which are out of scope.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
 7. Plan the exception handling chapter (decision 0023).
-8. Follow up on the rule overlaps the principles rollout found:
-   FN-10 and VC-10, STO-7 and LNK-9, SEQ-6 and OPR-7.
-
 ## Size estimate
 
 The `if` section is typical of a statement. The multiplicative section is

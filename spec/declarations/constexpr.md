@@ -125,7 +125,7 @@ declarations of a function must agree on `constexpr`.
 
 :::{rule} CEV-1
 :kind: reject
-:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp
+:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp
 
 Each call to a `consteval` function must be a constant expression. This
 does not apply to a call in an {term}`immediate function context`, such
