@@ -1,5 +1,8 @@
 // tidal-rules: ILC-4
 // tidal-expect: reject
+// tidal-error-clang: cannot be narrowed
+// tidal-error-gcc: narrowing conversion
+// tidal-error-edg: narrowing conversion
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

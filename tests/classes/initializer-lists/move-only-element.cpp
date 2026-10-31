@@ -1,5 +1,8 @@
 // tidal-rules: ILC-5
 // tidal-expect: reject
+// tidal-error-clang: implicitly-deleted copy constructor
+// tidal-error-gcc: use of deleted function .*M::M\(const M&\)
+// tidal-error-edg: deleted function
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

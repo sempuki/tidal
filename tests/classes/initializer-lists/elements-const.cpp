@@ -1,5 +1,8 @@
 // tidal-rules: ILC-5
 // tidal-expect: reject
+// tidal-error-clang: read-only variable is not assignable
+// tidal-error-gcc: assignment of read-only location
+// tidal-error-edg: must be a modifiable lvalue
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

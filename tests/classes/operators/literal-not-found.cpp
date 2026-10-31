@@ -1,3 +1,6 @@
 // tidal-rules: OPR-8
 // tidal-expect: reject
+// tidal-error-clang: no matching literal operator
+// tidal-error-gcc: unable to find numeric literal operator
+// tidal-error-edg: user-defined literal operator not found
 int x = 5_none;

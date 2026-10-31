@@ -1,5 +1,7 @@
 // tidal-rules: CPY-13
 // tidal-expect: reject
+// tidal-error-clang: prevents copy elision
+// tidal-error-gcc: prevents copy elision
 // tidal-flags: -Wall -Werror
 namespace std {
 template <class T> struct remove_reference { using type = T; };

@@ -1,5 +1,8 @@
 // tidal-rules: DCMP-6
 // tidal-expect: reject
+// tidal-error-clang: invalid operands to binary expression
+// tidal-error-gcc: no match for .operator==
+// tidal-error-edg: no operator .==. matches
 namespace std {
 struct partial_ordering {
   signed char value;

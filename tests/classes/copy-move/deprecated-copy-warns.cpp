@@ -1,5 +1,7 @@
 // tidal-rules: CPY-13
 // tidal-expect: reject
+// tidal-error-clang: implicit copy constructor .* is deprecated
+// tidal-error-gcc: is deprecated
 // tidal-flags: -Wextra -Werror
 struct S {
   int v = 0;

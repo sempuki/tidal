@@ -1,5 +1,8 @@
 // tidal-rules: ACC-5
 // tidal-expect: reject
+// tidal-error-clang: is a private member
+// tidal-error-gcc: (private|inaccessible) within this context
+// tidal-error-edg: is inaccessible
 class C;
 struct Reader { int read(const C& c) const; int other(const C& c) const; };
 class C {

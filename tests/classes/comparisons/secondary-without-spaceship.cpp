@@ -1,5 +1,8 @@
 // tidal-rules: DCMP-5
 // tidal-expect: reject
+// tidal-error-clang: operator<. is implicitly deleted
+// tidal-error-gcc: use of deleted function .*operator<
+// tidal-error-edg: no operator .<. matches
 namespace std {
 struct partial_ordering {
   signed char value;

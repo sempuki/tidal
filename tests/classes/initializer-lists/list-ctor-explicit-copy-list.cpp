@@ -1,5 +1,8 @@
 // tidal-rules: ILC-3
 // tidal-expect: reject
+// tidal-error-clang: constructor is explicit in copy-initialization
+// tidal-error-gcc: would use explicit constructor
+// tidal-error-edg: cannot use a constructor marked .explicit
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

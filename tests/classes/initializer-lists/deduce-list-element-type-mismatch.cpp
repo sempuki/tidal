@@ -1,5 +1,8 @@
 // tidal-rules: ILC-6
 // tidal-expect: reject
+// tidal-error-clang: no matching function for call to .count
+// tidal-error-gcc: no matching function for call to .count
+// tidal-error-edg: no instance of function template .count
 namespace std {
 template <class E> class initializer_list {
   const E* b_;
