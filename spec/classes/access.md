@@ -4,6 +4,55 @@ Access control limits which code can use the name of a class member. A
 member is public, protected, or private. A friend of a class has the same
 access as the members of the class.
 
+## Principles
+
+:::{principle} ACC-P1
+:rules: ACC-1 ACC-2 ACC-3 ACC-11 ACC-16
+
+Access control is about names, not objects. Each member name carries an
+access, set by the class key or by the last label before it. A use of
+the name is checked where the use occurs, after lookup and overload
+resolution have chosen the declaration, so an accessible overload that
+loses never rescues a call. Only names are checked: a deduced type, the
+final overrider of a virtual call, and the declarator of a member defined
+outside its class carry no name to check. A default argument is checked
+where the function is declared, because that is where its names are
+written.
+:::
+
+:::{principle} ACC-P2
+:rules: ACC-4
+
+A protected member is part of the interface that a class offers to its
+derived classes, and to nothing else. A derived class can use it only
+through its own type, so that one derived class cannot reach into the
+protected parts of another.
+:::
+
+:::{principle} ACC-P3
+:rules: ACC-5 ACC-6 ACC-7 ACC-15
+
+Friendship is granted by the class and belongs to the one it names. It
+does not pass on to the friends of a friend or to the classes derived
+from a friend. A class can befriend a function, one member function of
+another class, or a whole class, and needs access to a member function
+before it can name it. A friend function first declared in the class
+lives in the enclosing namespace but is found only through its
+arguments, so it stays with the class it serves.
+:::
+
+:::{principle} ACC-P4
+:rules: ACC-8 ACC-9 ACC-10 ACC-12 ACC-13 ACC-14
+
+A derived class sees its base's public and protected members, and the
+access of the base caps what the derived class passes on. A conversion
+to a base needs access to that base. A using-declaration can raise or
+lower the access of a base member it can reach. The injected name of a
+private base is private too. A nested class is a member, with a member's
+access to the enclosing class, while the enclosing class gets no special
+access in return.
+:::
+
 ## Syntax
 
 ```{eval-rst}

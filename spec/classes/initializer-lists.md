@@ -11,6 +11,36 @@ List initialization of aggregates and scalars is with initialization.
 Depends on: list initialization and aggregates, constructors and
 destructors, overload resolution *(referenced)*.
 
+## Principles
+
+:::{principle} ILC-P1
+:rules: ILC-1 ILC-2
+
+For a class with constructors, a braced list is a constructor call. The
+elements are the arguments, and empty braces call the default
+constructor.
+:::
+
+:::{principle} ILC-P2
+:rules: ILC-3 ILC-4
+
+A class that accepts a `std::initializer_list` means the braces as a
+list of values, so that constructor is tried first with the whole list,
+and the elements are tried as separate arguments only if no list
+constructor fits. Braces also promise that no value is silently cut
+down, so a narrowing conversion is an error and never a reason to try
+another constructor.
+:::
+
+:::{principle} ILC-P3
+:rules: ILC-5 ILC-6
+
+A `std::initializer_list` is a view of a temporary array of `const`
+elements that the braces create. The array lives as long as a temporary
+would, the elements cannot be changed or moved, and a function
+parameter of this type takes a braced list directly.
+:::
+
 ## Syntax
 
 An *initializer-list constructor* is a constructor whose first parameter

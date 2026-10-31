@@ -4,6 +4,62 @@ A class definition introduces a class type and declares its members. The
 members are data members, member functions, static members, nested types,
 and type aliases.
 
+## Principles
+
+:::{principle} CLS-P1
+:rules: CLS-1 CLS-2 CLS-8 CLS-9 CLS-12 CLS-16
+
+A class definition is a scope and a type under construction. Inside its
+body the class is incomplete, so a data member needs a type that is
+already complete, and a class cannot hold an object of its own type. The
+parts of the body that the implementation can read after the closing
+brace, such as member function bodies, default arguments, default member
+initializers, and `noexcept` operands, see the class as complete. A
+static data member can have the class's own type for the same reason:
+its definition comes after the class.
+
+The class body is one scope, so each member name has one meaning in it
+({principle}`NAM-P1`), and code outside the body names a nested type
+through the class. A class defined inside a function is a scope that can
+own nothing that would need a definition elsewhere.
+:::
+
+:::{principle} CLS-P2
+:rules: CLS-3 CLS-4 CLS-7 CLS-20 CLS-21
+
+A member belongs to each object of the class or to the class as a whole.
+A static data member is one object for the whole program, so it needs
+one definition, and a static member function has no object to act on.
+A member function defined in the class is `inline`, because every unit
+that includes the class sees its body. A `const` static member of
+integer type with an initializer in the class is a constant the class
+can use directly, so the initializer must be a constant expression, and
+the member still needs a definition if the program uses it as an object.
+:::
+
+:::{principle} CLS-P3
+:rules: CLS-5 CLS-6 CLS-13 CLS-14 CLS-15 CLS-17
+
+A non-static member function acts on an object. Its `this` has the type
+of that object with the function's own cv-qualifiers, and its
+ref-qualifier selects the function by the value category of the object.
+A member function can instead write that object out as its first
+parameter. It then has no `this`, cannot be static or virtual or
+qualified, and its address is an ordinary function pointer, because the
+object is now an ordinary argument. The call and subscript operators can
+be static for the same reason: they need no object at all.
+:::
+
+:::{principle} CLS-P4
+:rules: CLS-10 CLS-11 CLS-19
+
+The members of an object lie in it in the order of their declarations,
+and each object has a size, even an empty one, so that two objects never
+share an address ({principle}`OBJ-P1`). A class that keeps its members in
+one access, with no virtual parts, has a layout a program can reason
+about: its address is the address of its first member.
+:::
+
 ## Syntax
 
 ```{eval-rst}

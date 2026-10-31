@@ -13,6 +13,66 @@ are with virtual functions.
 Depends on: class definitions and members, access control, initialization,
 `new` and `delete`.
 
+## Principles
+
+:::{principle} CTOR-P1
+:rules: CTOR-1 DTOR-1 DTOR-6 DTOR-8
+
+A constructor begins the life of an object and a destructor ends it
+({principle}`OBJ-P1`). Both are known by the class name, return nothing,
+and act on the object in front of them, so neither can be static or
+qualified, and a constructor cannot be virtual because no object exists
+yet to dispatch on. A program can end an object by calling its
+destructor by name, with the call syntax. The storage stays, and only
+the object is gone.
+:::
+
+:::{principle} CTOR-P2
+:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4
+
+The implementation writes a default constructor and a destructor for a
+class that writes none, because building and ending the parts is right
+for most classes. Declaring any constructor says that default
+construction needs thought, so it removes the implicit default
+constructor. When a part cannot be default-constructed or destroyed, the
+synthesized function is deleted and only a use fails. A `const` object
+with no initializer needs a class that gives every part a value, because
+nothing can give it one later. The `noexcept` of a destructor follows
+from its parts.
+:::
+
+:::{principle} CTOR-P3
+:rules: CTOR-5 CTOR-6 CTOR-7 CTOR-8 CTOR-11 CTOR-12 CTOR-13 CTOR-14 CTOR-15 CTOR-16 CTOR-17 CTOR-18
+
+A constructor builds the parts first and then runs its body. The parts
+are built in declaration order, bases before members, whatever order the
+member initializer list has, because the destructor must undo them in
+one fixed order. A member initializer names a part and gives it its
+value; it cannot name anything else, and a reference member it binds to
+a temporary is dead before the body runs. A delegating constructor hands
+the whole job to another constructor and adds only its own body. Until
+the constructor completes, the object is not yet `const`, and a part has
+no value until its turn, so reading it earlier is undefined.
+:::
+
+:::{principle} CTOR-P4
+:rules: DTOR-5 DTOR-7
+
+A destructor runs its body first and then ends the parts in the reverse
+of their construction order ({principle}`OBJ-P2`). After it runs, the
+object is gone, and using it or destroying it again is undefined
+({principle}`OBJ-P4`).
+:::
+
+:::{principle} CTOR-P5
+:rules: CTOR-9 CTOR-10
+
+A constructor that takes one argument is a conversion from that argument
+type, and an implicit conversion can use it. `explicit` withdraws that
+offer, so the constructor then runs only where the program names the
+type.
+:::
+
 ## Syntax
 
 ```{eval-rst}

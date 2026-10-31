@@ -11,6 +11,58 @@ destruction, virtual destructors, abstract classes, and `dynamic_cast`.
 Depends on: derived classes, constructors and destructors, access
 control, `new` and `delete`.
 
+## Principles
+
+:::{principle} VIRT-P1
+:rules: VIRT-1 VIRT-5 VIRT-11 VIRT-20
+
+A virtual call goes to the function for the class the object was created
+as, found through a pointer or reference to any base. A function in a
+derived class overrides a base function when their signatures match,
+with or without the keyword, and each virtual function must have exactly
+one such final overrider in the complete class. The call is resolved at
+run time, so every virtual function needs a definition, called or not.
+:::
+
+:::{principle} VIRT-P2
+:rules: VIRT-2 VIRT-3 VIRT-4 VIRT-14 VIRT-15 VIRT-19
+
+An override replaces a function, so it must fit where the original
+stood: declared as a member in a class, with the same return type or a
+pointer or reference to a more derived class, and with the same
+`consteval` and deleted status. `override` and `final` let a class say
+what it means, and the implementation holds it to that.
+:::
+
+:::{principle} VIRT-P3
+:rules: VIRT-6 VIRT-7 VIRT-12 VIRT-13
+
+While a constructor or destructor of class `C` runs, the object is a `C`
+and nothing more ({principle}`OBJ-P1`), so a virtual call there reaches
+the overrider for `C`, and a pure virtual function has nothing to reach.
+A virtual destructor lets `delete` through a base pointer find the
+whole object; without one, that `delete` is undefined.
+:::
+
+:::{principle} VIRT-P4
+:rules: VIRT-8 VIRT-9 VIRT-16 VIRT-17
+
+A pure virtual function declares an obligation for derived classes. A
+class with one is abstract and cannot be an object on its own, only a
+base of a class that meets the obligation. A pure function can still
+have a definition, and a pure virtual destructor needs one, because
+derived destructors call it.
+:::
+
+:::{principle} VIRT-P5
+:rules: VIRT-10 VIRT-18
+
+`dynamic_cast` asks the object at run time whether it is the requested
+class, and answers with a null pointer when it is not. The question needs
+a polymorphic class to ask, except for the harmless direction toward a
+base.
+:::
+
 ## Syntax
 
 ```{eval-rst}

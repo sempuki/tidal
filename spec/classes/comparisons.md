@@ -9,6 +9,30 @@ deleted, and rewritten and reversed comparisons.
 
 Depends on: comparison operators, operator overloading, derived classes.
 
+## Principles
+
+:::{principle} DCMP-P1
+:rules: DCMP-1 DCMP-2 DCMP-3 DCMP-4 DCMP-5 DCMP-8
+
+A defaulted comparison compares part by part, bases first, in
+declaration order, and stops at the first difference. The
+implementation writes it only when asked and only in a shape it can
+fill in, and when a part cannot be compared that way, it deletes the
+function rather than report it ({principle}`CPY-P3`). The return type of
+a defaulted `<=>` is the weakest ordering among the parts, and a
+defaulted `<=>` brings a defaulted `==` with it.
+:::
+
+:::{principle} DCMP-P2
+:rules: DCMP-6 DCMP-7
+
+The other comparison operators are spelled from these two. An
+expression with `!=` or a relational operator also tries `==` or `<=>`,
+with the operands in either order, so a class need write only the two.
+A declared operator wins over a rewritten one, and an implementation
+should warn when the rewrites make a comparison ambiguous.
+:::
+
 ## Syntax
 
 ```{eval-rst}

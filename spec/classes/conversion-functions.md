@@ -9,6 +9,32 @@ converting constructors and standard conversions.
 Depends on: constructors and destructors, standard conversions, overload
 resolution *(referenced)*.
 
+## Principles
+
+:::{principle} CVF-P1
+:rules: CVF-1 CVF-5 CVF-7
+
+A conversion function is a member whose name is a type, and it says how
+an object of the class becomes a value of that type. It takes no
+parameters and declares no return type, because the name already says
+both. A derived class inherits them, and a conversion function with the
+same target type hides the base's, as any member with the same name
+would.
+:::
+
+:::{principle} CVF-P2
+:rules: CVF-2 CVF-3 CVF-4 CVF-6 CVF-8
+
+An implicit conversion may call one conversion function, as one of its
+user-defined steps, wherever a value of the target type is needed.
+`explicit` withdraws the function from implicit use and leaves it for
+direct initialization, casts, and the conditions where `bool` is asked
+for. Overload resolution chooses among conversion functions as among
+other functions, and a context that needs one integral value cannot pick
+between two. A conversion to the class itself, a base, or `void` can
+never be chosen, so an implementation should warn about one.
+:::
+
 ## Syntax
 
 ```{eval-rst}

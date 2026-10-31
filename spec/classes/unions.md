@@ -9,6 +9,57 @@ declarations, values, and their limits.
 Depends on: class definitions and members, constructors and destructors,
 copy and move, list initialization and aggregates, standard conversions.
 
+## Principles
+
+:::{principle} UNI-P1
+:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8
+:exceptions: UNI-10
+
+A union is one piece of storage with several views. All its members start
+at its first byte, and at most one of them is an object at a time. The
+initializer picks the first active member, and a plain assignment to
+another member makes that one active instead. Reading a member that is
+not active reads an object that is not there, which is undefined
+({principle}`OBJ-P4`). A reference is not an object with storage of its
+own, so a union cannot hold one.
+:::
+
+:::{principle} UNI-P2
+:rules: UNI-3
+
+The union does not know which member is active, so it cannot build,
+copy, or destroy its members on its own. When a member would need that,
+the implementation deletes the union's special member functions and
+leaves the job to the union's own code ({principle}`CPY-P3`).
+:::
+
+:::{principle} UNI-P3
+:rules: UNI-7 UNI-9
+
+An anonymous union adds its members to the scope around it, as if the
+scope held them, while they still share one storage. So it can only hold
+plain public data members, and at namespace scope it needs `static`
+because its members have no name to link by.
+:::
+
+:::{principle} UNI-P4
+:rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7
+
+A bit-field is a member with a width in bits. The width sets the range
+of values it holds and the way it promotes, while its declared type gives
+its signedness and its treatment in initialization. Because it need not
+start on a byte, a bit-field has no address, so a program cannot point
+to it or bind a plain reference to it.
+:::
+
+:::{principle} UNI-P5
+:rules: BF-8 BF-9 BF-10
+
+How bit-fields are packed, and what a bit-field holds after a value too
+wide for it is stored, are left to the implementation. An implementation
+should warn when a width exceeds its type or a constant does not fit.
+:::
+
 ## Syntax
 
 ```{eval-rst}

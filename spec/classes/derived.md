@@ -12,6 +12,59 @@ page.
 Depends on: class definitions and members, access control, constructors
 and destructors, copy and move.
 
+## Principles
+
+:::{principle} DER-P1
+:rules: DER-1 DER-2 DER-18
+
+A derived object contains one subobject for each base in its base list,
+and the base's members become its members ({principle}`OBJ-P1`). A base
+must therefore be a complete class that allows derivation. The same
+class reached by two non-virtual paths gives two separate subobjects,
+which is valid, and a member reached through both is ambiguous.
+:::
+
+:::{principle} DER-P2
+:rules: DER-3 DER-4 DER-9
+
+Lookup in a derived class searches the class and then its bases, as
+scopes nested outward ({principle}`NAM-P2`). A name in the derived class
+hides the same name in every base, overloads included, and a
+using-declaration brings a base name back. A name found in two base
+subobjects is ambiguous until the program picks a path.
+:::
+
+:::{principle} DER-P3
+:rules: DER-5 DER-10 DER-11 DER-16 DER-17
+
+A derived object is a base object with more parts, so a pointer or
+reference to it converts to the base implicitly and lands on the base
+subobject. The other direction is a claim about what the object really
+is, so it needs `static_cast`, is undefined when the claim is false, and
+is impossible from a virtual base, whose location depends on the most
+derived class.
+:::
+
+:::{principle} DER-P4
+:rules: DER-6 DER-7 DER-12 DER-13
+
+A virtual base is shared by every path, so an object has one of it. Only
+the most derived class knows the whole object, so its constructor
+initializes the virtual base, first and once, and every constructor of
+that class must be able to. Where the virtual base sits is decided at run
+time, so such a class has no `constexpr` constructor or destructor.
+:::
+
+:::{principle} DER-P5
+:rules: DER-8 DER-14 DER-15
+
+Constructing a derived object constructs its bases, so the derived class
+needs access to their constructors and destructors. A derived class can
+inherit the constructors of a direct base, which then build the base
+subobject and leave the rest to default initialization, and a signature
+two bases both offer is ambiguous.
+:::
+
 ## Syntax
 
 ```{eval-rst}

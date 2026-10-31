@@ -12,6 +12,42 @@ Depends on: class definitions and members, conversion functions, copy and
 move, sequencing and evaluation order, overload resolution
 *(referenced)*.
 
+## Principles
+
+:::{principle} OPR-P1
+:rules: OPR-1 OPR-6 OPR-7 OPR-11 OPR-12
+
+An operator applied to a class or enumeration operand is a function call
+in operator syntax. The function is chosen by overload resolution among
+the member operators of the left operand, the non-member operators that
+lookup finds, and the built-in operators after conversion. The syntax
+does not change: precedence and associativity stay, and the operands
+become ordinary arguments, evaluated in the built-in order only where the
+language promises that order.
+:::
+
+:::{principle} OPR-P2
+:rules: OPR-2 OPR-3 OPR-4 OPR-5
+
+An operator function keeps the shape of the operator it stands for. It
+has the same number of operands, no default arguments, and no new
+tokens. The
+operators that reach into the object, assignment, call, subscript, and
+arrow, must be members. The postfix increment takes a dummy `int` to
+tell it from the prefix form, and `operator->` chains until a pointer
+appears.
+:::
+
+:::{principle} OPR-P3
+:rules: OPR-8 OPR-9 OPR-10
+
+A literal with a suffix is a call to the literal operator for that
+suffix, and the form of the literal picks the parameter list. Literal
+operators live at namespace scope, where lookup by suffix finds them.
+Suffixes without a leading underscore belong to the language, so an
+implementation should warn about them.
+:::
+
 ## Syntax
 
 ```{eval-rst}
