@@ -51,6 +51,7 @@ current state only. The history of how it got here is in `git log`.
 | [Access control and friends](../spec/classes/access.md) | 13 | 7 required, 6 reject | 38 | Q-0052 | 0 flagged |
 | [Constructors and destructors](../spec/classes/constructors.md) | 24 | 11 required, 9 reject, 2 undefined, 1 no-diagnostic, 1 recommended | 110 | Q-0053, Q-0054 | 0 flagged |
 | [Copy and move](../spec/classes/copy-move.md) | 17 | 12 required, 3 reject, 1 unspecified, 1 recommended | 79 | Q-0055 | 0 flagged |
+| [Derived classes](../spec/classes/derived.md) | 15 | 7 required, 8 reject | 67 |  | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -58,12 +59,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-copy-move-rewrite.txt`. The table above comes from
+`reports/similarity/2026-10-30-derived.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1491/1491 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1558/1558 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -129,8 +130,8 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
-7. Continue classes in the order set by decision 0017. Next: derived
-   classes. Statements, expressions, and declarations in the
+7. Continue classes in the order set by decision 0017. Next: virtual
+   functions and abstract classes. Statements, expressions, and declarations in the
    charter's scope all have pages.
 
 ## Size estimate

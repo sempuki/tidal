@@ -241,6 +241,73 @@ compilers affect the Status column.
 | `classes/copy-move/rvalue-picks-move.cpp` | CPY-9 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/template-not-copy-ctor.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/user-dtor-keeps-copy.cpp` | CPY-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/aggregate-with-base.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/ambiguous-base-conversion.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-base-via-path.cpp` | DER-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-member-unused.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-member.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-overloads-different-bases.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-qualified-ok.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-repeated-base-member.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-resolved-by-using.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/base-alias.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/base-duplicate.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-enum.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-final.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-incomplete.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-not-class.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-private-ctor.cpp` | DER-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-private-dtor.cpp` | DER-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-protected-ctor.cpp` | DER-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/base-protected-dtor-direct.cpp` | DER-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-protected-dtor.cpp` | DER-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/base-qualified.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/base-self.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-to-derived-implicit.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-union.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/constexpr-ctor-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/constexpr-object-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/data-member-hides-function.cpp` | DER-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/derived-hides-base-overloads.cpp` | DER-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/derived-to-base-constant.cpp` | DER-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/derived-to-base-pointer.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/dominance-derived-hides.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/dominance-nonvirtual-ambiguous.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/final-not-keyword.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/hiding-type-by-member.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-access.cpp` | DER-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-default-args.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-explicit.cpp` | DER-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-hidden-by-derived.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-no-default.cpp` | DER-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-not-copy.cpp` | DER-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-not-direct-base.cpp` | DER-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` | DER-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-two-bases-unused.cpp` | DER-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/inherited-ctor.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/inherits-members.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/most-derived-inits-virtual-base.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/most-derived-must-init-virtual-base.cpp` | DER-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/null-derived-to-base.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/qualified-name-reaches-base.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/repeated-base-static-ok.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/repeated-base-two-subobjects.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/second-base-address.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/sizeof-at-least-base.cpp` | DER-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/slicing.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/union-as-derived.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/using-brings-overloads.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/using-derived-wins.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/using-not-a-base.cpp` | DER-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-and-nonvirtual-base.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-constructed-first.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/virtual-base-constructed-once.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/virtual-base-conversion-unambiguous.cpp` | DER-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/virtual-base-downcast.cpp` | DER-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-init-indirect.cpp` | DER-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/virtual-base-private-dtor.cpp` | DER-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-shared.cpp` | DER-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/derived/virtual-keyword-order.cpp` | DER-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1506,7 +1573,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1491/1491 tests pass on baseline compilers.
+1558/1558 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -2305,6 +2372,230 @@ check that the rejection has the intended cause.
 - `classes/copy-move/return-member-not-moved.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
 - `classes/copy-move/return-member-not-moved.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
 - `classes/copy-move/return-member-not-moved.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/derived/ambiguous-base-conversion.cpp` (clang-host): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/ambiguous-base-conversion.cpp` (gcc-host): error: ‘A’ is an ambiguous base of ‘D’
+- `classes/derived/ambiguous-base-conversion.cpp` (edg-7.0): error: base class "A" is ambiguous
+- `classes/derived/ambiguous-base-conversion.cpp` (gcc-14): error: 'A' is an ambiguous base of 'D'
+- `classes/derived/ambiguous-base-conversion.cpp` (clang-18): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/ambiguous-base-conversion.cpp` (gcc-16): error: 'A' is an ambiguous base of 'D'
+- `classes/derived/ambiguous-base-conversion.cpp` (clang-22): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/ambiguous-member.cpp` (clang-host): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-member.cpp` (gcc-host): error: request for member ‘x’ is ambiguous
+- `classes/derived/ambiguous-member.cpp` (edg-7.0): error: "D::x" is ambiguous
+- `classes/derived/ambiguous-member.cpp` (gcc-14): error: request for member 'x' is ambiguous / note: candidates are: 'int B::x'
+- `classes/derived/ambiguous-member.cpp` (clang-18): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-member.cpp` (gcc-16): error: request for member 'x' is ambiguous
+- `classes/derived/ambiguous-member.cpp` (clang-22): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (clang-host): error: member 'f' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (gcc-host): error: request for member ‘f’ is ambiguous
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (edg-7.0): error: "D::f" is ambiguous
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (gcc-14): error: request for member 'f' is ambiguous / note: candidates are: 'void B::f(double)'
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (clang-18): error: member 'f' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (gcc-16): error: request for member 'f' is ambiguous
+- `classes/derived/ambiguous-overloads-different-bases.cpp` (clang-22): error: member 'f' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-repeated-base-member.cpp` (clang-host): error: non-static member 'v' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-repeated-base-member.cpp` (gcc-host): error: request for member ‘v’ is ambiguous
+- `classes/derived/ambiguous-repeated-base-member.cpp` (edg-7.0): error: "D::v" is ambiguous
+- `classes/derived/ambiguous-repeated-base-member.cpp` (gcc-14): error: request for member 'v' is ambiguous / note: candidates are: 'int A::v'
+- `classes/derived/ambiguous-repeated-base-member.cpp` (clang-18): error: non-static member 'v' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/ambiguous-repeated-base-member.cpp` (gcc-16): error: request for member 'v' is ambiguous
+- `classes/derived/ambiguous-repeated-base-member.cpp` (clang-22): error: non-static member 'v' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/base-duplicate.cpp` (clang-host): error: base class 'B' specified more than once as a direct base class
+- `classes/derived/base-duplicate.cpp` (gcc-host): error: duplicate base type ‘B’ invalid
+- `classes/derived/base-duplicate.cpp` (edg-7.0): error: duplicate base class name
+- `classes/derived/base-duplicate.cpp` (gcc-14): error: duplicate base type 'B' invalid
+- `classes/derived/base-duplicate.cpp` (clang-18): error: base class 'B' specified more than once as a direct base class
+- `classes/derived/base-duplicate.cpp` (gcc-16): error: duplicate base type 'B' invalid
+- `classes/derived/base-duplicate.cpp` (clang-22): error: base class 'B' specified more than once as a direct base class
+- `classes/derived/base-enum.cpp` (clang-host): error: base specifier must name a class
+- `classes/derived/base-enum.cpp` (gcc-host): error: expected class-name before ‘{’ token
+- `classes/derived/base-enum.cpp` (edg-7.0): error: not a class or struct name
+- `classes/derived/base-enum.cpp` (gcc-14): error: expected class-name before '{' token
+- `classes/derived/base-enum.cpp` (clang-18): error: base specifier must name a class
+- `classes/derived/base-enum.cpp` (gcc-16): error: expected class-name before '{' token
+- `classes/derived/base-enum.cpp` (clang-22): error: base specifier must name a class
+- `classes/derived/base-final.cpp` (clang-host): error: base 'B' is marked 'final'
+- `classes/derived/base-final.cpp` (gcc-host): error: cannot derive from ‘final’ base ‘B’ in derived type ‘D’
+- `classes/derived/base-final.cpp` (edg-7.0): error: a "final" class type cannot be used as a base class
+- `classes/derived/base-final.cpp` (gcc-14): error: cannot derive from 'final' base 'B' in derived type 'D'
+- `classes/derived/base-final.cpp` (clang-18): error: base 'B' is marked 'final'
+- `classes/derived/base-final.cpp` (gcc-16): error: cannot derive from 'final' base 'B' in derived type 'D'
+- `classes/derived/base-final.cpp` (clang-22): error: base 'B' is marked 'final'
+- `classes/derived/base-incomplete.cpp` (clang-host): error: base class has incomplete type / note: forward declaration of 'B'
+- `classes/derived/base-incomplete.cpp` (gcc-host): error: invalid use of incomplete type ‘struct B’ / note: forward declaration of ‘struct B’
+- `classes/derived/base-incomplete.cpp` (edg-7.0): error: incomplete type "B" is not allowed
+- `classes/derived/base-incomplete.cpp` (gcc-14): error: invalid use of incomplete type 'struct B' / note: forward declaration of 'struct B'
+- `classes/derived/base-incomplete.cpp` (clang-18): error: base class has incomplete type / note: forward declaration of 'B'
+- `classes/derived/base-incomplete.cpp` (gcc-16): error: invalid use of incomplete type 'struct B' / note: forward declaration of 'struct B'
+- `classes/derived/base-incomplete.cpp` (clang-22): error: base class has incomplete type / note: forward declaration of 'B'
+- `classes/derived/base-not-class.cpp` (clang-host): error: expected class name
+- `classes/derived/base-not-class.cpp` (gcc-host): error: expected class-name before ‘int’ / error: expected ‘{’ before ‘int’
+- `classes/derived/base-not-class.cpp` (edg-7.0): error: expected an identifier
+- `classes/derived/base-not-class.cpp` (gcc-14): error: expected class-name before 'int' / error: expected '{' before 'int'
+- `classes/derived/base-not-class.cpp` (clang-18): error: expected class name
+- `classes/derived/base-not-class.cpp` (gcc-16): error: expected class-name before 'int' / error: expected '{' before 'int'
+- `classes/derived/base-not-class.cpp` (clang-22): error: expected class name
+- `classes/derived/base-private-ctor.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible default constructor
+- `classes/derived/base-private-ctor.cpp` (gcc-host): error: use of deleted function ‘D::D()’ / note: ‘D::D()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-ctor.cpp` (edg-7.0): error: the default constructor of "D" cannot be referenced -- it is a deleted function
+- `classes/derived/base-private-ctor.cpp` (gcc-14): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-ctor.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible default constructor
+- `classes/derived/base-private-ctor.cpp` (gcc-16): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-ctor.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible default constructor
+- `classes/derived/base-private-dtor.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible destructor
+- `classes/derived/base-private-dtor.cpp` (gcc-host): error: use of deleted function ‘D::D()’ / note: ‘D::D()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-dtor.cpp` (edg-7.0): error: the default constructor of "D" cannot be referenced -- it is a deleted function / error: function "D::~D() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/derived/base-private-dtor.cpp` (gcc-14): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-dtor.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible destructor
+- `classes/derived/base-private-dtor.cpp` (gcc-16): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/base-private-dtor.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has an inaccessible destructor
+- `classes/derived/base-protected-dtor-direct.cpp` (clang-host): error: variable of type 'B' has protected destructor / note: declared protected here
+- `classes/derived/base-protected-dtor-direct.cpp` (gcc-host): error: ‘B::~B()’ is protected within this context / note: declared protected here
+- `classes/derived/base-protected-dtor-direct.cpp` (edg-7.0): error: "B::~B() noexcept" (declared at line 3) is inaccessible
+- `classes/derived/base-protected-dtor-direct.cpp` (gcc-14): error: 'B::~B()' is protected within this context / note: declared protected here
+- `classes/derived/base-protected-dtor-direct.cpp` (clang-18): error: variable of type 'B' has protected destructor / note: declared protected here
+- `classes/derived/base-protected-dtor-direct.cpp` (gcc-16): error: 'B::~B()' is protected within this context / note: declared protected here
+- `classes/derived/base-protected-dtor-direct.cpp` (clang-22): error: variable of type 'B' has protected destructor / note: declared protected here
+- `classes/derived/base-self.cpp` (clang-host): error: base class has incomplete type / note: definition of 'D' is not complete until the closing '}'
+- `classes/derived/base-self.cpp` (gcc-host): error: invalid use of incomplete type ‘struct D’ / note: forward declaration of ‘struct D’
+- `classes/derived/base-self.cpp` (edg-7.0): error: incomplete type "D" is not allowed
+- `classes/derived/base-self.cpp` (gcc-14): error: invalid use of incomplete type 'struct D' / note: forward declaration of 'struct D'
+- `classes/derived/base-self.cpp` (clang-18): error: base class has incomplete type / note: definition of 'D' is not complete until the closing '}'
+- `classes/derived/base-self.cpp` (gcc-16): error: invalid use of incomplete type 'struct D' / note: forward declaration of 'struct D'
+- `classes/derived/base-self.cpp` (clang-22): error: base class has incomplete type / note: definition of 'D' is not complete until the closing '}'
+- `classes/derived/base-to-derived-implicit.cpp` (clang-host): error: cannot initialize return object of type 'D *' with an rvalue of type 'B *'
+- `classes/derived/base-to-derived-implicit.cpp` (gcc-host): error: invalid conversion from ‘B*’ to ‘D*’ [-fpermissive]
+- `classes/derived/base-to-derived-implicit.cpp` (edg-7.0): error: return value type does not match the function type
+- `classes/derived/base-to-derived-implicit.cpp` (gcc-14): error: invalid conversion from 'B*' to 'D*' [-fpermissive]
+- `classes/derived/base-to-derived-implicit.cpp` (clang-18): error: cannot initialize return object of type 'D *' with an rvalue of type 'B *'
+- `classes/derived/base-to-derived-implicit.cpp` (gcc-16): error: invalid conversion from 'B*' to 'D*' [-fpermissive]
+- `classes/derived/base-to-derived-implicit.cpp` (clang-22): error: cannot initialize return object of type 'D *' with an rvalue of type 'B *'
+- `classes/derived/base-union.cpp` (clang-host): error: unions cannot be base classes
+- `classes/derived/base-union.cpp` (gcc-host): error: base type ‘U’ fails to be a struct or class type
+- `classes/derived/base-union.cpp` (edg-7.0): error: a class cannot not derive from a union
+- `classes/derived/base-union.cpp` (gcc-14): error: base type 'U' fails to be a struct or class type
+- `classes/derived/base-union.cpp` (clang-18): error: unions cannot be base classes
+- `classes/derived/base-union.cpp` (gcc-16): error: base type 'U' fails to be a struct or class type
+- `classes/derived/base-union.cpp` (clang-22): error: unions cannot be base classes
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (clang-host): error: constexpr constructor not allowed in struct with virtual base class
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (gcc-host): error: ‘constexpr’ constructor in ‘struct D’ that has virtual base classes only available with ‘-std=c++2c’ or ‘-std=gnu++2c’
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (edg-7.0): error: a constructor for a class with virtual bases cannot be constexpr
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (gcc-14): error: 'struct D' has virtual base classes
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (clang-18): error: constexpr constructor not allowed in struct with virtual base class
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (gcc-16): error: 'constexpr' constructor in 'struct D' that has virtual base classes only available with '-std=c++2c' or '-std=gnu++2c'
+- `classes/derived/constexpr-ctor-virtual-base.cpp` (clang-22): error: constexpr constructor not allowed in struct with virtual base class
+- `classes/derived/constexpr-object-virtual-base.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const D' / note: struct with virtual base class is not a literal type
+- `classes/derived/constexpr-object-virtual-base.cpp` (gcc-host): error: call to non-‘constexpr’ function ‘D::D()’ / note: ‘D::D()’ is not usable as a ‘constexpr’ function because:
+- `classes/derived/constexpr-object-virtual-base.cpp` (edg-7.0): error: initialization is not constant / note: cannot call non-constexpr function "D::D() noexcept" (declared implicitly)
+- `classes/derived/constexpr-object-virtual-base.cpp` (gcc-14): error: call to non-'constexpr' function 'D::D()' / note: 'D::D()' is not usable as a 'constexpr' function because:
+- `classes/derived/constexpr-object-virtual-base.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const D' / note: struct with virtual base class is not a literal type
+- `classes/derived/constexpr-object-virtual-base.cpp` (gcc-16): error: call to non-'constexpr' function 'D::D()' / note: 'D::D()' is not usable as a 'constexpr' function because:
+- `classes/derived/constexpr-object-virtual-base.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const D' / note: struct with virtual base class is not a literal type
+- `classes/derived/data-member-hides-function.cpp` (clang-host): error: called object type 'int' is not a function or function pointer
+- `classes/derived/data-member-hides-function.cpp` (gcc-host): error: expression cannot be used as a function
+- `classes/derived/data-member-hides-function.cpp` (edg-7.0): error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+- `classes/derived/data-member-hides-function.cpp` (gcc-14): error: expression cannot be used as a function
+- `classes/derived/data-member-hides-function.cpp` (clang-18): error: called object type 'int' is not a function or function pointer
+- `classes/derived/data-member-hides-function.cpp` (gcc-16): error: expression cannot be used as a function
+- `classes/derived/data-member-hides-function.cpp` (clang-22): error: called object type 'int' is not a function or function pointer
+- `classes/derived/derived-hides-base-overloads.cpp` (clang-host): error: cannot initialize a parameter of type 'const char *' with an rvalue of type 'int' / note: passing argument to parameter here
+- `classes/derived/derived-hides-base-overloads.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘const char*’ [-fpermissive] / note: initializing argument 1 of ‘void D::f(const char*)’
+- `classes/derived/derived-hides-base-overloads.cpp` (edg-7.0): error: argument of type "int" is incompatible with parameter of type "const char *"
+- `classes/derived/derived-hides-base-overloads.cpp` (gcc-14): error: invalid conversion from 'int' to 'const char*' [-fpermissive] / note:   initializing argument 1 of 'void D::f(const char*)'
+- `classes/derived/derived-hides-base-overloads.cpp` (clang-18): error: cannot initialize a parameter of type 'const char *' with an rvalue of type 'int' / note: passing argument to parameter here
+- `classes/derived/derived-hides-base-overloads.cpp` (gcc-16): error: invalid conversion from 'int' to 'const char*' [-fpermissive] / note: initializing argument 1 of 'void D::f(const char*)'
+- `classes/derived/derived-hides-base-overloads.cpp` (clang-22): error: cannot initialize a parameter of type 'const char *' with an rvalue of type 'int' / note: passing argument to parameter here
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (clang-host): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (gcc-host): error: request for member ‘x’ is ambiguous
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (edg-7.0): error: "D::x" is ambiguous
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (gcc-14): error: request for member 'x' is ambiguous / note: candidates are: 'int A::x'
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (clang-18): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (gcc-16): error: request for member 'x' is ambiguous
+- `classes/derived/dominance-nonvirtual-ambiguous.cpp` (clang-22): error: member 'x' found in multiple base classes of different types / note: member found by ambiguous name lookup
+- `classes/derived/inherited-ctor-access.cpp` (clang-host): error: calling a private constructor of class 'B' / note: implicitly declared private here
+- `classes/derived/inherited-ctor-access.cpp` (gcc-host): error: ‘B::B(int)’ is private within this context / note: declared private here
+- `classes/derived/inherited-ctor-access.cpp` (edg-7.0): error: "B::B(int)" (declared at line 3) is inaccessible
+- `classes/derived/inherited-ctor-access.cpp` (gcc-14): error: 'B::B(int)' is private within this context / note: declared private here
+- `classes/derived/inherited-ctor-access.cpp` (clang-18): error: calling a private constructor of class 'B' / note: implicitly declared private here
+- `classes/derived/inherited-ctor-access.cpp` (gcc-16): error: 'B::B(int)' is private within this context / note: declared private here
+- `classes/derived/inherited-ctor-access.cpp` (clang-22): error: calling a private constructor of class 'B' / note: implicitly declared private here
+- `classes/derived/inherited-ctor-explicit.cpp` (clang-host): error: no viable conversion from 'int' to 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const D &' for 1st argument
+- `classes/derived/inherited-ctor-explicit.cpp` (gcc-host): error: conversion from ‘int’ to non-scalar type ‘D’ requested / note: explicit conversion function was not considered
+- `classes/derived/inherited-ctor-explicit.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "D"
+- `classes/derived/inherited-ctor-explicit.cpp` (gcc-14): error: conversion from 'int' to non-scalar type 'D' requested
+- `classes/derived/inherited-ctor-explicit.cpp` (clang-18): error: no viable conversion from 'int' to 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const D &' for 1st argument
+- `classes/derived/inherited-ctor-explicit.cpp` (gcc-16): error: conversion from 'int' to non-scalar type 'D' requested / note: explicit conversion function was not considered
+- `classes/derived/inherited-ctor-explicit.cpp` (clang-22): error: no viable conversion from 'int' to 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'int' to 'const D &' for 1st argument
+- `classes/derived/inherited-ctor-no-default.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has no default constructor
+- `classes/derived/inherited-ctor-no-default.cpp` (gcc-host): error: use of deleted function ‘D::D()’ / note: ‘D::D()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/inherited-ctor-no-default.cpp` (edg-7.0): error: the default constructor of "D" cannot be referenced -- it is a deleted function
+- `classes/derived/inherited-ctor-no-default.cpp` (gcc-14): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/inherited-ctor-no-default.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has no default constructor
+- `classes/derived/inherited-ctor-no-default.cpp` (gcc-16): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/inherited-ctor-no-default.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'B' has no default constructor
+- `classes/derived/inherited-ctor-not-copy.cpp` (clang-host): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'B' to 'const D' for 1st argument
+- `classes/derived/inherited-ctor-not-copy.cpp` (gcc-host): error: no matching function for call to ‘D::D(B&)’
+- `classes/derived/inherited-ctor-not-copy.cpp` (edg-7.0): error: no instance of constructor "D::D" matches the argument list / note: function "D::D(const D &)" does not match because argument #1 does not match parameter
+- `classes/derived/inherited-ctor-not-copy.cpp` (gcc-14): error: no matching function for call to 'D::D(B&)' / note: candidate: 'B::B(const B&)'
+- `classes/derived/inherited-ctor-not-copy.cpp` (clang-18): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'B' to 'const D' for 1st argument
+- `classes/derived/inherited-ctor-not-copy.cpp` (gcc-16): error: no matching function for call to 'D::D(B&)'
+- `classes/derived/inherited-ctor-not-copy.cpp` (clang-22): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'B' to 'const D' for 1st argument
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (clang-host): error: 'A' is not a direct base of 'D', cannot inherit constructors
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (gcc-host): error: ‘A’ is not a direct base of ‘D’
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (edg-7.0): error: inheriting constructors must be inherited from a direct base class
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (gcc-14): error: 'A' is not a direct base of 'D'
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (clang-18): error: 'A' is not a direct base of 'D', cannot inherit constructors
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (gcc-16): error: 'A' is not a direct base of 'D'
+- `classes/derived/inherited-ctor-not-direct-base.cpp` (clang-22): error: 'A' is not a direct base of 'D', cannot inherit constructors
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (clang-host): error: call to constructor of 'D' is ambiguous / note: candidate inherited constructor
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (gcc-host): error: call of overloaded ‘D(int)’ is ambiguous
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (edg-7.0): error: more than one instance of constructor "D::D" matches the argument list: / note: number of parameters of function "D::D()" does not match the call
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (gcc-14): error: call of overloaded 'D(int)' is ambiguous / note: candidate: 'B::B(int)'
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (clang-18): error: call to constructor of 'D' is ambiguous / note: candidate inherited constructor
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (gcc-16): error: call of overloaded 'D(int)' is ambiguous
+- `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (clang-22): error: call to constructor of 'D' is ambiguous / note: candidate inherited constructor
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (clang-host): error: constructor for 'D' must explicitly initialize the base class 'A' which does not have a default constructor
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (gcc-host): error: no matching function for call to ‘A::A()’
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (edg-7.0): error: no default constructor exists for class "A"
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (gcc-14): error: no matching function for call to 'A::A()' / note: candidate: 'A::A(int)'
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (clang-18): error: constructor for 'D' must explicitly initialize the base class 'A' which does not have a default constructor
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (gcc-16): error: no matching function for call to 'A::A()'
+- `classes/derived/most-derived-must-init-virtual-base.cpp` (clang-22): error: constructor for 'D' must explicitly initialize the base class 'A' which does not have a default constructor
+- `classes/derived/union-as-derived.cpp` (clang-host): error: unions cannot have base classes
+- `classes/derived/union-as-derived.cpp` (gcc-host): error: derived union ‘U’ invalid
+- `classes/derived/union-as-derived.cpp` (edg-7.0): error: a union is not allowed to have a base class
+- `classes/derived/union-as-derived.cpp` (gcc-14): error: derived union 'U' invalid
+- `classes/derived/union-as-derived.cpp` (clang-18): error: unions cannot have base classes
+- `classes/derived/union-as-derived.cpp` (gcc-16): error: derived union 'U' invalid
+- `classes/derived/union-as-derived.cpp` (clang-22): error: unions cannot have base classes
+- `classes/derived/using-not-a-base.cpp` (clang-host): error: using declaration refers into 'X', which is not a base class of 'D'
+- `classes/derived/using-not-a-base.cpp` (gcc-host): error: type ‘X’ is not a base type for type ‘D’
+- `classes/derived/using-not-a-base.cpp` (edg-7.0): error: invalid base class
+- `classes/derived/using-not-a-base.cpp` (gcc-14): error: type 'X' is not a base type for type 'D'
+- `classes/derived/using-not-a-base.cpp` (clang-18): error: using declaration refers into 'X::', which is not a base class of 'D'
+- `classes/derived/using-not-a-base.cpp` (gcc-16): error: type 'X' is not a base type for type 'D'
+- `classes/derived/using-not-a-base.cpp` (clang-22): error: using declaration refers into 'X', which is not a base class of 'D'
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (clang-host): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (gcc-host): error: ‘A’ is an ambiguous base of ‘D’
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (edg-7.0): error: base class "A" is ambiguous
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (gcc-14): error: 'A' is an ambiguous base of 'D'
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (clang-18): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (gcc-16): error: 'A' is an ambiguous base of 'D'
+- `classes/derived/virtual-and-nonvirtual-base.cpp` (clang-22): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/virtual-base-downcast.cpp` (clang-host): error: cannot cast 'A *' to 'B *' via virtual base 'A'
+- `classes/derived/virtual-base-downcast.cpp` (gcc-host): error: cannot convert from pointer to base class ‘A’ to pointer to derived class ‘B’ because the base is virtual
+- `classes/derived/virtual-base-downcast.cpp` (edg-7.0): error: cannot convert pointer to base class "A" to pointer to derived class "B" -- base class is virtual
+- `classes/derived/virtual-base-downcast.cpp` (gcc-14): error: cannot convert from pointer to base class 'A' to pointer to derived class 'B' because the base is virtual
+- `classes/derived/virtual-base-downcast.cpp` (clang-18): error: cannot cast 'A *' to 'B *' via virtual base 'A'
+- `classes/derived/virtual-base-downcast.cpp` (gcc-16): error: cannot convert from pointer to base class 'A' to pointer to derived class 'B' because the base is virtual
+- `classes/derived/virtual-base-downcast.cpp` (clang-22): error: cannot cast 'A *' to 'B *' via virtual base 'A'
+- `classes/derived/virtual-base-private-dtor.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'A' has an inaccessible destructor
+- `classes/derived/virtual-base-private-dtor.cpp` (gcc-host): error: use of deleted function ‘D::D()’ / note: ‘D::D()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/virtual-base-private-dtor.cpp` (edg-7.0): error: the default constructor of "D" cannot be referenced -- it is a deleted function / error: function "D::~D() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/derived/virtual-base-private-dtor.cpp` (gcc-14): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/virtual-base-private-dtor.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'A' has an inaccessible destructor
+- `classes/derived/virtual-base-private-dtor.cpp` (gcc-16): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/derived/virtual-base-private-dtor.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'A' has an inaccessible destructor
 - `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
 - `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
 - `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
