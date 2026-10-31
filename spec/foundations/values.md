@@ -210,13 +210,15 @@ Constant evaluation creates temporaries in the same cases.
 
 :::{rule} VC-9
 :kind: required
-:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp
+:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp expressions/sequencing/full-expression-statement.cpp expressions/sequencing/full-expression-for-clauses.cpp expressions/sequencing/full-expression-subexpression-not.cpp
 
-Each of these is a separate full expression, so its temporaries end with
-it:
+A *full expression* is an expression that is not part of a larger
+expression. Its temporaries end with it. These are full expressions:
 
+- the expression of an expression statement,
 - the initializer of one declarator, in a declaration with several,
 - a condition,
+- each of the three clauses of a `for` statement,
 - the expression of a `return` statement. Its temporaries end before the
   local variables of the function.
 

@@ -10,8 +10,8 @@ current state only. The history of how it got here is in `git log`.
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 23 | Q-0112 | 0 flagged |
 | [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 0 | 4 |  | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 31 | 4 | 2 | 18 |  | 0 flagged |
-| [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 48 | 6 | 1 | 13 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 23 | Q-0028, Q-0100 | 0 flagged |
+| [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 51 | 6 | 1 | 13 | Q-0099 | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 23 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 8 | 4 required, 1 undefined, 2 unspecified, 1 recommended | 21 | 1 | 0 | 10 |  | 0 flagged |
 | [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 74 | 7 | 6 | 72 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
@@ -75,7 +75,7 @@ current state only. The history of how it got here is in `git log`.
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 12 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 8 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 9 |  | 0 flagged |
-| [Glossary](../spec/glossary.md) | 18 terms | | | | | | | 0 flagged |
+| [Glossary](../spec/glossary.md) | 19 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
@@ -88,7 +88,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3165/3165 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3176/3176 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -120,7 +120,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2570 of 3165 tests, with no false
+- The clean-room front end passes 2581 of 3176 tests, with no false
   rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -153,18 +153,15 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Item Y: cross-page inventories on the Foundations pages. Rule IDs for
-   the usual arithmetic conversions and integer promotion, the contexts
-   of implicit conversion, and the full expression (decision 0039).
-2. Item S1: definitions of the trivial special member functions.
-3. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+1. Item S1: definitions of the trivial special member functions.
+2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
    which builds EDG itself as a 32-bit program.
-4. Item F: a grammar notation, then one grammar in which every
+3. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-5. Item G1: keywords, reserved names, and the literal suffix grammar.
-6. Item K: the language-support types, then the task-level guides.
-7. Propose exercises X1 to X4, after item Y.
+4. Item G1: keywords, reserved names, and the literal suffix grammar.
+5. Item K: the language-support types, then the task-level guides.
+6. Propose exercises X1 to X4, after item Y.
 
 Waiting on the maintainer:
 

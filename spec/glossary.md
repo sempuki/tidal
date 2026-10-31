@@ -53,6 +53,11 @@ discarded statement
     definition.
   - In a template, a discarded statement is not instantiated.
 
+full expression
+  An expression that is not part of a larger expression, such as the
+  expression of an expression statement or a condition. Its temporaries
+  end with it ({rule}`VC-9`).
+
 immediate function context
   A part of a program where a call to a `consteval` function need not be a
   constant expression by itself. Examples are the body of a `consteval`
@@ -136,28 +141,7 @@ unsequenced
 
 usual arithmetic conversions
   The conversions that give the two operands of a binary arithmetic
-  operator a common type. The steps are:
-
-  1. If one operand has a floating-point type, the other operand is
-     converted to the floating-point type with the larger range. The order
-     is `float`, `double`, `long double` ({rule}`TYP-9`). Extended
-     floating-point types have their own ranks
-     *(extended floating-point types referenced)*. If neither type's rank
-     is greater than the other's, the operation is not valid.
-  2. If not, both operands go through {term}`integer promotion`. If the
-     types are then the same, that type is the common type.
-  3. If both types are signed, or both are unsigned, the narrower operand
-     is converted to the wider type.
-  4. If the unsigned type is at least as wide as the signed type, the
-     signed operand is converted to the unsigned type.
-  5. If the signed type can hold all values of the unsigned type, the
-     unsigned operand is converted to the signed type.
-  6. If not, both operands are converted to the unsigned type that has the
-     width of the signed type.
-
-  Width means the integer conversion rank ({rule}`TYP-8`). For the
-  standard integer types the order is `char`, `short`, `int`, `long`,
-  `long long`.
+  operator one common type. The steps are in {rule}`CONV-19`.
 
 value category
   The kind of an expression. There are three kinds:

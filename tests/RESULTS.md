@@ -2254,6 +2254,7 @@ compilers affect the Status column.
 | `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/implicit-conversion-contexts.cpp` | CONV-20 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/integer-variable-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/integral-promotion.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/integral-to-floating-exact.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2284,6 +2285,13 @@ compilers affect the Status column.
 | `expressions/conversions/to-bool.cpp` | CONV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/to-signed-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/to-unsigned-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-floating.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-promoted-same.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-same-signedness.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-signed-holds-unsigned-lp64.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-unsigned-of-signed-ilp32.cpp` | CONV-19 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `expressions/conversions/uac-unsigned-of-signed-lp64.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-unsigned-rank-not-lower.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/void-pointer-to-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/decltype/abstract-prvalue-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/as-type-specifier.cpp` | DTY-3 | run | run | run | accept | run | run | run | run | pass |
@@ -2712,7 +2720,10 @@ compilers affect the Status column.
 | `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-for-clauses.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-statement.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
@@ -3180,7 +3191,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3165/3165 tests pass on baseline compilers.
+3176/3176 tests pass on baseline compilers.
 
 ## Rejections
 

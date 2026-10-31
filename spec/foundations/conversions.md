@@ -11,7 +11,7 @@ conversions:
 ## Principles
 
 :::{principle} CONV-P1
-:rules: CONV-1 CONV-13
+:rules: CONV-1 CONV-13 CONV-19 CONV-20
 
 An operand takes the shape that the operation needs before the operation
 sees it:
@@ -89,6 +89,48 @@ These operands go through {term}`integer promotion` in arithmetic:
   can hold all the values of the enumeration (ENUM-6) is the result.
 
 A `float` operand does not change to `double` in arithmetic.
+:::
+
+:::{rule} CONV-19
+:kind: required
+:tests: expressions/conversions/uac-floating.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp
+
+The {term}`usual arithmetic conversions` give the two operands of a
+binary arithmetic operator one common type. The first step that applies
+decides it:
+
+1. If either operand has a floating-point type, the common type is the
+   floating-point type of higher rank ({rule}`TYP-9`). Extended
+   floating-point types have their own ranks
+   *(extended floating-point types referenced)*. If neither rank is
+   higher, the operation is not valid.
+2. Otherwise both operands are promoted (CONV-1). If they now have the
+   same type, that is the common type.
+3. If both types are signed, or both are unsigned, the common type is
+   the one of higher rank ({rule}`TYP-8`).
+4. If the unsigned type's rank is not lower than the signed type's, the
+   common type is the unsigned type.
+5. If the signed type can hold every value of the unsigned type, the
+   common type is the signed type.
+6. Otherwise the common type is the unsigned type of the signed type's
+   rank.
+:::
+
+:::{rule} CONV-20
+:kind: required
+:tests: expressions/conversions/implicit-conversion-contexts.cpp
+
+An implicit conversion happens in each of these contexts. The rule that
+each one names gives the target type:
+
+- the initializer of a variable ({rule}`INIT-4`),
+- a function argument ({rule}`PFX-6`),
+- the expression of a `return` statement ({rule}`JMP-3`),
+- the right operand of an assignment ({rule}`ASN-1`),
+- the operands of a binary arithmetic or comparison operator (CONV-19),
+- a condition, by {term}`contextual conversion` ({rule}`IF-3`),
+- an array bound, an enumerator value, and a case label (CE-11, CE-19),
+- the condition of a `switch` ({rule}`SW-2`).
 :::
 
 :::{rule} CONV-8
