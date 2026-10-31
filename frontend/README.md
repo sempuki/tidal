@@ -42,10 +42,13 @@ evaluation broke. The conformance count of matching rules accepts either.
 
 `--m32` switches the target from LP64 (x86-64 Linux) to ILP32.
 `--werror` turns the warnings for `recommended` rules into errors.
-Some warnings run only when a `-W` flag asks for them, as on the
-matrix compilers: ATTR-6 and SEQ-7 with `-Wall`, ATTR-7 with
-`-Wimplicit-fallthrough` or `-Wextra`, CTOR-13 with `-Wall`, and the
-deprecated-copy part of CPY-13 with `-Wextra`.
+Some warnings run only when a `-W` flag asks for them, following the
+warning-flag table in the Evidence of `spec/foundations/translation.md`:
+ATTR-6 with `-Wall`, `-Wunused`, `-Wunused-variable`, or
+`-Wunused-but-set-variable`, SEQ-7 with `-Wall`, ATTR-7 with
+`-Wimplicit-fallthrough` or `-Wextra`, CTOR-13 with `-Wall`, the
+deprecated-copy part of CPY-13 with `-Wextra`, and the pessimizing-move
+part of CPY-13 with `-Wall`.
 
 ## Run the conformance tests
 
@@ -88,4 +91,5 @@ writes the table and one line per test to FILE.
 | `src/conform.rs` | the conformance harness |
 
 The findings about the specification are in
-`reports/clean-room/rust-frontend/report.md` and `report-2.md`.
+`reports/clean-room/rust-frontend/report.md` and `report-2.md` to
+`report-4.md`.

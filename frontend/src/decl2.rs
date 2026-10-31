@@ -239,6 +239,7 @@ impl P {
                     self.add_decl(name, DK::Namespace(s), line);
                     if inl {
                         self.scopes[cur].using_ns.push(s);
+                        self.inline_ns.insert(s);
                     }
                     s
                 }
@@ -910,6 +911,12 @@ impl P {
             let vi = VarInfo { ty, storage, constexpr: false, constinit: false, init: None, param: false, local: ctx != Ctx::Namespace, dependent: true, defined: true, class: None };
             let id = self.add_decl(n, DK::Var(vi), *nl);
             ids.push(id);
+        }
+        // ATTR-6: a structured binding declaration that is never read.
+        let maybe_unused = self.decl_attrs.iter().any(|a| a.name == "maybe_unused") || self.pending_attrs.iter().any(|a| a.name == "maybe_unused");
+        if ctx == Ctx::Block && storage == Storage::Auto && !ids.is_empty() && !maybe_unused && !self.in_template() {
+            self.unused_cands.push((ids[0], line));
+            self.binding_groups.insert(ids[0], ids.clone());
         }
         Ok(ids)
     }
@@ -1768,7 +1775,7 @@ impl P {
             }
         }
         // ATTR-6: a local scalar variable that may be unused.
-        if local && storage == Storage::Auto && redecl.is_none() && ctx == Ctx::Block && self.is_scalar(&ty) && !self.has_attr(id_placeholder, "maybe_unused") && !self.in_template() {
+        if local && storage == Storage::Auto && redecl.is_none() && ctx == Ctx::Block && (self.is_scalar(&ty) || self.plain_class(&ty.t, 0)) && !self.has_attr(id_placeholder, "maybe_unused") && !self.in_template() {
             self.unused_cands.push((id_placeholder, line));
         }
         // JMP-6, SW-5: variables a jump must not skip.
@@ -1867,6 +1874,10 @@ impl P {
             }
         }
         let member_class = if is_friend { None } else { class };
+        // Deallocation functions are non-throwing, on every declaration.
+        if name == "operatordelete" || name == "operatordelete[]" {
+            fty.noexcept = true;
+        }
         let kind = match &d.kind {
             NameKind::Ctor => FnKind::Ctor,
             NameKind::Dtor => FnKind::Dtor,
@@ -2219,6 +2230,28 @@ impl P {
                 id
             }
         };
+        // ACC-7, NAM-29: a friend first declared in a class is hidden
+        // from ordinary lookup until the namespace declares it.
+        if in_class_body && is_friend && d.qual.is_none() {
+            if let Some(c) = class {
+                let v = self.class_friends.entry(c).or_default();
+                if !v.contains(&id) {
+                    v.push(id);
+                }
+                match existing {
+                    None => {
+                        self.hidden_friends.insert(id, vec![c]);
+                    }
+                    Some(_) => {
+                        if let Some(h) = self.hidden_friends.get_mut(&id) {
+                            h.push(c);
+                        }
+                    }
+                }
+            }
+        } else if !in_class_body && existing.is_some() && self.scopes[target_scope].kind == SK::Namespace {
+            self.hidden_friends.remove(&id);
+        }
         if ds.constexpr || ds.consteval {
             if let Some(f) = self.func_mut(id) {
                 f.constexpr = true;
@@ -2355,7 +2388,7 @@ impl P {
 
     /// Push the scope `q` and the scopes that enclose it, for a qualified
     /// definition.
-    fn push_enclosing_for(&mut self, q: usize) {
+    pub fn push_enclosing_for(&mut self, q: usize) {
         let mut chain = Vec::new();
         let mut s = Some(q);
         while let Some(x) = s {
@@ -2494,15 +2527,43 @@ impl P {
         }
     }
 
+    /// ATTR-6: a class whose objects can be unused without effect: no
+    /// user-provided constructor or destructor, in the class, its bases,
+    /// or its members.
+    pub fn plain_class(&self, t: &Ty, depth: u32) -> bool {
+        let Ty::Class(c) = t else { return false };
+        let ci = &self.classes[*c];
+        if depth > 8 || !ci.complete || self.class_uncertain(*c) || ci.key == 2 {
+            return false;
+        }
+        let user = |d: DeclId| self.func(d).is_none_or(|f| !f.first_defaulted && !f.deleted);
+        if ci.ctors.iter().any(|&d| user(d)) || ci.dtor.is_some_and(user) {
+            return false;
+        }
+        if ci.bases.iter().any(|b| b.class.is_none_or(|bc| !self.plain_class(&Ty::Class(bc), depth + 1))) {
+            return false;
+        }
+        ci.fields.iter().all(|&f| match &self.decls[f].k {
+            DK::Field(fi) => match &fi.ty.t {
+                Ty::Class(_) => self.plain_class(&fi.ty.t, depth + 1),
+                Ty::Array(..) => false,
+                t => !t.is_ref(),
+            },
+            _ => false,
+        })
+    }
+
     pub fn parse_function_body(&mut self, fid: DeclId, param_scope: usize, class: Option<usize>, deduce: bool) -> PR<()> {
         let mark = self.unused_cands.len();
         let r = self.parse_function_body_in(fid, param_scope, class, deduce);
         // ATTR-6: warn about a local variable that the program never uses
         // (with -Wunused or -Wall, as the matrix compilers do).
         let cands: Vec<(DeclId, u32)> = self.unused_cands.drain(mark..).collect();
-        if self.wflag(&["-Wunused", "-Wunused-variable", "-Wall"]) && r.is_ok() {
+        if self.wflag(&["-Wunused", "-Wunused-variable", "-Wunused-but-set-variable", "-Wall"]) && r.is_ok() {
             for (id, line) in cands {
-                if !self.used_vars.contains(&id) {
+                let group = self.binding_groups.get(&id).cloned().unwrap_or_else(|| vec![id]);
+                let read = group.iter().any(|g| self.use_count.get(g).copied().unwrap_or(0) > self.assign_count.get(g).copied().unwrap_or(0));
+                if !read {
                     self.warn(line, "ATTR-6", format!("unused variable '{}'", self.decls[id].name));
                 }
             }

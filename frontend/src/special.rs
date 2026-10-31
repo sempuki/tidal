@@ -308,7 +308,11 @@ impl P {
     /// initializer. None when the front end cannot tell.
     pub fn const_default_ok(&self, c: usize, depth: u32) -> Option<bool> {
         let ci = &self.classes[c];
-        if ci.template || !ci.complete || self.class_uncertain(c) || depth > 16 || ci.key == 2 {
+        // An anonymous union makes the class opaque; CTOR-24 covers it.
+        if ci.template || !ci.complete || ci.bases.iter().any(|b| b.class.is_none_or(|bc| self.class_uncertain(bc))) || depth > 16 {
+            return None;
+        }
+        if ci.opaque && ci.anon_unions.is_empty() {
             return None;
         }
         match self.declared(c, Sm::Default) {
@@ -316,12 +320,30 @@ impl P {
             Declared::Unknown => return None,
             _ => {}
         }
+        let has_dmi = |u: usize| self.classes[u].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(x) if x.init.is_some()));
+        if ci.key == 2 {
+            // CTOR-24: a union needs a default member initializer on one
+            // member, or no members.
+            return Some(ci.fields.is_empty() || has_dmi(c));
+        }
         for b in &ci.bases {
             if !self.const_default_ok(b.class?, depth + 1)? {
                 return Some(false);
             }
         }
+        let variant_names: Vec<String> = ci.anon_unions.iter().flat_map(|&u| self.classes[u].fields.iter().map(|&f| self.decls[f].name.clone())).collect();
+        let is_variant = |f: DeclId| variant_names.contains(&self.decls[f].name);
+        let has_regular = ci.fields.iter().any(|&f| !is_variant(f) && matches!(&self.decls[f].k, DK::Field(x) if x.bits != Some(0)));
+        // CTOR-24: an anonymous union without a default member
+        // initializer, unless every data member is in such a union
+        // (Q-0126).
+        if has_regular && ci.anon_unions.iter().any(|&u| !has_dmi(u)) {
+            return Some(false);
+        }
         for &f in &ci.fields {
+            if is_variant(f) {
+                continue;
+            }
             let DK::Field(fi) = &self.decls[f].k else { continue };
             if fi.init.is_some() || fi.bits == Some(0) {
                 continue;
@@ -390,12 +412,12 @@ impl P {
                 continue;
             }
             if let Some(m) = Self::class_of_elem(&t.t) {
-                if self.dtor_deleted(m, depth + 1) {
+                // CPY-7: for a constructor, a destructor that is deleted
+                // or not accessible.
+                if !assign && self.dtor_deleted(m, depth + 1) {
                     return Some(true);
                 }
-                // CPY-7: a function of the base or member that is not
-                // accessible.
-                if self.classes[m].dtor.is_some_and(|d| self.sub_inaccessible(m, d, _is_base)) {
+                if !assign && self.classes[m].dtor.is_some_and(|d| self.sub_inaccessible(m, d, _is_base)) {
                     return Some(true);
                 }
                 if let Some(cands) = self.copy_cands(m, assign, rvalue) {
@@ -412,6 +434,14 @@ impl P {
             }
         }
         Some(false)
+    }
+
+    /// CPY-7: a union whose variant member cannot be copied.
+    fn variant_copy_deleted(&self, c: usize, assign: bool) -> bool {
+        self.classes[c].fields.iter().any(|&f| {
+            let DK::Field(fi) = &self.decls[f].k else { return false };
+            Self::class_of_elem(&fi.ty.t).is_some_and(|m| matches!(self.lv_status(m, assign, 1), CopySt::Deleted(_)))
+        })
     }
 
     /// How an lvalue of class `c` is copied (CPY-4, CPY-6, CPY-7, CPY-14).
@@ -566,7 +596,14 @@ impl P {
         };
         let name = self.classes[c].name.clone();
         if self.uni3_deleted(c, sm) {
-            self.error(line, "UNI-11", format!("the {} of '{}' is deleted (UNI-3)", sm.what(), name));
+            // CPY-7: a move function that UNI-3 deletes takes no part in
+            // overload resolution, so an rvalue uses the copy function.
+            let cp = if assign { Sm::CopyAssign } else { Sm::CopyCtor };
+            if rv && !self.uni3_deleted(c, cp) && !self.variant_copy_deleted(c, assign) {
+                return;
+            }
+            let shown = if rv { cp } else { sm };
+            self.error(line, "UNI-11", format!("the {} of '{}' is deleted (UNI-3)", shown.what(), name));
             return;
         }
         let st = if rv { self.rv_status(c, assign, 0) } else { self.lv_status(c, assign, 0) };

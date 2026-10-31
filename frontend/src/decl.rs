@@ -140,6 +140,7 @@ impl P {
                 return false;
             }
             let found = match scope {
+                None if self.at_k(k + 1, "::") => self.lookup_scope_name(&t.text),
                 None => self.lookup(&t.text),
                 Some(s) => self.lookup_in_scope(s, &t.text, true),
             };
@@ -741,9 +742,10 @@ impl P {
             }
             // Is this name followed by `::` (possibly after template args)?
             let name = self.tok().text.clone();
+            // NAM-15: the name before `::` finds only namespaces and types.
             let found = match scope {
-                None => self.lookup(&name),
-                Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
+                None => self.lookup_scope_name(&name),
+                Some(Ok(s)) => self.lookup_in_scope(s, &name, true).map(|v| self.scope_names_only(v)).filter(|v| !v.is_empty()),
                 Some(Err(())) => None,
             };
             let mut next = 1;
@@ -768,15 +770,52 @@ impl P {
                     DK::Type(q) => match &q.t {
                         Ty::Class(c) => Ok(self.classes[*c].scope),
                         Ty::Enum(e) => Ok(self.enums[*e].scope),
-                        _ => Err(()),
+                        Ty::Unknown => Err(()),
+                        _ => {
+                            if !self.in_template() {
+                                // NAM-16: a fundamental type is not a qualifier.
+                                self.error(self.line(), "NAM-16", format!("'{}' names a type that is not a class, enumeration, or namespace, and cannot come before '::'", name));
+                            }
+                            Err(())
+                        }
                     },
                     _ => Err(()),
                 },
-                None => Err(()),
+                None => {
+                    let certain = match scope {
+                        None => !self.lookup_uncertain(),
+                        Some(Ok(s)) => !self.scopes[s].uncertain && !matches!(self.scopes[s].kind, SK::Class(c) if self.class_uncertain(c)) && !self.in_template(),
+                        Some(Err(())) => false,
+                    };
+                    let hidden_by_value = scope.is_none() && self.lookup(&name).is_some();
+                    if certain && hidden_by_value {
+                        // NAM-16: only a variable or function has the name.
+                        self.error(self.line(), "NAM-16", format!("'{}' before '::' is not a namespace, class, or enumeration", name));
+                    }
+                    Err(())
+                }
             };
             self.pos += next + 1;
             scope = Some(s);
         }
+    }
+
+    /// NAM-15: unqualified lookup of a name before `::`, which skips
+    /// declarations other than namespaces and types.
+    pub fn lookup_scope_name(&self, name: &str) -> Option<Vec<DeclId>> {
+        let noms = self.nominations();
+        for &s in self.stack.iter().rev() {
+            if let (Some(v), _) = self.lookup_level(s, name, &noms) {
+                let v = self.scope_names_only(v);
+                if !v.is_empty() {
+                    return Some(v);
+                }
+            }
+        }
+        None
+    }
+    pub fn scope_names_only(&self, v: Vec<DeclId>) -> Vec<DeclId> {
+        v.into_iter().filter(|&i| matches!(self.decls[i].k, DK::Namespace(_) | DK::Class(_) | DK::Enum(_) | DK::Type(_) | DK::Template(_) | DK::TypeParam)).collect()
     }
 
     /// Parse a type name (possibly qualified, possibly a template-id)
@@ -785,9 +824,9 @@ impl P {
         let line = self.line();
         let scope = self.parse_nested_name()?;
         let name = self.ident()?;
-        let found = match scope {
-            None => self.lookup(&name),
-            Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
+        let (found, amb) = match scope {
+            None => self.lookup_full(&name),
+            Some(Ok(s)) => self.lookup_qualified(s, &name),
             Some(Err(())) => {
                 if self.at("<") {
                     self.skip_balanced();
@@ -795,6 +834,31 @@ impl P {
                 return Ok(QTy::unknown());
             }
         };
+        if !self.in_template() {
+            if amb {
+                if scope.is_none() && self.stack.iter().any(|&s| matches!(self.scopes[s].kind, SK::Class(_))) {
+                    // NAM-36, DER-4: an inherited name from two bases.
+                    self.error_because(line, "NAM-36", "DER-4", format!("'{}' names different classes in two bases", name));
+                } else {
+                    self.report_ambiguous(scope.and_then(|r| r.ok()), &name, line);
+                }
+                return Ok(QTy::unknown());
+            }
+            if let Some(Ok(s)) = scope {
+                if let SK::Class(c) = self.scopes[s].kind {
+                    if self.classes[c].name == name && !self.classes[c].template && self.in_base_clause == 0 {
+                        // NAM-34: after `C::`, `C` names the constructors.
+                        self.error(line, "NAM-34", format!("'{0}::{0}' names the constructors of '{0}', not a type", name));
+                        return Ok(QTy::unknown());
+                    }
+                }
+            }
+            if scope.is_none() && self.private_base_name(&name) {
+                // NAM-36, ACC-14: the name is a member of a private base
+                // of another class.
+                self.error_because(line, "NAM-36", "ACC-14", format!("'{}' is inherited through a private base and is not accessible here", name));
+            }
+        }
         let Some(ids) = found else {
             return Err(PErr { line, msg: format!("unknown type name '{}'", name) });
         };
@@ -826,6 +890,13 @@ impl P {
             let t = self.tok().clone();
             if t.kind == TK::Eof {
                 return Err(self.err("unterminated template argument list"));
+            }
+            if t.kind == TK::Ident && self.at_k(1, "::") && self.peek(2).text == t.text && !self.at_k(3, "::") && !self.at_k(3, "(") && !self.in_template() {
+                let is_class = self.lookup_scope_name(&t.text).is_some_and(|ids| ids.iter().any(|&i| matches!(self.decls[i].k, DK::Class(c) if !self.classes[c].template && self.classes[c].name == t.text)));
+                if is_class && !(self.pos > 0 && self.toks[self.pos - 1].text == "::") {
+                    // NAM-34: `C::C` names the constructors, not a type.
+                    self.error(t.line, "NAM-34", format!("'{0}::{0}' names the constructors of '{0}', not a type", t.text));
+                }
             }
             if t.kind == TK::Punct {
                 match t.text.as_str() {
@@ -1100,6 +1171,29 @@ impl P {
             return Err(self.err(format!("expected a declarator, found '{}'", self.tok_desc())));
         }
         self.skip_attributes();
+        // NAM-21: after a qualified name, the parameters and a trailing
+        // return type see the members of the named scope.
+        let depth = self.stack.len();
+        if let Some(q) = d.qual {
+            if !self.stack.contains(&q) {
+                self.push_enclosing_for(q);
+            }
+        }
+        let r = self.declarator_suffixes(&d, &inner_ops, abstract_ok, param_ctx);
+        self.stack.truncate(depth);
+        let suffixes = r?;
+        // ops: pointers apply first, then suffixes from the innermost
+        // (rightmost) outward, then the parenthesized inner declarator.
+        let mut ops = ptr_ops;
+        for s in suffixes.into_iter().rev() {
+            ops.push(s);
+        }
+        ops.extend(inner_ops);
+        d.ops = ops;
+        Ok(d)
+    }
+
+    fn declarator_suffixes(&mut self, d: &Declarator, inner_ops: &[DOp], abstract_ok: bool, param_ctx: bool) -> PR<Vec<DOp>> {
         let mut suffixes = Vec::new();
         loop {
             if self.at("[") {
@@ -1129,15 +1223,7 @@ impl P {
                 break;
             }
         }
-        // ops: pointers apply first, then suffixes from the innermost
-        // (rightmost) outward, then the parenthesized inner declarator.
-        let mut ops = ptr_ops;
-        for s in suffixes.into_iter().rev() {
-            ops.push(s);
-        }
-        ops.extend(inner_ops);
-        d.ops = ops;
-        Ok(d)
+        Ok(suffixes)
     }
 
     pub fn class_of_decl(&self, id: DeclId) -> Option<usize> {

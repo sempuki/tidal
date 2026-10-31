@@ -583,6 +583,9 @@ impl P {
             Some(self.parse_expression()?)
         };
         self.expect(";")?;
+        if let Some(x) = &e {
+            self.check_prvalue_dtor(x);
+        }
         let Some(f) = self.fns.last().cloned() else {
             return Ok(Stmt::Return(e));
         };
@@ -592,6 +595,12 @@ impl P {
                 self.error(line, "JMP-12", "return with a value in a constructor or destructor");
             }
             return Ok(Stmt::Return(None));
+        }
+        if let (Some(x), Some(fid), false) = (&e, f.func, f.is_lambda) {
+            if matches!(&x.k, EK::Unknown(w) if w == "lambda with reference captures") {
+                // LAM-19: the closure outlives the variables it refers to.
+                self.ref_lambda_fns.insert(fid);
+            }
         }
         if f.deduce {
             // return type deduction (spec/declarations/functions/return-deduction.md)

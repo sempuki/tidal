@@ -11,13 +11,23 @@ impl P {
     // ---------------- calls ----------------
 
     pub fn build_call(&mut self, callee: Expr, args: Vec<Expr>, line: u32) -> Expr {
+        let adl = std::mem::take(&mut self.call_adl);
         match callee.k.clone() {
-            EK::Func(f) => self.call_overloads(None, vec![f], args, line),
-            EK::Overloads(fs) => self.call_overloads(None, fs, args, line),
+            EK::Func(f) => {
+                self.call_adl = adl;
+                self.call_overloads(None, vec![f], args, line)
+            }
+            EK::Overloads(fs) => {
+                self.call_adl = adl;
+                self.call_overloads(None, fs, args, line)
+            }
             EK::BoundMember(obj, fs) => self.call_overloads(Some(*obj), fs, args, line),
             EK::Unknown(_) if !matches!(nonref(&callee.ty).t, Ty::Class(_)) => {
                 let _ = self.args_rvalues(args);
                 Expr::unknown(line, "call of unknown callee")
+            }
+            EK::Call(_, _, Some(fid)) if callee.ty.is_unknown() && self.ref_lambda_fns.contains(&fid) => {
+                Expr::unknown(line, "LAM-19: call of a closure whose reference captures name variables of a function that has returned")
             }
             _ => {
                 let ct = nonref(&callee.ty);
@@ -70,9 +80,6 @@ impl P {
         ci.has_conv || depth > 16 || ci.bases.iter().any(|b| b.class.is_none_or(|bc| self.any_conv(bc, depth + 1)))
     }
 
-    pub fn adl_candidates_pub(&self, name: &str, args: &[Expr]) -> Vec<DeclId> {
-        self.adl_candidates(name, args)
-    }
 
     fn args_rvalues(&mut self, args: Vec<Expr>) -> Vec<Expr> {
         args
@@ -82,58 +89,222 @@ impl P {
     /// viable candidate by arity and implicit convertibility, or the
     /// candidate with the best conversion ranks; anything harder gives
     /// an unknown result.
-    /// NAM-5: functions in the namespaces of class and enumeration
-    /// arguments join the candidates of an unqualified call. The front
-    /// end does not track whether the call was qualified.
-    fn adl_candidates(&self, name: &str, args: &[Expr]) -> Vec<DeclId> {
-        let mut out = Vec::new();
+    /// Argument-dependent lookup (NAM-27 to NAM-30): the functions named
+    /// `name` in the associated namespaces of the arguments and the
+    /// friends that the associated classes declare. The flag is false
+    /// when an argument type is not modeled, so the result can be
+    /// incomplete.
+    pub fn adl_lookup(&self, name: &str, args: &[Expr]) -> (Vec<DeclId>, bool) {
+        let mut ns: Vec<usize> = Vec::new();
+        let mut cls: Vec<usize> = Vec::new();
+        let mut certain = true;
         for a in args {
-            let t = nonref(&a.ty).t;
-            let scope = match t {
-                Ty::Class(c) => Some(self.classes[c].scope),
-                Ty::Enum(e) => Some(self.enums[e].scope),
-                Ty::Ptr(ref p) => match p.t {
-                    Ty::Class(c) => Some(self.classes[c].scope),
-                    _ => None,
-                },
-                _ => None,
-            };
-            let Some(mut s) = scope else { continue };
-            // the class's own scope holds hidden friends
-            if let Some(v) = self.scopes[s].names.get(name) {
-                for &d in v {
-                    if self.func(d).is_some_and(|f| f.class.is_none()) && !out.contains(&d) {
-                        out.push(d);
+            match &a.k {
+                // NAM-28: a braced list adds nothing.
+                EK::InitList(_) if a.ty.is_unknown() => continue,
+                // NAM-27: a closure type adds the namespace and the class
+                // around the lambda, which is where the call is.
+                EK::Unknown(w) if w.starts_with("lambda") => {
+                    if let Some(&s) = self.stack.iter().rev().find(|&&s| self.scopes[s].kind == SK::Namespace) {
+                        self.add_ns(s, &mut ns);
                     }
+                    if let Some(c) = self.stack.iter().rev().find_map(|&s| match self.scopes[s].kind {
+                        SK::Class(c) => Some(c),
+                        _ => None,
+                    }) {
+                        if !cls.contains(&c) {
+                            cls.push(c);
+                        }
+                    }
+                    continue;
+                }
+                EK::Overloads(ids) => {
+                    // NAM-27: each function of an overload set.
+                    for &f in ids {
+                        if let Some(fi) = self.func(f) {
+                            self.assoc_ty(&Ty::Func(Box::new(fi.fty.clone())), &mut ns, &mut cls, &mut certain, 0);
+                        } else {
+                            certain = false;
+                        }
+                    }
+                    continue;
+                }
+                _ => {}
+            }
+            if let EK::Unary(UOp::AddrOf, inner) = &a.k {
+                if let EK::Overloads(ids) = &inner.k {
+                    for &f in ids {
+                        if let Some(fi) = self.func(f) {
+                            if let Some(c) = fi.class.filter(|_| !fi.is_static) {
+                                self.assoc_ty(&Ty::MemPtr(c, Box::new(QTy::new(Ty::Func(Box::new(fi.fty.clone()))))), &mut ns, &mut cls, &mut certain, 0);
+                            } else {
+                                self.assoc_ty(&Ty::Func(Box::new(fi.fty.clone())), &mut ns, &mut cls, &mut certain, 0);
+                            }
+                        }
+                    }
+                    continue;
                 }
             }
-            while let Some(p) = self.scopes[s].parent {
-                s = p;
-                if self.scopes[s].kind == SK::Namespace {
-                    break;
+            self.assoc_ty(&a.ty.t, &mut ns, &mut cls, &mut certain, 0);
+        }
+        let mut out: Vec<DeclId> = Vec::new();
+        let is_fn = |p: &P, d: DeclId| match &p.decls[d].k {
+            DK::Func(f) => f.class.is_none(),
+            DK::Template(TemplKind::Func) => true,
+            _ => false,
+        };
+        for &n in &ns {
+            if self.scopes[n].uncertain {
+                certain = false;
+            }
+            // NAM-29: the namespace and its inline namespaces.
+            let mut found = Vec::new();
+            self.ns_and_inline_names(n, name, &mut found, 0);
+            for d in found {
+                if is_fn(self, d) && !out.contains(&d) {
+                    out.push(d);
                 }
             }
-            if let Some(v) = self.scopes[s].names.get(name) {
-                for &d in v {
-                    if self.func(d).is_some() && !out.contains(&d) {
+        }
+        for &c in &cls {
+            if self.class_uncertain(c) || self.friend_classes.contains(&c) && !self.class_friends.contains_key(&c) {
+                certain = false;
+            }
+            if let Some(fr) = self.class_friends.get(&c) {
+                for &d in fr {
+                    if self.decls[d].name == name && is_fn(self, d) && !out.contains(&d) {
                         out.push(d);
                     }
                 }
             }
         }
-        out
+        (out, certain)
+    }
+
+    fn ns_and_inline_names(&self, s: usize, name: &str, out: &mut Vec<DeclId>, depth: u32) {
+        if let Some(v) = self.scopes[s].names.get(name) {
+            for &d in v {
+                if !self.hidden_friends.contains_key(&d) && !out.contains(&d) {
+                    out.push(d);
+                }
+            }
+        }
+        if depth > 16 {
+            return;
+        }
+        for &n in &self.scopes[s].using_ns {
+            if self.inline_ns.contains(&n) && self.scopes[n].parent == Some(s) {
+                self.ns_and_inline_names(n, name, out, depth + 1);
+            }
+        }
+    }
+
+    /// Add a namespace, and the enclosing namespace of an inline one
+    /// (NAM-29).
+    fn add_ns(&self, mut s: usize, ns: &mut Vec<usize>) {
+        loop {
+            if !ns.contains(&s) {
+                ns.push(s);
+            }
+            if !self.inline_ns.contains(&s) {
+                return;
+            }
+            match self.scopes[s].parent {
+                Some(p) => s = p,
+                None => return,
+            }
+        }
+    }
+
+    /// The innermost namespace around a scope.
+    fn ns_of(&self, mut s: usize) -> usize {
+        loop {
+            if self.scopes[s].kind == SK::Namespace {
+                return s;
+            }
+            match self.scopes[s].parent {
+                Some(p) => s = p,
+                None => return self.global,
+            }
+        }
+    }
+
+    /// NAM-27: what one type adds to the associated namespaces and
+    /// classes.
+    fn assoc_ty(&self, t: &Ty, ns: &mut Vec<usize>, cls: &mut Vec<usize>, certain: &mut bool, depth: u32) {
+        if depth > 24 {
+            *certain = false;
+            return;
+        }
+        match t {
+            Ty::Unknown => *certain = false,
+            Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) => self.assoc_ty(&q.t, ns, cls, certain, depth + 1),
+            Ty::Func(f) => {
+                for p in &f.params {
+                    self.assoc_ty(&p.t, ns, cls, certain, depth + 1);
+                }
+                self.assoc_ty(&f.ret.t, ns, cls, certain, depth + 1);
+            }
+            Ty::MemPtr(c, q) => {
+                self.assoc_ty(&Ty::Class(*c), ns, cls, certain, depth + 1);
+                self.assoc_ty(&q.t, ns, cls, certain, depth + 1);
+            }
+            Ty::Class(c) => self.assoc_class(*c, ns, cls, certain, true, depth),
+            Ty::Enum(e) => {
+                let s = self.enums[*e].scope;
+                if let Some(p) = self.scopes[s].parent {
+                    if let SK::Class(o) = self.scopes[p].kind {
+                        if !cls.contains(&o) {
+                            cls.push(o);
+                        }
+                    }
+                    self.add_ns(self.ns_of(p), ns);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn assoc_class(&self, c: usize, ns: &mut Vec<usize>, cls: &mut Vec<usize>, certain: &mut bool, outer: bool, depth: u32) {
+        if depth > 24 {
+            *certain = false;
+            return;
+        }
+        let ci = &self.classes[c];
+        if ci.template || ci.opaque {
+            *certain = false;
+        }
+        if !cls.contains(&c) {
+            cls.push(c);
+        }
+        if let Some(p) = self.scopes[ci.scope].parent {
+            // the class that the class is a member of
+            if outer {
+                if let SK::Class(o) = self.scopes[p].kind {
+                    if !cls.contains(&o) {
+                        cls.push(o);
+                    }
+                }
+            }
+            self.add_ns(self.ns_of(p), ns);
+        }
+        for b in &ci.bases {
+            match b.class {
+                Some(bc) => self.assoc_class(bc, ns, cls, certain, false, depth + 1),
+                None => *certain = false,
+            }
+        }
     }
 
     fn call_overloads(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
         let mut cands = cands;
-        if obj.is_none() {
+        let adl = std::mem::take(&mut self.call_adl);
+        if obj.is_none() && adl {
             if let Some(&c0) = cands.first() {
                 let name = self.decls[c0].name.clone();
-                if self.func(c0).is_some_and(|f| f.class.is_none()) {
-                    for d in self.adl_candidates(&name, &args) {
-                        if !cands.contains(&d) {
-                            cands.push(d);
-                        }
+                for d in self.adl_lookup(&name, &args).0 {
+                    if !cands.contains(&d) {
+                        cands.push(d);
                     }
                 }
             }
@@ -198,7 +369,7 @@ impl P {
             }
         }
         if viable.is_empty() {
-            if any_template || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_) | EK::Unknown(_))) {
+            if any_template || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_)) || matches!(&a.k, EK::Unknown(w) if w != "class temporary")) {
                 return Expr::unknown(line, "call needing template deduction or unknown arguments");
             }
             if const_blocked {

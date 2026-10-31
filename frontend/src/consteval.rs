@@ -463,6 +463,9 @@ impl<'a> Eval<'a> {
             // CE-4: reinterpret_cast and void* to object pointer.
             return nc("CE-4", rest.to_string());
         }
+        if let Some(rest) = why.strip_prefix("LAM-19: ") {
+            return nc("LAM-19", rest.to_string());
+        }
         unsup(why.to_string())
     }
 
@@ -786,7 +789,10 @@ impl<'a> Eval<'a> {
                 if let Some(ti) = to_int(to) {
                     let r = wrap_int(x, &ti);
                     if let Ty::Enum(e) = to {
-                        if !matches!(from, Ty::Enum(f) if f == e) {
+                        // ENUM-21: with a fixed underlying type the value
+                        // converts to that type first.
+                        let fixed = self.p.enums[*e].fixed.is_some() || self.p.enums[*e].scoped;
+                        if !fixed && !matches!(from, Ty::Enum(f) if f == e) {
                             // ENUM-6, CAST-14: a value outside the range of
                             // an enumeration without a fixed type.
                             let (lo, hi) = self.p.enum_range(*e);

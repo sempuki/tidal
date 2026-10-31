@@ -254,6 +254,10 @@ impl P {
                     }
                     let _ = arr;
                     if let Ty::Ptr(x) = &pt.t {
+                        if x.t == Ty::Void && !self.in_template() {
+                            // NEW-8: a void* operand is not valid.
+                            self.error(line, "NEW-8", "operand of delete is a pointer to void");
+                        }
                         if let Ty::Class(c) = x.t {
                             if !self.in_template() && self.classes[c].complete && self.dtor_unusable(c) {
                                 // DTOR-3: no delete with a deleted destructor.
@@ -375,8 +379,59 @@ impl P {
         }
     }
 
+    /// NEW-7, NEW-11, NEW-16, NEW-17, NEW-20: the type, bounds, and
+    /// initializer of a `new` expression. `init` is (braced, number of
+    /// values) when there is an initializer.
+    #[allow(clippy::too_many_arguments)]
+    fn check_new_type(&mut self, t: &QTy, is_auto: bool, bounds: &[Option<u64>], first_absent: bool, first_const: Option<i128>, init: Option<(bool, usize)>, placement: Option<usize>, global: bool, line: u32) {
+        if is_auto {
+            if !bounds.is_empty() {
+                self.error(line, "NEW-16", "array of 'auto' in new");
+            } else if init.is_none_or(|(_, n)| n != 1) {
+                self.error(line, "NEW-16", "'new auto' needs exactly one initializer value");
+            }
+            return;
+        }
+        if t.is_unknown() {
+            return;
+        }
+        match &t.t {
+            Ty::Func(_) => self.error(line, "NEW-7", "new of a function type"),
+            Ty::Class(c) if !self.classes[*c].complete => self.error(line, "NEW-7", format!("new of the incomplete class '{}'", self.classes[*c].name)),
+            Ty::Class(_) if self.is_abstract(&t.t) => self.error(line, "NEW-7", "new of an abstract class"),
+            _ => {}
+        }
+        if t.c && init.is_none() && bounds.is_empty() && self.is_scalar(t) {
+            self.error(line, "NEW-11", "new of a const scalar without an initializer");
+        }
+        if first_absent && init.is_none() {
+            self.error(line, "NEW-17", "new of an array without a size or an initializer");
+        }
+        if let (Some(n), Some((true, k))) = (first_const, init) {
+            if n >= 0 && k as i128 > n {
+                self.error(line, "NEW-17", "more initializer values than the array size in new");
+            }
+        }
+        if let Some(np) = placement {
+            // NEW-20: a declared allocation function must accept the
+            // placement arguments; NEW-19's functions accept none.
+            let name = if bounds.is_empty() { "operatornew" } else { "operatornew[]" };
+            let class_fn = match &t.t {
+                Ty::Class(c) if !global => self.lookup_member(*c, name).is_some() || self.class_uncertain(*c),
+                _ => false,
+            };
+            let fns = self.scopes[self.global].names.get(name).cloned().unwrap_or_default();
+            let fits = fns.iter().any(|&f| self.func(f).is_none_or(|fi| fi.template || fi.fty.variadic || (fi.fty.params.len() >= 1 + np && fi.fty.params.len() - fi.defaults.min(fi.fty.params.len()) <= 1 + np)));
+            if !class_fn && !fits && !self.scopes[self.global].uncertain {
+                self.error(line, "NEW-20", format!("no declared '{}' takes {} placement argument{}", if bounds.is_empty() { "operator new" } else { "operator new[]" }, np, if np == 1 { "" } else { "s" }));
+            }
+        }
+    }
+
     fn parse_new(&mut self, line: u32) -> PR<Expr> {
+        let global = self.pos >= 1 && self.toks[self.pos - 1].text == "::";
         self.expect("new")?;
+        let mut placement: Option<Vec<Expr>> = None;
         if self.at("(") {
             // placement args or parenthesized type
             let save = self.pos;
@@ -397,9 +452,10 @@ impl P {
             }
             self.pos = save;
             self.pos += 1;
-            let _ = self.parse_call_args()?;
+            placement = Some(self.parse_call_args()?);
         }
         let ds = self.parse_decl_specs(None)?;
+        let is_auto = ds.auto.is_some() && ds.ty.is_none();
         let base = self.ds_base(&ds).unwrap_or(QTy::unknown());
         let mut t = base;
         // new-declarator: ptr ops and array bounds
@@ -411,17 +467,39 @@ impl P {
                 break;
             }
         }
+        if self.at("&") || self.at("&&") {
+            // NEW-7: the type must not be a reference.
+            self.pos += 1;
+            if !self.in_template() {
+                self.error(line, "NEW-7", "new of a reference type");
+            }
+            t = QTy::unknown();
+        }
         let mut bounds: Vec<Option<u64>> = Vec::new();
+        let mut first_absent = false;
+        let mut first_const: Option<i128> = None;
         while self.at("[") {
             self.pos += 1;
             let bl = self.line();
             let mut b = None;
+            if bounds.is_empty() && self.at("]") {
+                first_absent = true;
+            }
             if !self.at("]") {
                 let e = self.parse_expression()?;
                 let et = nonref(&e.ty);
                 if matches!(et.t, Ty::Ptr(_)) {
                     // NEW-2: the size converts to the type of sizeof.
                     self.error(bl, "NEW-17", "array size in new must not be a pointer");
+                }
+                if bounds.is_empty() && !self.in_template() && et.t.is_integral() {
+                    if let Ok(v) = self.const_int(&e) {
+                        first_const = Some(v);
+                        if v < 0 {
+                            // NEW-17: a constant size must not be negative.
+                            self.error(bl, "NEW-17", "negative constant array size in new");
+                        }
+                    }
                 }
                 if !bounds.is_empty() {
                     match self.const_int(&e) {
@@ -439,10 +517,15 @@ impl P {
         if !has_init && !self.in_template() {
             // INIT-9: default initialization of the new object.
             if let Ty::Class(c) = t.t {
-                self.check_default_init(c, line);
+                if self.classes[c].complete && !self.is_abstract(&t.t) {
+                    self.check_default_init(c, line);
+                }
             }
         }
-        self.parse_new_init()?;
+        let init = self.parse_new_init()?;
+        if !self.in_template() {
+            self.check_new_type(&t, is_auto, &bounds, first_absent, first_const, init, placement.as_ref().map(|v| v.len()), global, line);
+        }
         // NEW-2: the result points to the first element, which is an array
         // for a multi-dimensional new.
         let mut rt = t;
@@ -459,15 +542,31 @@ impl P {
         Ok(Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
     }
 
-    fn parse_new_init(&mut self) -> PR<()> {
+    /// DTOR-3: a class prvalue written where its destructor is deleted
+    /// or not accessible.
+    pub fn check_prvalue_dtor(&mut self, e: &Expr) {
+        if e.cat != Cat::PR || self.in_template() || self.in_unevaluated > 0 {
+            return;
+        }
+        if let Ty::Class(c) = e.ty.t {
+            if self.dtor_unusable(c) {
+                self.error(e.line, "DTOR-3", format!("prvalue of '{}', whose destructor is deleted or not accessible", self.classes[c].name));
+            }
+        }
+    }
+
+    fn parse_new_init(&mut self) -> PR<Option<(bool, usize)>> {
         if self.at("(") {
             self.pos += 1;
+            let mut n = 0;
             if !self.at(")") {
                 loop {
+                    n += 1;
                     if self.at("{") {
                         self.parse_braced_init()?;
                     } else {
-                        self.parse_assignment()?;
+                        let a = self.parse_assignment()?;
+                        self.check_prvalue_dtor(&a);
                     }
                     if !self.eat(",") {
                         break;
@@ -475,10 +574,16 @@ impl P {
                 }
             }
             self.expect(")")?;
+            return Ok(Some((false, n)));
         } else if self.at("{") {
-            self.parse_braced_init()?;
+            let e = self.parse_braced_init()?;
+            let n = match &e.k {
+                EK::InitList(v) => v.len(),
+                _ => 1,
+            };
+            return Ok(Some((true, n)));
         }
-        Ok(())
+        Ok(None)
     }
 
     fn parse_postfix(&mut self) -> PR<Expr> {
@@ -515,12 +620,14 @@ impl P {
                 }
                 e = self.build_subscript(e, idx, line);
             } else if self.at("(") {
+                let adl = self.adl_pos == Some(self.pos);
                 self.pos += 1;
                 let save = self.no_gt;
                 self.no_gt = 0;
                 let args = self.parse_call_args();
                 self.no_gt = save;
                 let args = args?;
+                self.call_adl = adl;
                 e = self.build_call(e, args, line);
             } else if self.at(".") || self.at("->") {
                 let arrow = self.at("->");
@@ -634,7 +741,6 @@ impl P {
                 return Ok(Expr::unknown(line, "member template"));
             }
         }
-        let _ = scope;
         // object expression
         let obj = if arrow {
             let o = self.rvalue(obj);
@@ -680,6 +786,14 @@ impl P {
             }
             return Ok(Expr::unknown(line, "unknown member"));
         };
+        if scope.is_none() && !self.in_template() && !self.class_uncertain(c) && self.member_lookup(c, &name).is_some_and(|r| r.1) {
+            // DER-4: the member is found in two base subobjects.
+            self.error(line, "DER-4", format!("member '{}' is found in more than one base of '{}'", name, self.classes[c].name));
+            if self.at("(") {
+                self.skip_balanced();
+            }
+            return Ok(Expr::unknown(line, "ambiguous member"));
+        }
         let id = ids[0];
         match self.decls[id].k.clone() {
             DK::Field(f) => {
@@ -1173,7 +1287,8 @@ impl P {
                 self.error(*ln, "JMP-14", format!("goto names an undefined label '{}' (a lambda body is a separate function)", l));
             }
         }
-        Ok(Expr::new(EK::Unknown("lambda".into()), QTy::unknown(), Cat::PR, line))
+        let what = if ctx.lambda_refs.is_empty() || !in_fn { "lambda" } else { "lambda with reference captures" };
+        Ok(Expr::new(EK::Unknown(what.into()), QTy::unknown(), Cat::PR, line))
     }
 
     fn parse_captures(&mut self, in_fn: bool, line: u32) -> PR<(Option<bool>, Vec<String>)> {
@@ -1333,11 +1448,32 @@ impl P {
                 }
             }
         }
-        let found = match scope {
-            None => self.lookup(&name),
-            Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
-            Some(Err(())) => None,
+        let (found, amb) = match scope {
+            None => self.lookup_full(&name),
+            Some(Ok(s)) => self.lookup_qualified(s, &name),
+            Some(Err(())) => (None, false),
         };
+        if amb && !self.in_template() {
+            self.report_ambiguous(scope.and_then(|r| r.ok()), &name, line);
+            if self.at("(") {
+                self.skip_balanced();
+            }
+            return Ok(Expr::unknown(line, "ambiguous name"));
+        }
+        // NAM-31, NAM-32: argument-dependent lookup follows ordinary
+        // lookup that finds functions declared at namespace scope.
+        if scope.is_none() && self.at("(") {
+            if let Some(ids) = &found {
+                let ns_funcs = ids.iter().all(|&i| match &self.decls[i].k {
+                    DK::Func(f) => f.class.is_none() && self.scopes[self.decls[i].scope].kind == SK::Namespace,
+                    DK::Template(TemplKind::Func) => self.scopes[self.decls[i].scope].kind == SK::Namespace,
+                    _ => false,
+                });
+                if ns_funcs {
+                    self.adl_pos = Some(self.pos);
+                }
+            }
+        }
         let Some(ids) = found else {
             if self.at("<") && self.in_template() {
                 self.skip_template_args()?;
@@ -1349,17 +1485,17 @@ impl P {
                 let save = self.pos;
                 self.pos += 1;
                 let args = self.parse_call_args()?;
-                let found = self.adl_candidates_pub(&name, &args);
+                let (found, certain) = self.adl_lookup(&name, &args);
                 if !found.is_empty() {
                     let callee = Expr::new(EK::Overloads(found), QTy::unknown(), Cat::L, line);
                     return Ok(self.build_call(callee, args, line));
                 }
                 let _ = save;
                 let in_class_body = self.class_depth > 0 && self.fns.is_empty();
-                if !self.lookup_uncertain() && !in_class_body && args.iter().all(|a| !a.ty.is_unknown() && !matches!(nonref(&a.ty).t, Ty::Class(_) | Ty::Enum(_) | Ty::Ptr(_))) && !self.in_template() {
-                    // NAM-1: no declaration, and argument-dependent lookup
-                    // has nothing to search for fundamental types (NAM-5).
-                    self.error(line, "NAM-8", format!("call of undeclared function '{}'", name));
+                if !self.lookup_uncertain() && !in_class_body && certain && !self.in_template() {
+                    // NAM-8: no declaration, and argument-dependent lookup
+                    // finds no function (NAM-28, NAM-30).
+                    self.error_because(line, "NAM-8", "NAM-30", format!("call of undeclared function '{}': argument-dependent lookup finds no function", name));
                 }
                 return Ok(Expr::unknown(line, "unqualified call to an undeclared name"));
             }
@@ -1382,6 +1518,25 @@ impl P {
             self.error(line, "NAM-8", format!("use of undeclared name '{}'", name));
             return Ok(Expr::unknown(line, "undeclared"));
         };
+        if !self.in_template() {
+            if scope.is_none() && self.private_base_name(&name) {
+                // ACC-18: a member of a private base of another class.
+                self.error(line, "ACC-18", format!("'{}' is a member of a private base of a base class and is not accessible here", name));
+            }
+            if let Some(Ok(s)) = scope {
+                if let SK::Class(c) = self.scopes[s].kind {
+                    let after_amp = start > 0 && self.toks.get(start - 1).is_some_and(|t| t.text == "&");
+                    if self.classes[c].name == name && !self.classes[c].template && !after_amp {
+                        // NAM-34: `C::C` names the constructors.
+                        self.error(line, "NAM-34", format!("'{0}::{0}' names the constructors of '{0}', which cannot be called or used as a type", name));
+                        if self.at("(") || self.at("{") {
+                            self.skip_balanced();
+                        }
+                        return Ok(Expr::unknown(line, "constructor name"));
+                    }
+                }
+            }
+        }
         // template-id
         let tid = ids.iter().copied().find(|&i| matches!(self.decls[i].k, DK::Template(_)));
         if let Some(t) = tid {
@@ -1414,6 +1569,28 @@ impl P {
             return self.parse_functional_cast(ty, line);
         }
         Ok(self.name_expr(ids, line))
+    }
+
+    /// An ambiguous lookup: NAM-14 for a qualified name in a namespace,
+    /// NAM-18 for a qualified name in a class, DER-4 for a member found in
+    /// two bases, NAM-24 or NAM-26 for using directives.
+    pub fn report_ambiguous(&mut self, scope: Option<usize>, name: &str, line: u32) {
+        match scope.map(|s| self.scopes[s].kind.clone()) {
+            Some(SK::Namespace) => self.error(line, "NAM-14", format!("'{}' is ambiguous: the using directives of the namespace find different entities", name)),
+            Some(SK::Class(_)) => self.error_because(line, "NAM-18", "DER-4", format!("'{}' is found in more than one base", name)),
+            _ => {
+                let in_class = self.stack.iter().rev().find_map(|&s| match self.scopes[s].kind {
+                    SK::Class(c) => Some(c),
+                    _ => None,
+                });
+                let in_bases = in_class.is_some_and(|c| self.member_lookup(c, name).is_some_and(|r| r.1));
+                if in_bases {
+                    self.error(line, "DER-4", format!("'{}' is found in more than one base", name));
+                } else {
+                    self.error_because(line, "NAM-26", "NAM-24", format!("'{}' is ambiguous: using directives make different entities visible", name));
+                }
+            }
+        }
     }
 
     fn parse_template_id_expr(&mut self, t: DeclId, line: u32) -> PR<Expr> {
@@ -1515,7 +1692,7 @@ impl P {
         if ids.len() == 1 && !self.in_template() {
             if let Some(f) = self.func(id) {
                 // RET-3: no use before the return type is known.
-                if f.ret_auto.is_some() && f.fty.ret.is_unknown() && !f.template {
+                if f.ret_auto.is_some() && f.fty.ret.is_unknown() && !f.template && f.body.is_none() {
                     let own = self.fns.iter().find(|c| c.func == Some(id));
                     let known = match own {
                         Some(c) => c.deduced.is_some(),
@@ -1537,6 +1714,7 @@ impl P {
         }
         if matches!(self.decls[id].k, DK::Var(_)) {
             self.used_vars.insert(id);
+            *self.use_count.entry(id).or_default() += 1;
         }
         match self.decls[id].k.clone() {
             DK::Var(v) => {
@@ -2834,6 +3012,10 @@ impl P {
                     }
                 }
             };
+            if let EK::Var(v) = l.k {
+                // ATTR-6: a plain assignment does not read the variable.
+                *self.assign_count.entry(v).or_default() += 1;
+            }
             return Expr::new(EK::Assign(None, Box::new(l), Box::new(rhs)), lt, Cat::L, line);
         }
         // compound assignment: ASN-5
@@ -3078,6 +3260,31 @@ impl P {
         }
     }
 
+    /// Whether an argument of class type matches no constructor of `c`:
+    /// the argument's class is not `c` or derived from it and has no
+    /// conversion function, and each constructor takes a type that is
+    /// not a class.
+    fn no_ctor_takes_class(&self, c: usize, a: &Expr) -> bool {
+        let Ty::Class(s) = nonref(&a.ty).t else { return false };
+        if s == c || self.class_uncertain(c) || self.class_uncertain(s) || !self.classes[c].complete || self.classes[c].ctors.is_empty() {
+            return false;
+        }
+        if self.is_base_of_p(c, s) || self.class_converts(s) != Some(false) {
+            return false;
+        }
+        self.classes[c].ctors.iter().all(|&cid| {
+            let Some(f) = self.func(cid) else { return false };
+            if f.template {
+                return false;
+            }
+            f.fty.params.iter().take(1).all(|p| match &nonref(p).t {
+                Ty::Class(x) => *x == c,
+                Ty::Unknown => false,
+                _ => true,
+            })
+        })
+    }
+
     pub fn build_functional(&mut self, ty: QTy, init: Expr, braced: bool, line: u32) -> Expr {
         let EK::InitList(items) = &init.k else { unreachable!() };
         if ty.is_unknown() {
@@ -3090,6 +3297,11 @@ impl P {
                 if matches!(x.k, EK::Construct(..)) {
                     return x;
                 }
+            }
+            if !braced && items.len() == 1 && !self.in_template() && self.no_ctor_takes_class(c, &items[0]) {
+                // PFX-16: no constructor of the class takes the argument.
+                self.error(line, "PFX-16", format!("no constructor of '{}' takes an argument of class type {}", self.classes[c].name, show(&nonref(&items[0].ty))));
+                return Expr::unknown(line, "bad functional cast");
             }
             let mut e = Expr::unknown(line, "class temporary");
             e.ty = ty.unqual();

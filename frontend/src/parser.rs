@@ -1,12 +1,13 @@
 // Parser state, entities, scopes, and name lookup.
 //
-// Name lookup is outside the spec (charter). The model here follows
-// NAM-P1 to NAM-P4 in spec/foundations/names.md: scopes nest, a use
+// Name lookup follows spec/foundations/names.md: scopes nest, a use
 // searches outward and stops at the first scope that declares the name
 // (NAM-2), class member bodies see the whole class (NAM-6), and labels
-// have their own function-wide name space (NAM-7). Argument-dependent
-// lookup (NAM-5) is not implemented: an unqualified call whose name is
-// not found is treated as unknown instead of rejected.
+// have their own function-wide name space (NAM-7). Using directives act
+// at the innermost namespace around the directive and the named
+// namespace (NAM-23), qualified lookup follows NAM-13, and member lookup
+// tracks base subobjects (NAM-17, DER-4). Argument-dependent lookup
+// (NAM-27 to NAM-32) is in expr2.rs.
 
 use crate::ast::*;
 use crate::diag::Diags;
@@ -315,6 +316,13 @@ pub struct P {
     /// variables that could be unused.
     pub used_vars: std::collections::HashSet<DeclId>,
     pub unused_cands: Vec<(DeclId, u32)>,
+    /// ATTR-6: the number of uses of each variable, and of uses as the
+    /// left operand of a plain assignment, which do not read it.
+    pub use_count: HashMap<DeclId, u32>,
+    pub assign_count: HashMap<DeclId, u32>,
+    /// ATTR-6: the names of one structured binding declaration, under
+    /// its first name.
+    pub binding_groups: HashMap<DeclId, Vec<DeclId>>,
     /// The access of class members (0 public, 1 protected, 2 private),
     /// the access in effect in each class body being parsed, and the
     /// classes that declare a friend.
@@ -355,6 +363,23 @@ pub struct P {
     pub class_attrs: HashMap<usize, Vec<String>>,
     /// The leading attributes of the declaration being parsed.
     pub decl_attrs: Vec<Attr>,
+    /// Friend functions first declared in a class body, with the classes
+    /// that declare them. Ordinary and qualified lookup do not find them
+    /// until a declaration at namespace scope (ACC-7, NAM-14).
+    pub hidden_friends: HashMap<DeclId, Vec<usize>>,
+    /// The friend functions that each class declares (NAM-29).
+    pub class_friends: HashMap<usize, Vec<DeclId>>,
+    /// Inline namespaces (NAM-13).
+    pub inline_ns: std::collections::HashSet<usize>,
+    /// Inside a base clause, where `C::C` names the class (NAM-33).
+    pub in_base_clause: u32,
+    /// The token position of the `(` of a call whose callee is an
+    /// unqualified name that allows argument-dependent lookup (NAM-31).
+    pub adl_pos: Option<usize>,
+    /// Set by build_call for the call being built (NAM-31, NAM-32).
+    pub call_adl: bool,
+    /// Functions that return a lambda with reference captures (LAM-19).
+    pub ref_lambda_fns: std::collections::HashSet<DeclId>,
     /// ENUM-10: the type of an enumerator inside its enumerator list.
     pub enumerator_ty: HashMap<DeclId, Ty>,
 }
@@ -379,6 +404,9 @@ impl P {
             wflags: Vec::new(),
             used_vars: Default::default(),
             unused_cands: Vec::new(),
+            use_count: HashMap::new(),
+            assign_count: HashMap::new(),
+            binding_groups: HashMap::new(),
             member_access: HashMap::new(),
             access_stack: Vec::new(),
             friend_classes: Default::default(),
@@ -407,6 +435,13 @@ impl P {
             class_attrs: HashMap::new(),
             pure_fns: std::collections::HashSet::new(),
             decl_attrs: Vec::new(),
+            hidden_friends: HashMap::new(),
+            class_friends: HashMap::new(),
+            inline_ns: Default::default(),
+            in_base_clause: 0,
+            adl_pos: None,
+            call_adl: false,
+            ref_lambda_fns: Default::default(),
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;
@@ -780,7 +815,7 @@ impl P {
             None => true,
         })
     }
-    fn is_base_of_p(&self, base: usize, derived: usize) -> bool {
+    pub fn is_base_of_p(&self, base: usize, derived: usize) -> bool {
         self.classes[derived].bases.iter().any(|b| b.class.is_some_and(|bc| bc == base || self.is_base_of_p(base, bc)))
     }
     /// Whether one of the -W flags is on.
@@ -849,14 +884,315 @@ impl P {
     }
 
     /// Unqualified lookup (NAM-2): search outward, stop at the first
-    /// scope that declares the name.
+    /// scope that declares the name. The members of a namespace that a
+    /// using directive names act as members of the innermost namespace
+    /// that encloses both the directive and that namespace (NAM-23).
     pub fn lookup(&self, name: &str) -> Option<Vec<DeclId>> {
+        self.lookup_full(name).0
+    }
+    /// Unqualified lookup, and whether the result is ambiguous (NAM-24,
+    /// NAM-26, DER-4).
+    pub fn lookup_full(&self, name: &str) -> (Option<Vec<DeclId>>, bool) {
+        let noms = self.nominations();
         for &s in self.stack.iter().rev() {
-            if let Some(r) = self.lookup_in_scope(s, name, true) {
-                return Some(r);
+            let (r, amb) = self.lookup_level(s, name, &noms);
+            if let Some(r) = r {
+                return (Some(r), amb);
             }
         }
-        None
+        (None, false)
+    }
+    /// The declarations of a name at one scope of unqualified lookup.
+    pub fn lookup_level(&self, s: usize, name: &str, noms: &[(usize, usize)]) -> (Option<Vec<DeclId>>, bool) {
+        let mut sources: Vec<Vec<DeclId>> = Vec::new();
+        let own = self.own_names(s, name);
+        let mut amb = false;
+        if !own.is_empty() {
+            sources.push(own);
+        } else if let SK::Class(c) = self.scopes[s].kind {
+            if let Some((r, a)) = self.member_lookup(c, name) {
+                amb = a;
+                sources.push(r);
+            }
+        }
+        if self.scopes[s].kind == SK::Namespace {
+            for &(t, n) in noms {
+                if t == s {
+                    let v = self.own_names(n, name);
+                    if !v.is_empty() {
+                        sources.push(v);
+                    }
+                }
+            }
+        }
+        if sources.is_empty() {
+            return (None, false);
+        }
+        amb |= self.sources_ambiguous(&sources);
+        (Some(merge_sources(sources)), amb)
+    }
+    /// The names a scope declares itself, without hidden friends.
+    pub fn own_names(&self, s: usize, name: &str) -> Vec<DeclId> {
+        match self.scopes[s].names.get(name) {
+            Some(v) => v.iter().copied().filter(|d| !self.hidden_friends.contains_key(d)).collect(),
+            None => Vec::new(),
+        }
+    }
+    /// The using directives in effect: (namespace where the members act,
+    /// nominated namespace). A directive is in effect in the scopes on
+    /// the stack, and the directives of a nominated namespace follow.
+    pub fn nominations(&self) -> Vec<(usize, usize)> {
+        let mut out: Vec<(usize, usize)> = Vec::new();
+        for &s in &self.stack {
+            let mut seen = vec![s];
+            let mut todo: Vec<usize> = self.scopes[s].using_ns.clone();
+            while let Some(n) = todo.pop() {
+                if seen.contains(&n) {
+                    continue;
+                }
+                seen.push(n);
+                let mut t = self.common_ns(s, n);
+                if !self.stack.contains(&t) {
+                    t = self.global;
+                }
+                if !out.contains(&(t, n)) {
+                    out.push((t, n));
+                }
+                todo.extend(self.scopes[n].using_ns.iter().copied());
+            }
+        }
+        out
+    }
+    /// The innermost namespace that encloses both scopes.
+    fn common_ns(&self, a: usize, b: usize) -> usize {
+        let chain = |mut x: Option<usize>| {
+            let mut v = Vec::new();
+            while let Some(s) = x {
+                if self.scopes[s].kind == SK::Namespace {
+                    v.push(s);
+                }
+                x = self.scopes[s].parent;
+            }
+            v
+        };
+        let ca = chain(Some(a));
+        let cb = chain(Some(b));
+        ca.into_iter().find(|s| cb.contains(s)).unwrap_or(self.global)
+    }
+    /// Whether declarations from several places name different entities
+    /// that are not all functions (NAM-14, NAM-24, NAM-26).
+    pub fn sources_ambiguous(&self, sources: &[Vec<DeclId>]) -> bool {
+        if sources.len() < 2 {
+            return false;
+        }
+        let mut keys: Vec<(u8, usize)> = Vec::new();
+        let mut all_funcs = true;
+        for src in sources {
+            let has_value = src.iter().any(|&d| !self.is_tag(d));
+            for &d in src {
+                if has_value && self.is_tag(d) {
+                    continue;
+                }
+                if !matches!(self.decls[d].k, DK::Func(_) | DK::Template(TemplKind::Func)) {
+                    all_funcs = false;
+                }
+                let k = self.entity_key(d);
+                if !keys.contains(&k) {
+                    keys.push(k);
+                }
+            }
+        }
+        !all_funcs && keys.len() > 1
+    }
+    fn is_tag(&self, d: DeclId) -> bool {
+        matches!(self.decls[d].k, DK::Class(_) | DK::Enum(_))
+    }
+    /// One key per entity: a class and an alias of it are one entity.
+    pub fn entity_key(&self, d: DeclId) -> (u8, usize) {
+        match &self.decls[d].k {
+            DK::Class(c) => (1, *c),
+            DK::Enum(e) => (2, *e),
+            DK::Type(q) => match q.t {
+                Ty::Class(c) => (1, c),
+                Ty::Enum(e) => (2, e),
+                _ => (0, d),
+            },
+            _ => (0, d),
+        }
+    }
+    /// Qualified lookup in a namespace (NAM-13): the namespace and its
+    /// inline namespaces, then, if that finds nothing, the namespaces
+    /// that its using directives name. Returns the declarations and
+    /// whether they are ambiguous (NAM-14).
+    pub fn lookup_qualified_ns(&self, s: usize, name: &str) -> (Option<Vec<DeclId>>, bool) {
+        let mut visited = vec![s];
+        let sources = self.qual_ns(s, name, &mut visited);
+        if sources.is_empty() {
+            return (None, false);
+        }
+        let amb = self.sources_ambiguous(&sources);
+        (Some(merge_sources(sources)), amb)
+    }
+    fn inline_names(&self, s: usize, name: &str, out: &mut Vec<DeclId>, depth: u32) {
+        for d in self.own_names(s, name) {
+            if !out.contains(&d) {
+                out.push(d);
+            }
+        }
+        if depth > 16 {
+            return;
+        }
+        for &n in &self.scopes[s].using_ns {
+            if self.inline_ns.contains(&n) && self.scopes[n].parent == Some(s) {
+                self.inline_names(n, name, out, depth + 1);
+            }
+        }
+    }
+    fn qual_ns(&self, s: usize, name: &str, visited: &mut Vec<usize>) -> Vec<Vec<DeclId>> {
+        let mut own = Vec::new();
+        self.inline_names(s, name, &mut own, 0);
+        if !own.is_empty() {
+            return vec![own];
+        }
+        let mut out = Vec::new();
+        for &n in &self.scopes[s].using_ns.clone() {
+            if visited.contains(&n) || (self.inline_ns.contains(&n) && self.scopes[n].parent == Some(s)) {
+                continue;
+            }
+            visited.push(n);
+            out.extend(self.qual_ns(n, name, visited));
+        }
+        out
+    }
+    /// Qualified lookup in any scope, with ambiguity (NAM-13, NAM-17,
+    /// NAM-19).
+    pub fn lookup_qualified(&self, s: usize, name: &str) -> (Option<Vec<DeclId>>, bool) {
+        match self.scopes[s].kind {
+            SK::Namespace => self.lookup_qualified_ns(s, name),
+            SK::Class(c) => match self.member_lookup(c, name) {
+                Some((v, a)) => (Some(v), a),
+                None => (None, false),
+            },
+            _ => {
+                let v = self.own_names(s, name);
+                if v.is_empty() {
+                    (None, false)
+                } else {
+                    (Some(v), false)
+                }
+            }
+        }
+    }
+    /// Lookup of a member in a class and its bases (NAM-17, DER-3,
+    /// DER-4). Returns the declarations and whether they are found in
+    /// more than one base subobject.
+    pub fn member_lookup(&self, c: usize, name: &str) -> Option<(Vec<DeclId>, bool)> {
+        let own = self.own_names(self.classes[c].scope, name);
+        if !own.is_empty() {
+            return Some((own, false));
+        }
+        let mut found: Vec<SubFound> = Vec::new();
+        self.sub_lookup(c, name, &mut vec![c], false, &mut found, 0);
+        if found.is_empty() {
+            return None;
+        }
+        // DER-4: a declaration in a class hides the same name in a
+        // virtual base of that class.
+        let snapshot = found.clone();
+        found.retain(|f| !(f.virt_key && snapshot.iter().any(|g| g.class != f.class && self.is_base_of_p(f.class, g.class))));
+        let mut ids: Vec<DeclId> = Vec::new();
+        for f in &found {
+            for &d in &f.decls {
+                if !ids.contains(&d) {
+                    ids.push(d);
+                }
+            }
+        }
+        let mut keys: Vec<&Vec<usize>> = Vec::new();
+        for f in &found {
+            if !keys.contains(&&f.key) {
+                keys.push(&f.key);
+            }
+        }
+        let classes: std::collections::HashSet<usize> = found.iter().map(|f| f.class).collect();
+        let shareable = ids.iter().all(|&d| match &self.decls[d].k {
+            DK::Var(_) | DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Enumerator(..) | DK::Template(_) => true,
+            DK::Func(f) => f.is_static,
+            _ => false,
+        });
+        let amb = keys.len() > 1 && !(classes.len() == 1 && shareable);
+        Some((ids, amb))
+    }
+    /// Whether unqualified lookup of `name` finds it in the bases of an
+    /// enclosing class only through a private base of another class
+    /// (NAM-36, ACC-14, ACC-18).
+    pub fn private_base_name(&self, name: &str) -> bool {
+        let noms = self.nominations();
+        for &s in self.stack.iter().rev() {
+            if !self.own_names(s, name).is_empty() {
+                return false;
+            }
+            if let SK::Class(c) = self.scopes[s].kind {
+                if self.class_uncertain(c) {
+                    return false;
+                }
+                if self.member_lookup(c, name).is_some() {
+                    return self.path_access(c, name, 0, false) == Some(false);
+                }
+            }
+            if self.lookup_level(s, name, &noms).0.is_some() {
+                return false;
+            }
+        }
+        false
+    }
+    /// Some(true) when a path to the name has no private edge below the
+    /// first, Some(false) when every path has one, None when not found.
+    fn path_access(&self, c: usize, name: &str, depth: u32, blocked: bool) -> Option<bool> {
+        if depth > 20 {
+            return None;
+        }
+        let mut res: Option<bool> = None;
+        for b in &self.classes[c].bases {
+            let Some(bc) = b.class else { return None };
+            if self.friend_classes.contains(&bc) {
+                return None;
+            }
+            let bl = blocked || (depth > 0 && b.access == 2);
+            let r = if !self.own_names(self.classes[bc].scope, name).is_empty() { Some(!bl) } else { self.path_access(bc, name, depth + 1, bl) };
+            match r {
+                Some(true) => return Some(true),
+                Some(false) => res = Some(false),
+                None => {}
+            }
+        }
+        res
+    }
+    fn sub_lookup(&self, c: usize, name: &str, path: &mut Vec<usize>, virt: bool, out: &mut Vec<SubFound>, depth: u32) {
+        if depth > 20 {
+            return;
+        }
+        let bases = self.classes[c].bases.clone();
+        for b in bases {
+            let Some(bc) = b.class else { continue };
+            // The subobject: the path from the last virtual base, or the
+            // whole path.
+            let mut key: Vec<usize> = if b.virt { vec![usize::MAX, bc] } else { let mut k = path.clone(); k.push(bc); k };
+            let v = virt || b.virt;
+            if !b.virt && virt {
+                // keep the virtual start of the path
+                let mut k = path.clone();
+                k.push(bc);
+                key = k;
+            }
+            let own = self.own_names(self.classes[bc].scope, name);
+            if !own.is_empty() {
+                out.push(SubFound { decls: own, class: bc, key, virt_key: v });
+                continue;
+            }
+            let mut p2 = key.clone();
+            self.sub_lookup(bc, name, &mut p2, v, out, depth + 1);
+        }
     }
     /// Is a failed lookup certain? It is not when a scope on the stack
     /// has uncertain contents or the code is in a template.
@@ -880,67 +1216,37 @@ impl P {
         let ci = &self.classes[c];
         ci.template || ci.opaque || ci.bases.iter().any(|b| b.class.map_or(true, |bc| self.class_uncertain(bc)))
     }
+    /// Lookup in one named scope. With `with_using`, a qualified lookup
+    /// (NAM-13); without it, only the scope and, for a class, its bases.
     pub fn lookup_in_scope(&self, s: usize, name: &str, with_using: bool) -> Option<Vec<DeclId>> {
-        if let Some(v) = self.scopes[s].names.get(name) {
-            if !v.is_empty() {
-                return Some(v.clone());
-            }
+        if with_using {
+            return self.lookup_qualified(s, name).0;
+        }
+        let v = self.own_names(s, name);
+        if !v.is_empty() {
+            return Some(v);
         }
         if let SK::Class(c) = self.scopes[s].kind {
-            if let Some(r) = self.lookup_in_bases(c, name, 0) {
-                return Some(r);
-            }
-        }
-        if with_using {
-            let mut found = Vec::new();
-            let mut seen = vec![s];
-            self.lookup_using(s, name, &mut found, &mut seen);
-            if !found.is_empty() {
-                return Some(found);
-            }
+            return self.member_lookup(c, name).map(|r| r.0);
         }
         None
     }
-    fn lookup_using(&self, s: usize, name: &str, found: &mut Vec<DeclId>, seen: &mut Vec<usize>) {
-        for &n in &self.scopes[s].using_ns {
-            if seen.contains(&n) {
-                continue;
-            }
-            seen.push(n);
-            if let Some(v) = self.scopes[n].names.get(name) {
-                for &d in v {
-                    if !found.contains(&d) {
-                        found.push(d);
-                    }
-                }
-            }
-            self.lookup_using(n, name, found, seen);
-        }
-    }
-    pub fn lookup_in_bases(&self, c: usize, name: &str, depth: u32) -> Option<Vec<DeclId>> {
-        if depth > 20 {
-            return None;
-        }
-        let mut res: Option<Vec<DeclId>> = None;
-        for b in &self.classes[c].bases {
-            if let Some(bc) = b.class {
-                let sc = self.classes[bc].scope;
-                let r = self.scopes[sc].names.get(name).cloned().filter(|v| !v.is_empty()).or_else(|| self.lookup_in_bases(bc, name, depth + 1));
-                if let Some(r) = r {
-                    match &mut res {
-                        None => res = Some(r),
-                        Some(v) => {
-                            for d in r {
-                                if !v.contains(&d) {
-                                    v.push(d);
-                                }
-                            }
-                        }
-                    }
+    pub fn lookup_in_bases(&self, c: usize, name: &str, _depth: u32) -> Option<Vec<DeclId>> {
+        let mut found: Vec<SubFound> = Vec::new();
+        self.sub_lookup(c, name, &mut vec![c], false, &mut found, 0);
+        let mut ids: Vec<DeclId> = Vec::new();
+        for f in &found {
+            for &d in &f.decls {
+                if !ids.contains(&d) {
+                    ids.push(d);
                 }
             }
         }
-        res
+        if ids.is_empty() {
+            None
+        } else {
+            Some(ids)
+        }
     }
     /// Lookup of a member of a class, including bases.
     pub fn lookup_member(&self, c: usize, name: &str) -> Option<Vec<DeclId>> {
@@ -1043,6 +1349,27 @@ impl P {
     pub fn lit_token(&self) -> Option<Lit> {
         self.tok().lit.clone()
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct SubFound {
+    pub decls: Vec<DeclId>,
+    pub class: usize,
+    pub key: Vec<usize>,
+    pub virt_key: bool,
+}
+
+/// Join the declarations from several places, without repeats.
+pub fn merge_sources(sources: Vec<Vec<DeclId>>) -> Vec<DeclId> {
+    let mut out = Vec::new();
+    for v in sources {
+        for d in v {
+            if !out.contains(&d) {
+                out.push(d);
+            }
+        }
+    }
+    out
 }
 
 pub fn is_keyword(s: &str) -> bool {

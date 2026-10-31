@@ -176,7 +176,10 @@ impl P {
                     self.pos += 1;
                     self.parse_decltype()?
                 } else if self.qualified_names_type(0) {
-                    self.parse_type_name()?
+                    self.in_base_clause += 1;
+                    let r = self.parse_type_name();
+                    self.in_base_clause -= 1;
+                    r?
                 } else {
                     let n = self.tok().text.clone();
                     self.skip_qualified_name()?;
@@ -308,9 +311,16 @@ impl P {
         // TYN-4: declare the class in the enclosing namespace or block.
         let mut scope = self.decl_scope();
         if !decl_only {
+            let in_body = !self.fns.is_empty();
             for &s in self.stack.iter().rev() {
                 match self.scopes[s].kind {
+                    // The outermost block of a function body shares the
+                    // parameter scope.
                     SK::Namespace | SK::Block => {
+                        scope = s;
+                        break;
+                    }
+                    SK::Params if in_body => {
                         scope = s;
                         break;
                     }
@@ -349,8 +359,9 @@ impl P {
     /// Lookup that ignores names other than classes and enumerations
     /// (TYN-4).
     pub fn lookup_tag(&self, name: &str) -> Option<Vec<DeclId>> {
+        let noms = self.nominations();
         for &s in self.stack.iter().rev() {
-            if let Some(v) = self.lookup_in_scope(s, name, true) {
+            if let (Some(v), _) = self.lookup_level(s, name, &noms) {
                 let tags: Vec<DeclId> = v.into_iter().filter(|&i| matches!(self.decls[i].k, DK::Class(_) | DK::Enum(_) | DK::Template(_) | DK::Type(_))).collect();
                 if !tags.is_empty() {
                     return Some(tags);
