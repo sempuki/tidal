@@ -9,6 +9,7 @@ storage-linkage
 inline
 declarators
 alignment
+volatile
 initialization/index
 structured-bindings
 enumerations
@@ -31,6 +32,7 @@ storage-linkage
 inline
 declarators
 alignment
+volatile
 initialization/index
 structured-bindings
 enumerations
