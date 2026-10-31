@@ -10,7 +10,8 @@ Fails when:
   steps 3 and 6),
 - a test is not listed by any of the rules it names,
 - a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/,
-- a tidal-expect-<x> override names no compiler id or family.
+- a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
+  tidal-error is on a test that no compiler is expected to reject.
 """
 
 import re
@@ -154,6 +155,11 @@ def main() -> int:
         for key in test.overrides:
             if key not in known:
                 errors.append(f"{test.name}: tidal-expect-{key} names no compiler or family")
+        for key in test.errors:
+            if key and key not in known:
+                errors.append(f"{test.name}: tidal-error-{key} names no compiler or family")
+        if test.errors and "reject" not in [test.default, *test.overrides.values()]:
+            errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject")
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")

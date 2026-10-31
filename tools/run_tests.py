@@ -36,7 +36,7 @@ from matrix import BUILD, TESTS, Compiler  # noqa: E402
 EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
 # Bump when outcome() changes how it computes a result, so cached results
 # from the old logic are not reused.
-OUTCOME_VERSION = 2
+OUTCOME_VERSION = 3
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
@@ -51,6 +51,7 @@ class Test:
     flags: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     sources: list[Path] = field(default_factory=list)
+    errors: dict[str, str] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
@@ -69,11 +70,16 @@ class Test:
             return "accept"
         return e
 
+    def error_pattern(self, c: Compiler) -> str | None:
+        """The pattern a rejection by this compiler must match: by id, family, then default."""
+        return self.errors.get(c.id) or self.errors.get(c.family) or self.errors.get("")
+
 
 def parse_test(path: Path) -> Test:
     rules, flags, notes, sources = [], [], [], []
     default = None
     overrides = {}
+    errors = {}
     for line in path.read_text().splitlines():
         if not line.startswith("//"):
             break
@@ -87,6 +93,13 @@ def parse_test(path: Path) -> Test:
             default = value
         elif key.startswith("expect-"):
             overrides[key.removeprefix("expect-")] = value
+        elif key == "error" or key.startswith("error-"):
+            target = key.removeprefix("error").removeprefix("-")
+            try:
+                re.compile(value)
+            except re.error as e:
+                raise ValueError(f"{path}: bad tidal-{key} pattern: {e}")
+            errors[target] = value
         elif key == "flags":
             flags += value.split()
         elif key == "note":
@@ -105,7 +118,7 @@ def parse_test(path: Path) -> Test:
     for s in sources:
         if not s.name.endswith(EXTRA_SUFFIX) or not s.exists():
             raise ValueError(f"{path}: tidal-sources entry {s.name} must be an existing *{EXTRA_SUFFIX} file")
-    return Test(path, rules, default, overrides, flags, notes, sources)
+    return Test(path, rules, default, overrides, flags, notes, sources, errors)
 
 
 def test_files(paths: list[Path]) -> list[Path]:
@@ -140,8 +153,16 @@ def diagnostics(stderr: str) -> list[str]:
 
 
 def failure(proc: subprocess.CompletedProcess) -> str:
+    """All error messages of a failed compile or link, joined with " / ".
+
+    The whole list is kept, so a tidal-error pattern can match any of them.
+    """
     diags = diagnostics(proc.stderr) or [" ".join(proc.stderr.split())[:200]]
-    return " / ".join(diags[:2])
+    return " / ".join(d for d in diags if not d.startswith("note:")) or " / ".join(diags)
+
+
+def short(detail: str) -> str:
+    return " / ".join(detail.split(" / ")[:2])
 
 
 def run_binary(c: Compiler, out: str) -> tuple[str, str]:
@@ -224,6 +245,8 @@ def main() -> int:
     ap.add_argument("--compilers", default="baseline")
     ap.add_argument("--report", type=Path, help="write a Markdown results table")
     ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--errors-out", type=Path,
+                    help="write the error messages of every rejecting compiler as JSON")
     ap.add_argument("-j", type=int, default=os.cpu_count())
     args = ap.parse_args()
 
@@ -244,8 +267,13 @@ def main() -> int:
             c.stop()
 
     def matches(t: Test, c: Compiler) -> bool:
-        got = results[(t, c)][0]
-        return got == "skip" or t.expect(c) is None or got == t.expect(c)
+        got, detail = results[(t, c)]
+        if got == "skip" or t.expect(c) is None:
+            return True
+        if got != t.expect(c):
+            return False
+        pattern = t.error_pattern(c) if got == "reject" else None
+        return pattern is None or re.search(pattern, detail, re.IGNORECASE) is not None
 
     failures, rows, differs = 0, [], []
     for t in tests:
@@ -255,7 +283,11 @@ def main() -> int:
         rows.append((t, "FAIL" if failed else "pass"))
         for c in bad:
             got, detail = results[(t, c)]
-            line = f"{t.name} [{c.id}]: expected {t.expect(c)}, got {got}  {detail}"
+            if got == t.expect(c):
+                line = (f"{t.name} [{c.id}]: rejected, but no error matches "
+                        f"/{t.error_pattern(c)}/  {short(detail)}")
+            else:
+                line = f"{t.name} [{c.id}]: expected {t.expect(c)}, got {got}  {short(detail)}"
             if c.role == "baseline":
                 print("FAIL " + line)
             else:
@@ -263,6 +295,15 @@ def main() -> int:
 
     for line in differs:
         print("differs " + line)
+
+    if args.errors_out:
+        dump = {}
+        for t in tests:
+            for c in compilers:
+                got, detail = results[(t, c)]
+                if got in {"reject", "link-fail"}:
+                    dump.setdefault(t.name, {})[c.id] = detail.split(" / ")
+        args.errors_out.write_text(json.dumps(dump, indent=1, sort_keys=True))
     print(f"{len(tests) - failures}/{len(tests)} tests pass on baseline compilers; "
           f"{len(differs)} differences on report compilers")
 
