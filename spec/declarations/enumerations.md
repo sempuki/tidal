@@ -122,7 +122,7 @@ The forms that ENUM-3 allows are the only ones. A program must not:
 - compare a scoped value with an integer,
 - initialize an integer from a scoped value,
 - apply `++` or `--` to an enumeration without a user-declared operator
-  *(referenced)*.
+  ({rule}`OPR-6`).
 :::
 
 :::{rule} ENUM-4

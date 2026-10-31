@@ -4,7 +4,7 @@ The operators `&&` and `||` combine two `bool` values, and `!`
 negates one. `&&` and `||` evaluate their right operand only if the left
 operand does not decide the result. These rules apply to the built-in
 operators. An overloaded operator is a function call and evaluates both
-operands *(overload resolution referenced)*.
+operands ({rule}`OPR-7`).
 
 ## Principles
 
@@ -162,7 +162,7 @@ before the right operand starts.
 :kind: required
 :tests: expressions/logical/overloaded-and-evaluates-both.cpp
 
-An overloaded `&&` or `||` *(referenced)* evaluates both operands. The
+An overloaded `&&` or `||` ({rule}`OPR-7`) evaluates both operands. The
 left operand is evaluated before the right operand.
 :::
 

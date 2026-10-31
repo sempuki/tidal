@@ -98,7 +98,7 @@ the declaration, also if no call uses it.
 :tests: declarations/functions/default-arguments/operator-default-argument.cpp
 
 An operator function other than `operator()` must not have default
-arguments *(operator overloading referenced)*.
+arguments ({rule}`OPR-2`).
 :::
 
 ## Runtime Behavior

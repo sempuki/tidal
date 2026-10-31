@@ -2,7 +2,7 @@
 
 A cast converts a value to a named type. The casts are `static_cast`,
 `const_cast`, `reinterpret_cast`, and the cast notations `(T)e`, `T(e)`,
-and `T{e}`. `dynamic_cast` applies to classes *(referenced)*.
+and `T{e}`. `dynamic_cast` applies to classes ({rule}`VIRT-10`).
 
 ## Principles
 
@@ -135,7 +135,7 @@ first cast that is valid:
 :tests: expressions/casts/functional-cast-several-arguments.cpp expressions/casts/functional-cast-several-scalar.cpp
 
 `T(a, b)` with several operands is valid only for a class type `T`
-*(classes referenced)*.
+({rule}`CTOR-10`).
 :::
 
 :::{rule} CAST-11

@@ -72,7 +72,7 @@ that they create, belong to the full expression that contains the call.
 :kind: required
 :tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp
 
-An overloaded operator *(referenced)* keeps the order of the built-in
+An overloaded operator ({rule}`OPR-7`) keeps the order of the built-in
 operator for shifts, assignment, compound assignment, subscripts, the
 comma operator, and the pointer-to-member operators. An overloaded `&&`
 or `||` evaluates both operands, the left one first (OPR-7).

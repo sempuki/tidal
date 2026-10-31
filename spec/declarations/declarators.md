@@ -267,7 +267,7 @@ cv-qualifier that an alias repeats is permitted and counts one time.
 
 A definition of a `const` variable of scalar type must have an
 initializer. An `extern` declaration that is not a definition needs no
-initializer. Class types have a separate rule *(referenced)*.
+initializer. Class types have a separate rule, {rule}`CTOR-4`.
 :::
 
 :::{rule} CV-4
@@ -328,7 +328,7 @@ in a constant expression. A `const` floating-point variable cannot. A
 :tests: declarations/declarators/pointer-to-member.cpp
 
 A declarator of the form `C::* name` declares a pointer to a member of
-class `C` *(classes referenced)*. DCL-23 lists what is not valid.
+class `C` ({rule}`MPTR-1`). DCL-23 lists what is not valid.
 :::
 
 :::{rule} DCL-23

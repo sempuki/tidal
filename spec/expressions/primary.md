@@ -260,7 +260,7 @@ function with an explicit object parameter, or outside a class.
 :kind: required
 :tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp
 
-A name refers to the entity that lookup finds *(referenced)*. Its value
+A name refers to the entity that lookup finds ({rule}`NAM-8`). Its value
 category is:
 
 - an lvalue for a variable, a parameter, or a function,

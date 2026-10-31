@@ -204,7 +204,7 @@ A member initializer with braces must not need a narrowing conversion.
 :tests: classes/constructors/mem-init-duplicate.cpp classes/constructors/mem-init-in-declaration-only.cpp classes/constructors/mem-init-indirect-base.cpp classes/constructors/mem-init-not-member.cpp classes/constructors/mem-init-pack-of-reference.cpp classes/constructors/mem-init-static-member.cpp
 
 Each `mem_init` must name a non-static data member, a direct base, or a
-virtual base *(referenced)* of the class. A name can be a type alias of a
+virtual base ({rule}`DER-6`) of the class. A name can be a type alias of a
 base. A `mem_init` must not:
 
 - name the same member or base two times,
@@ -240,7 +240,7 @@ includes:
 
 Direct initialization and casts can use it. `explicit(c)` makes the
 constructor `explicit` if the constant expression `c` is `true`. Only a
-constructor or conversion function *(referenced)* declared in its class
+constructor or conversion function ({rule}`CVF-3`) declared in its class
 can have `explicit`.
 :::
 

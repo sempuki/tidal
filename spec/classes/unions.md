@@ -270,7 +270,7 @@ values that fit in its width.
 :kind: required
 :tests: classes/unions/common-initial-sequence.cpp
 
-Two standard-layout *(referenced)* structs that are members of a union
+Two standard-layout ({rule}`CLS-19`) structs that are members of a union
 can begin with members of the same types, a *common initial sequence*.
 While one struct is active, a program can read a member of that sequence
 through the other struct. The read gives the stored value.

@@ -74,7 +74,7 @@ includes `bool` and the character types.
 An operand must not have floating-point type, pointer type, scoped
 enumeration type, pointer-to-member type, or the type of `nullptr`. A
 class operand is valid only through a usable conversion or an operator
-function *(referenced)*.
+function ({rule}`OPR-6`).
 :::
 
 :::{rule} SHF-4

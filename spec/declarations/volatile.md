@@ -129,7 +129,7 @@ Constant evaluation cannot read a volatile object (VOL-1).
 :tests: declarations/volatile/access-run.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
 
 Each read and each write of an object through a volatile lvalue is an
-observable effect *(referenced)*. The implementation performs it. The
+observable effect ({rule}`TR-7`). The implementation performs it. The
 type of a volatile variable keeps `volatile`, but the result of an
 arithmetic operation on its value does not. A `const volatile` variable
 at namespace scope has external linkage, so all translation units share

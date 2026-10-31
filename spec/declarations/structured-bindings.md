@@ -80,7 +80,7 @@ The members that SB-3 names must:
 
 - all be in the same class, which can be a base class,
 - all be accessible at the declaration, for example in a member function
-  or a friend of the class *(access referenced)*,
+  or a friend of the class ({rule}`ACC-2`),
 - not include an anonymous union.
 
 The type of the hidden variable must not be a union or a scalar type.
@@ -168,8 +168,8 @@ variable is `const`.
 :kind: required
 :tests: declarations/structured-bindings/bit-field-assign.cpp
 
-A binding to a bit-field member refers to the bit-field *(classes
-referenced)*. A program can assign to it. SB-16 lists what is not valid.
+A binding to a bit-field member refers to the bit-field ({rule}`BF-1`).
+A program can assign to it. SB-16 lists what is not valid.
 :::
 
 :::{rule} SB-16

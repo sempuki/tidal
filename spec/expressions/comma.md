@@ -79,7 +79,7 @@ A comma operator in such a list must be in parentheses.
 :tests: expressions/comma/subscript-comma.cpp expressions/comma/subscript-parenthesized.cpp
 
 A comma at the top level of a subscript separates subscript arguments
-*(referenced)*. The built-in subscript takes one argument, so the comma
+({rule}`OPR-3`). The built-in subscript takes one argument, so the comma
 must be in parentheses to act as an operator.
 :::
 
@@ -105,7 +105,7 @@ side effects complete before the right operand is evaluated.
 :kind: required
 :tests: expressions/comma/overloaded-comma-order.cpp
 
-An overloaded comma operator *(referenced)* evaluates its left operand
+An overloaded comma operator ({rule}`OPR-7`) evaluates its left operand
 before its right operand.
 :::
 

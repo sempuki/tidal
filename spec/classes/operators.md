@@ -65,8 +65,8 @@ implementation should warn about them.
 
 An *operator function* has an `operator_function_id` as its name. A
 *literal operator* has a `literal_operator_id` as its name. This page
-does not cover the operator functions for `new`, `delete`, and `co_await`
-*(referenced)*.
+does not cover the operator functions for `new` and `delete`
+({rule}`NEW-13`), or for `co_await` *(referenced)*.
 
 ## Constraints
 

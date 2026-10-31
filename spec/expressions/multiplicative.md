@@ -2,7 +2,7 @@
 
 The operators `*` (multiply), `/` (divide), and `%` (remainder) apply to
 operands of built-in types. An overloaded form of these operators is a
-function call *(overload resolution referenced)*.
+function call ({rule}`OPR-7`).
 
 ## Principles
 
@@ -95,7 +95,7 @@ integer, character, `bool`, and floating-point types.
 An operand of `*`, `/`, or `%` must not have pointer type, scoped
 enumeration type, class type, pointer-to-member type, or the type of
 `nullptr`. The class type rule does not apply if overload resolution
-*(referenced)* finds a user-declared operator or a usable conversion.
+({rule}`OPR-6`) finds a user-declared operator or a usable conversion.
 :::
 
 :::{rule} MUL-4

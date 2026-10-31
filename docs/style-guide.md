@@ -99,6 +99,9 @@ Write each rule in a `rule` directive:
 - Link each defined term with `` {term}`...` `` the first time it occurs in
   a rule.
 - Do not explain a rule in prose. Put an example in `Examples`.
+- Link a rule on another page with `` {rule}`ID` ``. Mark a topic that
+  Tidal does not specify yet with *(referenced)*. A marker must not name
+  a topic that has a page.
 
 ## 5. Word list
 

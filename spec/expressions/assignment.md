@@ -77,7 +77,7 @@ must not be:
 - an array,
 - a function.
 
-For a class type, assignment calls an operator function *(referenced)*,
+For a class type, assignment calls an operator function ({rule}`OPR-7`),
 so a class prvalue can be the left operand.
 :::
 
@@ -110,7 +110,7 @@ The operands of `E1 op= E2` must be valid for `op` (ASN-5).
 :tests: expressions/assignment/braced-empty.cpp expressions/assignment/braced-ok.cpp expressions/assignment/braced-compound-class.cpp
 
 The right operand of `=` can be a braced list. For a class type, the
-braced list is the argument of the operator function *(referenced)*.
+braced list is the argument of the operator function ({rule}`OPR-7`).
 :::
 
 :::{rule} ASN-14

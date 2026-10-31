@@ -120,7 +120,7 @@ through the result.
 The operand of `&` is an lvalue or a qualified name of a class member. For
 an lvalue of type `T`, the result is a pointer to `T` with the same
 {term}`cv-qualifiers <cv-qualifier>`. For a qualified member name, the
-result is a pointer to member *(classes referenced)*.
+result is a pointer to member ({rule}`MPTR-2`).
 :::
 
 :::{rule} UN-9
@@ -205,7 +205,7 @@ contains:
 - a `new` expression whose allocation function is not `noexcept`, such
   as the default one,
 - a `dynamic_cast` to a reference type that can fail,
-- a throw-expression *(referenced)*.
+- a throw-expression ({rule}`THR-5`).
 
 Otherwise it is `true`.
 :::

@@ -159,7 +159,7 @@ must be valid, so a class with a deleted copy constructor is rejected.
 :kind: reject
 :tests: expressions/conditional/bitfield-address.cpp
 
-An lvalue result that refers to a bit-field operand *(referenced)* has
+An lvalue result that refers to a bit-field operand ({rule}`BF-1`) has
 the limits of a bit-field. A program must not apply `&` to it.
 :::
 

@@ -144,7 +144,7 @@ A capture list must obey these rules:
 - Only a variable with {term}`automatic storage` can be captured.
 - A lambda outside a function must not have a capture default, except in
   a default member initializer.
-- A variable of abstract class type *(referenced)* cannot be captured by
+- A variable of abstract class type ({rule}`VIRT-8`) cannot be captured by
   copy.
 :::
 

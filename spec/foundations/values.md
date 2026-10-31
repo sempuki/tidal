@@ -221,7 +221,7 @@ of one element end before the next element is initialized.
 
 An implementation can make an extra temporary copy of a trivially
 copyable class object for a function argument or a return value
-*(classes referenced)*. It is unspecified if a parameter and the
+({rule}`CPY-19`). It is unspecified if a parameter and the
 caller's object have the same address.
 :::
 

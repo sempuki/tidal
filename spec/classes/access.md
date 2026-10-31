@@ -215,7 +215,7 @@ valid.
 :kind: required
 :tests: classes/access/using-changes-access.cpp
 
-A using-declaration *(referenced)* in a derived class gives a base member
+A using-declaration ({rule}`DER-9`) in a derived class gives a base member
 the access of the label where the declaration occurs. This can increase
 or decrease the access.
 :::

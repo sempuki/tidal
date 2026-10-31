@@ -110,6 +110,9 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
+- 42 *(referenced)* markers remain. Each names a topic with no page,
+  such as overload resolution, argument-dependent lookup, templates and
+  concepts, the library, threads, conversion ranks, or literal types.
 
 ## Known limits of the tooling
 
@@ -141,10 +144,9 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). The current phase is
 phase 1, repair what exists:
 
-1. Replace stale *(referenced)* markers with rule links (item B).
-2. Finish constant evaluation: initialized subobjects, "literal type",
+1. Finish constant evaluation: initialized subobjects, "literal type",
    and an index of `undefined` rules (item D).
-3. The remaining process checks of phase 1: nonterminals defined once,
+2. The remaining process checks of phase 1: nonterminals defined once,
    stale markers, a "compiler defect" question status, and front-end
    conformance as a regression signal.
 

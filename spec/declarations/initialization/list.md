@@ -4,8 +4,8 @@ List-initialization uses a braced list, as in `int x{1};` or
 `S s = {1, 2};`. This page covers scalars, aggregates, and character
 arrays.
 
-An *aggregate* is an array, or a class with these properties *(classes
-referenced)*:
+An *aggregate* is an array, or a class with these properties (the
+{doc}`classes chapter </classes/index>` defines the terms):
 
 - no user-declared or inherited constructors,
 - no private or protected direct non-static data members,
@@ -219,7 +219,7 @@ is evaluated completely before the next value starts.
 A member without a value in the list is initialized from its default
 member initializer. If it has none, it is initialized from an empty
 braced list. A scalar member becomes zero. A member of class type gets
-its default constructor *(classes referenced)*. LIST-16 lists what is not
+its default constructor ({rule}`CTOR-2`). LIST-16 lists what is not
 valid.
 :::
 

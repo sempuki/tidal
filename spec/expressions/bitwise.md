@@ -3,7 +3,7 @@
 The operators `&`, `^`, and `|` combine the bits of two integer values.
 The operator `~` inverts the bits of one integer value. These rules apply
 to the built-in operators. An overloaded operator is a function call
-*(overload resolution referenced)*.
+({rule}`OPR-7`).
 
 ## Principles
 
@@ -73,7 +73,7 @@ operator can be of different types, including two different enumerations.
 An operand of `&`, `^`, `|`, or `~` must not have floating-point type,
 pointer type, scoped enumeration type, pointer-to-member type, or the
 type of `nullptr`. A class operand is valid only through a usable
-conversion or an operator function *(referenced)*.
+conversion or an operator function ({rule}`OPR-6`).
 :::
 
 :::{rule} BIT-4

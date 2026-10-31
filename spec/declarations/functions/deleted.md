@@ -2,7 +2,7 @@
 
 `= delete` as the body of a function makes each use of the function an
 error. `= default` asks for the implicit definition of a special member
-function *(classes referenced)*.
+function ({rule}`CTOR-2`, {rule}`CPY-4`, {rule}`DTOR-2`).
 
 ## Principles
 
@@ -58,7 +58,7 @@ version permits it ({question}`Q-0007`).
 :tests: declarations/functions/deleted/default-non-member.cpp declarations/functions/deleted/defaulted-friend-comparison.cpp
 
 `= default` is permitted only on special member functions and
-comparison operators *(classes referenced)*. A defaulted comparison
+comparison operators ({rule}`DCMP-3`). A defaulted comparison
 operator can be a friend that the class declares. Other functions that are
 not class members must not use `= default`.
 :::

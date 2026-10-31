@@ -122,7 +122,7 @@ deleted before the evaluation ends.
 :tests: expressions/new-delete/abstract-type.cpp expressions/new-delete/function-type.cpp expressions/new-delete/incomplete-type.cpp expressions/new-delete/new-void.cpp expressions/new-delete/reference-type.cpp
 
 The type in a `new` expression must be a complete object type. It must
-not be `void`, an incomplete type, an abstract class *(referenced)*, a
+not be `void`, an incomplete type, an abstract class ({rule}`VIRT-8`), a
 reference, or a function type.
 :::
 

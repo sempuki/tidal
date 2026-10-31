@@ -270,7 +270,7 @@ ref-qualifier.
 :tests: classes/members/static-call-operator.cpp
 
 `operator()` and `operator[]` can be static member functions. `operator[]`
-can have any number of parameters *(operator overloading referenced)*.
+can have any number of parameters ({rule}`OPR-3`).
 :::
 
 :::{rule} CLS-16

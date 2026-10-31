@@ -6,8 +6,10 @@ same name in other scopes or {term}`translation units <translation unit>`
 refers to the same entity.
 
 This page covers variables and functions at namespace scope and block
-scope. Class members, dynamic storage, threads, modules, and `extern "C"`
-are on other pages *(referenced)*. Rules with the prefix `STO` are about
+scope. Class members ({doc}`/classes/members`), dynamic storage
+({doc}`/expressions/new-delete`), and `extern "C"`
+({doc}`/declarations/linkage-specifications`) are on other pages. Threads
+and modules are out of scope. Rules with the prefix `STO` are about
 storage duration and the storage class specifiers. Rules with the prefix
 `LNK` are about linkage.
 
@@ -69,7 +71,7 @@ duplicated definition is found when the program is linked, if at all.
    storage_class: "static" | "extern" | "thread_local" | "mutable"
 ```
 
-`mutable` applies to class members *(referenced)*.
+`mutable` applies to class members ({rule}`CLS-25`).
 
 ## Constraints
 

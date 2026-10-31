@@ -81,7 +81,7 @@ in a static data member that carries its initializer in the class.
 ```
 
 `decl_specifier` includes `const`, `volatile`, `static`, `constexpr`, and
-the other specifiers *(referenced)*. `type_constraint` names a concept
+the other declaration specifiers. `type_constraint` names a concept
 *(referenced)*.
 
 ## Constraints
@@ -222,7 +222,7 @@ If one declaration declares several variables with `auto` (AUTO-9),
 :tests: declarations/auto/decltype-auto-value-category.cpp declarations/auto/decltype-auto-keeps-cv.cpp
 
 `decltype(auto)` gives the type that `decltype` gives the initializer
-*(referenced)*. The {term}`value category` of the initializer controls the
+({rule}`DTY-2`). The {term}`value category` of the initializer controls the
 result:
 
 - a name gives its declared type, including `const`,

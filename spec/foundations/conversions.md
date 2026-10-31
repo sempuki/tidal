@@ -159,7 +159,7 @@ member that the base declares.
 These conversions must not occur implicitly:
 
 - the conversion of CONV-14 to a base that is ambiguous (DER-10) or
-  not accessible *(referenced)*,
+  not accessible ({rule}`ACC-12`),
 - the conversion of CONV-15 through a virtual base or an ambiguous
   base, or to a base that is not accessible (MPTR-11),
 - a pointer to a member of a derived class to a pointer to a member of

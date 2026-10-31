@@ -315,7 +315,7 @@ last is destroyed first.
 In the ordinary form, a `goto` or a `case` or `default` label of an
 enclosing `switch` can transfer control into a branch. The condition is
 not evaluated in that case. The general rules for jumps over
-initialization apply *(referenced)*.
+initialization apply ({rule}`JMP-6`).
 :::
 
 :::{rule} IF-18

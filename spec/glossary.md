@@ -10,12 +10,12 @@ automatic storage
   block. See {term}`storage duration`.
 
 constant evaluation
-  *(referenced)* Evaluation of an expression during translation, before
-  the program runs. It occurs where translation needs a value. Examples
-  are an array bound, a `static_assert`, the condition of `if constexpr`,
-  and a call to a `consteval` function. An implementation rejects a
-  program if constant evaluation reaches an operation that has undefined
-  behavior.
+  Evaluation of an expression during translation, before the program
+  runs. It occurs where translation needs a value. Examples are an array
+  bound, a `static_assert`, the condition of `if constexpr`, and a call
+  to a `consteval` function. An implementation rejects a program if
+  constant evaluation reaches an operation that has undefined behavior.
+  {doc}`/foundations/constant-evaluation` gives the rules.
 
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
@@ -27,7 +27,7 @@ contextual conversion
 cv-qualifier
   `const` or `volatile` applied to a type. A program cannot change a
   `const` object after its initialization. Each access to a `volatile`
-  object is an observable effect *(referenced)*.
+  object is an observable effect ({rule}`TR-7`).
 
 declarator
   The part of a declaration that gives one name and makes its type. A
@@ -80,7 +80,7 @@ storage duration
   exists until the end of the block. *Static* storage exists for all of the
   program run. *Thread* storage exists for the life of a thread, with one
   object for each thread. *Dynamic* storage comes from `new` and goes back
-  with `delete` *(referenced)*.
+  with `delete` ({rule}`NEW-9`).
 
 translation unit
   One source file after preprocessing, with all the files that it

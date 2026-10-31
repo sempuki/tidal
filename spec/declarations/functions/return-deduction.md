@@ -84,8 +84,8 @@ of the placeholder.
 :kind: reject
 :tests: declarations/functions/return-deduction/virtual-auto.cpp
 
-A virtual function must not have a deduced return type *(virtual
-functions referenced)*.
+A virtual function must not have a deduced return type
+({rule}`VIRT-2`).
 :::
 
 ## Undefined Behavior

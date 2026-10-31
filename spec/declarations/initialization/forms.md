@@ -1,8 +1,8 @@
 # Forms of initialization
 
 An initializer gives a variable its first value. This page covers scalars
-and arrays. Initialization by constructors belongs to classes
-*(referenced)*.
+and arrays. Initialization by constructors is on the page on
+{doc}`constructors and destructors </classes/constructors>`.
 
 ## Principles
 
@@ -80,7 +80,7 @@ An initializer after `=` or in parentheses must meet these conditions:
 - For a scalar, the parentheses must hold exactly one expression.
 - For a scalar, the expression in parentheses must not be a braced list.
 - The type of the variable must be complete.
-- An `explicit` constructor *(referenced)* must not be used with `=`.
+- An `explicit` constructor ({rule}`CTOR-9`) must not be used with `=`.
 - `nullptr` converts to `bool` only in direct initialization.
 :::
 
