@@ -13,6 +13,7 @@ derived
 virtual
 unions
 conversion-functions
+operators
 :::
 
 :::{toctree}
@@ -27,4 +28,5 @@ derived
 virtual
 unions
 conversion-functions
+operators
 :::
