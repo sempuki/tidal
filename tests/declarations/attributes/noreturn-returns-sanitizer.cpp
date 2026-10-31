@@ -1,6 +1,6 @@
 // tidal-rules: ATTR-3
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=undefined -fno-sanitize-recover=undefined
+// tidal-flags: -O0 -fsanitize=undefined -fno-sanitize-recover=undefined
 // tidal-error: unreachable program point
 // tidal-error-gcc-14: exit 139
 // tidal-note: GCC 14 does not report it, and the program crashes.

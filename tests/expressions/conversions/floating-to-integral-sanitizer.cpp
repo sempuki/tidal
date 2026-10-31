@@ -1,6 +1,6 @@
 // tidal-rules: CONV-5
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=float-cast-overflow -fno-sanitize-recover=all
+// tidal-flags: -O0 -fsanitize=float-cast-overflow -fno-sanitize-recover=all
 // tidal-error: 1e\+10 is outside the range of representable values
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 int main(int argc, char**) {

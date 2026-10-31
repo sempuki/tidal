@@ -1,6 +1,6 @@
 // tidal-rules: LAM-19
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=address
+// tidal-flags: -O0 -fsanitize=address
 // tidal-error: AddressSanitizer: stack-use-after-scope
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 int main(int argc, char**) {

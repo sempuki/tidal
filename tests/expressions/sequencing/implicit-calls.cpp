@@ -31,7 +31,7 @@ int main() {
   before = calls; take(a);                      // copy, ~Item
   if (calls - before != 2) return 4;
   before = calls; int* p = new int(3); delete p; // operator new, operator delete
-  if (calls - before != 2) return 5;
+  if (calls - before != 2 && calls - before != 0) return 5;  // NEW-14: the pair can be omitted
   before = calls; int sum = 0; for (int e : Range{}) sum += e;  // begin, end
   if (calls - before != 2 || sum != 3) return 6;
   return 0;

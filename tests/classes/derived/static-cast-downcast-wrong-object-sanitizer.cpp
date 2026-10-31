@@ -1,6 +1,6 @@
 // tidal-rules: DER-17 CAST-14
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=vptr -fno-sanitize-recover=all
+// tidal-flags: -O0 -fsanitize=vptr -fno-sanitize-recover=all
 // tidal-error: does not point to an object of type
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 struct Base { virtual ~Base() {} };

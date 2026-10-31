@@ -2,10 +2,10 @@
 
 Each page says how many of its tests the baseline compilers agree on:
 "All eight compilers agree on 63 of 69 tests." A test counts as agreed
-when it carries no per-compiler expectation (tidal-expect-<x>). A
-compiler that skips a test, as EDG skips -Werror tests, does not
-disagree. tools/status_table.py rewrites the sentences, and
-tools/check_spec.py fails when one is out of date.
+when it carries no per-compiler expectation (tidal-expect-<x>) other
+than one for a report compiler. A compiler that skips a test, as EDG
+skips -Werror tests, does not disagree. tools/status_table.py rewrites
+the sentences, and tools/check_spec.py fails when one is out of date.
 """
 
 import re
@@ -27,8 +27,14 @@ def counts(page_text: str) -> tuple[int, int]:
     tests = set()
     for line in re.findall(r"^:tests: (.*)$", page_text, flags=re.M):
         tests.update(line.split())
+    report = {c.id for c in matrix.load() if c.role == "report"}
+
+    def agrees(text: str) -> bool:
+        keys = re.findall(r"^// tidal-expect-([a-z0-9.-]+):", text, flags=re.M)
+        return all(k in report for k in keys)
+
     agreed = sum(1 for t in tests if (matrix.TESTS / t).exists()
-                 and not re.search(r"^// tidal-expect-", (matrix.TESTS / t).read_text(), flags=re.M))
+                 and agrees((matrix.TESTS / t).read_text()))
     return agreed, len(tests)
 
 

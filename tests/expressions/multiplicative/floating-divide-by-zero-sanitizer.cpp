@@ -1,6 +1,6 @@
 // tidal-rules: MUL-11
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=float-divide-by-zero -fno-sanitize-recover=all
+// tidal-flags: -O0 -fsanitize=float-divide-by-zero -fno-sanitize-recover=all
 // tidal-error: division by zero
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 int main(int argc, char**) {

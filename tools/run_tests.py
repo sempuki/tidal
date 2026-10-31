@@ -59,12 +59,13 @@ class Test:
         return str(self.path.relative_to(TESTS))
 
     def expect(self, c: Compiler) -> str | None:
-        """Expected outcome for one compiler: by id, then family, then default.
+        """Expected outcome for one compiler: by id, the id it is a variant of, family, default.
 
         None means the test states no expectation for this compiler. That is
         an error for a baseline compiler and informational for a report one.
         """
-        e = self.overrides.get(c.id) or self.overrides.get(c.family) or self.default
+        e = (self.overrides.get(c.id) or self.overrides.get(c.variant_of)
+             or self.overrides.get(c.family) or self.default)
         if e is None and c.role == "baseline":
             raise ValueError(f"{self.name}: no expectation for baseline compiler {c.id}")
         if e in {"run", "run-fail", "link-fail"} and c.frontend_only:
@@ -72,8 +73,9 @@ class Test:
         return e
 
     def error_pattern(self, c: Compiler) -> str | None:
-        """The pattern a rejection by this compiler must match: by id, family, then default."""
-        return self.errors.get(c.id) or self.errors.get(c.family) or self.errors.get("")
+        """The pattern a rejection by this compiler must match: by id, the id it is a variant of, family, default."""
+        return (self.errors.get(c.id) or self.errors.get(c.variant_of)
+                or self.errors.get(c.family) or self.errors.get(""))
 
 
 def parse_test(path: Path) -> Test:

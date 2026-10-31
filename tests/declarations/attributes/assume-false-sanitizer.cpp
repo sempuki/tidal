@@ -1,6 +1,6 @@
 // tidal-rules: ATTR-10
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=undefined -fno-sanitize-recover=undefined
+// tidal-flags: -O0 -fsanitize=undefined -fno-sanitize-recover=undefined
 // tidal-error-clang: assumption is violated
 // tidal-error-gcc: unreachable program point
 // tidal-expect-clang-18: run

@@ -1,6 +1,6 @@
 // tidal-rules: NEW-5 CPY-4
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=address
+// tidal-flags: -O0 -fsanitize=address
 // tidal-error: AddressSanitizer: attempting double-free
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 struct Owner {

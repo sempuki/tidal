@@ -1,6 +1,6 @@
 // tidal-rules: ADD-10
 // tidal-expect: run-fail
-// tidal-flags: -fsanitize=undefined -fno-sanitize-recover=undefined
+// tidal-flags: -O0 -fsanitize=undefined -fno-sanitize-recover=undefined
 // tidal-expect-gcc: run
 // tidal-error-clang: non-zero offset 1 to null pointer
 // tidal-note: The GCC sanitizer does not check an offset from a null pointer.

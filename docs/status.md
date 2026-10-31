@@ -44,7 +44,7 @@ current state only. The history of how the project got here is in
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 22 | 12 required, 10 reject | 49 | 9 | 0 | 5 | Q-0010 | 0 flagged |
 | [Type aliases and class names](../spec/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 60 | 3 | 3 | 2 | Q-0066, Q-0067, Q-0093 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 54 | 11 | 2 | 22 | Q-0011, Q-0045, Q-0105 | 0 flagged |
-| [The inline specifier](../spec/declarations/inline.md) | 8 | 4 required, 2 reject, 2 no-diagnostic | 34 | 2 | 2 | 0 | Q-0068 | 0 flagged |
+| [The inline specifier](../spec/declarations/inline.md) | 8 | 4 required, 2 reject, 2 no-diagnostic | 34 | 2 | 3 | 0 | Q-0068 | 0 flagged |
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 82 | 8 | 2 | 27 | Q-0012, Q-0106 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 3 | Q-0080 | 0 flagged |
@@ -70,7 +70,7 @@ current state only. The history of how the project got here is in
 | [List initialization of classes](../spec/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 30 | 1 | 1 | 8 | Q-0081 | 0 flagged |
 | [Copy and move](../spec/classes/copy-move.md) | 27 | 14 required, 10 reject, 2 unspecified, 1 recommended | 102 | 3 | 2 | 43 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 22 | 9 required, 12 reject, 1 undefined | 77 | 4 | 1 | 9 | Q-0085 | 0 flagged |
-| [Virtual functions and abstract classes](../spec/classes/virtual.md) | 20 | 7 required, 9 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 107 | 3 | 3 | 5 | Q-0056, Q-0086, Q-0087 | 0 flagged |
+| [Virtual functions and abstract classes](../spec/classes/virtual.md) | 20 | 7 required, 9 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 107 | 3 | 4 | 5 | Q-0056, Q-0086, Q-0087 | 0 flagged |
 | [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 101 | 5 | 3 | 22 | Q-0057, Q-0058, Q-0088 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 60 | 1 | 1 | 7 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 89 | 3 | 1 | 31 | Q-0060 | 0 flagged |
@@ -92,7 +92,8 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3506/3506 tests pass on each. Tests may
+Eight compilers are baseline, and 3506/3506 tests pass on each. Two
+report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
@@ -105,29 +106,34 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 14.2.0 | container | |
 | EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 61 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
+| GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
+| Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
 
 Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and twenty-two questions are open for opinions, each with a
-provisional answer the spec follows. Nine of them have the status
+One hundred and twenty-five questions are open for opinions, each with
+a provisional answer the spec follows. Ten of them have the status
 "compiler defect". Their answer is that one compiler or an older
-version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
-Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
+version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
+Q-0026, Q-0044, Q-0115, Q-0125). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
 
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
-- 42 *(referenced)* markers remain. Each names a topic with no page,
-  such as overload resolution, argument-dependent lookup, templates and
-  concepts, the library, threads, conversion ranks, or literal types.
+- 26 *(referenced)* markers remain. Each names a topic with no page:
+  overload resolution, templates and concepts, the library, class
+  properties, conversion sequences, coroutines, extended floating-point
+  types, the memory model, or the one-definition rule.
 
 ## Known limits of the tooling
 
 - The clean-room front end passes 2873 of 3506 tests. The front end
-  rejects one valid test, `new-placement-and-bound-order.cpp`.
+  rejects 12 valid tests, all added after front-end round 3: eight
+  name-lookup tests and four tests of the repaired rules (CPY-7, UNI-3,
+  the enumeration casts, and the global allocation functions).
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
@@ -161,8 +167,7 @@ forward-progress rule belongs with threads, which are out of scope.
 and 2 are done. Next:
 
 1. Phase 3, items I and J: use of an entity and the one-definition
-   rule. The prerequisite is an optimization-level variant in the
-   runner.
+   rule. The `-O2` report compilers are in place (decision 0043).
 2. Phase 3, item L: implicit conversion sequences, after its method
    controls (a source reader's behavior inventory and a probe grid).
 3. Front end, round 4: the name-lookup rules NAM-13 to NAM-36. The

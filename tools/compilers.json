@@ -232,6 +232,46 @@
       ]
     },
     {
+      "id": "gcc-16-o2",
+      "family": "gcc",
+      "role": "report",
+      "image": {
+        "dockerfile": "official.Dockerfile",
+        "args": {
+          "IMAGE": "docker.io/library/gcc:16"
+        }
+      },
+      "check": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "-O2",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "g++",
+        "-std=c++23",
+        "-pedantic-errors",
+        "-O2",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "g++",
+        "--version"
+      ],
+      "unsupported_flags": [
+        "-m32"
+      ],
+      "variant_of": "gcc-16"
+    },
+    {
       "id": "clang-22",
       "family": "clang",
       "role": "baseline",
@@ -264,6 +304,43 @@
         "clang++-22",
         "--version"
       ]
+    },
+    {
+      "id": "clang-22-o2",
+      "family": "clang",
+      "role": "report",
+      "image": {
+        "dockerfile": "llvm.Dockerfile",
+        "args": {
+          "LLVM_VERSION": "22"
+        }
+      },
+      "check": [
+        "clang++-22",
+        "-std=c++23",
+        "-pedantic-errors",
+        "-O2",
+        "{flags}",
+        "-c",
+        "{src}",
+        "-o",
+        "{out}.o"
+      ],
+      "build": [
+        "clang++-22",
+        "-std=c++23",
+        "-pedantic-errors",
+        "-O2",
+        "{flags}",
+        "{src}",
+        "-o",
+        "{out}"
+      ],
+      "version": [
+        "clang++-22",
+        "--version"
+      ],
+      "variant_of": "clang-22"
     }
   ]
 }

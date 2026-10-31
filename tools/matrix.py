@@ -54,6 +54,7 @@ class Compiler:
     unsupported_flags: list[str] = field(default_factory=list)  # glob patterns; a test using one is skipped
     required_flags: list[str] = field(default_factory=list)  # a test without all of them is skipped
     drop_flags: list[str] = field(default_factory=list)  # removed from the command; the target is built in
+    variant_of: str | None = None  # a test's expectations for this compiler id also apply here
     container: str | None = None
     shells: queue.Queue | None = None
 
