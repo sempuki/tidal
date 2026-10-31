@@ -29,6 +29,10 @@ reader.
 - **Report a gap.** As a source reader, write a summary under the rules
   in `AGENTS.md`. A writer checks it with `tools/similarity.py` and
   triages it into probes (decision 0019).
+- **Use the spec on its own.** Write programs, or extend the front end
+  in `frontend/`, from the spec pages alone, and report where the text
+  was not enough (decision 0029). This works for any role, provided you
+  read only Tidal's files while you do it.
 - **Draft or extend a page.** As a writer, follow the pipeline below.
 - **Improve the tooling.** The runner, the checks, and the site build are
   in `tools/` and `site/`.

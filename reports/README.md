@@ -21,3 +21,11 @@ rewrite, run the tool again and commit the new report next to the old one.
 `reports/review/` holds summaries from reviewers, who are source readers.
 Each summary passed the similarity check before a writer read it. It holds
 suggestions to probe in prose only, with no code and no wording.
+
+## Spec-only reports (decision 0029)
+
+`reports/spec-only/` holds reports from readers who use only Tidal's own
+files: a programmer from another language who writes programs from the
+spec, and the builder of the spec-only front end in `frontend/`. Each
+finding cites Tidal rule or principle IDs. A report passes the
+similarity check before a writer uses it.
