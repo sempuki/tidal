@@ -61,3 +61,5 @@ article div.tidal-principle {
 }
 .tidal-principle-rules a { color: inherit; font-family: var(--font-stack--monospace); }
 article div.tidal-rule { font-size: 0.92rem; }
+
+.tidal-index-count { font-size: 0.7rem; color: var(--color-foreground-muted); }

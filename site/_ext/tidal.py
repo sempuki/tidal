@@ -168,10 +168,107 @@ class PagesDirective(SphinxDirective):
         return [table]
 
 
+RULE_LINE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
+PRINCIPLE_LINE = re.compile(r"^:::\{principle\}\s+([A-Z]+-P\d+)\s*$")
+
+
+def page_outline(path: Path):
+    """Return (title, [(principle id, first sentence, rules, exceptions)], {rule: (kind, ntests)})."""
+    lines = path.read_text().splitlines()
+    title = next((l[2:].strip() for l in lines if l.startswith("# ")), path.stem)
+    principles, rules = [], {}
+    cur = None
+    for line in lines:
+        if m := PRINCIPLE_LINE.match(line):
+            cur = {"id": m.group(1), "rules": [], "exceptions": [], "text": []}
+            principles.append(cur)
+        elif m := RULE_LINE.match(line):
+            cur = None
+            rid = m.group(1)
+            rules[rid] = ["required", 0]
+            current_rule = rid
+        elif line.startswith(":kind:") and rules:
+            rules[current_rule][0] = line.split(":", 2)[2].strip()
+        elif line.startswith(":tests:") and rules:
+            rules[current_rule][1] = len(line.split(":", 2)[2].split())
+        elif cur is not None:
+            if line.startswith(":rules:"):
+                cur["rules"] = line.split(":", 2)[2].split()
+            elif line.startswith(":exceptions:"):
+                cur["exceptions"] = line.split(":", 2)[2].split()
+            elif line == ":::":
+                cur = None
+            elif line.strip() and not cur["text"]:
+                cur["text"].append(line.strip())
+    for pr in principles:
+        first = " ".join(pr["text"])
+        pr["gist"] = re.split(r"(?<=[.])\s", first)[0] if first else ""
+    return title, principles, rules
+
+
+class RuleIndexDirective(SphinxDirective):
+    """List every page with its principles, each principle's rules, and test counts."""
+    has_content = False
+
+    def run(self):
+        root = Path(self.env.srcdir)
+        order = ["foundations", "statements", "expressions", "declarations", "classes"]
+        out = []
+        for chapter in order:
+            index = root / chapter / "index.md"
+            if not index.exists():
+                continue
+            sec = nodes.section(ids=[f"rule-index-{chapter}"])
+            sec += nodes.title(text=chapter.capitalize())
+            for page in self._pages(index):
+                self.env.note_dependency(str(page))
+                title, principles, rules = page_outline(page)
+                rel = page.relative_to(root).with_suffix("").as_posix()
+                psec = nodes.section(ids=[f"rule-index-{rel.replace('/', '-')}"])
+                head = nodes.title()
+                head += nodes.reference("", title, refuri=f"{rel}.html")
+                psec += head
+                cited = set()
+                for pr in principles:
+                    item = nodes.paragraph()
+                    item += nodes.reference("", pr["id"], refuri=f"{rel}.html#principle-{pr['id'].lower()}",
+                                            classes=["tidal-rule-ref"])
+                    item += nodes.inline("", " " + pr["gist"] + " ")
+                    for key, label in (("rules", ""), ("exceptions", "except ")):
+                        for rid in pr[key]:
+                            cited.add(rid)
+                            kind, n = rules.get(rid, ("?", 0))
+                            item += nodes.inline("", " ")
+                            item += nodes.reference("", f"{label}{rid}", refuri=f"{rel}.html#rule-{rid.lower()}",
+                                                    classes=["tidal-rule-ref", f"tidal-kind-{kind}"])
+                            item += nodes.inline("", f"\u2009({n})", classes=["tidal-index-count"])
+                    psec += item
+                loose = [r for r in rules if r not in cited]
+                if loose:
+                    item = nodes.paragraph()
+                    item += nodes.inline("", "Rules not under a principle: " + ", ".join(loose))
+                    psec += item
+                sec += psec
+            out.append(sec)
+        return out
+
+    def _pages(self, index: Path):
+        text = index.read_text()
+        m = re.search(r":::\{tidal-pages\}\n(.*?)\n:::", text, re.S)
+        if not m:
+            return
+        for name in m.group(1).split():
+            target = index.parent / f"{name}.md"
+            if name.endswith("index"):
+                yield from self._pages(index.parent / f"{name}.md")
+            elif target.exists():
+                yield target
+
+
 def in_progress_notice(app, docname, source):
     """Put a notice at the top of a spec page that has no rules yet."""
     text = source[0]
-    if docname.endswith("index") or docname == "glossary" or ":::{rule}" in text:
+    if docname.endswith("index") or docname in ("glossary", "rules") or ":::{rule}" in text:
         return
     lines = text.split("\n", 1)
     notice = (":::{note}\nThis page is in progress. Its tests exist, and its rules "
@@ -199,5 +296,6 @@ def setup(app):
     app.add_directive("rule", RuleDirective, override=True)
     app.add_role("question", question_role)
     app.add_directive("tidal-pages", PagesDirective)
+    app.add_directive("tidal-rule-index", RuleIndexDirective)
     app.connect("source-read", in_progress_notice)
     return {"version": "1", "parallel_read_safe": True}

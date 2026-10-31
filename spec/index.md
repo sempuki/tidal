@@ -31,4 +31,5 @@ expressions/index
 declarations/index
 classes/index
 glossary
+rules
 :::
