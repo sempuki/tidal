@@ -49,3 +49,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-parse-declcxx | llvm | `clang/lib/Parse/ParseDeclCXX.cpp` | sanitized | `6598dcd7f0fdef7c8cdf3d7e14846adffa6f8fcb3c4ff62aaed2b3dc238c2b46` |
 | clang-parse-exprcxx | llvm | `clang/lib/Parse/ParseExprCXX.cpp` | sanitized | `6a61327601814e49573f338da7823fdda3e96db2de40cc31fc29556da342195b` |
 | clang-parse-init | llvm | `clang/lib/Parse/ParseInit.cpp` | sanitized | `e24a7bcfad1b914a3951bed6800eb254b8adb1a4a9d9c146e0b38af4cb65a7ca` |
+| clang-sema-lookup | llvm | `clang/lib/Sema/SemaLookup.cpp` | sanitized | `6c9d6a82791d7ddf107de7d564e1f32d4e1a65a183030f1ce0aaa3f5c46af0b7` |
+| clang-sema-cxxscopespec | llvm | `clang/lib/Sema/SemaCXXScopeSpec.cpp` | sanitized | `2bb8a79d55c5133a9f675070aae5102aefbd4542d910e56fc2315b5b831d68cc` |
+| edg-lookup | edg | `src/lookup.c` | sanitized | `251e21f04cc94b0e8da1c5e1031ca3f832aaf5ec2b19bd6ff4ece4116e543af2` |
+| edg-scope-stk | edg | `src/scope_stk.c` | sanitized | `8f781d2ded6e32ec02943ab98a9ffbb1ae800812b8d6eada6484c698c7b682e4` |

@@ -221,6 +221,30 @@
       "repo": "llvm",
       "path": "clang/lib/Parse/ParseInit.cpp",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-lookup",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaLookup.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-sema-cxxscopespec",
+      "repo": "llvm",
+      "path": "clang/lib/Sema/SemaCXXScopeSpec.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-lookup",
+      "repo": "edg",
+      "path": "src/lookup.c",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-scope-stk",
+      "repo": "edg",
+      "path": "src/scope_stk.c",
+      "class": "sanitized"
     }
   ]
 }
