@@ -15,7 +15,7 @@ statements and opens a scope.
    label: `identifier` ":"
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} STMT-2
 :kind: required

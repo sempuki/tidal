@@ -10,7 +10,7 @@ it evaluates its right operand, which gives the result.
    expression: `assignment_expr` {"," `assignment_expr`}
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} COMMA-2
 :kind: required

@@ -13,7 +13,7 @@ again while a condition is true.
            :    `statement`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} LOOP-4
 :kind: required

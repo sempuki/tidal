@@ -20,7 +20,7 @@ storage duration and the storage class specifiers. Rules with the prefix
 
 `mutable` applies to class members *(referenced)*.
 
-## Static Semantics
+## Constraints
 
 :::{rule} STO-4
 :kind: required

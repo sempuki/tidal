@@ -27,7 +27,7 @@ A *direct base* is a class in the base list. An *indirect base* is a base
 of a base. A *virtual base* is a base named with `virtual`. The *most
 derived class* of an object is the class that the object was created as.
 
-## Static Semantics
+## Constraints
 
 :::{rule} DER-1
 :kind: reject

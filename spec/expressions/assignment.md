@@ -13,7 +13,7 @@ operation with the assignment.
    assign_op: "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | "&=" | "^=" | "|="
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} ASN-1
 :kind: required

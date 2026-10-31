@@ -16,7 +16,7 @@ with `begin` and `end`.
    for_range_init: `expression` | `braced_init`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} RFOR-2
 :kind: required

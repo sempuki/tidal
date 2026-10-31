@@ -21,7 +21,7 @@ An attribute specifier comes before the declaration or statement that it
 applies to. It can also come after the name of an entity in a
 {term}`declarator`.
 
-## Static Semantics
+## Constraints
 
 :::{rule} ATTR-1
 :kind: required

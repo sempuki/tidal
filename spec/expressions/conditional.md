@@ -10,7 +10,7 @@ two other operands, as the condition selects.
    conditional_expr: `logical_or_expr` ["?" `expression` ":" `assignment_expr`]
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} COND-1
 :kind: reject

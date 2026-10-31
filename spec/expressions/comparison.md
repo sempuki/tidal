@@ -13,7 +13,7 @@ three-way comparison operator `<=>` gives an ordering value.
    three_way: `shift_expr` {"<=>" `shift_expr`}
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} CMP-1
 :kind: required

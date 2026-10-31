@@ -4,7 +4,7 @@
 error. `= default` asks for the implicit definition of a special member
 function *(classes referenced)*.
 
-## Static Semantics
+## Constraints
 
 :::{rule} DEL-1
 :kind: reject

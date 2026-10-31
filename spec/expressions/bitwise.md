@@ -15,7 +15,7 @@ to the built-in operators. An overloaded operator is a function call
    complement: "~" `unary_expr`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} BIT-1
 :kind: required

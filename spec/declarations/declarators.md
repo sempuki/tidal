@@ -19,7 +19,7 @@ can apply at each level.
    cv: "const" | "volatile"
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} DCL-1
 :kind: required

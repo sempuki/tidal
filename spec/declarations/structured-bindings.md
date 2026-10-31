@@ -14,7 +14,7 @@ a data member of a class, or an element from the tuple protocol.
    cv: "const" | "volatile"
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} SB-2
 :kind: reject

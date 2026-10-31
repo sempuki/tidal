@@ -10,7 +10,7 @@ argument uses the default argument.
    parameter: `decl_specifiers` `declarator` ["=" `expression`]
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} DEFARG-1
 :kind: required

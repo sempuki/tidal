@@ -15,7 +15,7 @@ The operators `!` and `~` are on the logical and bitwise pages.
              : | "noexcept" "(" `expression` ")"
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} UN-1
 :kind: required

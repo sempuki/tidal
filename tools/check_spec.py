@@ -33,7 +33,7 @@ OPTION = re.compile(r"^:(kind|tests):\s*(.*)$")
 SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Which classes each segment may hold (docs/style-guide.md, decision 0016).
 SEGMENT_KINDS = {
-    "Static Semantics": {"required", "reject", "withdrawn"},
+    "Constraints": {"required", "reject", "withdrawn"},
     "Dynamic Semantics": {"required", "withdrawn"},
     "Undefined Behavior": {"undefined", "withdrawn"},
     "Implementation Requirements": {"impl-defined", "unspecified", "no-diagnostic", "withdrawn"},

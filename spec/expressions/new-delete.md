@@ -15,7 +15,7 @@ object and frees its storage.
               : ["::"] "delete" "[" "]" `expression`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} NEW-1
 :kind: required

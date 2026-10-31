@@ -12,7 +12,7 @@ function call *(overload resolution referenced)*.
    operand: `unary_expression`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} MUL-1
 :kind: required

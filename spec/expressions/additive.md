@@ -11,7 +11,7 @@ into the same array.
    add_expr: `mul_expr` { ("+" | "-") `mul_expr` }
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} ADD-1
 :kind: required

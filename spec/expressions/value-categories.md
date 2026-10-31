@@ -4,7 +4,7 @@ Each expression has a type and a {term}`value category`. The category is
 lvalue, xvalue, or prvalue. It controls what a program can do with the
 result, and when a temporary object exists.
 
-## Static Semantics
+## Constraints
 
 :::{rule} VC-1
 :kind: required

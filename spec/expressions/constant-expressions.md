@@ -4,7 +4,7 @@ A constant expression is an expression that the implementation evaluates
 during translation. {term}`Constant evaluation <constant evaluation>`
 permits most operations. This page lists the operations that it rejects.
 
-## Static Semantics
+## Constraints
 
 :::{rule} CE-1
 :kind: required

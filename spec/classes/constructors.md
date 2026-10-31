@@ -31,7 +31,7 @@ Depends on: class definitions and members, access control, initialization,
 A *member initializer list* is the list of `mem_init` after the colon. A
 *delegating constructor* has a `mem_init` that names its own class.
 
-## Static Semantics
+## Constraints
 
 :::{rule} CTOR-1
 :kind: reject

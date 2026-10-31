@@ -23,7 +23,7 @@ referenced)*:
    designator: "." `name`
 ```
 
-## Static Semantics
+## Constraints
 
 :::{rule} LIST-1
 :kind: required

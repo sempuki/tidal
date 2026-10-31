@@ -41,7 +41,7 @@ out a part that has no content.
 |---|---|---|
 | Title and summary | One or two sentences that say what the page covers. | No |
 | `Syntax` | A `productionlist` grammar block. | Yes |
-| `Static Semantics` | Rules that an implementation checks before the program runs. | Yes |
+| `Constraints` | Rules that an implementation checks before the program runs. | Yes |
 | `Dynamic Semantics` | What the program does when it runs. | Yes |
 | `Undefined Behavior` | Conditions that have no requirements. | Yes |
 | `Implementation Requirements` | Implementation-defined and unspecified behavior, and errors that an implementation need not diagnose. | Yes |
@@ -49,7 +49,7 @@ out a part that has no content.
 | `Examples` | Code, with short comments. | No |
 | `Evidence` | Compiler results and divergences that support the rules. | No |
 
-The `Static Semantics` segment states a general requirement: an
+The `Constraints` segment states a general requirement: an
 implementation rejects a program that does not obey a rule in it. A rule
 need not repeat it.
 

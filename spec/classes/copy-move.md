@@ -26,7 +26,7 @@ The four functions are the *copy and move functions* of a class. A
 *user-declared* function is one that the class declares, including with
 `= default` or `= delete`.
 
-## Static Semantics
+## Constraints
 
 :::{rule} CPY-1
 :kind: required

@@ -3,7 +3,7 @@
 A function with `auto` or `decltype(auto)` as its return type gets its
 return type from its `return` statements.
 
-## Static Semantics
+## Constraints
 
 :::{rule} RET-1
 :kind: required

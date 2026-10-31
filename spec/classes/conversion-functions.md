@@ -21,7 +21,7 @@ resolution *(referenced)*.
 The *target type* of a conversion function is its `conversion_type`. The
 name of the function is `operator` followed by the target type.
 
-## Static Semantics
+## Constraints
 
 :::{rule} CVF-1
 :kind: required
