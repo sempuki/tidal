@@ -36,7 +36,7 @@ from matrix import BUILD, TESTS, Compiler  # noqa: E402
 EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
 # Bump when outcome() changes how it computes a result, so cached results
 # from the old logic are not reused.
-OUTCOME_VERSION = 3
+OUTCOME_VERSION = 4
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
@@ -153,16 +153,19 @@ def diagnostics(stderr: str) -> list[str]:
 
 
 def failure(proc: subprocess.CompletedProcess) -> str:
-    """All error messages of a failed compile or link, joined with " / ".
+    """All error and note messages of a failed compile or link, joined with " / ".
 
     The whole list is kept, so a tidal-error pattern can match any of them.
+    Notes count: Clang and EDG name the cause of a failed constant
+    evaluation only in a note.
     """
     diags = diagnostics(proc.stderr) or [" ".join(proc.stderr.split())[:200]]
-    return " / ".join(d for d in diags if not d.startswith("note:")) or " / ".join(diags)
+    return " / ".join(diags)
 
 
 def short(detail: str) -> str:
-    return " / ".join(detail.split(" / ")[:2])
+    errors = [d for d in detail.split(" / ") if not d.startswith("note:")] or detail.split(" / ")
+    return " / ".join(errors[:2])
 
 
 def run_binary(c: Compiler, out: str) -> tuple[str, str]:
@@ -272,7 +275,7 @@ def main() -> int:
             return True
         if got != t.expect(c):
             return False
-        pattern = t.error_pattern(c) if got == "reject" else None
+        pattern = t.error_pattern(c) if got in {"reject", "link-fail"} else None
         return pattern is None or re.search(pattern, detail, re.IGNORECASE) is not None
 
     failures, rows, differs = 0, [], []
@@ -284,7 +287,7 @@ def main() -> int:
         for c in bad:
             got, detail = results[(t, c)]
             if got == t.expect(c):
-                line = (f"{t.name} [{c.id}]: rejected, but no error matches "
+                line = (f"{t.name} [{c.id}]: {got}, but no error matches "
                         f"/{t.error_pattern(c)}/  {short(detail)}")
             else:
                 line = f"{t.name} [{c.id}]: expected {t.expect(c)}, got {got}  {short(detail)}"

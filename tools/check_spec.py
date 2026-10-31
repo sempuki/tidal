@@ -158,8 +158,8 @@ def main() -> int:
         for key in test.errors:
             if key and key not in known:
                 errors.append(f"{test.name}: tidal-error-{key} names no compiler or family")
-        if test.errors and "reject" not in [test.default, *test.overrides.values()]:
-            errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject")
+        if test.errors and not {"reject", "link-fail"} & {test.default, *test.overrides.values()}:
+            errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject or fail to link")
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")
