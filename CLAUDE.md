@@ -8,7 +8,7 @@ Read these before you change anything:
 - `docs/setup.md`: what a machine needs.
 - `docs/pipeline.md` and `docs/style-guide.md`: how a page is made and
   written.
-- `docs/exercises.md`: the spec-only exercises and their prompts.
+- `docs/exercises.md`: the clean-room exercises and their prompts.
 
 ## Writing
 

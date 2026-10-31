@@ -5,16 +5,16 @@ This document says who may read which material and how the output is checked.
 
 ## Roles
 
-**Writer.** Drafts rules and tests. In the target setup this is an LLM pipeline
+**Spec writer.** Drafts rules and tests. In the target setup this is an LLM pipeline
 plus human reviewers who have not studied the ISO text.
 
 **Checker.** Compares Tidal text with the reference corpus. This role is
 filled by `tools/similarity.py` (decision 0011). The tool reads the corpus
-and reports only Tidal text, so anyone may run it, including the writer.
+and reports only Tidal text, so anyone may run it, including the spec writer.
 Nobody needs to read the corpus.
 
 **Reviewer.** Reads the reference material and Tidal, and reports gaps and
-possible errors to the writer as prose summaries only (decisions 0019 and
+possible errors to the spec writer as prose summaries only (decisions 0019 and
 0020). A reviewer is a source reader under `AGENTS.md` and never writes or
 changes a file in the repository.
 
@@ -32,7 +32,7 @@ input is recorded in `inputs/MANIFEST.md`.
 
 ### Clean
 
-The writer may use these directly.
+The spec writer may use these directly.
 
 - Behavior of an implementation: whether a program compiles, its diagnostics,
   its output, and the result of constant evaluation.
@@ -41,7 +41,7 @@ The writer may use these directly.
 
 ### Sanitized
 
-The writer may use these only after they pass through `tools/sanitize.py`,
+The spec writer may use these only after they pass through `tools/sanitize.py`,
 which removes every comment and every string that cites the standard. Only
 permissively licensed sources are inputs (decision 0021).
 
@@ -56,7 +56,7 @@ echo standard terms (`isLValue`, `CheckConditionalOperands`).
 
 ### Forbidden
 
-The writer must not read these.
+The spec writer must not read these.
 
 - The ISO standard, its working drafts, and any rendering of them
   (eel.is/c++draft, timsong-cpp.github.io, the `cplusplus/draft` sources).
@@ -68,7 +68,7 @@ The writer must not read these.
 - Language-lawyer answers on Q&A sites, which usually quote the standard.
 - Implementation sources that are not under a permissive license, such as
   GCC. Tidal uses GCC through its behavior. A source reader can read GCC
-  source and give the writer a summary under `AGENTS.md`.
+  source and give the spec writer a summary under `AGENTS.md`.
 
 ## Similarity check
 
@@ -83,14 +83,14 @@ rule IDs, never draft text.
 
 A rule is flagged when it shares a run of 8 or more words with the draft
 (after normalization) or its overlap score exceeds the threshold in the tool.
-The writer rewrites flagged rules and runs the tool again. Both reports are
+The spec writer rewrites flagged rules and runs the tool again. Both reports are
 committed.
 
 ## Records
 
 For each section the repository holds:
 
-- the input manifest entries the writer used,
+- the input manifest entries the spec writer used,
 - the rules and tests, committed before the similarity check,
 - the similarity report,
 - any rewrites, committed separately with the report that triggered them,
@@ -101,7 +101,8 @@ For each section the repository holds:
 
 | Role | Filled by |
 |---|---|
-| Writer | Claude (an LLM from Anthropic), working only inside this repository and `inputs/clean/` |
+| Spec writer | Claude (an LLM from Anthropic), working only inside this repository and `inputs/clean/` |
+| Clean-room reader | Separate agents in the role of a programmer, an implementer, or a planner, reading only Tidal's files (decisions 0029 to 0031) |
 | Checker | `tools/similarity.py` |
 | Reviewer | A separate agent or person that does not write the sections it reviews |
 | Contributors | Anyone, through pull requests to `questions/` and the spec |

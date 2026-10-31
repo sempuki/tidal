@@ -19,7 +19,7 @@ the same packages under their own names.
 
 ## Rust
 
-The spec-only front end in `frontend/` builds with stable Rust and no
+The clean-room front end in `frontend/` builds with stable Rust and no
 crates (decision 0029):
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

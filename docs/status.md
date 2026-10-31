@@ -142,12 +142,12 @@ forward-progress rule belongs with threads, which are out of scope.
    Foundations chapter and two topic pages, and decide whether rules also
    want short annotations (decision 0024).
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-3. Act on the spec-only findings (`reports/spec-only/`): the W0 pilot
+3. Act on the clean-room findings (`reports/clean-room/`): the W0 pilot
    and the Foundations Predict batches. Each claimed behavior gets a
    probe first.
 4. Run the Predict batches for the expressions pages, then the Write
    suites in the order of `docs/exercises.md`.
-5. Integrate the spec-only front end in `frontend/` and its report.
+5. Integrate the clean-room front end in `frontend/` and its report.
 6. Add EDG's 32-bit configuration as a second EDG matrix entry.
 7. Read EDG's sanitized source for the `if` section. GCC's source is read
    only by source readers (decision 0021).
@@ -167,5 +167,5 @@ typical of a simple operator family.
   that size each.
 
 That totals about 66 section-units. Drafting one unit takes one working
-session for the writer. Review and adjudication are not included and are
+session for the spec writer. Review and adjudication are not included and are
 expected to dominate once reviewers are involved.

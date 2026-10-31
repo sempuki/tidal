@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and score Predict batches for spec-only exercises (decision 0030).
+"""Build and score Predict batches for clean-room exercises (decision 0030).
 
 Usage:
     tools/exercises.py predict PAGE OUT     # e.g. expressions/additive build/exercises/R-additive

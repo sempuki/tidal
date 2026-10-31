@@ -1,12 +1,12 @@
-# Spec-only exercises
+# Clean-room exercises
 
-Spec-only readers (decision 0029) check the specification by using it.
+Clean-room readers (decision 0029) check the specification by using it.
 This page lists the exercises they run. Decision 0030 sets the scheme.
 
 Every exercise has three properties: a **kind**, a **persona**, and the
 **pages** it targets. The reader reads only Tidal's own files, writes
 findings by rule ID, and never cites ISO wording. Reports go under
-`reports/spec-only/<exercise-id>/`.
+`reports/clean-room/<exercise-id>/`.
 
 ## 1. Kinds
 
@@ -106,9 +106,9 @@ catalog counts as done.
 
 | Exercise | State | Report |
 |---|---|---|
-| W0 | done | `reports/spec-only/java-programmer/` |
-| Front end | running | `reports/spec-only/rust-frontend/` |
-| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/spec-only/R-foundations/` |
+| W0 | done | `reports/clean-room/java-programmer/` |
+| Front end | running | `reports/clean-room/rust-frontend/` |
+| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | All others | planned | |
 
 ## 8. Prompts

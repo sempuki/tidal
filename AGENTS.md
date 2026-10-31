@@ -3,7 +3,7 @@
 These rules apply to every agent, human or AI, that works on Tidal. They
 keep text from protected sources out of Tidal. Decision 0020 records why.
 
-## Two kinds of agent
+## Three kinds of agent
 
 A **source reader** is an agent that has read material that can contain
 protected specification text. This material includes:
@@ -17,17 +17,26 @@ protected specification text. This material includes:
   as GCC, sanitized or not,
 - posts and answers that quote any of the above.
 
-A **writer** is an agent that has not read such material.
+A **spec writer** is an agent that has not read such material. It writes
+the specification text, the tests, the tools, and the documentation.
+
+A **clean-room reader** is an agent that has not read such material and
+reads only Tidal's own files. It uses the specification the way its
+audience would: it writes programs from it, predicts test outcomes,
+builds the front end in `frontend/`, or plans what to specify next. It
+reports findings to the spec writers and writes only in its own
+exercise directories (decisions 0029 to 0031).
 
 An agent that reads such material becomes a source reader for the rest of
-its session or context. It cannot become a writer again in that session.
+its session or context. It cannot become a spec writer or a clean-room
+reader again in that session.
 
 ## Rules
 
 1. A source reader must not write or change any file in this repository.
    This includes specification text, tests, examples, the glossary,
    questions, tools, and documentation.
-2. A source reader gives information to a writer only as a summary.
+2. A source reader gives information to a spec writer only as a summary.
 3. A summary contains only descriptions of language behavior, gaps, and
    doubts, written in the source reader's own words.
 4. A summary must not contain:
@@ -35,22 +44,22 @@ its session or context. It cannot become a writer again in that session.
    - quoted or paraphrased text from a source,
    - proposed wording for Tidal rules,
    - section numbers or stable names from a source.
-5. A writer makes all wording and all code itself. It uses only these
+5. A spec writer makes all wording and all code itself. It uses only these
    inputs:
    - summaries from source readers,
    - the behavior and diagnostics of implementations,
    - sanitized, permissively licensed implementation sources in
      `inputs/clean/`,
    - Tidal's own text and tests.
-6. Before a writer reads a summary, `tools/similarity.py` checks the
+6. Before a spec writer reads a summary, `tools/similarity.py` checks the
    summary against the reference corpus. A summary with a flagged passage
    goes back to the source reader.
-7. Summaries that a writer uses are committed under `reports/review/`.
+7. Summaries that a spec writer uses are committed under `reports/review/`.
    Each one names the role of the agent that wrote it.
 
-## What a writer can do
+## What a spec writer can do
 
-A writer can compile and run programs on any implementation, read
+A spec writer can compile and run programs on any implementation, read
 compiler diagnostics, read the sanitized sources, and read every file in
 this repository. `docs/clean-room.md` gives the full input rules, and
 `docs/style-guide.md` gives the rules for writing specification text.
@@ -62,7 +71,7 @@ These practices apply to every agent that changes the repository.
 - **Keep going.** Work through `docs/status.md` next steps in order.
   When a step ends, start the next one.
 - **Do not wait for decisions.** When the compilers disagree or a
-  classification is unclear, adopt the writer's answer as provisional,
+  classification is unclear, adopt the spec writer's answer as provisional,
   record it as a question in `questions/`, and continue. Ask the
   maintainer only before an action that is new in kind and reaches
   outside the repository, such as contacting another project.
@@ -72,7 +81,7 @@ These practices apply to every agent that changes the repository.
 - **Documents state the present.** Status pages, decisions, and Evidence
   segments say where the project is and what comes next. The story of
   how a change came about goes in its commit message. Name roles
-  (maintainer, writer, source reader, contributor), not people.
+  (maintainer, spec writer, source reader, contributor), not people.
 - **Describe the process plainly.** Documents and commit messages record
   inputs, tools, roles, and steps as facts. They do not evaluate them.
 - **One integrator.** When several agents work at once, each writes only
@@ -80,8 +89,8 @@ These practices apply to every agent that changes the repository.
   and decisions and makes the commits (decision 0018). A subagent that
   cannot write its report returns it as text, and the integrator saves
   it.
-- **Check reports before use.** A review summary or a spec-only report
-  passes `tools/similarity.py` before a writer acts on it (decisions
+- **Check reports before use.** A review summary or a clean-room report
+  passes `tools/similarity.py` before a spec writer acts on it (decisions
   0019, 0029).
 
 ### Shell habits

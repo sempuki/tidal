@@ -22,14 +22,14 @@ See [docs/charter.md](docs/charter.md).
 | Path | Contents |
 |---|---|
 | `CONTRIBUTING.md` | Roles, how to claim work, the pipeline in short, and what a change needs before merge |
-| `AGENTS.md` | Rules for all agents: source readers give writers summaries only |
+| `AGENTS.md` | Rules for all agents: source readers give spec writers summaries only |
 | `docs/charter.md` | Goals, scope, and non-goals |
 | `docs/setup.md` | What a machine needs to run every check |
 | `docs/clean-room.md` | Who may read what, and how contamination is checked |
 | `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
 | `docs/spec-format.md` | Rule classes and test directives |
 | `docs/pipeline.md` | The step-by-step process for producing a section |
-| `docs/exercises.md` | Spec-only exercises that check the specification by using it |
+| `docs/exercises.md` | Clean-room exercises that check the specification by using it |
 | `docs/decisions/` | One file per design decision, numbered in order |
 | `docs/status.md` | Where the project stands and what comes next |
 | `spec/` | The Tidal specification text; `spec/index.md` is the site front page and table of contents |
