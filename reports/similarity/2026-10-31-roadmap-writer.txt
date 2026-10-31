@@ -1,0 +1,20 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   roadmap.md:Roadmap               longest=0   overlap=0.00
+ok   roadmap.md:Where the views agree longest=0   overlap=0.00
+ok   roadmap.md:Phase 1: repair what exists longest=0   overlap=0.00
+ok   roadmap.md:Phase 2: foundations that later pages ne longest=0   overlap=0.00
+ok   roadmap.md:Phase 3: lookup and overload resolution longest=0   overlap=0.00
+ok   roadmap.md:Phase 4: templates    longest=0   overlap=0.00
+ok   roadmap.md:Parallel lanes        longest=0   overlap=0.00
+ok   roadmap.md:Deferred              longest=0   overlap=0.02
+ok   roadmap.md:Method controls for phases 3 and 4 longest=0   overlap=0.00
+ok   writer.md:Roadmap: what to write next, from the cl longest=0   overlap=0.00
+ok   writer.md:Baseline numbers       longest=0   overlap=0.00
+ok   writer.md:1. Candidate items     longest=0   overlap=0.00
+ok   writer.md:Format fit             longest=0   overlap=0.00
+ok   writer.md:2. Recommended writing order longest=0   overlap=0.00
+ok   writer.md:3. Pipeline and tooling work, ranked longest=0   overlap=0.00
+ok   writer.md:4. Risks to the method longest=0   overlap=0.00
+
+0 flagged

@@ -103,7 +103,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and eleven questions are open for opinions, each with a provisional answer the
+One hundred and twelve questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -138,19 +138,23 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-1. Ask the reviewer who prompted the principles-first change to read the
-   Foundations chapter and two topic pages, and decide whether rules also
-   want short annotations (decision 0024).
-2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-3. Act on the clean-room findings (`reports/clean-room/`): the W0 pilot
-   and the Foundations Predict batches. Each claimed behavior gets a
-   probe first.
-4. Run the Predict batches for the expressions pages, then the Write
-   suites in the order of `docs/exercises.md`.
-5. Integrate the clean-room front end in `frontend/` and its report.
-6. Add EDG's 32-bit configuration as a second EDG matrix entry.
-7. Read EDG's sanitized source for the `if` section. GCC's source is read
-   only by source readers (decision 0021).
+`docs/roadmap.md` orders the work (decision 0033). The current phase is
+phase 1, repair what exists:
+
+1. Fix the contradictions between rules (roadmap item A).
+2. Decide and check that a reject test cites a `reject` rule, then split
+   prohibitions out of `required` rules (item C).
+3. Replace stale *(referenced)* markers with rule links (item B).
+4. Finish constant evaluation: initialized subobjects, "literal type",
+   and an index of `undefined` rules (item D).
+5. The process checks and status columns of phase 1.
+
+Waiting on the maintainer:
+
+- Ask the reviewer who prompted the principles-first change to read the
+  Foundations chapter and two topic pages (decision 0024).
+- Approve reporting the EDG behavior in Q-0002 and Q-0003 to the EDG
+  project.
 
 ## Size estimate
 

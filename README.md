@@ -32,6 +32,7 @@ See [docs/charter.md](docs/charter.md).
 | `docs/exercises.md` | Clean-room exercises that check the specification by using it |
 | `docs/decisions/` | One file per design decision, numbered in order |
 | `docs/status.md` | Where the project stands and what comes next |
+| `docs/roadmap.md` | The order of the work ahead, from four clean-room views |
 | `spec/` | The Tidal specification text; `spec/index.md` is the site front page and table of contents |
 | `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
