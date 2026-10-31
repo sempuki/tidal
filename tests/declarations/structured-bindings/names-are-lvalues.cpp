@@ -1,4 +1,4 @@
-// tidal-rules: SB-2
+// tidal-rules: SB-12
 // tidal-expect: run
 // tidal-note: Gap review 2026-10-31.
 template <class A, class B> constexpr bool same = false;
