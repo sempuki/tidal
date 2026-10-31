@@ -13,10 +13,18 @@ A comparison compares two values and gives a `bool` prvalue
 ({principle}`VC-P1`). Arithmetic operands are first brought to one
 common type by the {term}`usual arithmetic conversions`, and the
 comparison sees the converted values, so a negative `int` compared with
-an `unsigned` has become a large unsigned value. The relational
-operators bind more tightly than the equality operators, and `<=>` more
-tightly than both, and each group associates to the left, which is why
-`a < b < c` compares a `bool` with `c`. The two operands are not ordered
+an `unsigned` has become a large unsigned value. The operators bind in
+three groups, and each group associates to the left:
+
+```text
+   binds more tightly
+         <=>
+         <   >   <=   >=
+         ==  !=
+   binds less tightly
+```
+
+So `a < b < c` compares a `bool` with `c`. The two operands are not ordered
 with respect to each other ({rule}`SEQ-8`).
 :::
 
@@ -43,9 +51,14 @@ compares their addresses.
 :rules: CMP-7 CMP-15 CMP-22
 :exceptions: CMP-8 CMP-20
 
-Pointers have an order only inside one thing: elements of one array in
-index order, with the position past the end last, and members of one
-object in declaration order. Outside one thing there is no order, so a
+Pointers have an order only inside one thing:
+
+| Pointers to | Order |
+|---|---|
+| Elements of one array | Index order, with the position past the end last |
+| Members of one object | Declaration order |
+
+Outside one thing there is no order, so a
 relational comparison of pointers to unrelated objects gives an
 unspecified result, and the two directions need not even agree. Equality
 is different. Two pointers are equal when they hold one address, which
@@ -67,10 +80,13 @@ greater than anything. So every comparison with a NaN is `false`, except
 :::{principle} CMP-P5
 :rules: CMP-12 CMP-13 CMP-17 CMP-18 CMP-25
 
-`<=>` compares once and gives an ordering value: `strong_ordering` where
-equal values are the same, as for integers and object pointers, and
-`partial_ordering` where some values are unordered or equal values can
-differ, as for floating-point types, with NaN as the unordered case.
+`<=>` compares once and gives an ordering value.
+
+| Result | Used where | Examples |
+|---|---|---|
+| `strong_ordering` | Equal values are the same | Integers, object pointers |
+| `partial_ordering` | Some values are unordered, or equal values can differ | Floating-point types, with NaN as the unordered case |
+
 Because `<=>` stands in for all six comparisons, its operands must be
 comparable without loss. These are rejected:
 

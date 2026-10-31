@@ -43,9 +43,17 @@ function declared twice.
 :rules: NAM-2 NAM-4 NAM-12 NAM-9
 
 A use of a name searches the scope that contains the use, then the
-scope that contains that one, and so on outward. The search stops at the
-first scope that declares the name, whatever kind of thing the name is.
-So an inner declaration hides an outer one, and a variable in an inner
+scope that contains that one, and so on outward:
+
+```text
+outermost scope                  searched last
+  ...
+    scope around that one        searched second
+      scope that holds the use   searched first
+```
+
+The search stops at the first scope that declares the name, whatever
+kind of thing the name is. So an inner declaration hides an outer one, and a variable in an inner
 scope hides a function of the same name outside it. A qualified name
 skips the search and goes to the scope it names, which is how a program
 reaches a hidden name. A namespace is a scope that a program can reopen
@@ -66,12 +74,16 @@ arguments of fundamental type.
 :::{principle} NAM-P4
 :rules: NAM-6 NAM-7 NAM-10 NAM-11
 
-Two scopes depart from the plain model. In a class body, member function
-bodies and default member initializers see every member of the class,
-also those declared later, because the class is complete there. The
-other parts of the body see only earlier members. Labels have their own
-scope, the whole function, and their own name space, so a label and a
-variable can share a name.
+Two scopes depart from the plain model. In a class body, what a part
+sees depends on the part:
+
+| Part of a class body | Members it sees |
+|---|---|
+| Member function bodies and default member initializers | Every member of the class, also those declared later, because the class is complete there |
+| The other parts | Only earlier members |
+
+Labels have their own scope, the whole function, and their own name
+space, so a label and a variable can share a name.
 :::
 
 ## Constraints

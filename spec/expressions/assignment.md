@@ -31,8 +31,14 @@ so the class decides what its left operand can be.
 
 A compound assignment `E1 op= E2` means `E1 = E1 op E2`, with one
 difference: `E1` is evaluated once. The read, the operation, and the
-write are one evaluation, so a function call that is unordered with it
-runs either before the read or after the write, never in between.
+write are one evaluation. A function call `f()` that is unordered with
+it runs before the read or after the write:
+
+```text
+   either:  f()  then  [ read E1 --> op --> write E1 ]
+   or:      [ read E1 --> op --> write E1 ]  then  f()
+   never:   read E1 --> f() --> write E1
+```
 :::
 
 :::{principle} ASN-P3

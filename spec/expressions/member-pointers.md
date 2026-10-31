@@ -47,14 +47,12 @@ exists only to be called.
 Conversions between pointers to members run the opposite way to
 conversions between pointers to objects.
 
-- A pointer to a member of a base works with every derived object, so
-  base to derived is implicit.
-- Derived to base is not, because a base object may lack the member, so
-  it needs `static_cast`.
-- Through a virtual base the offset of the member is not known from the
-  type, so no conversion exists.
-- A pointer to member is not an address, so it never converts to an
-  ordinary pointer, and data members and member functions stay apart.
+| Conversion | Allowed by | Why |
+|---|---|---|
+| Base to derived | Implicit conversion | A pointer to a member of a base works with every derived object. |
+| Derived to base | `static_cast` only | A base object may lack the member. |
+| Through a virtual base | Nothing | The offset of the member is not known from the type. |
+| To an ordinary pointer, or between data members and member functions | Nothing | A pointer to member is not an address. |
 
 The qualifier rules follow those of ordinary pointers.
 :::

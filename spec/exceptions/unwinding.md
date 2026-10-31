@@ -29,27 +29,38 @@ block's automatic objects in the reverse of their construction order
 ({principle}`OBJ-P2`). The search for a handler runs that exit for
 every block between the throw and the handler, innermost first, so by
 the time the handler runs, nothing that the thrown-from code created on
-the way still exists. Objects that the throw did not reach are never
-created. Static objects are not part of any of those blocks, so
-unwinding leaves them alone, and an exception that leaves the
-initialization of a static local variable leaves the variable not yet
-initialized, so the next call tries again.
+the way still exists:
+
+```text
+try {                        block C
+  {                          block B
+    {                        block A
+      throw ...;   ------->  1. A's automatic objects end
+    }                        2. B's automatic objects end
+  }                          3. C's automatic objects end
+}
+catch (...) {                4. the handler runs
+}
+```
+
+Objects that the throw did not reach are never created. Static objects
+are not part of any of those blocks, so unwinding leaves them alone, and
+an exception that leaves the initialization of a static local variable
+leaves the variable not yet initialized, so the next call tries again.
 :::
 
 :::{principle} UNW-P2
 :rules: UNW-2 UNW-3
 
 A constructor that throws has built some parts and not others, and only
-the parts that exist can be ended ({principle}`OBJ-P1`). So the bases
-and members that it completed are destroyed, in reverse, and the
-object's own destructor never runs, because the object never existed.
-The same holds for the elements of an array built so far. A delegating
-constructor whose target completed has a complete object, so its
-destructor does run. When a `new` expression's constructor throws, the
-object never existed but its storage does, so the storage goes back
-through the deallocation function that matches the allocation
-function, placement arguments included, and only if such a match
-exists.
+the parts that exist can be ended ({principle}`OBJ-P1`).
+
+| What throws | What happens |
+|---|---|
+| A constructor | The bases and members that it completed are destroyed, in reverse. The object's own destructor never runs, because the object never existed. |
+| The construction of an array | The same holds for the elements built so far. |
+| A delegating constructor whose target completed | The object is complete, so its destructor does run. |
+| The constructor in a `new` expression | The object never existed, but its storage does. The storage goes back through the deallocation function that matches the allocation function, placement arguments included, and only if such a match exists. |
 :::
 
 :::{principle} UNW-P3

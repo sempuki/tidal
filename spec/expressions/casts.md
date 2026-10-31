@@ -11,12 +11,11 @@ and `T{e}`. `dynamic_cast` applies to classes ({rule}`VIRT-10`).
 
 Each named cast has one job, so a reader sees what a cast is for.
 
-- `static_cast` does the conversions that an initialization could do,
-  and the inverses of implicit conversions that are safe to undo, such
-  as base to derived and `void*` to an object pointer.
-- `const_cast` changes qualifiers and nothing else, and its result is
-  the same object.
-- `reinterpret_cast` changes how storage is read and nothing else.
+| Cast | Job |
+|---|---|
+| `static_cast` | The conversions that an initialization could do. The inverses of implicit conversions that are safe to undo, such as base to derived and `void*` to an object pointer. |
+| `const_cast` | Changes qualifiers and nothing else. Its result is the same object. |
+| `reinterpret_cast` | Changes how storage is read and nothing else. |
 
 A cast that would need two jobs, such as a change of qualifiers inside a
 `static_cast`, is rejected, because the reader could not tell which was
@@ -29,12 +28,13 @@ intended.
 
 The older cast notations are defined by the named casts.
 
-- `(T)e` and `T(e)` try the named casts in a fixed order and take the
-  first that works.
-- `T{e}` is list initialization, so it refuses to narrow.
-- `T(a, b)` is construction.
-- `auto(e)` makes a plain prvalue copy.
-- `T()` makes a value-initialized prvalue.
+| Notation | Meaning |
+|---|---|
+| `(T)e`, `T(e)` | Tries the named casts in a fixed order and takes the first that works |
+| `T{e}` | List initialization, so it refuses to narrow |
+| `T(a, b)` | Construction |
+| `auto(e)` | A plain prvalue copy |
+| `T()` | A value-initialized prvalue |
 
 The one power the old notation keeps for itself is a conversion to or
 from a base that is not accessible.

@@ -33,7 +33,19 @@ an alternative spelling as a word.
 
 The built-in `&&` and `||` evaluate the left operand first, completely,
 and evaluate the right operand only when the left one has not already
-decided the result. So the right operand can depend on the left one
+decided the result:
+
+```text
+   a && b                        a || b
+
+   evaluate a fully              evaluate a fully
+     |                             |
+     +-- false --> done            +-- true  --> done
+     |                             |
+     +-- true  --> evaluate b      +-- false --> evaluate b
+```
+
+So the right operand can depend on the left one
 having been true or false, and during constant evaluation an operation
 that is never reached is never checked. An overloaded `&&` or `||` is
 an ordinary function call, so it evaluates both operands, left first.

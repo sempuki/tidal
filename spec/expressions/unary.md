@@ -24,9 +24,17 @@ operand of `+`, which only converts it, and not of `-`.
 :::{principle} UN-P2
 :rules: UN-5 UN-6 UN-7 UN-8 UN-9
 
-`&` and `*` go between an object and its address. `&` takes an lvalue,
-because only an object with an identity has an address
-({principle}`VC-P1`), and gives a pointer with the object's
+`&` and `*` go between an object and its address:
+
+```text
+                 &
+   object  ------------>  pointer
+   (lvalue)  <-----------
+                 *
+```
+
+`&` takes an lvalue, because only an object with an identity has an
+address ({principle}`VC-P1`), and gives a pointer with the object's
 cv-qualifiers. `*` takes a pointer and gives back the object as an
 lvalue, so the two undo each other. A pointer to `void` points at no
 particular object and cannot be dereferenced. A pointer that points at
@@ -44,9 +52,15 @@ pointers include:
 Prefix `++` and `--` change their operand in place by one and hand the
 same object back as an lvalue. So the operand has to be something a
 program can change, and its type has to have a notion of "one more".
-Numbers have it, apart from `bool`, which has only two values. A pointer
-has it when the pointed-to type is complete, since one more then means
-the next element (ADD-P3). An enumeration does not have it. Where the
+
+| Operand type | Has "one more" |
+|---|---|
+| A number other than `bool` | Yes |
+| `bool` | No. It has only two values. |
+| A pointer to a complete type | Yes. One more means the next element (ADD-P3). |
+| An enumeration | No |
+
+Where the
 step overflows the type or leaves the array, the result is undefined,
 as it is for `+` and `-`.
 :::

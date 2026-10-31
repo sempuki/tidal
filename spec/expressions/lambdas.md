@@ -32,13 +32,13 @@ happens.
 Captures are how the closure reaches the automatic variables of the
 enclosing function.
 
-- A capture by copy is a member that the enclosing variable initializes
-  when the lambda expression is evaluated, so later changes to the
-  variable are invisible.
-- A capture by reference is an alias of the variable itself.
-- An init capture is a member with any initializer.
-- `this` is captured as a pointer, or the object is copied with
-  `*this`.
+| Capture | What the closure holds |
+|---|---|
+| By copy | A member that the enclosing variable initializes when the lambda expression is evaluated. Later changes to the variable are invisible. |
+| By reference | An alias of the variable itself |
+| Init capture | A member with any initializer |
+| `this` | A pointer |
+| `*this` | A copy of the object |
 
 The captures exist before the call operator is declared, so its
 parameter list and return type can see them.
@@ -64,9 +64,12 @@ enclosing lambda in turn. These are rejected:
 :rules: LAM-10 LAM-11 LAM-25 LAM-26
 
 A closure with no captures carries no state, so it is as good as a
-function. It converts to a pointer to function, and its type can be
-default-constructed and assigned. A closure with captures is an object
-with state, and must be made from the lambda expression.
+function. A closure with captures is an object with state.
+
+| Closure | Converts to a pointer to function | Type can be default-constructed and assigned |
+|---|---|---|
+| No captures | Yes | Yes |
+| With captures | No | No. It must be made from the lambda expression. |
 :::
 
 :::{principle} LAM-P5

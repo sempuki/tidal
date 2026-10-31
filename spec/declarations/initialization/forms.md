@@ -10,11 +10,15 @@ and arrays. Initialization by constructors is on the page on
 :rules: INIT-2 INIT-4 INIT-7 INIT-5 INIT-8
 
 An initializer gives an object its first value by converting the
-initializer to the object's type ({principle}`VC-P2`). `=` and
-parentheses mean the same conversion. The one difference is that `=` is
-copy-initialization, so it does not use an `explicit` constructor. An
-array takes a list of values, one per element. Empty braces and `T()`
-mean the zero of the type.
+initializer to the object's type ({principle}`VC-P2`).
+
+| Initializer | Meaning |
+|---|---|
+| `=` | The conversion. This is copy-initialization, so it does not use an `explicit` constructor. |
+| Parentheses | The same conversion as `=` |
+| A list of values, for an array | One value per element |
+| Empty braces, `T()` | The zero of the type |
+
 :::
 
 :::{principle} INIT-P2
@@ -44,11 +48,13 @@ declaration are initialized from left to right.
 
 These terms name the forms of initialization:
 
-- An initializer after `=` is *copy-initialization*.
-- An initializer in parentheses is *direct-initialization*.
-- A braced initializer is *list-initialization*.
-- A variable without an initializer is *default-initialized*.
-- Empty parentheses or braces give *value-initialization*.
+| Form | Term |
+|---|---|
+| An initializer after `=` | *copy-initialization* |
+| An initializer in parentheses | *direct-initialization* |
+| A braced initializer | *list-initialization* |
+| A variable without an initializer | *default-initialized* |
+| Empty parentheses or braces | *value-initialization* |
 
 Objects with static or thread storage are *zero-initialized* first
 (STO-3).
@@ -114,10 +120,12 @@ An array must not be initialized from another array.
 
 Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is:
 
-- `0` for an integer,
-- `0.0` for a floating-point type,
-- `false` for `bool`,
-- a null pointer for a pointer.
+| Type | Zero |
+|---|---|
+| An integer | `0` |
+| A floating-point type | `0.0` |
+| `bool` | `false` |
+| A pointer | A null pointer |
 
 An array element without a value in the list also gets zero.
 :::

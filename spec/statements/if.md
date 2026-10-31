@@ -28,14 +28,23 @@ with no ambiguity.
 :rules: IF-7 IF-21 IF-8 IF-9 IF-10
 
 The statement's names follow the general rules of scopes
-({principle}`NAM-P1`). The initializer and the condition declare names
-into a scope that encloses both branches, so the else branch sees the
-condition variable too. Each branch is a scope of its own, with or
-without braces. A branch that redeclares one of those names at its top
-level would make the name mean two things in one place, so it is
-rejected, while a block inside the branch can hide it. The initializer
-can be any declaration that a block can hold, which excludes the kinds
-that declare no variable.
+({principle}`NAM-P1`):
+
+```text
+if ( initializer ; condition )    scope of the statement: holds the
+                                  names of the initializer and the
+                                  condition, and encloses both branches
+  first branch                    a scope of its own
+else
+  second branch                   a scope of its own, which sees the
+                                  condition variable too
+```
+
+A branch is a scope with or without braces. A branch that redeclares one
+of those names at its top level would make the name mean two things in
+one place, so it is rejected, while a block inside the branch can hide
+it. The initializer can be any declaration that a block can hold, which
+excludes the kinds that declare no variable.
 :::
 
 :::{principle} IF-P5
@@ -71,13 +80,18 @@ holds for `if consteval`.
 :rules: IF-18 IF-19 IF-20 IF-24
 
 `if consteval` asks which mode the program is running in
-({principle}`TR-P4`). The first branch runs in constant evaluation and
-the second at run time, and `if !consteval` swaps them. The branch that
-runs in constant evaluation is a place where a `consteval` call needs no
-constant arguments, because the whole branch is already a constant
-evaluation. The form has no condition, because the mode is the
-condition, and its branches are blocks, so that the form is never
-mistaken for the ordinary one.
+({principle}`TR-P4`):
+
+| Form | Runs in constant evaluation | Runs at run time |
+|---|---|---|
+| `if consteval` | The first branch | The second branch |
+| `if !consteval` | The second branch | The first branch |
+
+The branch that runs in constant evaluation is a place where a
+`consteval` call needs no constant arguments, because the whole branch
+is already a constant evaluation. The form has no condition, because the
+mode is the condition, and its branches are blocks, so that the form is
+never mistaken for the ordinary one.
 :::
 
 ## Syntax

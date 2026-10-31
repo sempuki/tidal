@@ -16,13 +16,11 @@ A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives it that object. What a
 reference accepts follows from what it may do with its referent.
 
-- A reference that can change the object binds only to an lvalue of
-  that type or a derived type.
-- A `const` lvalue reference changes nothing, so it also binds to
-  rvalues and to values of other types, through a temporary object when
-  there is no object to bind to.
-- An rvalue reference exists to take from an object that is going away,
-  so it binds to rvalues and never to an lvalue of its own type.
+| Reference | What it may do | Binds to |
+|---|---|---|
+| One that can change the object | Change the object | Only an lvalue of that type or a derived type |
+| `const` lvalue reference | Nothing | Also rvalues and values of other types, through a temporary object when there is no object to bind to |
+| Rvalue reference | Take from an object that is going away | Rvalues, and never an lvalue of its own type |
 
 In every form the initializer is one expression.
 :::

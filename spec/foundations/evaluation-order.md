@@ -22,12 +22,13 @@ A full expression finishes, with all its side effects, before the next
 one starts, so a program is a sequence of steps at that level. Within a
 full expression, these orders are fixed:
 
-- The function is known before its arguments are evaluated.
-- The right side of an assignment is complete before the left side is
-  touched.
-- An array is known before its index.
-- The object is known before the member pointer applied to it.
-- The elements of a braced list come in the order written.
+| Construct | Evaluated first | Evaluated after |
+|---|---|---|
+| Call | The function | Its arguments |
+| Assignment | The right side, complete | The left side |
+| Subscript | The array | Its index |
+| Member pointer | The object | The member pointer applied to it |
+| Braced list | Each element | The elements after it, in the order written |
 
 An overloaded operator keeps the order of the built-in operator it
 replaces, because the program reads the same either way.
@@ -63,11 +64,12 @@ expression.
 
 These operands are evaluated in a fixed order:
 
-- In `a[b]`, `a` before `b`.
-- In an assignment or a compound assignment, the right operand before the
-  left operand, with all its side effects.
-- In `a.*b` and `a->*b`, `a` before `b`.
-- In a braced list, the elements from left to right (LIST-7).
+| Expression | Evaluated first | Evaluated after |
+|---|---|---|
+| `a[b]` | `a` | `b` |
+| An assignment or a compound assignment | The right operand, with all its side effects | The left operand |
+| `a.*b` and `a->*b` | `a` | `b` |
+| A braced list (LIST-7) | Each element | The elements to its right |
 :::
 
 :::{rule} SEQ-5

@@ -76,9 +76,17 @@ constructors.
 :rules: DTOR-5 DTOR-7
 
 A destructor runs its body first and then ends the parts in the reverse
-of their construction order ({principle}`OBJ-P2`). After it runs, the
-object is gone, and using it or destroying it again is undefined
-({principle}`OBJ-P4`).
+of their construction order ({principle}`OBJ-P2`):
+
+```text
+constructor                         destructor
+  1. bases, in declaration order      1. destructor body
+  2. members, in declaration order    2. members, last first
+  3. constructor body                 3. bases, last first
+```
+
+After it runs, the object is gone, and using it or destroying it again
+is undefined ({principle}`OBJ-P4`).
 :::
 
 :::{principle} CTOR-P5

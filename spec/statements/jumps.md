@@ -17,9 +17,11 @@ A label names a statement that `goto` can transfer control to.
 A jump statement names a place and goes there, and the place must exist
 in the same function.
 
-- `break` goes past the innermost loop or `switch`.
-- `continue` goes to the end of the innermost loop body.
-- `goto` goes to a label.
+| Statement | Goes to |
+|---|---|
+| `break` | Past the innermost loop or `switch` |
+| `continue` | The end of the innermost loop body |
+| `goto` | A label |
 
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,
@@ -35,12 +37,11 @@ Control that leaves a scope ends the scope's objects, and control that
 enters a scope must not skip the creation of an object it will find
 there ({principle}`OBJ-P2`). So these cases follow:
 
-- A jump out of a block destroys the block's variables, in reverse
-  order, and `return` does the same after it has taken its value.
-- A jump backward past a declaration destroys the variable, and the
-  declaration makes it again.
-- A jump forward past an initialization is rejected, because the
-  variable would exist without a value.
+| Jump | Result |
+|---|---|
+| Out of a block | The block's variables are destroyed, in reverse order. `return` does the same after it has taken its value. |
+| Backward past a declaration | The variable is destroyed, and the declaration makes it again. |
+| Forward past an initialization | Rejected, because the variable would exist without a value |
 
 A type that needs no construction and no destruction has nothing
 to skip, so a jump can pass its declaration when it has no initializer.

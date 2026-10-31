@@ -44,10 +44,14 @@ kind of thing it finds, with `class` and `struct` counting as one kind.
 :rules: TYN-6 TYN-7
 
 A class exists from its first declaration and is complete only after
-its definition. Anything that needs only the existence of the type, such
-as a pointer, a reference, or a function declaration, works after a
-declaration. Anything that needs the size or the members waits for the
-definition. A definition happens once. An enumeration with no body
+its definition.
+
+| A use that needs | Works after |
+|---|---|
+| Only the existence of the type, such as a pointer, a reference, or a function declaration | A declaration |
+| The size or the members | The definition |
+
+A definition happens once. An enumeration with no body
 needs a fixed underlying type, because its size is all that a use can
 ask of it.
 :::

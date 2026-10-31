@@ -13,10 +13,20 @@ name refers to one element of an object. An element is one of these:
 :rules: SB-1 SB-6 SB-12
 
 A structured binding declaration is one ordinary variable with several
-names for its parts. The declaration creates a hidden variable from the
-initializer, with the `auto`, the cv-qualifiers, and the reference that
-the declaration writes. Each name then refers to one element of that
-variable. So each name is an lvalue, whatever the initializer was, and a
+names for its parts.
+
+```text
+initializer
+    |
+    v
+hidden variable   (the written auto, cv-qualifiers, reference)
+    |
+    +-- element 1  <-- name 1
+    +-- element 2  <-- name 2
+    +-- ...
+```
+
+Each name refers to one element of the hidden variable. So each name is an lvalue, whatever the initializer was, and a
 temporary that the hidden variable binds to lives as long as the names
 do ({principle}`OBJ-P3`).
 :::
@@ -27,9 +37,11 @@ do ({principle}`OBJ-P3`).
 The type of the hidden variable decides what its elements are, in a
 fixed order of tests:
 
-1. An array gives its elements.
-2. A type with a tuple size gives the results of `get`.
-3. Any other class gives its data members in declaration order.
+| Test | Type of the hidden variable | Elements |
+|---|---|---|
+| 1 | An array | Its elements |
+| 2 | A type with a tuple size | The results of `get` |
+| 3 | Any other class | Its data members, in declaration order |
 
 The number of names must equal the number of elements. Each name has
 the declared type of its element, with the qualifiers of the hidden

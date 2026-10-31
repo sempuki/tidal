@@ -20,12 +20,12 @@ pages *(templates referenced)*:
 A variable declared with `auto` holds a value, so its type is the type
 of the value that the initializer produces.
 
-- A reference in the initializer's type is dropped, because the variable
-  is a new object and does not refer to the old one.
-- The top-level `const` and `volatile` are dropped for the same reason,
-  because they belonged to the old object.
-- An array or a function cannot be held as a value, so the variable gets
-  the pointer that the initializer converts to ({principle}`VC-P1`).
+| In the initializer's type | In the variable's type | Why |
+|---|---|---|
+| A reference | Dropped | The variable is a new object and does not refer to the old one. |
+| Top-level `const` and `volatile` | Dropped | They belonged to the old object. |
+| An array or a function | The pointer that the initializer converts to ({principle}`VC-P1`) | An array or a function cannot be held as a value. |
+
 :::
 
 :::{principle} AUTO-P2
@@ -33,14 +33,13 @@ of the value that the initializer produces.
 
 What the declaration writes around `auto` applies to the deduced type.
 
-- `auto&` makes a reference, so it keeps the initializer's type whole,
-  with its qualifiers and without decay, and it needs something to
-  refer to.
-- `auto&&` binds to anything and becomes an lvalue or an rvalue
-  reference as the initializer is one or the other.
-- `const`, `volatile`, and `*` add to the deduced type as they would to
-  a written one.
-- A concept before `auto` is a check on the result.
+| Written around `auto` | Effect |
+|---|---|
+| `auto&` | Makes a reference, so it keeps the initializer's type whole, with its qualifiers and without decay. It needs something to refer to. |
+| `auto&&` | Binds to anything. It becomes an lvalue or an rvalue reference as the initializer is one or the other. |
+| `const`, `volatile`, `*` | Adds to the deduced type as it would to a written one. |
+| A concept before `auto` | Checks the result. |
+
 :::
 
 :::{principle} AUTO-P3
@@ -48,13 +47,12 @@ What the declaration writes around `auto` applies to the deduced type.
 
 The form of the initializer sets how the type is read from it.
 
-- Parentheses and braces without `=` hold one expression and read its
-  type.
-- A braced list after `=` is a list, so the variable becomes a
-  `std::initializer_list`.
-- `decltype(auto)` reads the initializer as `decltype` does, so a name
-  gives its declared type and the value category of any other
-  expression decides between a reference and a plain type.
+| Form | How the type is read |
+|---|---|
+| Parentheses, or braces without `=` | They hold one expression, and its type is read. |
+| A braced list after `=` | It is a list, so the variable becomes a `std::initializer_list`. |
+| `decltype(auto)` | As `decltype` reads it. A name gives its declared type. For any other expression, the value category decides between a reference and a plain type. |
+
 :::
 
 :::{principle} AUTO-P4
@@ -118,10 +116,11 @@ removed. Qualifiers below the top level stay.
 
 These initializers give a pointer:
 
-- an initializer of array type gives a pointer to its first element,
-- a function gives a pointer to the function,
-- a string literal gives a pointer to `const` of its character type,
-  for example `const char*` or `const char8_t*`.
+| Initializer | Pointer |
+|---|---|
+| Of array type | A pointer to its first element |
+| A function | A pointer to the function |
+| A string literal | A pointer to `const` of its character type, for example `const char*` or `const char8_t*` |
 :::
 
 :::{rule} AUTO-3
@@ -247,10 +246,12 @@ If one declaration declares several variables with `auto` (AUTO-9),
 ({rule}`DTY-2`). The {term}`value category` of the initializer controls the
 result:
 
-- a name gives its declared type, including `const`,
-- a parenthesized lvalue gives an lvalue reference,
-- an xvalue gives an rvalue reference,
-- a prvalue gives a type that is not a reference.
+| Initializer | Type |
+|---|---|
+| A name | Its declared type, including `const` |
+| A parenthesized lvalue | An lvalue reference |
+| An xvalue | An rvalue reference |
+| A prvalue | A type that is not a reference |
 :::
 
 :::{rule} AUTO-11

@@ -89,14 +89,14 @@ expression must not itself be a braced list.
 In braces, a value must not go through a *narrowing* conversion. These
 conversions are narrowing:
 
-- floating-point to integer, for all values;
-- integer to floating-point, unless the value is a constant that the
-  target type holds exactly;
-- `long double` to `double` or `float`, or `double` to `float`, unless
-  the value is a constant in the range of the target type;
-- integer to an integer type that cannot hold all its values, unless the
-  value is a constant that fits;
-- pointer or pointer to member to `bool`.
+| From | To | Not narrowing if |
+|---|---|---|
+| Floating-point | Integer | Never |
+| Integer | Floating-point | The value is a constant that the target type holds exactly. |
+| `long double` | `double` or `float` | The value is a constant in the range of the target type. |
+| `double` | `float` | The value is a constant in the range of the target type. |
+| Integer | An integer type that cannot hold all its values | The value is a constant that fits. |
+| Pointer or pointer to member | `bool` | Never |
 
 An unscoped enumeration without a fixed type counts as an integer source.
 A bit-field counts by its width, so a bit-field whose values all fit in

@@ -79,7 +79,17 @@ it as an error.
 
 Each translation unit is translated on its own, with only the
 declarations it contains, and the units are then linked into one
-program. So these hold:
+program:
+
+```text
+unit 1 --> translated with its own declarations --+
+                                                  |
+unit 2 --> translated with its own declarations --+--> linked into
+                                                  |    one program
+unit 3 --> translated with its own declarations --+
+```
+
+So these hold:
 
 - A name that one unit uses and another defines needs a declaration in
   the first unit.

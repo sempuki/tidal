@@ -24,30 +24,29 @@ exists only after its value, so the value cannot name it
 :rules: ENUM-2 ENUM-15 ENUM-3 ENUM-16 ENUM-11 ENUM-9 ENUM-20
 
 The two kinds of enumeration differ in where their names go and how
-freely their values convert. An unscoped enumeration puts its
-enumerators into the enclosing scope and lets a value promote to an
-integer, as C does. A scoped enumeration keeps its enumerators inside
-and converts to or from an integer only with a cast, so its values take
-part in no arithmetic and stand in no condition. `using enum` brings
-the enumerators of either kind into a scope by name.
+freely their values convert.
+
+| | Unscoped | Scoped |
+|---|---|---|
+| Enumerators | Go into the enclosing scope | Stay inside the enumeration |
+| Values | Promote to an integer, as C does | Convert to or from an integer only with a cast, so they take part in no arithmetic and stand in no condition |
+
+`using enum` brings the enumerators of either kind into a scope by name.
 :::
 
 :::{principle} ENUM-P3
 :rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-7 ENUM-18 ENUM-8 ENUM-19
 
-The underlying type holds the values. If the program fixes it, or the
-enumeration is scoped, the type is known from the first declaration,
-so:
+The underlying type holds the values.
 
-- the enumeration can be declared before its enumerators,
-- every value of the type is a value of the enumeration,
-- an integer in braces can initialize it.
+| | Fixed by the program, or scoped | Not fixed |
+|---|---|---|
+| Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation |
+| Values of the enumeration | Every value of the type | Only the bits the enumerators need. A value outside that range has no meaning. |
 
-If the program does not fix it:
-
-- the implementation chooses a type wide enough,
-- the range is only the bits the enumerators need,
-- a value outside that range has no meaning.
+When the type is known from the first declaration, the enumeration can
+be declared before its enumerators, and an integer in braces can
+initialize it.
 :::
 
 ## Syntax
@@ -219,15 +218,15 @@ enumerator has the type of its enumeration. Unary `+` on an unscoped
 value gives its promoted integer type.
 
 Inside the enumerator list, the enumeration is not complete, so an
-enumerator has another type there:
+enumerator has another type there. Every scoped enumeration has a fixed
+underlying type.
 
-- With a fixed underlying type, which every scoped enumeration has, it
-  has that type.
-- Without one, an enumerator with an initializer has the type of the
-  initializer, without promotion. An initializer of enumeration type
-  gives that enumeration type.
-- Without one, an enumerator without an initializer has the type of the
-  enumerator before it, if that type can hold its value (ENUM-13).
+| Underlying type | Enumerator | Type inside the list |
+|---|---|---|
+| Fixed | Any | The underlying type |
+| Not fixed | With an initializer | The type of the initializer, without promotion. An initializer of enumeration type gives that enumeration type. |
+| Not fixed | Without an initializer | The type of the enumerator before it, if that type can hold its value (ENUM-13) |
+
 :::
 
 :::{rule} ENUM-11

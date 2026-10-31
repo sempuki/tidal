@@ -12,12 +12,11 @@ result, and when a temporary object exists.
 Every expression denotes an object, a function, or a value. The
 categories are these:
 
-- An *lvalue* names something with an identity. A program can take its
-  address, assign to it, and bind a reference to it.
-- A *prvalue* is a value with no identity yet, a result to be stored,
-  used, or dropped.
-- An *xvalue* is an object that has an identity but whose contents the
-  program has given up, so a move can take them.
+| Category | Identity | What it is |
+|---|---|---|
+| *lvalue* | Yes | Something a program can take the address of, assign to, and bind a reference to. |
+| *xvalue* | Yes | An object whose contents the program has given up, so a move can take them. |
+| *prvalue* | Not yet | A value, a result to be stored, used, or dropped. |
 
 The form of an expression sets its category, and its type does not. The
 name of a variable is an lvalue even when the variable has rvalue

@@ -28,29 +28,36 @@ type has a lifetime that starts with its storage, so it can exist with
 no value yet.
 
 A class object is built from its subobjects, and their lifetimes nest
-inside its own. The bases and members exist before the constructor body
-runs and still exist while the destructor body runs. So a constructor
-body sees complete parts, and a destructor body sees them too.
+inside its own. So the constructor body and the destructor body both
+see complete parts:
+
+```text
+                                bases and      the object
+                                members exist  exists
+  bases and members are built        |
+  constructor body runs              |
+  initialization completes           |              |
+  ...                                |              |
+  destructor body runs               |              |
+  destructor completes                              |
+```
 :::
 
 :::{principle} OBJ-P2
 :rules: OBJ-3 OBJ-4 OBJ-5 OBJ-6 OBJ-9
 :exceptions: OBJ-11
 
-The storage duration of an object decides who ends it and when, and one
-law covers every case: objects end in the reverse of the order in which
+The storage duration of an object decides who ends it and when. One
+law covers every case. Objects end in the reverse of the order in which
 they began.
 
-- A block ends its automatic objects when control leaves it, by any
-  route.
-- A program ends its static objects after `main` returns, in the
-  reverse of their construction order. That order is the order of their
-  definitions for objects at namespace scope and the order of first use
-  for objects local to a function.
-- An array ends its elements from the last to the first.
-- A temporary ends with the full expression that made it.
-- A dynamic object is the one case with no fixed end. It exists until
-  `delete` ends it, however many scopes have come and gone.
+| Objects | Ended by | When |
+|---|---|---|
+| Automatic objects | Their block | When control leaves the block, by any route |
+| Static objects | The program | After `main` returns, in the reverse of their construction order. That order is the order of their definitions at namespace scope, and the order of first use for objects local to a function. |
+| Array elements | The array | From the last to the first |
+| A temporary | Its full expression | When the full expression that made it ends |
+| A dynamic object | `delete` | No fixed end. It exists until `delete` ends it, however many scopes have come and gone. |
 :::
 
 :::{principle} OBJ-P3

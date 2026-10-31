@@ -12,7 +12,16 @@ object and frees its storage.
 `new` creates an object whose life does not depend on any scope
 ({principle}`OBJ-P2`). It first obtains storage and then initializes
 the object in it, so the allocation happens before the initializer's
-arguments are evaluated. `delete` reverses the two steps. The object
+arguments are evaluated. `delete` reverses the two steps:
+
+```text
+   new      obtain storage --> evaluate the initializer's arguments
+                           --> initialize the object
+
+   delete   destroy the object --> free the storage
+```
+
+The object
 must have a complete object type, because its size and its constructor
 are needed, and an array can have a size known only at run time. An
 object that `new` leaves without an initializer has no value, as any

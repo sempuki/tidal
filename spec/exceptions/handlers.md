@@ -22,14 +22,30 @@ constructors and destructors.
 
 A try block names the statements it guards and the handlers that can
 take over when one of them throws. When an exception leaves the block,
-the handlers are tried in the order written, and the first one whose
-type accepts the exception runs. The rest are not consulted, so a
-handler that a previous handler always shadows can never run, and an
-implementation should say so. The catch-all handler accepts everything,
-which is why it must come last. A try block with no handler guards
-nothing, so it is not valid. If no handler accepts the exception, it
-leaves the try block as it entered it, and the next enclosing try block
-gets the same chance.
+the handlers are tried in the order written:
+
+```text
+exception leaves the try block
+        |
+        v
+first handler accepts its type? --yes--> that handler runs
+        | no
+        v
+next handler accepts its type?  --yes--> that handler runs
+        | no
+        v
+       ...
+        | no handler accepts it
+        v
+the exception leaves the try block as it entered it,
+and the next enclosing try block gets the same chance
+```
+
+Once a handler runs, the rest are not consulted, so a handler that a
+previous handler always shadows can never run, and an implementation
+should say so. The catch-all handler accepts everything, which is why it
+must come last. A try block with no handler guards nothing, so it is not
+valid.
 :::
 
 :::{principle} TRY-P2
@@ -44,9 +60,14 @@ that keep the exception object what it is:
 - the decay of an array or function to a pointer.
 
 Arithmetic conversions and user-defined conversions change the value, so
-they take no part. A handler by value receives a copy, which slices a
-derived exception to the base. A handler by reference sees the exception
-object itself and can change it before passing it on. The handler's
+they take no part. The form of the handler decides what it gets:
+
+| Handler | Receives |
+|---|---|
+| By value | A copy, which slices a derived exception to the base |
+| By reference | The exception object itself, which it can change before passing it on |
+
+The handler's
 parameter is a declaration of a narrow kind. It has:
 
 - a type and at most a name,

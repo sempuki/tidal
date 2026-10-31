@@ -25,9 +25,11 @@ size and values. A program names an integer type by combining
 specifiers, and the order of the specifiers does not matter. Each
 specifier adds one property:
 
-- a sign (`signed` or `unsigned`),
-- a size (`short`, `long`, or `long long`),
-- the base type (`int`, `char`, or `double`).
+| Property | Specifiers |
+|---|---|
+| Sign | `signed`, `unsigned` |
+| Size | `short`, `long`, `long long` |
+| Base type | `int`, `char`, `double` |
 
 A combination that asks for two values of one property, or a property
 that the base type does not have, names no type.

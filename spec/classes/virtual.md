@@ -51,6 +51,16 @@ implementation holds it to that.
 While a constructor or destructor of class `C` runs, the object is a `C`
 and nothing more ({principle}`OBJ-P1`), so a virtual call there reaches
 the overrider for `C`, and a pure virtual function has nothing to reach.
+For a class `D` derived from `B`:
+
+```text
+B constructor runs     the object is a B   calls reach B's overriders
+D constructor runs     the object is a D   calls reach D's overriders
+  ...
+D destructor runs      the object is a D   calls reach D's overriders
+B destructor runs      the object is a B   calls reach B's overriders
+```
+
 A virtual destructor lets `delete` through a base pointer find the
 whole object; without one, that `delete` is undefined.
 :::

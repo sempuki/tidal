@@ -199,11 +199,12 @@ candidate makes the expression not valid.
 A literal with a suffix calls a literal operator with that suffix. The
 form of the literal selects the parameter list:
 
-- an integer literal: `unsigned long long`, or `const char*` for the raw
-  digits,
-- a floating literal: `long double`, or `const char*`,
-- a character literal: the character type,
-- a string literal: a pointer to the character type and the length.
+| Literal | Parameter list |
+|---|---|
+| An integer literal | `unsigned long long`, or `const char*` for the raw digits |
+| A floating literal | `long double`, or `const char*` |
+| A character literal | The character type |
+| A string literal | A pointer to the character type, and the length |
 
 If both a numeric form and the `const char*` form exist for a suffix, a
 numeric or floating literal uses the numeric form. Adjacent string

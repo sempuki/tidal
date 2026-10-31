@@ -33,12 +33,11 @@ division has no single meaning.
 
 The result is the mathematical one, fitted to the type.
 
-- For floating-point operands that means rounding.
-- For integer division it means dropping the fraction, toward zero, and
-  the remainder is then whatever makes quotient and remainder add back
-  up to the dividend.
-- An unsigned type is a modular type, so an unsigned result wraps
-  around instead of overflowing.
+| Operands | How the result is fitted |
+|---|---|
+| Floating-point | Rounding |
+| Integer, with `/` and `%` | The quotient drops the fraction, toward zero. The remainder is then whatever makes quotient and remainder add back up to the dividend. |
+| Unsigned | The type is modular, so the result wraps around instead of overflowing. |
 
 An implementation can keep extra precision in floating-point
 intermediates, and the matrix targets do not.

@@ -32,9 +32,13 @@ scope that contains it, so no other entity there can have that name.
 :rules: NS-3 NS-12 NS-4 NS-13
 
 Two kinds of namespace lend their members to the enclosing namespace.
-An `inline` namespace does so by name, so a qualified name through the
-enclosing namespace finds them. An unnamed namespace does so without a
-name, and its members have internal linkage. In both cases a name
+
+| Namespace | Lends its members | Result |
+|---|---|---|
+| `inline` | By name | A qualified name through the enclosing namespace finds them. |
+| Unnamed | Without a name | Its members have internal linkage. |
+
+In both cases a name
 declared in both places is ambiguous, because neither declaration hides
 the other.
 :::
@@ -43,12 +47,15 @@ the other.
 :rules: NS-7 NS-16 NS-8 NS-17 NS-9
 
 There are two ways to use a namespace's names without qualification,
-and they differ in strength. A using declaration is a declaration in the
-current scope, so it conflicts with other declarations there as any
-declaration does, and it carries the overloads it saw. A using directive
-is weaker. It only makes the members visible to lookup, so a declaration
-in the current scope hides them, and two directives can make a name
-ambiguous. Neither form belongs in a class.
+and they differ in strength.
+
+| | Using declaration | Using directive |
+|---|---|---|
+| What it is | A declaration in the current scope | Weaker. It only makes the members visible to lookup. |
+| Another declaration in the current scope | Conflicts with it, as any declaration does | Hides the members |
+| Other effects | Carries the overloads it saw | Two directives can make a name ambiguous. |
+
+Neither form belongs in a class.
 :::
 
 ## Syntax

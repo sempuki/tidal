@@ -17,18 +17,21 @@ Depends on: primary expressions, value categories, unary operators.
 :rules: DTY-1 DTY-2 DTY-4
 
 `decltype` answers one of two questions, and the parentheses choose
-which. For a plain name it reports the declared type of the entity, with
-the reference and the qualifiers the declaration wrote, because that is
-what the programmer meant by the name. For any other expression,
-including a name in parentheses, it reports the type of the expression
-marked with its value category ({principle}`VC-P1`):
+which. For a plain name it reports the declared type of the entity. For
+any other expression, including a name in parentheses, it reports the
+type of the expression marked with its value category
+({principle}`VC-P1`).
 
-- a reference for an lvalue,
-- an rvalue reference for an xvalue,
-- the bare type for a prvalue.
+| Operand | Result |
+|---|---|
+| A plain name | The declared type, with the reference and the qualifiers the declaration wrote |
+| Any other lvalue | A reference |
+| An xvalue | An rvalue reference |
+| A prvalue | The bare type |
 
-An overloaded function name has no single type, so it fits neither
-question.
+A plain name gives the declared type because that is what the
+programmer meant by the name. An overloaded function name has no
+single type, so it fits neither question.
 :::
 
 :::{principle} DTY-P2

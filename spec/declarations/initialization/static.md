@@ -9,12 +9,26 @@ are set at run time, in an order that this page gives.
 :::{principle} SINIT-P1
 :rules: SINIT-1 SINIT-2
 
-Static storage is initialized in two steps. First, every variable is
-zero, and every variable whose initializer is a constant gets its value
-before any code runs. Then, at run time, the remaining variables of a
-translation unit are initialized in the order of their definitions. So a
-later initializer in the same unit can read an earlier variable and get
-its final value.
+Static storage is initialized in two steps.
+
+```text
++--------------------------------------------------+
+| 1. Before any code runs                          |
+|    every variable is zero                        |
+|    each variable with a constant initializer     |
+|    gets its value                                |
++--------------------------------------------------+
+                         |
+                         v
++--------------------------------------------------+
+| 2. At run time, in each translation unit         |
+|    the remaining variables are initialized       |
+|    in the order of their definitions             |
++--------------------------------------------------+
+```
+
+So a later initializer in the same unit can read an earlier variable and
+get its final value.
 :::
 
 :::{principle} SINIT-P2

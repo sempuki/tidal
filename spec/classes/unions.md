@@ -19,8 +19,21 @@ copy and move, list initialization and aggregates, standard conversions.
 :exceptions: UNI-10 UNI-12
 
 A union is one piece of storage with several views. All its members start
-at its first byte, and at most one of them is an object at a time. The
-initializer picks the first active member, and a plain assignment to
+at its first byte, and at most one of them is an object at a time:
+
+```text
+first byte
+|
++--------+
+| a      |                  member a
++--------+--------------+
+| b                     |   member b
++-----------------------+
+| c  |                      member c
++----+
+```
+
+The initializer picks the first active member, and a plain assignment to
 another member makes that one active instead. Reading a member that is
 not active reads an object that is not there, which is undefined
 ({principle}`OBJ-P4`). A reference is not an object with storage of its
@@ -48,11 +61,18 @@ because its members have no name to link by.
 :::{principle} UNI-P4
 :rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7 BF-11
 
-A bit-field is a member with a width in bits. The width sets the range
-of values it holds and the way it promotes, while its declared type gives
-its signedness and its treatment in initialization. Because it need not
-start on a byte, a bit-field has no address, so a program cannot point
-to it or bind a plain reference to it.
+A bit-field is a member with a width in bits. The width and the
+declared type each decide part of its behavior:
+
+| Property | Decided by |
+|---|---|
+| The range of values it holds | The width |
+| The way it promotes | The width |
+| Its signedness | The declared type |
+| Its treatment in initialization | The declared type |
+
+Because it need not start on a byte, a bit-field has no address, so a
+program cannot point to it or bind a plain reference to it.
 :::
 
 :::{principle} UNI-P5

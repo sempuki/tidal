@@ -11,7 +11,19 @@ two other operands, as the condition selects.
 `?:` is a selection. The condition is converted to `bool` by contextual
 conversion and evaluated first, with all its side effects. Then exactly
 one of the two other operands is evaluated, and the other is not touched
-at all. So during constant evaluation only the selected operand has to
+at all:
+
+```text
+   c ? a : b
+
+   evaluate c, with all its side effects
+        |
+        +-- true  --> evaluate a --> result   (b is not touched)
+        |
+        +-- false --> evaluate b --> result   (a is not touched)
+```
+
+So during constant evaluation only the selected operand has to
 be constant. The operator groups to the right, and its middle operand
 is a full expression that can hold a comma or an assignment without
 parentheses.
@@ -71,25 +83,17 @@ conversion`.
 The second and third operands give one result type and
 {term}`value category`:
 
-- If both are lvalues of the same type, apart from cv-qualifiers, and the
-  cv-qualifiers of one include those of the other, the result is an
-  lvalue with the larger set. If neither set includes the other, as for
-  `const` and `volatile`, the result is a prvalue.
-- If both are xvalues, the result is an xvalue. If one is an lvalue and
-  the other an xvalue, the result is a prvalue.
-- If both have arithmetic or enumeration type, the
-  {term}`usual arithmetic conversions` give the type of a prvalue result.
-  Two integer literals `0` give `int`.
-- If one is a pointer and the other is a pointer or a null pointer
-  constant, the result is a pointer prvalue with the combined
-  cv-qualifiers.
-- If both are `nullptr`, or one is `nullptr` and the other the literal
-  `0`, the result has the type of `nullptr` ({question}`Q-0102`).
-- A pointer to member and `nullptr` give a pointer to member.
-- If one operand has class type and converts to the type of the other,
-  the result has the other type. A derived class lvalue and a base class
-  lvalue give a base class lvalue. A class that converts to `int` and an
-  `int` give an `int` prvalue.
+| Operands | Result |
+|---|---|
+| Lvalues of the same type apart from cv-qualifiers, where the cv-qualifiers of one include those of the other | An lvalue with the larger set |
+| Lvalues of the same type apart from cv-qualifiers, where neither set includes the other, as for `const` and `volatile` | A prvalue |
+| Two xvalues | An xvalue |
+| An lvalue and an xvalue | A prvalue |
+| Both of arithmetic or enumeration type | A prvalue of the type that the {term}`usual arithmetic conversions` give. Two integer literals `0` give `int`. |
+| A pointer, and a pointer or a null pointer constant | A pointer prvalue with the combined cv-qualifiers |
+| Two `nullptr`, or `nullptr` and the literal `0` | The type of `nullptr` ({question}`Q-0102`) |
+| A pointer to member and `nullptr` | A pointer to member |
+| One of class type that converts to the type of the other | The other type. A derived class lvalue and a base class lvalue give a base class lvalue. A class that converts to `int` and an `int` give an `int` prvalue. |
 :::
 
 :::{rule} COND-4

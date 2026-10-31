@@ -55,9 +55,14 @@ rely on a promise, so a broken promise has no defined behavior.
 :::{principle} ATTR-P4
 :rules: ATTR-4 ATTR-5 ATTR-6 ATTR-7 ATTR-14
 
-The other attributes exist to turn warnings on or off. `deprecated` and
-`nodiscard` ask for a warning at a use. `maybe_unused` and
-`fallthrough` ask that a usual warning stay silent. These are advice to
+The other attributes exist to turn warnings on or off.
+
+| Attribute | Asks for |
+|---|---|
+| `deprecated`, `nodiscard` | A warning at a use |
+| `maybe_unused`, `fallthrough` | Silence for a usual warning |
+
+These are advice to
 the implementation, and a program that ignores them stays valid.
 :::
 

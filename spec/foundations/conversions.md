@@ -16,13 +16,12 @@ conversions:
 An operand takes the shape that the operation needs before the operation
 sees it:
 
-- An integer narrower than `int` becomes an `int`, and for a bit-field
-  the width decides, because the width is what the value can hold.
-- An array used as a value becomes a pointer to its first element, and
-  a function name becomes a pointer to the function, because the
-  operations on values have no use for an array or a function itself.
-- A `float` keeps its type, because arithmetic on `float` is an
-  operation of its own.
+| Operand | Becomes | Why |
+|---|---|---|
+| An integer narrower than `int` | An `int`. For a bit-field the width decides. | The width is what the value can hold. |
+| An array used as a value | A pointer to its first element | The operations on values have no use for an array itself. |
+| A function name | A pointer to the function | The operations on values have no use for a function itself. |
+| A `float` | It keeps its type. | Arithmetic on `float` is an operation of its own. |
 :::
 
 :::{principle} CONV-P2
@@ -40,12 +39,14 @@ null pointer counts as zero.
 :rules: CONV-4 CONV-5 CONV-6 CONV-7 CONV-11
 
 A conversion to or from a floating-point type keeps the value when the
-target can hold it exactly. A floating-point target that cannot takes
-one of the two nearest values, and a value beyond its range becomes the
-largest finite value or infinity, by the implementation's choice. An
-integer target of a floating-point value takes the value with its
-fraction dropped, and if that value does not fit, there is no answer, so
-the behavior is undefined.
+target can hold it exactly. The results are these:
+
+| Target | Value | Result |
+|---|---|---|
+| Floating-point | Cannot be held exactly | One of the two nearest values |
+| Floating-point | Beyond the target's range | The largest finite value or infinity, by the implementation's choice |
+| Integer, from floating-point | Fits after its fraction is dropped | The value with its fraction dropped |
+| Integer, from floating-point | Does not fit after its fraction is dropped | No answer, so the behavior is undefined |
 :::
 
 :::{principle} CONV-P3

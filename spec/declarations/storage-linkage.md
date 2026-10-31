@@ -24,13 +24,15 @@ prefix `LNK` are about linkage.
 The place of a declaration and its storage class decide the storage
 duration of the variable ({principle}`OBJ-P2`).
 
-- A block gives automatic storage, with a new object each time control
-  passes the declaration.
-- A namespace, or `static` in a block, gives one object for the
-  program. A block `static` is initialized the first time control
-  reaches it, so a second arrival during that initialization has no
-  defined meaning.
-- `thread_local` gives one object per thread.
+| Declaration | Storage | Objects |
+|---|---|---|
+| In a block | Automatic | A new object each time control passes the declaration |
+| At namespace scope | Static | One for the program |
+| `static` in a block | Static | One for the program |
+| `thread_local` | Thread | One per thread |
+
+A block `static` is initialized the first time control reaches it, so a
+second arrival during that initialization has no defined meaning.
 
 Static storage starts at zero before any initializer runs, and the
 program ends static objects in the reverse of the order in which their
@@ -60,17 +62,19 @@ namespace scope, which has no name to share, must be `static`.
 
 Linkage says whether declarations in different scopes or translation
 units name one entity. A name at namespace scope is shared across the
-program unless something keeps it private:
+program unless something keeps it private.
 
-- `static`,
-- an unnamed namespace,
-- `const` on a variable, which marks it as a local constant rather than
-  a shared object.
+| Declaration | Linkage |
+|---|---|
+| A name at namespace scope | Shared across the program |
+| The same, with `static` | Private |
+| A name in an unnamed namespace | Private |
+| A `const` variable at namespace scope | Private, because `const` marks a local constant rather than a shared object |
+| A block-scope variable | Shared with nothing |
+| A block-scope variable with `extern` | The namespace-scope entity of that name |
 
-A block-scope variable is shared with nothing, unless `extern` says that
-it is the namespace-scope entity of that name. The first declaration
-settles the linkage, and later declarations inherit it, which is why
-`static` cannot come second.
+The first declaration settles the linkage, and later declarations
+inherit it, which is why `static` cannot come second.
 :::
 
 :::{principle} STO-P4

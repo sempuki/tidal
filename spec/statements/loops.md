@@ -16,13 +16,15 @@ A loop repeats a body while a condition, converted to `bool` by
 {term}`contextual conversion`, holds. The three forms differ only in
 when the condition is tested and what runs around the body.
 
-- `while` tests first.
-- `do` tests after, so the body runs at least once, and its condition
-  cannot be a declaration, because a declaration there would have no
-  place to live.
-- `for` adds a step that runs once before the loop and a step that runs
-  after each body, and leaves any part out, with an absent condition
-  meaning `true`.
+| Form | Tests the condition | Runs around the body |
+|---|---|---|
+| `while` | Before the body | Nothing |
+| `do` | After the body, so the body runs at least once | Nothing |
+| `for` | Before the body | A step that runs once before the loop, and a step that runs after each body |
+
+The condition of a `do` cannot be a declaration, because a declaration
+there would have no place to live. A `for` can leave any part out, and
+an absent condition means `true`.
 :::
 
 :::{principle} LOOP-P2

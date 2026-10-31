@@ -19,19 +19,24 @@ the promoted type of the left operand alone, as a prvalue
 :::{principle} SHF-P2
 :rules: SHF-5 SHF-6
 
-A left shift by `n` multiplies by two to the `n`, modulo the width of
-the result type, so it is defined for every value, including negative
-ones and ones whose sign changes. A right shift by `n` divides by two to
-the `n`, rounding toward negative infinity, so a negative value stays
-negative.
+| Shift by `n` | Effect | So |
+|---|---|---|
+| Left | Multiplies by two to the `n`, modulo the width of the result type | It is defined for every value, including negative ones and ones whose sign changes. |
+| Right | Divides by two to the `n`, rounding toward negative infinity | A negative value stays negative. |
 :::
 
 :::{principle} SHF-P3
 :rules: SHF-7 SHF-9
 
 A shift count means something only from zero up to one less than the
-width of the promoted left operand. Any other count is undefined, and an
-implementation should warn when it can see the count.
+width of the promoted left operand:
+
+```text
+   count:   below 0    | 0 ... width - 1 |  width and above
+            undefined  |     defined     |  undefined
+```
+
+An implementation should warn when it can see an undefined count.
 :::
 
 :::{principle} SHF-P4

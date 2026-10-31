@@ -58,10 +58,11 @@ All `return` statements that RET-1 counts must give the same type. A
 
 The rules for variables apply to the return type:
 
-- `auto` removes references and top-level qualifiers (AUTO-1),
-- `auto&` keeps them (AUTO-3),
-- `decltype(auto)` uses `decltype` of the returned expression
-  (AUTO-10).
+| Placeholder | Return type | Rule |
+|---|---|---|
+| `auto` | Removes references and top-level qualifiers | AUTO-1 |
+| `auto&` | Keeps them | AUTO-3 |
+| `decltype(auto)` | Uses `decltype` of the returned expression | AUTO-10 |
 :::
 
 :::{rule} RET-3

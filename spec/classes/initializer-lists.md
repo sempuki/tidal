@@ -29,11 +29,20 @@ constructor.
 :rules: ILC-3 ILC-4 ILC-8
 
 A class that accepts a `std::initializer_list` means the braces as a
-list of values, so that constructor is tried first with the whole list,
-and the elements are tried as separate arguments only if no list
-constructor fits. Braces also promise that no value is silently cut
-down, so a narrowing conversion is an error and never a reason to try
-another constructor.
+list of values, so that constructor is tried first:
+
+```text
+braced list
+     |
+     v
+a list constructor fits the whole list? --yes--> it is called
+     | no
+     v
+the elements are tried as separate arguments
+```
+
+Braces also promise that no value is silently cut down, so a narrowing
+conversion is an error and never a reason to try another constructor.
 :::
 
 :::{principle} ILC-P3

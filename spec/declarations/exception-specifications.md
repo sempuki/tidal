@@ -47,12 +47,15 @@ function, and a destructor is no exception.
 :::{principle} EXS-P3
 :rules: EXS-4
 
-A function the program writes is potentially throwing unless it says
-otherwise, because only the program knows its body. A function the
-implementation writes gets its specifier from the functions it calls:
-a defaulted special member or comparison is non-throwing when every
-part it touches is, and a deallocation function is non-throwing by
-default.
+Only the program knows the body of a function it writes. A function the
+implementation writes gets its specifier from the functions it calls.
+
+| Function | Specifier when it says nothing |
+|---|---|
+| Written by the program | Potentially throwing |
+| A defaulted special member or comparison | Non-throwing when every part it touches is |
+| A deallocation function | Non-throwing |
+
 :::
 
 :::{principle} EXS-P4

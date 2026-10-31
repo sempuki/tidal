@@ -85,8 +85,10 @@ declaration* is a `friend_decl` in a class body.
 
 The default access of a member depends on the class key:
 
-- `class` gives private access.
-- `struct` and `union` give public access.
+| Class key | Default access |
+|---|---|
+| `class` | private |
+| `struct`, `union` | public |
 
 An access label sets the access of the members after it, up to the next
 label. A class can have any number of labels, in any order.

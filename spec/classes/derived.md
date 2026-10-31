@@ -55,11 +55,25 @@ is, so the conversion:
 :::{principle} DER-P4
 :rules: DER-6 DER-7 DER-12 DER-13
 
-A virtual base is shared by every path, so an object has one of it. Only
-the most derived class knows the whole object, so its constructor
+A virtual base is shared by every path, so an object has one of it.
+Compare a base `A` that `D` reaches through `B` and through `C`:
+
+```text
+A is a non-virtual base           A is a virtual base
+
+  A         A                            A
+  |         |                           / \
+  B         C                          B   C
+   \       /                            \ /
+       D                                 D
+
+a D holds two A subobjects        a D holds one A subobject
+```
+
+Only the most derived class knows the whole object, so its constructor
 initializes the virtual base, first and once, and every constructor of
-that class must be able to. Where the virtual base sits is decided at run
-time, so such a class has no `constexpr` constructor or destructor.
+that class must be able to. Where the virtual base sits is decided at
+run time, so such a class has no `constexpr` constructor or destructor.
 :::
 
 :::{principle} DER-P5

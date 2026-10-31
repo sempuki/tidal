@@ -26,9 +26,12 @@ and an array member element by element. The functions that do this are
 the copy and move constructors and the copy and move assignment
 operators. The language recognizes them by their signatures:
 
-- A copy function takes a reference to the class.
-- A move function takes an rvalue reference.
-- The assignment operators are members of the class.
+| Function | Parameter |
+|---|---|
+| Copy constructor or copy assignment operator | A reference to the class |
+| Move constructor or move assignment operator | An rvalue reference |
+
+The assignment operators are members of the class.
 
 A constructor that takes the class by value cannot exist, because it
 would need itself to copy its argument.
@@ -44,12 +47,15 @@ implicit copy constructor takes a `const` reference if every part can be
 copied from a `const` object.
 
 A class that declares one of these functions says that part-by-part
-copying is wrong for it. So one declaration removes the others. A
-user-declared move function removes the implicit copy functions. A
-user-declared copy function or destructor removes the implicit move
-functions, and rvalues of that class fall back to copying. The implicit
-assignment operator of a derived class hides those of its bases for the
-same reason: a derived class decides for its own parts.
+copying is wrong for it. So one declaration removes the others:
+
+| User-declared function | Removes |
+|---|---|
+| A move function | The implicit copy functions |
+| A copy function or a destructor | The implicit move functions. Rvalues of that class fall back to copying. |
+
+The implicit assignment operator of a derived class hides those of its
+bases for the same reason: a derived class decides for its own parts.
 
 A user-declared destructor is the exception: it keeps the implicit copy
 functions. So a class that releases a resource in its destructor must
@@ -80,12 +86,17 @@ that works, because by then the class has promised it.
 :rules: CPY-9 CPY-10 CPY-11 CPY-24 CPY-25
 
 Whether a copy or a move happens follows from the value category of the
-source. An lvalue copies. An rvalue moves if it can and copies if it
-cannot. A `const` rvalue copies, because a move would change it. A
-prvalue needs neither: it initializes its target directly, so a class
-with no usable copy or move function can still be returned and passed
-as a prvalue. A `return` of a local variable or a parameter treats the
-name as an rvalue, because the object is about to end.
+source:
+
+| Source | Result |
+|---|---|
+| An lvalue | A copy |
+| An rvalue | A move if it can, and a copy if it cannot |
+| A `const` rvalue | A copy, because a move would change it |
+| A prvalue | Neither. It initializes its target directly, so a class with no usable copy or move function can still be returned and passed as a prvalue. |
+
+A `return` of a local variable or a parameter treats the name as an
+rvalue, because the object is about to end.
 :::
 
 :::{principle} CPY-P5

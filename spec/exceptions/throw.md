@@ -21,10 +21,11 @@ evaluation, objects and lifetime.
 A `throw` makes the exception object from its operand the way a
 declaration makes a variable from an initializer.
 
-- A prvalue operand becomes the exception object directly, so no copy
-  or move happens and none needs to exist ({principle}`VC-P2`).
-- A local variable is about to end, so it is moved.
-- Any other lvalue is copied.
+| Operand | Exception object |
+|---|---|
+| A prvalue | The operand becomes it directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
+| A local variable | Moved from the operand, because the variable is about to end |
+| Any other lvalue | Copied from the operand |
 
 Arrays and functions decay to pointers, and cv-qualifiers are dropped,
 because the exception object is a fresh object of its own. So the

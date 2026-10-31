@@ -11,12 +11,11 @@ into the same array.
 
 `+` and `-` have three jobs, one for each of these operand forms:
 
-- On numbers they add and subtract, with the operands brought to one
-  common type by the {term}`usual arithmetic conversions`, so the
-  result has that type.
-- On a pointer and an integer they move the pointer, and the result has
-  the pointer's type.
-- Subtracting two pointers gives a distance.
+| Operands | Job | Result |
+|---|---|---|
+| Two numbers | Add or subtract | A value of the common type of the {term}`usual arithmetic conversions` |
+| A pointer and an integer | Move the pointer | A pointer of the pointer operand's type |
+| Two pointers, with `-` | Measure the distance | The distance |
 
 Any other combination of operands is rejected. The result is a prvalue
 in every case ({principle}`VC-P1`).
@@ -25,11 +24,16 @@ in every case ({principle}`VC-P1`).
 :::{principle} ADD-P2
 :rules: ADD-5 ADD-9 ADD-17
 
-For numbers the result is the mathematical one, fitted to the type. An
-unsigned type is modular, so its result wraps. A signed integer type and
-a floating-point type are not, so a result outside their range has no
-value, and the behavior is undefined. Constant evaluation rejects it
-({principle}`TR-P4`).
+For numbers the result is the mathematical one, fitted to the type.
+The types differ when the result is outside their range:
+
+| Type | Modular | Result outside the range |
+|---|---|---|
+| Unsigned integer | Yes | Wraps |
+| Signed integer | No | No value. The behavior is undefined. |
+| Floating-point | No | No value. The behavior is undefined. |
+
+Constant evaluation rejects the undefined cases ({principle}`TR-P4`).
 :::
 
 :::{principle} ADD-P3
@@ -47,7 +51,19 @@ position at all, so only moving it by zero means anything.
 
 A single object is an array of one, and every array has one extra
 valid position just past its last element, so a loop can run to the
-end. Outside those positions there is nothing to point at, and the
+end:
+
+```text
+   +------+------+------+------+
+   | a[0] | a[1] | a[2] | a[3] |
+   +------+------+------+------+
+   ^                           ^
+   a                           a + 4: one past the last element
+
+   valid positions: a + 0 to a + 4
+```
+
+Outside those positions there is nothing to point at, and the
 behavior is undefined. Two pointers into different arrays have no
 distance. The element type must be the array's element type, because
 the arithmetic counts in that type's size.
