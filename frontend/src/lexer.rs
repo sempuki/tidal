@@ -84,7 +84,107 @@ pub fn alt_token(s: &str) -> Option<&'static str> {
     })
 }
 
+/// State of the `#include` slice (INC-1 to INC-5): the guard names that
+/// `#define` has defined and the files that `#pragma once` closed.
+#[derive(Default)]
+pub struct Pp {
+    defines: std::collections::HashSet<String>,
+    once: std::collections::HashSet<std::path::PathBuf>,
+    depth: u32,
+}
+
 pub fn lex(src: &str, d: &mut Diags) -> Vec<Token> {
+    lex_file(src, None, d)
+}
+
+/// Lex a translation unit whose main file is `path`. `#include "file"`
+/// lines are replaced by the tokens of the file (INC-1). The tokens of a
+/// header carry the line of the directive.
+pub fn lex_file(src: &str, path: Option<&std::path::Path>, d: &mut Diags) -> Vec<Token> {
+    let mut pp = Pp::default();
+    if let Some(p) = path {
+        if src_has_pragma_once(src) {
+            pp.once.insert(p.canonicalize().unwrap_or(p.to_path_buf()));
+        }
+    }
+    let mut out = lex_in(src, path, d, &mut pp);
+    let line = out.last().map_or(1, |t| t.line);
+    out.push(Token { kind: TK::Eof, text: String::new(), line, lit: None });
+    out
+}
+
+fn src_has_pragma_once(src: &str) -> bool {
+    src.lines().map(str::trim).find(|l| !l.is_empty() && !l.starts_with("//")).map_or(false, |l| {
+        let w: Vec<&str> = l.trim_start_matches('#').split_whitespace().collect();
+        l.starts_with('#') && w == ["pragma", "once"]
+    })
+}
+
+/// Handle one directive line (without the `#`). Returns the tokens it
+/// adds, and sets `*skip` when an `#ifndef` names a defined guard.
+fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp, skip: &mut bool) -> Vec<Token> {
+    let text = text.split("//").next().unwrap_or("").trim();
+    let (word, rest) = match text.find(|c: char| !(c.is_alphanumeric() || c == '_')) {
+        Some(k) => (&text[..k], text[k..].trim()),
+        None => (text, ""),
+    };
+    match word {
+        "include" => {
+            if !(rest.starts_with('"') && rest.len() >= 2 && rest[1..].contains('"')) {
+                d.unsupported(line, "#include form other than \"file\" (outside the spec)");
+                return vec![];
+            }
+            let name = &rest[1..1 + rest[1..].find('"').unwrap()];
+            let Some(base) = path else {
+                d.unsupported(line, "#include without a file name for the unit");
+                return vec![];
+            };
+            // INC-2: the directory of the file that holds the directive.
+            let file = base.parent().unwrap_or(std::path::Path::new(".")).join(name);
+            let Ok(src) = std::fs::read_to_string(&file) else {
+                d.error(line, Some("INC-3"), format!("no file matches the header name \"{}\"", name));
+                return vec![];
+            };
+            let canon = file.canonicalize().unwrap_or(file.clone());
+            if pp.once.contains(&canon) {
+                return vec![]; // INC-5
+            }
+            if src_has_pragma_once(&src) {
+                pp.once.insert(canon);
+            }
+            if pp.depth > 64 {
+                d.unsupported(line, "#include nested too deeply");
+                return vec![];
+            }
+            pp.depth += 1;
+            let mut toks = lex_in(&src, Some(&file), d, pp);
+            pp.depth -= 1;
+            for t in &mut toks {
+                t.line = line;
+            }
+            toks
+        }
+        "pragma" if rest == "once" => vec![],
+        "ifndef" => {
+            // INC-4: a later inclusion of a guarded file adds no text.
+            if pp.defines.contains(rest) {
+                *skip = true;
+            }
+            vec![]
+        }
+        "define" if !rest.is_empty() && rest.chars().all(|c| c.is_alphanumeric() || c == '_') => {
+            pp.defines.insert(rest.to_string());
+            vec![]
+        }
+        "endif" => vec![],
+        _ => {
+            d.unsupported(line, "preprocessor directive (outside the spec)");
+            vec![]
+        }
+    }
+}
+
+fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp) -> Vec<Token> {
     let b: Vec<char> = src.chars().collect();
     let mut i = 0;
     let mut line = 1u32;
@@ -118,10 +218,46 @@ pub fn lex(src: &str, d: &mut Diags) -> Vec<Token> {
             i += 2;
             continue;
         }
-        if c == '#' && out.last().map_or(true, |t: &Token| t.line != line) {
-            d.unsupported(line, "preprocessor directive (outside the spec)");
+        if c == '#' && out.last().map_or(true, |t: &Token| t.line != line) && line_start(&b, i) {
+            let st = i + 1;
             while i < n && b[i] != '\n' {
                 i += 1;
+            }
+            let text: String = b[st..i].iter().collect();
+            let mut skip = false;
+            let toks = directive(text.trim(), line, path, d, pp, &mut skip);
+            out.extend(toks);
+            if skip {
+                // Skip to the matching `#endif`.
+                let mut nest = 0;
+                while i < n {
+                    if b[i] == '\n' {
+                        line += 1;
+                        i += 1;
+                        let mut k = i;
+                        while k < n && (b[k] == ' ' || b[k] == '\t') {
+                            k += 1;
+                        }
+                        if k < n && b[k] == '#' {
+                            let rest: String = b[k + 1..].iter().take_while(|&&c| c != '\n').collect();
+                            let w = rest.trim_start();
+                            if w.starts_with("if") {
+                                nest += 1;
+                            } else if w.starts_with("endif") {
+                                if nest == 0 {
+                                    i = k;
+                                    while i < n && b[i] != '\n' {
+                                        i += 1;
+                                    }
+                                    break;
+                                }
+                                nest -= 1;
+                            }
+                        }
+                        continue;
+                    }
+                    i += 1;
+                }
             }
             continue;
         }
@@ -214,8 +350,21 @@ pub fn lex(src: &str, d: &mut Diags) -> Vec<Token> {
             i += 1;
         }
     }
-    out.push(Token { kind: TK::Eof, text: String::new(), line, lit: None });
     out
+}
+
+/// Only white space comes before position `i` on its line.
+fn line_start(b: &[char], i: usize) -> bool {
+    let mut k = i;
+    while k > 0 {
+        k -= 1;
+        match b[k] {
+            '\n' => return true,
+            ' ' | '\t' => continue,
+            _ => return false,
+        }
+    }
+    true
 }
 
 fn lex_raw_string(

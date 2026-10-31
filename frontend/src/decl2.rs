@@ -34,6 +34,7 @@ impl P {
             self.parse_declaration_recover(Ctx::Namespace);
         }
         self.check_main();
+        self.check_internal_uses();
     }
 
     pub fn parse_declaration_recover(&mut self, ctx: Ctx) -> Option<Stmt> {
@@ -1515,6 +1516,12 @@ impl P {
         if local {
             self.check_condition_conflict(&name, line);
         }
+        // ODR-1: a static data member defined twice outside its class.
+        if let (Some(q), Some(p)) = (d.qual, redecl) {
+            if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() && !self.static_member_defs.insert(p) {
+                self.error(line, "ODR-1", format!("static data member '{}' defined twice", name));
+            }
+        }
         if d.qual.is_some() && redecl.is_none() && !self.in_template() {
             if let SK::Class(c) = self.scopes[target_scope].kind {
                 if !self.class_uncertain(c) {
@@ -2006,7 +2013,9 @@ impl P {
                     if f.template != template {
                         continue;
                     }
-                    if f.fty.params == fty.params && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq {
+                    if f.fty.params == fty.params && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq && !(self.at("requires") && in_class_body) {
+                        // (A member with a trailing requires-clause can
+                        // overload one with the same parameters.)
                         existing = Some(p);
                     } else if f.fty.params == fty.params && in_class_body && f.fty.refq != fty.refq && (f.fty.refq == 0 || fty.refq == 0) {
                         // CLS-6: overloads must all have ref-qualifiers or none.
@@ -2212,6 +2221,9 @@ impl P {
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
+                if member_class.is_none() && !is_friend && ctx != Ctx::Block && !template && !self.in_template() && (is_static || self.in_unnamed_ns(sc)) {
+                    self.internal_fns.insert(id);
+                }
                 if let Some(c) = member_class {
                     if kind == FnKind::Ctor {
                         self.classes[c].ctors.push(id);
@@ -2249,6 +2261,10 @@ impl P {
                     }
                 }
             }
+        } else if !in_class_body && existing.is_some() && d.qual.is_some() && self.hidden_friends.contains_key(&id) && self.decl_scope() != target_scope && !self.in_template() {
+            // ACC-17: a qualified declaration outside the namespace does
+            // not find a friend that is still hidden.
+            self.error(line, "ACC-17", format!("'{}' is a friend that the namespace has not declared", name));
         } else if !in_class_body && existing.is_some() && self.scopes[target_scope].kind == SK::Namespace {
             self.hidden_friends.remove(&id);
         }
@@ -2543,11 +2559,17 @@ impl P {
         if ci.bases.iter().any(|b| b.class.is_none_or(|bc| !self.plain_class(&Ty::Class(bc), depth + 1))) {
             return false;
         }
+        // ATTR-6: the members, also of array elements.
+        fn elem(t: &Ty) -> &Ty {
+            match t {
+                Ty::Array(e, _) => elem(&e.t),
+                t => t,
+            }
+        }
         ci.fields.iter().all(|&f| match &self.decls[f].k {
-            DK::Field(fi) => match &fi.ty.t {
-                Ty::Class(_) => self.plain_class(&fi.ty.t, depth + 1),
-                Ty::Array(..) => false,
-                t => !t.is_ref(),
+            DK::Field(fi) => match elem(&fi.ty.t) {
+                t @ Ty::Class(_) => self.plain_class(t, depth + 1),
+                t => !t.is_ref() && !t.contains_unknown(),
             },
             _ => false,
         })
@@ -2815,6 +2837,35 @@ impl P {
             r?;
         }
         Ok(())
+    }
+
+    /// A scope inside an unnamed namespace (LNK rules: internal linkage).
+    pub fn in_unnamed_ns(&self, mut s: usize) -> bool {
+        loop {
+            if s != self.global && self.scopes[s].kind == SK::Namespace && self.scopes[s].name.is_empty() {
+                return true;
+            }
+            match self.scopes[s].parent {
+                Some(p) => s = p,
+                None => return false,
+            }
+        }
+    }
+
+    /// ODR-9, ODR-11: a function with internal linkage that the unit
+    /// calls must be defined in the unit. The rule needs no diagnostic.
+    /// Clang and GCC warn, and `-pedantic-errors` makes the warning an
+    /// error, so the front end rejects.
+    fn check_internal_uses(&mut self) {
+        let mut seen = std::collections::HashSet::new();
+        for (id, line) in self.internal_uses.clone() {
+            if !seen.insert(id) {
+                continue;
+            }
+            if self.func(id).is_some_and(|f| !f.defined && !f.deleted && !f.opaque) && !self.scopes[self.decls[id].scope].uncertain {
+                self.error(line, "ODR-9", format!("function '{}' has internal linkage and is used but not defined", self.decls[id].name));
+            }
+        }
     }
 
     fn check_main(&mut self) {

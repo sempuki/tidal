@@ -41,7 +41,9 @@ impl P {
                             return Expr::unknown(line, "bad call");
                         }
                         // OPR-7: a call of a class object calls its operator().
-                        if !self.in_template() && !self.class_uncertain(c) {
+                        // A conversion function to a function pointer adds a
+                        // candidate that the front end does not model.
+                        if !self.in_template() && !self.class_uncertain(c) && !self.any_conv(c, 0) {
                             if let Some(ids) = self.lookup_member(c, "operator()") {
                                 if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)) {
                                     return self.call_overloads(Some(callee), ids, args, line);
@@ -296,6 +298,10 @@ impl P {
         }
     }
 
+    pub fn call_overloads_pub(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
+        self.call_overloads(obj, cands, args, line)
+    }
+
     fn call_overloads(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
         let mut cands = cands;
         let adl = std::mem::take(&mut self.call_adl);
@@ -331,6 +337,20 @@ impl P {
                 o
             }
         });
+        // ICS-P5: choose by the conversion sequences when the front end can
+        // form all of them.
+        let mut picked: Option<(DeclId, Vec<crate::ics::Ics>)> = None;
+        self.ics_no_viable = false;
+        if !any_template && !self.in_template() {
+            match self.ics_select(obj.as_ref(), &cands, &args) {
+                Ok(Some(x)) => picked = Some(x),
+                Ok(None) => return Expr::unknown(line, "ambiguous call (no candidate has better sequences)"),
+                Err(()) => {}
+            }
+        }
+        let fid = if let Some((f, _)) = &picked {
+            *f
+        } else {
         let mut viable: Vec<(DeclId, Vec<u8>)> = Vec::new();
         let mut arity_ok_any = false;
         let mut const_blocked = false;
@@ -385,6 +405,12 @@ impl P {
             }
             return Expr::unknown(line, "bad call");
         }
+        if std::mem::take(&mut self.ics_no_viable) {
+            // ICS-1 to ICS-20: no candidate has a sequence for every
+            // argument.
+            self.error(line, "PFX-16", "no viable function: an argument has no implicit conversion sequence to its parameter");
+            return Expr::unknown(line, "bad call");
+        }
         if any_template && viable.iter().all(|v| v.1.iter().any(|&r| r > 0)) {
             return Expr::unknown(line, "call that may select a template");
         }
@@ -416,7 +442,15 @@ impl P {
             }
             return Expr::unknown(line, "ambiguous call");
         };
-        let fid = viable[bi].0;
+        viable[bi].0
+        };
+        if let Some((_, seqs)) = &picked {
+            if seqs.iter().any(|q| q.kind == crate::ics::IK::Ambig) {
+                // ICS-8, ICS-7: the chosen function needs the ambiguous
+                // sequence.
+                self.error_because(line, "ICS-8", "CVF-12", format!("the call of '{}' needs an ambiguous conversion", self.decls[fid].name));
+            }
+        }
         let f = self.func(fid).unwrap().clone();
         if f.deleted {
             // DEL-1: a program must not refer to a deleted function.
@@ -425,6 +459,9 @@ impl P {
         if f.is_main {
             // TR-3: a program must not call main.
             self.error(line, "TR-3", "call of 'main'");
+        }
+        if self.in_unevaluated == 0 && !self.in_template() && self.internal_fns.contains(&fid) {
+            self.internal_uses.push((fid, line));
         }
         if self.in_unevaluated == 0 && !self.in_template() {
             // PFX-14: no call with an incomplete class as the return type or
@@ -634,6 +671,11 @@ impl P {
             if self.class_converts(c) == Some(false) && kind != CastKind::Const {
                 self.error(line, "CAST-19", "no conversion from a class without conversion functions");
             }
+            if matches!(kind, CastKind::Static | CastKind::Functional) {
+                if let Some(x) = self.user_conv(&e, &target, line) {
+                    return x;
+                }
+            }
             return Expr::new(EK::Unknown("conversion function".into()), target, Cat::PR, line);
         }
         let null = self.is_null_ptr_constant(&e);
@@ -745,6 +787,23 @@ impl P {
         let is_paren = matches!(form, InitForm::Paren(_));
         // references
         if ty.t.is_ref() {
+            if let (Some(v), true, Ty::LRef(inner) | Ty::RRef(inner)) = (&items, is_list, &ty.t) {
+                let inner = (**inner).clone();
+                let one_related = v.len() == 1 && match (&nonref(&v[0].ty).t, &inner.t) {
+                    (Ty::Class(a), Ty::Class(b)) => a == b || self.is_base_of(*b, *a),
+                    _ => false,
+                };
+                if matches!(inner.t, Ty::Array(..)) || (matches!(inner.t, Ty::Class(_)) && !one_related) {
+                    // ICS-17, ICS-20: the list initializes a temporary of
+                    // the referenced type.
+                    if matches!(ty.t, Ty::LRef(_)) && !(inner.c && !inner.v) {
+                        self.error(line, "REF-8", "non-const lvalue reference cannot bind to a temporary from a braced list");
+                        return Expr::unknown(line, "bad reference init");
+                    }
+                    let _ = self.convert_init(e, &inner.unqual(), InitForm::CopyList, line);
+                    return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+                }
+            }
             let one = match (&items, is_list || is_paren) {
                 (Some(v), true) => {
                     if v.len() != 1 {
@@ -853,10 +912,26 @@ impl P {
                         let fields = self.classes[c].fields.clone();
                         let is_union = self.classes[c].key == 2;
                         let nfields = if is_union { 1.min(fields.len()) } else { fields.len() };
-                        if v.iter().any(|x| matches!(x.k, EK::Unknown(ref s) if s == "designator")) {
+                        if v.iter().any(|x| matches!(x.k, EK::Unknown(ref s) if s.starts_with("designator"))) {
+                            // LIST-14: designators in declaration order.
+                            let mut last = None;
+                            for x in v {
+                                if let EK::Unknown(s) = &x.k {
+                                    let name = s.trim_start_matches("designator").trim();
+                                    if let Some(i) = fields.iter().position(|&f| self.decls[f].name == name) {
+                                        if last.is_some_and(|l| i <= l) {
+                                            self.error(line, "LIST-14", format!("designator '{}' is out of declaration order", name));
+                                            break;
+                                        }
+                                        last = Some(i);
+                                    }
+                                }
+                            }
                             return Expr::new(EK::Unknown("designated initializers".into()), ty.clone(), Cat::PR, line);
                         }
-                        if v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c) {
+                        if v.len() == 1 && (nonref(&v[0].ty).t == Ty::Class(c) || matches!(nonref(&v[0].ty).t, Ty::Class(d) if self.is_base_of(c, d))) {
+                            // ICS-18: one element of the class or a derived
+                            // class initializes by copy.
                             return v[0].clone();
                         }
                         let any_nested_aggr = fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if matches!(fi.ty.t, Ty::Array(..) | Ty::Class(_))));
@@ -899,6 +974,11 @@ impl P {
                             if self.is_base_of(c, sc) {
                                 return e;
                             }
+                        }
+                        if matches!(et.t, Ty::Class(_)) && matches!(self.ics_value_pub(&e, &ty.unqual()), Ok(Some(_))) {
+                            // ICS-4: a conversion function to the class or
+                            // a class derived from it.
+                            return Expr::new(EK::Unknown("conversion function".into()), ty.clone(), Cat::PR, line);
                         }
                         if simple_aggr && !self.class_uncertain(c) && form == InitForm::Copy {
                             self.error(line, "INIT-7", "no conversion to an aggregate class");
@@ -1127,6 +1207,10 @@ impl P {
     /// call stays unknown.
     pub fn ctor_call(&mut self, c: usize, args: &[Expr], ty: &QTy, line: u32) -> Expr {
         let unknown = Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+        if !self.class_uncertain(c) && !self.in_template() && self.ctor_no_match(c, args) {
+            self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[c].name));
+            return unknown;
+        }
         if self.class_uncertain(c) || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_))) {
             return unknown;
         }

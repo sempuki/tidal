@@ -105,10 +105,11 @@ fn run_one(t: &Test) -> Outcome2 {
         let src = std::fs::read_to_string(&f).unwrap_or_default();
         let (m32, werror, wflags) = (t.m32, t.werror, t.wflags.clone());
         let (tx, rx) = mpsc::channel();
+        let fpath = f.clone();
         std::thread::Builder::new()
             .stack_size(64 << 20)
             .spawn(move || {
-                let r = std::panic::catch_unwind(|| check_source(&src, m32, werror, &wflags));
+                let r = std::panic::catch_unwind(|| check_source(&src, Some(&fpath), m32, werror, &wflags));
                 let _ = tx.send(r.map(|(o, _)| o).map_err(|_| ()));
             })
             .unwrap();

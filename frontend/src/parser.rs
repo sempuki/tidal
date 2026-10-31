@@ -331,6 +331,20 @@ pub struct P {
     pub friend_classes: std::collections::HashSet<usize>,
     /// Names of constructs that were skipped, for the unsupported list.
     pub in_unevaluated: u32,
+    /// ODR-9: functions with internal linkage, and the first evaluated
+    /// call of each.
+    pub internal_fns: std::collections::HashSet<DeclId>,
+    pub internal_uses: Vec<(DeclId, u32)>,
+    /// ODR-1: static data members with a definition outside the class.
+    pub static_member_defs: std::collections::HashSet<DeclId>,
+    /// The classes that stand for `std::initializer_list<E>` (ICS-16),
+    /// with their element types.
+    pub init_list_classes: Vec<(QTy, usize)>,
+    /// The parenthesized arguments of the `new` initializer being parsed.
+    pub new_paren_args: Vec<Expr>,
+    /// The last ICS selection formed every sequence and found no viable
+    /// function.
+    pub ics_no_viable: bool,
     pub ce_depth: u32,
     pub pending_template: Option<crate::decl2::PendingTemplate>,
     pub skipped_template_check: bool,
@@ -411,6 +425,12 @@ impl P {
             access_stack: Vec::new(),
             friend_classes: Default::default(),
             in_unevaluated: 0,
+            internal_fns: Default::default(),
+            internal_uses: Vec::new(),
+            static_member_defs: Default::default(),
+            init_list_classes: Vec::new(),
+            new_paren_args: Vec::new(),
+            ics_no_viable: false,
             ce_depth: 0,
             pending_template: None,
             skipped_template_check: false,

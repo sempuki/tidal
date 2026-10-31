@@ -208,6 +208,7 @@ impl P {
                     let e = self.parse_unary();
                     self.in_unevaluated -= 1;
                     let e = e?;
+                    self.check_unevaluated_dtor(&e, false);
                     if matches!(e.k, EK::Overloads(_) | EK::Func(_)) {
                         self.error(line, "UN-14", "sizeof applied to a function");
                         return Ok(Expr::new(EK::Int(1), QTy::new(Ty::size_t()), Cat::PR, line));
@@ -230,6 +231,7 @@ impl P {
                     self.in_unevaluated -= 1;
                     let e = e?;
                     self.expect(")")?;
+                    self.check_unevaluated_dtor(&e, false);
                     let v = self.noexcept_of(&e);
                     return Ok(match v {
                         Some(b) => Expr::new(EK::Int(b as i128), QTy::bool_(), Cat::PR, line),
@@ -348,6 +350,10 @@ impl P {
             return Ok(Expr::unknown(line, "pointer to member"));
         };
         let id = ids[0];
+        if ids.iter().filter(|&&i| self.func(i).is_some()).count() > 1 {
+            // The target type chooses from an overload set; not modeled.
+            return Ok(Expr::unknown(line, "address of an overload set"));
+        }
         match self.decls[id].k.clone() {
             DK::Field(f) => {
                 if f.ty.t.is_ref() {
@@ -383,7 +389,7 @@ impl P {
     /// initializer of a `new` expression. `init` is (braced, number of
     /// values) when there is an initializer.
     #[allow(clippy::too_many_arguments)]
-    fn check_new_type(&mut self, t: &QTy, is_auto: bool, bounds: &[Option<u64>], first_absent: bool, first_const: Option<i128>, init: Option<(bool, usize)>, placement: Option<usize>, global: bool, line: u32) {
+    fn check_new_type(&mut self, t: &QTy, is_auto: bool, bounds: &[Option<u64>], first_absent: bool, first_const: Option<i128>, init: Option<(bool, usize)>, placement: Option<&[Expr]>, global: bool, line: u32) {
         if is_auto {
             if !bounds.is_empty() {
                 self.error(line, "NEW-16", "array of 'auto' in new");
@@ -412,7 +418,8 @@ impl P {
                 self.error(line, "NEW-17", "more initializer values than the array size in new");
             }
         }
-        if let Some(np) = placement {
+        if let Some(pargs) = placement {
+            let np = pargs.len();
             // NEW-20: a declared allocation function must accept the
             // placement arguments; NEW-19's functions accept none.
             let name = if bounds.is_empty() { "operatornew" } else { "operatornew[]" };
@@ -421,7 +428,16 @@ impl P {
                 _ => false,
             };
             let fns = self.scopes[self.global].names.get(name).cloned().unwrap_or_default();
-            let fits = fns.iter().any(|&f| self.func(f).is_none_or(|fi| fi.template || fi.fty.variadic || (fi.fty.params.len() >= 1 + np && fi.fty.params.len() - fi.defaults.min(fi.fty.params.len()) <= 1 + np)));
+            let fits_count: Vec<DeclId> = fns.iter().copied().filter(|&f| self.func(f).is_none_or(|fi| fi.template || fi.fty.variadic || (fi.fty.params.len() >= 1 + np && fi.fty.params.len() - fi.defaults.min(fi.fty.params.len()) <= 1 + np))).collect();
+            // NEW-20, PFX-6: each placement argument converts to its
+            // parameter type.
+            let fits = fits_count.iter().any(|&f| {
+                let Some(fi) = self.func(f).cloned() else { return true };
+                if fi.template || fi.fty.variadic {
+                    return true;
+                }
+                pargs.iter().enumerate().all(|(i, a)| !matches!(self.ics_form(a, &fi.fty.params[i + 1], false), Ok(None)))
+            });
             if !class_fn && !fits && !self.scopes[self.global].uncertain {
                 self.error(line, "NEW-20", format!("no declared '{}' takes {} placement argument{}", if bounds.is_empty() { "operator new" } else { "operator new[]" }, np, if np == 1 { "" } else { "s" }));
             }
@@ -522,9 +538,17 @@ impl P {
                 }
             }
         }
+        self.new_paren_args.clear();
         let init = self.parse_new_init()?;
+        let pargs = std::mem::take(&mut self.new_paren_args);
+        if let (Ty::Class(c), true, Some((false, _))) = (&t.t, bounds.is_empty(), init) {
+            // CTOR-25: a constructor must accept the arguments.
+            if !self.class_uncertain(*c) && !self.in_template() && self.ctor_no_match(*c, &pargs) {
+                self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[*c].name));
+            }
+        }
         if !self.in_template() {
-            self.check_new_type(&t, is_auto, &bounds, first_absent, first_const, init, placement.as_ref().map(|v| v.len()), global, line);
+            self.check_new_type(&t, is_auto, &bounds, first_absent, first_const, init, placement.as_deref(), global, line);
         }
         // NEW-2: the result points to the first element, which is an array
         // for a multi-dimensional new.
@@ -544,6 +568,41 @@ impl P {
 
     /// DTOR-3: a class prvalue written where its destructor is deleted
     /// or not accessible.
+    /// DTOR-3 for an unevaluated operand: every class prvalue in the
+    /// operand, except a call that is the operand of `decltype` (also as
+    /// the right operand of a comma).
+    pub fn check_unevaluated_dtor(&mut self, e: &Expr, decltype: bool) {
+        if self.in_template() {
+            return;
+        }
+        let mut top = e;
+        let mut spine: Vec<*const Expr> = Vec::new();
+        while let EK::Comma(_, r) = &top.k {
+            spine.push(top);
+            top = r;
+        }
+        let exempt_call = decltype && matches!(top.k, EK::Call(..));
+        if exempt_call {
+            spine.push(top);
+        } else {
+            spine.clear();
+        }
+        let mut found: Option<(usize, u32)> = None;
+        walk_expr(e, &mut |x: &Expr| {
+            if found.is_some() || spine.iter().any(|&p| std::ptr::eq(x, p)) || x.cat != Cat::PR {
+                return;
+            }
+            if let Ty::Class(c) = x.ty.t {
+                found = Some((c, x.line));
+            }
+        });
+        if let Some((c, line)) = found {
+            if self.dtor_unusable(c) {
+                self.error(line, "DTOR-3", format!("prvalue of '{}', whose destructor is deleted or not accessible", self.classes[c].name));
+            }
+        }
+    }
+
     pub fn check_prvalue_dtor(&mut self, e: &Expr) {
         if e.cat != Cat::PR || self.in_template() || self.in_unevaluated > 0 {
             return;
@@ -559,14 +618,16 @@ impl P {
         if self.at("(") {
             self.pos += 1;
             let mut n = 0;
+            let mut args = Vec::new();
             if !self.at(")") {
                 loop {
                     n += 1;
                     if self.at("{") {
-                        self.parse_braced_init()?;
+                        args.push(self.parse_braced_init()?);
                     } else {
                         let a = self.parse_assignment()?;
                         self.check_prvalue_dtor(&a);
+                        args.push(a);
                     }
                     if !self.eat(",") {
                         break;
@@ -574,6 +635,7 @@ impl P {
                 }
             }
             self.expect(")")?;
+            self.new_paren_args = args;
             return Ok(Some((false, n)));
         } else if self.at("{") {
             let e = self.parse_braced_init()?;
@@ -1183,13 +1245,15 @@ impl P {
         let r = (|| -> PR<()> {
             while !self.at("}") {
                 if self.at(".") && self.peek(1).kind == TK::Ident {
-                    // designator (LIST-5): kept as an unknown item
+                    // designator (LIST-5): kept as an unknown item with the
+                    // member name
+                    let dname = self.peek(1).text.clone();
                     self.pos += 2;
                     self.eat("=");
                     let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
                     let mut u = Expr::unknown(line, "designated initializer");
                     u.ty = e.ty.clone();
-                    items.push(Expr::new(EK::Unknown("designator".into()), QTy::unknown(), Cat::PR, line));
+                    items.push(Expr::new(EK::Unknown(format!("designator {}", dname)), QTy::unknown(), Cat::PR, line));
                     continue_after(self);
                     if !self.eat(",") {
                         break;
@@ -2102,6 +2166,9 @@ impl P {
             _ => {}
         }
         if let Ty::Class(sc) = nonref(&e.ty).t {
+            if let Some(x) = self.user_conv(&e, &target, line) {
+                return Ok(x);
+            }
             return match self.class_converts(sc) {
                 Some(false) => Err(format!("class '{}' has no conversion function", self.classes[sc].name)),
                 _ => Ok(Expr::new(EK::Unknown("conversion function".into()), to.clone(), Cat::PR, line)),
@@ -2305,6 +2372,14 @@ impl P {
     }
 
     /// Bind a reference (REF-1, REF-2, REF-3).
+    /// The expression names a bit-field.
+    pub fn is_bitfield(&self, e: &Expr) -> bool {
+        match &e.k {
+            EK::Member(_, f) => matches!(&self.decls[*f].k, DK::Field(fi) if fi.bits.is_some()),
+            _ => false,
+        }
+    }
+
     pub fn bind_ref(&mut self, e: Expr, to: &QTy, line: u32, rule: &'static str) -> Expr {
         let (is_l, inner) = match &to.t {
             Ty::LRef(i) => (true, (**i).clone()),
@@ -2314,7 +2389,7 @@ impl P {
         if e.ty.is_unknown() || inner.is_unknown() {
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
-        if matches!(e.k, EK::InitList(_)) {
+        if matches!(e.k, EK::InitList(_)) && e.ty.is_unknown() {
             return Expr::new(EK::Unknown("reference bound to a braced list".into()), inner, Cat::L, line);
         }
         if matches!(e.k, EK::Overloads(_) | EK::Func(_)) && matches!(inner.t, Ty::Func(_)) {
@@ -2325,6 +2400,16 @@ impl P {
             || matches!((&et.t, &inner.t), (Ty::Class(a), Ty::Class(b)) if self.is_base_of(*b, *a))
             || matches!((&et.t, &inner.t), (Ty::Array(a, Some(_)), Ty::Array(b, None)) if a == b);
         let cv_ok = (!et.c || inner.c) && (!et.v || inner.v);
+        if matches!(et.t, Ty::Class(_)) && matches!(inner.t, Ty::Func(_)) {
+            return Expr::new(EK::Unknown("conversion to a function reference".into()), inner, Cat::L, line);
+        }
+        if !related && matches!(et.t, Ty::Class(_)) {
+            // ICS-11: a conversion function whose result the reference
+            // binds.
+            if let Some(x) = self.user_conv(&e, to, line) {
+                return x;
+            }
+        }
         if is_l && !(inner.c && !inner.v) {
             // REF-1: a non-const lvalue reference binds only to an lvalue
             // of a related type with no more qualifiers.
@@ -2333,6 +2418,8 @@ impl P {
                     return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
                 }
                 self.error(line, "REF-8", format!("non-const lvalue reference cannot bind to an rvalue ({})", rule));
+            } else if related && self.is_bitfield(&e) {
+                self.error(line, "REF-8", "non-const lvalue reference cannot bind to a bit-field");
             } else if !related {
                 if let Ty::Class(_) = et.t {
                     // conversion function to a reference: not modeled
@@ -2467,6 +2554,14 @@ impl P {
     // ---------------- builders ----------------
 
     pub fn build_comma(&mut self, l: Expr, r: Expr, line: u32) -> Expr {
+        let classes: Vec<usize> = [&l, &r].iter().filter_map(|e| if let Ty::Class(c) = nonref(&e.ty).t { Some(c) } else { None }).collect();
+        if !classes.is_empty() && !self.in_template() && self.operator_visible(",", &classes) {
+            // An operator function for the comma.
+            if let Some(x) = self.operator_select(",", &l, Some(&r), line) {
+                return x;
+            }
+            return Expr::unknown(line, "overloaded comma");
+        }
         let ty = r.ty.clone();
         let cat = r.cat;
         let l = Expr::new(EK::Conv(Conv::ToVoid, Box::new(l)), QTy::new(Ty::Void), Cat::PR, line);
@@ -2499,6 +2594,9 @@ impl P {
         if all_known && !self.operator_visible(op, &classes) {
             self.error(line, rule, format!("no operator '{}' for class operand", op));
             return Some(Expr::unknown(line, "bad class operand"));
+        }
+        if let Some(x) = self.operator_select(op, l, r, line) {
+            return Some(x);
         }
         Some(Expr::unknown(line, "overloaded operator"))
     }
@@ -2955,6 +3053,11 @@ impl P {
                 }
                 self.check_copy_from(c, &x, false, true, line);
             }
+            if op == "=" {
+                if let Some(x) = self.operator_select("=", &l, Some(&r), line) {
+                    return x;
+                }
+            }
             return Expr::unknown(line, "class assignment");
         }
         if lt.is_unknown() {
@@ -3188,6 +3291,9 @@ impl P {
         if matches!(i.k, EK::InitList(_)) {
             return Expr::unknown(line, "braced subscript");
         }
+        if let Ty::Class(_) = nonref(&i.ty).t {
+            return Expr::unknown(line, "subscript with a class index");
+        }
         let it = nonref(&i.ty);
         if at.is_unknown() || it.is_unknown() {
             return Expr::new(EK::Index(Box::new(a), Box::new(i)), QTy::unknown(), Cat::L, line);
@@ -3302,6 +3408,13 @@ impl P {
                 // PFX-16: no constructor of the class takes the argument.
                 self.error(line, "PFX-16", format!("no constructor of '{}' takes an argument of class type {}", self.classes[c].name, show(&nonref(&items[0].ty))));
                 return Expr::unknown(line, "bad functional cast");
+            }
+            if braced && items.is_empty() && !self.in_template() && self.is_simple_aggregate(c) && self.classes[c].fields.is_empty() && !self.class_uncertain(c) {
+                // An empty aggregate from empty braces.
+                let mut e = self.convert_init(init.clone(), &ty.unqual(), InitForm::DirectList, line);
+                e.cat = Cat::PR;
+                e.ty = ty.unqual();
+                return Expr::new(EK::Conv(Conv::NoOp, Box::new(e)), ty.unqual(), Cat::PR, line);
             }
             let mut e = Expr::unknown(line, "class temporary");
             e.ty = ty.unqual();

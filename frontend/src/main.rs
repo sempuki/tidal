@@ -12,6 +12,7 @@ mod decl2;
 mod diag;
 mod expr;
 mod expr2;
+mod ics;
 mod lexer;
 mod parser;
 mod special;
@@ -26,10 +27,10 @@ pub enum Outcome {
     Unsupported(Vec<diag::Diag>),
 }
 
-pub fn check_source(src: &str, m32: bool, werror: bool, wflags: &[String]) -> (Outcome, Vec<diag::Diag>) {
+pub fn check_source(src: &str, path: Option<&std::path::Path>, m32: bool, werror: bool, wflags: &[String]) -> (Outcome, Vec<diag::Diag>) {
     types::ILP32.with(|c| c.set(m32));
     let mut d = diag::Diags::default();
-    let toks = lexer::lex(src, &mut d);
+    let toks = lexer::lex_file(src, path, &mut d);
     let mut p = parser::P::new(toks, d);
     p.werror = werror;
     p.wflags = wflags.to_vec();
@@ -66,7 +67,7 @@ fn main() {
                 }
             };
             let wflags: Vec<String> = args.iter().filter(|a| a.starts_with("-W")).cloned().collect();
-            let (out, all) = check_source(&src, m32, werror, &wflags);
+            let (out, all) = check_source(&src, Some(std::path::Path::new(path)), m32, werror, &wflags);
             for d in &all {
                 let kind = match d.sev {
                     Severity::Error => "error",

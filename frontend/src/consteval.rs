@@ -1172,7 +1172,7 @@ impl<'a> Eval<'a> {
             // CE-16: a declared but not yet defined function.
             return nc("CE-16", format!("'{}' is declared but not defined at this point", name));
         };
-        if f.kind != FnKind::Normal && f.kind != FnKind::Operator {
+        if f.kind != FnKind::Normal && f.kind != FnKind::Operator && f.kind != FnKind::Conversion {
             return unsup("special member function call");
         }
         self.depth += 1;
@@ -1507,7 +1507,7 @@ impl<'a> Eval<'a> {
                 None => Ok(Flow::Return(None)),
                 Some(e) => {
                     let ret_ref = self.ret_ref.last().copied().unwrap_or(true);
-                    if e.cat != Cat::PR && !matches!(e.k, EK::Conv(..)) && ret_ref {
+                    if e.cat != Cat::PR && (!matches!(e.k, EK::Conv(..)) || matches!(e.k, EK::Conv(Conv::Bind, _))) && ret_ref {
                         // returning a reference
                         let p = self.lvalue(e)?;
                         return Ok(Flow::Return(Some(Val::Ptr(p))));

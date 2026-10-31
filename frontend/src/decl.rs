@@ -864,6 +864,19 @@ impl P {
         };
         let id = *ids.iter().find(|&&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::TypeParam | DK::Template(_))).unwrap_or(&ids[0]);
         if self.at("<") && matches!(self.decls[id].k, DK::Template(_)) {
+            if name == "initializer_list" && self.scopes[self.decls[id].scope].name == "std" && !self.in_template() {
+                // LSUP-1: std::initializer_list<E> becomes a class that
+                // the front end knows by its element type (ICS-16).
+                let save = self.pos;
+                self.pos += 1;
+                let el = self.parse_type_id();
+                if let Ok(el) = el {
+                    if self.eat(">") && !el.is_unknown() {
+                        return Ok(QTy::new(Ty::Class(self.init_list_class(el, line))));
+                    }
+                }
+                self.pos = save;
+            }
             self.skip_template_args()?;
             return Ok(QTy::unknown());
         }
@@ -879,6 +892,37 @@ impl P {
             DK::Enum(e) => QTy::new(Ty::Enum(*e)),
             _ => QTy::unknown(),
         })
+    }
+
+    /// The class for `std::initializer_list<E>`. The front end does not
+    /// model its members, so the class is opaque.
+    pub fn init_list_class(&mut self, el: QTy, line: u32) -> usize {
+        if let Some(x) = self.init_list_classes.iter().find(|x| x.0 == el) {
+            return x.1;
+        }
+        let parent = self.global;
+        let scope = self.new_scope(SK::Class(self.classes.len()), Some(parent), "initializer_list");
+        self.classes.push(ClassInfo {
+            name: "initializer_list".into(),
+            key: 1,
+            scope,
+            complete: true,
+            fields: vec![],
+            bases: vec![],
+            has_conv: false,
+            conv_targets: vec![],
+            ctors: vec![],
+            dtor: None,
+            has_virtual: false,
+            template: false,
+            opaque: true,
+            line,
+            align: 8,
+            anon_unions: vec![],
+        });
+        let c = self.classes.len() - 1;
+        self.init_list_classes.push((el, c));
+        c
     }
 
     pub fn skip_template_args(&mut self) -> PR<()> {
@@ -943,6 +987,7 @@ impl P {
         self.in_unevaluated -= 1;
         let e = e?;
         self.expect(")")?;
+        self.check_unevaluated_dtor(&e, true);
         Ok(self.decltype_of(&e, parenthesized))
     }
 
@@ -1418,6 +1463,25 @@ impl P {
                 q = QTy::new(Ty::LRef(Box::new(q)));
             } else if self.eat("&&") {
                 q = QTy::new(Ty::RRef(Box::new(q)));
+            } else if self.is_member_ptr_start() {
+                // `operator int C::*`
+                let save = self.pos;
+                let scope = self.parse_nested_name()?;
+                let cname = self.ident();
+                let class = match (scope, cname) {
+                    (None, Ok(n)) => self.lookup(&n).and_then(|ids| self.class_of_decl(ids[0])),
+                    (Some(Ok(s)), Ok(n)) => self.lookup_in_scope(s, &n, true).and_then(|ids| self.class_of_decl(ids[0])),
+                    _ => None,
+                };
+                if !self.eat("::") || !self.eat("*") {
+                    self.pos = save;
+                    break;
+                }
+                let (c, v) = self.parse_cv();
+                q = match class {
+                    Some(cl) => QTy { t: Ty::MemPtr(cl, Box::new(q)), c, v },
+                    None => QTy::unknown(),
+                };
             } else {
                 break;
             }

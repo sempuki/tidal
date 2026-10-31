@@ -56,6 +56,12 @@ part of CPY-13 with `-Wall`.
 target/release/tidal-fe conform ../tests [-v] [--out FILE]
 ```
 
+`check` reads `#include "file"` relative to the directory of the file
+that holds the directive (INC-2). The front end has no other
+preprocessing: `#ifndef`, `#define` of a name without a value, `#endif`,
+and `#pragma once` work only as include guards, and other directives are
+unsupported.
+
 The harness reads the `// tidal-` directives at the top of each test. The
 harness uses the `tidal-expect-edg` override when a test has one, and treats
 `run`, `run-fail`, and `link-fail` as accept. `-Werror` in `tidal-flags`
@@ -81,15 +87,16 @@ writes the table and one line per test to FILE.
 
 | File | Contents |
 |---|---|
-| `src/lexer.rs` | tokens and literal checks (PRIM rules) |
+| `src/lexer.rs` | tokens, literal checks (PRIM rules), and `#include "file"` with include guards and `#pragma once` (INC rules) |
 | `src/parser.rs` | parser state, entities, scopes, name lookup |
 | `src/decl.rs`, `src/decl2.rs` | decl-specifiers, declarators, declarations, functions, templates |
 | `src/class.rs` | class and enumeration specifiers |
 | `src/expr.rs`, `src/expr2.rs` | expressions, conversions, calls, casts, initialization |
+| `src/ics.rs` | implicit conversion sequences, their comparison, and the choice between candidates (ICS rules) |
 | `src/stmt.rs` | statements and jump checks |
 | `src/consteval.rs` | constant evaluation |
 | `src/conform.rs` | the conformance harness |
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-4.md`.
+`report-5.md`.
