@@ -131,8 +131,10 @@ catalog counts as done.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | done: 2291/3058 pass, 0 false rejects, 717 of 1350 rejections caught | `reports/clean-room/rust-frontend/` |
+| Front end | done: 2589/3199 pass, 0 false rejects (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
+| Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
+| X1, X2, X3, X4 | done: 30, 20, 22, and 17 rule changes; findings X1-1 to X4-16 | `reports/clean-room/X1/` to `X4/` |
 | All others | planned | |
 
 ## 9. Prompts

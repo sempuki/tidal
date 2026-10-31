@@ -160,7 +160,11 @@ current phase is phase 2, foundations that later pages need:
    nonterminal an error.
 3. Item G1: keywords, reserved names, and the literal suffix grammar.
 4. Item K: the language-support types, then the task-level guides.
-5. Propose exercises X1 to X4 (running).
+5. Act on the findings of Propose exercises X1 to X4
+   (`reports/clean-room/X1/` to `X4/`). The most cited gaps: a list of
+   implicit calls (X2-1), what default initialization does to a class
+   (X3-1), the state of an object whose declaration a jump skips
+   (X3-2), and orders that no rule gives (X1-3 to X1-8).
 
 Waiting on the maintainer:
 
