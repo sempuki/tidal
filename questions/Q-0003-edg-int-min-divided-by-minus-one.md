@@ -1,6 +1,6 @@
 # Q-0003: Does EDG accepting `INT_MIN / -1` during constant evaluation change MUL-10?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** MUL-10, divergence MUL-D3, `tests/expressions/multiplicative/signed-overflow-divide.cpp`, `tests/expressions/multiplicative/signed-overflow-remainder.cpp`
 
 ## Context

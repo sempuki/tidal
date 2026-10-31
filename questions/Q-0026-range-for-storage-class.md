@@ -1,6 +1,6 @@
 # Q-0026: May a range-based for variable have a storage class?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** RFOR-5, `tests/statements/range-for/storage-class.cpp`, `tests/statements/range-for/static-thread-local-declaration.cpp`
 
 ## Context

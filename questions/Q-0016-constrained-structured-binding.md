@@ -1,6 +1,6 @@
 # Q-0016: May a structured binding use a constrained `auto`?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** SB-7, `tests/declarations/structured-bindings/constrained.cpp`
 
 ## Context

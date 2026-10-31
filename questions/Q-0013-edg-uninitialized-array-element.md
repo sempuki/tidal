@@ -1,6 +1,6 @@
 # Q-0013: Does EDG accepting a read of an uninitialized array element during constant evaluation change INIT-1?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** INIT-1, `tests/declarations/initialization/forms/read-uninitialized-array.cpp`
 
 ## Context

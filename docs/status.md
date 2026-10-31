@@ -103,8 +103,11 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and fourteen questions are open for opinions, each with a provisional answer the
-spec follows. Q-0009 (license) is settled. See `questions/README.md`.
+One hundred and fourteen questions are open for opinions, each with a
+provisional answer the spec follows. Nine of them have the status
+"compiler defect": their answer is that one compiler or an older version
+is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
+Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
 

@@ -1,6 +1,6 @@
 # Q-NNNN: Question as a single sentence?
 
-**Status:** open | provisional | settled
+**Status:** open | provisional | compiler defect | settled
 **Affects:** rule IDs, tests, or documents
 
 ## Context

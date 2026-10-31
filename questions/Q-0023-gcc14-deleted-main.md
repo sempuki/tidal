@@ -1,6 +1,6 @@
 # Q-0023: Is `int main() = delete;` rejected?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** DEL-2, `tests/declarations/functions/deleted/deleted-main.cpp`
 
 ## Context

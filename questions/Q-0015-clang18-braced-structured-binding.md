@@ -1,6 +1,6 @@
 # Q-0015: Is `auto [a, b]{arr};` valid when `arr` is an array?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** SB-7, `tests/declarations/structured-bindings/initializer-braces.cpp`
 
 ## Context

@@ -1,6 +1,6 @@
 # Q-0044: Is a `for` condition variable destroyed before or after the iteration expression?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** LOOP-3, `tests/statements/loops/for-condition-destroyed-after-step.cpp`
 
 ## Context

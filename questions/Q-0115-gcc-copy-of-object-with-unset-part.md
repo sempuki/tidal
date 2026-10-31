@@ -1,6 +1,6 @@
 # Q-0115: Does GCC accepting a copy of an object with an unset part during constant evaluation change CE-22?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** CE-22, `tests/expressions/constant-expressions/copy-unset-member.cpp`, `tests/expressions/constant-expressions/copy-unset-array-element.cpp`
 
 ## Context

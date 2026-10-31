@@ -1,6 +1,6 @@
 # Q-0002: Does EDG accepting floating division by zero during constant evaluation change MUL-11?
 
-**Status:** provisional
+**Status:** compiler defect
 **Affects:** MUL-11, divergence MUL-D2, `tests/expressions/multiplicative/floating-divide-by-zero.cpp`, `tests/expressions/multiplicative/floating-zero-by-zero.cpp`
 
 ## Context
