@@ -2917,9 +2917,9 @@ compilers affect the Status column.
 | `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/translation/warning-not-error.cpp` | TR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/align-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/align-lp64.cpp` | TYP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/align-member-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/align-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/bool-values.cpp` | TYP-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/char-signed-ilp32.cpp` | TYP-3 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/char-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2927,7 +2927,7 @@ compilers affect the Status column.
 | `foundations/types/distinct-same-size-ilp32.cpp` | TYP-5 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/distinct-same-size.cpp` | TYP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/float-precision.cpp` | TYP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/int-max-overflow.cpp` | TYP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/int-max-overflow.cpp` | TYP-4 ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/integer-ranges-ilp32.cpp` | TYP-4 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/integer-ranges-lp64.cpp` | TYP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/long-double-precision-ilp32.cpp` | TYP-10 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
@@ -2947,20 +2947,25 @@ compilers affect the Status column.
 | `foundations/types/size-result-type-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
 | `foundations/types/size-result-type-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/specifier-int-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-bool.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-long-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-long-double.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/specifier-long-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-long-double.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-long-long-long.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-long-short.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-short-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-short-double.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-char32.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-signed-unsigned.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-signed-wchar.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-unsigned-bool.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-char16.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-unsigned-char8.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifier-unsigned-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/types/specifiers-equivalent.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 TYP-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/wchar-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
@@ -3160,7 +3165,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3145/3145 tests pass on baseline compilers.
+3150/3150 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -12198,6 +12203,13 @@ check that the rejection has the intended cause.
 - `foundations/types/specifier-int-char.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier
 - `foundations/types/specifier-int-char.cpp` (gcc-16): error: two or more data types in declaration of 'a'
 - `foundations/types/specifier-int-char.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier
+- `foundations/types/specifier-long-bool.cpp` (clang-host): error: 'long bool' is invalid
+- `foundations/types/specifier-long-bool.cpp` (gcc-host): error: ‘long’ specified with ‘bool’
+- `foundations/types/specifier-long-bool.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-bool.cpp` (gcc-14): error: 'long' specified with 'bool'
+- `foundations/types/specifier-long-bool.cpp` (clang-18): error: 'long bool' is invalid
+- `foundations/types/specifier-long-bool.cpp` (gcc-16): error: 'long' specified with 'bool'
+- `foundations/types/specifier-long-bool.cpp` (clang-22): error: 'long bool' is invalid
 - `foundations/types/specifier-long-char.cpp` (clang-host): error: 'long char' is invalid
 - `foundations/types/specifier-long-char.cpp` (gcc-host): error: ‘long’ specified with ‘char’
 - `foundations/types/specifier-long-char.cpp` (edg-7.0): error: invalid combination of type specifiers
@@ -12212,6 +12224,13 @@ check that the rejection has the intended cause.
 - `foundations/types/specifier-long-float.cpp` (clang-18): error: 'long float' is invalid
 - `foundations/types/specifier-long-float.cpp` (gcc-16): error: 'long' specified with 'float'
 - `foundations/types/specifier-long-float.cpp` (clang-22): error: 'long float' is invalid
+- `foundations/types/specifier-long-long-double.cpp` (clang-host): error: 'long long double' is invalid
+- `foundations/types/specifier-long-long-double.cpp` (gcc-host): error: ‘long long’ specified with ‘double’
+- `foundations/types/specifier-long-long-double.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-long-double.cpp` (gcc-14): error: 'long long' specified with 'double'
+- `foundations/types/specifier-long-long-double.cpp` (clang-18): error: 'long long double' is invalid
+- `foundations/types/specifier-long-long-double.cpp` (gcc-16): error: 'long long' specified with 'double'
+- `foundations/types/specifier-long-long-double.cpp` (clang-22): error: 'long long double' is invalid
 - `foundations/types/specifier-long-long-long.cpp` (clang-host): error: cannot combine with previous 'long long' declaration specifier
 - `foundations/types/specifier-long-long-long.cpp` (gcc-host): error: ‘long long long’ is too long for GCC
 - `foundations/types/specifier-long-long-long.cpp` (edg-7.0): error: invalid combination of type specifiers
@@ -12240,6 +12259,20 @@ check that the rejection has the intended cause.
 - `foundations/types/specifier-short-double.cpp` (clang-18): error: 'short double' is invalid
 - `foundations/types/specifier-short-double.cpp` (gcc-16): error: 'short' specified with 'double'
 - `foundations/types/specifier-short-double.cpp` (clang-22): error: 'short double' is invalid
+- `foundations/types/specifier-short-float.cpp` (clang-host): error: 'short float' is invalid
+- `foundations/types/specifier-short-float.cpp` (gcc-host): error: ‘short’ specified with ‘float’
+- `foundations/types/specifier-short-float.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-short-float.cpp` (gcc-14): error: 'short' specified with 'float'
+- `foundations/types/specifier-short-float.cpp` (clang-18): error: 'short float' is invalid
+- `foundations/types/specifier-short-float.cpp` (gcc-16): error: 'short' specified with 'float'
+- `foundations/types/specifier-short-float.cpp` (clang-22): error: 'short float' is invalid
+- `foundations/types/specifier-signed-char32.cpp` (clang-host): error: 'char32_t' cannot be signed or unsigned
+- `foundations/types/specifier-signed-char32.cpp` (gcc-host): error: ‘signed’ specified with ‘char32_t’
+- `foundations/types/specifier-signed-char32.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-signed-char32.cpp` (gcc-14): error: 'signed' specified with 'char32_t'
+- `foundations/types/specifier-signed-char32.cpp` (clang-18): error: 'char32_t' cannot be signed or unsigned
+- `foundations/types/specifier-signed-char32.cpp` (gcc-16): error: 'signed' specified with 'char32_t'
+- `foundations/types/specifier-signed-char32.cpp` (clang-22): error: 'char32_t' cannot be signed or unsigned
 - `foundations/types/specifier-signed-unsigned.cpp` (clang-host): error: cannot combine with previous 'signed' declaration specifier
 - `foundations/types/specifier-signed-unsigned.cpp` (gcc-host): error: ‘signed’ and ‘unsigned’ specified together
 - `foundations/types/specifier-signed-unsigned.cpp` (edg-7.0): error: invalid combination of type specifiers
@@ -12261,6 +12294,13 @@ check that the rejection has the intended cause.
 - `foundations/types/specifier-unsigned-bool.cpp` (clang-18): error: 'bool' cannot be signed or unsigned
 - `foundations/types/specifier-unsigned-bool.cpp` (gcc-16): error: 'unsigned' specified with 'bool'
 - `foundations/types/specifier-unsigned-bool.cpp` (clang-22): error: 'bool' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char16.cpp` (clang-host): error: 'char16_t' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char16.cpp` (gcc-host): error: ‘unsigned’ specified with ‘char16_t’
+- `foundations/types/specifier-unsigned-char16.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-unsigned-char16.cpp` (gcc-14): error: 'unsigned' specified with 'char16_t'
+- `foundations/types/specifier-unsigned-char16.cpp` (clang-18): error: 'char16_t' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char16.cpp` (gcc-16): error: 'unsigned' specified with 'char16_t'
+- `foundations/types/specifier-unsigned-char16.cpp` (clang-22): error: 'char16_t' cannot be signed or unsigned
 - `foundations/types/specifier-unsigned-char8.cpp` (clang-host): error: 'char8_t' cannot be signed or unsigned
 - `foundations/types/specifier-unsigned-char8.cpp` (gcc-host): error: ‘unsigned’ specified with ‘char8_t’
 - `foundations/types/specifier-unsigned-char8.cpp` (edg-7.0): error: invalid combination of type specifiers

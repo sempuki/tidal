@@ -164,7 +164,7 @@ difference of two null pointers is zero.
 
 :::{rule} ADD-9
 :kind: undefined
-:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp expressions/additive/signed-overflow-add-sanitizer.cpp
+:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp expressions/additive/signed-overflow-add-sanitizer.cpp foundations/types/int-max-overflow.cpp
 
 If the common type is a signed integer type and the mathematical result
 does not fit in it, the behavior is undefined.

@@ -1,4 +1,4 @@
-// tidal-rules: TYP-2
+// tidal-rules: TYP-2 TYP-12
 // tidal-expect: accept
 // tidal-flags: -m32
 struct Pair { char tag; long long value; };

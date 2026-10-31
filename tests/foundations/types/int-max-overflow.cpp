@@ -1,4 +1,4 @@
-// tidal-rules: TYP-4
+// tidal-rules: TYP-4 ADD-9
 // tidal-expect: reject
 // tidal-error-clang: outside the range of representable values of type .int.
 // tidal-error-gcc: overflow in constant expression

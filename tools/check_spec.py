@@ -149,7 +149,7 @@ REFERENCED_TOPICS = {
     "concepts",
     "conversion sequences",  # implicit conversion sequences
     "coroutines",
-    "fundamental types",     # ranks, extended floating-point types
+    "extended floating-point types",
     "library",
     "lookup",                # qualified and argument-dependent lookup
     "memory model",

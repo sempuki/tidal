@@ -81,6 +81,7 @@ Every rule ID starts with the prefix of its page.
 | `TR` | `foundations/translation.md` |
 | `TRY` | `exceptions/handlers.md` |
 | `TYN` | `declarations/type-names.md` |
+| `TYP` | `foundations/types.md` |
 | `UN` | `expressions/unary.md` |
 | `UNEV` | `expressions/decltype.md` |
 | `UNI` | `classes/unions.md` |

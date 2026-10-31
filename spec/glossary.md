@@ -140,9 +140,10 @@ usual arithmetic conversions
 
   1. If one operand has a floating-point type, the other operand is
      converted to the floating-point type with the larger range. The order
-     is `float`, `double`, `long double`. Extended floating-point types
-     have their own ranks *(fundamental types referenced)*. If neither
-     type's rank is greater than the other's, the operation is not valid.
+     is `float`, `double`, `long double` ({rule}`TYP-9`). Extended
+     floating-point types have their own ranks
+     *(extended floating-point types referenced)*. If neither type's rank
+     is greater than the other's, the operation is not valid.
   2. If not, both operands go through {term}`integer promotion`. If the
      types are then the same, that type is the common type.
   3. If both types are signed, or both are unsigned, the narrower operand
@@ -154,8 +155,8 @@ usual arithmetic conversions
   6. If not, both operands are converted to the unsigned type that has the
      width of the signed type.
 
-  Width means the conversion rank *(fundamental types referenced)*. For
-  the standard integer types the order is `char`, `short`, `int`, `long`,
+  Width means the integer conversion rank ({rule}`TYP-8`). For the
+  standard integer types the order is `char`, `short`, `int`, `long`,
   `long long`.
 
 value category
