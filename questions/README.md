@@ -95,6 +95,10 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0082](Q-0082-array-new-deleted-destructor.md) | Can new create an array of a class whose destructor is deleted? | provisional | option 1 |
 | [Q-0083](Q-0083-nested-default-member-init-early.md) | Can a default member initializer of a nested class be used before the enclosing class is complete? | provisional | option 1 |
 | [Q-0084](Q-0084-reference-member-temporary.md) | Must an implementation reject a constructor that binds a reference member to a temporary? | provisional | option 1 |
+| [Q-0085](Q-0085-constexpr-destructor-virtual-base.md) | Can a class with a virtual base have a constexpr destructor? | provisional | option 1 |
+| [Q-0086](Q-0086-call-returning-abstract.md) | Is a call to a function that returns an abstract class valid? | provisional | option 1 |
+| [Q-0087](Q-0087-explicit-object-matches-virtual.md) | Can an explicit object member function have the name and parameters of a base virtual function? | provisional | option 1 |
+| [Q-0088](Q-0088-union-user-assignment-active.md) | Does assignment through a user-provided operator activate an inactive union member during constant evaluation? | provisional | option 1 |
 
 ## Status values
 
