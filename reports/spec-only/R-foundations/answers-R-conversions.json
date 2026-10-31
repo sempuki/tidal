@@ -1,0 +1,339 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-3"
+  ],
+  "why": "A null pointer to member converts to false and a non-null one to true, so main returns 0."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "A pointer to void must not convert implicitly to another pointer type."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "nullptr and zero literals of any integer type convert to null pointers, and the program has no main."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "1e300 converts to float as the largest finite value or infinity, and both exceed 3.0e38f; Clang and GCC give infinity in constant evaluation."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1",
+   "UN-1"
+  ],
+  "why": "Plain and Small promote to int, Big keeps unsigned long long, and char32_t promotes to unsigned int because int cannot hold all its values."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-15"
+  ],
+  "why": "A pointer to a member of a base converts implicitly to a pointer to the same member of a derived class."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "const is added at the inner level and also at every level above it, so the conversion is implicit."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-12"
+  ],
+  "why": "nullptr converts to bool only in direct initialization, and this is copy initialization."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "The conversion from int A::* to int D::* goes through the ambiguous base A."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "An integer variable with the value zero is not a null pointer constant."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A zero literal in parentheses still counts as a null pointer constant."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-5",
+   "CE-9",
+   "TR-5"
+  ],
+  "why": "1e10 does not fit in int, so the conversion is undefined, and constant evaluation rejects it."
+ },
+ "p13": {
+  "outcome": "run-fail",
+  "rules": [
+   "CONV-5",
+   "TR-8"
+  ],
+  "why": "1e10 to int is undefined at run time, and the float-cast-overflow sanitizer without recovery stops the program with a nonzero status; the spec only says undefined, and the sanitizer outcome comes from the test list."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-14",
+   "CONV-P3"
+  ],
+  "why": "D has two B subobjects, so the derived-to-base conversion is ambiguous and not implicit."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-3",
+   "MUL-11"
+  ],
+  "why": "A NaN converts to true so main returns 0, but MUL-11 makes 0.0/0.0 undefined, so the spec does not settle this; the best guess is that x86-64 gives NaN."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A nonzero integer must not convert to a pointer implicitly."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-13",
+   "UN-1"
+  ],
+  "why": "Unary + turns the array into int* and the function name into a function pointer, and the program has no main."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A character literal with value zero is not an integer literal, so it is not a null pointer constant (EDG accepts it, Q-0100)."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "An unsigned bit-field of width 3 promotes to int, so 1 - 2 is -1, which is less than 0, and main returns 0."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "0.1 rounds to one of the two nearest floats, both nonzero and below 0.11f."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-3"
+  ],
+  "why": "Nonzero gives true, 0.0, -0.0 and a null pointer give false, and a pointer of type int* (not nullptr itself) converts to bool in copy initialization."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-5"
+  ],
+  "why": "-0.5 drops its fraction to 0, which fits in unsigned, so the result is 0."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "bool, the char types, short, unsigned short and char16_t promote to int, wchar_t is smaller than long long on the target, and float keeps its type."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-2"
+  ],
+  "why": "Integer conversions keep the low bits: -1 gives ~0u, 300 gives 44, and -2 gives 65534."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-12"
+  ],
+  "why": "nullptr converts to bool in direct initialization with parentheses or braces."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A noexcept function converts to a pointer to a function with or without noexcept."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-14"
+  ],
+  "why": "A pointer or reference to D converts implicitly to B, which is an unambiguous public base."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A function without noexcept must not convert to a pointer to a noexcept function."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "const is added at the inner level without adding it at the level above."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "A pointer to a function must not convert to a pointer to void."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-16"
+  ],
+  "why": "A pointer to an array of known bound converts implicitly to a pointer to an array of unknown bound."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "const int* to void* removes a cv-qualifier."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-15"
+  ],
+  "why": "A pointer to a member of a derived class does not convert implicitly to a pointer to a member of the base."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A pointer to a member function without noexcept must not convert to one with noexcept."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "Bit-fields promote by width: width 3 gives int, width 40 keeps long long, and unsigned width 32 promotes to unsigned int."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-2"
+  ],
+  "why": "Signed targets keep the low bits in two's complement: 200 gives -56, 4294967295u gives -1, and 40000 gives -25536."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A zero literal converts to a null pointer to data member and to member function."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "Each value is between two adjacent floats, and the asserts accept either."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "The spec leaves the choice to the implementation, but every compiler in the matrix rounds to nearest with ties to even, which gives 16777220.0f."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A pointer to a noexcept member function converts to one without noexcept."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "The literal false is not a null pointer constant."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-6"
+  ],
+  "why": "2^24 fits exactly in float and 2^52 fits exactly in double."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "Object pointers convert to void pointers with the same or more cv-qualifiers."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "The member pointer conversion must not go through the virtual base B."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-4"
+  ],
+  "why": "Conversion drops the fraction toward zero: 3, -3 and 2."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-14"
+  ],
+  "why": "A null D* converts to a null B* even though B is at a nonzero offset, so main returns 0."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-5",
+   "CE-9"
+  ],
+  "why": "-1.0 to unsigned is undefined, so constant evaluation rejects it."
+ }
+}

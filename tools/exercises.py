@@ -52,6 +52,7 @@ MATCHES = {
 
 RULE = re.compile(r"^:::\{rule\} (\S+)$")
 TESTS_LINE = re.compile(r"^:tests: (.*)$")
+MAIN = re.compile(r"\bint\s+main\s*\(")
 
 
 def page_tests(page: str) -> list[str]:
@@ -99,7 +100,9 @@ def predict(page: str, out: Path) -> int:
         for j, extra in enumerate(test.sources, 2):
             files.append(f"{pid}-{j}.cpp")
             (out / files[-1]).write_text(strip(extra.read_text()))
-        key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules}
+        has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
+        key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
+                    "main": has_main}
         build = " ".join(files)
         if test.flags:
             build += f", with {' '.join(test.flags)}"
@@ -143,6 +146,11 @@ def score(out: Path, answers_path: Path) -> int:
         a = answers.get(pid, {})
         got = a.get("outcome")
         ok = any(got in MATCHES[e] for e in k["expect"])
+        # The runner links a program with no main only when its test
+        # expects a link failure, which the reader cannot see. So for
+        # such a program, compiling and failing to link both count.
+        if not k.get("main", True) and got in {"compiles", "link-fail"}:
+            ok = ok or bool({"accept", "link-fail"} & set(k["expect"]))
         right += ok
         if not ok:
             rows.append(f"| {pid} | {k['test']} | {', '.join(k['expect'])} | {got} | "

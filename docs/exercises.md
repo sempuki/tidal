@@ -108,7 +108,7 @@ catalog counts as done.
 |---|---|---|
 | W0 | done | `reports/spec-only/java-programmer/` |
 | Front end | running | `reports/spec-only/rust-frontend/` |
-| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | running | |
+| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/spec-only/R-foundations/` |
 | All others | planned | |
 
 ## 8. Prompts

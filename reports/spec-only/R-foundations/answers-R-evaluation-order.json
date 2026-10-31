@@ -1,0 +1,130 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-3"
+  ],
+  "why": "Braced list elements are evaluated left to right, so a is 0 and b is 1."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The function expression pick() is evaluated before the argument arg()."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-5"
+  ],
+  "why": "The side effect of i++ is complete before the next full expression."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-3"
+  ],
+  "why": "The right side of an assignment, with its side effects, finishes before the store, so i is 2 and j is 3."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The object expression of a member call is evaluated before the arguments."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-4"
+  ],
+  "why": "Two unsequenced reads of a volatile object are undefined, but nothing requires a diagnostic and there is no main."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-5",
+   "CE-1"
+  ],
+  "why": "Plain sequential statements in a constexpr function evaluate to 2."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-5"
+  ],
+  "why": "The temporary made for the default argument ends with the call statement, so it is gone before the next statement writes 9."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-4"
+  ],
+  "why": "Unsequenced writes to adjacent bit-fields in one memory location are undefined, but compilers do not diagnose it and there is no main."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6"
+  ],
+  "why": "An overloaded << keeps the built-in shift order, so first() runs before second()."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "SEQ-4",
+   "TR-6"
+  ],
+  "why": "Clang and GCC warn about unsequenced modifications of i under -Wall, and -Werror makes the warning an error."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "The calls do not interleave, so the results are 0 and 1 in some order, sum is 1 and counter is 2."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "Arguments are each evaluated completely in some order, so r is 1 or 10 and i is 2."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-3"
+  ],
+  "why": "In a[b], a is evaluated before b."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6"
+  ],
+  "why": "An overloaded assignment keeps the built-in order, right operand first."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-3"
+  ],
+  "why": "In a.*b, a is evaluated before b."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-3"
+  ],
+  "why": "In a compound assignment the right operand is evaluated before the left."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "The argument order is unspecified, but the program accepts either order."
+ }
+}

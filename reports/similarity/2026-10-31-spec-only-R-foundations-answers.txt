@@ -1,0 +1,11 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.02
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.03
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.00
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.00
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.00
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.01
+ok   answers.md:reports/spec-only/R-foundations/answers- longest=0   overlap=0.03
+
+0 flagged

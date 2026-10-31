@@ -1,0 +1,11 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   report.md:Predict batches: Foundations longest=0   overlap=0.00
+ok   report.md:Scores                 longest=0   overlap=0.00
+ok   report.md:Translation            longest=0   overlap=0.01
+ok   report.md:Objects and names      longest=0   overlap=0.01
+ok   report.md:Values                 longest=0   overlap=0.01
+ok   report.md:Conversions            longest=0   overlap=0.00
+ok   report.md:Constant evaluation    longest=0   overlap=0.01
+
+0 flagged

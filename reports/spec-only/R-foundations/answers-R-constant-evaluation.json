@@ -1,0 +1,330 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-18"
+  ],
+  "why": "The call through the unknown reference s does not read the object, so it is a constant (Clang 18 rejects, Q-0090)."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "CE-16"
+  ],
+  "why": "later has only a declaration where v is initialized, and the later definition does not help."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "n is not const or constexpr, so it is not usable in constant expressions."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "A loop of 100000000 steps exceeds the step limits of all implementations in the matrix."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The storage is freed twice."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "A recursion depth of 400 is within the limits of all implementations in the matrix."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "CE-5",
+   "CE-3"
+  ],
+  "why": "bump changes counter, which existed before the evaluation."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is on a path that f(1) does not take."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The goto is not reached by f(false)."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CE-4"
+  ],
+  "why": "Constant evaluation must not convert a pointer to void to a pointer to an object type."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "A const int with a constant initializer is usable in constant expressions."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "n is const but its initializer is a call to a non-constexpr function, so it is not usable."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Equality comparison of function pointers is allowed in constant evaluation."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "A constexpr pointer must not point to an object with automatic storage."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1",
+   "LAM-12"
+  ],
+  "why": "Calls to lambdas are allowed in constant evaluation, and the lambdas are implicitly constexpr."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "A recursion depth of 100000 exceeds the limits of all implementations in the matrix."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CE-6"
+  ],
+  "why": "f reads u.i while u.f is the active member."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The storage from new is never freed in the evaluation."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "A try block is allowed when no exception is thrown."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3",
+   "TR-1"
+  ],
+  "why": "The initializer of w is its own evaluation, which did not call f, so v is not usable there, and the error is diagnosed although f is never called."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3",
+   "CE-11"
+  ],
+  "why": "A const variable of enumeration type with a constant initializer is usable, so e + 1 is a valid array bound."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "f(-1) evaluates the throw-expression."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "f(true) reaches the goto."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "MUL-9"
+  ],
+  "why": "f(1) divides by zero, which is undefined."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The result points to storage that the evaluation allocated and did not free."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "CE-4"
+  ],
+  "why": "Constant evaluation must not contain a reinterpret_cast."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9"
+  ],
+  "why": "g reads through a pointer to x after f returned, which is a dangling read and undefined."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11"
+  ],
+  "why": "The condition of explicit(...) must not narrow, and 2 to bool narrows (EDG accepts, Q-0078)."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CE-12"
+  ],
+  "why": "f reads an object through a volatile lvalue."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The variable of non-literal type is not reached by f(false)."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "Storage from new[] is freed with delete."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "Both pointers refer to objects with static storage duration."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Loops, calls and arithmetic on local objects are allowed; 1+4+9 is 14 and 16+1 is 17."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "none"
+  ],
+  "why": "The spec has no rule for non-type template arguments; by analogy with CE-11 the conversion of 300 to unsigned char narrows, so the guess is reject."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-5"
+  ],
+  "why": "The evaluation can change objects it created."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "plain is not constexpr."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "A const volatile variable is not usable in constant expressions, so it cannot be an array bound."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-6"
+  ],
+  "why": "Each assignment makes that member active, so reading u.i after u.i = 9 is valid."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-11",
+   "CE-1"
+  ],
+  "why": "n is constexpr, so n * 2 is a valid array bound and n a valid enumerator value."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "Each allocation is freed once with the matching form; 5 + 3 is 8."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CE-13"
+  ],
+  "why": "Comparing the addresses of two string literals is not allowed in constant evaluation; Clang rejects but GCC and EDG accept (Q-0033)."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "f(true) reaches the static variable."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "f(false) does not reach the static variable."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "CE-15"
+  ],
+  "why": "Constant evaluation must not order pointers to unrelated objects with <."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Virtual calls to constexpr functions are allowed, and the call dispatches to Derived::id."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "A constexpr reference must not refer to a temporary object."
+ }
+}
