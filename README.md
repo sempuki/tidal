@@ -21,6 +21,7 @@ See [docs/charter.md](docs/charter.md).
 
 | Path | Contents |
 |---|---|
+| `CONTRIBUTING.md` | Roles, how to claim work, the pipeline in short, and what a change needs before merge |
 | `AGENTS.md` | Rules for all agents: source readers give writers summaries only |
 | `docs/charter.md` | Goals, scope, and non-goals |
 | `docs/clean-room.md` | Who may read what, and how contamination is checked |
