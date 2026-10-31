@@ -9,16 +9,17 @@ current state only. The history of how it got here is in `git log`.
 |---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 6 | 3 required, 2 reject, 1 recommended | 21 | Q-0112 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 27 |  | 0 flagged |
+| [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 7 | 6 required, 1 reject | 26 |  | 0 flagged |
+| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 6 | 4 required, 1 undefined, 1 unspecified | 18 |  | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 7 | 6 required, 1 recommended | 15 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 21 | 14 required, 7 reject | 65 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 32 | Q-0097 | 0 flagged |
 | [Iteration statements](../spec/statements/loops.md) | 7 | 4 required, 3 reject | 19 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 26 | Q-0020, Q-0026, Q-0098 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 12 | 8 required, 3 reject, 1 unspecified | 40 | Q-0041, Q-0097 | 0 flagged |
-| [Value categories and temporaries](../spec/expressions/value-categories.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/expressions/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
-| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 18 |  | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 5 impl-defined, 1 recommended | 94 | Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 9 | 5 required, 2 reject, 2 recommended | 49 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 18 | 7 required, 2 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 34 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
@@ -34,7 +35,6 @@ current state only. The history of how it got here is in `git log`.
 | [Pointers to members](../spec/expressions/member-pointers.md) | 11 | 5 required, 4 reject, 1 undefined, 1 unspecified | 66 |  | 0 flagged |
 | [Postfix expressions](../spec/expressions/postfix.md) | 15 | 7 required, 5 reject, 2 undefined, 1 impl-defined | 39 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 18 | 8 required, 6 reject, 2 undefined, 2 impl-defined | 45 | Q-0017 | 0 flagged |
-| [Constant expressions](../spec/expressions/constant-expressions.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 15 | 8 required, 4 reject, 2 undefined, 1 unspecified | 46 | Q-0035, Q-0036, Q-0091 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 21 | 15 required, 3 reject, 1 undefined, 1 unspecified, 1 recommended | 55 | Q-0037, Q-0092 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 15 | 12 required, 3 reject | 49 | Q-0010 | 0 flagged |

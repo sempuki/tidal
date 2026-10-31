@@ -9,13 +9,12 @@ model is checked in its simplest setting.
 :::{tidal-pages}
 translation
 objects
+values
+conversions
 names
+evaluation-order
+constant-evaluation
 :::
-
-The pages on values and value categories, standard conversions,
-evaluation order, and constant evaluation belong here too. They stay
-under Expressions until the current review of those pages ends, and then
-move.
 
 :::{toctree}
 :hidden:
@@ -23,5 +22,9 @@ move.
 
 translation
 objects
+values
+conversions
 names
+evaluation-order
+constant-evaluation
 :::
