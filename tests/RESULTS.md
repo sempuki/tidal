@@ -162,6 +162,85 @@ compilers affect the Status column.
 | `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/assign-result-lvalue.cpp` | CPY-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/cast-move-only-accepted.cpp` | CPY-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/const-member-assign.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/const-member-move-assign.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/const-rvalue-picks-copy.cpp` | CPY-9 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/copy-assign-forms.cpp` | CPY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/copy-assign-nonmember.cpp` | CPY-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-assign-static.cpp` | CPY-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-by-value.cpp` | CPY-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-const-ref.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` | CPY-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-default-args.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` | CPY-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-nonconst-ref.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-volatile.cpp` | CPY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-assign-wrong-return-used.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-assign-wrong-return.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-assign-by-value.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-const-mismatch-unused.cpp` | CPY-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` | CPY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-deleted-used.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-nonconst-param.cpp` | CPY-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-copy-restores.cpp` | CPY-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-move-const-param-used.cpp` | CPY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-move-const-param.cpp` | CPY-14 | accept | accept | accept | accept | reject | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-out-of-line-copy.cpp` | CPY-14 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/defaulted-out-of-line-would-delete.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-volatile-param-used.cpp` | CPY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-volatile-param.cpp` | CPY-14 | accept | accept | accept | accept | reject | accept | accept | accept | pass |
+| `classes/copy-move/deleted-copy-move-only-member.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/deleted-copy-private-member.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/deleted-move-falls-back-to-copy.cpp` | CPY-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/deprecated-copy-warns.cpp` | CPY-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/explicit-copy-ctor-copy-init.cpp` | CPY-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-assign-nonconst.cpp` | CPY-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-constexpr.cpp` | CPY-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp` | CPY-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/implicit-copy-nonconst-from-member.cpp` | CPY-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy.cpp` | CPY-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/implicit-move-assign.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/implicit-move.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/lvalue-move-only-rejected.cpp` | CPY-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/memberwise-array.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/memberwise-assign-order.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/memberwise-order.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/move-assign-deletes-copy-ctor.cpp` | CPY-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor-default-args.cpp` | CPY-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/move-ctor-deletes-copy-assign.cpp` | CPY-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor-deletes-copy.cpp` | CPY-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor.cpp` | CPY-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/move-on-return-no-warning.cpp` | CPY-13 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/move-only-member-moves.cpp` | CPY-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/named-return-elision-either.cpp` | CPY-12 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/named-return-needs-move.cpp` | CPY-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/no-implicit-move-assign-user-dtor.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-copy-assign.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-copy.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-dtor.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/pessimizing-move-warns.cpp` | CPY-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/prvalue-argument-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/prvalue-no-copy-count.cpp` | CPY-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/prvalue-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/reference-member-assign.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/reference-member-copy-ctor.cpp` | CPY-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-converting-move.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-global-not-moved.cpp` | CPY-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-local-as-lvalue-ref.cpp` | CPY-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-local-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-local-prefers-move.cpp` | CPY-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/return-lvalue-ref-not-moved.cpp` | CPY-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-member-not-moved.cpp` | CPY-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-param-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-parenthesized-local.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-rvalue-ref-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-rvalue-ref-to-ref.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/rvalue-picks-move.cpp` | CPY-9 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/template-not-copy-ctor.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/copy-move/user-dtor-keeps-copy.cpp` | CPY-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1427,7 +1506,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1412/1412 tests pass on baseline compilers.
+1491/1491 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1995,6 +2074,237 @@ check that the rejection has the intended cause.
 - `classes/constructors/use-after-dtor-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
 - `classes/constructors/use-after-dtor-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
 - `classes/constructors/use-after-dtor-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/copy-move/const-member-assign.cpp` (clang-host): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/const-member-assign.cpp` (gcc-host): error: use of deleted function ‘S& S::operator=(const S&)’ / note: ‘S& S::operator=(const S&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-assign.cpp` (edg-7.0): error: function "S::operator=(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/const-member-assign.cpp` (gcc-14): error: use of deleted function 'S& S::operator=(const S&)' / note: 'S& S::operator=(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-assign.cpp` (clang-18): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/const-member-assign.cpp` (gcc-16): error: use of deleted function 'S& S::operator=(const S&)' / note: 'S& S::operator=(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-assign.cpp` (clang-22): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/const-member-move-assign.cpp` (clang-host): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/const-member-move-assign.cpp` (gcc-host): error: use of deleted function ‘S& S::operator=(S&&)’ / note: ‘S& S::operator=(S&&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-move-assign.cpp` (edg-7.0): error: function "S::operator=(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/const-member-move-assign.cpp` (gcc-14): error: use of deleted function 'S& S::operator=(S&&)' / note: 'S& S::operator=(S&&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-move-assign.cpp` (clang-18): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/const-member-move-assign.cpp` (gcc-16): error: use of deleted function 'S& S::operator=(S&&)' / note: 'S& S::operator=(S&&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/const-member-move-assign.cpp` (clang-22): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
+- `classes/copy-move/copy-assign-nonmember.cpp` (clang-host): error: overloaded 'operator=' must be a non-static member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (gcc-host): error: ‘S& operator=(S&, const S&)’ must be a non-static member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (edg-7.0): error: "operator=" must be a member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (gcc-14): error: 'S& operator=(S&, const S&)' must be a non-static member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (clang-18): error: overloaded 'operator=' must be a non-static member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (gcc-16): error: 'S& operator=(S&, const S&)' must be a non-static member function
+- `classes/copy-move/copy-assign-nonmember.cpp` (clang-22): error: overloaded 'operator=' must be a non-static member function
+- `classes/copy-move/copy-assign-static.cpp` (clang-host): error: overloaded 'operator=' cannot be a static member function
+- `classes/copy-move/copy-assign-static.cpp` (gcc-host): error: ‘static S& S::operator=(const S&)’ must be a non-static member function
+- `classes/copy-move/copy-assign-static.cpp` (edg-7.0): error: operator may not be a static member function
+- `classes/copy-move/copy-assign-static.cpp` (gcc-14): error: 'static S& S::operator=(const S&)' must be a non-static member function
+- `classes/copy-move/copy-assign-static.cpp` (clang-18): error: overloaded 'operator=' cannot be a static member function
+- `classes/copy-move/copy-assign-static.cpp` (gcc-16): error: 'static S& S::operator=(const S&)' must be a non-static member function
+- `classes/copy-move/copy-assign-static.cpp` (clang-22): error: overloaded 'operator=' cannot be a static member function
+- `classes/copy-move/copy-ctor-by-value.cpp` (clang-host): error: copy constructor must pass its first argument by reference
+- `classes/copy-move/copy-ctor-by-value.cpp` (gcc-host): error: invalid constructor; you probably meant ‘S (const S&)’
+- `classes/copy-move/copy-ctor-by-value.cpp` (edg-7.0): error: copy constructor for class "S" may not have a parameter of type "S"
+- `classes/copy-move/copy-ctor-by-value.cpp` (gcc-14): error: invalid constructor; you probably meant 'S (const S&)'
+- `classes/copy-move/copy-ctor-by-value.cpp` (clang-18): error: copy constructor must pass its first argument by reference
+- `classes/copy-move/copy-ctor-by-value.cpp` (gcc-16): error: invalid constructor; you probably meant 'S (const S&)'
+- `classes/copy-move/copy-ctor-by-value.cpp` (clang-22): error: copy constructor must pass its first argument by reference
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (gcc-host): error: binding reference of type ‘S&’ to ‘const S’ discards qualifiers / note: initializing argument 1 of ‘S::S(S&, int)’
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (edg-7.0): error: no instance of constructor "S::S" matches the argument list / note: function "S::S(S &, int)" does not match because argument #1 does not match parameter
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (gcc-14): error: binding reference of type 'S&' to 'const S' discards qualifiers / note:   initializing argument 1 of 'S::S(S&, int)'
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (clang-18): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (gcc-16): error: binding reference of type 'S&' to 'const S' discards qualifiers / note: initializing argument 1 of 'S::S(S&, int)'
+- `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (gcc-host): error: binding reference of type ‘S&’ to ‘const S’ discards qualifiers / note: initializing argument 1 of ‘S::S(S&)’
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (edg-7.0): error: no instance of constructor "S::S" matches the argument list / note: function "S::S(S &)" does not match because argument #1 does not match parameter
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (gcc-14): error: binding reference of type 'S&' to 'const S' discards qualifiers / note:   initializing argument 1 of 'S::S(S&)'
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (clang-18): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (gcc-16): error: binding reference of type 'S&' to 'const S' discards qualifiers / note: initializing argument 1 of 'S::S(S&)'
+- `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (clang-host): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (gcc-host): error: defaulted declaration ‘void S::operator=(const S&)’ does not match the expected signature / note: expected signature: ‘constexpr S& S::operator=(const S&)’
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (edg-7.0): error: invalid type for defaulted assignment operator
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (gcc-14): error: defaulted declaration 'void S::operator=(const S&)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(const S&)'
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (clang-18): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (gcc-16): error: defaulted declaration 'void S::operator=(const S&)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(const S&)'
+- `classes/copy-move/defaulted-assign-wrong-return-used.cpp` (clang-22): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (clang-host): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (gcc-host): error: defaulted declaration ‘void S::operator=(const S&)’ does not match the expected signature / note: expected signature: ‘constexpr S& S::operator=(const S&)’
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (edg-7.0): error: invalid type for defaulted assignment operator
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (gcc-14): error: defaulted declaration 'void S::operator=(const S&)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(const S&)'
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (clang-18): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (gcc-16): error: defaulted declaration 'void S::operator=(const S&)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(const S&)'
+- `classes/copy-move/defaulted-assign-wrong-return.cpp` (clang-22): error: explicitly-defaulted copy assignment operator must return 'S &'
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (clang-host): error: the parameter for an explicitly-defaulted copy assignment operator must be an lvalue reference type
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (gcc-host): error: defaulted declaration ‘S& S::operator=(S)’ does not match the expected signature / note: expected signature: ‘constexpr S& S::operator=(S&)’
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (edg-7.0): error: invalid type for defaulted assignment operator
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (gcc-14): error: defaulted declaration 'S& S::operator=(S)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(S&)'
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (clang-18): error: the parameter for an explicitly-defaulted copy assignment operator must be an lvalue reference type
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (gcc-16): error: defaulted declaration 'S& S::operator=(S)' does not match the expected signature / note: expected signature: 'constexpr S& S::operator=(S&)'
+- `classes/copy-move/defaulted-copy-assign-by-value.cpp` (clang-22): error: the parameter for an explicitly-defaulted copy assignment operator must be an lvalue reference type
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (clang-host): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (gcc-host): note: expected signature: ‘S::S(S&)’ / error: use of deleted function ‘S::S(const S&)’
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (edg-7.0): error: function "S::S(const S &)" (declared at line 4) cannot be referenced -- it is a deleted function
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (gcc-14): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (clang-18): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (gcc-16): note: expected signature: 'S::S(S&)' / error: use of deleted function 'S::S(const S&)'
+- `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` (clang-22): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (clang-host): note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor / note: 'M' has been explicitly marked deleted here
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (gcc-host): error: use of deleted function ‘S::S(const S&)’ / note: ‘S::S(const S&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (edg-7.0): error: function "S::S(const S &)" (declared at line 4) cannot be referenced -- it is a deleted function
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (gcc-14): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (clang-18): note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor / note: 'M' has been explicitly marked deleted here
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (gcc-16): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/defaulted-copy-deleted-used.cpp` (clang-22): note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor / note: 'M' has been explicitly marked deleted here
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (clang-host): note: function is implicitly deleted because its declared type does not match the type of an implicit move constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (gcc-host): note: expected signature: ‘constexpr S::S(S&&)’ / error: use of deleted function ‘constexpr S::S(const S&&)’
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (edg-7.0): error: function "S::S(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (gcc-14): error: defaulted declaration 'S::S(const S&&)' does not match the expected signature / note: expected signature: 'constexpr S::S(S&&)'
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (clang-18): note: function is implicitly deleted because its declared type does not match the type of an implicit move constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (gcc-16): note: expected signature: 'constexpr S::S(S&&)' / error: use of deleted function 'constexpr S::S(const S&&)'
+- `classes/copy-move/defaulted-move-const-param-used.cpp` (clang-22): note: function is implicitly deleted because its declared type does not match the type of an implicit move constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-move-const-param.cpp` (gcc-14): error: defaulted declaration 'S::S(const S&&)' does not match the expected signature / note: expected signature: 'constexpr S::S(S&&)'
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (clang-host): error: defaulting this copy constructor would delete it after its first declaration / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (gcc-host): note: ‘S::S(const S&)’ is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function ‘M::M(const M&)’
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (edg-7.0): error: function "M::M(const M &)" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (gcc-14): note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function 'M::M(const M&)'
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (clang-18): error: defaulting this copy constructor would delete it after its first declaration / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (gcc-16): note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function 'M::M(const M&)'
+- `classes/copy-move/defaulted-out-of-line-would-delete.cpp` (clang-22): error: defaulting this copy constructor would delete it after its first declaration / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (clang-host): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (gcc-host): note: expected signature: ‘constexpr S::S(const S&)’ / error: use of deleted function ‘constexpr S::S(const volatile S&)’
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (edg-7.0): error: function "S::S(const volatile S &)" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (gcc-14): error: defaulted declaration 'S::S(const volatile S&)' does not match the expected signature / note: expected signature: 'constexpr S::S(const S&)'
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (clang-18): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (gcc-16): note: expected signature: 'constexpr S::S(const S&)' / error: use of deleted function 'constexpr S::S(const volatile S&)'
+- `classes/copy-move/defaulted-volatile-param-used.cpp` (clang-22): note: function is implicitly deleted because its declared type does not match the type of an implicit copy constructor / error: call to implicitly-deleted copy constructor of 'S'
+- `classes/copy-move/defaulted-volatile-param.cpp` (gcc-14): error: defaulted declaration 'S::S(const volatile S&)' does not match the expected signature / note: expected signature: 'constexpr S::S(const S&)'
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (gcc-host): error: use of deleted function ‘S::S(const S&)’ / note: ‘S::S(const S&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (edg-7.0): error: function "S::S(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (gcc-14): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (gcc-16): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-move-only-member.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has a deleted copy constructor
+- `classes/copy-move/deleted-copy-private-member.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has an inaccessible copy constructor
+- `classes/copy-move/deleted-copy-private-member.cpp` (gcc-host): error: use of deleted function ‘S::S(const S&)’ / note: ‘S::S(const S&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-private-member.cpp` (edg-7.0): error: function "S::S(const S &)" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/deleted-copy-private-member.cpp` (gcc-14): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-private-member.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has an inaccessible copy constructor
+- `classes/copy-move/deleted-copy-private-member.cpp` (gcc-16): error: use of deleted function 'S::S(const S&)' / note: 'S::S(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/deleted-copy-private-member.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor of 'S' is implicitly deleted because field 'm' has an inaccessible copy constructor
+- `classes/copy-move/deprecated-copy-warns.cpp` (clang-host): error: definition of implicit copy constructor for 'S' is deprecated because it has a user-provided copy assignment operator [-Werror,-Wdeprecated-copy-with-user-provided-copy] / note: in implicit copy constructor for 'S' first required here
+- `classes/copy-move/deprecated-copy-warns.cpp` (gcc-host): error: implicitly-declared ‘constexpr S::S(const S&)’ is deprecated [-Werror=deprecated-copy] / note: because ‘S’ has user-provided ‘S& S::operator=(const S&)’
+- `classes/copy-move/deprecated-copy-warns.cpp` (gcc-14): error: implicitly-declared 'constexpr S::S(const S&)' is deprecated [-Werror=deprecated-copy] / note: because 'S' has user-provided 'S& S::operator=(const S&)'
+- `classes/copy-move/deprecated-copy-warns.cpp` (clang-18): error: definition of implicit copy constructor for 'S' is deprecated because it has a user-provided copy assignment operator [-Werror,-Wdeprecated-copy-with-user-provided-copy] / note: in implicit copy constructor for 'S' first required here
+- `classes/copy-move/deprecated-copy-warns.cpp` (gcc-16): error: implicitly-declared 'constexpr S::S(const S&)' is deprecated [-Werror=deprecated-copy] / note: because 'S' has user-provided 'S& S::operator=(const S&)'
+- `classes/copy-move/deprecated-copy-warns.cpp` (clang-22): error: definition of implicit copy constructor for 'S' is deprecated because it has a user-provided copy assignment operator [-Werror,-Wdeprecated-copy-with-user-provided-copy] / note: in implicit copy constructor for 'S' first required here
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: explicit constructor is not a candidate
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (gcc-host): error: no matching function for call to ‘S::S(S&)’
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (edg-7.0): error: class "S" has no suitable copy constructor
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (gcc-14): error: no matching function for call to 'S::S(S&)' / note: candidate: 'S::S()'
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (clang-18): error: no matching constructor for initialization of 'S' / note: explicit constructor is not a candidate
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (gcc-16): error: no matching function for call to 'S::S(S&)'
+- `classes/copy-move/explicit-copy-ctor-copy-init.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: explicit constructor is not a candidate
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (clang-host): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (gcc-host): error: use of deleted function ‘S::S(S&&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (edg-7.0): error: function "S::S(S &&)" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (gcc-14): error: use of deleted function 'S::S(S&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (clang-18): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (gcc-16): error: use of deleted function 'S::S(S&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` (clang-22): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (clang-host): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (gcc-host): error: binding reference of type ‘S&’ to ‘const S’ discards qualifiers / note: initializing argument 1 of ‘S& S::operator=(S&)’
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (edg-7.0): error: no operator "=" matches these operands / note: function "S::operator=" does not match because argument #1 does not match parameter
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (gcc-14): error: binding reference of type 'S&' to 'const S' discards qualifiers / note:   initializing argument 1 of 'S& S::operator=(S&)'
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (clang-18): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (gcc-16): error: binding reference of type 'S&' to 'const S' discards qualifiers / note: initializing argument 1 of 'S& S::operator=(S&)'
+- `classes/copy-move/implicit-copy-assign-nonconst.cpp` (clang-22): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 1st argument ('const S') would lose const qualifier
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (clang-host): error: no viable conversion from 'const S' to 'M' / note: candidate constructor not viable: no known conversion from 'const S' to 'M &' for 1st argument
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (gcc-host): error: binding reference of type ‘S&’ to ‘const S’ discards qualifiers / note: initializing argument 1 of ‘S::S(S&)’
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (edg-7.0): error: class "S" has no suitable copy constructor
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (gcc-14): error: binding reference of type 'S&' to 'const S' discards qualifiers / note:   initializing argument 1 of 'S::S(S&)'
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (clang-18): error: no viable conversion from 'const S' to 'M' / note: candidate constructor not viable: no known conversion from 'const S' to 'M &' for 1st argument
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (gcc-16): error: binding reference of type 'S&' to 'const S' discards qualifiers / note: initializing argument 1 of 'S::S(S&)'
+- `classes/copy-move/implicit-copy-nonconst-from-member.cpp` (clang-22): error: no viable conversion from 'const S' to 'M' / note: candidate constructor not viable: no known conversion from 'const S' to 'M &' for 1st argument
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (gcc-host): error: use of deleted function ‘constexpr M::M(const M&)’ / note: ‘constexpr M::M(const M&)’ is implicitly declared as deleted because ‘M’ declares a move constructor or move assignment operator
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (edg-7.0): error: function "M::M(const M &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (gcc-14): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/lvalue-move-only-rejected.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (gcc-host): error: use of deleted function ‘constexpr S::S(const S&)’ / note: ‘constexpr S::S(const S&)’ is implicitly declared as deleted because ‘S’ declares a move constructor or move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (edg-7.0): error: function "S::S(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (gcc-14): error: use of deleted function 'constexpr S::S(const S&)' / note: 'constexpr S::S(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (gcc-16): error: use of deleted function 'constexpr S::S(const S&)' / note: 'constexpr S::S(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (clang-host): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (gcc-host): error: use of deleted function ‘constexpr S& S::operator=(const S&)’ / note: ‘constexpr S& S::operator=(const S&)’ is implicitly declared as deleted because ‘S’ declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (edg-7.0): error: function "S::operator=(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (gcc-14): error: use of deleted function 'constexpr S& S::operator=(const S&)' / note: 'constexpr S& S::operator=(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (clang-18): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (gcc-16): error: use of deleted function 'constexpr S& S::operator=(const S&)' / note: 'constexpr S& S::operator=(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy-assign.cpp` (clang-22): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (gcc-host): error: use of deleted function ‘constexpr S::S(const S&)’ / note: ‘constexpr S::S(const S&)’ is implicitly declared as deleted because ‘S’ declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (edg-7.0): error: function "S::S(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (gcc-14): error: use of deleted function 'constexpr S::S(const S&)' / note: 'constexpr S::S(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (gcc-16): error: use of deleted function 'constexpr S::S(const S&)' / note: 'constexpr S::S(const S&)' is implicitly declared as deleted because 'S' declares a move constructor or move assignment operator
+- `classes/copy-move/move-ctor-deletes-copy.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move constructor
+- `classes/copy-move/named-return-needs-move.cpp` (clang-host): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/named-return-needs-move.cpp` (gcc-host): error: use of deleted function ‘S::S(S&&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/named-return-needs-move.cpp` (edg-7.0): error: function "S::S(S &&)" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/copy-move/named-return-needs-move.cpp` (gcc-14): error: use of deleted function 'S::S(S&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/named-return-needs-move.cpp` (clang-18): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/named-return-needs-move.cpp` (gcc-16): error: use of deleted function 'S::S(S&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/named-return-needs-move.cpp` (clang-22): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/pessimizing-move-warns.cpp` (clang-host): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
+- `classes/copy-move/pessimizing-move-warns.cpp` (gcc-host): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove ‘std::move’ call
+- `classes/copy-move/pessimizing-move-warns.cpp` (gcc-14): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove 'std::move' call
+- `classes/copy-move/pessimizing-move-warns.cpp` (clang-18): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
+- `classes/copy-move/pessimizing-move-warns.cpp` (gcc-16): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove 'std::move' call
+- `classes/copy-move/pessimizing-move-warns.cpp` (clang-22): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
+- `classes/copy-move/reference-member-assign.cpp` (clang-host): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'r' is of reference type 'int &'
+- `classes/copy-move/reference-member-assign.cpp` (gcc-host): error: use of deleted function ‘S& S::operator=(const S&)’ / note: ‘S& S::operator=(const S&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/reference-member-assign.cpp` (edg-7.0): error: function "S::operator=(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/reference-member-assign.cpp` (gcc-14): error: use of deleted function 'S& S::operator=(const S&)' / note: 'S& S::operator=(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/reference-member-assign.cpp` (clang-18): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'r' is of reference type 'int &'
+- `classes/copy-move/reference-member-assign.cpp` (gcc-16): error: use of deleted function 'S& S::operator=(const S&)' / note: 'S& S::operator=(const S&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/copy-move/reference-member-assign.cpp` (clang-22): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'r' is of reference type 'int &'
+- `classes/copy-move/return-global-not-moved.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-global-not-moved.cpp` (gcc-host): error: use of deleted function ‘constexpr M::M(const M&)’ / note: ‘constexpr M::M(const M&)’ is implicitly declared as deleted because ‘M’ declares a move constructor or move assignment operator
+- `classes/copy-move/return-global-not-moved.cpp` (edg-7.0): error: function "M::M(const M &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/return-global-not-moved.cpp` (gcc-14): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-global-not-moved.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-global-not-moved.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-global-not-moved.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (clang-host): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int' / error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ / error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (edg-7.0): error: initial value of reference to non-const must be an lvalue / error: initial value of reference to non-const must be an lvalue
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int' / error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (clang-18): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int' / error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int' / error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `classes/copy-move/return-local-as-lvalue-ref.cpp` (clang-22): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int' / error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (gcc-host): error: use of deleted function ‘constexpr M::M(const M&)’ / note: ‘constexpr M::M(const M&)’ is implicitly declared as deleted because ‘M’ declares a move constructor or move assignment operator
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (edg-7.0): error: function "M::M(const M &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (gcc-14): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-lvalue-ref-not-moved.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-member-not-moved.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-member-not-moved.cpp` (gcc-host): error: use of deleted function ‘constexpr M::M(const M&)’ / note: ‘constexpr M::M(const M&)’ is implicitly declared as deleted because ‘M’ declares a move constructor or move assignment operator
+- `classes/copy-move/return-member-not-moved.cpp` (edg-7.0): error: function "M::M(const M &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/return-member-not-moved.cpp` (gcc-14): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-member-not-moved.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/copy-move/return-member-not-moved.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/copy-move/return-member-not-moved.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
 - `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
 - `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
 - `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
