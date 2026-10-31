@@ -23,6 +23,8 @@ commit messages and messages to the maintainer:
   questions"), no hypophora ("Why? Because..."), and no rhetorical
   anaphora (the same opening repeated across sentences). Write "The
   cache makes this fast".
+- Keep "it" and "this" rare, with one obvious referent. Prefer the noun
+  again, and never write a bare "This means".
 - No "not X, but Y" framing. State the thing.
 - No colon that holds back the point.
 - No em-dashes for asides. Use a new sentence or parentheses.

@@ -39,10 +39,20 @@ meaning arrives. Technical text never uses one. These are the kinds:
 | Hypophora | Asks a question, then answers it | `Why is this undefined? Because the value is unknown.` | `This is undefined because the value is unknown.` |
 | Rhetorical anaphora | Repeats an opening across sentences for rhythm | `It checks the type. It checks the value. It checks the range.` | `It checks the type, the value, and the range.` |
 
-Grammatical back-reference ("it", "this rule", "the operand") is not
-rhetorical anaphora, and stays. The colon that holds back the point,
+The colon that holds back the point,
 "not X but Y", and the buried lede are close relatives, and the table
 above bans them too.
+
+### Pronouns
+
+Keep "it", "this", "that", and "they" rare, and make each one's
+referent obvious.
+
+- Prefer the noun again: "the operand", "the rule", "the conversion".
+- Use "it" or "they" only when exactly one noun in the same or the
+  previous sentence can be the referent.
+- Never use a bare "this" or "that" as a subject. Write "This rule
+  means", not "This means".
 
 STE limits writers to an approved dictionary. Tidal keeps that rule in a
 relaxed form:
