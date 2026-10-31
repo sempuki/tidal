@@ -7,7 +7,7 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
-| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 6 | 3 required, 2 reject, 1 recommended | 21 | Q-0112 | 0 flagged |
+| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 8 | 4 required, 2 reject, 1 undefined, 1 recommended | 26 | Q-0112 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 27 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
@@ -58,7 +58,7 @@ current state only. The history of how it got here is in `git log`.
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | Q-0007, Q-0023 | 0 flagged |
 | [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 20 |  | 0 flagged |
 | [Exception specifications](../spec/declarations/exception-specifications.md) | 6 | 3 required, 1 reject, 1 impl-defined, 1 no-diagnostic | 36 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
-| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 52 | Q-0020, Q-0025 | 0 flagged |
+| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 53 | Q-0020, Q-0025 | 0 flagged |
 | [Static assertions](../spec/declarations/static-assert.md) | 5 | 4 required, 1 reject | 28 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 20 | 14 required, 4 reject, 1 impl-defined, 1 no-diagnostic | 84 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 16 | 8 required, 8 reject | 46 | Q-0052 | 0 flagged |
@@ -71,7 +71,10 @@ current state only. The history of how it got here is in `git log`.
 | [Conversion functions](../spec/classes/conversion-functions.md) | 8 | 5 required, 2 reject, 1 recommended | 60 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 12 | 8 required, 2 reject, 1 unspecified, 1 recommended | 89 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 63 | Q-0061, Q-0062 | 0 flagged |
-| [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
+| [Throw expressions and the exception object](../spec/exceptions/throw.md) | 0 |  | 0 |  | 0 flagged |
+| [Try blocks and handlers](../spec/exceptions/handlers.md) | 0 |  | 0 |  | 0 flagged |
+| [Unwinding and termination](../spec/exceptions/unwinding.md) | 0 |  | 0 |  | 0 flagged |
+| [Glossary](../spec/glossary.md) | 16 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
@@ -79,12 +82,12 @@ https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. Every page
 opens with its principles (decision 0024), and the Foundations chapter
 holds the models that the other pages cite. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-all-pages-3.txt`. The table above comes from
+`reports/similarity/2026-10-31-abstract-machine.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 2888/2888 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 2894/2894 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -100,7 +103,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and eleven questions are open for opinions, each with a provisional answer the
+One hundred and twelve questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -128,9 +131,10 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-0. Build the generated rule index and the short annotations on rules
-   planned in decision 0024, and ask the reviewer who prompted the change
-   to read the Foundations chapter and two topic pages.
+0. Draft the Exceptions chapter (decision 0025): throw expressions,
+   handlers, unwinding. Then ask the reviewer who prompted the
+   principles-first change to read the Foundations chapter and two topic
+   pages, and decide whether rules also want short annotations.
 1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
