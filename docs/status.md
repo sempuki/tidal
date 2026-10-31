@@ -13,7 +13,7 @@ current state only. The history of how it got here is in `git log`.
 | [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 14 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 22 | Q-0020, Q-0026 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 11 | 8 required, 2 reject, 1 unspecified | 30 | Q-0041 | 0 flagged |
-| [Value categories and temporaries](../spec/expressions/value-categories.md) | 7 | 6 required, 1 unspecified | 19 |  | 0 flagged |
+| [Value categories and temporaries](../spec/expressions/value-categories.md) | 10 | 8 required, 1 unspecified, 1 impl-defined | 31 |  | 0 flagged |
 | [Standard conversions](../spec/expressions/conversions.md) | 16 | 9 required, 4 reject, 1 undefined, 2 impl-defined | 34 | Q-0028 | 0 flagged |
 | [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 16 |  | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 20 | 9 required, 6 reject, 1 undefined, 1 unspecified, 2 impl-defined, 1 recommended | 79 | Q-0063, Q-0064 | 0 flagged |
@@ -35,8 +35,12 @@ current state only. The history of how it got here is in `git log`.
 | [New and delete](../spec/expressions/new-delete.md) | 9 | 4 required, 3 reject, 2 undefined | 31 | Q-0035, Q-0036 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 16 | 14 required, 2 reject | 36 | Q-0037 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 14 | 12 required, 2 reject | 43 | Q-0010 | 0 flagged |
+| [Type aliases and class names](../spec/declarations/type-names.md) | 7 | 4 required, 2 reject, 1 no-diagnostic | 50 | Q-0066, Q-0067 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 20 | 14 required, 3 reject, 1 undefined, 2 no-diagnostic | 47 | Q-0011, Q-0045 | 0 flagged |
+| [The inline specifier](../spec/declarations/inline.md) | 6 | 4 required, 1 reject, 1 no-diagnostic | 28 | Q-0068 | 0 flagged |
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 23 | 16 required, 4 reject, 1 undefined, 1 impl-defined, 1 recommended | 75 | Q-0012 | 0 flagged |
+| [Alignment](../spec/declarations/alignment.md) | 5 | 2 required, 2 reject, 1 impl-defined | 27 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
+| [Volatile](../spec/declarations/volatile.md) | 5 | 4 required, 1 recommended | 25 | Q-0080 | 0 flagged |
 | [Forms of initialization](../spec/declarations/initialization/forms.md) | 5 | 4 required, 1 undefined | 18 | Q-0013, Q-0039 | 0 flagged |
 | [List initialization and aggregates](../spec/declarations/initialization/list.md) | 10 | 8 required, 2 reject | 48 | Q-0042, Q-0043 | 0 flagged |
 | [Reference binding](../spec/declarations/initialization/references.md) | 7 | 6 required, 1 undefined | 24 | Q-0040 | 0 flagged |
@@ -44,22 +48,26 @@ current state only. The history of how it got here is in `git log`.
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 10 | 8 required, 2 reject | 43 | Q-0007, Q-0015, Q-0016, Q-0048 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 undefined, 1 impl-defined | 46 | Q-0017, Q-0018, Q-0047 | 0 flagged |
 | [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 36 | Q-0019 | 0 flagged |
+| [Linkage specifications](../spec/declarations/linkage-specifications.md) | 6 | 3 required, 1 reject, 2 impl-defined | 27 | Q-0074, Q-0075, Q-0076 | 0 flagged |
 | [Standard attributes](../spec/declarations/attributes.md) | 16 | 6 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 36 | Q-0020, Q-0021, Q-0046 | 0 flagged |
 | [Function definitions](../spec/declarations/functions/definitions.md) | 10 | 3 required, 3 reject, 1 undefined, 2 impl-defined, 1 recommended | 32 | Q-0022, Q-0024 | 0 flagged |
 | [Default arguments](../spec/declarations/functions/default-arguments.md) | 6 | 3 required, 3 reject | 18 | Q-0038 | 0 flagged |
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | Q-0007, Q-0023 | 0 flagged |
 | [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 16 |  | 0 flagged |
+| [Exception specifications](../spec/declarations/exception-specifications.md) | 6 | 3 required, 1 reject, 1 impl-defined, 1 no-diagnostic | 31 | Q-0077, Q-0078, Q-0079 | 0 flagged |
 | [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 46 | Q-0020, Q-0025 | 0 flagged |
+| [Static assertions](../spec/declarations/static-assert.md) | 5 | 4 required, 1 reject | 27 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 15 | 11 required, 3 reject, 1 impl-defined | 59 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 13 | 7 required, 6 reject | 38 | Q-0052 | 0 flagged |
 | [Constructors and destructors](../spec/classes/constructors.md) | 24 | 11 required, 9 reject, 2 undefined, 1 no-diagnostic, 1 recommended | 110 | Q-0053, Q-0054 | 0 flagged |
+| [List initialization of classes](../spec/classes/initializer-lists.md) | 6 | 5 required, 1 reject | 28 | Q-0081 | 0 flagged |
 | [Copy and move](../spec/classes/copy-move.md) | 17 | 12 required, 3 reject, 1 unspecified, 1 recommended | 79 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 15 | 7 required, 8 reject | 67 |  | 0 flagged |
 | [Virtual functions and abstract classes](../spec/classes/virtual.md) | 18 | 7 required, 8 reject, 1 undefined, 1 no-diagnostic, 1 recommended | 95 | Q-0056 | 0 flagged |
 | [Unions and bit-fields](../spec/classes/unions.md) | 18 | 10 required, 5 reject, 1 undefined, 1 impl-defined, 1 recommended | 80 | Q-0057, Q-0058 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 7 | 5 required, 1 reject, 1 recommended | 55 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 11 | 8 required, 2 reject, 1 recommended | 82 | Q-0060 | 0 flagged |
-| [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 55 | Q-0061, Q-0062 | 0 flagged |
+| [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 57 | Q-0061, Q-0062 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -67,12 +75,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-decltype.txt`. The table above comes from
+`reports/similarity/2026-10-30-initializer-lists.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 2100/2100 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 2357/2357 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -88,7 +96,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Sixty-four questions are open for opinions, each with a provisional answer the
+Eighty questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -111,19 +119,9 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Topics in scope with no page yet
 
-From the gap review (`reports/review/2026-10-30-gap-review.md`). Each
-needs a page through the full pipeline.
-
-- Expressions: temporaries in general. Exception handling, including
-  `throw`, is a later chapter (decision 0023).
-- Declarations: `typedef` and alias declarations, `static_assert`, the
-  `inline` specifier, `alignas` and alignment, linkage specifications,
-  elaborated type specifiers and forward class declarations, `noexcept`
-  in function types, and `volatile`.
-- Classes: initializer-list constructors and their place in overload
-  resolution.
-- Statements: the forward-progress rule belongs with threads, which are
-  out of scope.
+None. Each topic from the gap review (`reports/review/2026-10-30-gap-review.md`)
+has a page. Exception handling is a later chapter (decision 0023). The
+forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
@@ -135,9 +133,9 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
-7. Write pages for the topics in scope with no page yet: expressions
-   first, then declarations, then the remaining class topic. Next:
-   temporaries.
+7. Run a second gap review (decision 0019, `AGENTS.md`) over the classes
+   pages and the pages added after the first review, and triage it.
+8. Plan the exception handling chapter (decision 0023).
 
 ## Size estimate
 

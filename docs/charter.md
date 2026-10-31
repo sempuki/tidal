@@ -28,19 +28,24 @@ In scope:
   `switch`), iteration (`while`, `do`, `for`, range-based `for`), jumps
   (`break`, `continue`, `return`, `goto`), labels, declaration statements as
   statements.
-- Expressions: value categories, the built-in operators, evaluation order and
-  sequencing, conversions applied to operands, constant evaluation as far as
-  it decides whether an expression is a constant expression.
+- Expressions: primary expressions and literals, value categories and
+  temporaries, the built-in operators, pointers to members, `decltype` and
+  unevaluated operands, evaluation order and sequencing, conversions
+  applied to operands, constant evaluation as far as it decides whether an
+  expression is a constant expression.
 - Declarations: placeholder types (`auto`, `decltype(auto)`), storage
   classes and linkage, declarators (pointers, references, arrays,
   functions), cv-qualifiers, initialization, structured bindings,
   enumerations, namespaces and `using`, standard attributes, function
-  definitions, and the `constexpr`, `consteval`, and `constinit`
-  specifiers. The order of work is in `docs/status.md`.
+  definitions, the `constexpr`, `consteval`, and `constinit` specifiers,
+  type aliases and elaborated type specifiers, static assertions, the
+  `inline` specifier, alignment, linkage specifications, exception
+  specifications, and `volatile`.
 - Classes: class definitions and members, access control, constructors
   and destructors, copy and move, derived classes, virtual functions,
-  unions and bit-fields, conversion functions, operator overloading, and
-  defaulted comparisons (decision 0017).
+  unions and bit-fields, conversion functions, operator overloading,
+  defaulted comparisons (decision 0017), and list initialization of
+  classes.
 
 Referenced but not specified:
 

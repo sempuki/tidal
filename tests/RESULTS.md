@@ -74,6 +74,7 @@ compilers affect the Status column.
 | `classes/comparisons/eq-private-members.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
 | `classes/comparisons/eq-ref-qualified.cpp` | DCMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/comparisons/eq-reference-member.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-rvalue-ref-qualified.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/eq-stops-at-first-false.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
 | `classes/comparisons/eq-union.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/eq-wrong-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -418,6 +419,34 @@ compilers affect the Status column.
 | `classes/derived/virtual-base-private-dtor.cpp` | DER-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/virtual-base-shared.cpp` | DER-6 | run | run | run | accept | run | run | run | run | pass |
 | `classes/derived/virtual-keyword-order.cpp` | DER-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/backing-array-copy-elements.cpp` | ILC-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/backing-array-lives-with-list.cpp` | ILC-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/constexpr-list-ctor.cpp` | ILC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/copy-from-single-same-class.cpp` | ILC-3 | run | run | run | accept | run | run-fail | run | run | pass |
+| `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` | ILC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/deduce-list-element-type.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/designated-non-aggregate.cpp` | ILC-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/elements-const.cpp` | ILC-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/empty-braces-default.cpp` | ILC-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/empty-braces-no-default.cpp` | ILC-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/function-param-list.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-copy-list.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` | ILC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/list-ctor-extra-default-params.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/list-ctor-not-viable-fallback.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-preferred-over-better-match.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-preferred.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/move-only-element.cpp` | ILC-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-constant-fits.cpp` | ILC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/narrowing-in-ctor-args.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-in-list-elements.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-paren-ok.cpp` | ILC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/nested-braces-element.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/not-aggregate-with-ctor.cpp` | ILC-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/return-braced-list.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/initializer-lists/return-deduced-from-list.cpp` | ILC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/selects-constructor.cpp` | ILC-1 | run | run | run | accept | run | run | run | run | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -734,6 +763,33 @@ compilers affect the Status column.
 | `classes/virtual/virtual-static.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/virtual-template.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/virtual-trailing-return.cpp` | VIRT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/alignof-variable-type.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/array-of-aligned.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/class.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/alignment/enum.cpp` | ALN-1 | reject | reject | reject | accept | accept | reject | reject | reject | pass |
+| `declarations/alignment/extended-huge.cpp` | ALN-5 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
+| `declarations/alignment/extended-new.cpp` | ALN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/alignment/extended-supported.cpp` | ALN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/alignment/max-fundamental.cpp` | ALN-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/member-raises-class.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/member.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/negative.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/alignment/not-constant.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/alignment/not-power-of-two.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/alignment/on-alias-declaration.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-bitfield.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-function.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-parameter.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/alignment/on-typedef.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/alignment/redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/alignment/redeclare-without.cpp` | ALN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/strictest-wins.cpp` | ALN-1 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
+| `declarations/alignment/type-operand.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/variable.cpp` | ALN-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/alignment/weaker-on-class-member.cpp` | ALN-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/alignment/weaker-than-natural.cpp` | ALN-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/alignment/zero-ignored.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-bool.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
@@ -980,6 +1036,37 @@ compilers affect the Status column.
 | `declarations/enumerations/using-enum-not-enum.cpp` | ENUM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/using-enum-opaque.cpp` | ENUM-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `declarations/enumerations/using-enum.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/alias-noexcept-function.cpp` | EXS-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/exception-specifications/call-through-noexcept-pointer.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/constexpr-not-implied.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/decltype-keeps-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-explicit-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/delete-class-follows-destructor.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/delete-operator-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/forms.cpp` | EXS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/implicit-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/implicit-special-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/in-type.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/inheriting-ctor-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/lambda-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/member-function-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/narrowing-operand.cpp` | EXS-1 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/nested-indirection.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` | EXS-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/non-constant.cpp` | EXS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/operand-cycle.cpp` | EXS-6 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
+| `declarations/exception-specifications/operand-later-member.cpp` | EXS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/overload-on-noexcept.cpp` | EXS-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/override-dtor-noexcept-false.cpp` | EXS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/override-may-add-noexcept.cpp` | EXS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/override-must-be-noexcept.cpp` | EXS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/parameter-noexcept-overloads.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/pointer-operand.cpp` | EXS-1 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/throw-empty-removed.cpp` | EXS-5 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/throw-type-removed.cpp` | EXS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/typedef-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/user-function-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/default-arguments/added-later.cpp` | DEFARG-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/default-arguments/basic.cpp` | DEFARG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/default-arguments/block-scope-declaration.cpp` | DEFARG-2 | run | run | run | accept | run | run | run | run | pass |
@@ -1158,6 +1245,61 @@ compilers affect the Status column.
 | `declarations/initialization/static/dynamic-reads-zero.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/initialization/static/inline-variables-ordered.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/initialization/static/maybe-static.cpp` | SINIT-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/constexpr-function-inline.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/deleted-function-inline.cpp` | INL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/inline/function-and-variable.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-after-definition.cpp` | INL-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/inline/inline-before-definition.cpp` | INL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/inline/inline-block-function-declaration.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-block-variable.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-class.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-friend-definition.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-internal-linkage.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-main.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-nonstatic-member.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-parameter.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-redefinition-same-tu.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-local-in-function.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-member-incomplete.cpp` | INL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-static-member.cpp` | INL-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-typedef.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-undefined-used.cpp` | INL-6 | link-fail | link-fail | link-fail | reject | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/inline/inline-unused-not-defined.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-variable-const-default-external.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/inline-variable-undefined-used.cpp` | INL-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-virtual.cpp` | INL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/inline/member-defined-in-class.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/static-constexpr-member-inline.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/static-local-shared.cpp` | INL-5 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/inline/static-member-not-inline-needs-definition.cpp` | INL-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/linkage-specifications/block-form-defines.cpp` | LSP-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/block-form.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/block-scope.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-and-cpp-overload.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-cross-unit.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-function-pointer-assign.cpp` | LSP-6 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/c-linkage-main.cpp` | LSP-2 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
+| `declarations/linkage-specifications/c-linkage-template.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-name-across-namespaces.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-name-conflict-types.cpp` | LSP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-name-conflicts-global.cpp` | LSP-4 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `declarations/linkage-specifications/c-overload-rejected.cpp` | LSP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` | LSP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-variable-named-main.cpp` | LSP-4 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
+| `declarations/linkage-specifications/class-scope.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/cpp-linkage.cpp` | LSP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/function-type-linkage-overload.cpp` | LSP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/linkage-in-namespace.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/members-cpp-linkage.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/nested-innermost.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/redeclare-c-then-plain.cpp` | LSP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` | LSP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/single-form-declaration-only.cpp` | LSP-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/linkage-specifications/single-form-with-init-defines.cpp` | LSP-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/single-form.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/static-in-c-block.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/linkage-specifications/unknown-language.cpp` | LSP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/alias-conflict.cpp` | NS-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/alias.cpp` | NS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/block-scope-namespace.cpp` | NS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1194,6 +1336,33 @@ compilers affect the Status column.
 | `declarations/namespaces/using-directive-not-namespace.cpp` | NS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/using-directive-transitive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/using-directive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-contextual-bool.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-narrowing.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-not-constant.cpp` | SA-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/condition-pointer.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-ub.cpp` | SA-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/constexpr-function-call.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/discarded-branch-nontemplate.cpp` | SA-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/discarded-branch.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/false-rejected.cpp` | SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/false-with-message.cpp` | SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-block-not-statement-position.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-block.cpp` | SA-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/static-assert/in-class-incomplete-self.cpp` | SA-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-class.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-extern-c.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-for-init.cpp` | SA-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-namespace.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-concatenated.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-not-literal.cpp` | SA-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/message-object.cpp` | SA-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/message-optional.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-prefixed-string.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-wide-string.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/template-dependent-false.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/template-instantiated-false.cpp` | SA-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/static-assert/template-nondependent-false.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/static-assert/true-accepted.cpp` | SA-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/storage-linkage/anonymous-union-namespace.cpp` | STO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/anonymous-union-static.cpp` | STO-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp` | STO-11 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
@@ -1284,6 +1453,82 @@ compilers affect the Status column.
 | `declarations/structured-bindings/underscore-twice.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/union-rejected.cpp` | SB-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/with-other-declarator.cpp` | SB-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-cv.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-defines-class.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-function-type.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-in-block.cpp` | TYN-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/alias-in-class.cpp` | TYN-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/alias-of-incomplete.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-overload-same.cpp` | TYN-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-scope.cpp` | TYN-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
+| `declarations/type-names/class-definition-conflicts-typedef.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/class-redefinition.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/complete-after-definition-in-scope.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/elaborated-declares-in-block.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-declares-in-namespace.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-declares.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/elaborated-enum-declared.cpp` | TYN-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-enum-undeclared.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-hides-function.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/elaborated-in-parameter-scope.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/elaborated-key-class-struct.cpp` | TYN-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-key-enum-mismatch.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-key-union-mismatch.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-qualified-undeclared.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/enum-fixed-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/enum-scoped-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-after-definition.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-class-function-definition-param.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-incomplete-use.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-object.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-reference-param.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-class.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/forward-enum-base-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-enum-no-base.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-enum-opaque.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/forward-enum-scoped-default-base.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-nested-class.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/forward-nested-wrong-scope.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-initializer.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-multiple.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-name-in-class-redeclared.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-name-not-class-key.cpp` | TYN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-no-name.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-redeclare-different.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-redeclare-same.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-same-type.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-storage-class.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-unnamed-c-like.cpp` | TYN-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/type-names/typedef-unnamed-class-member-function.cpp` | TYN-3 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
+| `declarations/type-names/typedef-with-unsigned.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/variable-then-typedef.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/access-run.cpp` | VOL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/assign-to-volatile-class.cpp` | VOL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/assignment-result-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/compound-no-warning.cpp` | VOL-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/const-cast-removes.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/const-ref-volatile-no-temporary.cpp` | VOL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/constant-read-rejected.cpp` | VOL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/copy-volatile-class-rejected.cpp` | VOL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/copy-volatile-scalar-ok.cpp` | VOL-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/defaulted-comparison-volatile.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/increment-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/nonvolatile-member-on-volatile.cpp` | VOL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/overload-on-volatile.cpp` | VOL-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/overload-param-volatile-ref.cpp` | VOL-3 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/pointer-add-volatile.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/pointer-remove-volatile.cpp` | VOL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/ref-plain-to-volatile.cpp` | VOL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/ref-volatile-to-plain.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/static-const-volatile-in-class.cpp` | VOL-2 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
+| `declarations/volatile/volatile-class-user-copy.cpp` | VOL-4 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/volatile-in-type-traits.cpp` | VOL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-local-loop.cpp` | VOL-1 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/volatile-member-function.cpp` | VOL-2 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/volatile/volatile-member-of-volatile-object.cpp` | VOL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-member-on-plain.cpp` | VOL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-structured-binding.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/additive/base-pointer-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `expressions/additive/deref-one-past-end.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/function-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1933,21 +2178,33 @@ compilers affect the Status column.
 | `expressions/unary/sizeof-void.cpp` | UN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/address-of-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/address-of-xvalue.cpp` | VC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/aggregate-element-temporaries.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/argument-lives-to-end.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/assign-to-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/condition-temporaries.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/cv-prvalue-dropped.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/declarators-separate.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/default-argument-temporary.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/discarded-prvalue-destroyed.cpp` | VC-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/guaranteed-elision.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/lvalues.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/materialization-binds.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/materialize-array-decay.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/materialize-array-subscript.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/materialize-member-access.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/materialize-member-call.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/member-reference-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/more-categories.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/parameter-destruction-point.cpp` | VC-10 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/prvalue-no-object-until-needed.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/prvalues.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/return-temporaries-before-locals.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/rvalue-ref-to-function-cast.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/rvalue-reference-name-binding.cpp` | VC-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/rvalue-reference-name-is-lvalue.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/static-member-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/temporaries-reverse-order.cpp` | VC-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/temporary-constant-evaluation.cpp` | VC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/trivial-parameter-address.cpp` | VC-7 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
@@ -2115,7 +2372,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-2100/2100 tests pass on baseline compilers.
+2357/2357 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -2328,6 +2585,13 @@ check that the rejection has the intended cause.
 - `classes/comparisons/eq-reference-member.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member / note: replace 'default' with 'delete'
 - `classes/comparisons/eq-reference-member.cpp` (gcc-16): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
 - `classes/comparisons/eq-reference-member.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (clang-host): error: ref-qualifier '&&' is not allowed on a defaulted comparison operator
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (gcc-host): error: defaulted ‘bool S::operator==(const S&) const &&’ must not have ‘&&’ ref-qualifier
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (edg-7.0): error: a defaulted member comparison operator cannot be "&&"-qualified
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (gcc-14): error: defaulted 'bool S::operator==(const S&) const &&' must not have '&&' ref-qualifier
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (clang-18): error: ref-qualifier '&&' is not allowed on a defaulted comparison operator
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (gcc-16): error: defaulted 'bool S::operator==(const S&) const &&' must not have '&&' ref-qualifier
+- `classes/comparisons/eq-rvalue-ref-qualified.cpp` (clang-22): error: ref-qualifier '&&' is not allowed on a defaulted comparison operator
 - `classes/comparisons/eq-union.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because 'U' is a union with variant members / note: replace 'default' with 'delete'
 - `classes/comparisons/eq-union.cpp` (gcc-host): error: use of deleted function ‘constexpr bool U::operator==(const U&) const’ / note: ‘constexpr bool U::operator==(const U&) const’ is implicitly deleted because the default definition would be ill-formed:
 - `classes/comparisons/eq-union.cpp` (edg-7.0): error: function "U::operator==(const U &) const" (declared at line 3) cannot be referenced -- it is a deleted function
@@ -3465,6 +3729,76 @@ check that the rejection has the intended cause.
 - `classes/derived/virtual-base-private-dtor.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'A' has an inaccessible destructor
 - `classes/derived/virtual-base-private-dtor.cpp` (gcc-16): error: use of deleted function 'D::D()' / note: 'D::D()' is implicitly deleted because the default definition would be ill-formed:
 - `classes/derived/virtual-base-private-dtor.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'D' / note: default constructor of 'D' is implicitly deleted because base class 'A' has an inaccessible destructor
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (clang-host): error: no matching function for call to 'count' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'double')
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (gcc-host): error: no matching function for call to ‘count(<brace-enclosed initializer list>)’
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (edg-7.0): error: no instance of function template "count" matches the argument list / note: candidate function template "count" failed deduction
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (gcc-14): error: no matching function for call to 'count(<brace-enclosed initializer list>)' / note: candidate: 'template<class T> int count(std::initializer_list<T>)'
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (clang-18): error: no matching function for call to 'count' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'double')
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (gcc-16): error: no matching function for call to 'count(<brace-enclosed initializer list>)'
+- `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` (clang-22): error: no matching function for call to 'count' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'double')
+- `classes/initializer-lists/designated-non-aggregate.cpp` (clang-host): error: initialization of non-aggregate type 'S' with a designated initializer list
+- `classes/initializer-lists/designated-non-aggregate.cpp` (gcc-host): error: designated initializers cannot be used with a non-aggregate type ‘S’ / error: no matching function for call to ‘S::S(<brace-enclosed initializer list>)’
+- `classes/initializer-lists/designated-non-aggregate.cpp` (edg-7.0): error: a designator cannot be used with a non-aggregate type "S"
+- `classes/initializer-lists/designated-non-aggregate.cpp` (gcc-14): error: designated initializers cannot be used with a non-aggregate type 'S' / error: no matching function for call to 'S::S(<brace-enclosed initializer list>)'
+- `classes/initializer-lists/designated-non-aggregate.cpp` (clang-18): error: initialization of non-aggregate type 'S' with a designated initializer list
+- `classes/initializer-lists/designated-non-aggregate.cpp` (gcc-16): error: designated initializers cannot be used with a non-aggregate type 'S' / error: no matching function for call to 'S::S(<brace-enclosed initializer list>)'
+- `classes/initializer-lists/designated-non-aggregate.cpp` (clang-22): error: initialization of non-aggregate type 'S' with a designated initializer list
+- `classes/initializer-lists/elements-const.cpp` (clang-host): error: read-only variable is not assignable
+- `classes/initializer-lists/elements-const.cpp` (gcc-host): error: assignment of read-only location ‘* l.std::initializer_list<int>::begin()’
+- `classes/initializer-lists/elements-const.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `classes/initializer-lists/elements-const.cpp` (gcc-14): error: assignment of read-only location '* l.std::initializer_list<int>::begin()'
+- `classes/initializer-lists/elements-const.cpp` (clang-18): error: read-only variable is not assignable
+- `classes/initializer-lists/elements-const.cpp` (gcc-16): error: assignment of read-only location '* l.std::initializer_list<int>::begin()'
+- `classes/initializer-lists/elements-const.cpp` (clang-22): error: read-only variable is not assignable
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (clang-host): error: chosen constructor is explicit in copy-initialization
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (gcc-host): error: converting to ‘S’ from initializer list would use explicit constructor ‘S::S(std::initializer_list<int>)’
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (edg-7.0): error: copy-list-initialization cannot use a constructor marked "explicit"
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (gcc-14): error: converting to 'S' from initializer list would use explicit constructor 'S::S(std::initializer_list<int>)'
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (clang-18): error: chosen constructor is explicit in copy-initialization
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (gcc-16): error: converting to 'S' from initializer list would use explicit constructor 'S::S(std::initializer_list<int>)'
+- `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` (clang-22): error: chosen constructor is explicit in copy-initialization
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (gcc-host): error: narrowing conversion of ‘1.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (gcc-14): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (gcc-16): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/move-only-element.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/initializer-lists/move-only-element.cpp` (gcc-host): error: use of deleted function ‘constexpr M::M(const M&)’ / note: ‘constexpr M::M(const M&)’ is implicitly declared as deleted because ‘M’ declares a move constructor or move assignment operator
+- `classes/initializer-lists/move-only-element.cpp` (edg-7.0): error: function "M::M(const M &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/initializer-lists/move-only-element.cpp` (gcc-14): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/initializer-lists/move-only-element.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/initializer-lists/move-only-element.cpp` (gcc-16): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator
+- `classes/initializer-lists/move-only-element.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (gcc-host): error: narrowing conversion of ‘1.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (gcc-14): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (gcc-16): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-ctor-args.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing] / error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (gcc-14): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing] / error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing] / error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/initializer-lists/narrowing-in-list-elements.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (clang-host): error: no matching constructor for initialization of 'P' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (gcc-host): error: no matching function for call to ‘P::P(<brace-enclosed initializer list>)’
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (edg-7.0): error: no instance of constructor "P::P" matches the argument list / note: number of parameters of function "P::P(const P &) noexcept" does not match the call
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (gcc-14): error: no matching function for call to 'P::P(<brace-enclosed initializer list>)' / note: candidate: 'P::P()'
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (clang-18): error: no matching constructor for initialization of 'P' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (gcc-16): error: no matching function for call to 'P::P(<brace-enclosed initializer list>)'
+- `classes/initializer-lists/not-aggregate-with-ctor.cpp` (clang-22): error: no matching constructor for initialization of 'P' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/initializer-lists/return-deduced-from-list.cpp` (clang-host): error: cannot deduce return type from initializer list
+- `classes/initializer-lists/return-deduced-from-list.cpp` (gcc-host): error: returning initializer list
+- `classes/initializer-lists/return-deduced-from-list.cpp` (edg-7.0): error: a brace-enclosed list does not provide a return type
+- `classes/initializer-lists/return-deduced-from-list.cpp` (gcc-14): error: returning initializer list
+- `classes/initializer-lists/return-deduced-from-list.cpp` (clang-18): error: cannot deduce return type from initializer list
+- `classes/initializer-lists/return-deduced-from-list.cpp` (gcc-16): error: returning initializer list
+- `classes/initializer-lists/return-deduced-from-list.cpp` (clang-22): error: cannot deduce return type from initializer list
 - `classes/members/anonymous-struct.cpp` (clang-host): error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
 - `classes/members/anonymous-struct.cpp` (gcc-host): error: ISO C++ prohibits anonymous structs [-Wpedantic]
 - `classes/members/anonymous-struct.cpp` (edg-7.0): error: declaration does not declare anything
@@ -4480,6 +4814,83 @@ check that the rejection has the intended cause.
 - `classes/virtual/virtual-template.cpp` (clang-18): error: 'virtual' cannot be specified on member function templates
 - `classes/virtual/virtual-template.cpp` (gcc-16): error: templates may not be 'virtual'
 - `classes/virtual/virtual-template.cpp` (clang-22): error: 'virtual' cannot be specified on member function templates
+- `declarations/alignment/definition-without-earlier-with.cpp` (clang-host): error: 'alignas' must be specified on definition if it is specified on any declaration / note: declared with 'alignas' attribute here
+- `declarations/alignment/definition-without-earlier-with.cpp` (edg-7.0): error: alignment attribute must also appear on definition at line 6
+- `declarations/alignment/definition-without-earlier-with.cpp` (clang-18): error: 'alignas' must be specified on definition if it is specified on any declaration / note: declared with 'alignas' attribute here
+- `declarations/alignment/definition-without-earlier-with.cpp` (clang-22): error: 'alignas' must be specified on definition if it is specified on any declaration / note: declared with 'alignas' attribute here
+- `declarations/alignment/enum.cpp` (clang-host): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/enum.cpp` (gcc-host): error: ‘alignas’ on enumerated type [-Wattributes]
+- `declarations/alignment/enum.cpp` (clang-18): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/enum.cpp` (gcc-16): error: 'alignas' on enumerated type [-Wattributes]
+- `declarations/alignment/enum.cpp` (clang-22): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/extended-huge.cpp` (edg-7.0): error: invalid alignment value specified by attribute / error: static assertion failed
+- `declarations/alignment/negative.cpp` (clang-host): error: requested alignment is not a power of 2
+- `declarations/alignment/negative.cpp` (gcc-host): error: requested alignment ‘-8’ is not a positive power of 2
+- `declarations/alignment/negative.cpp` (edg-7.0): error: invalid argument to attribute "alignas"
+- `declarations/alignment/negative.cpp` (gcc-14): error: requested alignment '-8' is not a positive power of 2
+- `declarations/alignment/negative.cpp` (clang-18): error: requested alignment is not a power of 2
+- `declarations/alignment/negative.cpp` (gcc-16): error: requested alignment '-8' is not a positive power of 2
+- `declarations/alignment/negative.cpp` (clang-22): error: requested alignment is not a power of 2
+- `declarations/alignment/not-constant.cpp` (clang-host): error: 'aligned' attribute requires integer constant / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/alignment/not-constant.cpp` (gcc-host): error: the value of ‘n’ is not usable in a constant expression / note: ‘int n’ is not const
+- `declarations/alignment/not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 3) cannot be used as a constant
+- `declarations/alignment/not-constant.cpp` (gcc-14): error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
+- `declarations/alignment/not-constant.cpp` (clang-18): error: 'aligned' attribute requires integer constant / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/alignment/not-constant.cpp` (gcc-16): error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
+- `declarations/alignment/not-constant.cpp` (clang-22): error: 'aligned' attribute requires integer constant / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/alignment/not-power-of-two.cpp` (clang-host): error: requested alignment is not a power of 2
+- `declarations/alignment/not-power-of-two.cpp` (gcc-host): error: requested alignment ‘3’ is not a positive power of 2
+- `declarations/alignment/not-power-of-two.cpp` (edg-7.0): error: invalid alignment value specified by attribute
+- `declarations/alignment/not-power-of-two.cpp` (gcc-14): error: requested alignment '3' is not a positive power of 2
+- `declarations/alignment/not-power-of-two.cpp` (clang-18): error: requested alignment is not a power of 2
+- `declarations/alignment/not-power-of-two.cpp` (gcc-16): error: requested alignment '3' is not a positive power of 2
+- `declarations/alignment/not-power-of-two.cpp` (clang-22): error: requested alignment is not a power of 2
+- `declarations/alignment/on-alias-declaration.cpp` (clang-host): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-alias-declaration.cpp` (gcc-host): error: ‘alignas’ on a type alias [-Wattributes]
+- `declarations/alignment/on-alias-declaration.cpp` (edg-7.0): error: identifier "I" is undefined / error: expected a ";"
+- `declarations/alignment/on-alias-declaration.cpp` (clang-18): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-alias-declaration.cpp` (gcc-16): error: 'alignas' on a type alias [-Wattributes]
+- `declarations/alignment/on-alias-declaration.cpp` (clang-22): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-bitfield.cpp` (clang-host): error: 'alignas' attribute cannot be applied to a bit-field
+- `declarations/alignment/on-bitfield.cpp` (gcc-host): error: ‘alignas’ on bit-field [-Wattributes]
+- `declarations/alignment/on-bitfield.cpp` (edg-7.0): error: attribute "alignas" does not apply to bit fields
+- `declarations/alignment/on-bitfield.cpp` (clang-18): error: 'alignas' attribute cannot be applied to a bit-field
+- `declarations/alignment/on-bitfield.cpp` (gcc-16): error: 'alignas' on bit-field [-Wattributes]
+- `declarations/alignment/on-bitfield.cpp` (clang-22): error: 'alignas' attribute cannot be applied to a bit-field
+- `declarations/alignment/on-function.cpp` (clang-host): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-function.cpp` (gcc-host): error: ‘alignas’ on function declaration [-Wattributes]
+- `declarations/alignment/on-function.cpp` (edg-7.0): error: alignas does not apply here
+- `declarations/alignment/on-function.cpp` (clang-18): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-function.cpp` (gcc-16): error: 'alignas' on function declaration [-Wattributes]
+- `declarations/alignment/on-function.cpp` (clang-22): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-parameter.cpp` (clang-host): error: 'alignas' attribute cannot be applied to a function parameter
+- `declarations/alignment/on-parameter.cpp` (gcc-host): error: alignment may not be specified for ‘x’
+- `declarations/alignment/on-parameter.cpp` (edg-7.0): error: alignas does not apply here
+- `declarations/alignment/on-parameter.cpp` (gcc-14): error: alignment may not be specified for 'x'
+- `declarations/alignment/on-parameter.cpp` (clang-18): error: 'alignas' attribute cannot be applied to a function parameter
+- `declarations/alignment/on-parameter.cpp` (gcc-16): error: alignment may not be specified for 'x'
+- `declarations/alignment/on-parameter.cpp` (clang-22): error: 'alignas' attribute cannot be applied to a function parameter
+- `declarations/alignment/on-typedef.cpp` (clang-host): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-typedef.cpp` (gcc-host): error: ‘alignas’ on a type alias [-Wattributes]
+- `declarations/alignment/on-typedef.cpp` (edg-7.0): error: alignas does not apply here
+- `declarations/alignment/on-typedef.cpp` (clang-18): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/on-typedef.cpp` (gcc-16): error: 'alignas' on a type alias [-Wattributes]
+- `declarations/alignment/on-typedef.cpp` (clang-22): error: 'alignas' attribute only applies to variables, data members and tag types
+- `declarations/alignment/redeclare-different.cpp` (clang-host): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
+- `declarations/alignment/redeclare-different.cpp` (edg-7.0): error: specified alignment (16) is different from alignment (8) specified on a previous declaration
+- `declarations/alignment/redeclare-different.cpp` (clang-18): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
+- `declarations/alignment/redeclare-different.cpp` (clang-22): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
+- `declarations/alignment/strictest-wins.cpp` (gcc-host): error: static assertion failed
+- `declarations/alignment/strictest-wins.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(8 == 16)'
+- `declarations/alignment/strictest-wins.cpp` (gcc-16): error: static assertion failed
+- `declarations/alignment/weaker-on-class-member.cpp` (clang-host): error: requested alignment is less than minimum alignment of 8 for type 'double'
+- `declarations/alignment/weaker-on-class-member.cpp` (edg-7.0): error: alignment cannot be set to less than the default alignment
+- `declarations/alignment/weaker-on-class-member.cpp` (clang-18): error: requested alignment is less than minimum alignment of 8 for type 'double'
+- `declarations/alignment/weaker-on-class-member.cpp` (clang-22): error: requested alignment is less than minimum alignment of 8 for type 'double'
+- `declarations/alignment/weaker-than-natural.cpp` (clang-host): error: requested alignment is less than minimum alignment of 4 for type 'int'
+- `declarations/alignment/weaker-than-natural.cpp` (edg-7.0): error: alignment cannot be set to less than the default alignment
+- `declarations/alignment/weaker-than-natural.cpp` (clang-18): error: requested alignment is less than minimum alignment of 4 for type 'int'
+- `declarations/alignment/weaker-than-natural.cpp` (clang-22): error: requested alignment is less than minimum alignment of 4 for type 'int'
 - `declarations/attributes/assume-false-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assumption evaluated to false
 - `declarations/attributes/assume-false-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: failed ‘assume’ attribute assumption
 - `declarations/attributes/assume-false-constant.cpp` (edg-7.0): error: expression must have a constant value / note: assumption failed
@@ -5362,6 +5773,64 @@ check that the rejection has the intended cause.
 - `declarations/enumerations/using-enum-opaque.cpp` (clang-18): error: enumeration 'C' is incomplete
 - `declarations/enumerations/using-enum-opaque.cpp` (gcc-16): error: 'using enum' of 'C' before its enum-specifier / note: opaque-enum-declaration here
 - `declarations/enumerations/using-enum-opaque.cpp` (clang-22): error: enumeration 'C' is incomplete
+- `declarations/exception-specifications/narrowing-operand.cpp` (clang-host): error: noexcept specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `declarations/exception-specifications/narrowing-operand.cpp` (gcc-host): error: narrowing conversion of ‘2’ from ‘int’ to ‘bool’ [-Wnarrowing]
+- `declarations/exception-specifications/narrowing-operand.cpp` (gcc-14): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
+- `declarations/exception-specifications/narrowing-operand.cpp` (clang-18): error: noexcept specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `declarations/exception-specifications/narrowing-operand.cpp` (gcc-16): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
+- `declarations/exception-specifications/narrowing-operand.cpp` (clang-22): error: noexcept specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (clang-host): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (gcc-host): error: declaration of ‘void f() noexcept (false)’ has a different exception specifier / note: from previous declaration ‘void f() noexcept’
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (edg-7.0): error: exception specification is incompatible with that of previous function "f" (declared at line 3):
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (gcc-14): error: declaration of 'void f() noexcept (false)' has a different exception specifier / note: from previous declaration 'void f() noexcept'
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (clang-18): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (gcc-16): error: declaration of 'void f() noexcept (false)' has a different exception specifier / note: from previous declaration 'void f() noexcept'
+- `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` (clang-22): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/non-constant.cpp` (clang-host): error: noexcept specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `declarations/exception-specifications/non-constant.cpp` (gcc-host): error: the value of ‘flag’ is not usable in a constant expression / note: ‘bool flag’ is not const
+- `declarations/exception-specifications/non-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "flag" (declared at line 3) cannot be used as a constant
+- `declarations/exception-specifications/non-constant.cpp` (gcc-14): error: the value of 'flag' is not usable in a constant expression / note: 'bool flag' is not const
+- `declarations/exception-specifications/non-constant.cpp` (clang-18): error: noexcept specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `declarations/exception-specifications/non-constant.cpp` (gcc-16): error: the value of 'flag' is not usable in a constant expression / note: 'bool flag' is not const
+- `declarations/exception-specifications/non-constant.cpp` (clang-22): error: noexcept specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `declarations/exception-specifications/operand-cycle.cpp` (clang-host): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/operand-cycle.cpp` (clang-18): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/operand-cycle.cpp` (clang-22): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (clang-host): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (gcc-host): error: declaration of ‘void f() noexcept’ has a different exception specifier / note: from previous declaration ‘void f()’
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (edg-7.0): error: exception specification is incompatible with that of previous function "f" (declared at line 3)
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (gcc-14): error: declaration of 'void f() noexcept' has a different exception specifier / note: from previous declaration 'void f()'
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (clang-18): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (gcc-16): error: declaration of 'void f() noexcept' has a different exception specifier / note: from previous declaration 'void f()'
+- `declarations/exception-specifications/overload-on-noexcept.cpp` (clang-22): error: exception specification in declaration does not match previous declaration / note: previous declaration is here
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (clang-host): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (gcc-host): error: looser exception specification on overriding virtual function ‘virtual D::~D() noexcept (false)’ / note: overridden function is ‘virtual B::~B() noexcept’
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (edg-7.0): error: exception specification for virtual function "D::~D" is incompatible with that of overridden function "B::~B"
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (gcc-14): error: looser exception specification on overriding virtual function 'virtual D::~D() noexcept (false)' / note: overridden function is 'virtual B::~B() noexcept'
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (clang-18): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (gcc-16): error: looser exception specification on overriding virtual function 'virtual D::~D() noexcept (false)' / note: overridden function is 'virtual B::~B() noexcept'
+- `declarations/exception-specifications/override-dtor-noexcept-false.cpp` (clang-22): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (clang-host): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (gcc-host): error: looser exception specification on overriding virtual function ‘virtual void D::f()’ / note: overridden function is ‘virtual void B::f() noexcept’
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (edg-7.0): error: exception specification for virtual function "D::f" is incompatible with that of overridden function "B::f"
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (gcc-14): error: looser exception specification on overriding virtual function 'virtual void D::f()' / note: overridden function is 'virtual void B::f() noexcept'
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (clang-18): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (gcc-16): error: looser exception specification on overriding virtual function 'virtual void D::f()' / note: overridden function is 'virtual void B::f() noexcept'
+- `declarations/exception-specifications/override-must-be-noexcept.cpp` (clang-22): error: exception specification of overriding function is more lax than base version / note: overridden virtual function is here
+- `declarations/exception-specifications/pointer-operand.cpp` (clang-host): error: conversion from 'const int *' to 'bool' is not allowed in a converted constant expression
+- `declarations/exception-specifications/pointer-operand.cpp` (gcc-host): error: conversion from ‘const int*’ to ‘bool’ in a converted constant expression / error: could not convert ‘& x’ from ‘const int*’ to ‘bool’
+- `declarations/exception-specifications/pointer-operand.cpp` (gcc-14): error: conversion from 'const int*' to 'bool' in a converted constant expression / error: could not convert '& x' from 'const int*' to 'bool'
+- `declarations/exception-specifications/pointer-operand.cpp` (clang-18): error: conversion from 'const int *' to 'bool' is not allowed in a converted constant expression
+- `declarations/exception-specifications/pointer-operand.cpp` (gcc-16): error: conversion from 'const int*' to 'bool' in a converted constant expression / error: could not convert '& x' from 'const int*' to 'bool'
+- `declarations/exception-specifications/pointer-operand.cpp` (clang-22): error: conversion from 'const int *' to 'bool' is not allowed in a converted constant expression
+- `declarations/exception-specifications/throw-empty-removed.cpp` (edg-7.0): error: the "throw()" specification is not part of C++20 and later
+- `declarations/exception-specifications/throw-type-removed.cpp` (clang-host): error: ISO C++17 does not allow dynamic exception specifications [-Wdynamic-exception-spec] / note: use 'noexcept(false)' instead
+- `declarations/exception-specifications/throw-type-removed.cpp` (gcc-host): error: ISO C++17 does not allow dynamic exception specifications
+- `declarations/exception-specifications/throw-type-removed.cpp` (edg-7.0): error: dynamic exception specifications are not permitted in this mode
+- `declarations/exception-specifications/throw-type-removed.cpp` (gcc-14): error: ISO C++17 does not allow dynamic exception specifications
+- `declarations/exception-specifications/throw-type-removed.cpp` (clang-18): error: ISO C++17 does not allow dynamic exception specifications [-Wdynamic-exception-spec] / note: use 'noexcept(false)' instead
+- `declarations/exception-specifications/throw-type-removed.cpp` (gcc-16): error: ISO C++17 does not allow dynamic exception specifications
+- `declarations/exception-specifications/throw-type-removed.cpp` (clang-22): error: ISO C++17 does not allow dynamic exception specifications [-Wdynamic-exception-spec] / note: use 'noexcept(false)' instead
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-host): error: too few arguments to function call, expected 1, have 0
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (gcc-host): error: too few arguments to function
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (edg-7.0): error: too few arguments in function call
@@ -6010,6 +6479,177 @@ check that the rejection has the intended cause.
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-18): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `declarations/inline/inline-after-definition.cpp` (clang-host): error: inline declaration of 'f' follows non-inline definition / note: previous definition is here
+- `declarations/inline/inline-after-definition.cpp` (edg-7.0): error: function "f" cannot be declared inline after its definition at line 5
+- `declarations/inline/inline-after-definition.cpp` (clang-18): error: inline declaration of 'f' follows non-inline definition / note: previous definition is here
+- `declarations/inline/inline-after-definition.cpp` (clang-22): error: inline declaration of 'f' follows non-inline definition / note: previous definition is here
+- `declarations/inline/inline-block-function-declaration.cpp` (clang-host): error: inline declaration of 'g' not allowed in block scope
+- `declarations/inline/inline-block-function-declaration.cpp` (gcc-host): error: ‘inline’ specifier invalid for function ‘g’ declared out of global scope [-Wpedantic]
+- `declarations/inline/inline-block-function-declaration.cpp` (edg-7.0): error: "inline" is not allowed
+- `declarations/inline/inline-block-function-declaration.cpp` (gcc-14): error: 'inline' specifier invalid for function 'g' declared out of global scope [-Wpedantic]
+- `declarations/inline/inline-block-function-declaration.cpp` (clang-18): error: inline declaration of 'g' not allowed in block scope
+- `declarations/inline/inline-block-function-declaration.cpp` (gcc-16): error: 'inline' specifier invalid for function 'g' declared out of global scope [-Wpedantic]
+- `declarations/inline/inline-block-function-declaration.cpp` (clang-22): error: inline declaration of 'g' not allowed in block scope
+- `declarations/inline/inline-block-variable.cpp` (clang-host): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-block-variable.cpp` (gcc-host): error: ‘inline’ specifier invalid for variable ‘x’ declared at block scope
+- `declarations/inline/inline-block-variable.cpp` (edg-7.0): error: "inline" is not allowed
+- `declarations/inline/inline-block-variable.cpp` (gcc-14): error: 'inline' specifier invalid for variable 'x' declared at block scope
+- `declarations/inline/inline-block-variable.cpp` (clang-18): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-block-variable.cpp` (gcc-16): error: 'inline' specifier invalid for variable 'x' declared at block scope
+- `declarations/inline/inline-block-variable.cpp` (clang-22): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-class.cpp` (clang-host): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-class.cpp` (gcc-host): error: ‘inline’ can only be specified for functions
+- `declarations/inline/inline-class.cpp` (edg-7.0): error: inline specifier allowed on function declarations only
+- `declarations/inline/inline-class.cpp` (gcc-14): error: 'inline' can only be specified for functions
+- `declarations/inline/inline-class.cpp` (clang-18): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-class.cpp` (gcc-16): error: 'inline' can only be specified for functions
+- `declarations/inline/inline-class.cpp` (clang-22): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-main.cpp` (clang-host): error: 'main' is not allowed to be declared inline
+- `declarations/inline/inline-main.cpp` (gcc-host): error: cannot declare ‘::main’ to be inline
+- `declarations/inline/inline-main.cpp` (edg-7.0): error: function "main" may not be declared inline
+- `declarations/inline/inline-main.cpp` (gcc-14): error: cannot declare '::main' to be inline
+- `declarations/inline/inline-main.cpp` (clang-18): error: 'main' is not allowed to be declared inline
+- `declarations/inline/inline-main.cpp` (gcc-16): error: cannot declare '::main' to be inline
+- `declarations/inline/inline-main.cpp` (clang-22): error: 'main' is not allowed to be declared inline
+- `declarations/inline/inline-nonstatic-member.cpp` (clang-host): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-nonstatic-member.cpp` (gcc-host): error: ‘v’ declared as an ‘inline’ field
+- `declarations/inline/inline-nonstatic-member.cpp` (edg-7.0): error: a nonstatic data member cannot be declared as inline
+- `declarations/inline/inline-nonstatic-member.cpp` (gcc-14): error: 'v' declared as an 'inline' field
+- `declarations/inline/inline-nonstatic-member.cpp` (clang-18): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-nonstatic-member.cpp` (gcc-16): error: 'v' declared as an 'inline' field
+- `declarations/inline/inline-nonstatic-member.cpp` (clang-22): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-parameter.cpp` (clang-host): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-parameter.cpp` (gcc-host): error: ‘x’ declared as an ‘inline’ parameter
+- `declarations/inline/inline-parameter.cpp` (edg-7.0): error: invalid specifier on a parameter
+- `declarations/inline/inline-parameter.cpp` (gcc-14): error: 'x' declared as an 'inline' parameter
+- `declarations/inline/inline-parameter.cpp` (clang-18): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-parameter.cpp` (gcc-16): error: 'x' declared as an 'inline' parameter
+- `declarations/inline/inline-parameter.cpp` (clang-22): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-redefinition-same-tu.cpp` (clang-host): error: redefinition of 'f' / note: previous definition is here
+- `declarations/inline/inline-redefinition-same-tu.cpp` (gcc-host): error: redefinition of ‘int f()’ / note: ‘int f()’ previously defined here
+- `declarations/inline/inline-redefinition-same-tu.cpp` (edg-7.0): error: function "f" has already been defined (previous definition at line 3)
+- `declarations/inline/inline-redefinition-same-tu.cpp` (gcc-14): error: redefinition of 'int f()' / note: 'int f()' previously defined here
+- `declarations/inline/inline-redefinition-same-tu.cpp` (clang-18): error: redefinition of 'f' / note: previous definition is here
+- `declarations/inline/inline-redefinition-same-tu.cpp` (gcc-16): error: redefinition of 'int f()' / note: 'int f()' previously defined here
+- `declarations/inline/inline-redefinition-same-tu.cpp` (clang-22): error: redefinition of 'f' / note: previous definition is here
+- `declarations/inline/inline-static-local-in-function.cpp` (clang-host): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-static-local-in-function.cpp` (gcc-host): error: ‘inline’ specifier invalid for variable ‘x’ declared at block scope
+- `declarations/inline/inline-static-local-in-function.cpp` (edg-7.0): error: "inline" is not allowed
+- `declarations/inline/inline-static-local-in-function.cpp` (gcc-14): error: 'inline' specifier invalid for variable 'x' declared at block scope
+- `declarations/inline/inline-static-local-in-function.cpp` (clang-18): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-static-local-in-function.cpp` (gcc-16): error: 'inline' specifier invalid for variable 'x' declared at block scope
+- `declarations/inline/inline-static-local-in-function.cpp` (clang-22): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-static-member-incomplete.cpp` (clang-host): error: variable has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/inline/inline-static-member-incomplete.cpp` (gcc-host): error: ‘S S::self’ has incomplete type
+- `declarations/inline/inline-static-member-incomplete.cpp` (edg-7.0): error: incomplete type "S" is not allowed / error: incomplete type "S" is not allowed
+- `declarations/inline/inline-static-member-incomplete.cpp` (gcc-14): error: 'S S::self' has incomplete type
+- `declarations/inline/inline-static-member-incomplete.cpp` (clang-18): error: variable has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/inline/inline-static-member-incomplete.cpp` (gcc-16): error: 'S S::self' has incomplete type
+- `declarations/inline/inline-static-member-incomplete.cpp` (clang-22): error: variable has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/inline/inline-typedef.cpp` (clang-host): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-typedef.cpp` (gcc-host): error: ‘I’ declared as an ‘inline’ type
+- `declarations/inline/inline-typedef.cpp` (edg-7.0): error: invalid storage class for an inline function / error: inline specifier allowed on function declarations only
+- `declarations/inline/inline-typedef.cpp` (gcc-14): error: 'I' declared as an 'inline' type
+- `declarations/inline/inline-typedef.cpp` (clang-18): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-typedef.cpp` (gcc-16): error: 'I' declared as an 'inline' type
+- `declarations/inline/inline-typedef.cpp` (clang-22): error: 'inline' can only appear on functions and non-local variables
+- `declarations/inline/inline-undefined-used.cpp` (clang-host): note: used here / link: undefined reference to `missing()'
+- `declarations/inline/inline-undefined-used.cpp` (gcc-host): link: undefined reference to `missing()'
+- `declarations/inline/inline-undefined-used.cpp` (edg-7.0): error: extern inline function "missing" was referenced but not defined
+- `declarations/inline/inline-undefined-used.cpp` (gcc-14): link: undefined reference to `missing()'
+- `declarations/inline/inline-undefined-used.cpp` (clang-18): note: used here / link: undefined reference to `missing()'
+- `declarations/inline/inline-undefined-used.cpp` (gcc-16): link: undefined reference to `missing()'
+- `declarations/inline/inline-undefined-used.cpp` (clang-22): note: used here / link: undefined reference to `missing()'
+- `declarations/inline/inline-variable-undefined-used.cpp` (clang-host): error: inline variable 'shared' is not defined / note: used here
+- `declarations/inline/inline-variable-undefined-used.cpp` (gcc-host): error: odr-used inline variable ‘shared’ is not defined
+- `declarations/inline/inline-variable-undefined-used.cpp` (edg-7.0): error: extern inline variable "shared" was referenced but not defined
+- `declarations/inline/inline-variable-undefined-used.cpp` (gcc-14): error: odr-used inline variable 'shared' is not defined
+- `declarations/inline/inline-variable-undefined-used.cpp` (clang-18): error: inline variable 'shared' is not defined / note: used here
+- `declarations/inline/inline-variable-undefined-used.cpp` (gcc-16): error: odr-used inline variable 'shared' is not defined
+- `declarations/inline/inline-variable-undefined-used.cpp` (clang-22): error: inline variable 'shared' is not defined / note: used here
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (clang-host): link: undefined reference to `S::count'
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (gcc-host): link: undefined reference to `S::count'
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (gcc-14): link: undefined reference to `S::count'
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (clang-18): link: undefined reference to `S::count'
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (gcc-16): link: undefined reference to `S::count'
+- `declarations/inline/static-member-not-inline-needs-definition.cpp` (clang-22): link: undefined reference to `S::count'
+- `declarations/linkage-specifications/block-scope.cpp` (clang-host): error: expected unqualified-id
+- `declarations/linkage-specifications/block-scope.cpp` (gcc-host): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/block-scope.cpp` (edg-7.0): error: linkage specification is not allowed
+- `declarations/linkage-specifications/block-scope.cpp` (gcc-14): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/block-scope.cpp` (clang-18): error: expected unqualified-id
+- `declarations/linkage-specifications/block-scope.cpp` (gcc-16): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/block-scope.cpp` (clang-22): error: expected unqualified-id
+- `declarations/linkage-specifications/c-function-pointer-assign.cpp` (edg-7.0): error: a value of type "void (*)() C" cannot be used to initialize an entity of type "void (*)()"
+- `declarations/linkage-specifications/c-linkage-main.cpp` (clang-host): error: 'main' should not be 'extern "C"' [-Werror,-Wmain]
+- `declarations/linkage-specifications/c-linkage-main.cpp` (gcc-host): error: cannot declare ‘::main’ with a linkage specification other than ‘extern "C++"’ [-Wpedantic]
+- `declarations/linkage-specifications/c-linkage-main.cpp` (edg-7.0): error: function "main" cannot be declared in a linkage-specification
+- `declarations/linkage-specifications/c-linkage-main.cpp` (gcc-16): error: cannot declare '::main' with a linkage specification other than 'extern "C++"' [-Wpedantic]
+- `declarations/linkage-specifications/c-linkage-main.cpp` (clang-22): error: 'main' should not be 'extern "C"' [-Werror,-Wmain]
+- `declarations/linkage-specifications/c-linkage-template.cpp` (clang-host): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `declarations/linkage-specifications/c-linkage-template.cpp` (gcc-host): error: template with C linkage / note: ‘extern "C"’ linkage started here
+- `declarations/linkage-specifications/c-linkage-template.cpp` (edg-7.0): error: this declaration may not have extern "C" linkage
+- `declarations/linkage-specifications/c-linkage-template.cpp` (gcc-14): error: template with C linkage / note: 'extern "C"' linkage started here
+- `declarations/linkage-specifications/c-linkage-template.cpp` (clang-18): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `declarations/linkage-specifications/c-linkage-template.cpp` (gcc-16): error: template with C linkage / note: 'extern "C"' linkage started here
+- `declarations/linkage-specifications/c-linkage-template.cpp` (clang-22): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (clang-host): error: conflicting types for 'conflict' / note: previous declaration is here
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (gcc-host): error: conflicting C language linkage declaration ‘void b::conflict(double)’ / note: previous declaration ‘void a::conflict(int)’
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (edg-7.0): error: declaration is incompatible with previous "a::conflict" (declared at line 3)
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (gcc-14): error: conflicting C language linkage declaration 'void b::conflict(double)' / note: previous declaration 'void a::conflict(int)'
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (clang-18): error: conflicting types for 'conflict' / note: previous declaration is here
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (gcc-16): error: conflicting C language linkage declaration 'void b::conflict(double)' / note: previous declaration 'void a::conflict(int)'
+- `declarations/linkage-specifications/c-name-conflict-types.cpp` (clang-22): error: conflicting types for 'conflict' / note: previous declaration is here
+- `declarations/linkage-specifications/c-name-conflicts-global.cpp` (clang-host): error: declaration of 'clash' with C language linkage conflicts with declaration in global scope / note: declared in global scope here
+- `declarations/linkage-specifications/c-name-conflicts-global.cpp` (edg-7.0): error: name linkage conflicts with previous declaration of variable "clash" (declared at line 5)
+- `declarations/linkage-specifications/c-name-conflicts-global.cpp` (clang-18): error: declaration of 'clash' with C language linkage conflicts with declaration in global scope / note: declared in global scope here
+- `declarations/linkage-specifications/c-name-conflicts-global.cpp` (clang-22): error: declaration of 'clash' with C language linkage conflicts with declaration in global scope / note: declared in global scope here
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (clang-host): error: conflicting types for 'f' / note: previous declaration is here
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (gcc-host): error: conflicting declaration of C function ‘void f(double)’ / note: previous declaration ‘void f(int)’
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (edg-7.0): error: more than one instance of overloaded function "f" has "C" linkage
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (gcc-14): error: conflicting declaration of C function 'void f(double)' / note: previous declaration 'void f(int)'
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (clang-18): error: conflicting types for 'f' / note: previous declaration is here
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (gcc-16): error: conflicting declaration of C function 'void f(double)' / note: previous declaration 'void f(int)'
+- `declarations/linkage-specifications/c-overload-rejected.cpp` (clang-22): error: conflicting types for 'f' / note: previous declaration is here
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (clang-host): error: redefinition of 'item' as different kind of symbol / note: previous definition is here
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (gcc-host): error: conflicting C language linkage declaration ‘void n::item()’ / note: previous declaration ‘int item’
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (edg-7.0): error: declaration is incompatible with previous "item" (declared at line 3)
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (gcc-14): error: conflicting C language linkage declaration 'void n::item()' / note: previous declaration 'int item'
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (clang-18): error: redefinition of 'item' as different kind of symbol / note: previous definition is here
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (gcc-16): error: conflicting C language linkage declaration 'void n::item()' / note: previous declaration 'int item'
+- `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` (clang-22): error: redefinition of 'item' as different kind of symbol / note: previous definition is here
+- `declarations/linkage-specifications/c-variable-named-main.cpp` (clang-host): error: main cannot be declared as a variable with C language linkage
+- `declarations/linkage-specifications/c-variable-named-main.cpp` (gcc-host): error: an entity named ‘main’ cannot be declared with C language linkage
+- `declarations/linkage-specifications/c-variable-named-main.cpp` (edg-7.0): error: "main" cannot be used as a global variable name or given C language linkage
+- `declarations/linkage-specifications/c-variable-named-main.cpp` (gcc-16): error: an entity named 'main' cannot be declared with C language linkage
+- `declarations/linkage-specifications/c-variable-named-main.cpp` (clang-22): error: main cannot be declared as a variable with C language linkage
+- `declarations/linkage-specifications/class-scope.cpp` (clang-host): error: expected member name or ';' after declaration specifiers
+- `declarations/linkage-specifications/class-scope.cpp` (gcc-host): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/class-scope.cpp` (edg-7.0): error: linkage specification is not allowed
+- `declarations/linkage-specifications/class-scope.cpp` (gcc-14): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/class-scope.cpp` (clang-18): error: expected member name or ';' after declaration specifiers
+- `declarations/linkage-specifications/class-scope.cpp` (gcc-16): error: expected unqualified-id before string constant
+- `declarations/linkage-specifications/class-scope.cpp` (clang-22): error: expected member name or ';' after declaration specifiers
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (clang-host): error: declaration of 'g' has a different language linkage / note: previous declaration is here
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (gcc-host): error: conflicting declaration of ‘int g(int)’ with ‘C’ linkage / note: previous declaration with ‘C++’ linkage
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (edg-7.0): error: linkage specification is incompatible with previous "g" (declared at line 3)
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (gcc-14): error: conflicting declaration of 'int g(int)' with 'C' linkage / note: previous declaration with 'C++' linkage
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (clang-18): error: declaration of 'g' has a different language linkage / note: previous declaration is here
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (gcc-16): error: conflicting declaration of 'int g(int)' with 'C' linkage / note: previous declaration with 'C++' linkage
+- `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` (clang-22): error: declaration of 'g' has a different language linkage / note: previous declaration is here
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (clang-host): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (gcc-host): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (gcc-14): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (clang-18): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (gcc-16): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/single-form-declaration-only.cpp` (clang-22): link: undefined reference to `never_defined'
+- `declarations/linkage-specifications/unknown-language.cpp` (clang-host): error: unknown linkage language
+- `declarations/linkage-specifications/unknown-language.cpp` (gcc-host): error: language string ‘"Fortran"’ not recognized
+- `declarations/linkage-specifications/unknown-language.cpp` (edg-7.0): error: unknown external linkage specification
+- `declarations/linkage-specifications/unknown-language.cpp` (gcc-14): error: language string '"Fortran"' not recognized
+- `declarations/linkage-specifications/unknown-language.cpp` (clang-18): error: unknown linkage language
+- `declarations/linkage-specifications/unknown-language.cpp` (gcc-16): error: language string '"Fortran"' not recognized
+- `declarations/linkage-specifications/unknown-language.cpp` (clang-22): error: unknown linkage language
 - `declarations/namespaces/alias-conflict.cpp` (clang-host): error: redefinition of 'L' as an alias for a different namespace / note: previously defined as an alias for 'A'
 - `declarations/namespaces/alias-conflict.cpp` (gcc-host): error: ‘namespace L = B;’ conflicts with a previous declaration / note: previous declaration ‘namespace L = A;’
 - `declarations/namespaces/alias-conflict.cpp` (edg-7.0): error: namespace "L" has already been defined
@@ -6138,6 +6778,76 @@ check that the rejection has the intended cause.
 - `declarations/namespaces/using-directive-not-namespace.cpp` (clang-18): error: expected namespace name
 - `declarations/namespaces/using-directive-not-namespace.cpp` (gcc-16): error: 'S' is not a namespace-name
 - `declarations/namespaces/using-directive-not-namespace.cpp` (clang-22): error: expected namespace name
+- `declarations/static-assert/condition-not-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/static-assert/condition-not-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘n’ is not usable in a constant expression
+- `declarations/static-assert/condition-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 3) cannot be used as a constant
+- `declarations/static-assert/condition-not-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression
+- `declarations/static-assert/condition-not-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/static-assert/condition-not-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression
+- `declarations/static-assert/condition-not-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
+- `declarations/static-assert/condition-ub.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
+- `declarations/static-assert/condition-ub.cpp` (gcc-host): error: non-constant condition for static assertion / error: division by zero is not a constant expression
+- `declarations/static-assert/condition-ub.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
+- `declarations/static-assert/condition-ub.cpp` (gcc-14): error: non-constant condition for static assertion / error: division by zero is not a constant expression
+- `declarations/static-assert/condition-ub.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `declarations/static-assert/condition-ub.cpp` (gcc-16): error: non-constant condition for static assertion / error: division by zero is not a constant expression
+- `declarations/static-assert/condition-ub.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (clang-host): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (gcc-host): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (edg-7.0): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (gcc-14): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (clang-18): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (gcc-16): error: static assertion failed
+- `declarations/static-assert/discarded-branch-nontemplate.cpp` (clang-22): error: static assertion failed
+- `declarations/static-assert/false-rejected.cpp` (clang-host): error: static assertion failed due to requirement '1 == 2'
+- `declarations/static-assert/false-rejected.cpp` (gcc-host): error: static assertion failed
+- `declarations/static-assert/false-rejected.cpp` (edg-7.0): error: static assertion failed / note: the final comparison was 1 == 2
+- `declarations/static-assert/false-rejected.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(1 == 2)'
+- `declarations/static-assert/false-rejected.cpp` (clang-18): error: static assertion failed due to requirement '1 == 2'
+- `declarations/static-assert/false-rejected.cpp` (gcc-16): error: static assertion failed
+- `declarations/static-assert/false-rejected.cpp` (clang-22): error: static assertion failed due to requirement '1 == 2'
+- `declarations/static-assert/false-with-message.cpp` (clang-host): error: static assertion failed: always fails
+- `declarations/static-assert/false-with-message.cpp` (gcc-host): error: static assertion failed: always fails
+- `declarations/static-assert/false-with-message.cpp` (edg-7.0): error: static assertion failed with "always fails"
+- `declarations/static-assert/false-with-message.cpp` (gcc-14): error: static assertion failed: always fails
+- `declarations/static-assert/false-with-message.cpp` (clang-18): error: static assertion failed: always fails
+- `declarations/static-assert/false-with-message.cpp` (gcc-16): error: static assertion failed: always fails
+- `declarations/static-assert/false-with-message.cpp` (clang-22): error: static assertion failed: always fails
+- `declarations/static-assert/in-class-incomplete-self.cpp` (clang-host): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/static-assert/in-class-incomplete-self.cpp` (gcc-host): error: invalid application of ‘sizeof’ to incomplete type ‘S’
+- `declarations/static-assert/in-class-incomplete-self.cpp` (edg-7.0): error: incomplete type "S" is not allowed
+- `declarations/static-assert/in-class-incomplete-self.cpp` (gcc-14): error: invalid application of 'sizeof' to incomplete type 'S'
+- `declarations/static-assert/in-class-incomplete-self.cpp` (clang-18): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/static-assert/in-class-incomplete-self.cpp` (gcc-16): error: invalid application of 'sizeof' to incomplete type 'S'
+- `declarations/static-assert/in-class-incomplete-self.cpp` (clang-22): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
+- `declarations/static-assert/in-for-init.cpp` (clang-host): error: expected expression
+- `declarations/static-assert/in-for-init.cpp` (gcc-host): error: expected primary-expression before ‘static_assert’
+- `declarations/static-assert/in-for-init.cpp` (edg-7.0): error: this declaration is not valid here
+- `declarations/static-assert/in-for-init.cpp` (gcc-14): error: expected primary-expression before 'static_assert'
+- `declarations/static-assert/in-for-init.cpp` (clang-18): error: expected expression
+- `declarations/static-assert/in-for-init.cpp` (gcc-16): error: expected primary-expression before 'static_assert'
+- `declarations/static-assert/in-for-init.cpp` (clang-22): error: expected expression
+- `declarations/static-assert/message-not-literal.cpp` (clang-host): error: 'static_assert' with a user-generated message is a C++26 extension [-Werror,-Wc++26-extensions] / error: the message in a static assertion must be a string literal or an object with 'data()' and 'size()' member functions
+- `declarations/static-assert/message-not-literal.cpp` (gcc-host): error: ‘static_assert’ with non-string message only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions] / error: request for member ‘size’ in ‘msg’, which is of non-class type ‘const char* const’
+- `declarations/static-assert/message-not-literal.cpp` (edg-7.0): error: expected a string literal
+- `declarations/static-assert/message-not-literal.cpp` (gcc-14): error: 'static_assert' with non-string message only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions] / error: request for member 'size' in 'msg', which is of non-class type 'const char* const'
+- `declarations/static-assert/message-not-literal.cpp` (clang-18): error: expected string literal for diagnostic message in static_assert
+- `declarations/static-assert/message-not-literal.cpp` (gcc-16): error: 'static_assert' with non-string message only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions] / error: request for member 'size' in 'msg', which is of non-class type 'const char* const'
+- `declarations/static-assert/message-not-literal.cpp` (clang-22): error: 'static_assert' with a user-generated message is a C++26 extension [-Werror,-Wc++26-extensions] / error: the message in a static assertion must be a string literal or an object with 'data()' and 'size()' member functions
+- `declarations/static-assert/message-object.cpp` (clang-host): error: 'static_assert' with a user-generated message is a C++26 extension [-Werror,-Wc++26-extensions]
+- `declarations/static-assert/message-object.cpp` (gcc-host): error: ‘static_assert’ with non-string message only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
+- `declarations/static-assert/message-object.cpp` (edg-7.0): error: expected a string literal
+- `declarations/static-assert/message-object.cpp` (gcc-14): error: 'static_assert' with non-string message only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/static-assert/message-object.cpp` (clang-18): error: expected string literal for diagnostic message in static_assert / error: expected unqualified-id
+- `declarations/static-assert/message-object.cpp` (gcc-16): error: 'static_assert' with non-string message only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/static-assert/message-object.cpp` (clang-22): error: 'static_assert' with a user-generated message is a C++26 extension [-Werror,-Wc++26-extensions]
+- `declarations/static-assert/template-instantiated-false.cpp` (clang-host): error: static assertion failed due to requirement 'sizeof(int) == 0' / note: in instantiation of function template specialization 'f<int>' requested here
+- `declarations/static-assert/template-instantiated-false.cpp` (gcc-host): error: static assertion failed
+- `declarations/static-assert/template-instantiated-false.cpp` (edg-7.0): error: static assertion failed / note: the final comparison was 4 == 0
+- `declarations/static-assert/template-instantiated-false.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(4 == 0)'
+- `declarations/static-assert/template-instantiated-false.cpp` (clang-18): error: static assertion failed due to requirement 'sizeof(int) == 0' / note: in instantiation of function template specialization 'f<int>' requested here
+- `declarations/static-assert/template-instantiated-false.cpp` (gcc-16): error: static assertion failed
+- `declarations/static-assert/template-instantiated-false.cpp` (clang-22): error: static assertion failed due to requirement 'sizeof(int) == 0' / note: in instantiation of function template specialization 'f<int>' requested here
 - `declarations/storage-linkage/anonymous-union-namespace.cpp` (clang-host): error: anonymous unions at namespace or global scope must be declared 'static'
 - `declarations/storage-linkage/anonymous-union-namespace.cpp` (gcc-host): error: namespace-scope anonymous aggregates must be static
 - `declarations/storage-linkage/anonymous-union-namespace.cpp` (edg-7.0): error: anonymous union at global or namespace scope must be declared static
@@ -6468,6 +7178,274 @@ check that the rejection has the intended cause.
 - `declarations/structured-bindings/with-other-declarator.cpp` (clang-18): error: decomposition declaration must be the only declaration in its group
 - `declarations/structured-bindings/with-other-declarator.cpp` (gcc-16): error: expected ';' before ',' token
 - `declarations/structured-bindings/with-other-declarator.cpp` (clang-22): error: structured binding declaration must be the only declaration in its group
+- `declarations/type-names/alias-overload-same.cpp` (clang-host): error: redefinition of 'f' / note: previous definition is here
+- `declarations/type-names/alias-overload-same.cpp` (gcc-host): error: redefinition of ‘void f(int)’ / note: ‘void f(Int)’ previously defined here
+- `declarations/type-names/alias-overload-same.cpp` (edg-7.0): error: function "f" has already been defined (previous definition at line 5)
+- `declarations/type-names/alias-overload-same.cpp` (gcc-14): error: redefinition of 'void f(int)' / note: 'void f(Int)' previously defined here
+- `declarations/type-names/alias-overload-same.cpp` (clang-18): error: redefinition of 'f' / note: previous definition is here
+- `declarations/type-names/alias-overload-same.cpp` (gcc-16): error: redefinition of 'void f(int)' / note: 'void f(Int)' previously defined here
+- `declarations/type-names/alias-overload-same.cpp` (clang-22): error: redefinition of 'f' / note: previous definition is here
+- `declarations/type-names/alias-scope.cpp` (clang-host): error: unknown type name 'I'
+- `declarations/type-names/alias-scope.cpp` (gcc-host): error: ‘I’ does not name a type
+- `declarations/type-names/alias-scope.cpp` (edg-7.0): error: identifier "I" is undefined
+- `declarations/type-names/alias-scope.cpp` (gcc-14): error: 'I' does not name a type
+- `declarations/type-names/alias-scope.cpp` (clang-18): error: unknown type name 'I'
+- `declarations/type-names/alias-scope.cpp` (gcc-16): error: 'I' does not name a type
+- `declarations/type-names/alias-scope.cpp` (clang-22): error: unknown type name 'I'
+- `declarations/type-names/alias-shadow-changes-meaning.cpp` (gcc-host): error: declaration of ‘typedef long int S::I’ changes meaning of ‘I’ [-Wchanges-meaning] / note: used here to mean ‘typedef int I’
+- `declarations/type-names/alias-shadow-changes-meaning.cpp` (gcc-14): error: declaration of 'typedef long int S::I' changes meaning of 'I' [-Wchanges-meaning] / note: used here to mean 'typedef int I'
+- `declarations/type-names/alias-shadow-changes-meaning.cpp` (gcc-16): error: declaration of 'typedef long int S::I' changes meaning of 'I' [-Wchanges-meaning] / note: used here to mean 'typedef int I'
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (clang-host): error: definition of type 'T' conflicts with typedef of the same name
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (gcc-host): error: using typedef-name ‘T’ after ‘struct’ / note: ‘T’ has a previous declaration here
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (edg-7.0): error: invalid redeclaration of type name "T" (declared at line 3)
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (gcc-14): error: using typedef-name 'T' after 'struct' / note: 'T' has a previous declaration here
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (clang-18): error: definition of type 'T' conflicts with typedef of the same name
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (gcc-16): error: using typedef-name 'T' after 'struct' / note: 'T' has a previous declaration here
+- `declarations/type-names/class-definition-conflicts-typedef.cpp` (clang-22): error: definition of type 'T' conflicts with typedef of the same name
+- `declarations/type-names/class-redefinition.cpp` (clang-host): error: redefinition of 'S' / note: previous definition is here
+- `declarations/type-names/class-redefinition.cpp` (gcc-host): error: redefinition of ‘struct S’ / note: previous definition of ‘struct S’
+- `declarations/type-names/class-redefinition.cpp` (edg-7.0): error: class "S" has already been defined (previous definition at line 3)
+- `declarations/type-names/class-redefinition.cpp` (gcc-14): error: redefinition of 'struct S' / note: previous definition of 'struct S'
+- `declarations/type-names/class-redefinition.cpp` (clang-18): error: redefinition of 'S' / note: previous definition is here
+- `declarations/type-names/class-redefinition.cpp` (gcc-16): error: redefinition of 'struct S' / note: previous definition of 'struct S'
+- `declarations/type-names/class-redefinition.cpp` (clang-22): error: redefinition of 'S' / note: previous definition is here
+- `declarations/type-names/elaborated-declares-in-block.cpp` (clang-host): error: unknown type name 'Local'
+- `declarations/type-names/elaborated-declares-in-block.cpp` (gcc-host): error: ‘Local’ does not name a type
+- `declarations/type-names/elaborated-declares-in-block.cpp` (edg-7.0): error: identifier "Local" is undefined
+- `declarations/type-names/elaborated-declares-in-block.cpp` (gcc-14): error: 'Local' does not name a type
+- `declarations/type-names/elaborated-declares-in-block.cpp` (clang-18): error: unknown type name 'Local'
+- `declarations/type-names/elaborated-declares-in-block.cpp` (gcc-16): error: 'Local' does not name a type
+- `declarations/type-names/elaborated-declares-in-block.cpp` (clang-22): error: unknown type name 'Local'
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (clang-host): error: member access into incomplete type 'struct Hidden' / note: forward declaration of 'n::Hidden'
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (gcc-host): error: invalid use of incomplete type ‘struct n::Hidden’ / note: forward declaration of ‘struct n::Hidden’
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (edg-7.0): error: pointer or reference to incomplete type "n::Hidden" is not allowed / error: argument of type "Hidden *" is incompatible with parameter of type "n::Hidden *"
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (gcc-14): error: invalid use of incomplete type 'struct n::Hidden' / note: forward declaration of 'struct n::Hidden'
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (clang-18): error: member access into incomplete type 'struct Hidden' / note: forward declaration of 'n::Hidden'
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (gcc-16): error: invalid use of incomplete type 'struct n::Hidden' / note: forward declaration of 'struct n::Hidden'
+- `declarations/type-names/elaborated-declares-in-namespace.cpp` (clang-22): error: member access into incomplete type 'struct Hidden' / note: forward declaration of 'n::Hidden'
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (clang-host): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (gcc-host): error: use of enum ‘Undeclared’ without previous declaration
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (edg-7.0): error: forward declaration of enum type is nonstandard
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (gcc-14): error: use of enum 'Undeclared' without previous declaration
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (clang-18): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (gcc-16): error: use of enum 'Undeclared' without previous declaration
+- `declarations/type-names/elaborated-enum-undeclared.cpp` (clang-22): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (clang-host): error: use of 'E' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (gcc-host): error: ‘E’ referred to as ‘struct’ / note: ‘E’ has a previous declaration here
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (edg-7.0): error: tag kind of class or struct is incompatible with declaration of enum "E" (declared at line 3)
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (gcc-14): error: 'E' referred to as 'struct' / note: 'E' has a previous declaration here
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (clang-18): error: use of 'E' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (gcc-16): error: 'E' referred to as 'struct' / note: 'E' has a previous declaration here
+- `declarations/type-names/elaborated-key-enum-mismatch.cpp` (clang-22): error: use of 'E' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (clang-host): error: use of 'S' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (gcc-host): error: ‘union’ tag used in naming ‘struct S’ [-fpermissive]
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (edg-7.0): error: tag kind of union is incompatible with declaration of class "S" (declared at line 3)
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (gcc-14): error: 'union' tag used in naming 'struct S' [-fpermissive]
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (clang-18): error: use of 'S' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (gcc-16): error: 'union' tag used in naming 'struct S' [-fpermissive]
+- `declarations/type-names/elaborated-key-union-mismatch.cpp` (clang-22): error: use of 'S' with tag type that does not match previous declaration / note: previous use is here
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (clang-host): error: no struct named 'Missing' in namespace 'n'
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (gcc-host): error: ‘Missing’ in namespace ‘n’ does not name a type
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (edg-7.0): error: namespace "n" has no tag member named "Missing"
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (gcc-14): error: 'Missing' in namespace 'n' does not name a type
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (clang-18): error: no struct named 'Missing' in namespace 'n'
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (gcc-16): error: 'Missing' in namespace 'n' does not name a type
+- `declarations/type-names/elaborated-qualified-undeclared.cpp` (clang-22): error: no struct named 'Missing' in namespace 'n'
+- `declarations/type-names/enum-fixed-mismatch.cpp` (clang-host): error: enumeration previously declared with fixed underlying type / note: previous declaration is here
+- `declarations/type-names/enum-fixed-mismatch.cpp` (gcc-host): error: underlying type mismatch in enum ‘enum E’ / note: previous definition here
+- `declarations/type-names/enum-fixed-mismatch.cpp` (edg-7.0): error: enum "E" (declared at line 3) was previously declared with a different base type
+- `declarations/type-names/enum-fixed-mismatch.cpp` (gcc-14): error: underlying type mismatch in enum 'enum E' / note: previous definition here
+- `declarations/type-names/enum-fixed-mismatch.cpp` (clang-18): error: enumeration previously declared with fixed underlying type / note: previous declaration is here
+- `declarations/type-names/enum-fixed-mismatch.cpp` (gcc-16): error: underlying type mismatch in enum 'enum E' / note: previous definition here
+- `declarations/type-names/enum-fixed-mismatch.cpp` (clang-22): error: enumeration previously declared with fixed underlying type / note: previous declaration is here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (clang-host): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (gcc-host): error: scoped/unscoped mismatch in enum ‘enum class E’ / note: previous definition here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (edg-7.0): error: enum "E" (declared at line 3) was previously declared as a different kind of enum type
+- `declarations/type-names/enum-scoped-mismatch.cpp` (gcc-14): error: scoped/unscoped mismatch in enum 'enum class E' / note: previous definition here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (clang-18): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (gcc-16): error: scoped/unscoped mismatch in enum 'enum class E' / note: previous definition here
+- `declarations/type-names/enum-scoped-mismatch.cpp` (clang-22): error: enumeration previously declared as scoped / note: previous declaration is here
+- `declarations/type-names/forward-class-function-definition-param.cpp` (clang-host): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-function-definition-param.cpp` (gcc-host): error: ‘e’ has incomplete type / note: forward declaration of ‘class Engine’
+- `declarations/type-names/forward-class-function-definition-param.cpp` (edg-7.0): error: incomplete type "Engine" is not allowed
+- `declarations/type-names/forward-class-function-definition-param.cpp` (gcc-14): error: 'e' has incomplete type / note: forward declaration of 'class Engine'
+- `declarations/type-names/forward-class-function-definition-param.cpp` (clang-18): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-function-definition-param.cpp` (gcc-16): error: 'e' has incomplete type / note: forward declaration of 'class Engine'
+- `declarations/type-names/forward-class-function-definition-param.cpp` (clang-22): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-incomplete-use.cpp` (clang-host): error: member access into incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-incomplete-use.cpp` (gcc-host): error: invalid use of incomplete type ‘class Engine’ / note: forward declaration of ‘class Engine’
+- `declarations/type-names/forward-class-incomplete-use.cpp` (edg-7.0): error: pointer or reference to incomplete type "Engine" is not allowed
+- `declarations/type-names/forward-class-incomplete-use.cpp` (gcc-14): error: invalid use of incomplete type 'class Engine' / note: forward declaration of 'class Engine'
+- `declarations/type-names/forward-class-incomplete-use.cpp` (clang-18): error: member access into incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-incomplete-use.cpp` (gcc-16): error: invalid use of incomplete type 'class Engine' / note: forward declaration of 'class Engine'
+- `declarations/type-names/forward-class-incomplete-use.cpp` (clang-22): error: member access into incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-object.cpp` (clang-host): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-object.cpp` (gcc-host): error: aggregate ‘Engine e’ has incomplete type and cannot be defined
+- `declarations/type-names/forward-class-object.cpp` (edg-7.0): error: incomplete type "Engine" is not allowed
+- `declarations/type-names/forward-class-object.cpp` (gcc-14): error: aggregate 'Engine e' has incomplete type and cannot be defined
+- `declarations/type-names/forward-class-object.cpp` (clang-18): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-class-object.cpp` (gcc-16): error: aggregate 'Engine e' has incomplete type and cannot be defined
+- `declarations/type-names/forward-class-object.cpp` (clang-22): error: variable has incomplete type 'Engine' / note: forward declaration of 'Engine'
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (clang-host): error: enumeration redeclared with different underlying type 'long' (was 'int') / note: previous declaration is here
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (gcc-host): error: different underlying type in enum ‘enum class E’ / note: previous definition here
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (edg-7.0): error: enum "E" (declared at line 3) was previously declared with a different base type
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (gcc-14): error: different underlying type in enum 'enum class E' / note: previous definition here
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (clang-18): error: enumeration redeclared with different underlying type 'long' (was 'int') / note: previous declaration is here
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (gcc-16): error: different underlying type in enum 'enum class E' / note: previous definition here
+- `declarations/type-names/forward-enum-base-mismatch.cpp` (clang-22): error: enumeration redeclared with different underlying type 'long' (was 'int') / note: previous declaration is here
+- `declarations/type-names/forward-enum-no-base.cpp` (clang-host): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/forward-enum-no-base.cpp` (gcc-host): error: use of enum ‘Plain’ without previous declaration
+- `declarations/type-names/forward-enum-no-base.cpp` (edg-7.0): error: forward declaration of enum type is nonstandard
+- `declarations/type-names/forward-enum-no-base.cpp` (gcc-14): error: use of enum 'Plain' without previous declaration
+- `declarations/type-names/forward-enum-no-base.cpp` (clang-18): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/forward-enum-no-base.cpp` (gcc-16): error: use of enum 'Plain' without previous declaration
+- `declarations/type-names/forward-enum-no-base.cpp` (clang-22): error: ISO C++ forbids forward references to 'enum' types
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (clang-host): error: no struct named 'Missing' in 'Outer'
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (gcc-host): error: qualified name does not name a class before ‘{’ token
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (edg-7.0): error: class "Outer" has no tag member named "Missing"
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (gcc-14): error: qualified name does not name a class before '{' token
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (clang-18): error: no struct named 'Missing' in 'Outer'
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (gcc-16): error: qualified name does not name a class before '{' token
+- `declarations/type-names/forward-nested-wrong-scope.cpp` (clang-22): error: no struct named 'Missing' in 'Outer'
+- `declarations/type-names/typedef-initializer.cpp` (clang-host): error: illegal initializer (only variables can be initialized)
+- `declarations/type-names/typedef-initializer.cpp` (gcc-host): error: typedef ‘A’ is initialized (use ‘decltype’ instead)
+- `declarations/type-names/typedef-initializer.cpp` (edg-7.0): error: expected a ";"
+- `declarations/type-names/typedef-initializer.cpp` (gcc-14): error: typedef 'A' is initialized (use 'decltype' instead)
+- `declarations/type-names/typedef-initializer.cpp` (clang-18): error: illegal initializer (only variables can be initialized)
+- `declarations/type-names/typedef-initializer.cpp` (gcc-16): error: typedef 'A' is initialized (use 'decltype' instead)
+- `declarations/type-names/typedef-initializer.cpp` (clang-22): error: illegal initializer (only variables can be initialized)
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (clang-host): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (gcc-host): error: redeclaration of ‘typedef long int S::T’ / note: previous declaration ‘typedef int S::T’
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (edg-7.0): error: invalid redeclaration of type name "S::T" (declared at line 3)
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (gcc-14): error: redeclaration of 'typedef long int S::T' / note: previous declaration 'typedef int S::T'
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (clang-18): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (gcc-16): error: redeclaration of 'typedef long int S::T' / note: previous declaration 'typedef int S::T'
+- `declarations/type-names/typedef-name-in-class-redeclared.cpp` (clang-22): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-name-not-class-key.cpp` (clang-host): error: typedef 'T' cannot be referenced with the 'struct' specifier
+- `declarations/type-names/typedef-name-not-class-key.cpp` (gcc-host): error: using typedef-name ‘T’ after ‘struct’ / note: ‘T’ has a previous declaration here
+- `declarations/type-names/typedef-name-not-class-key.cpp` (edg-7.0): error: typedef "T" may not be used in an elaborated type specifier
+- `declarations/type-names/typedef-name-not-class-key.cpp` (gcc-14): error: using typedef-name 'T' after 'struct' / note: 'T' has a previous declaration here
+- `declarations/type-names/typedef-name-not-class-key.cpp` (clang-18): error: typedef 'T' cannot be referenced with a struct specifier
+- `declarations/type-names/typedef-name-not-class-key.cpp` (gcc-16): error: using typedef-name 'T' after 'struct' / note: 'T' has a previous declaration here
+- `declarations/type-names/typedef-name-not-class-key.cpp` (clang-22): error: typedef 'T' cannot be referenced with the 'struct' specifier
+- `declarations/type-names/typedef-no-name.cpp` (clang-host): error: typedef requires a name [-Werror,-Wmissing-declarations]
+- `declarations/type-names/typedef-no-name.cpp` (gcc-host): error: declaration does not declare anything [-fpermissive]
+- `declarations/type-names/typedef-no-name.cpp` (edg-7.0): error: declaration requires a typedef name
+- `declarations/type-names/typedef-no-name.cpp` (gcc-14): error: declaration does not declare anything [-fpermissive]
+- `declarations/type-names/typedef-no-name.cpp` (clang-18): error: typedef requires a name [-Werror,-Wmissing-declarations]
+- `declarations/type-names/typedef-no-name.cpp` (gcc-16): error: declaration does not declare anything [-fpermissive]
+- `declarations/type-names/typedef-no-name.cpp` (clang-22): error: typedef requires a name [-Werror,-Wmissing-declarations]
+- `declarations/type-names/typedef-redeclare-different.cpp` (clang-host): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-redeclare-different.cpp` (gcc-host): error: conflicting declaration ‘typedef long int A’ / note: previous declaration as ‘typedef int A’
+- `declarations/type-names/typedef-redeclare-different.cpp` (edg-7.0): error: invalid redeclaration of type name "A" (declared at line 3)
+- `declarations/type-names/typedef-redeclare-different.cpp` (gcc-14): error: conflicting declaration 'typedef long int A' / note: previous declaration as 'typedef int A'
+- `declarations/type-names/typedef-redeclare-different.cpp` (clang-18): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-redeclare-different.cpp` (gcc-16): error: conflicting declaration 'typedef long int A' / note: previous declaration as 'typedef int A'
+- `declarations/type-names/typedef-redeclare-different.cpp` (clang-22): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
+- `declarations/type-names/typedef-storage-class.cpp` (clang-host): error: cannot combine with previous 'static' declaration specifier
+- `declarations/type-names/typedef-storage-class.cpp` (gcc-host): error: ‘typedef’ specifier conflicts with ‘static’
+- `declarations/type-names/typedef-storage-class.cpp` (edg-7.0): error: more than one storage class may not be specified
+- `declarations/type-names/typedef-storage-class.cpp` (gcc-14): error: 'typedef' specifier conflicts with 'static'
+- `declarations/type-names/typedef-storage-class.cpp` (clang-18): error: cannot combine with previous 'static' declaration specifier
+- `declarations/type-names/typedef-storage-class.cpp` (gcc-16): error: 'typedef' specifier conflicts with 'static'
+- `declarations/type-names/typedef-storage-class.cpp` (clang-22): error: cannot combine with previous 'static' declaration specifier
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (clang-host): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this member declaration
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (gcc-host): error: anonymous non-C-compatible type given name for linkage purposes by ‘typedef’ declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it contains ‘int Box::get() const’ declaration
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (edg-7.0): error: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration / note: type is not C-like because of this member declaration
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (clang-18): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this member declaration
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (gcc-16): error: anonymous non-C-compatible type given name for linkage purposes by 'typedef' declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it contains 'int Box::get() const' declaration
+- `declarations/type-names/typedef-unnamed-class-member-function.cpp` (clang-22): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this member declaration
+- `declarations/type-names/typedef-with-unsigned.cpp` (clang-host): error: redefinition of 'A' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-with-unsigned.cpp` (gcc-host): error: expected initializer before ‘x’
+- `declarations/type-names/typedef-with-unsigned.cpp` (edg-7.0): error: "A" has already been declared in the current scope / error: expected a ";"
+- `declarations/type-names/typedef-with-unsigned.cpp` (gcc-14): error: expected initializer before 'x'
+- `declarations/type-names/typedef-with-unsigned.cpp` (clang-18): error: redefinition of 'A' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-with-unsigned.cpp` (gcc-16): error: expected initializer before 'x'
+- `declarations/type-names/typedef-with-unsigned.cpp` (clang-22): error: redefinition of 'A' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/variable-then-typedef.cpp` (clang-host): error: redefinition of 'X' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/variable-then-typedef.cpp` (gcc-host): error: ‘typedef int X’ redeclared as different kind of entity / note: previous declaration ‘int X’
+- `declarations/type-names/variable-then-typedef.cpp` (edg-7.0): error: "X" has already been declared in the current scope
+- `declarations/type-names/variable-then-typedef.cpp` (gcc-14): error: 'typedef int X' redeclared as different kind of entity / note: previous declaration 'int X'
+- `declarations/type-names/variable-then-typedef.cpp` (clang-18): error: redefinition of 'X' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/variable-then-typedef.cpp` (gcc-16): error: 'typedef int X' redeclared as different kind of entity / note: previous declaration 'int X'
+- `declarations/type-names/variable-then-typedef.cpp` (clang-22): error: redefinition of 'X' as different kind of symbol / note: previous definition is here
+- `declarations/volatile/assign-to-volatile-class.cpp` (clang-host): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 'this' argument has type 'volatile S', but method is not marked volatile
+- `declarations/volatile/assign-to-volatile-class.cpp` (gcc-host): error: passing ‘volatile S’ as ‘this’ argument discards qualifiers [-fpermissive]
+- `declarations/volatile/assign-to-volatile-class.cpp` (edg-7.0): error: no operator "=" matches these operands / note: function "S::operator=(S &&) noexcept" does not match because argument #1 does not match parameter
+- `declarations/volatile/assign-to-volatile-class.cpp` (gcc-14): error: passing 'volatile S' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/assign-to-volatile-class.cpp` (clang-18): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 'this' argument has type 'volatile S', but method is not marked volatile
+- `declarations/volatile/assign-to-volatile-class.cpp` (gcc-16): error: passing 'volatile S' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/assign-to-volatile-class.cpp` (clang-22): error: no viable overloaded '=' / note: candidate function (the implicit copy assignment operator) not viable: 'this' argument has type 'volatile S', but method is not marked volatile
+- `declarations/volatile/assignment-result-warns.cpp` (clang-host): error: use of result of assignment to object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/assignment-result-warns.cpp` (gcc-host): error: using value of assignment with ‘volatile’-qualified left operand is deprecated [-Werror=volatile]
+- `declarations/volatile/assignment-result-warns.cpp` (gcc-14): error: using value of assignment with 'volatile'-qualified left operand is deprecated [-Werror=volatile]
+- `declarations/volatile/assignment-result-warns.cpp` (clang-18): error: use of result of assignment to object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/assignment-result-warns.cpp` (gcc-16): error: using value of assignment with 'volatile'-qualified left operand is deprecated [-Werror=volatile]
+- `declarations/volatile/assignment-result-warns.cpp` (clang-22): error: use of result of assignment to object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (clang-host): error: volatile lvalue reference to type 'const volatile int' cannot bind to a temporary of type 'int'
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (gcc-host): error: cannot bind lvalue reference of type ‘const volatile int&’ to an rvalue of type ‘int’
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (edg-7.0): error: initial value of reference to const volatile must be an lvalue
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (gcc-14): error: cannot bind lvalue reference of type 'const volatile int&' to an rvalue of type 'int'
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (clang-18): error: volatile lvalue reference to type 'const volatile int' cannot bind to a temporary of type 'int'
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (gcc-16): error: cannot bind lvalue reference of type 'const volatile int&' to an rvalue of type 'int'
+- `declarations/volatile/const-ref-volatile-no-temporary.cpp` (clang-22): error: volatile lvalue reference to type 'const volatile int' cannot bind to a temporary of type 'int'
+- `declarations/volatile/constant-read-rejected.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `declarations/volatile/constant-read-rejected.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression
+- `declarations/volatile/constant-read-rejected.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to read from volatile storage
+- `declarations/volatile/constant-read-rejected.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/volatile/constant-read-rejected.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `declarations/volatile/constant-read-rejected.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
+- `declarations/volatile/constant-read-rejected.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor (the implicit copy constructor) not viable: 1st argument ('volatile S') would lose volatile qualifier
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (gcc-host): error: no matching function for call to ‘S(volatile S&)’
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (edg-7.0): error: class "S" has no suitable copy constructor
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (gcc-14): error: no matching function for call to 'S(volatile S&)' / note: candidate: 'constexpr S::S(const S&)' (near match)
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (clang-18): error: no viable conversion from 'volatile S' to 'int'
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (gcc-16): error: no matching function for call to 'S(volatile S&)'
+- `declarations/volatile/copy-volatile-class-rejected.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor (the implicit copy constructor) not viable: 1st argument ('volatile S') would lose volatile qualifier
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (clang-host): error: defaulted comparison function must not be volatile
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (gcc-host): error: defaulted ‘bool S::operator==(const S&) const volatile’ must be ‘const’
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (edg-7.0): error: a defaulted member comparison operator must be "const"
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (gcc-14): error: defaulted 'bool S::operator==(const S&) const volatile' must be 'const'
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (clang-18): error: defaulted comparison function must not be volatile
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (gcc-16): error: defaulted 'bool S::operator==(const S&) const volatile' must be 'const'
+- `declarations/volatile/defaulted-comparison-volatile.cpp` (clang-22): error: defaulted comparison function must not be volatile
+- `declarations/volatile/increment-warns.cpp` (clang-host): error: increment of object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/increment-warns.cpp` (gcc-host): error: ‘++’ expression of ‘volatile’-qualified type is deprecated [-Werror=volatile]
+- `declarations/volatile/increment-warns.cpp` (gcc-14): error: '++' expression of 'volatile'-qualified type is deprecated [-Werror=volatile]
+- `declarations/volatile/increment-warns.cpp` (clang-18): error: increment of object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/increment-warns.cpp` (gcc-16): error: '++' expression of 'volatile'-qualified type is deprecated [-Werror=volatile]
+- `declarations/volatile/increment-warns.cpp` (clang-22): error: increment of object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (clang-host): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (gcc-host): error: passing ‘volatile Port’ as ‘this’ argument discards qualifiers [-fpermissive]
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (edg-7.0): error: the object has type qualifiers that are not compatible with the member function "Port::read"
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (gcc-14): error: passing 'volatile Port' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (clang-18): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (gcc-16): error: passing 'volatile Port' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/nonvolatile-member-on-volatile.cpp` (clang-22): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/pointer-remove-volatile.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'volatile int *'
+- `declarations/volatile/pointer-remove-volatile.cpp` (gcc-host): error: invalid conversion from ‘volatile int*’ to ‘int*’ [-fpermissive]
+- `declarations/volatile/pointer-remove-volatile.cpp` (edg-7.0): error: a value of type "volatile int *" cannot be used to initialize an entity of type "int *"
+- `declarations/volatile/pointer-remove-volatile.cpp` (gcc-14): error: invalid conversion from 'volatile int*' to 'int*' [-fpermissive]
+- `declarations/volatile/pointer-remove-volatile.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'volatile int *'
+- `declarations/volatile/pointer-remove-volatile.cpp` (gcc-16): error: invalid conversion from 'volatile int*' to 'int*' [-fpermissive]
+- `declarations/volatile/pointer-remove-volatile.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'volatile int *'
+- `declarations/volatile/ref-plain-to-volatile.cpp` (clang-host): error: binding reference of type 'int' to value of type 'volatile int' drops 'volatile' qualifier
+- `declarations/volatile/ref-plain-to-volatile.cpp` (gcc-host): error: binding reference of type ‘int&’ to ‘volatile int’ discards qualifiers
+- `declarations/volatile/ref-plain-to-volatile.cpp` (edg-7.0): error: qualifiers dropped in binding reference of type "int &" to initializer of type "volatile int"
+- `declarations/volatile/ref-plain-to-volatile.cpp` (gcc-14): error: binding reference of type 'int&' to 'volatile int' discards qualifiers
+- `declarations/volatile/ref-plain-to-volatile.cpp` (clang-18): error: binding reference of type 'int' to value of type 'volatile int' drops 'volatile' qualifier
+- `declarations/volatile/ref-plain-to-volatile.cpp` (gcc-16): error: binding reference of type 'int&' to 'volatile int' discards qualifiers
+- `declarations/volatile/ref-plain-to-volatile.cpp` (clang-22): error: binding reference of type 'int' to value of type 'volatile int' drops 'volatile' qualifier
+- `declarations/volatile/static-const-volatile-in-class.cpp` (clang-host): error: static const volatile data member must be initialized out of line
+- `declarations/volatile/static-const-volatile-in-class.cpp` (clang-18): error: static const volatile data member must be initialized out of line
+- `declarations/volatile/static-const-volatile-in-class.cpp` (clang-22): error: static const volatile data member must be initialized out of line
+- `declarations/volatile/volatile-structured-binding.cpp` (clang-host): error: volatile qualifier in structured binding declaration is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/volatile-structured-binding.cpp` (gcc-host): error: ‘volatile’-qualified structured binding is deprecated [-Werror=volatile]
+- `declarations/volatile/volatile-structured-binding.cpp` (gcc-14): error: 'volatile'-qualified structured binding is deprecated [-Werror=volatile]
+- `declarations/volatile/volatile-structured-binding.cpp` (clang-18): error: volatile qualifier in structured binding declaration is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/volatile-structured-binding.cpp` (gcc-16): error: 'volatile'-qualified structured binding is deprecated [-Werror=volatile]
+- `declarations/volatile/volatile-structured-binding.cpp` (clang-22): error: volatile qualifier in structured binding declaration is deprecated [-Werror,-Wdeprecated-volatile]
 - `expressions/additive/base-pointer-derived-array.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: cannot access field of pointer past the end of object
 - `expressions/additive/base-pointer-derived-array.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access storage one position past an object treated as an array of one element
 - `expressions/additive/base-pointer-derived-array.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: cannot access field of pointer past the end of object
