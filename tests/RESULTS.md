@@ -52,6 +52,61 @@ compilers affect the Status column.
 | `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/using-reduces-access.cpp` | ACC-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/declared-outside-then-defaulted.cpp` | DCMP-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `classes/comparisons/decltype-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-anonymous-union-member.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-array-member.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-bases-first.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-by-value-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-constexpr.cpp` | DCMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-friend-by-value.cpp` | DCMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-friend.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-member-eq-private.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-member-not-comparable-unused.cpp` | DCMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-member-not-comparable.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-memberwise.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-mixed-params.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-nonconst-member.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-nonmember-nonfriend.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-other-class-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-out-of-class.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-private-members.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-ref-qualified.cpp` | DCMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-reference-member.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-stops-at-first-false.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/eq-union.cpp` | DCMP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-wrong-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-wrong-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-declared-not-rewritten.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/ne-needs-bool-eq.cpp` | DCMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/non-member-reversed.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/not-equal-defaulted.cpp` | DCMP-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` | DCMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/out-of-class-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
+| `classes/comparisons/reversed-eq.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/rewritten-ambiguous-const-ok.cpp` | DCMP-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/rewritten-ambiguous-warns.cpp` | DCMP-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/rewritten-ne.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/rewritten-relational-reversed.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/secondary-defaulted.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-array.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` | DCMP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-auto-partial.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-auto-strong.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-auto-weak-member.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-bases-first.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-bool-member-ok.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-constexpr.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-declares-eq.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-memberwise.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` | DCMP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-no-header-types.cpp` | DCMP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-relational-rewrite.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-specified-type-synthesized.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/comparisons/spaceship-wrong-return-used.cpp` | DCMP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-wrong-return.cpp` | DCMP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/template-defaulted.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/body-after-members.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
 | `classes/constructors/const-object-defaulted-in-class.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/const-object-empty.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -422,6 +477,88 @@ compilers affect the Status column.
 | `classes/members/static-uses-this.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-virtual.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/address-of-overload.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/argument-dependent-lookup.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/arrow-chain.cpp` | OPR-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/arrow-circular.cpp` | OPR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/arrow-declaration-ok.cpp` | OPR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/arrow-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/arrow-returns-int.cpp` | OPR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/assign-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/assign-not-from-other.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/assign-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/associativity-kept.cpp` | OPR-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/builtin-candidate-via-conversion.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/call-default-argument-ok.cpp` | OPR-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/call-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/call-operator-overloads.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/call-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/comma-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/comma-overload.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/compound-assign-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/compound-not-synthesized.cpp` | OPR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/default-argument.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/enum-builtin-still-used.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/enum-operator.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/explicit-call-syntax.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/left-operand-conversion-nonmember.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/left-operand-no-conversion-member.cpp` | OPR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-bad-params.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-block-scope.cpp` | OPR-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/literal-char.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-constexpr.cpp` | OPR-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/literal-default-arg.cpp` | OPR-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `classes/operators/literal-extern-c.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-float.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-in-namespace.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-integer-for-float-missing.cpp` | OPR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-integer.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-member.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-no-underscore-warns.cpp` | OPR-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-not-found.cpp` | OPR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-raw-float.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-raw.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-string.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/literal-three-params.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/member-and-nonmember-ambiguous.cpp` | OPR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/member-binary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/member-hides-not-nonmember.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/member-unary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/new-operator-token.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/no-candidate.cpp` | OPR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/no-short-circuit.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/nonmember-binary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/nonmember-no-class-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/nonmember-pointer-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/nonmember-unary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/not-overloadable-conditional.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-dot-star.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-dot.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-scope.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/operator-template-ok.cpp` | OPR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/postfix-arg-zero.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/postfix-nonmember.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/postfix-not-declared.cpp` | OPR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/postfix-wrong-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/precedence-kept.cpp` | OPR-11 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/prefix-postfix.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/reference-param-nonmember.cpp` | OPR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/shift-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/shift-right-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/static-call-not-other.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/static-call-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/static-member-operator.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/static-subscript.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/subscript-default-arg.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/subscript-multi.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/subscript-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/subscript-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/subscript-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/subscript-zero-params.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/operators/unary-or-binary-ok.cpp` | OPR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/operators/variadic-operator.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/wrong-arity-member.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/wrong-arity-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/aggregate-first-member.cpp` | UNI-4 | run | run | run | accept | run | run | run | run | pass |
 | `classes/unions/anonymous-union-default-member-init.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
 | `classes/unions/anonymous-union-function.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1803,7 +1940,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1788/1788 tests pass on baseline compilers.
+1925/1925 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -1935,6 +2072,166 @@ check that the rejection has the intended cause.
 - `classes/access/using-reduces-access.cpp` (clang-18): error: 'x' is a private member of 'D' / note: declared private here
 - `classes/access/using-reduces-access.cpp` (gcc-16): error: 'int B::x' is inaccessible within this context
 - `classes/access/using-reduces-access.cpp` (clang-22): error: 'x' is a private member of 'D' / note: declared private here
+- `classes/comparisons/declared-outside-then-defaulted.cpp` (clang-host): error: defaulting this equality comparison operator is not allowed because it was already declared outside the class / note: previous declaration is here
+- `classes/comparisons/declared-outside-then-defaulted.cpp` (edg-7.0): error: a comparison operator defaulted in a class definition must be the first declaration of that comparison operator (function "operator==" (declared at line 6))
+- `classes/comparisons/declared-outside-then-defaulted.cpp` (clang-18): error: defaulting this equality comparison operator is not allowed because it was already declared outside the class / note: previous declaration is here
+- `classes/comparisons/declared-outside-then-defaulted.cpp` (clang-22): error: defaulting this equality comparison operator is not allowed because it was already declared outside the class / note: previous declaration is here
+- `classes/comparisons/decltype-auto-return.cpp` (clang-host): error: return type for defaulted equality comparison operator must be 'bool', not 'decltype(auto)'
+- `classes/comparisons/decltype-auto-return.cpp` (gcc-host): error: defaulted ‘decltype(auto) S::operator==(const S&) const’ must return ‘bool’
+- `classes/comparisons/decltype-auto-return.cpp` (edg-7.0): error: return type of defaulted comparison operator must be "bool"
+- `classes/comparisons/decltype-auto-return.cpp` (gcc-14): error: defaulted 'decltype(auto) S::operator==(const S&) const' must return 'bool'
+- `classes/comparisons/decltype-auto-return.cpp` (clang-18): error: return type for defaulted equality comparison operator must be 'bool', not 'decltype(auto)'
+- `classes/comparisons/decltype-auto-return.cpp` (gcc-16): error: defaulted 'decltype(auto) S::operator==(const S&) const' must return 'bool'
+- `classes/comparisons/decltype-auto-return.cpp` (clang-22): error: return type for defaulted equality comparison operator must be 'bool', not 'decltype(auto)'
+- `classes/comparisons/eq-anonymous-union-member.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because 'S' is a union-like class with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-anonymous-union-member.cpp` (gcc-host): error: use of deleted function ‘constexpr bool S::operator==(const S&) const’ / note: ‘constexpr bool S::operator==(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-anonymous-union-member.cpp` (edg-7.0): error: function "S::operator==(const S &) const" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/comparisons/eq-anonymous-union-member.cpp` (gcc-14): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-anonymous-union-member.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because 'S' is a union-like class with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-anonymous-union-member.cpp` (gcc-16): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-anonymous-union-member.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because 'S' is a union-like class with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-auto-return.cpp` (clang-host): error: return type for defaulted equality comparison operator must be 'bool', not 'auto'
+- `classes/comparisons/eq-auto-return.cpp` (gcc-host): error: defaulted ‘auto operator==(const S&, const S&)’ must return ‘bool’ / error: use of ‘auto operator==(const S&, const S&)’ before deduction of ‘auto’
+- `classes/comparisons/eq-auto-return.cpp` (edg-7.0): error: return type of defaulted comparison operator must be "bool" / error: cannot deduce the return type of function "operator==" (declared at line 3); it has not been defined
+- `classes/comparisons/eq-auto-return.cpp` (gcc-14): error: defaulted 'auto operator==(const S&, const S&)' must return 'bool' / error: use of 'auto operator==(const S&, const S&)' before deduction of 'auto'
+- `classes/comparisons/eq-auto-return.cpp` (clang-18): error: return type for defaulted equality comparison operator must be 'bool', not 'auto'
+- `classes/comparisons/eq-auto-return.cpp` (gcc-16): error: defaulted 'auto operator==(const S&, const S&)' must return 'bool' / error: use of 'auto operator==(const S&, const S&)' before deduction of 'auto'
+- `classes/comparisons/eq-auto-return.cpp` (clang-22): error: return type for defaulted equality comparison operator must be 'bool', not 'auto'
+- `classes/comparisons/eq-by-value-param.cpp` (clang-host): error: invalid parameter type for defaulted equality comparison operator; found 'P', expected 'const P &'
+- `classes/comparisons/eq-by-value-param.cpp` (gcc-host): error: defaulted member ‘bool P::operator==(P) const’ must have parameter type ‘const P&’
+- `classes/comparisons/eq-by-value-param.cpp` (edg-7.0): error: bad type "P" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+- `classes/comparisons/eq-by-value-param.cpp` (gcc-14): error: defaulted member 'bool P::operator==(P) const' must have parameter type 'const P&'
+- `classes/comparisons/eq-by-value-param.cpp` (clang-18): error: invalid parameter type for defaulted equality comparison operator; found 'P', expected 'const P &'
+- `classes/comparisons/eq-by-value-param.cpp` (gcc-16): error: defaulted member 'bool P::operator==(P) const' must have parameter type 'const P&'
+- `classes/comparisons/eq-by-value-param.cpp` (clang-22): error: invalid parameter type for defaulted equality comparison operator; found 'P', expected 'const P &'
+- `classes/comparisons/eq-member-eq-private.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because it would invoke a private 'operator==' member of 'M' to compare member 'm' / note: implicitly declared private here
+- `classes/comparisons/eq-member-eq-private.cpp` (gcc-host): error: use of deleted function ‘constexpr bool S::operator==(const S&) const’ / note: ‘constexpr bool S::operator==(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-eq-private.cpp` (edg-7.0): error: function "S::operator==(const S &) const" (declared at line 4) cannot be referenced -- it is a deleted function
+- `classes/comparisons/eq-member-eq-private.cpp` (gcc-14): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-eq-private.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because it would invoke a private 'operator==' member of 'M' to compare member 'm' / note: implicitly declared private here
+- `classes/comparisons/eq-member-eq-private.cpp` (gcc-16): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-eq-private.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because it would invoke a private 'operator==' member of 'M' to compare member 'm' / note: implicitly declared private here
+- `classes/comparisons/eq-member-not-comparable.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-member-not-comparable.cpp` (gcc-host): error: use of deleted function ‘constexpr bool S::operator==(const S&) const’ / note: ‘constexpr bool S::operator==(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-not-comparable.cpp` (edg-7.0): error: function "S::operator==(const S &) const" (declared at line 4) cannot be referenced -- it is a deleted function
+- `classes/comparisons/eq-member-not-comparable.cpp` (gcc-14): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-not-comparable.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-member-not-comparable.cpp` (gcc-16): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-member-not-comparable.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-mixed-params.cpp` (clang-host): error: parameters for defaulted equality comparison operator must have the same type (found 'const S &' vs 'S')
+- `classes/comparisons/eq-mixed-params.cpp` (gcc-host): error: defaulted ‘bool operator==(const S&, S)’ must have parameters of either type ‘const S&’ or ‘S’, not both
+- `classes/comparisons/eq-mixed-params.cpp` (edg-7.0): error: bad type "S" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+- `classes/comparisons/eq-mixed-params.cpp` (gcc-14): error: defaulted 'bool operator==(const S&, S)' must have parameters of either type 'const S&' or 'S', not both
+- `classes/comparisons/eq-mixed-params.cpp` (clang-18): error: parameters for defaulted equality comparison operator must have the same type (found 'const S &' vs 'S')
+- `classes/comparisons/eq-mixed-params.cpp` (gcc-16): error: defaulted 'bool operator==(const S&, S)' must have parameters of either type 'const S&' or 'S', not both
+- `classes/comparisons/eq-mixed-params.cpp` (clang-22): error: parameters for defaulted equality comparison operator must have the same type (found 'const S &' vs 'S')
+- `classes/comparisons/eq-nonconst-member.cpp` (clang-host): error: defaulted member equality comparison operator must be const-qualified
+- `classes/comparisons/eq-nonconst-member.cpp` (gcc-host): error: defaulted ‘bool S::operator==(const S&)’ must be ‘const’
+- `classes/comparisons/eq-nonconst-member.cpp` (edg-7.0): error: a defaulted member comparison operator must be "const"
+- `classes/comparisons/eq-nonconst-member.cpp` (gcc-14): error: defaulted 'bool S::operator==(const S&)' must be 'const'
+- `classes/comparisons/eq-nonconst-member.cpp` (clang-18): error: defaulted member equality comparison operator must be const-qualified
+- `classes/comparisons/eq-nonconst-member.cpp` (gcc-16): error: defaulted 'bool S::operator==(const S&)' must be 'const'
+- `classes/comparisons/eq-nonconst-member.cpp` (clang-22): error: defaulted member equality comparison operator must be const-qualified
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (clang-host): error: equality comparison operator is not a friend of 'S'
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (gcc-host): error: defaulted ‘bool operator==(const S&, const S&)’ is not a friend of ‘S’
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (edg-7.0): error: a defaulted comparison operator must be a member or a friend of the class it applies to
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (gcc-14): error: defaulted 'bool operator==(const S&, const S&)' is not a friend of 'S'
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (clang-18): error: equality comparison operator is not a friend of 'S'
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (gcc-16): error: defaulted 'bool operator==(const S&, const S&)' is not a friend of 'S'
+- `classes/comparisons/eq-nonmember-nonfriend.cpp` (clang-22): error: equality comparison operator is not a friend of 'S'
+- `classes/comparisons/eq-other-class-param.cpp` (clang-host): error: invalid parameter type for defaulted equality comparison operator; found 'const T &', expected 'const S &'
+- `classes/comparisons/eq-other-class-param.cpp` (gcc-host): error: defaulted member ‘bool S::operator==(const T&) const’ must have parameter type ‘const S&’
+- `classes/comparisons/eq-other-class-param.cpp` (edg-7.0): error: bad type "const T &" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+- `classes/comparisons/eq-other-class-param.cpp` (gcc-14): error: defaulted member 'bool S::operator==(const T&) const' must have parameter type 'const S&'
+- `classes/comparisons/eq-other-class-param.cpp` (clang-18): error: invalid parameter type for defaulted equality comparison operator; found 'const T &', expected 'const S &'
+- `classes/comparisons/eq-other-class-param.cpp` (gcc-16): error: defaulted member 'bool S::operator==(const T&) const' must have parameter type 'const S&'
+- `classes/comparisons/eq-other-class-param.cpp` (clang-22): error: invalid parameter type for defaulted equality comparison operator; found 'const T &', expected 'const S &'
+- `classes/comparisons/eq-reference-member.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-reference-member.cpp` (gcc-host): error: use of deleted function ‘constexpr bool S::operator==(const S&) const’ / note: ‘constexpr bool S::operator==(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-reference-member.cpp` (edg-7.0): error: function "S::operator==(const S &) const" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/comparisons/eq-reference-member.cpp` (gcc-14): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-reference-member.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-reference-member.cpp` (gcc-16): error: use of deleted function 'constexpr bool S::operator==(const S&) const' / note: 'constexpr bool S::operator==(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-reference-member.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-union.cpp` (clang-host): note: defaulted 'operator==' is implicitly deleted because 'U' is a union with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-union.cpp` (gcc-host): error: use of deleted function ‘constexpr bool U::operator==(const U&) const’ / note: ‘constexpr bool U::operator==(const U&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-union.cpp` (edg-7.0): error: function "U::operator==(const U &) const" (declared at line 3) cannot be referenced -- it is a deleted function
+- `classes/comparisons/eq-union.cpp` (gcc-14): error: use of deleted function 'constexpr bool U::operator==(const U&) const' / note: 'constexpr bool U::operator==(const U&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-union.cpp` (clang-18): note: defaulted 'operator==' is implicitly deleted because 'U' is a union with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-union.cpp` (gcc-16): error: use of deleted function 'constexpr bool U::operator==(const U&) const' / note: 'constexpr bool U::operator==(const U&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/eq-union.cpp` (clang-22): note: defaulted 'operator==' is implicitly deleted because 'U' is a union with variant members / note: replace 'default' with 'delete'
+- `classes/comparisons/eq-wrong-param.cpp` (clang-host): error: invalid parameter type for defaulted equality comparison operator; found 'S &', expected 'const S &'
+- `classes/comparisons/eq-wrong-param.cpp` (gcc-host): error: defaulted member ‘bool S::operator==(S&) const’ must have parameter type ‘const S&’
+- `classes/comparisons/eq-wrong-param.cpp` (edg-7.0): error: bad type "S &" for parameter of defaulted comparison operator (must be "reference to const X" where X is the enclosing class type)
+- `classes/comparisons/eq-wrong-param.cpp` (gcc-14): error: defaulted member 'bool S::operator==(S&) const' must have parameter type 'const S&'
+- `classes/comparisons/eq-wrong-param.cpp` (clang-18): error: invalid parameter type for defaulted equality comparison operator; found 'S &', expected 'const S &'
+- `classes/comparisons/eq-wrong-param.cpp` (gcc-16): error: defaulted member 'bool S::operator==(S&) const' must have parameter type 'const S&'
+- `classes/comparisons/eq-wrong-param.cpp` (clang-22): error: invalid parameter type for defaulted equality comparison operator; found 'S &', expected 'const S &'
+- `classes/comparisons/eq-wrong-return.cpp` (clang-host): error: return type for defaulted equality comparison operator must be 'bool', not 'int'
+- `classes/comparisons/eq-wrong-return.cpp` (gcc-host): error: defaulted ‘int S::operator==(const S&) const’ must return ‘bool’
+- `classes/comparisons/eq-wrong-return.cpp` (edg-7.0): error: return type of defaulted comparison operator must be "bool"
+- `classes/comparisons/eq-wrong-return.cpp` (gcc-14): error: defaulted 'int S::operator==(const S&) const' must return 'bool'
+- `classes/comparisons/eq-wrong-return.cpp` (clang-18): error: return type for defaulted equality comparison operator must be 'bool', not 'int'
+- `classes/comparisons/eq-wrong-return.cpp` (gcc-16): error: defaulted 'int S::operator==(const S&) const' must return 'bool'
+- `classes/comparisons/eq-wrong-return.cpp` (clang-22): error: return type for defaulted equality comparison operator must be 'bool', not 'int'
+- `classes/comparisons/ne-needs-bool-eq.cpp` (clang-host): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
+- `classes/comparisons/ne-needs-bool-eq.cpp` (gcc-host): error: return type of ‘int S::operator==(int) const’ is not ‘bool’ / note: used as rewritten candidate for comparison of ‘S’ and ‘int’
+- `classes/comparisons/ne-needs-bool-eq.cpp` (edg-7.0): error: function "S::operator==" (declared at line 3) selected for operator rewrite does not return type bool
+- `classes/comparisons/ne-needs-bool-eq.cpp` (gcc-14): error: return type of 'int S::operator==(int) const' is not 'bool' / note: used as rewritten candidate for comparison of 'S' and 'int'
+- `classes/comparisons/ne-needs-bool-eq.cpp` (clang-18): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
+- `classes/comparisons/ne-needs-bool-eq.cpp` (gcc-16): error: return type of 'int S::operator==(int) const' is not 'bool' / note: used as rewritten candidate for comparison of 'S' and 'int'
+- `classes/comparisons/ne-needs-bool-eq.cpp` (clang-22): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'S')
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘S’ and ‘S’)
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'S' and 'S')
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-18): error: invalid operands to binary expression ('S' and 'S')
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'S' and 'S')
+- `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'S')
+- `classes/comparisons/out-of-class-would-delete.cpp` (clang-host): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
+- `classes/comparisons/out-of-class-would-delete.cpp` (clang-18): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
+- `classes/comparisons/out-of-class-would-delete.cpp` (clang-22): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (clang-host): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'S' and 'S') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (gcc-host): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: ‘bool S::operator==(const S&)’
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (gcc-14): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: 'bool S::operator==(const S&)'
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (clang-18): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'S' and 'S') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (gcc-16): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: 'bool S::operator==(const S&)'
+- `classes/comparisons/rewritten-ambiguous-warns.cpp` (clang-22): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'S' and 'S') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (clang-host): note: defaulted 'operator<=>' is implicitly deleted because there is no viable three-way comparison function for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (gcc-host): error: use of deleted function ‘constexpr auto S::operator<=>(const S&) const’ / note: ‘constexpr auto S::operator<=>(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (edg-7.0): error: function "S::operator<=>(const S &) const" (declared at line 66) cannot be referenced -- it is a deleted function
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (gcc-14): error: use of deleted function 'constexpr auto S::operator<=>(const S&) const' / note: 'constexpr auto S::operator<=>(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (clang-18): note: defaulted 'operator<=>' is implicitly deleted because there is no viable three-way comparison function for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (gcc-16): error: use of deleted function 'constexpr auto S::operator<=>(const S&) const' / note: 'constexpr auto S::operator<=>(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` (clang-22): note: defaulted 'operator<=>' is implicitly deleted because there is no viable three-way comparison function for member 'm' / note: replace 'default' with 'delete'
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (clang-host): error: invalid operands to binary expression ('V' and 'V')
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘V’ and ‘V’)
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'V' and 'V')
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (clang-18): error: invalid operands to binary expression ('V' and 'V')
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'V' and 'V')
+- `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` (clang-22): error: invalid operands to binary expression ('V' and 'V')
+- `classes/comparisons/spaceship-no-header-types.cpp` (clang-host): error: cannot default 'operator<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `classes/comparisons/spaceship-no-header-types.cpp` (gcc-host): error: ‘strong_ordering’ is not a member of ‘std’ / note: ‘std::strong_ordering’ is defined in header ‘<compare>’; this is probably fixable by adding ‘#include <compare>’
+- `classes/comparisons/spaceship-no-header-types.cpp` (edg-7.0): error: no valid std::strong_ordering type found (<compare> must be included) / error: no valid std::weak_ordering type found (<compare> must be included)
+- `classes/comparisons/spaceship-no-header-types.cpp` (gcc-14): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>'
+- `classes/comparisons/spaceship-no-header-types.cpp` (clang-18): error: cannot default 'operator<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `classes/comparisons/spaceship-no-header-types.cpp` (gcc-16): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>'
+- `classes/comparisons/spaceship-no-header-types.cpp` (clang-22): error: cannot default 'operator<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (clang-host): error: no matching conversion for static_cast from 'std::strong_ordering' to 'int' / note: in defaulted three-way comparison operator for 'S' first required here
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (gcc-host): error: use of deleted function ‘constexpr int S::operator<=>(const S&) const’ / note: ‘constexpr int S::operator<=>(const S&) const’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (edg-7.0): error: function "S::operator<=>(const S &) const" (declared at line 63) cannot be referenced -- it is a deleted function
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (gcc-14): error: use of deleted function 'constexpr int S::operator<=>(const S&) const' / note: 'constexpr int S::operator<=>(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (clang-18): error: no matching conversion for static_cast from 'std::strong_ordering' to 'int' / note: in defaulted three-way comparison operator for 'S' first required here
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (gcc-16): error: use of deleted function 'constexpr int S::operator<=>(const S&) const' / note: 'constexpr int S::operator<=>(const S&) const' is implicitly deleted because the default definition would be ill-formed:
+- `classes/comparisons/spaceship-wrong-return-used.cpp` (clang-22): error: no matching conversion for static_cast from 'std::strong_ordering' to 'int' / note: in defaulted three-way comparison operator for 'S' first required here
+- `classes/comparisons/template-defaulted.cpp` (clang-host): error: comparison operator template cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (gcc-host): error: a template cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (edg-7.0): error: function templates cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (gcc-14): error: a template cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (clang-18): error: comparison operator template cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (gcc-16): error: a template cannot be defaulted
+- `classes/comparisons/template-defaulted.cpp` (clang-22): error: comparison operator template cannot be defaulted
 - `classes/constructors/const-object-defaulted-in-class.cpp` (clang-host): error: default initialization of an object of const type 'const S' without a user-provided default constructor
 - `classes/constructors/const-object-defaulted-in-class.cpp` (gcc-host): error: uninitialized ‘const s’ [-fpermissive] / note: ‘const struct S’ has no user-provided default constructor
 - `classes/constructors/const-object-defaulted-in-class.cpp` (edg-7.0): error: const variable "s" requires an initializer -- class "S" has no user-provided default constructor
@@ -3214,6 +3511,233 @@ check that the rejection has the intended cause.
 - `classes/members/static-virtual.cpp` (clang-18): error: 'virtual' can only appear on non-static member functions
 - `classes/members/static-virtual.cpp` (gcc-16): error: member 'f' cannot be declared both 'virtual' and 'static'
 - `classes/members/static-virtual.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
+- `classes/operators/arrow-circular.cpp` (clang-host): error: circular pointer delegation detected
+- `classes/operators/arrow-circular.cpp` (gcc-host): error: circular pointer delegation detected
+- `classes/operators/arrow-circular.cpp` (edg-7.0): error: loop in sequence of "operator->" functions starting at class "A"
+- `classes/operators/arrow-circular.cpp` (gcc-14): error: circular pointer delegation detected
+- `classes/operators/arrow-circular.cpp` (clang-18): error: circular pointer delegation detected
+- `classes/operators/arrow-circular.cpp` (gcc-16): error: circular pointer delegation detected
+- `classes/operators/arrow-circular.cpp` (clang-22): error: circular pointer delegation detected
+- `classes/operators/arrow-nonmember.cpp` (clang-host): error: overloaded 'operator->' must be a non-static member function
+- `classes/operators/arrow-nonmember.cpp` (gcc-host): error: ‘int* operator->(S)’ must be a non-static member function
+- `classes/operators/arrow-nonmember.cpp` (edg-7.0): error: "operator->" must be a member function
+- `classes/operators/arrow-nonmember.cpp` (gcc-14): error: 'int* operator->(S)' must be a non-static member function
+- `classes/operators/arrow-nonmember.cpp` (clang-18): error: overloaded 'operator->' must be a non-static member function
+- `classes/operators/arrow-nonmember.cpp` (gcc-16): error: 'int* operator->(S)' must be a non-static member function
+- `classes/operators/arrow-nonmember.cpp` (clang-22): error: overloaded 'operator->' must be a non-static member function
+- `classes/operators/arrow-returns-int.cpp` (clang-host): error: member reference type 'int' is not a pointer
+- `classes/operators/arrow-returns-int.cpp` (gcc-host): error: result of ‘operator->()’ yields non-pointer result
+- `classes/operators/arrow-returns-int.cpp` (edg-7.0): error: operator -> or ->* applied to "int" instead of to a pointer type
+- `classes/operators/arrow-returns-int.cpp` (gcc-14): error: result of 'operator->()' yields non-pointer result
+- `classes/operators/arrow-returns-int.cpp` (clang-18): error: member reference type 'int' is not a pointer
+- `classes/operators/arrow-returns-int.cpp` (gcc-16): error: result of 'operator->()' yields non-pointer result
+- `classes/operators/arrow-returns-int.cpp` (clang-22): error: member reference type 'int' is not a pointer
+- `classes/operators/assign-nonmember.cpp` (clang-host): error: overloaded 'operator=' must be a non-static member function
+- `classes/operators/assign-nonmember.cpp` (gcc-host): error: ‘S& operator=(S&, int)’ must be a non-static member function
+- `classes/operators/assign-nonmember.cpp` (edg-7.0): error: "operator=" must be a member function
+- `classes/operators/assign-nonmember.cpp` (gcc-14): error: 'S& operator=(S&, int)' must be a non-static member function
+- `classes/operators/assign-nonmember.cpp` (clang-18): error: overloaded 'operator=' must be a non-static member function
+- `classes/operators/assign-nonmember.cpp` (gcc-16): error: 'S& operator=(S&, int)' must be a non-static member function
+- `classes/operators/assign-nonmember.cpp` (clang-22): error: overloaded 'operator=' must be a non-static member function
+- `classes/operators/call-nonmember.cpp` (clang-host): error: overloaded 'operator()' must be a non-static member function
+- `classes/operators/call-nonmember.cpp` (gcc-host): error: ‘int operator()(S)’ must be a member function
+- `classes/operators/call-nonmember.cpp` (edg-7.0): error: "operator()" must be a member function
+- `classes/operators/call-nonmember.cpp` (gcc-14): error: 'int operator()(S)' must be a member function
+- `classes/operators/call-nonmember.cpp` (clang-18): error: overloaded 'operator()' must be a non-static member function
+- `classes/operators/call-nonmember.cpp` (gcc-16): error: 'int operator()(S)' must be a member function
+- `classes/operators/call-nonmember.cpp` (clang-22): error: overloaded 'operator()' must be a non-static member function
+- `classes/operators/compound-not-synthesized.cpp` (clang-host): error: no viable overloaded '+='
+- `classes/operators/compound-not-synthesized.cpp` (gcc-host): error: no match for ‘operator+=’ (operand types are ‘V’ and ‘V’)
+- `classes/operators/compound-not-synthesized.cpp` (edg-7.0): error: no operator "+=" matches these operands / note: built-in operator+=(<arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/operators/compound-not-synthesized.cpp` (gcc-14): error: no match for 'operator+=' (operand types are 'V' and 'V')
+- `classes/operators/compound-not-synthesized.cpp` (clang-18): error: no viable overloaded '+='
+- `classes/operators/compound-not-synthesized.cpp` (gcc-16): error: no match for 'operator+=' (operand types are 'V' and 'V')
+- `classes/operators/compound-not-synthesized.cpp` (clang-22): error: no viable overloaded '+='
+- `classes/operators/default-argument.cpp` (clang-host): error: parameter of overloaded 'operator+' cannot have a default argument
+- `classes/operators/default-argument.cpp` (gcc-host): error: ‘S S::operator+(int)’ cannot have default arguments
+- `classes/operators/default-argument.cpp` (edg-7.0): error: default argument is not allowed
+- `classes/operators/default-argument.cpp` (gcc-14): error: 'S S::operator+(int)' cannot have default arguments
+- `classes/operators/default-argument.cpp` (clang-18): error: parameter of overloaded 'operator+' cannot have a default argument
+- `classes/operators/default-argument.cpp` (gcc-16): error: 'S S::operator+(int)' cannot have default arguments
+- `classes/operators/default-argument.cpp` (clang-22): error: parameter of overloaded 'operator+' cannot have a default argument
+- `classes/operators/left-operand-no-conversion-member.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'S')
+- `classes/operators/left-operand-no-conversion-member.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘int’ and ‘S’)
+- `classes/operators/left-operand-no-conversion-member.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter
+- `classes/operators/left-operand-no-conversion-member.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'int' and 'S')
+- `classes/operators/left-operand-no-conversion-member.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'S')
+- `classes/operators/left-operand-no-conversion-member.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'int' and 'S')
+- `classes/operators/left-operand-no-conversion-member.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'S')
+- `classes/operators/literal-bad-params.cpp` (clang-host): error: invalid literal operator parameter type 'int', did you mean 'unsigned long long'?
+- `classes/operators/literal-bad-params.cpp` (gcc-host): error: ‘int operator""_bad(int)’ has invalid argument list
+- `classes/operators/literal-bad-params.cpp` (edg-7.0): error: invalid integer parameter type ("int") for literal operator; expected a character type or unsigned long long
+- `classes/operators/literal-bad-params.cpp` (gcc-14): error: 'int operator""_bad(int)' has invalid argument list
+- `classes/operators/literal-bad-params.cpp` (clang-18): error: invalid literal operator parameter type 'int', did you mean 'unsigned long long'?
+- `classes/operators/literal-bad-params.cpp` (gcc-16): error: 'int operator""_bad(int)' has invalid argument list
+- `classes/operators/literal-bad-params.cpp` (clang-22): error: invalid literal operator parameter type 'int', did you mean 'unsigned long long'?
+- `classes/operators/literal-default-arg.cpp` (clang-host): error: literal operator cannot have a default argument
+- `classes/operators/literal-default-arg.cpp` (edg-7.0): error: a literal operator cannot have default arguments
+- `classes/operators/literal-default-arg.cpp` (clang-18): error: literal operator cannot have a default argument
+- `classes/operators/literal-default-arg.cpp` (clang-22): error: literal operator cannot have a default argument
+- `classes/operators/literal-extern-c.cpp` (clang-host): error: literal operator must have C++ linkage / note: extern "C" language linkage specification begins here
+- `classes/operators/literal-extern-c.cpp` (gcc-host): error: literal operator with C linkage / note: ‘extern "C"’ linkage started here
+- `classes/operators/literal-extern-c.cpp` (edg-7.0): error: a literal operator cannot have extern "C" name linkage
+- `classes/operators/literal-extern-c.cpp` (gcc-14): error: literal operator with C linkage / note: 'extern "C"' linkage started here
+- `classes/operators/literal-extern-c.cpp` (clang-18): error: literal operator must have C++ linkage / note: extern "C" language linkage specification begins here
+- `classes/operators/literal-extern-c.cpp` (gcc-16): error: literal operator with C linkage / note: 'extern "C"' linkage started here
+- `classes/operators/literal-extern-c.cpp` (clang-22): error: literal operator must have C++ linkage / note: extern "C" language linkage specification begins here
+- `classes/operators/literal-integer-for-float-missing.cpp` (clang-host): error: no matching literal operator for call to 'operator""_u' with argument of type 'long double' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-integer-for-float-missing.cpp` (gcc-host): error: unable to find numeric literal operator ‘operator""_u’ / note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+- `classes/operators/literal-integer-for-float-missing.cpp` (edg-7.0): error: user-defined literal operator not found
+- `classes/operators/literal-integer-for-float-missing.cpp` (gcc-14): error: unable to find numeric literal operator 'operator""_u' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `classes/operators/literal-integer-for-float-missing.cpp` (clang-18): error: no matching literal operator for call to 'operator""_u' with argument of type 'long double' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-integer-for-float-missing.cpp` (gcc-16): error: unable to find numeric literal operator 'operator""_u' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `classes/operators/literal-integer-for-float-missing.cpp` (clang-22): error: no matching literal operator for call to 'operator""_u' with argument of type 'long double' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-member.cpp` (clang-host): error: literal operator 'operator""_m' must be in a namespace or global scope
+- `classes/operators/literal-member.cpp` (gcc-host): error: ‘int S::operator""_m(long long unsigned int)’ must be a non-member function
+- `classes/operators/literal-member.cpp` (edg-7.0): error: a literal operator cannot be a member of a class
+- `classes/operators/literal-member.cpp` (gcc-14): error: 'int S::operator""_m(long long unsigned int)' must be a non-member function
+- `classes/operators/literal-member.cpp` (clang-18): error: literal operator 'operator""_m' must be in a namespace or global scope
+- `classes/operators/literal-member.cpp` (gcc-16): error: 'int S::operator""_m(long long unsigned int)' must be a non-member function
+- `classes/operators/literal-member.cpp` (clang-22): error: literal operator 'operator""_m' must be in a namespace or global scope
+- `classes/operators/literal-no-underscore-warns.cpp` (clang-host): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-no-underscore-warns.cpp` (gcc-host): error: literal operator suffixes not preceded by ‘_’ are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-warns.cpp` (gcc-14): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-warns.cpp` (clang-18): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-no-underscore-warns.cpp` (gcc-16): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-warns.cpp` (clang-22): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-not-found.cpp` (clang-host): error: no matching literal operator for call to 'operator""_none' with argument of type 'unsigned long long' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-not-found.cpp` (gcc-host): error: unable to find numeric literal operator ‘operator""_none’ / note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+- `classes/operators/literal-not-found.cpp` (edg-7.0): error: user-defined literal operator not found
+- `classes/operators/literal-not-found.cpp` (gcc-14): error: unable to find numeric literal operator 'operator""_none' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `classes/operators/literal-not-found.cpp` (clang-18): error: no matching literal operator for call to 'operator""_none' with argument of type 'unsigned long long' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-not-found.cpp` (gcc-16): error: unable to find numeric literal operator 'operator""_none' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `classes/operators/literal-not-found.cpp` (clang-22): error: no matching literal operator for call to 'operator""_none' with argument of type 'unsigned long long' or 'const char *', and no matching literal operator template
+- `classes/operators/literal-three-params.cpp` (clang-host): error: non-template literal operator must have one or two parameters
+- `classes/operators/literal-three-params.cpp` (gcc-host): error: ‘int operator""_t(const char*, Size, int)’ has invalid argument list
+- `classes/operators/literal-three-params.cpp` (edg-7.0): error: too many parameters for this literal operator
+- `classes/operators/literal-three-params.cpp` (gcc-14): error: 'int operator""_t(const char*, Size, int)' has invalid argument list
+- `classes/operators/literal-three-params.cpp` (clang-18): error: non-template literal operator must have one or two parameters
+- `classes/operators/literal-three-params.cpp` (gcc-16): error: 'int operator""_t(const char*, Size, int)' has invalid argument list
+- `classes/operators/literal-three-params.cpp` (clang-22): error: non-template literal operator must have one or two parameters
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (clang-host): error: use of overloaded operator '+' is ambiguous (with operand types 'V' and 'V') / note: candidate function
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (gcc-host): error: ambiguous overload for ‘operator+’ (operand types are ‘V’ and ‘V’)
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (edg-7.0): error: more than one operator "+" matches these operands: / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (gcc-14): error: ambiguous overload for 'operator+' (operand types are 'V' and 'V') / note: candidate: 'V V::operator+(V) const'
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (clang-18): error: use of overloaded operator '+' is ambiguous (with operand types 'V' and 'V') / note: candidate function
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (gcc-16): error: ambiguous overload for 'operator+' (operand types are 'V' and 'V')
+- `classes/operators/member-and-nonmember-ambiguous.cpp` (clang-22): error: use of overloaded operator '+' is ambiguous (with operand types 'V' and 'V') / note: candidate function
+- `classes/operators/new-operator-token.cpp` (clang-host): error: 'operator*' cannot be the name of a variable or data member / error: expected ';' at end of declaration list
+- `classes/operators/new-operator-token.cpp` (gcc-host): error: declaration of ‘operator*’ as non-function / error: expected ‘;’ at end of member declaration
+- `classes/operators/new-operator-token.cpp` (edg-7.0): error: an operator name must be declared as a function / error: expected a ";"
+- `classes/operators/new-operator-token.cpp` (gcc-14): error: declaration of 'operator*' as non-function / error: expected ';' at end of member declaration
+- `classes/operators/new-operator-token.cpp` (clang-18): error: 'operator*' cannot be the name of a variable or data member / error: expected ';' at end of declaration list
+- `classes/operators/new-operator-token.cpp` (gcc-16): error: declaration of 'operator*' as non-function / error: expected ';' at end of member declaration
+- `classes/operators/new-operator-token.cpp` (clang-22): error: 'operator*' cannot be the name of a variable or data member / error: expected ';' at end of declaration list
+- `classes/operators/no-candidate.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'S')
+- `classes/operators/no-candidate.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘S’ and ‘S’)
+- `classes/operators/no-candidate.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/operators/no-candidate.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'S' and 'S')
+- `classes/operators/no-candidate.cpp` (clang-18): error: invalid operands to binary expression ('S' and 'S')
+- `classes/operators/no-candidate.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'S' and 'S')
+- `classes/operators/no-candidate.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'S')
+- `classes/operators/nonmember-no-class-param.cpp` (clang-host): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/nonmember-no-class-param.cpp` (gcc-host): error: ‘int operator+(int, int)’ must have an argument of class or enumerated type
+- `classes/operators/nonmember-no-class-param.cpp` (edg-7.0): error: nonmember operator requires a parameter with class or enum type
+- `classes/operators/nonmember-no-class-param.cpp` (gcc-14): error: 'int operator+(int, int)' must have an argument of class or enumerated type
+- `classes/operators/nonmember-no-class-param.cpp` (clang-18): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/nonmember-no-class-param.cpp` (gcc-16): error: 'int operator+(int, int)' must have an argument of class or enumerated type
+- `classes/operators/nonmember-no-class-param.cpp` (clang-22): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/nonmember-pointer-param.cpp` (clang-host): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/nonmember-pointer-param.cpp` (gcc-host): error: ‘int operator+(S*, S*)’ must have an argument of class or enumerated type
+- `classes/operators/nonmember-pointer-param.cpp` (edg-7.0): error: nonmember operator requires a parameter with class or enum type
+- `classes/operators/nonmember-pointer-param.cpp` (gcc-14): error: 'int operator+(S*, S*)' must have an argument of class or enumerated type
+- `classes/operators/nonmember-pointer-param.cpp` (clang-18): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/nonmember-pointer-param.cpp` (gcc-16): error: 'int operator+(S*, S*)' must have an argument of class or enumerated type
+- `classes/operators/nonmember-pointer-param.cpp` (clang-22): error: overloaded 'operator+' must have at least one parameter of class or enumeration type
+- `classes/operators/not-overloadable-conditional.cpp` (clang-host): error: expected a type
+- `classes/operators/not-overloadable-conditional.cpp` (gcc-host): error: ISO C++ prohibits overloading ‘operator ?:’
+- `classes/operators/not-overloadable-conditional.cpp` (edg-7.0): error: expected an operator / error: expected a ";"
+- `classes/operators/not-overloadable-conditional.cpp` (gcc-14): error: ISO C++ prohibits overloading 'operator ?:'
+- `classes/operators/not-overloadable-conditional.cpp` (clang-18): error: expected a type
+- `classes/operators/not-overloadable-conditional.cpp` (gcc-16): error: ISO C++ prohibits overloading 'operator ?:'
+- `classes/operators/not-overloadable-conditional.cpp` (clang-22): error: expected a type
+- `classes/operators/not-overloadable-dot-star.cpp` (clang-host): error: expected a type
+- `classes/operators/not-overloadable-dot-star.cpp` (gcc-host): error: expected type-specifier before ‘.*’ token
+- `classes/operators/not-overloadable-dot-star.cpp` (edg-7.0): error: expected an operator
+- `classes/operators/not-overloadable-dot-star.cpp` (gcc-14): error: expected type-specifier before '.*' token
+- `classes/operators/not-overloadable-dot-star.cpp` (clang-18): error: expected a type
+- `classes/operators/not-overloadable-dot-star.cpp` (gcc-16): error: expected type-specifier before '.*' token
+- `classes/operators/not-overloadable-dot-star.cpp` (clang-22): error: expected a type
+- `classes/operators/not-overloadable-dot.cpp` (clang-host): error: expected a type
+- `classes/operators/not-overloadable-dot.cpp` (gcc-host): error: expected type-specifier before ‘.’ token
+- `classes/operators/not-overloadable-dot.cpp` (edg-7.0): error: expected an operator
+- `classes/operators/not-overloadable-dot.cpp` (gcc-14): error: expected type-specifier before '.' token
+- `classes/operators/not-overloadable-dot.cpp` (clang-18): error: expected a type
+- `classes/operators/not-overloadable-dot.cpp` (gcc-16): error: expected type-specifier before '.' token
+- `classes/operators/not-overloadable-dot.cpp` (clang-22): error: expected a type
+- `classes/operators/not-overloadable-scope.cpp` (clang-host): error: expected a type
+- `classes/operators/not-overloadable-scope.cpp` (gcc-host): error: expected type-specifier before ‘::’ token
+- `classes/operators/not-overloadable-scope.cpp` (edg-7.0): error: expected an identifier / error: expected an operator
+- `classes/operators/not-overloadable-scope.cpp` (gcc-14): error: expected type-specifier before '::' token
+- `classes/operators/not-overloadable-scope.cpp` (clang-18): error: expected a type
+- `classes/operators/not-overloadable-scope.cpp` (gcc-16): error: expected type-specifier before '::' token
+- `classes/operators/not-overloadable-scope.cpp` (clang-22): error: expected a type
+- `classes/operators/postfix-not-declared.cpp` (clang-host): error: cannot increment value of type 'C'
+- `classes/operators/postfix-not-declared.cpp` (gcc-host): error: no ‘operator++(int)’ declared for postfix ‘++’ [-fpermissive]
+- `classes/operators/postfix-not-declared.cpp` (edg-7.0): error: no operator "++" matches these operands / note: number of parameters of function "C::operator++" does not match the call
+- `classes/operators/postfix-not-declared.cpp` (gcc-14): error: no 'operator++(int)' declared for postfix '++' [-fpermissive]
+- `classes/operators/postfix-not-declared.cpp` (clang-18): error: cannot increment value of type 'C'
+- `classes/operators/postfix-not-declared.cpp` (gcc-16): error: no 'operator++(int)' declared for postfix '++' [-fpermissive]
+- `classes/operators/postfix-not-declared.cpp` (clang-22): error: cannot increment value of type 'C'
+- `classes/operators/postfix-wrong-param.cpp` (clang-host): error: parameter of overloaded post-increment operator must have type 'int' (not 'long')
+- `classes/operators/postfix-wrong-param.cpp` (gcc-host): error: postfix ‘C C::operator++(long int)’ must have ‘int’ as its argument
+- `classes/operators/postfix-wrong-param.cpp` (edg-7.0): error: extra parameter of postfix "operator++" must be of type "int"
+- `classes/operators/postfix-wrong-param.cpp` (gcc-14): error: postfix 'C C::operator++(long int)' must have 'int' as its argument
+- `classes/operators/postfix-wrong-param.cpp` (clang-18): error: parameter of overloaded post-increment operator must have type 'int' (not 'long')
+- `classes/operators/postfix-wrong-param.cpp` (gcc-16): error: postfix 'C C::operator++(long int)' must have 'int' as its argument
+- `classes/operators/postfix-wrong-param.cpp` (clang-22): error: parameter of overloaded post-increment operator must have type 'int' (not 'long')
+- `classes/operators/static-call-not-other.cpp` (clang-host): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/static-call-not-other.cpp` (gcc-host): error: ‘static int S::operator+(int)’ must be either a non-static member function or a non-member function
+- `classes/operators/static-call-not-other.cpp` (edg-7.0): error: operator may not be a static member function
+- `classes/operators/static-call-not-other.cpp` (gcc-14): error: 'static int S::operator+(int)' must be either a non-static member function or a non-member function
+- `classes/operators/static-call-not-other.cpp` (clang-18): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/static-call-not-other.cpp` (gcc-16): error: 'static int S::operator+(int)' must be either a non-static member function or a non-member function
+- `classes/operators/static-call-not-other.cpp` (clang-22): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/static-member-operator.cpp` (clang-host): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/static-member-operator.cpp` (gcc-host): error: ‘static S S::operator+(S, S)’ must be either a non-static member function or a non-member function
+- `classes/operators/static-member-operator.cpp` (edg-7.0): error: operator may not be a static member function
+- `classes/operators/static-member-operator.cpp` (gcc-14): error: 'static S S::operator+(S, S)' must be either a non-static member function or a non-member function
+- `classes/operators/static-member-operator.cpp` (clang-18): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/static-member-operator.cpp` (gcc-16): error: 'static S S::operator+(S, S)' must be either a non-static member function or a non-member function
+- `classes/operators/static-member-operator.cpp` (clang-22): error: overloaded 'operator+' cannot be a static member function
+- `classes/operators/subscript-nonmember.cpp` (clang-host): error: overloaded 'operator[]' must be a non-static member function
+- `classes/operators/subscript-nonmember.cpp` (gcc-host): error: ‘int operator[](S, int)’ must be a member function
+- `classes/operators/subscript-nonmember.cpp` (edg-7.0): error: "operator[]" must be a member function
+- `classes/operators/subscript-nonmember.cpp` (gcc-14): error: 'int operator[](S, int)' must be a member function
+- `classes/operators/subscript-nonmember.cpp` (clang-18): error: overloaded 'operator[]' must be a non-static member function
+- `classes/operators/subscript-nonmember.cpp` (gcc-16): error: 'int operator[](S, int)' must be a member function
+- `classes/operators/subscript-nonmember.cpp` (clang-22): error: overloaded 'operator[]' must be a non-static member function
+- `classes/operators/variadic-operator.cpp` (clang-host): error: overloaded 'operator+' cannot be variadic
+- `classes/operators/variadic-operator.cpp` (gcc-host): error: ‘S S::operator+(...)’ must not have variable number of arguments
+- `classes/operators/variadic-operator.cpp` (edg-7.0): error: ellipsis is not allowed in operator function parameter list
+- `classes/operators/variadic-operator.cpp` (gcc-14): error: 'S S::operator+(...)' must not have variable number of arguments
+- `classes/operators/variadic-operator.cpp` (clang-18): error: overloaded 'operator+' cannot be variadic
+- `classes/operators/variadic-operator.cpp` (gcc-16): error: 'S S::operator+(...)' must not have variable number of arguments
+- `classes/operators/variadic-operator.cpp` (clang-22): error: overloaded 'operator+' cannot be variadic
+- `classes/operators/wrong-arity-member.cpp` (clang-host): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
+- `classes/operators/wrong-arity-member.cpp` (gcc-host): error: ‘S S::operator+(S, S)’ must have either zero or one argument
+- `classes/operators/wrong-arity-member.cpp` (edg-7.0): error: too many parameters for this operator function
+- `classes/operators/wrong-arity-member.cpp` (gcc-14): error: 'S S::operator+(S, S)' must have either zero or one argument
+- `classes/operators/wrong-arity-member.cpp` (clang-18): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
+- `classes/operators/wrong-arity-member.cpp` (gcc-16): error: 'S S::operator+(S, S)' must have either zero or one argument
+- `classes/operators/wrong-arity-member.cpp` (clang-22): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
+- `classes/operators/wrong-arity-nonmember.cpp` (clang-host): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
+- `classes/operators/wrong-arity-nonmember.cpp` (gcc-host): error: ‘S operator+(S, S, S)’ must have either one or two arguments
+- `classes/operators/wrong-arity-nonmember.cpp` (edg-7.0): error: too many parameters for this operator function
+- `classes/operators/wrong-arity-nonmember.cpp` (gcc-14): error: 'S operator+(S, S, S)' must have either one or two arguments
+- `classes/operators/wrong-arity-nonmember.cpp` (clang-18): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
+- `classes/operators/wrong-arity-nonmember.cpp` (gcc-16): error: 'S operator+(S, S, S)' must have either one or two arguments
+- `classes/operators/wrong-arity-nonmember.cpp` (clang-22): error: overloaded 'operator+' must be a unary or binary operator (has 3 parameters)
 - `classes/unions/anonymous-union-function.cpp` (clang-host): error: functions cannot be declared in an anonymous union
 - `classes/unions/anonymous-union-function.cpp` (gcc-host): error: ‘void f()::<unnamed union>::g()’ invalid; an anonymous union may only have public non-static data members [-fpermissive] / error: ‘void f()::<unnamed union>::g()’ invalid; an anonymous union can only have non-static data members [-fpermissive]
 - `classes/unions/anonymous-union-function.cpp` (edg-7.0): error: invalid anonymous union -- member function is not allowed

@@ -55,6 +55,8 @@ current state only. The history of how it got here is in `git log`.
 | [Virtual functions and abstract classes](../spec/classes/virtual.md) | 18 | 7 required, 8 reject, 1 undefined, 1 no-diagnostic, 1 recommended | 95 | Q-0056 | 0 flagged |
 | [Unions and bit-fields](../spec/classes/unions.md) | 18 | 10 required, 5 reject, 1 undefined, 1 impl-defined, 1 recommended | 80 | Q-0057, Q-0058 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 7 | 5 required, 1 reject, 1 recommended | 55 | Q-0059 | 0 flagged |
+| [Operator overloading](../spec/classes/operators.md) | 11 | 8 required, 2 reject, 1 recommended | 82 | Q-0060 | 0 flagged |
+| [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 55 | Q-0061, Q-0062 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -62,12 +64,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-conversion-functions-rewrite.txt`. The table above comes from
+`reports/similarity/2026-10-30-comparisons.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1788/1788 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1925/1925 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -83,7 +85,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Fifty-eight questions are open for opinions, each with a provisional answer the
+Sixty-one questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -115,11 +117,10 @@ needs a page through the full pipeline.
   expressions (or a recorded decision to exclude exceptions).
 - Declarations: `typedef` and alias declarations, `static_assert`, the
   `inline` specifier, `alignas` and alignment, linkage specifications,
-  elaborated type specifiers and forward class declarations, the
-  `explicit` specifier, `noexcept` in function types, pointer-to-member
-  declarators, and `volatile`.
-- Classes: the sections of decision 0017, plus initialization by
-  constructors and initializer-list constructors.
+  elaborated type specifiers and forward class declarations, `noexcept`
+  in function types, pointer-to-member declarators, and `volatile`.
+- Classes: initializer-list constructors and their place in overload
+  resolution.
 - Statements: the forward-progress rule belongs with threads, which are
   out of scope.
 
@@ -133,9 +134,9 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
-7. Continue classes in the order set by decision 0017. Next: operator
-   overloading. Statements, expressions, and declarations in the
-   charter's scope all have pages.
+7. Write pages for the topics in scope with no page yet: expressions
+   first, then declarations, then the remaining class topic. Next:
+   primary expressions.
 
 ## Size estimate
 
