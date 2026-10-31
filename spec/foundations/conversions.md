@@ -44,7 +44,7 @@ the behavior is undefined.
 :::
 
 :::{principle} CONV-P3
-:rules: CONV-8 CONV-9 CONV-10 CONV-14 CONV-15 CONV-16 CONV-17
+:rules: CONV-8 CONV-9 CONV-10 CONV-14 CONV-15 CONV-16 CONV-17 CONV-18
 
 A pointer converts implicitly only in the direction that loses no
 safety: toward `void`, toward a base class, toward more cv-qualifiers at
@@ -53,9 +53,10 @@ to member of a derived class, and from an array of known bound to one of
 unknown bound. Each reverse direction would claim something the pointer
 cannot promise, so none of them is implicit. A null pointer comes only
 from `nullptr` or a literal zero, because any other value with the value
-zero is a number, and a number is not a pointer. Through a base that is
-virtual, ambiguous, or not accessible, there is no single path, so no
-implicit conversion.
+zero is a number, and a number is not a pointer. For the same reason a
+pointer is not a number, so no pointer converts implicitly to an
+integer. Through a base that is virtual, ambiguous, or not accessible,
+there is no single path, so no implicit conversion.
 :::
 
 ## Constraints
@@ -131,29 +132,46 @@ A function name can be used as a pointer that calls that function.
 
 :::{rule} CONV-14
 :kind: required
-:tests: expressions/conversions/ambiguous-base.cpp expressions/conversions/derived-to-base.cpp expressions/conversions/null-derived-to-second-base.cpp
+:tests: expressions/conversions/derived-to-base.cpp expressions/conversions/null-derived-to-second-base.cpp
 
 A pointer or reference to a derived class converts implicitly to a pointer
-or reference to a base class *(classes referenced)*. The base must be
-unambiguous and accessible *(referenced)*. A null pointer converts to a
+or reference to a base class (DER-5). A null pointer converts to a
 null pointer, also when the base subobject is at a nonzero offset.
+CONV-17 lists the bases that do not allow it.
 :::
 
 :::{rule} CONV-15
 :kind: required
-:tests: expressions/conversions/member-pointer-base-to-derived.cpp expressions/conversions/member-pointer-derived-to-base.cpp
+:tests: expressions/conversions/member-pointer-base-to-derived.cpp
 
-A pointer to a member of a base class converts implicitly to a pointer to
-the same member of a derived class. The opposite direction is not
-implicit.
+A member pointer that names a member of a base class can be used as a
+member pointer of a derived class without a cast. It still names the
+member that the base declares.
 :::
 
 :::{rule} CONV-17
 :kind: reject
-:tests: expressions/conversions/member-pointer-virtual-base.cpp expressions/conversions/member-pointer-ambiguous-base.cpp
+:tests: expressions/conversions/member-pointer-virtual-base.cpp expressions/conversions/member-pointer-ambiguous-base.cpp expressions/conversions/ambiguous-base.cpp expressions/conversions/member-pointer-derived-to-base.cpp
 
-The conversion of CONV-15 must not go through a virtual base or an
-ambiguous base, and the base must be accessible (MPTR-11).
+These conversions must not occur implicitly:
+
+- the conversion of CONV-14 to a base that is ambiguous (DER-10) or
+  not accessible *(referenced)*,
+- the conversion of CONV-15 through a virtual base or an ambiguous
+  base, or to a base that is not accessible (MPTR-11),
+- a pointer to a member of a derived class to a pointer to a member of
+  its base.
+:::
+
+:::{rule} CONV-18
+:kind: reject
+:tests: expressions/conversions/pointer-to-integer.cpp expressions/conversions/nullptr-to-integer.cpp expressions/conversions/member-pointer-to-integer.cpp foundations/translation/ill-formed-diagnosed.cpp
+
+A pointer, a pointer to member, and `nullptr` must not convert
+implicitly to an integer type. An array, such as a string literal,
+becomes a pointer first, so it does not convert either. The conversion
+to `bool` is the exception (CONV-3, CONV-12), and `reinterpret_cast` can
+convert a pointer explicitly (CAST-6).
 :::
 
 :::{rule} CONV-16
@@ -229,7 +247,8 @@ type, the result is one of the two. The implementation defines which one.
 
 If the target floating-point type has infinities, a value above its
 largest finite value converts to the largest finite value or to infinity.
-The implementation defines which one ({question}`Q-0028`).
+The implementation defines which one ({question}`Q-0028`). The
+conversion is not undefined, so it can occur in constant evaluation.
 :::
 
 ## Examples
@@ -241,6 +260,8 @@ signed char sc = 200;      // -56
 int i = 3.99;              // 3
 int big = 1e10;            // undefined
 float f = 16777217;        // 16777216.0f or 16777218.0f
+float g = 16777219;        // 16777220.0f on every matrix target
+long n = &i;               // rejected: a pointer is not a number
 int* p = 0;                // a null pointer
 int zero = 0;
 int* q = zero;             // rejected
@@ -253,6 +274,8 @@ bool c(nullptr);           // false
 The results are in `tests/RESULTS.md`.
 
 - CONV-5: all compilers reject the conversion during constant evaluation.
+  At run time, the sanitizer (`-fsanitize=float-cast-overflow`) stops
+  the program with a nonzero status on Clang and GCC.
 - CONV-8: EDG accepts a character literal with the value zero as a null
   pointer constant. Clang and GCC reject it ({question}`Q-0100`).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and

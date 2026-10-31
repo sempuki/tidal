@@ -230,8 +230,10 @@ and the program discards.
 :kind: recommended
 :tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp
 
-`[[maybe_unused]]` can apply to a variable, parameter, function, or type.
-An implementation should not warn that such an entity is unused.
+An implementation should warn about a local variable that the program
+never uses. `[[maybe_unused]]` can apply to a variable, parameter,
+function, or type. An implementation should not warn that such an
+entity is unused.
 :::
 
 :::{rule} ATTR-7

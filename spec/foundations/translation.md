@@ -80,7 +80,7 @@ nowhere is found out only when the program is linked.
 :::
 
 :::{principle} TR-P3
-:rules: TR-2 TR-3
+:rules: TR-2 TR-3 TR-9
 
 Execution begins at `main`. The program's exit status is the value that
 `main` returns, and reaching the end of `main` returns zero. `main` is
@@ -139,7 +139,7 @@ when the broken code is in a function that the program never calls.
 `main` must return `int`, must not be a template, and must have no
 parameters or the two parameters `int` and `char**`
 ({question}`Q-0112`). A program must not call `main` or take its
-address. A program with no `main` does not link.
+address.
 :::
 
 ## Runtime Behavior
@@ -157,12 +157,14 @@ many strings followed by a null pointer.
 
 :::{rule} TR-4
 :kind: required
-:tests: foundations/translation/units-translated-separately.cpp foundations/translation/unit-sees-own-declarations-only.cpp foundations/translation/undefined-at-link.cpp
+:tests: foundations/translation/units-translated-separately.cpp foundations/translation/unit-sees-own-declarations-only.cpp foundations/translation/undefined-at-link.cpp foundations/translation/main-no-definition.cpp
 
 Each translation unit sees only its own declarations. A function with
 internal linkage is a separate function in each unit that defines it. A
 function that is declared and used but defined in no unit makes the
-program fail to link.
+program fail to link. This includes `main`, which the program's start
+uses, so a program with no `main` fails to link. A name that only
+another unit declares cannot be used (NAM-8).
 :::
 
 :::{rule} TR-5
@@ -175,7 +177,9 @@ needed, such as a `static_assert`. An operation that would be undefined,
 such as division by zero, makes the evaluation not constant, and the
 program is rejected there, while the same call at run time with a
 value that is never zero is valid. `if consteval` selects its first
-branch in constant evaluation and its second at run time.
+branch in constant evaluation and its second at run time. A
+`constexpr` function that never gives a constant is still valid
+(CX-3), as long as no constant evaluation reaches it.
 :::
 
 :::{rule} TR-7
@@ -200,6 +204,17 @@ specification sets no requirement on the whole execution, before or
 after that point. Constant evaluation rejects such an evaluation, also
 when the result of the operation is not used. An operation on a path
 that the evaluation does not take has no effect on it.
+:::
+
+## Implementation Requirements
+
+:::{rule} TR-9
+:kind: impl-defined
+:tests: foundations/translation/main-with-args.cpp foundations/translation/main-program-name.cpp
+
+The environment that starts a program supplies the values of `main`'s
+two parameters. On the matrix targets, the first is at least 1, and the
+first string holds the name by which the program was started.
 :::
 
 ## Recommended Practice

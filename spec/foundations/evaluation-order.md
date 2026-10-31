@@ -23,7 +23,7 @@ either way.
 :::
 
 :::{principle} SEQ-P2
-:rules: SEQ-1 SEQ-4
+:rules: SEQ-1 SEQ-4 SEQ-7
 
 Everywhere else, the order is the implementation's choice, and the
 choice can differ from one call to the next. The one promise is that
@@ -31,7 +31,8 @@ each argument of a call is evaluated as a whole, and the called function
 runs as a whole, so two evaluations do not interleave. A program whose
 result depends on an order that the language did not fix has no meaning,
 so two {term}`unsequenced` accesses to one memory location, where at
-least one writes, are undefined.
+least one writes, are undefined. Where the implementation can see such
+a pair, it should say so.
 :::
 
 ## Runtime Behavior
@@ -100,6 +101,17 @@ The arguments of a function call are evaluated in an unspecified order.
 Each argument is evaluated completely before the evaluation of another
 argument starts. The body of a called function also does not overlap with
 other evaluations in the caller.
+:::
+
+## Recommended Practice
+
+:::{rule} SEQ-7
+:kind: recommended
+:tests: expressions/sequencing/unsequenced-increments.cpp
+
+An implementation should warn when it can see two unsequenced
+evaluations in one expression that modify the same object, or that
+modify it and read it.
 :::
 
 ## Examples

@@ -1,4 +1,4 @@
-// tidal-rules: SEQ-4
+// tidal-rules: SEQ-4 SEQ-7
 // tidal-expect: reject
 // tidal-error-clang: multiple unsequenced modifications
 // tidal-error-gcc: may be undefined.*sequence-point

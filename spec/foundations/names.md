@@ -13,7 +13,7 @@ control.
 ## Principles
 
 :::{principle} NAM-P1
-:rules: NAM-1 NAM-3
+:rules: NAM-1 NAM-3 NAM-8
 :exceptions: NAM-6
 
 A scope is a region of the program where names can be declared: a
@@ -65,14 +65,25 @@ variable can share a name.
 
 :::{rule} NAM-1
 :kind: required
-:tests: foundations/names/visible-from-declaration.cpp foundations/names/use-before-declaration.cpp foundations/names/visible-in-own-initializer.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-sees-earlier-globals.cpp foundations/names/function-not-later-global.cpp
+:tests: foundations/names/visible-from-declaration.cpp foundations/names/visible-in-own-initializer.cpp foundations/names/function-sees-earlier-globals.cpp
 
 A name is visible from its point of declaration to the end of its scope.
 The point of declaration comes before the initializer, so a variable is
-in scope in its own initializer. A use before the declaration, or after
-the scope ends, is not valid. A function body sees the names declared
-before the function in its translation unit, and not those declared
-after it.
+in scope in its own initializer. Reading the variable there reads an
+object that has no value yet, which is undefined (OBJ-2). A function
+body sees the names declared before the function in its translation
+unit.
+:::
+
+:::{rule} NAM-8
+:kind: reject
+:tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp
+
+A use of a name must find a declaration that is visible at that point
+(NAM-1). A use before the declaration, a use after the scope of the
+declaration ends, and a use of a name that only another translation unit
+declares are rejected. In a class body, NAM-6 makes later members
+visible.
 :::
 
 :::{rule} NAM-2

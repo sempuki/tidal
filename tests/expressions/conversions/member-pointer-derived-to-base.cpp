@@ -1,4 +1,4 @@
-// tidal-rules: CONV-15
+// tidal-rules: CONV-17
 // tidal-expect: reject
 // tidal-error-clang: different classes
 // tidal-error-gcc: cannot convert .int D::\*. to .int B::\*.

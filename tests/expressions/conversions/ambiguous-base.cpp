@@ -1,4 +1,4 @@
-// tidal-rules: CONV-14
+// tidal-rules: CONV-17
 // tidal-expect: reject
 // tidal-error-clang: ambiguous conversion from derived class
 // tidal-error-gcc: is an ambiguous base of

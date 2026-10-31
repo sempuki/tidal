@@ -2187,7 +2187,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/volatile-read.cpp` | CE-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/ambiguous-base.cpp` | CONV-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/array-function-to-pointer.cpp` | CONV-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/array-pointer-unknown-bound.cpp` | CONV-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/bitfield-promotes.cpp` | CONV-1 | run | run | run | accept | run | run | run | run | pass |
@@ -2215,8 +2215,9 @@ compilers affect the Status column.
 | `expressions/conversions/member-function-noexcept-drop.cpp` | CONV-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/member-pointer-ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/member-pointer-base-to-derived.cpp` | CONV-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/member-pointer-derived-to-base.cpp` | CONV-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/member-pointer-derived-to-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/member-pointer-to-bool.cpp` | CONV-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/conversions/member-pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/member-pointer-virtual-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/nan-to-bool.cpp` | CONV-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/conversions/negative-fraction-to-unsigned.cpp` | CONV-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2227,7 +2228,9 @@ compilers affect the Status column.
 | `expressions/conversions/null-pointer-constants.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/nullptr-to-bool-copy.cpp` | CONV-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/nullptr-to-bool-direct.cpp` | CONV-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/nullptr-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/parenthesized-zero-null.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/pointer-to-void-pointer.cpp` | CONV-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/potentially-throwing-to-noexcept.cpp` | CONV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/to-bool.cpp` | CONV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2662,7 +2665,7 @@ compilers affect the Status column.
 | `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 SEQ-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/sequencing/volatile-reads-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/class-operand.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -2793,7 +2796,7 @@ compilers affect the Status column.
 | `foundations/names/class-member-type-needs-order.cpp` | NAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/class-members-any-order.cpp` | NAM-6 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/function-not-later-global.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/function-not-later-global.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/names/hiding-ignores-kind.cpp` | NAM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
@@ -2809,14 +2812,15 @@ compilers affect the Status column.
 | `foundations/names/redeclare-function-ok.cpp` | NAM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/redeclare-same-scope.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/scope-ends-with-block.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/use-before-declaration.cpp` | NAM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/scope-ends-with-block.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/use-before-declaration.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/visible-from-declaration.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/names/visible-in-own-initializer.cpp` | NAM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/objects/address-stable.cpp` | OBJ-7 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/array-elements-order.cpp` | OBJ-6 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/block-reverse-order.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/constant-evaluation-same-order.cpp` | OBJ-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/objects/construction-order.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/deleted-object-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/distinct-objects-distinct-addresses.cpp` | OBJ-7 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/dynamic-not-destroyed-without-delete.cpp` | OBJ-5 | run | run | run | accept | run | run | run | run | pass |
@@ -2846,23 +2850,24 @@ compilers affect the Status column.
 | `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/translation/exit-status-kept-optimized.cpp` | TR-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/translation/if-consteval-selects.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/ill-formed-in-unused-function.cpp` | TR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-address.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-called.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-exit-status.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/translation/main-falls-off-end.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-no-definition.cpp` | TR-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/translation/main-no-definition.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
 | `foundations/translation/main-nonzero-status.cpp` | TR-2 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/translation/main-program-name.cpp` | TR-9 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-with-args.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/translation/main-with-args.cpp` | TR-2 TR-9 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `foundations/translation/observable-volatile-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
 | `foundations/translation/undefined-at-link.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
 | `foundations/translation/undefined-on-taken-path-only.cpp` | TR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/undefined-taints-whole-evaluation.cpp` | TR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/unit-sees-own-declarations-only.cpp` | TR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/unit-sees-own-declarations-only.cpp` | TR-4 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/units-translated-separately.cpp` | TR-4 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/translation/volatile-order-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
 | `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3065,7 +3070,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3050/3050 tests pass on baseline compilers.
+3055/3055 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -10032,6 +10037,13 @@ check that the rejection has the intended cause.
 - `expressions/conversions/member-pointer-derived-to-base.cpp` (clang-18): error: cannot initialize a variable of type 'int B::*' with an rvalue of type 'int D::*': different classes ('B' vs 'D')
 - `expressions/conversions/member-pointer-derived-to-base.cpp` (gcc-16): error: cannot convert 'int D::*' to 'int B::*' in initialization
 - `expressions/conversions/member-pointer-derived-to-base.cpp` (clang-22): error: cannot initialize a variable of type 'int B::*' with an rvalue of type 'int D::*': different classes ('B' vs 'D')
+- `expressions/conversions/member-pointer-to-integer.cpp` (clang-host): error: cannot initialize a variable of type 'long' with an lvalue of type 'int S::*'
+- `expressions/conversions/member-pointer-to-integer.cpp` (gcc-host): error: cannot convert ‘int S::*’ to ‘long int’ in initialization
+- `expressions/conversions/member-pointer-to-integer.cpp` (edg-7.0): error: a value of type "int S::*" cannot be used to initialize an entity of type "long"
+- `expressions/conversions/member-pointer-to-integer.cpp` (gcc-14): error: cannot convert 'int S::*' to 'long int' in initialization
+- `expressions/conversions/member-pointer-to-integer.cpp` (clang-18): error: cannot initialize a variable of type 'long' with an lvalue of type 'int S::*'
+- `expressions/conversions/member-pointer-to-integer.cpp` (gcc-16): error: cannot convert 'int S::*' to 'long int' in initialization
+- `expressions/conversions/member-pointer-to-integer.cpp` (clang-22): error: cannot initialize a variable of type 'long' with an lvalue of type 'int S::*'
 - `expressions/conversions/member-pointer-virtual-base.cpp` (clang-host): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
 - `expressions/conversions/member-pointer-virtual-base.cpp` (gcc-host): error: pointer to member conversion via virtual base ‘B’
 - `expressions/conversions/member-pointer-virtual-base.cpp` (edg-7.0): error: cannot convert pointer to member of base class "B" to pointer to member of derived class "D" -- base class is virtual
@@ -10053,6 +10065,20 @@ check that the rejection has the intended cause.
 - `expressions/conversions/nullptr-to-bool-copy.cpp` (clang-18): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
 - `expressions/conversions/nullptr-to-bool-copy.cpp` (gcc-16): error: converting to 'bool' from 'std::nullptr_t' requires direct-initialization [-fpermissive]
 - `expressions/conversions/nullptr-to-bool-copy.cpp` (clang-22): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/nullptr-to-integer.cpp` (clang-host): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/nullptr-to-integer.cpp` (gcc-host): error: cannot convert ‘std::nullptr_t’ to ‘int’ in initialization
+- `expressions/conversions/nullptr-to-integer.cpp` (edg-7.0): error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "int"
+- `expressions/conversions/nullptr-to-integer.cpp` (gcc-14): error: cannot convert 'std::nullptr_t' to 'int' in initialization
+- `expressions/conversions/nullptr-to-integer.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/nullptr-to-integer.cpp` (gcc-16): error: cannot convert 'std::nullptr_t' to 'int' in initialization
+- `expressions/conversions/nullptr-to-integer.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/conversions/pointer-to-integer.cpp` (clang-host): error: cannot initialize a variable of type 'long' with an lvalue of type 'int *'
+- `expressions/conversions/pointer-to-integer.cpp` (gcc-host): error: invalid conversion from ‘int*’ to ‘long int’ [-fpermissive]
+- `expressions/conversions/pointer-to-integer.cpp` (edg-7.0): error: a value of type "int *" cannot be used to initialize an entity of type "long"
+- `expressions/conversions/pointer-to-integer.cpp` (gcc-14): error: invalid conversion from 'int*' to 'long int' [-fpermissive]
+- `expressions/conversions/pointer-to-integer.cpp` (clang-18): error: cannot initialize a variable of type 'long' with an lvalue of type 'int *'
+- `expressions/conversions/pointer-to-integer.cpp` (gcc-16): error: invalid conversion from 'int*' to 'long int' [-fpermissive]
+- `expressions/conversions/pointer-to-integer.cpp` (clang-22): error: cannot initialize a variable of type 'long' with an lvalue of type 'int *'
 - `expressions/conversions/potentially-throwing-to-noexcept.cpp` (clang-host): error: cannot initialize a variable of type 'void (*)() noexcept' with an lvalue of type 'void ()': different exception specifications
 - `expressions/conversions/potentially-throwing-to-noexcept.cpp` (gcc-host): error: invalid conversion from ‘void (*)()’ to ‘void (*)() noexcept’ [-fpermissive]
 - `expressions/conversions/potentially-throwing-to-noexcept.cpp` (edg-7.0): error: a value of type "void (*)()" cannot be used to initialize an entity of type "void (*)() noexcept"

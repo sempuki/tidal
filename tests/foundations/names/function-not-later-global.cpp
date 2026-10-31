@@ -1,4 +1,4 @@
-// tidal-rules: NAM-1
+// tidal-rules: NAM-8
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .later
 // tidal-error-gcc: later. was not declared in this scope

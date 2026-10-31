@@ -7,12 +7,12 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
-| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 8 | 4 required, 2 reject, 1 undefined, 1 recommended | 26 | Q-0112 | 0 flagged |
-| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 28 |  | 0 flagged |
+| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 9 | 4 required, 2 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | Q-0112 | 0 flagged |
+| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 29 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/foundations/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
-| [Names, scopes, and lookup](../spec/foundations/names.md) | 7 | 6 required, 1 reject | 26 |  | 0 flagged |
-| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 6 | 4 required, 1 undefined, 1 unspecified | 18 |  | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 51 | Q-0028, Q-0100 | 0 flagged |
+| [Names, scopes, and lookup](../spec/foundations/names.md) | 8 | 6 required, 2 reject | 27 |  | 0 flagged |
+| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 7 | 4 required, 1 undefined, 1 unspecified, 1 recommended | 18 |  | 0 flagged |
 | [Constant expressions](../spec/foundations/constant-evaluation.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 7 | 6 required, 1 recommended | 15 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 21 | 14 required, 7 reject | 65 |  | 0 flagged |
@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3050/3050 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3055/3055 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -113,7 +113,7 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- 1446 tests carry `tidal-error` patterns, which check that a compiler
+- 1449 tests carry `tidal-error` patterns, which check that a compiler
   rejects them, fails to link them, or stops them at run time, for the
   reason their rule gives.
   About 50 tests have no pattern for some compiler family, because that

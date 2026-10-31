@@ -69,12 +69,14 @@ rejects each of these.
 
 :::{rule} OBJ-1
 :kind: required
-:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/members-subobjects-end-after-body.cpp foundations/objects/scalar-lifetime-with-storage.cpp
+:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/members-subobjects-end-after-body.cpp foundations/objects/scalar-lifetime-with-storage.cpp foundations/objects/construction-order.cpp
 
 The lifetime of a class object begins when its constructor completes
 and ends when its destructor completes. Its bases and members are
 initialized before the constructor body runs and destroyed after the
-destructor body runs. The lifetime of a scalar object begins when its
+destructor body runs. The bases come first, in the order of the base
+list, then the members, in the order of their declarations. Destruction
+runs in the reverse order. The lifetime of a scalar object begins when its
 storage is obtained, before it has a value.
 :::
 

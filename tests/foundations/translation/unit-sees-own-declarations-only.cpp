@@ -1,4 +1,4 @@
-// tidal-rules: TR-4
+// tidal-rules: TR-4 NAM-8
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .defined_elsewhere
 // tidal-error-gcc: defined_elsewhere. was not declared in this scope
