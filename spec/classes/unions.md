@@ -29,9 +29,9 @@ no variable.
 :kind: required
 :tests: classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-private-members.cpp classes/unions/union-static-member.cpp
 
-All non-static data members of a union start at the address of the
-union. The size and alignment of a union are at least those of its
-largest member. A union can have member functions, constructors, a
+Each data member of a union that is not static begins at the first byte
+of the union. A union is at least as large and as aligned as its largest
+member. A union can have member functions, constructors, a
 destructor, static data members, and array members. Its members are
 public unless an access label says otherwise.
 :::
@@ -99,14 +99,14 @@ union can be local, a class member, or `static` at namespace scope.
 :kind: reject
 :tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp
 
-An anonymous union at namespace scope must be `static`. This includes an
-unnamed namespace ({question}`Q-0057`). An anonymous union must contain
-only public non-static data members. It must not declare:
+Outside a function or class, an anonymous union needs `static`, even in
+an unnamed namespace ({question}`Q-0057`). Its members must all be public
+data members that are not static. These are not valid in it:
 
-- a member function,
-- a static data member,
-- a nested type,
-- a name that the enclosing scope already declares.
+- member functions,
+- static data members,
+- nested types,
+- a member with a name that the enclosing scope has.
 :::
 
 :::{rule} BF-1
