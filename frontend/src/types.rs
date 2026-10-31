@@ -1,6 +1,6 @@
-// Types. Sizes follow the x86-64 Linux targets of the test matrix (LP64),
-// or ILP32 with `-m32`. The spec leaves sizes implementation-defined
-// (UN-15, MUL-15), so these numbers are a stated choice.
+// Types. Sizes and alignments follow TYP-1 and TYP-2: the x86-64 Linux
+// column (LP64), or the `-m32` column (ILP32) with `--m32`. On `-m32` the
+// front end uses the GCC and Clang alignments of TYP-2, not EDG's.
 
 use std::cell::Cell;
 

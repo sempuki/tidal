@@ -390,9 +390,9 @@ impl P {
                         // ATTR-2: no argument or one string literal.
                         self.error(line, "ATTR-2", format!("'{}' takes no argument or one string literal", name));
                     }
-                    ("noreturn", Some(_)) => {
-                        // ATTR-2: noreturn has no argument.
-                        self.error(line, "ATTR-2", "'noreturn' takes no argument");
+                    ("noreturn" | "fallthrough" | "likely" | "unlikely" | "maybe_unused" | "no_unique_address", Some(_)) => {
+                        // ATTR-2: these attributes have no argument.
+                        self.error(line, "ATTR-2", format!("'{}' takes no argument", name));
                     }
                     _ => {}
                 }
@@ -1675,7 +1675,7 @@ impl P {
         }
         let t = nonref(&e.ty);
         if self.is_scoped_enum(&t.t) || !(t.t.is_integral() || self.is_unscoped_enum(&t.t) || matches!(t.t, Ty::Class(_))) {
-            self.error(line, "DCL-19", "array bound must have integer or unscoped enumeration type");
+            self.error_because(line, "DCL-19", "CE-25", "array bound must have integer or unscoped enumeration type");
             return Some(u64::MAX);
         }
         match self.const_int(e) {

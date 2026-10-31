@@ -1,6 +1,6 @@
 // tidal-fe: a hobby C++ front end built from the Tidal specification.
 //
-//   tidal-fe check FILE [--m32] [--werror]   exit 0 accept, 1 reject, 2 unsupported
+//   tidal-fe check FILE [--m32] [--werror] [-Wname]   exit 0 accept, 1 reject, 2 unsupported
 //   tidal-fe conform DIR [-v] [--out FILE]    run the conformance tests
 
 mod ast;
@@ -14,6 +14,7 @@ mod expr;
 mod expr2;
 mod lexer;
 mod parser;
+mod special;
 mod stmt;
 mod types;
 
@@ -25,12 +26,13 @@ pub enum Outcome {
     Unsupported(Vec<diag::Diag>),
 }
 
-pub fn check_source(src: &str, m32: bool, werror: bool) -> (Outcome, Vec<diag::Diag>) {
+pub fn check_source(src: &str, m32: bool, werror: bool, wflags: &[String]) -> (Outcome, Vec<diag::Diag>) {
     types::ILP32.with(|c| c.set(m32));
     let mut d = diag::Diags::default();
     let toks = lexer::lex(src, &mut d);
     let mut p = parser::P::new(toks, d);
     p.werror = werror;
+    p.wflags = wflags.to_vec();
     p.parse_translation_unit();
     let all = p.d.list.clone();
     let errors: Vec<_> = all.iter().filter(|d| d.sev == Severity::Error).cloned().collect();
@@ -63,7 +65,8 @@ fn main() {
                     std::process::exit(64);
                 }
             };
-            let (out, all) = check_source(&src, m32, werror);
+            let wflags: Vec<String> = args.iter().filter(|a| a.starts_with("-W")).cloned().collect();
+            let (out, all) = check_source(&src, m32, werror, &wflags);
             for d in &all {
                 let kind = match d.sev {
                     Severity::Error => "error",

@@ -1,0 +1,19 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   report-3.md:Front end update: round 3 longest=0   overlap=0.00
+ok   report-3.md:1. Conformance       longest=0   overlap=0.00
+ok   report-3.md:2. What changed in the front end longest=0   overlap=0.00
+ok   report-3.md:G14. The global allocation functions longest=0   overlap=0.02
+ok   report-3.md:G15. CTOR-4 and unions longest=0   overlap=0.07
+ok   report-3.md:G16. The destructor condition of CPY-7 longest=0   overlap=0.00
+ok   report-3.md:G17. A UNI-3 deleted move and overload r longest=0   overlap=0.00
+ok   report-3.md:G18. Which unused variables ATTR-6 cover longest=0   overlap=0.00
+ok   report-3.md:G19. Which flag enables each recommended longest=0   overlap=0.00
+ok   report-3.md:G20. What counts as falling through for  longest=0   overlap=0.00
+ok   report-3.md:G21. A cast to an rvalue in CPY-13 longest=0   overlap=0.02
+ok   report-3.md:G22. The temporary in DTOR-3 longest=0   overlap=0.00
+ok   report-3.md:G23. Overlapping reject rules longest=0   overlap=0.00
+ok   report-3.md:G24. Keyword tests without rule text longest=0   overlap=0.00
+ok   report-3.md:G25. CTOR-14 needs overload ranking longest=0   overlap=0.00
+
+0 flagged

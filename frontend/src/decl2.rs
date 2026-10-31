@@ -132,6 +132,13 @@ impl P {
         }
         if let Ctx::Class(c) = ctx {
             if matches!(t.as_str(), "public" | "private" | "protected") && self.at_k(1, ":") {
+                if let Some(a) = self.access_stack.last_mut() {
+                    *a = match t.as_str() {
+                        "public" => 0,
+                        "protected" => 1,
+                        _ => 2,
+                    };
+                }
                 self.pos += 2;
                 return Ok(None);
             }
@@ -677,6 +684,11 @@ impl P {
         let line = self.line();
         let class = if let Ctx::Class(c) = ctx { Some(c) } else { None };
         let ds = self.parse_decl_specs(class)?;
+        if ds.friend {
+            if let Ctx::Class(c) = ctx {
+                self.friend_classes.insert(c);
+            }
+        }
         self.check_decl_specs(&ds, ctx, line);
         if self.at(";") {
             self.pos += 1;
@@ -961,6 +973,9 @@ impl P {
                 _ => continue,
             };
             if let Ctx::Class(cc) = ctx {
+                if !self.classes[cc].anon_unions.contains(&c) {
+                    self.classes[cc].anon_unions.push(c);
+                }
                 // a variant member of the enclosing class
                 let idx = self.classes[cc].fields.len();
                 let fi = FieldInfo { ty, class: cc, index: idx, bits: None, mutable: false, init: None, align: 0, nua: false };
@@ -1656,15 +1671,21 @@ impl P {
             self.error(line, "STO-13", "block-scope extern declaration with an initializer");
         }
         // Convert the initializer.
+        let written_init = init.is_some();
         let mut converted = None;
         if let Some(e) = init {
             let ce = self.convert_init(e, &ty, form, init_line);
             converted = Some(ce);
         } else if storage != Storage::Extern && class_member.is_none() && !self.in_template() {
-            // CTOR-20: no use of a deleted default constructor.
-            if let Ty::Class(c) = &ty.t {
-                if self.default_ctor_deleted(*c, 0) == Some(true) {
-                    self.error(line, "CTOR-20", format!("default constructor of '{}' is deleted", self.classes[*c].name));
+            if let Some(c) = elem_class(&ty.t) {
+                self.check_default_init(c, line);
+            }
+            // CTOR-4: a const object without an initializer.
+            if ty.c && !ds.constexpr {
+                if let Some(c) = elem_class(&ty.t) {
+                    if self.const_default_ok(c, 0) == Some(false) {
+                        self.error(line, "CTOR-4", format!("const object of '{}' without an initializer leaves a member without a value", self.classes[c].name));
+                    }
                 }
             }
             // Default-initialization runs the default constructor.
@@ -1673,6 +1694,19 @@ impl P {
                     let e = self.ctor_call(c, &[], &ty, line);
                     if matches!(e.k, EK::Construct(..)) {
                         converted = Some(e);
+                    }
+                }
+            }
+        }
+        if !self.in_template() && storage != Storage::Extern && class_member.is_none() {
+            if let Some(c) = elem_class(&ty.t) {
+                // UNI-11, DTOR-3: a variable is destroyed at its end, so its
+                // destructor must not be deleted.
+                if !ty.t.is_ref() && self.classes[c].complete {
+                    if self.uni3_deleted(c, crate::special::Sm::Dtor) {
+                        self.error(line, "UNI-11", format!("the destructor of '{}' is deleted (UNI-3)", self.classes[c].name));
+                    } else if self.dtor_unusable(c) {
+                        self.error(line, "DTOR-3", format!("variable of '{}', whose destructor is deleted or not accessible", self.classes[c].name));
                     }
                 }
             }
@@ -1733,13 +1767,22 @@ impl P {
                 self.error(line, "CINIT-2", "initializing declaration lacks the 'constinit' of an earlier declaration");
             }
         }
+        // ATTR-6: a local scalar variable that may be unused.
+        if local && storage == Storage::Auto && redecl.is_none() && ctx == Ctx::Block && self.is_scalar(&ty) && !self.has_attr(id_placeholder, "maybe_unused") && !self.in_template() {
+            self.unused_cands.push((id_placeholder, line));
+        }
         // JMP-6, SW-5: variables a jump must not skip.
         if local && storage == Storage::Auto && redecl.is_none() {
-            let nontrivial_class = match &ty.t {
-                Ty::Class(c) => !self.classes[*c].ctors.is_empty() || self.classes[*c].dtor.is_some() || self.classes[*c].opaque,
-                _ => false,
+            // CTOR-23, DTOR-9: a class with a trivial default constructor
+            // and a trivial destructor can be skipped.
+            let nontrivial_class = match self.skippable_type(&ty.t) {
+                Some(ok) => !ok,
+                None => match &ty.t {
+                    Ty::Class(c) => !self.classes[*c].ctors.is_empty() || self.classes[*c].dtor.is_some() || self.classes[*c].opaque,
+                    _ => false,
+                },
             };
-            if converted.is_some() || nontrivial_class {
+            if written_init || nontrivial_class {
                 self.jump_vars.insert(id_placeholder);
             }
         }
@@ -1818,6 +1861,11 @@ impl P {
         };
         let in_class_body = matches!(ctx, Ctx::Class(_));
         let is_friend = ds.friend;
+        if is_friend {
+            if let Some(c) = self.current_class() {
+                self.friend_classes.insert(c);
+            }
+        }
         let member_class = if is_friend { None } else { class };
         let kind = match &d.kind {
             NameKind::Ctor => FnKind::Ctor,
@@ -1984,6 +2032,17 @@ impl P {
         }
         let deleted = self.at("=") && self.at_k(1, "delete");
         let defaulted = self.at("=") && self.at_k(1, "default");
+        if self.at(":") && kind == FnKind::Ctor {
+            // CTOR-15: mem-initializers only in a definition.
+            let save = self.pos;
+            self.skip_ctor_init();
+            let decl_only = self.at(";");
+            self.pos = save;
+            if decl_only {
+                self.error(line, "CTOR-15", "mem-initializers in a constructor declaration that is not a definition");
+                self.skip_ctor_init();
+            }
+        }
         let is_def = self.at("{") || self.at(":") || self.at("try") || deleted || defaulted;
         if is_def && ctx == Ctx::Block {
             // FN-9: no function definition inside a function body.
@@ -2138,6 +2197,7 @@ impl P {
                     ret_auto: None,
                     mem_inits: Vec::new(),
                     first_attrs: self.decl_attrs.iter().map(|a| a.name.clone()).collect(),
+                    first_defaulted: defaulted,
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
@@ -2210,6 +2270,11 @@ impl P {
         if self.at("requires") {
             self.pos += 1;
             self.skip_constraint()?;
+        }
+        if let Some(c) = self.func(id).and_then(|f| f.class) {
+            if kind == FnKind::Ctor || name == "operator=" {
+                self.check_copy_decl(id, c, name == "operator=", defaulted, existing.is_none(), line);
+            }
         }
         if self.at("=") && self.peek(1).kind == TK::Int && self.peek(1).text == "0" {
             self.pos += 2;
@@ -2430,6 +2495,22 @@ impl P {
     }
 
     pub fn parse_function_body(&mut self, fid: DeclId, param_scope: usize, class: Option<usize>, deduce: bool) -> PR<()> {
+        let mark = self.unused_cands.len();
+        let r = self.parse_function_body_in(fid, param_scope, class, deduce);
+        // ATTR-6: warn about a local variable that the program never uses
+        // (with -Wunused or -Wall, as the matrix compilers do).
+        let cands: Vec<(DeclId, u32)> = self.unused_cands.drain(mark..).collect();
+        if self.wflag(&["-Wunused", "-Wunused-variable", "-Wall"]) && r.is_ok() {
+            for (id, line) in cands {
+                if !self.used_vars.contains(&id) {
+                    self.warn(line, "ATTR-6", format!("unused variable '{}'", self.decls[id].name));
+                }
+            }
+        }
+        r
+    }
+
+    fn parse_function_body_in(&mut self, fid: DeclId, param_scope: usize, class: Option<usize>, deduce: bool) -> PR<()> {
         let (ret, kind, is_static, cv_c, cv_v, consteval) = {
             let f = self.func(fid).unwrap();
             (f.fty.ret.clone(), f.kind, f.is_static, f.fty.cv_c, f.fty.cv_v, f.consteval)
@@ -2458,7 +2539,7 @@ impl P {
         let r = (|| -> PR<Stmt> {
             let is_try = self.eat("try");
             if self.at(":") {
-                let mi = self.parse_ctor_initializers(class)?;
+                let mi = self.parse_ctor_initializers(class, fid)?;
                 if let Some(f) = self.func_mut(fid) {
                     f.mem_inits = mi;
                 }
@@ -2507,9 +2588,14 @@ impl P {
         Ok(())
     }
 
-    fn parse_ctor_initializers(&mut self, class: Option<usize>) -> PR<Vec<MemInit>> {
+    fn parse_ctor_initializers(&mut self, class: Option<usize>, fid: DeclId) -> PR<Vec<MemInit>> {
         self.expect(":")?;
         let mut out = Vec::new();
+        // CTOR-15, CTOR-16: what each mem-initializer names.
+        let mut seen: Vec<(Option<DeclId>, Option<usize>)> = Vec::new();
+        let mut delegating = false;
+        let mut count = 0;
+        let mut field_order: Vec<(usize, u32)> = Vec::new();
         loop {
             let line = self.line();
             // mem-initializer-id
@@ -2541,8 +2627,49 @@ impl P {
                 self.expect(")")?;
             }
             self.eat("...");
+            count += 1;
             if target.is_none() && class.is_some_and(|c| !self.class_uncertain(c)) && !self.in_template() {
                 self.error(line, "CTOR-15", format!("'{}' is not a member or base of the class", name));
+            }
+            if let (Some(ids), Some(c), false) = (&target, class, self.in_template()) {
+                let id = ids[0];
+                let named_class = match &self.decls[id].k {
+                    DK::Class(b) => Some(*b),
+                    DK::Type(q) => match q.t {
+                        Ty::Class(b) => Some(b),
+                        _ => None,
+                    },
+                    _ => None,
+                };
+                let key = match named_class {
+                    Some(b) => (None, Some(b)),
+                    None => (Some(id), None),
+                };
+                if seen.contains(&key) {
+                    self.error(line, "CTOR-15", format!("'{}' is initialized two times", name));
+                }
+                seen.push(key);
+                if self.var(id).is_some() {
+                    self.error(line, "CTOR-15", format!("'{}' is a static data member", name));
+                }
+                if let Some(b) = named_class {
+                    if b == c {
+                        delegating = true;
+                        // CTOR-8: not a delegation to itself.
+                        if !braced && !self.class_uncertain(c) {
+                            let ty = QTy::new(Ty::Class(c));
+                            let e = self.ctor_call(c, &args, &ty, line);
+                            if matches!(e.k, EK::Construct(t, _) if t == fid) {
+                                self.error(line, "CTOR-8", "a constructor delegates to itself");
+                            }
+                        }
+                    } else if !self.class_uncertain(c) {
+                        let direct = self.classes[c].bases.iter().any(|x| x.class == Some(b));
+                        if !direct && !self.has_virtual_base(c, b, 0) {
+                            self.error(line, "CTOR-15", format!("'{}' is not a direct or virtual base of the class", name));
+                        }
+                    }
+                }
             }
             // A mem-initializer for a direct member: convert its arguments
             // to the member's type, for constant evaluation.
@@ -2567,12 +2694,37 @@ impl P {
                 }
                 _ => None,
             };
+            if let Some(fd) = field {
+                if let DK::Field(fi) = &self.decls[fd].k {
+                    field_order.push((fi.index, line));
+                }
+            }
             out.push(MemInit { field, init });
             if !self.eat(",") {
                 break;
             }
         }
+        // CTOR-13: warn when the list is not in the order of
+        // initialization.
+        if self.wflag(&["-Wall", "-Wreorder"]) && !self.in_template() {
+            if let Some(w) = field_order.windows(2).find(|w| w[1].0 < w[0].0) {
+                self.warn(w[1].1, "CTOR-13", "the member initializer list is not in the order of initialization");
+            }
+        }
+        if delegating && count > 1 {
+            // CTOR-16: a delegating mem-initializer stands alone.
+            self.error(self.line(), "CTOR-16", "a delegating constructor has another mem-initializer");
+        }
         Ok(out)
+    }
+
+    /// Whether `b` is a virtual base of `c`, at any depth (DER-6).
+    pub fn has_virtual_base(&self, c: usize, b: usize, depth: u32) -> bool {
+        depth < 16
+            && self.classes[c].bases.iter().any(|x| match x.class {
+                Some(bc) => (x.virt && bc == b) || self.has_virtual_base(bc, b, depth + 1),
+                None => false,
+            })
     }
 
     pub fn parse_handlers(&mut self) -> PR<()> {
@@ -2658,4 +2810,13 @@ fn can_complete(p: &P, s: &Stmt) -> bool {
 /// A variable declaration that creates an object (not `extern`).
 fn storage_is_object(ds: &DeclSpec) -> bool {
     !ds.storage.contains(&Storage::Extern) && !ds.typedef
+}
+
+/// The class of a type, or of the elements of an array type.
+pub fn elem_class(t: &Ty) -> Option<usize> {
+    match t {
+        Ty::Array(e, _) => elem_class(&e.t),
+        Ty::Class(c) => Some(*c),
+        _ => None,
+    }
 }

@@ -74,6 +74,8 @@ pub struct FuncInfo {
     pub mem_inits: Vec<MemInit>,
     /// The attributes of the first declaration (ATTR-2).
     pub first_attrs: Vec<String>,
+    /// The first declaration has `= default` (CTOR-23, DTOR-9, CPY-27).
+    pub first_defaulted: bool,
 }
 
 /// One attribute: its name without namespace, whether it had a
@@ -173,6 +175,8 @@ pub struct ClassInfo {
     pub opaque: bool,
     pub line: u32,
     pub align: u64,
+    /// The anonymous unions that are members of the class (UNI-3).
+    pub anon_unions: Vec<usize>,
 }
 
 #[derive(Clone, Debug)]
@@ -305,6 +309,18 @@ pub struct P {
     pub deferred: Vec<Deferred>,
     pub global: usize,
     pub werror: bool,
+    /// The -W flags of the run, for warnings that only a flag enables.
+    pub wflags: Vec<String>,
+    /// ATTR-6: the variables that an expression names, and the local
+    /// variables that could be unused.
+    pub used_vars: std::collections::HashSet<DeclId>,
+    pub unused_cands: Vec<(DeclId, u32)>,
+    /// The access of class members (0 public, 1 protected, 2 private),
+    /// the access in effect in each class body being parsed, and the
+    /// classes that declare a friend.
+    pub member_access: HashMap<DeclId, u8>,
+    pub access_stack: Vec<u8>,
+    pub friend_classes: std::collections::HashSet<usize>,
     /// Names of constructs that were skipped, for the unsupported list.
     pub in_unevaluated: u32,
     pub ce_depth: u32,
@@ -360,6 +376,12 @@ impl P {
             deferred: Vec::new(),
             global: 0,
             werror: false,
+            wflags: Vec::new(),
+            used_vars: Default::default(),
+            unused_cands: Vec::new(),
+            member_access: HashMap::new(),
+            access_stack: Vec::new(),
+            friend_classes: Default::default(),
             in_unevaluated: 0,
             ce_depth: 0,
             pending_template: None,
@@ -622,6 +644,9 @@ impl P {
                 return Some(false);
             }
         }
+        if self.default_parts_inaccessible(c) {
+            return Some(true);
+        }
         // a base or member that cannot be default-constructed or destroyed
         let unusable = |t: &Ty| -> Option<bool> {
             let t = match t {
@@ -706,6 +731,62 @@ impl P {
     pub fn unsupported(&mut self, line: u32, msg: impl Into<String>) {
         self.d.unsupported(line, msg);
     }
+    /// Whether a member is accessible where the parser is now. A class
+    /// with a friend counts as accessible, since the front end does not
+    /// track friends one by one. `base` is true for a member of a base
+    /// class used by a derived class (protected is then accessible).
+    pub fn accessible(&self, id: DeclId, base: bool) -> bool {
+        let a = self.member_access.get(&id).copied().unwrap_or(0);
+        if a == 0 || (a == 1 && base) {
+            return true;
+        }
+        let owner = match &self.decls[id].k {
+            DK::Func(f) => f.class,
+            DK::Field(f) => Some(f.class),
+            _ => match self.scopes[self.decls[id].scope].kind {
+                SK::Class(c) => Some(c),
+                _ => None,
+            },
+        };
+        let Some(owner) = owner else { return true };
+        if self.friend_classes.contains(&owner) || self.class_uncertain(owner) {
+            return true;
+        }
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
+        for &s in &self.stack {
+            if let SK::Class(c) = self.scopes[s].kind {
+                here.push(c);
+            }
+        }
+        here.iter().any(|&c| c == owner || (a == 1 && self.is_base_of_p(owner, c)))
+    }
+    /// Whether `base` is a public base of `derived` along each step, or
+    /// the parser is inside `derived` or a class that declares a friend.
+    pub fn base_accessible(&self, derived: usize, base: usize) -> bool {
+        if self.friend_classes.contains(&derived) || self.class_uncertain(derived) {
+            return true;
+        }
+        let inside = self.fns.iter().filter_map(|f| f.class).chain(self.stack.iter().filter_map(|&s| match self.scopes[s].kind {
+            SK::Class(c) => Some(c),
+            _ => None,
+        }));
+        let inside: Vec<usize> = inside.collect();
+        if inside.contains(&derived) {
+            return true;
+        }
+        self.classes[derived].bases.iter().any(|b| match b.class {
+            Some(bc) if bc == base => b.access == 0,
+            Some(bc) => b.access == 0 && self.is_base_of_p(base, bc) && self.base_accessible(bc, base),
+            None => true,
+        })
+    }
+    fn is_base_of_p(&self, base: usize, derived: usize) -> bool {
+        self.classes[derived].bases.iter().any(|b| b.class.is_some_and(|bc| bc == base || self.is_base_of_p(base, bc)))
+    }
+    /// Whether one of the -W flags is on.
+    pub fn wflag(&self, names: &[&str]) -> bool {
+        self.wflags.iter().any(|f| names.iter().any(|n| f == n))
+    }
     pub fn warn(&mut self, line: u32, rule: &'static str, msg: impl Into<String>) {
         if self.werror {
             self.d.error(line, Some(rule), format!("{} (warning treated as error)", msg.into()));
@@ -736,6 +817,13 @@ impl P {
         self.add_decl_in(scope, name, k, line)
     }
     pub fn add_decl_in(&mut self, scope: usize, name: &str, k: DK, line: u32) -> DeclId {
+        let id = self.add_decl_in0(scope, name, k, line);
+        if let (SK::Class(_), Some(&a)) = (&self.scopes[scope].kind, self.access_stack.last()) {
+            self.member_access.insert(id, a);
+        }
+        id
+    }
+    fn add_decl_in0(&mut self, scope: usize, name: &str, k: DK, line: u32) -> DeclId {
         self.decls.push(Decl { name: name.to_string(), k, line, scope });
         let id = self.decls.len() - 1;
         if !name.is_empty() {

@@ -15,14 +15,31 @@ impl P {
             EK::Func(f) => self.call_overloads(None, vec![f], args, line),
             EK::Overloads(fs) => self.call_overloads(None, fs, args, line),
             EK::BoundMember(obj, fs) => self.call_overloads(Some(*obj), fs, args, line),
-            EK::Unknown(_) => {
+            EK::Unknown(_) if !matches!(nonref(&callee.ty).t, Ty::Class(_)) => {
                 let _ = self.args_rvalues(args);
                 Expr::unknown(line, "call of unknown callee")
             }
             _ => {
                 let ct = nonref(&callee.ty);
                 match &ct.t {
-                    Ty::Class(_) => Expr::unknown(line, "call operator"),
+                    Ty::Class(c) => {
+                        let c = *c;
+                        // PFX-17: a class object needs an operator() or a
+                        // conversion function.
+                        if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && self.lookup_member(c, "operator()").is_none() && !self.any_conv(c, 0) {
+                            self.error(line, "PFX-17", format!("'{}' has no operator() and no conversion function", self.classes[c].name));
+                            return Expr::unknown(line, "bad call");
+                        }
+                        // OPR-7: a call of a class object calls its operator().
+                        if !self.in_template() && !self.class_uncertain(c) {
+                            if let Some(ids) = self.lookup_member(c, "operator()") {
+                                if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)) {
+                                    return self.call_overloads(Some(callee), ids, args, line);
+                                }
+                            }
+                        }
+                        Expr::unknown(line, "call operator")
+                    }
                     Ty::Unknown => Expr::unknown(line, "call of unknown callee"),
                     Ty::Func(_) | Ty::Ptr(_) => {
                         let c = self.rvalue(callee);
@@ -30,7 +47,7 @@ impl P {
                             return Expr::unknown(line, "call");
                         };
                         let Ty::Func(ft) = &p.t else {
-                            self.error(line, "PFX-7", "call of a value that is not a function");
+                            self.error(line, "PFX-17", "call of a value that is not a function");
                             return Expr::unknown(line, "bad call");
                         };
                         let ft = (**ft).clone();
@@ -39,12 +56,18 @@ impl P {
                         Expr::new(EK::Call(Box::new(c), args, None), t, cat, line)
                     }
                     _ => {
-                        self.error(line, "PFX-7", format!("called object of type {} is not a function", show(&ct)));
+                        self.error(line, "PFX-17", format!("called object of type {} is not a function", show(&ct)));
                         Expr::unknown(line, "bad call")
                     }
                 }
             }
         }
+    }
+
+    /// Whether a class or one of its bases has a conversion function.
+    fn any_conv(&self, c: usize, depth: u32) -> bool {
+        let ci = &self.classes[c];
+        ci.has_conv || depth > 16 || ci.bases.iter().any(|b| b.class.is_none_or(|bc| self.any_conv(bc, depth + 1)))
     }
 
     pub fn adl_candidates_pub(&self, name: &str, args: &[Expr]) -> Vec<DeclId> {
@@ -232,6 +255,14 @@ impl P {
             // TR-3: a program must not call main.
             self.error(line, "TR-3", "call of 'main'");
         }
+        if self.in_unevaluated == 0 && !self.in_template() {
+            // PFX-14: no call with an incomplete class as the return type or
+            // as a parameter type.
+            let incomplete = |p: &P, t: &Ty| matches!(t, Ty::Class(c) if !p.classes[*c].complete && !p.classes[*c].template);
+            if incomplete(self, &f.fty.ret.t) || f.fty.params.iter().any(|q| incomplete(self, &q.t)) {
+                self.error(line, "PFX-14", format!("call of '{}', whose return or parameter type is an incomplete class", self.decls[fid].name));
+            }
+        }
         let args = self.convert_args(&f.fty, args, line, Some(fid));
         let (t, cat) = ret_cat(&f.fty.ret);
         let callee = match obj {
@@ -345,6 +376,14 @@ impl P {
                 let c = if is_raw_list(&a) {
                     self.convert_init(a, &p, InitForm::CopyList, al)
                 } else {
+                    if let Ty::Class(pc) = p.t {
+                        // PFX-6: a class parameter is copy-initialized.
+                        if nonref(&a.ty).t == Ty::Class(pc) {
+                            let mut x = a.clone();
+                            x.ty = nonref(&x.ty);
+                            self.check_copy_from(pc, &x, true, false, al);
+                        }
+                    }
                     match self.implicit(a, &p, false) {
                         Ok(x) => x,
                         Err(m) => {
@@ -422,7 +461,7 @@ impl P {
         }
         if let Ty::Class(c) = nonref(&e.ty).t {
             if self.class_converts(c) == Some(false) && kind != CastKind::Const {
-                self.error(line, "CAST-1", "no conversion from a class without conversion functions");
+                self.error(line, "CAST-19", "no conversion from a class without conversion functions");
             }
             return Expr::new(EK::Unknown("conversion function".into()), target, Cat::PR, line);
         }
@@ -466,8 +505,15 @@ impl P {
                         return Expr::unknown(line, "bad cast");
                     }
                     if !related || func_obj {
-                        self.error(line, "CAST-2", "static_cast between unrelated pointer types");
+                        self.error_because(line, "CAST-2", "CAST-19", "static_cast between unrelated pointer types");
                         return Expr::unknown(line, "bad cast");
+                    }
+                    if let (Ty::Class(x), Ty::Class(y)) = (&a.t, &b.t) {
+                        if x != y && self.is_base_of(*x, *y) && !self.in_template() && !self.base_accessible(*y, *x) {
+                            // CAST-2: a downcast needs an accessible base.
+                            self.error(line, "CAST-2", "static_cast to a derived class through a base that is not accessible");
+                            return Expr::unknown(line, "bad cast");
+                        }
                     }
                 }
                 if a.t == Ty::Void && b.t != Ty::Void {
@@ -481,7 +527,7 @@ impl P {
             }
             (f, Ty::Ptr(_)) if f.is_integral() || matches!(f, Ty::Enum(_)) => {
                 if kind == CastKind::Static {
-                    self.error(line, "CAST-2", "static_cast of an integer to a pointer");
+                    self.error_because(line, "CAST-2", "CAST-19", "static_cast of an integer to a pointer");
                     return Expr::unknown(line, "bad cast");
                 }
                 return Expr::new(EK::Unknown("CE-4: integer to pointer".into()), target, Cat::PR, line);
@@ -499,7 +545,7 @@ impl P {
         match self.implicit(e, &target, true) {
             Ok(x) => x,
             Err(m) => {
-                self.error(line, if kind == CastKind::Static { "CAST-2" } else { "CAST-9" }, format!("invalid cast: {}", m));
+                self.error(line, "CAST-19", format!("invalid cast: {}", m));
                 Expr::unknown(line, "bad cast")
             }
         }
@@ -616,6 +662,19 @@ impl P {
                 if !self.classes[c].complete && !self.in_template() {
                     self.error(line, "TYN-7", "object of incomplete class type");
                     return Expr::unknown(line, "incomplete");
+                }
+                // A copy or move from a glvalue of the same class.
+                let src = match (&items, form) {
+                    (Some(v), InitForm::Paren(1) | InitForm::DirectList | InitForm::CopyList) if v.len() == 1 => Some(v[0].clone()),
+                    (None, InitForm::Copy | InitForm::None) => Some(e.clone()),
+                    _ => None,
+                };
+                if let Some(x) = src {
+                    if nonref(&x.ty).t == Ty::Class(c) {
+                        let mut x = x;
+                        x.ty = nonref(&x.ty);
+                        self.check_copy_from(c, &x, matches!(form, InitForm::Copy | InitForm::CopyList | InitForm::None), false, line);
+                    }
                 }
                 let simple_aggr = self.is_simple_aggregate(c);
                 match (&items, simple_aggr) {

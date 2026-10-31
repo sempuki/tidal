@@ -17,6 +17,8 @@ struct Test {
     rules: Vec<String>,
     m32: bool,
     werror: bool,
+    /// The -W flags other than -Werror.
+    wflags: Vec<String>,
     sources: Vec<PathBuf>,
 }
 
@@ -84,6 +86,7 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
         rules,
         m32: flags.contains("-m32"),
         werror: flags.contains("-Werror"),
+        wflags: flags.split_whitespace().filter(|f| f.starts_with("-W") && *f != "-Werror").map(String::from).collect(),
         sources,
     })
 }
@@ -100,12 +103,12 @@ fn run_one(t: &Test) -> Outcome2 {
     let mut unsup = Vec::new();
     for f in files {
         let src = std::fs::read_to_string(&f).unwrap_or_default();
-        let (m32, werror) = (t.m32, t.werror);
+        let (m32, werror, wflags) = (t.m32, t.werror, t.wflags.clone());
         let (tx, rx) = mpsc::channel();
         std::thread::Builder::new()
             .stack_size(64 << 20)
             .spawn(move || {
-                let r = std::panic::catch_unwind(|| check_source(&src, m32, werror));
+                let r = std::panic::catch_unwind(|| check_source(&src, m32, werror, &wflags));
                 let _ = tx.send(r.map(|(o, _)| o).map_err(|_| ()));
             })
             .unwrap();

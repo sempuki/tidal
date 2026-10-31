@@ -44,26 +44,15 @@ impl P {
             match a.name.as_str() {
                 "fallthrough" if !null => self.error(a.line, "ATTR-2", "'fallthrough' must be a statement on its own"),
                 "fallthrough" => {
-                    // ATTR-2: immediately before a case or default label.
-                    let mut k = 1;
-                    while self.at_k(k, "[") && self.at_k(k + 1, "[") {
-                        let mut depth = 0;
-                        while self.peek(k).kind != TK::Eof {
-                            if self.at_k(k, "[") {
-                                depth += 1;
-                            } else if self.at_k(k, "]") {
-                                depth -= 1;
-                            }
-                            k += 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
+                    // ATTR-2: a statement in a switch. Where it may stand
+                    // is checked when the switch ends.
+                    let in_switch = self.fns.last().is_some_and(|f| !f.switches.is_empty());
+                    if !in_switch {
+                        self.error(a.line, "ATTR-2", "'fallthrough' outside a switch statement");
+                        stmt = Some(Stmt::Null);
+                    } else {
+                        stmt = Some(Stmt::Fallthrough(a.line));
                     }
-                    if !(self.at_k(k, "case") || self.at_k(k, "default")) {
-                        self.error(a.line, "ATTR-2", "'fallthrough' is not immediately before a case or default label");
-                    }
-                    stmt = Some(Stmt::Null);
                 }
                 "assume" if !null => self.error(a.line, "ATTR-13", "an assumption must be a statement on its own"),
                 "assume" => {
@@ -197,6 +186,15 @@ impl P {
         let e = self.parse_expression()?;
         self.expect(";")?;
         self.check_unused(&e);
+        self.check_unsequenced(&e);
+        // DTOR-3: a class prvalue here is a temporary, which is destroyed.
+        if e.cat == Cat::PR && !self.in_template() {
+            if let Ty::Class(c) = e.ty.t {
+                if self.dtor_unusable(c) {
+                    self.error(line, "DTOR-3", format!("temporary of '{}', whose destructor is deleted or not accessible", self.classes[c].name));
+                }
+            }
+        }
         Ok(Stmt::Expr(e))
     }
 
@@ -356,7 +354,7 @@ impl P {
             return None;
         }
         if !(et.is_integral() || matches!(et, Ty::Enum(_))) {
-            self.error(line, "CE-11", "case value must have integer or enumeration type");
+            self.error(line, "CE-25", "case value must have integer or enumeration type");
             return None;
         }
         if self.is_scoped_enum(&et) && et != ct.t {
@@ -530,7 +528,7 @@ impl P {
     fn check_unused(&mut self, e: &Expr) {
         fn has_effect(p: &P, e: &Expr) -> bool {
             match &e.k {
-                EK::Call(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) => true,
+                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) => true,
                 EK::Unary(op, a) => matches!(op, UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec) || has_effect(p, a) || (*op == UOp::Deref && a.ty.v),
                 EK::Conv(Conv::ToVoid, _) => true,
                 EK::Conv(Conv::LToR, a) => a.ty.v || has_effect(p, a),
@@ -549,6 +547,13 @@ impl P {
             let by_value_class = matches!(&e.ty.t, Ty::Class(c) if e.cat == Cat::PR && self.class_attrs.get(c).is_some_and(|v| v.iter().any(|n| n == "nodiscard")));
             if self.has_attr(*f, "nodiscard") || by_value_class {
                 self.warn(e.line, "ATTR-5", "result of a 'nodiscard' call discarded");
+            }
+        }
+        // ATTR-5: a temporary that a nodiscard constructor creates.
+        if let EK::Construct(cid, _) = &e.k {
+            let class_nd = matches!(&e.ty.t, Ty::Class(c) if self.class_attrs.get(c).is_some_and(|v| v.iter().any(|n| n == "nodiscard")));
+            if self.has_attr(*cid, "nodiscard") || class_nd {
+                self.warn(e.line, "ATTR-5", "temporary from a 'nodiscard' constructor discarded");
             }
         }
         if e.ty.is_unknown() {
@@ -694,6 +699,24 @@ impl P {
                 let implicit_move = v.local && v.storage == Storage::Auto && (!v.ty.t.is_ref() || matches!(v.ty.t, Ty::RRef(_)));
                 if implicit_move {
                     x.cat = Cat::X;
+                }
+            }
+        }
+        self.check_unsequenced(&x);
+        // CPY-13: a cast to an rvalue that prevents the local variable from
+        // being the return value.
+        if self.wflag(&["-Wall", "-Wpessimizing-move"]) && !self.in_template() {
+            if let EK::Call(_, args, Some(fid)) = &x.k {
+                if self.decls[*fid].name == "move" && args.len() == 1 && matches!(ret.t, Ty::Class(_)) {
+                    let mut a = &args[0];
+                    while let EK::Conv(_, i) = &a.k {
+                        a = i;
+                    }
+                    if let EK::Var(id) = &a.k {
+                        if self.var(*id).is_some_and(|v| v.local && !v.param && v.storage == Storage::Auto && v.ty.t == ret.t) {
+                            self.warn(line, "CPY-13", "a cast to an rvalue in a return prevents copy elision");
+                        }
+                    }
                 }
             }
         }
@@ -1039,6 +1062,10 @@ impl P {
             fc.switches.pop();
             fc.breakable -= 1;
             let body = body?;
+            self.check_fallthrough(&body, false);
+            if self.wflag(&["-Wimplicit-fallthrough", "-Wextra"]) && !self.in_template() {
+                self.check_implicit_fallthrough(&body);
+            }
             let cond = match decl {
                 Some(id) => CondK::Decl(id, ce),
                 None => CondK::Expr(ce),
@@ -1294,5 +1321,196 @@ impl P {
         let body = self.loop_body(Some((cs, "RFOR-6")))?;
         let _ = body;
         Ok(Stmt::Unsupported("range-based for".into()))
+    }
+}
+
+/// Whether a statement begins with a `case` or `default` label.
+fn starts_with_case(s: &Stmt) -> bool {
+    match s {
+        Stmt::Case(..) | Stmt::Default(_) => true,
+        Stmt::Label(_, x) => starts_with_case(x),
+        Stmt::Block(v) => v.first().is_some_and(starts_with_case),
+        _ => false,
+    }
+}
+
+impl P {
+    /// ATTR-2: the next statement that can run after a `fallthrough` must
+    /// have a `case` or `default` label. `to_case` says whether the
+    /// statement after `s` has one.
+    fn check_fallthrough(&mut self, s: &Stmt, to_case: bool) {
+        match s {
+            Stmt::Fallthrough(line) => {
+                if !to_case {
+                    self.error(*line, "ATTR-2", "'fallthrough' is not followed by a case or default label");
+                }
+            }
+            Stmt::Block(v) => {
+                for (i, x) in v.iter().enumerate() {
+                    let next = match v.get(i + 1) {
+                        Some(n) => starts_with_case(n),
+                        None => to_case,
+                    };
+                    self.check_fallthrough(x, next);
+                }
+            }
+            Stmt::If { then, els, .. } => {
+                self.check_fallthrough(then, to_case);
+                if let Some(e) = els {
+                    self.check_fallthrough(e, to_case);
+                }
+            }
+            // The end of a loop body goes back to the loop.
+            Stmt::While { body, .. } | Stmt::Do { body, .. } | Stmt::For { body, .. } => self.check_fallthrough(body, false),
+            Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => self.check_fallthrough(x, to_case),
+            // A nested switch was checked when it ended.
+            _ => {}
+        }
+    }
+}
+
+/// Whether control can leave a statement at its end into the next one.
+/// A `[[fallthrough]];` at the end counts as an end that does not fall
+/// through unannotated (ATTR-7).
+fn falls_through(p: &P, s: &Stmt) -> bool {
+    fn has_break(s: &Stmt) -> bool {
+        match s {
+            Stmt::Break => true,
+            Stmt::Block(v) => v.iter().any(has_break),
+            Stmt::If { then, els, .. } => has_break(then) || els.as_deref().is_some_and(has_break),
+            Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => has_break(x),
+            _ => false,
+        }
+    }
+    match s {
+        Stmt::Break | Stmt::Continue | Stmt::Return(_) | Stmt::Goto(_) | Stmt::Fallthrough(_) => false,
+        Stmt::Unsupported(_) => false,
+        Stmt::Block(v) => v.last().is_none_or(|l| falls_through(p, l)),
+        Stmt::Expr(e) => match &e.k {
+            EK::Throw(_) => false,
+            EK::Call(_, _, Some(f)) => !p.has_attr(*f, "noreturn"),
+            _ => true,
+        },
+        Stmt::If { then, els: Some(els), .. } => falls_through(p, then) || falls_through(p, els),
+        Stmt::For { cond: None, body, .. } => has_break(body),
+        Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => falls_through(p, x),
+        _ => true,
+    }
+}
+
+/// The statement under the labels of a labeled statement.
+fn unlabeled(s: &Stmt) -> &Stmt {
+    match s {
+        Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => unlabeled(x),
+        s => s,
+    }
+}
+
+impl P {
+    /// ATTR-7: warn where control goes from the statements of one `case`
+    /// into the next label without `[[fallthrough]];`.
+    fn check_implicit_fallthrough(&mut self, body: &Stmt) {
+        let Stmt::Block(v) = body else { return };
+        for j in 1..v.len() {
+            if !starts_with_case(&v[j]) {
+                continue;
+            }
+            // the statements since the previous label
+            let mut k = j;
+            let mut any = false;
+            while k > 0 {
+                k -= 1;
+                if !matches!(unlabeled(&v[k]), Stmt::Null) {
+                    any = true;
+                }
+                if starts_with_case(&v[k]) {
+                    break;
+                }
+            }
+            if !any || !starts_with_case(&v[k]) {
+                continue;
+            }
+            if falls_through(self, &v[j - 1]) {
+                let line = self.stmt_line(&v[j]);
+                self.warn(line, "ATTR-7", "control falls through to the next case label");
+            }
+        }
+    }
+
+    fn stmt_line(&self, s: &Stmt) -> u32 {
+        match s {
+            Stmt::Expr(e) | Stmt::Return(Some(e)) => e.line,
+            Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => self.stmt_line(x),
+            Stmt::Block(v) => v.first().map(|x| self.stmt_line(x)).unwrap_or(0),
+            _ => 0,
+        }
+    }
+}
+
+/// The variables that an expression modifies and reads, without looking
+/// into calls and into operators that order their operands.
+fn mods_reads(e: &Expr, mods: &mut Vec<DeclId>, reads: &mut Vec<DeclId>) {
+    let strip = |x: &Expr| -> Option<DeclId> {
+        let mut x = x;
+        while let EK::Conv(_, a) = &x.k {
+            x = a;
+        }
+        if let EK::Var(id) = &x.k {
+            Some(*id)
+        } else {
+            None
+        }
+    };
+    match &e.k {
+        EK::Var(id) => reads.push(*id),
+        EK::Unary(UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec, a) => {
+            if let Some(id) = strip(a) {
+                mods.push(id);
+            }
+            mods_reads(a, mods, reads);
+        }
+        EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) => mods_reads(a, mods, reads),
+        EK::Binary(op, a, b) if !matches!(op, BOp::LAnd | BOp::LOr) => {
+            mods_reads(a, mods, reads);
+            mods_reads(b, mods, reads);
+        }
+        EK::Assign(_, a, b) => {
+            if let Some(id) = strip(a) {
+                mods.push(id);
+            }
+            mods_reads(a, mods, reads);
+            mods_reads(b, mods, reads);
+        }
+        _ => {}
+    }
+}
+
+impl P {
+    /// SEQ-7: warn when the unsequenced operands of a built-in operator
+    /// both modify one variable, or one modifies it and the other reads it.
+    pub fn check_unsequenced(&mut self, e: &Expr) {
+        if !self.wflag(&["-Wall", "-Wsequence-point", "-Wunsequenced"]) || self.in_template() {
+            return;
+        }
+        let mut found = None;
+        walk_expr(e, &mut |x: &Expr| {
+            if found.is_some() {
+                return;
+            }
+            if let EK::Binary(op, a, b) = &x.k {
+                if matches!(op, BOp::LAnd | BOp::LOr | BOp::Shl | BOp::Shr) {
+                    return;
+                }
+                let (mut ma, mut ra, mut mb, mut rb) = (vec![], vec![], vec![], vec![]);
+                mods_reads(a, &mut ma, &mut ra);
+                mods_reads(b, &mut mb, &mut rb);
+                if ma.iter().any(|v| mb.contains(v) || rb.contains(v)) || mb.iter().any(|v| ra.contains(v)) {
+                    found = Some(x.line);
+                }
+            }
+        });
+        if let Some(line) = found {
+            self.warn(line, "SEQ-7", "unsequenced modification and access to a variable");
+        }
     }
 }

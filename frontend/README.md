@@ -17,7 +17,7 @@ The binary is `target/release/tidal-fe`.
 ## Check one file
 
 ```sh
-target/release/tidal-fe check FILE [--m32] [--werror]
+target/release/tidal-fe check FILE [--m32] [--werror] [-Wname ...]
 ```
 
 | Exit status | Meaning |
@@ -42,6 +42,10 @@ evaluation broke. The conformance count of matching rules accepts either.
 
 `--m32` switches the target from LP64 (x86-64 Linux) to ILP32.
 `--werror` turns the warnings for `recommended` rules into errors.
+Some warnings run only when a `-W` flag asks for them, as on the
+matrix compilers: ATTR-6 and SEQ-7 with `-Wall`, ATTR-7 with
+`-Wimplicit-fallthrough` or `-Wextra`, CTOR-13 with `-Wall`, and the
+deprecated-copy part of CPY-13 with `-Wextra`.
 
 ## Run the conformance tests
 
@@ -52,7 +56,8 @@ target/release/tidal-fe conform ../tests [-v] [--out FILE]
 The harness reads the `// tidal-` directives at the top of each test. The
 harness uses the `tidal-expect-edg` override when a test has one, and treats
 `run`, `run-fail`, and `link-fail` as accept. `-Werror` in `tidal-flags`
-passes `--werror`, and `-m32` passes `--m32`. A test with
+passes `--werror`, `-m32` passes `--m32`, and the other `-W` flags
+pass through. A test with
 `tidal-sources` checks each translation unit on its own.
 
 The output is a table per directory and per subdirectory with these

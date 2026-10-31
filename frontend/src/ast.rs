@@ -195,6 +195,8 @@ pub enum Stmt {
     Block(Vec<Stmt>),
     /// `[[assume(e)]];` (ATTR-10, ATTR-15).
     Assume(Expr),
+    /// `[[fallthrough]];` and its line (ATTR-2).
+    Fallthrough(u32),
     If { init: Option<Box<Stmt>>, cond: Option<CondK>, then: Box<Stmt>, els: Option<Box<Stmt>>, kind: IfKind },
     While { cond: CondK, body: Box<Stmt> },
     Do { body: Box<Stmt>, cond: Expr },

@@ -131,6 +131,7 @@ impl P {
                     opaque: spec_args,
                     line,
                     align: 0,
+                    anon_unions: vec![],
                 });
                 let c = self.classes.len() - 1;
                 if !name.is_empty() && !spec_args && !matches!(qual, Some(Err(()))) {
@@ -226,6 +227,7 @@ impl P {
             self.add_decl_in(class_scope, &name, DK::Class(c), line);
         }
         self.class_depth += 1;
+        self.access_stack.push(if self.classes[c].key == 1 { 2 } else { 0 });
         let saved_templ = self.templ;
         if is_template && self.templ == 0 {
             self.templ = 1;
@@ -234,6 +236,7 @@ impl P {
             self.parse_declaration_recover(Ctx::Class(c));
         }
         self.templ = saved_templ;
+        self.access_stack.pop();
         self.expect("}")?;
         self.class_depth -= 1;
         self.stack = saved;
@@ -332,6 +335,7 @@ impl P {
             opaque: false,
             line,
             align: 0,
+            anon_unions: vec![],
         });
         let c = self.classes.len() - 1;
         let k = if self.pending_template.is_some() { DK::Template(TemplKind::Class(c)) } else { DK::Class(c) };
@@ -529,7 +533,7 @@ impl P {
                     _ => None,
                 };
                 if !(et.t.is_integral() || matches!(et.t, Ty::Enum(_) | Ty::Unknown)) {
-                    self.error(el, "CE-11", "enumerator value must have integer or enumeration type");
+                    self.error(el, "CE-25", "enumerator value must have integer or enumeration type");
                 }
                 match self.const_int(&ex) {
                     Ok(x) => v = x,

@@ -61,6 +61,8 @@ pub struct Obj {
     pub volatile: bool,
     pub is_static: bool,
     pub string: bool,
+    /// A complete object declared `const` (CAST-5, CV-5).
+    pub konst: bool,
 }
 
 enum Flow {
@@ -119,7 +121,7 @@ impl<'a> Eval<'a> {
     }
 
     fn new_obj(&mut self, val: Val, own: bool) -> usize {
-        self.objs.push(Obj { val, alive: true, own, volatile: false, is_static: false, string: false });
+        self.objs.push(Obj { val, alive: true, own, volatile: false, is_static: false, string: false, konst: false });
         self.objs.len() - 1
     }
 
@@ -155,6 +157,15 @@ impl<'a> Eval<'a> {
             }
         }
         Ok(v)
+    }
+
+    /// CAST-5, CV-5: a write to an object declared `const` is undefined.
+    /// Such a write is only possible through a `const_cast`.
+    fn check_const_write(&self, p: &Ptr) -> R<()> {
+        if self.objs[p.obj].konst {
+            return nc("CAST-5", "write to a const object through the result of a const_cast");
+        }
+        Ok(())
     }
 
     fn get_mut_at(&mut self, p: &Ptr) -> R<&mut Val> {
@@ -539,6 +550,7 @@ impl<'a> Eval<'a> {
                         }
                     }
                 }
+                self.check_const_write(&place)?;
                 let slot = self.get_mut_at(&place)?;
                 *slot = nv.clone();
                 // CE-6: an assignment to a union member makes it active.
@@ -895,6 +907,7 @@ impl<'a> Eval<'a> {
                     Val::Null => return nc("ADD-10", "increment of a null pointer"),
                     _ => return unsup("increment"),
                 };
+                self.check_const_write(&place)?;
                 *self.get_mut_at(&place)? = nv.clone();
                 Ok(if matches!(op, UOp::PreInc | UOp::PreDec) { nv } else { old })
             }
@@ -1380,7 +1393,7 @@ impl<'a> Eval<'a> {
             return self.exec_seek(s, seek);
         }
         match s {
-            Stmt::Null => Ok(Flow::Normal),
+            Stmt::Null | Stmt::Fallthrough(_) => Ok(Flow::Normal),
             // ATTR-10: an assumption that is false is undefined.
             Stmt::Assume(e) => match self.eval_bool(e) {
                 Ok(false) => nc("ATTR-10", "assumption is false"),
@@ -1608,6 +1621,9 @@ impl<'a> Eval<'a> {
                 let val = self.rvalue_init(&init, &v.ty)?;
                 self.objs[o].val = val;
                 self.objs[o].volatile = v.ty.v;
+                // A class can have mutable members, so only scalars and arrays
+                // of scalars are marked.
+                self.objs[o].konst = v.ty.c && crate::decl2::elem_class(&v.ty.t).is_none();
                 return Ok(());
             }
             None => self.default_val(&v.ty)?,
@@ -1718,7 +1734,7 @@ impl P {
         let e2 = if e.is_glvalue() && !matches!(e.ty.t, Ty::Array(..)) { Expr::new(EK::Conv(Conv::LToR, Box::new(e.clone())), e.ty.unqual(), Cat::PR, e.line) } else { e.clone() };
         match ev.eval(&e2)? {
             Val::Int(v) => Ok(v),
-            Val::Float(_) => nc("CE-11", "a floating value where an integer constant is needed"),
+            Val::Float(_) => nc("CE-25", "a floating value where an integer constant is needed"),
             _ => unsup("non-integer constant"),
         }
     }

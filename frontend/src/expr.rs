@@ -253,6 +253,14 @@ impl P {
                         _ => self.error(line, "NEW-8", "operand of delete must be a pointer"),
                     }
                     let _ = arr;
+                    if let Ty::Ptr(x) = &pt.t {
+                        if let Ty::Class(c) = x.t {
+                            if !self.in_template() && self.classes[c].complete && self.dtor_unusable(c) {
+                                // DTOR-3: no delete with a deleted destructor.
+                                self.error(line, "DTOR-3", format!("delete of '{}', whose destructor is deleted", self.classes[c].name));
+                            }
+                        }
+                    }
                     return Ok(Expr::new(EK::Unknown("delete expression".into()), QTy::new(Ty::Void), Cat::PR, line));
                 }
                 "co_await" => return Err(self.err("coroutines (outside the spec)")),
@@ -323,6 +331,11 @@ impl P {
         } else {
             self.ident()?
         };
+        if name == self.classes[c].name && !self.in_template() {
+            // CTOR-1: a constructor has no address.
+            self.error(line, "CTOR-1", "the address of a constructor");
+            return Ok(Expr::unknown(line, "pointer to member"));
+        }
         let found = self.lookup_member(c, &name);
         let Some(ids) = found else {
             if !self.class_uncertain(c) {
@@ -422,6 +435,13 @@ impl P {
             self.expect("]")?;
             bounds.push(b);
         }
+        let has_init = self.at("(") || self.at("{");
+        if !has_init && !self.in_template() {
+            // INIT-9: default initialization of the new object.
+            if let Ty::Class(c) = t.t {
+                self.check_default_init(c, line);
+            }
+        }
         self.parse_new_init()?;
         // NEW-2: the result points to the first element, which is an array
         // for a multi-dimensional new.
@@ -507,6 +527,14 @@ impl P {
                 self.pos += 1;
                 self.eat("template");
                 e = self.parse_member_access(e, arrow, line)?;
+                if let EK::BoundMember(_, fs) = &e.k {
+                    let non_static = fs.iter().all(|&f| self.func(f).is_some_and(|fi| !fi.is_static) && !self.decls[f].name.starts_with("operator"));
+                    if !self.at("(") && non_static && !fs.is_empty() && !self.in_template() {
+                        // PFX-14: a non-static member function reached
+                        // through member access is called.
+                        self.error(line, "PFX-14", "a member function named through member access is not called");
+                    }
+                }
             } else if self.at("++") || self.at("--") {
                 let op = if self.at("++") { UOp::PostInc } else { UOp::PostDec };
                 self.pos += 1;
@@ -539,11 +567,37 @@ impl P {
         // destructor call
         if self.at("~") {
             self.pos += 1;
+            let mut named: Option<Ty> = None;
             if self.at("decltype") {
                 self.pos += 1;
                 self.skip_balanced();
             } else {
+                if self.is_ident() && !self.at_k(1, "::") && !self.at_k(1, "<") {
+                    named = self.lookup(&self.tok().text.clone()).and_then(|ids| match &self.decls[ids[0]].k {
+                        DK::Class(b) => Some(Ty::Class(*b)),
+                        DK::Type(q) => Some(q.t.clone()),
+                        _ => None,
+                    });
+                }
                 self.skip_qualified_name()?;
+            }
+            if !self.in_template() {
+                // DTOR-8: the name after `~` denotes the object's type, and
+                // the destructor is called.
+                let ot = nonref(&obj.ty);
+                let objt = match (&ot.t, arrow) {
+                    (Ty::Ptr(p), true) => Some(p.t.clone()),
+                    (t, false) => Some(t.clone()),
+                    _ => None,
+                };
+                if let (Some(n), Some(o)) = (&named, &objt) {
+                    if *o != Ty::Unknown && *n != Ty::Unknown && n != o {
+                        self.error(line, "DTOR-8", "the name after '~' does not denote the type of the object");
+                    }
+                }
+                if !self.at("(") {
+                    self.error(line, "DTOR-8", "a destructor must be called with '()'");
+                }
             }
             return Ok(Expr::new(EK::Unknown("pseudo destructor".into()), QTy::unknown(), Cat::PR, line));
         }
@@ -590,7 +644,16 @@ impl P {
                     Expr::new(EK::Unary(UOp::Deref, Box::new(o)), pt, Cat::L, line)
                 }
                 Ty::Unknown => return Ok(Expr::unknown(line, "member of unknown")),
-                Ty::Class(_) => return Ok(Expr::unknown(line, "overloaded operator->")),
+                Ty::Class(c) => {
+                    let c = *c;
+                    if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && self.lookup_member(c, "operator->").is_none() {
+                        // PFX-11: `->` needs a pointer, or a class with
+                        // `operator->`.
+                        self.error(line, "PFX-11", format!("'->' applied to an object of class '{}', which has no operator->", self.classes[c].name));
+                        return Ok(Expr::unknown(line, "bad ->"));
+                    }
+                    return Ok(Expr::unknown(line, "overloaded operator->"));
+                }
                 _ => {
                     self.error(line, "PFX-11", "'->' applied to a non-pointer");
                     return Ok(Expr::unknown(line, "bad ->"));
@@ -807,6 +870,12 @@ impl P {
                 };
                 self.parse_declarator_name(&mut d)?;
                 let name = d.name.unwrap_or_default();
+                // The global allocation and deallocation functions exist in
+                // every program, next to any that the program declares, so a
+                // call of one is not checked against the declared ones alone.
+                if matches!(name.as_str(), "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]") {
+                    return Ok(Expr::unknown(line, "allocation function"));
+                }
                 let found = self.lookup(&name);
                 return Ok(match found {
                     Some(ids) => self.name_expr(ids, line),
@@ -1233,6 +1302,10 @@ impl P {
                 Ok(d) => d.name.unwrap_or_default(),
                 Err(e) => return Err(e),
             };
+            let class_scope = matches!(scope, Some(Ok(s)) if matches!(self.scopes[s].kind, SK::Class(_)));
+            if !class_scope && matches!(name.as_str(), "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]") {
+                return Ok(Expr::unknown(line, "allocation function"));
+            }
             let found = match scope {
                 Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
                 _ => self.lookup(&name),
@@ -1245,9 +1318,21 @@ impl P {
         if self.at("~") {
             self.pos += 1;
             self.ident()?;
+            if !self.at("(") && !self.in_template() {
+                // DTOR-8: a destructor is called, and has no address.
+                self.error(line, "DTOR-8", "a destructor must be called with '()'");
+            }
             return Ok(Expr::unknown(line, "destructor name"));
         }
         let name = self.ident()?;
+        if let Some(Ok(sc)) = scope {
+            if let SK::Class(c) = self.scopes[sc].kind {
+                if self.classes[c].name == name && start > 0 && self.toks.get(start - 1).is_some_and(|t| t.text == "&") && !self.in_template() {
+                    // CTOR-1: a constructor has no address.
+                    self.error(line, "CTOR-1", "the address of a constructor");
+                }
+            }
+        }
         let found = match scope {
             None => self.lookup(&name),
             Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
@@ -1430,7 +1515,7 @@ impl P {
         if ids.len() == 1 && !self.in_template() {
             if let Some(f) = self.func(id) {
                 // RET-3: no use before the return type is known.
-                if f.ret_auto.is_some() && f.fty.ret.is_unknown() && f.class.is_none() && !f.template {
+                if f.ret_auto.is_some() && f.fty.ret.is_unknown() && !f.template {
                     let own = self.fns.iter().find(|c| c.func == Some(id));
                     let known = match own {
                         Some(c) => c.deduced.is_some(),
@@ -1449,6 +1534,9 @@ impl P {
         if Some(id) == self.auto_in_own_init {
             // AUTO-8: an auto variable must not occur in its own initializer.
             self.error(line, "AUTO-8", "variable declared with 'auto' used in its own initializer");
+        }
+        if matches!(self.decls[id].k, DK::Var(_)) {
+            self.used_vars.insert(id);
         }
         match self.decls[id].k.clone() {
             DK::Var(v) => {
@@ -1556,6 +1644,11 @@ impl P {
     fn build_this(&mut self, line: u32) -> Expr {
         let f = self.fns.iter().rev().find(|f| !f.is_lambda);
         match f.and_then(|f| f.class.map(|c| (c, f.is_static, f.this_const, f.this_volatile))) {
+            Some((_, false, _, _)) if f.and_then(|f| f.func).and_then(|id| self.func(id)).is_some_and(|fi| fi.explicit_obj) => {
+                // PRIM-20: no `this` with an explicit object parameter.
+                self.error(line, "PRIM-20", "'this' in a member function with an explicit object parameter");
+                Expr::unknown(line, "this")
+            }
             Some((c, false, cst, vol)) => {
                 let mut ct = QTy::new(Ty::Class(c));
                 ct.c = cst;
@@ -1799,6 +1892,33 @@ impl P {
                 if ci.complete && ci.ctors.is_empty() && !self.class_uncertain(*tc) && !matches!(et.t, Ty::Class(_)) {
                     return Err(format!("no conversion to class '{}'", ci.name));
                 }
+                let tc = *tc;
+                if !direct && ci.complete && !self.class_uncertain(tc) && !self.in_template() && !matches!(et.t, Ty::Class(_)) {
+                    let x = self.ctor_call(tc, std::slice::from_ref(&e), to, line);
+                    if let EK::Construct(cid, _) = &x.k {
+                        if self.func(*cid).is_some_and(|f| f.explicit) {
+                            // CTOR-9: copy-initialization does not use an
+                            // explicit constructor.
+                            self.error(line, "CTOR-9", "copy-initialization uses an explicit constructor");
+                        }
+                        return Ok(x);
+                    }
+                    // CTOR-22: one user-defined conversion at most. A
+                    // constructor whose parameter is a class needs a second
+                    // one from a value that is not a class.
+                    let one_arg: Vec<DeclId> = self.classes[tc].ctors.iter().copied().filter(|&i| self.func(i).is_some_and(|f| !f.params.is_empty() && f.params.len() - 1 <= f.defaults)).collect();
+                    let all_class = !one_arg.is_empty()
+                        && self.classes[tc].ctors.iter().all(|&i| self.func(i).is_some_and(|f| !f.template))
+                        && one_arg.iter().all(|&i| {
+                            let f = self.func(i).unwrap();
+                            let pt = self.var(f.params[0]).map(|v| nonref(&v.ty).t).unwrap_or(Ty::Unknown);
+                            matches!(pt, Ty::Class(pc) if !self.class_uncertain(pc))
+                        });
+                    if all_class && (et.t.is_arithmetic() || matches!(et.t, Ty::Enum(_) | Ty::Ptr(_) | Ty::NullPtr)) {
+                        self.error(line, "CTOR-22", format!("conversion to '{}' needs two user-defined conversions", self.classes[tc].name));
+                        return Ok(Expr::unknown(line, "bad conversion"));
+                    }
+                }
                 return Ok(Expr::new(EK::Unknown("converting constructor".into()), to.clone(), Cat::PR, line));
             }
             _ => {}
@@ -1839,6 +1959,20 @@ impl P {
                 match &from {
                     Ty::Ptr(fp) => {
                         if self.ptr_convertible(fp, tp) {
+                            if let (Ty::Class(d), Ty::Class(b)) = (&fp.t, &tp.t) {
+                                if d != b && !self.in_template() && !self.class_uncertain(*d) {
+                                    // CONV-17: the base must be unambiguous
+                                    // and accessible.
+                                    if self.base_count(*b, *d, 0) > 1 {
+                                        self.error(line, "CONV-17", "conversion to an ambiguous base");
+                                        return Ok(Expr::unknown(line, "bad conversion"));
+                                    }
+                                    if !self.base_accessible(*d, *b) {
+                                        self.error(line, "CONV-17", "conversion to a base that is not accessible");
+                                        return Ok(Expr::unknown(line, "bad conversion"));
+                                    }
+                                }
+                            }
                             Ok(self.conv(e, Conv::PtrConv, target))
                         } else {
                             Err(format!("no implicit conversion from {} to {}", show(&e.ty), show(to)))
@@ -1855,6 +1989,32 @@ impl P {
                 }
             }
             (_, Ty::MemPtr(..)) => {
+                if let (Ty::MemPtr(_, a), Ty::MemPtr(_, b)) = (&from, &tt) {
+                    if let (Ty::Func(fa), Ty::Func(fb)) = (&a.t, &b.t) {
+                        if !fa.noexcept && fb.noexcept {
+                            // CONV-10: no implicit conversion that adds
+                            // noexcept.
+                            self.error(line, "CONV-10", "a pointer to a member function without noexcept does not convert to one with noexcept");
+                            return Ok(Expr::unknown(line, "bad conversion"));
+                        }
+                    }
+                }
+                if let (Ty::MemPtr(fc, a), Ty::MemPtr(tc, b)) = (&from, &tt) {
+                    if fc != tc && a.t == b.t && !self.in_template() && !self.class_uncertain(*fc) && !self.class_uncertain(*tc) {
+                        // CONV-15, CONV-17: a pointer to a member of a base
+                        // converts to one of a derived class, through a base
+                        // that is not virtual, ambiguous, or inaccessible.
+                        let bad = if self.is_base_of(*fc, *tc) {
+                            self.has_virtual_base(*tc, *fc, 0) || self.base_count(*fc, *tc, 0) > 1 || !self.base_accessible(*tc, *fc)
+                        } else {
+                            true
+                        };
+                        if bad {
+                            self.error(line, "CONV-17", "invalid conversion between pointers to members");
+                            return Ok(Expr::unknown(line, "bad conversion"));
+                        }
+                    }
+                }
                 if null || matches!(from, Ty::MemPtr(..)) {
                     Ok(self.conv(e, Conv::NullPtr, target))
                 } else {
@@ -1919,6 +2079,40 @@ impl P {
             }
             (a, b) => a == b,
         }
+    }
+
+    /// The number of base subobjects of class `base` in `derived`. A
+    /// virtual base counts once.
+    pub fn base_count(&self, base: usize, derived: usize, depth: u32) -> usize {
+        fn walk(p: &P, base: usize, c: usize, depth: u32, nonvirt: &mut usize, virt: &mut bool) {
+            if depth > 16 {
+                return;
+            }
+            for b in &p.classes[c].bases {
+                let Some(bc) = b.class else { continue };
+                if bc == base {
+                    if b.virt {
+                        *virt = true;
+                    } else {
+                        *nonvirt += 1;
+                    }
+                } else if !b.virt {
+                    walk(p, base, bc, depth + 1, nonvirt, virt);
+                } else {
+                    // through a virtual base: count that base's subobjects
+                    // once
+                    let mut n = 0;
+                    let mut v = false;
+                    walk(p, base, bc, depth + 1, &mut n, &mut v);
+                    if n > 0 || v {
+                        *virt = true;
+                    }
+                }
+            }
+        }
+        let (mut n, mut v) = (0, false);
+        walk(self, base, derived, depth, &mut n, &mut v);
+        n + usize::from(v)
     }
 
     pub fn is_base_of(&self, base: usize, derived: usize) -> bool {
@@ -2564,7 +2758,25 @@ impl P {
 
     pub fn build_assign(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
         let lt = l.ty.clone();
-        if let Ty::Class(_) = lt.t {
+        if let Ty::Class(c) = lt.t {
+            // CPY-22: the implicit copy assignment operator of a derived
+            // class hides the assignment operators of its bases.
+            let rt = nonref(&r.ty);
+            if op == "=" && !self.in_template() && !self.class_uncertain(c) && self.classes[c].ctors.is_empty() && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && (rt.t.is_arithmetic() || matches!(rt.t, Ty::Enum(_) | Ty::Ptr(_) | Ty::NullPtr)) {
+                let base_assign = self.classes[c].bases.iter().any(|b| b.class.is_some_and(|bc| self.lookup_member(bc, "operator=").is_some()));
+                if base_assign {
+                    self.error(line, "CPY-22", format!("the implicit copy assignment operator of '{}' hides the base assignment operators", self.classes[c].name));
+                }
+            }
+            // CPY-21 to CPY-23, UNI-11: the assignment operator used.
+            if op == "=" && nonref(&r.ty).t == Ty::Class(c) && !self.in_template() {
+                let mut x = r.clone();
+                x.ty = nonref(&x.ty);
+                if x.cat == Cat::PR {
+                    x.cat = Cat::X;
+                }
+                self.check_copy_from(c, &x, false, true, line);
+            }
             return Expr::unknown(line, "class assignment");
         }
         if lt.is_unknown() {
@@ -2871,8 +3083,14 @@ impl P {
         if ty.is_unknown() {
             return Expr::unknown(line, "functional cast to unknown type");
         }
-        if let Ty::Class(_) = ty.t {
-            let _ = items;
+        if let Ty::Class(c) = ty.t {
+            if !braced && !items.is_empty() && !self.in_template() && self.classes[c].complete && !self.classes[c].ctors.is_empty() {
+                let items = items.clone();
+                let x = self.ctor_call(c, &items, &ty, line);
+                if matches!(x.k, EK::Construct(..)) {
+                    return x;
+                }
+            }
             let mut e = Expr::unknown(line, "class temporary");
             e.ty = ty.unqual();
             return e;
