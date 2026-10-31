@@ -142,15 +142,15 @@ virtual destructor of its base, so that destructor needs a definition.
 :kind: reject
 :tests: classes/virtual/dynamic-cast-casts-away-const.cpp classes/virtual/dynamic-cast-from-nonpointer.cpp classes/virtual/dynamic-cast-incomplete.cpp classes/virtual/dynamic-cast-nonpolymorphic.cpp classes/virtual/dynamic-cast-not-pointer.cpp classes/virtual/dynamic-cast-to-nonclass.cpp classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp
 
-`dynamic_cast<T>(e)` requires these:
+A `dynamic_cast` must meet these conditions:
 
-- `T` is a pointer or reference to a complete class, or `void*`, with
-  any cv-qualifiers.
-- If `T` is a pointer, `e` is a pointer. If `T` is a reference, `e` is
-  an lvalue or xvalue.
-- The cast does not remove cv-qualifiers.
-- If the cast is not a conversion to a base, the type of `e` is a
-  pointer or reference to a polymorphic class.
+- The target is `void*`, a class pointer, or a class reference. The
+  class must be complete.
+- A pointer target needs a pointer operand. A reference target needs an
+  lvalue or xvalue operand.
+- The target keeps every cv-qualifier of the operand.
+- A cast that does not go to a base needs an operand of polymorphic
+  class type, through a pointer or reference.
 :::
 
 ## Dynamic Semantics
