@@ -18,14 +18,15 @@ parameter list, as `const` can.
 
 :::{rule} VOL-2
 :kind: required
-:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp
+:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
 
 A member function declared `volatile` can be called on a volatile object
 and on other objects. A member function that is not `volatile` cannot be
 called on a volatile object. Two member functions can overload on
 `volatile`. A member of a volatile object is volatile. A `static const
 volatile` integer member can have an initializer in its class
-({question}`Q-0080`).
+({question}`Q-0080`). A volatile object of class type is initialized by
+an ordinary constructor. It is volatile after the constructor ends.
 :::
 
 :::{rule} VOL-3
@@ -49,24 +50,42 @@ object. A volatile class object can only be copied or assigned with
 functions that the class declares for volatile operands.
 :::
 
+:::{rule} VOL-7
+:kind: reject
+:tests: declarations/volatile/volatile-constructor.cpp declarations/volatile/volatile-destructor.cpp
+
+A constructor or a destructor must not be declared `volatile`.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} VOL-1
 :kind: required
-:tests: declarations/volatile/access-run.cpp declarations/volatile/constant-read-rejected.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp
+:tests: declarations/volatile/access-run.cpp declarations/volatile/constant-read-rejected.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
 
 Each read and each write of an object through a volatile lvalue is an
 observable effect *(referenced)*. The implementation performs it. The
 type of a volatile variable keeps `volatile`, but the result of an
 arithmetic operation on its value does not. Constant evaluation cannot
-read a volatile object.
+read a volatile object. A `const volatile` variable at namespace scope has
+external linkage, so all translation units share it.
+:::
+
+## Undefined Behavior
+
+:::{rule} VOL-6
+:kind: undefined
+:tests: declarations/volatile/nonvolatile-access-to-volatile-constant.cpp
+
+If a program accesses a volatile object through a glvalue that is not
+volatile, the behavior is undefined.
 :::
 
 ## Recommended Practice
 
 :::{rule} VOL-5
 :kind: recommended
-:tests: declarations/volatile/assignment-result-warns.cpp declarations/volatile/compound-no-warning.cpp declarations/volatile/increment-warns.cpp declarations/volatile/volatile-structured-binding.cpp
+:tests: declarations/volatile/assignment-result-warns.cpp declarations/volatile/compound-no-warning.cpp declarations/volatile/increment-warns.cpp declarations/volatile/volatile-structured-binding.cpp declarations/volatile/volatile-parameter-warns.cpp declarations/volatile/volatile-return-warns.cpp declarations/volatile/pointer-to-volatile-parameter-ok.cpp
 
 An implementation should warn about these uses, which are deprecated:
 
@@ -76,6 +95,7 @@ An implementation should warn about these uses, which are deprecated:
 - a structured binding declaration with `volatile`.
 
 Compound assignment, such as `v += 1` and `v |= 1`, is not deprecated.
+CV-9 gives the warnings for volatile parameter and return types.
 :::
 
 ## Examples
@@ -97,8 +117,8 @@ void send(volatile Uart& u, unsigned c) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 24 of
-25 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 32 of
+33 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile and
   run. A test cannot observe if an access was removed.

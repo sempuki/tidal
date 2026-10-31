@@ -21,7 +21,7 @@ before the declarator.
 
 :::{rule} INL-1
 :kind: required
-:tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp
+:tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp declarations/inline/constexpr-variable-internal.cpp declarations/inline/inline-friend-declaration-not-definition.cpp
 
 `inline` applies to functions and to variables with static storage
 duration. These rules apply:
@@ -30,7 +30,10 @@ duration. These rules apply:
 - An inline function that no code uses needs no definition.
 - An inline entity with internal linkage is a separate entity in each
   translation unit.
-- An inline `const` variable at namespace scope has external linkage.
+- An inline `const` variable at namespace scope has external linkage. A
+  `constexpr` variable at namespace scope is not inline, so each
+  translation unit has its own object.
+- A friend declaration can be `inline` without being a definition.
 - A virtual function can be `inline`.
 :::
 
@@ -52,24 +55,25 @@ An inline function must not be defined two times in one translation unit.
 
 :::{rule} INL-3
 :kind: required
-:tests: declarations/inline/constexpr-function-inline.cpp declarations/inline/deleted-function-inline.cpp declarations/inline/inline-friend-definition.cpp declarations/inline/member-defined-in-class.cpp declarations/inline/static-constexpr-member-inline.cpp
+:tests: declarations/inline/constexpr-function-inline.cpp declarations/inline/deleted-function-inline.cpp declarations/inline/inline-friend-definition.cpp declarations/inline/member-defined-in-class.cpp declarations/inline/static-constexpr-member-inline.cpp declarations/inline/implicit-special-members-inline.cpp
 
 These declarations are inline without the keyword:
 
 - a member function or friend function defined in its class,
 - a `constexpr` or `consteval` function,
 - a `static constexpr` data member,
-- a deleted function.
+- a deleted function,
+- an implicitly declared special member function.
 :::
 
 :::{rule} INL-4
 :kind: required
-:tests: declarations/inline/inline-static-member-incomplete.cpp declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp
+:tests: declarations/inline/inline-static-member-incomplete.cpp declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp declarations/inline/inline-nonconst-static-member-out-of-class.cpp
 
 An inline static data member is defined in its class, with its
 initializer. It needs no definition outside the class. Its type must be
-complete there. A `const` static data member can also be defined
-`inline` outside its class. A static data member that is not inline
+complete there. A static data member declared in its class can also be
+defined `inline` outside it. A static data member that is not inline
 needs one definition outside its class if it is used.
 :::
 
@@ -95,6 +99,16 @@ defined in that translation unit. An implementation need not diagnose a
 missing definition before linking.
 :::
 
+:::{rule} INL-7
+:kind: no-diagnostic
+:tests: declarations/inline/inline-in-one-unit-only.cpp declarations/inline/inline-different-definitions.cpp
+
+If a function or variable with external linkage is `inline` in one
+translation unit, it must be `inline` in each translation unit that
+declares it. LNK-6 requires its definitions to match. An implementation
+need not diagnose a violation of either rule.
+:::
+
 ## Examples
 
 ```cpp
@@ -111,11 +125,14 @@ struct Config {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
-28 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 33 of
+34 tests.
 
 - INL-2: GCC accepts `inline` on a declaration after the definition.
   Clang and EDG reject it ({question}`Q-0068`).
+- INL-1: all compilers accept an `inline` friend declaration that is
+  not a definition.
+- INL-7: the test with two different definitions accepts either body.
 - INL-6: EDG reports a used inline function with no definition during
   translation. Clang and GCC report it when linking. All three report a
   used inline variable with no definition during translation.

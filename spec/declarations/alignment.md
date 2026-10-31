@@ -27,10 +27,10 @@ or after the class key of a class definition, as in
 
 :::{rule} ALN-1
 :kind: required
-:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/enum.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp
+:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/enum.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp
 
 `alignas` applies to a variable, a non-static data member, or a class
-definition. `alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has
+declaration, including a forward declaration. `alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has
 no effect. If a declaration has several `alignas`, the strictest applies
 ({question}`Q-0071`). It does not apply to an enumeration
 ({question}`Q-0073`).
@@ -54,10 +54,10 @@ apply to a function, a parameter, a bit-field, or a type alias
 
 :::{rule} ALN-3
 :kind: reject
-:tests: declarations/alignment/definition-without-earlier-with.cpp declarations/alignment/redeclare-different.cpp declarations/alignment/redeclare-without.cpp
+:tests: declarations/alignment/definition-without-earlier-with.cpp declarations/alignment/redeclare-different.cpp declarations/alignment/redeclare-without.cpp declarations/alignment/class-redeclare-different.cpp declarations/alignment/class-definition-without-earlier-with.cpp
 
-If a declaration of a variable has `alignas`, its definition must have
-the same alignment ({question}`Q-0070`). A definition can add `alignas` if
+If a declaration of a variable or a class has `alignas`, its definition
+must have the same alignment ({question}`Q-0070`). A definition can add `alignas` if
 the earlier declarations have none.
 :::
 
@@ -85,6 +85,14 @@ the x86-64 Linux targets in the matrix, `long double` has alignment 16.
 EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
 :::
 
+:::{rule} ALN-6
+:kind: no-diagnostic
+:tests: declarations/alignment/different-units-alignas.cpp
+
+Declarations of one entity in different translation units must have the
+same alignment. An implementation need not diagnose a difference.
+:::
+
 ## Examples
 
 ```cpp
@@ -104,8 +112,8 @@ alignas(2) int bad;              // rejected: weaker than alignof(int)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 16 of
-27 tests. Each divergence has a question.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 18 of
+31 tests. Each divergence has a question.
 
 - ALN-1: GCC uses the last of several `alignas` on a class
   ({question}`Q-0071`). EDG and GCC 14 accept `alignas` on an enumeration
@@ -113,7 +121,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 16 of
 - ALN-2: GCC accepts `alignas` weaker than the natural alignment
   ({question}`Q-0069`). GCC 14 accepts it on a function, a type alias,
   and a bit-field ({question}`Q-0072`).
-- ALN-3: GCC accepts declarations with different `alignas`
-  ({question}`Q-0070`).
+- ALN-3: GCC accepts declarations of a variable or a class with
+  different `alignas` ({question}`Q-0070`).
 
 Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.

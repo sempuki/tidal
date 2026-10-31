@@ -1,0 +1,76 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   alignment.md:Alignment           longest=0   overlap=0.03
+ok   alignment.md:Syntax              longest=0   overlap=0.00
+ok   ALN-1                            longest=0   overlap=0.06
+ok   ALN-2                            longest=0   overlap=0.04
+ok   ALN-3                            longest=0   overlap=0.11
+ok   ALN-4                            longest=0   overlap=0.00
+ok   ALN-5                            longest=0   overlap=0.00
+ok   ALN-6                            longest=0   overlap=0.00
+ok   alignment.md:Examples            longest=0   overlap=0.00
+ok   alignment.md:Evidence            longest=0   overlap=0.00
+ok   exception-specifications.md:Exception specifications longest=0   overlap=0.02
+ok   exception-specifications.md:Syntax longest=0   overlap=0.00
+ok   EXS-1                            longest=0   overlap=0.00
+ok   EXS-2                            longest=0   overlap=0.07
+ok   EXS-3                            longest=0   overlap=0.04
+ok   EXS-4                            longest=0   overlap=0.03
+ok   EXS-5                            longest=0   overlap=0.00
+ok   EXS-6                            longest=0   overlap=0.00
+ok   exception-specifications.md:Examples longest=0   overlap=0.00
+ok   exception-specifications.md:Evidence longest=0   overlap=0.00
+ok   inline.md:The inline specifier   longest=0   overlap=0.01
+ok   inline.md:Syntax                 longest=0   overlap=0.00
+ok   INL-1                            longest=0   overlap=0.02
+ok   INL-2                            longest=0   overlap=0.06
+ok   INL-3                            longest=0   overlap=0.06
+ok   INL-4                            longest=0   overlap=0.07
+ok   INL-5                            longest=0   overlap=0.00
+ok   INL-6                            longest=0   overlap=0.09
+ok   INL-7                            longest=0   overlap=0.08
+ok   inline.md:Examples               longest=0   overlap=0.00
+ok   inline.md:Evidence               longest=0   overlap=0.00
+ok   linkage-specifications.md:Linkage specifications longest=0   overlap=0.03
+ok   linkage-specifications.md:Syntax longest=0   overlap=0.00
+ok   LSP-1                            longest=0   overlap=0.01
+ok   LSP-2                            longest=0   overlap=0.02
+ok   LSP-3                            longest=0   overlap=0.00
+ok   LSP-4                            longest=0   overlap=0.00
+ok   LSP-5                            longest=0   overlap=0.00
+ok   LSP-6                            longest=0   overlap=0.09
+ok   linkage-specifications.md:Examples longest=0   overlap=0.02
+ok   linkage-specifications.md:Evidence longest=0   overlap=0.01
+ok   static-assert.md:Static assertions longest=0   overlap=0.00
+ok   static-assert.md:Syntax          longest=0   overlap=0.00
+ok   SA-1                             longest=0   overlap=0.00
+ok   SA-2                             longest=0   overlap=0.00
+ok   SA-3                             longest=0   overlap=0.11
+ok   SA-4                             longest=0   overlap=0.04
+ok   SA-5                             longest=0   overlap=0.08
+ok   static-assert.md:Examples        longest=0   overlap=0.00
+ok   static-assert.md:Evidence        longest=0   overlap=0.00
+ok   type-names.md:Type aliases and class names longest=0   overlap=0.00
+ok   type-names.md:Syntax             longest=0   overlap=0.02
+ok   TYN-1                            longest=0   overlap=0.01
+ok   TYN-2                            longest=0   overlap=0.06
+ok   TYN-3                            longest=0   overlap=0.00
+ok   TYN-4                            longest=0   overlap=0.04
+ok   TYN-6                            longest=0   overlap=0.05
+ok   TYN-7                            longest=0   overlap=0.05
+ok   TYN-5                            longest=0   overlap=0.04
+ok   type-names.md:Examples           longest=0   overlap=0.00
+ok   type-names.md:Evidence           longest=0   overlap=0.01
+ok   volatile.md:Volatile             longest=0   overlap=0.00
+ok   volatile.md:Syntax               longest=0   overlap=0.00
+ok   VOL-2                            longest=0   overlap=0.03
+ok   VOL-3                            longest=0   overlap=0.04
+ok   VOL-4                            longest=0   overlap=0.02
+ok   VOL-7                            longest=0   overlap=0.00
+ok   VOL-1                            longest=0   overlap=0.07
+ok   VOL-6                            longest=0   overlap=0.21
+ok   VOL-5                            longest=0   overlap=0.00
+ok   volatile.md:Examples             longest=0   overlap=0.00
+ok   volatile.md:Evidence             longest=0   overlap=0.00
+
+0 flagged

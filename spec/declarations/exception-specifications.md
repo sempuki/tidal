@@ -27,11 +27,12 @@ declarator. `noexcept` alone means `noexcept(true)`. A function with
 
 :::{rule} EXS-1
 :kind: required
-:tests: declarations/exception-specifications/forms.cpp declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/operand-later-member.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp
+:tests: declarations/exception-specifications/forms.cpp declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/operand-later-member.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp declarations/exception-specifications/operand-uses-parameters.cpp
 
 The operand of `noexcept` is a constant expression that converts to
 `bool` without narrowing ({question}`Q-0078`). In a member function, the
-operand can name members declared later in the class. A list of types in
+operand can name members declared later in the class. It can also use
+the parameters of the function. A list of types in
 the form `throw(T)` is not valid.
 :::
 
@@ -62,13 +63,17 @@ when the overridden function is not.
 
 :::{rule} EXS-4
 :kind: required
-:tests: declarations/exception-specifications/constexpr-not-implied.cpp declarations/exception-specifications/defaulted-explicit-noexcept.cpp declarations/exception-specifications/defaulted-follows-members.cpp declarations/exception-specifications/delete-operator-noexcept.cpp declarations/exception-specifications/implicit-follows-members.cpp declarations/exception-specifications/implicit-special-members.cpp declarations/exception-specifications/inheriting-ctor-noexcept.cpp declarations/exception-specifications/lambda-not-noexcept.cpp declarations/exception-specifications/user-function-not-noexcept.cpp declarations/exception-specifications/delete-class-follows-destructor.cpp
+:tests: declarations/exception-specifications/constexpr-not-implied.cpp declarations/exception-specifications/defaulted-explicit-noexcept.cpp declarations/exception-specifications/defaulted-follows-members.cpp declarations/exception-specifications/delete-operator-noexcept.cpp declarations/exception-specifications/implicit-follows-members.cpp declarations/exception-specifications/implicit-special-members.cpp declarations/exception-specifications/inheriting-ctor-noexcept.cpp declarations/exception-specifications/lambda-not-noexcept.cpp declarations/exception-specifications/user-function-not-noexcept.cpp declarations/exception-specifications/delete-class-follows-destructor.cpp declarations/exception-specifications/class-delete-operator-noexcept.cpp declarations/exception-specifications/default-member-init-throwing.cpp declarations/exception-specifications/defaulted-comparison-noexcept.cpp declarations/exception-specifications/defaulted-comparison-member-throwing.cpp
 
 A function without a `noexcept` specifier is not non-throwing, with these
 exceptions:
 
-- An implicit or defaulted special member function is non-throwing if
-  each function that it calls for bases and members is non-throwing.
+- An implicit or defaulted special member function, or a defaulted
+  comparison, is non-throwing if each function that it calls for bases
+  and members is non-throwing ({question}`Q-0095` for comparisons). A
+  default member initializer that it uses counts too.
+- A deallocation function `operator delete` is non-throwing
+  ({question}`Q-0094`).
 - A destructor follows DTOR-4.
 - An inherited constructor has the specifier of the base constructor.
 - A `delete` expression is non-throwing if the destructor that it calls
@@ -116,13 +121,17 @@ struct File : Base { void close() override; };  // rejected: throwing override
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
-31 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 30 of
+36 tests.
 
 - EXS-1: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
 - EXS-5: Clang and GCC accept `throw()`. EDG rejects it
   ({question}`Q-0077`).
+- EXS-4: GCC treats a class-specific `operator delete` without a
+  specifier as potentially throwing. EDG treats a defaulted `==` as
+  non-throwing even if a member `==` is potentially throwing
+  ({question}`Q-0094`, {question}`Q-0095`).
 - EXS-6: Clang rejects an operand that depends on the function itself.
   GCC and EDG accept it ({question}`Q-0079`).
 

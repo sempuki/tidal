@@ -18,10 +18,11 @@ Depends on: constant expressions, standard conversions.
 
 :::{rule} SA-1
 :kind: reject
-:tests: declarations/static-assert/false-rejected.cpp declarations/static-assert/false-with-message.cpp declarations/static-assert/true-accepted.cpp
+:tests: declarations/static-assert/false-rejected.cpp declarations/static-assert/false-with-message.cpp declarations/static-assert/true-accepted.cpp declarations/static-assert/message-shown.cpp
 
 The condition of a static assertion must be `true`. If it is `false`, the
-implementation rejects the program.
+implementation rejects the program. Its diagnostic includes the message,
+if there is one.
 :::
 
 :::{rule} SA-2
@@ -85,6 +86,7 @@ int h = half(10);                     // checked for T = int: valid
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All seven compilers agree on all
-27 tests.
+28 tests. Clang, GCC, and EDG each show the message of a failed
+assertion.
 
 Inputs: clang-sema-declcxx, clang-diag-sema, clang-diag-parse, edg-decls.

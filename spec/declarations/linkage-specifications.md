@@ -25,13 +25,14 @@ name* is a function or variable that has C language linkage.
 
 :::{rule} LSP-1
 :kind: required
-:tests: declarations/linkage-specifications/block-form.cpp declarations/linkage-specifications/cpp-linkage.cpp declarations/linkage-specifications/linkage-in-namespace.cpp declarations/linkage-specifications/members-cpp-linkage.cpp declarations/linkage-specifications/nested-innermost.cpp declarations/linkage-specifications/single-form.cpp declarations/linkage-specifications/static-in-c-block.cpp
+:tests: declarations/linkage-specifications/block-form.cpp declarations/linkage-specifications/cpp-linkage.cpp declarations/linkage-specifications/linkage-in-namespace.cpp declarations/linkage-specifications/members-cpp-linkage.cpp declarations/linkage-specifications/nested-innermost.cpp declarations/linkage-specifications/single-form.cpp declarations/linkage-specifications/static-in-c-block.cpp declarations/linkage-specifications/block-form-no-scope.cpp
 
 A linkage specification gives its language linkage to the functions and
 variables that it declares. In nested linkage specifications, the
 innermost applies. These rules apply:
 
-- A linkage specification can occur in a namespace.
+- A linkage specification can occur in a namespace. Its braces do not
+  make a scope, so names declared in them are visible after them.
 - A `static` function in an `extern "C"` block has internal linkage.
 - Member functions of a class have C++ language linkage, also in an
   `extern "C"` block, so they can be overloaded.
@@ -39,10 +40,11 @@ innermost applies. These rules apply:
 
 :::{rule} LSP-2
 :kind: reject
-:tests: declarations/linkage-specifications/block-scope.cpp declarations/linkage-specifications/c-linkage-main.cpp declarations/linkage-specifications/c-linkage-template.cpp declarations/linkage-specifications/class-scope.cpp
+:tests: declarations/linkage-specifications/block-scope.cpp declarations/linkage-specifications/c-linkage-main.cpp declarations/linkage-specifications/c-linkage-template.cpp declarations/linkage-specifications/class-scope.cpp declarations/linkage-specifications/single-form-static.cpp
 
 A linkage specification can only occur at namespace scope. It must not
 occur in a block or a class. A template must not have C language linkage.
+The form without braces must not declare a `static` entity.
 `main` must not have C language linkage ({question}`Q-0076`).
 :::
 
@@ -112,8 +114,8 @@ extern "C" int c_add(double, double);  // rejected: C functions cannot overload
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 23 of
-27 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 25 of
+29 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`).
