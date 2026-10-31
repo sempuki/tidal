@@ -82,7 +82,15 @@ def main() -> int:
     start = lines.index(HEADER) + 2
     end = next(i for i in range(start, len(lines)) if not lines[i].startswith("|"))
     lines[start:end] = rows
-    STATUS.write_text("\n".join(lines))
+    text = "\n".join(lines)
+    # The front end's pass count comes from its baseline (tools/frontend_check.py).
+    tsv = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
+    if tsv.exists():
+        status = [l.split("\t")[0] for l in tsv.read_text().splitlines() if l and not l.startswith("#")]
+        passing = sum(s in ("pass", "EDG-ONLY") for s in status)
+        text = re.sub(r"(clean-room front end passes) \d+ of \d+ tests",
+                      rf"\1 {passing} of {len(status)} tests", text)
+    STATUS.write_text(text)
     print(f"{len(rows)} rows")
     return 0
 

@@ -124,7 +124,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2601 of 3214 tests. The front end
+- The clean-room front end passes 2604 of 3217 tests. The front end
   rejects one valid test, `new-placement-and-bound-order.cpp`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
