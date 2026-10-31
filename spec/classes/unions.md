@@ -186,11 +186,10 @@ evaluation follows these rules.
 
 :::{rule} BF-5
 :kind: required
-:tests: classes/unions/bitfield-constant-wraps.cpp classes/unions/bitfield-plain-int-signed.cpp classes/unions/bitfield-signed-wraps.cpp classes/unions/bitfield-unsigned-wraps.cpp
+:tests: classes/unions/bitfield-plain-int-signed.cpp
 
-A value stored in a bit-field of width `n` is reduced modulo 2^n. A
-bit-field of a signed type, including plain `int`, holds negative values.
-Constant evaluation gives the same result.
+A bit-field of a signed type, including plain `int`, holds negative
+values that fit in its width.
 :::
 
 :::{rule} UNI-10
@@ -228,11 +227,21 @@ the x86-64 Linux targets in the matrix, adjacent bit-fields of the same
 type share one unit of that type while they fit.
 :::
 
+:::{rule} BF-10
+:kind: impl-defined
+:tests: classes/unions/bitfield-unsigned-wraps.cpp classes/unions/bitfield-signed-wraps.cpp classes/unions/bitfield-constant-wraps.cpp
+
+If a value stored in a bit-field of width `n` does not fit, the value
+that the bit-field holds is implementation-defined. On the x86-64 targets
+in the matrix, the value is reduced modulo 2^n, also during constant
+evaluation.
+:::
+
 ## Recommended Practice
 
 :::{rule} BF-8
 :kind: recommended
-:tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp
+:tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp classes/unions/bitfield-assign-too-wide-warns.cpp
 
 An implementation should warn if a bit-field width is larger than its
 type, or if a constant assignment changes value because of the width.
@@ -264,8 +273,7 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 83 of
-86 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 84 of 87 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject it ({question}`Q-0057`).

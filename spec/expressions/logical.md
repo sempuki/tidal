@@ -61,6 +61,32 @@ evaluation does not permit. If the right operand is evaluated, such an
 operation makes the expression not constant.
 :::
 
+:::{rule} LOG-12
+:kind: required
+:tests: expressions/logical/nullptr-operand.cpp expressions/logical/member-pointer-operand.cpp
+
+An operand of `!`, `&&`, or `||` can be `nullptr` or a pointer to member.
+It converts to `bool` by {term}`contextual conversion`, so `nullptr` and a
+null pointer to member give `false` (question pending).
+:::
+
+:::{rule} LOG-13
+:kind: required
+:tests: expressions/logical/alternative-tokens.cpp
+
+Each of these words is another spelling of an operator. No header is
+needed:
+
+| Word | Operator | Word | Operator |
+|---|---|---|---|
+| `and` | `&&` | `bitand` | `&` |
+| `or` | `\|\|` | `bitor` | `\|` |
+| `not` | `!` | `xor` | `^` |
+| `not_eq` | `!=` | `compl` | `~` |
+| `and_eq` | `&=` | `or_eq` | `\|=` |
+| `xor_eq` | `^=` | | |
+:::
+
 ## Dynamic Semantics
 
 :::{rule} LOG-10
@@ -133,7 +159,7 @@ a || b && c                     // a || (b && c); compilers warn
 
 ## Evidence
 
-All seven compilers agree on all 17 tests. The results are in
+All seven compilers agree on 20 of 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - LOG-8: Clang warns under `-Wlogical-op-parentheses` and GCC under
@@ -141,5 +167,7 @@ All seven compilers agree on all 17 tests. The results are in
 - LOG-9: Clang and GCC warn under `-Wlogical-not-parentheses`.
 - EDG doesn't take these warning flags and skips the recommended-practice
   tests.
+- LOG-12: GCC 14 rejects `nullptr` as an operand. GCC 16, Clang, and EDG
+  accept it (question pending).
 
 Inputs: clang-sema-expr, clang-diag-sema.

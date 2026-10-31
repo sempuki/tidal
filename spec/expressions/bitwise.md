@@ -37,10 +37,12 @@ operator can be of different types, including two different enumerations.
 
 :::{rule} BIT-3
 :kind: reject
-:tests: expressions/bitwise/operands-floating.cpp expressions/bitwise/operands-pointer.cpp expressions/bitwise/operands-scoped-enum.cpp expressions/bitwise/complement-floating.cpp expressions/bitwise/complement-pointer.cpp
+:tests: expressions/bitwise/operands-floating.cpp expressions/bitwise/operands-pointer.cpp expressions/bitwise/operands-scoped-enum.cpp expressions/bitwise/complement-floating.cpp expressions/bitwise/complement-pointer.cpp expressions/bitwise/class-operand.cpp expressions/bitwise/nullptr-operand.cpp expressions/bitwise/member-pointer-operand.cpp
 
-An operand of `&`, `^`, `|`, or `~` must not have floating-point
-type, pointer type, or scoped enumeration type.
+An operand of `&`, `^`, `|`, or `~` must not have floating-point type,
+pointer type, scoped enumeration type, pointer-to-member type, or the
+type of `nullptr`. A class operand is valid only through a usable
+conversion or an operator function *(referenced)*.
 :::
 
 :::{rule} BIT-4
@@ -113,7 +115,7 @@ Mode::Read | Mode::Write   // rejected without an operator|
 
 ## Evidence
 
-All seven compilers agree on all 17 tests. The results are in
+All seven compilers agree on all 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - BIT-6: Clang warns "& has lower precedence than ==" and GCC warns

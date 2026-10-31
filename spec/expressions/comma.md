@@ -30,10 +30,17 @@ expression.
 
 :::{rule} COMMA-4
 :kind: required
-:tests: expressions/comma/argument-separator.cpp expressions/comma/initializer-separator.cpp
+:tests: expressions/comma/argument-separator.cpp expressions/comma/initializer-separator.cpp expressions/comma/separators.cpp
 
-In a list of function arguments or initializers, a comma separates the
-items. A comma operator in such a list must be in parentheses.
+In these lists, a comma separates the items:
+
+- function arguments and initializers,
+- declarators in one declaration,
+- base and member initializers,
+- enumerators,
+- template arguments *(referenced)*.
+
+A comma operator in such a list must be in parentheses.
 :::
 
 :::{rule} COMMA-6
@@ -43,6 +50,14 @@ items. A comma operator in such a list must be in parentheses.
 A comma at the top level of a subscript separates subscript arguments
 *(referenced)*. The built-in subscript takes one argument, so the comma
 must be in parentheses to act as an operator.
+:::
+
+:::{rule} COMMA-8
+:kind: reject
+:tests: expressions/comma/array-bound-unparenthesized.cpp expressions/comma/array-bound-parenthesized.cpp expressions/comma/case-label-unparenthesized.cpp
+
+Where the syntax asks for a constant expression, such as an array bound
+or a `case` label, a comma operator must be in parentheses.
 :::
 
 ## Dynamic Semantics
@@ -86,7 +101,7 @@ arr[(i, j)];               // fine: the comma operator, the value j
 
 ## Evidence
 
-All seven compilers agree on all 12 tests. The results are in
+All seven compilers agree on all 17 tests. The results are in
 `tests/RESULTS.md`.
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no
