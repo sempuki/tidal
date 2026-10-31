@@ -67,7 +67,7 @@ operation makes the expression not constant.
 
 An operand of `!`, `&&`, or `||` can be `nullptr` or a pointer to member.
 It converts to `bool` by {term}`contextual conversion`, so `nullptr` and a
-null pointer to member give `false` (question pending).
+null pointer to member give `false` ({question}`Q-0101`).
 :::
 
 :::{rule} LOG-13
@@ -168,6 +168,6 @@ All seven compilers agree on 20 of 21 tests. The results are in
 - EDG doesn't take these warning flags and skips the recommended-practice
   tests.
 - LOG-12: GCC 14 rejects `nullptr` as an operand. GCC 16, Clang, and EDG
-  accept it (question pending).
+  accept it ({question}`Q-0101`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

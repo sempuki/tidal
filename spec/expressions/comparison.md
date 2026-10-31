@@ -53,7 +53,7 @@ A comparison must not have these operands:
 - pointers to unrelated types,
 - a pointer to a function and `void*`,
 - two pointers to members, or two values of the type of `nullptr`, for a
-  relational operator (question pending for `nullptr`).
+  relational operator ({question}`Q-0103` for `nullptr`).
 :::
 
 :::{rule} CMP-10
@@ -158,7 +158,7 @@ evaluation can do these comparisons.
 Two pointers are equal if they hold the same address, or if both are
 null. Pointers to different objects can be equal. Examples are a pointer
 to a class object and a pointer to its first member, after conversion to
-`void*`, and pointers to two members of a union (question pending).
+`void*`, and pointers to two members of a union ({question}`Q-0104`).
 :::
 
 :::{rule} CMP-17
@@ -186,14 +186,14 @@ pointers to members.
 
 :::{rule} CMP-8
 :kind: unspecified
-:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp
+:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp
 
 If no rule orders two pointers, each relational operator and `<=>` gives
 an unspecified result. The results of `a < b` and `a > b` need not agree.
 This applies to pointers to unrelated objects or functions, to members
 of a union, and to members that occupy no storage. During
-{term}`constant evaluation`, such a comparison is not a constant
-expression.
+{term}`constant evaluation`, a comparison of pointers to unrelated
+objects or functions is not a constant expression.
 :::
 
 :::{rule} CMP-20
@@ -264,6 +264,9 @@ The results are in `tests/RESULTS.md`. The `<=>` tests declare a minimal
 because tests include no headers. EDG needs `std::weak_ordering` declared
 even for integer operands.
 
+- CMP-8: for pointers to two members of a union, or to an empty member
+  and its neighbor, all three implementations give a result during
+  constant evaluation. Only the unrelated-object case is rejected there.
 - CMP-1: Clang 22 rejects a chained comparison by default as a
   `-Wparentheses` error. It accepts the comparison when that warning is
   off. Clang 18, GCC, and EDG accept it ({question}`Q-0029`).
@@ -287,8 +290,8 @@ even for integer operands.
   EDG accepts it ({question}`Q-0051`).
 - CMP-15: EDG evaluates the comparison of a class object and its first
   member, after conversion to `void*`, to `false`. Clang and GCC give
-  `true` (question pending).
+  `true` ({question}`Q-0104`).
 - CMP-9: EDG accepts a relational comparison of two values of the type of
-  `nullptr`. Clang and GCC reject it (question pending).
+  `nullptr`. Clang and GCC reject it ({question}`Q-0103`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

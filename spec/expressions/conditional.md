@@ -40,7 +40,7 @@ The second and third operands give one result type and
   constant, the result is a pointer prvalue with the combined
   cv-qualifiers.
 - If both are `nullptr`, or one is `nullptr` and the other the literal
-  `0`, the result has the type of `nullptr` (question pending).
+  `0`, the result has the type of `nullptr` ({question}`Q-0102`).
 - A pointer to member and `nullptr` give a pointer to member.
 - If one operand has class type and converts to the type of the other,
   the result has the other type. A derived class lvalue and a base class
@@ -160,6 +160,6 @@ All seven compilers agree on 36 of 37 tests. The results are in
 - COND-3: operands of two different enumeration types give `int`. Clang
   and GCC warn that this use is deprecated.
 - COND-3: GCC rejects a conditional with the literal `0` and `nullptr`.
-  Clang and EDG accept it (question pending).
+  Clang and EDG accept it ({question}`Q-0102`).
 
 Inputs: clang-sema-expr, clang-diag-sema.
