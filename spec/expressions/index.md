@@ -7,6 +7,7 @@ value-categories
 conversions
 sequencing
 primary
+decltype
 multiplicative
 additive
 shift
@@ -33,6 +34,7 @@ value-categories
 conversions
 sequencing
 primary
+decltype
 multiplicative
 additive
 shift
