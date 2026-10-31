@@ -26,6 +26,24 @@ Maintenance Group. The rules below are the ones that apply most often.
 | Do not set up a puzzle and then answer it. Say the thing. | `` `decltype(x)` gives the declared type, and `decltype((x))` gives the type of the expression. `` | `` `decltype` answers one of two questions, and the parentheses choose which. `` |
 | Do not end a passage with a line that restates it. | Stop after the last fact. | `So the rule is simple.` |
 
+### Backwards sentences
+
+A *backwards sentence* puts its meaning somewhere other than its plain
+place, for emphasis. It makes the reader hold a gap open until the
+meaning arrives. Technical text never uses one. These are the kinds:
+
+| Kind | What it does | Backwards | Plain |
+|---|---|---|---|
+| Cleft | Front-loads a wh-clause or "it is" | `What makes this fast is the cache.` | `The cache makes this fast.` |
+| Cataphora | Points forward to content not yet given | `` `decltype` answers one of two questions, and the parentheses choose which. `` | `` `decltype(x)` gives the declared type, and `decltype((x))` gives the type of the expression. `` |
+| Hypophora | Asks a question, then answers it | `Why is this undefined? Because the value is unknown.` | `This is undefined because the value is unknown.` |
+| Rhetorical anaphora | Repeats an opening across sentences for rhythm | `It checks the type. It checks the value. It checks the range.` | `It checks the type, the value, and the range.` |
+
+Grammatical back-reference ("it", "this rule", "the operand") is not
+rhetorical anaphora, and stays. The colon that holds back the point,
+"not X but Y", and the buried lede are close relatives, and the table
+above bans them too.
+
 STE limits writers to an approved dictionary. Tidal keeps that rule in a
 relaxed form:
 

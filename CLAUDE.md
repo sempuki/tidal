@@ -17,8 +17,12 @@ has the full rules for specification text. Everywhere else, including
 commit messages and messages to the maintainer:
 
 - Use short, direct sentences. Lead with the point.
-- No cleft sentences: write "The cache makes this fast", not "What makes
-  this fast is the cache".
+- No backwards sentences (`docs/style-guide.md`, section 1): no cleft
+  sentences ("What makes this fast is the cache"), no cataphora that
+  points ahead to a point not yet made ("X answers one of two
+  questions"), no hypophora ("Why? Because..."), and no rhetorical
+  anaphora (the same opening repeated across sentences). Write "The
+  cache makes this fast".
 - No "not X, but Y" framing. State the thing.
 - No colon that holds back the point.
 - No em-dashes for asides. Use a new sentence or parentheses.
