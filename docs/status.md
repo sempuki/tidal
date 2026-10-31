@@ -8,7 +8,7 @@ current state only. The history of how it got here is in `git log`.
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 23 | Q-0112 | 0 flagged |
-| [Fundamental types](../spec/foundations/types.md) | 0 |  | 0 | 0 | 0 | 0 |  | 0 flagged |
+| [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 0 | 4 |  | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 31 | 4 | 2 | 18 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 48 | 6 | 1 | 13 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 23 | Q-0028, Q-0100 | 0 flagged |
@@ -24,7 +24,7 @@ current state only. The history of how it got here is in `git log`.
 | [Primary expressions](../spec/expressions/primary.md) | 25 | 9 required, 8 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | 6 | 4 | 9 | Q-0033, Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 49 | 4 | 3 | 5 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 19 | 7 required, 3 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 38 | 9 | 5 | 17 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
-| [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 40 | 9 | 6 | 7 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
+| [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 41 | 9 | 6 | 7 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
 | [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 25 | 3 | 0 | 4 |  | 0 flagged |
 | [Comparison operators](../spec/expressions/comparison.md) | 25 | 13 required, 6 reject, 2 unspecified, 4 recommended | 67 | 9 | 9 | 10 | Q-0029, Q-0030, Q-0050, Q-0051, Q-0103, Q-0104 | 0 flagged |
 | [Bitwise operators](../spec/expressions/bitwise.md) | 8 | 4 required, 1 reject, 3 recommended | 21 | 2 | 0 | 2 |  | 0 flagged |
@@ -83,12 +83,12 @@ https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. Every page
 opens with its principles (decision 0024), and the Foundations chapter
 holds the models that the other pages cite. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-lists.txt`. The table above comes from
+`reports/similarity/2026-10-31-types.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 3145/3145 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3150/3150 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -120,7 +120,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2552 of 3145 tests, with no false
+- The clean-room front end passes 2557 of 3150 tests, with no false
   rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -153,14 +153,27 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Item E: a page of fundamental types, ranks, and per-target values,
-   with the values in tables (decision 0036).
-2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+1. Repairs from the front-end and designer reports
+   (`reports/clean-room/rust-frontend/report-2.md`,
+   `reports/clean-room/roadmap/designer.md`):
+   - G7: a convention for which rules a test of a failed constant cites,
+     the rule that needs the constant or the rule the evaluation broke.
+   - G8: `reject` rules for the prohibitions left in CE-11, CAST-1,
+     CAST-9, and PFX-7.
+   - D2: PRIM-16 and the literal grammar allow only built-in suffixes,
+     and OPR-8 accepts user-defined ones.
+   - D7, D8: ADD-P4 and MUL-P4 cite SEQ-1 for operand order, and the
+     comparison and bitwise pages have no operand-order rule.
+   - D26: CE-8 and THR-10, and THR-11 and UNW-8, state one rule twice.
+2. Add the designer's view to the roadmap. It ranks cross-page
+   inventories on the Foundations pages first, and disagrees with
+   deferring items G and S.
+3. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
    which builds EDG itself as a 32-bit program.
-3. Item F: a grammar notation, then one grammar in which every
+4. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-4. Item K: the language-support types, then the task-level guides.
+5. Item K: the language-support types, then the task-level guides.
 
 Waiting on the maintainer:
 
