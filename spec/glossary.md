@@ -17,6 +17,11 @@ constant evaluation
   constant evaluation reaches an operation that has undefined behavior.
   {doc}`/foundations/constant-evaluation` gives the rules.
 
+constant initializer
+  An initializer whose whole initialization of the variable is a constant
+  expression. Such a variable's value is known during translation
+  (CE-24).
+
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
   necessary, for example in an `if` condition. The value `e` is converted
@@ -63,6 +68,12 @@ linkage
   all {term}`translation units <translation unit>`. A name with *internal*
   linkage refers to the same entity in one translation unit only. A name
   with no linkage refers only to the entity of its own declaration.
+
+literal type
+  A type whose objects constant evaluation can create and destroy:
+  scalar and reference types, arrays of literal types, closure types,
+  and classes with a `constexpr` or implicit destructor whose parts all
+  have literal types (CE-23).
 
 observable behavior
   The part of an execution that an implementation must reproduce: each

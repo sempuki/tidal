@@ -66,15 +66,15 @@ and asks nothing of the destructor. A variable is either `constinit` or
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp
 
 A `constexpr` variable is `const`. It must be initialized, and the
 initialization must be a constant expression. A variable of class type
 can have no initializer if a `constexpr` default constructor gives every
-member a value. Its type must be a literal type
-*(referenced)*. A `constexpr` reference at namespace scope can bind to a
-temporary, because that temporary has static storage. In a block
-without `static`, it cannot.
+member a value. Its type must be a {term}`literal type` (CE-23). A
+`constexpr` reference at namespace scope can bind to a temporary,
+because that temporary has static storage. In a block without `static`,
+it cannot.
 :::
 
 :::{rule} CX-2
@@ -173,11 +173,11 @@ on `consteval`.
 
 :::{rule} CINIT-1
 :kind: reject
-:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp
+:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp
 
-A `constinit` variable must have a constant initializer. `constinit` does
-not make the variable `const`, so the program can change it. It does not require a `constexpr`
-destructor.
+A `constinit` variable must have a {term}`constant initializer`.
+`constinit` does not make the variable `const`, so the program can
+change it. It does not require a `constexpr` destructor.
 :::
 
 :::{rule} CINIT-2

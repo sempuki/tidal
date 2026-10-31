@@ -6,7 +6,7 @@ compilers affect the Status column.
 
 - `clang-host` (baseline): `clang version 22.1.8 (Fedora 22.1.8-4.fc44)`
 - `gcc-host` (baseline): `g++ (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)`
-- `edg-7.0` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 30 2026 17:22:22)`
+- `edg-7.0` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 31 2026 17:55:32)`
 - `gcc-14` (baseline): `g++-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0`
 - `clang-18` (baseline): `Ubuntu clang version 18.1.3 (1ubuntu1)`
 - `gcc-16` (baseline): `g++ (GCC) 16.2.0`
@@ -2154,7 +2154,12 @@ compilers affect the Status column.
 | `expressions/constant-expressions/call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/const-enum-usable.cpp` | CE-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-usable.cpp` | CE-24 CV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/converted-constant-narrowing.cpp` | CE-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/copy-after-every-part-set.cpp` | CE-22 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/copy-unset-array-element.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `expressions/constant-expressions/copy-unset-member.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `expressions/constant-expressions/deep-recursion.cpp` | CE-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/delete-mismatch.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2165,6 +2170,15 @@ compilers affect the Status column.
 | `expressions/constant-expressions/inactive-union-member.cpp` | CE-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/integral-constant-array-bound.cpp` | CE-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/lambda-call.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-base.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-closure.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-constexpr-destructor.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-destructor.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-not-reached.cpp` | CE-23 CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-union-all-volatile.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-union-volatile-member.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-volatile-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/long-loop.cpp` | CE-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/moderate-recursion.cpp` | CE-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/modify-local-object.cpp` | CE-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2178,10 +2192,13 @@ compilers affect the Status column.
 | `expressions/constant-expressions/read-parameter-outside.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/reinterpret-cast.cpp` | CE-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/relational-unrelated-pointers.cpp` | CE-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-every-part-set.cpp` | CE-21 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-points-to-local.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-points-to-static.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-refers-to-static-temporary.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-refers-to-temporary.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-unset-array-element.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-unset-member.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/static-local-reached.cpp` | CE-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
@@ -2191,6 +2208,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/undefined-behavior-dangling.cpp` | CE-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/undefined-behavior.cpp` | CE-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/unknown-reference-not-read.cpp` | CE-18 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
+| `expressions/constant-expressions/unset-member-not-copied.cpp` | CE-22 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/volatile-read.cpp` | CE-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3081,7 +3099,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3066/3066 tests pass on baseline compilers.
+3084/3084 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -9807,6 +9825,13 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (clang-18): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: read of volatile-qualified type 'const volatile int' is not allowed in a constant expression / error: variable length array declaration not allowed at file scope
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (gcc-16): error: size of array 'arr' is not an integral constant-expression
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (clang-22): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: read of volatile-qualified type 'const volatile int' is not allowed in a constant expression / error: variable length array declaration not allowed at file scope
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (gcc-host): error: ‘constinit’ variable ‘setting’ does not have a constant initializer / error: call to non-‘constexpr’ function ‘int read_setting()’
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "read_setting" (declared at line 6)
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (gcc-14): error: 'constinit' variable 'setting' does not have a constant initializer / error: call to non-'constexpr' function 'int read_setting()'
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (gcc-16): error: 'constinit' variable 'setting' does not have a constant initializer / error: call to non-'constexpr' function 'int read_setting()'
+- `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (clang-host): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘unsigned char’ [-Wnarrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned char": constant value does not fit in destination type
@@ -9814,6 +9839,14 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (clang-18): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (gcc-16): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (clang-22): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `expressions/constant-expressions/copy-unset-array-element.cpp` (clang-host): error: constexpr variable 'size' must be initialized by a constant expression / note: subobject 'data' is not initialized
+- `expressions/constant-expressions/copy-unset-array-element.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `expressions/constant-expressions/copy-unset-array-element.cpp` (clang-18): error: constexpr variable 'size' must be initialized by a constant expression / note: subobject 'data' is not initialized
+- `expressions/constant-expressions/copy-unset-array-element.cpp` (clang-22): error: constexpr variable 'size' must be initialized by a constant expression / note: subobject 'data' is not initialized
+- `expressions/constant-expressions/copy-unset-member.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: subobject 'second' is not initialized
+- `expressions/constant-expressions/copy-unset-member.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `expressions/constant-expressions/copy-unset-member.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: subobject 'second' is not initialized
+- `expressions/constant-expressions/copy-unset-member.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: subobject 'second' is not initialized
 - `expressions/constant-expressions/deep-recursion.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: constexpr evaluation exceeded maximum depth of 512 calls / note: (skipping 502 calls in backtrace; use -fconstexpr-backtrace-limit=0 to see all)
 - `expressions/constant-expressions/deep-recursion.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr’ evaluation depth exceeds maximum of 512 (use ‘-fconstexpr-depth=’ to increase the maximum)
 - `expressions/constant-expressions/deep-recursion.cpp` (edg-7.0): error: expression must have a constant value / note: expression not folded to a constant due to excessive constexpr function call complexity
@@ -9855,6 +9888,41 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/inactive-union-member.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression / error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
 - `expressions/constant-expressions/inactive-union-member.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'U::i' member instead of active 'U::f' member in constant expression
 - `expressions/constant-expressions/inactive-union-member.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
+- `expressions/constant-expressions/literal-base.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const Derived' / note: 'Derived' is not literal because it has base class 'Logged' of non-literal type
+- `expressions/constant-expressions/literal-base.cpp` (gcc-host): error: the type ‘const Derived’ of ‘constexpr’ variable ‘derived’ is not literal / note: ‘Derived’ is not literal because: / note:   base class ‘Logged’ of ‘Derived’ is non-literal / note: ‘Logged’ is not literal because: / note:   ‘Logged’ does not have ‘constexpr’ destructor
+- `expressions/constant-expressions/literal-base.cpp` (edg-7.0): error: initialization is not constant / note: cannot call non-constexpr function "Derived::~Derived" (declared implicitly) / error: a constexpr variable must have a literal type or a reference type
+- `expressions/constant-expressions/literal-base.cpp` (gcc-14): error: the type 'const Derived' of 'constexpr' variable 'derived' is not literal / note: 'Derived' is not literal because: / note:   base class 'Logged' of 'Derived' is non-literal / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-base.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const Derived' / note: 'Derived' is not literal because it has base class 'Logged' of non-literal type
+- `expressions/constant-expressions/literal-base.cpp` (gcc-16): error: the type 'const Derived' of 'constexpr' variable 'derived' is not literal / note: 'Derived' is not literal because: / note:   base class 'Logged' of 'Derived' is non-literal / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-base.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const Derived' / note: 'Derived' is not literal because it has base class 'Logged' of non-literal type
+- `expressions/constant-expressions/literal-destructor.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const Logged' / note: 'Logged' is not literal because its destructor is not constexpr
+- `expressions/constant-expressions/literal-destructor.cpp` (gcc-host): error: the type ‘const Logged’ of ‘constexpr’ variable ‘logged’ is not literal / note: ‘Logged’ is not literal because: / note:   ‘Logged’ does not have ‘constexpr’ destructor
+- `expressions/constant-expressions/literal-destructor.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "Logged::~Logged" (declared at line 8) / error: a constexpr variable must have a literal type or a reference type
+- `expressions/constant-expressions/literal-destructor.cpp` (gcc-14): error: the type 'const Logged' of 'constexpr' variable 'logged' is not literal / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-destructor.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const Logged' / note: 'Logged' is not literal because its destructor is not constexpr
+- `expressions/constant-expressions/literal-destructor.cpp` (gcc-16): error: the type 'const Logged' of 'constexpr' variable 'logged' is not literal / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-destructor.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const Logged' / note: 'Logged' is not literal because its destructor is not constexpr
+- `expressions/constant-expressions/literal-member.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const Holder' / note: 'Holder' is not literal because it has data member 'inner' of non-literal type 'Logged'
+- `expressions/constant-expressions/literal-member.cpp` (gcc-host): error: the type ‘const Holder’ of ‘constexpr’ variable ‘holder’ is not literal / note: ‘Holder’ is not literal because: / note:   non-static data member ‘Holder::inner’ has non-literal type / note: ‘Logged’ is not literal because: / note:   ‘Logged’ does not have ‘constexpr’ destructor
+- `expressions/constant-expressions/literal-member.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "Holder::~Holder" (declared implicitly) / error: a constexpr variable must have a literal type or a reference type
+- `expressions/constant-expressions/literal-member.cpp` (gcc-14): error: the type 'const Holder' of 'constexpr' variable 'holder' is not literal / note: 'Holder' is not literal because: / note:   non-static data member 'Holder::inner' has non-literal type / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-member.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const Holder' / note: 'Holder' is not literal because it has data member 'inner' of non-literal type 'Logged'
+- `expressions/constant-expressions/literal-member.cpp` (gcc-16): error: the type 'const Holder' of 'constexpr' variable 'holder' is not literal / note: 'Holder' is not literal because: / note:   non-static data member 'Holder::inner' has non-literal type / note: 'Logged' is not literal because: / note:   'Logged' does not have 'constexpr' destructor
+- `expressions/constant-expressions/literal-member.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const Holder' / note: 'Holder' is not literal because it has data member 'inner' of non-literal type 'Logged'
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const Register' / note: 'Register' is not literal because it has data member 'hardware' of volatile type 'volatile int'
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (gcc-host): error: the type ‘const Register’ of ‘constexpr’ variable ‘reg’ is not literal / note: ‘Register’ is not literal because: / note:   non-static data member ‘Register::hardware’ has volatile type / note:   non-static data member ‘Register::wide’ has volatile type
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (edg-7.0): error: a constexpr variable must have a literal type or a reference type
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (gcc-14): error: the type 'const Register' of 'constexpr' variable 'reg' is not literal / note: 'Register' is not literal because: / note:   non-static data member 'Register::hardware' has volatile type / note:   non-static data member 'Register::wide' has volatile type
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const Register' / note: 'Register' is not literal because it has data member 'hardware' of volatile type 'volatile int'
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (gcc-16): error: the type 'const Register' of 'constexpr' variable 'reg' is not literal / note: 'Register' is not literal because: / note:   non-static data member 'Register::hardware' has volatile type / note:   non-static data member 'Register::wide' has volatile type
+- `expressions/constant-expressions/literal-union-all-volatile.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const Register' / note: 'Register' is not literal because it has data member 'hardware' of volatile type 'volatile int'
+- `expressions/constant-expressions/literal-volatile-member.cpp` (clang-host): error: constexpr variable cannot have non-literal type 'const Port' / note: 'Port' is not literal because it has data member 'level' of volatile type 'volatile int'
+- `expressions/constant-expressions/literal-volatile-member.cpp` (gcc-host): error: the type ‘const Port’ of ‘constexpr’ variable ‘port’ is not literal / note: ‘Port’ is not literal because: / note:   non-static data member ‘Port::level’ has volatile type
+- `expressions/constant-expressions/literal-volatile-member.cpp` (edg-7.0): error: a constexpr variable must have a literal type or a reference type
+- `expressions/constant-expressions/literal-volatile-member.cpp` (gcc-14): error: the type 'const Port' of 'constexpr' variable 'port' is not literal / note: 'Port' is not literal because: / note:   non-static data member 'Port::level' has volatile type
+- `expressions/constant-expressions/literal-volatile-member.cpp` (clang-18): error: constexpr variable cannot have non-literal type 'const Port' / note: 'Port' is not literal because it has data member 'level' of volatile type 'volatile int'
+- `expressions/constant-expressions/literal-volatile-member.cpp` (gcc-16): error: the type 'const Port' of 'constexpr' variable 'port' is not literal / note: 'Port' is not literal because: / note:   non-static data member 'Port::level' has volatile type
+- `expressions/constant-expressions/literal-volatile-member.cpp` (clang-22): error: constexpr variable cannot have non-literal type 'const Port' / note: 'Port' is not literal because it has data member 'level' of volatile type 'volatile int'
 - `expressions/constant-expressions/long-loop.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: constexpr evaluation hit maximum step limit; possible infinite loop?
 - `expressions/constant-expressions/long-loop.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr’ loop iteration count exceeds limit of 262144 (use ‘-fconstexpr-loop-limit=’ to increase the limit)
 - `expressions/constant-expressions/long-loop.cpp` (edg-7.0): error: expression must have a constant value / note: expression not folded to a constant due to excessive constexpr function call complexity
@@ -9925,6 +9993,20 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (clang-18): error: constexpr variable 't' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (gcc-16): error: '<anonymous>' is not a constant expression
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (clang-22): error: constexpr variable 't' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
+- `expressions/constant-expressions/result-unset-array-element.cpp` (clang-host): error: constexpr variable 'table' must be initialized by a constant expression / note: subobject 'slots' is not initialized
+- `expressions/constant-expressions/result-unset-array-element.cpp` (gcc-host): error: ‘Table{int [2]{1}}’ is not a constant expression / error: ‘((Table*)(& table))->Table::Table()’ is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-array-element.cpp` (edg-7.0): error: initialization is not constant / note: access to uninitialized subobject at index 1
+- `expressions/constant-expressions/result-unset-array-element.cpp` (gcc-14): error: 'Table{int [2]{1}}' is not a constant expression / error: 'Table()' is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-array-element.cpp` (clang-18): error: constexpr variable 'table' must be initialized by a constant expression / note: subobject 'slots' is not initialized
+- `expressions/constant-expressions/result-unset-array-element.cpp` (gcc-16): error: 'Table{int [2]{1}}' is not a constant expression / error: '((Table*)(& table))->Table::Table()' is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-array-element.cpp` (clang-22): error: constexpr variable 'table' must be initialized by a constant expression / note: subobject 'slots' is not initialized
+- `expressions/constant-expressions/result-unset-member.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'second' is not initialized
+- `expressions/constant-expressions/result-unset-member.cpp` (gcc-host): error: ‘constinit’ variable ‘pair’ does not have a constant initializer / error: ‘Pair{1}’ is not a constant expression / error: ‘pair.Pair::Pair()’ is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-member.cpp` (edg-7.0): error: initialization is not constant / note: access to uninitialized subobject (member "Pair::second")
+- `expressions/constant-expressions/result-unset-member.cpp` (gcc-14): error: 'constinit' variable 'pair' does not have a constant initializer / error: 'Pair{1}' is not a constant expression / error: 'Pair()' is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-member.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'second' is not initialized
+- `expressions/constant-expressions/result-unset-member.cpp` (gcc-16): error: 'constinit' variable 'pair' does not have a constant initializer / error: 'Pair{1}' is not a constant expression / error: 'pair.Pair::Pair()' is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-unset-member.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'second' is not initialized
 - `expressions/constant-expressions/static-local-reached.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: control flows through the definition of a static variable
 - `expressions/constant-expressions/static-local-reached.cpp` (gcc-host): error: non-constant condition for static assertion / error: control passes through definition of ‘n’ with static storage duration
 - `expressions/constant-expressions/static-local-reached.cpp` (edg-7.0): error: expression must have a constant value / note: constant-evaluation cannot go through the declaration of a variable with static or thread storage duration
@@ -10242,21 +10324,21 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (gcc-14): error: binding reference of type 'int&' to 'const int' discards qualifiers / error: static assertion failed
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (clang-18): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier / error: static assertion failed due to requirement 'same<int &, const int &>'
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (clang-22): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier / error: static assertion failed due to requirement 'same<int &, const int &>'
-- `expressions/lambdas/capturing-no-function-pointer.cpp` (clang-host): error: no viable conversion from '(lambda at /home/ryanm/Development/tidal/tests/expressions/lambdas/capturing-no-function-pointer.cpp:8:16)' to 'int (*)()'
+- `expressions/lambdas/capturing-no-function-pointer.cpp` (clang-host): error: no viable conversion from '(lambda at /home/ryanm/Code/tidal/tests/expressions/lambdas/capturing-no-function-pointer.cpp:8:16)' to 'int (*)()'
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (gcc-host): error: cannot convert ‘f()::<lambda()>’ to ‘int (*)()’ in initialization
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (edg-7.0): error: no suitable conversion function from "lambda []()->int" to "int (*)()" exists
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (gcc-14): error: cannot convert 'f()::<lambda()>' to 'int (*)()' in initialization
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (clang-18): error: no viable conversion from '(lambda at /tidal/tests/expressions/lambdas/capturing-no-function-pointer.cpp:8:16)' to 'int (*)()'
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (gcc-16): error: cannot convert 'f()::<lambda()>' to 'int (*)()' in initialization
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (clang-22): error: no viable conversion from '(lambda at /tidal/tests/expressions/lambdas/capturing-no-function-pointer.cpp:8:16)' to 'int (*)()'
-- `expressions/lambdas/capturing-not-default-constructible.cpp` (clang-host): error: no matching constructor for initialization of 'decltype(g)' (aka '(lambda at /home/ryanm/Development/tidal/tests/expressions/lambdas/capturing-not-default-constructible.cpp:8:12)') / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
+- `expressions/lambdas/capturing-not-default-constructible.cpp` (clang-host): error: no matching constructor for initialization of 'decltype(g)' (aka '(lambda at /home/ryanm/Code/tidal/tests/expressions/lambdas/capturing-not-default-constructible.cpp:8:12)') / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (gcc-host): error: use of deleted function ‘f()::<lambda()>::<lambda>()’ / note: a lambda closure type has a deleted default constructor / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (edg-7.0): error: the default constructor of "lambda []()->int" cannot be referenced -- it is a deleted function
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (gcc-14): error: use of deleted function 'f()::<lambda()>::<lambda>()' / note: a lambda closure type has a deleted default constructor / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (clang-18): error: no matching constructor for initialization of 'decltype(g)' (aka '(lambda at /tidal/tests/expressions/lambdas/capturing-not-default-constructible.cpp:8:12)') / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (gcc-16): error: use of deleted function 'f()::<lambda()>::<lambda>()' / note: a lambda closure type has a deleted default constructor / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `expressions/lambdas/capturing-not-default-constructible.cpp` (clang-22): error: no matching constructor for initialization of 'decltype(g)' (aka '(lambda at /tidal/tests/expressions/lambdas/capturing-not-default-constructible.cpp:8:12)') / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
-- `expressions/lambdas/closure-copy-assign-deleted.cpp` (clang-host): error: object of type '(lambda at /home/ryanm/Development/tidal/tests/expressions/lambdas/closure-copy-assign-deleted.cpp:7:32)' cannot be assigned because its copy assignment operator is implicitly deleted / note: lambda expression begins here
+- `expressions/lambdas/closure-copy-assign-deleted.cpp` (clang-host): error: object of type '(lambda at /home/ryanm/Code/tidal/tests/expressions/lambdas/closure-copy-assign-deleted.cpp:7:32)' cannot be assigned because its copy assignment operator is implicitly deleted / note: lambda expression begins here
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (gcc-host): error: use of deleted function ‘f()::<lambda()>& f()::<lambda()>::operator=(const f()::<lambda()>&)’ / note: a lambda closure type has a deleted copy assignment operator
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (edg-7.0): error: function "lambda []()->int::operator=(const lambda []()->int &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (gcc-14): error: use of deleted function 'f()::<lambda()>& f()::<lambda()>::operator=(const f()::<lambda()>&)' / note: a lambda closure type has a deleted copy assignment operator

@@ -307,11 +307,11 @@ removes a cv-qualifier.
 
 :::{rule} CV-8
 :kind: required
-:tests: declarations/declarators/const-integral-constant.cpp
+:tests: declarations/declarators/const-integral-constant.cpp expressions/constant-expressions/constant-initializer-usable.cpp
 
-A `const` variable of integer or enumeration type with a constant
-initializer can occur in a constant expression. CV-11 lists what is not
-valid.
+A `const` variable of integer or enumeration type with a
+{term}`constant initializer` can occur in a constant expression. CV-11
+lists what is not valid.
 :::
 
 :::{rule} CV-11

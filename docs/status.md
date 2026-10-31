@@ -8,12 +8,12 @@ current state only. The history of how it got here is in `git log`.
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 20 | Q-0112 | 0 flagged |
-| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 29 | 4 | 0 | 10 |  | 0 flagged |
+| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 31 | 4 | 2 | 10 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 48 | 6 | 1 | 8 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 13 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 7 |  | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 7 | 4 required, 1 undefined, 1 unspecified, 1 recommended | 18 | 1 | 0 | 1 |  | 0 flagged |
-| [Constant expressions](../spec/foundations/constant-evaluation.md) | 20 | 4 required, 15 reject, 1 impl-defined | 47 | 7 | 3 | 18 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 24 | 6 required, 17 reject, 1 impl-defined | 65 | 7 | 5 | 18 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 8 | 6 required, 1 reject, 1 recommended | 15 | 3 | 2 | 2 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 65 | 9 | 0 | 4 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 4 | Q-0097 | 0 flagged |
@@ -41,7 +41,7 @@ current state only. The history of how it got here is in `git log`.
 | [Type aliases and class names](../spec/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 60 | 3 | 3 | 2 | Q-0066, Q-0067, Q-0093 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 54 | 11 | 2 | 0 | Q-0011, Q-0045, Q-0105 | 0 flagged |
 | [The inline specifier](../spec/declarations/inline.md) | 8 | 4 required, 2 reject, 2 no-diagnostic | 34 | 2 | 2 | 0 | Q-0068 | 0 flagged |
-| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 81 | 9 | 2 | 8 | Q-0012, Q-0106 | 0 flagged |
+| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 82 | 8 | 2 | 8 | Q-0012, Q-0106 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 2 | Q-0080 | 0 flagged |
 | [Forms of initialization](../spec/declarations/initialization/forms.md) | 8 | 5 required, 2 reject, 1 undefined | 22 | 4 | 1 | 1 | Q-0013, Q-0039 | 0 flagged |
@@ -58,7 +58,7 @@ current state only. The history of how it got here is in `git log`.
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | 2 | 1 | 0 | Q-0007, Q-0023 | 0 flagged |
 | [Return type deduction](../spec/declarations/functions/return-deduction.md) | 7 | 2 required, 4 reject, 1 undefined | 21 | 1 | 0 | 5 |  | 0 flagged |
 | [Exception specifications](../spec/declarations/exception-specifications.md) | 8 | 3 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 36 | 2 | 6 | 0 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
-| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 12 | 3 required, 9 reject | 55 | 2 | 5 | 6 | Q-0020, Q-0025 | 0 flagged |
+| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 12 | 3 required, 9 reject | 61 | 2 | 5 | 6 | Q-0020, Q-0025 | 0 flagged |
 | [Static assertions](../spec/declarations/static-assert.md) | 8 | 4 required, 4 reject | 28 | 0 | 0 | 2 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 27 | 14 required, 11 reject, 1 impl-defined, 1 no-diagnostic | 84 | 12 | 1 | 10 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 19 | 8 required, 11 reject | 48 | 9 | 1 | 1 | Q-0052 | 0 flagged |
@@ -74,7 +74,7 @@ current state only. The history of how it got here is in `git log`.
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 8 required, 2 reject, 1 recommended | 30 | 4 | 0 | 3 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 2 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 29 | 1 | 0 | 0 |  | 0 flagged |
-| [Glossary](../spec/glossary.md) | 16 terms | | | | | | | 0 flagged |
+| [Glossary](../spec/glossary.md) | 18 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3066/3066 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3084/3084 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -103,7 +103,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and thirteen questions are open for opinions, each with a provisional answer the
+One hundred and fourteen questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -144,9 +144,7 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). The current phase is
 phase 1, repair what exists:
 
-1. Finish constant evaluation: initialized subobjects, "literal type",
-   and an index of `undefined` rules (item D).
-2. The remaining process checks of phase 1: nonterminals defined once,
+1. The remaining process checks of phase 1: nonterminals defined once,
    stale markers, a "compiler defect" question status, and front-end
    conformance as a regression signal.
 

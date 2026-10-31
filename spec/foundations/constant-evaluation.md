@@ -7,7 +7,7 @@ permits most operations. This page lists the operations that it rejects.
 ## Principles
 
 :::{principle} CE-P1
-:rules: CE-1 CE-17 CE-18 CE-20
+:rules: CE-1 CE-17 CE-18 CE-20 CE-23
 
 Constant evaluation is the same program run at translation time
 ({principle}`TR-P4`). Within one evaluation it can do what a run can do:
@@ -16,31 +16,36 @@ made, and allocation. A function is not rejected for containing a
 construct that constant evaluation cannot handle. It is rejected only
 when an evaluation reaches that construct, so a function can serve both
 modes. A reference whose object the evaluation does not know is a
-problem only when the evaluation reads through it.
+problem only when the evaluation reads through it. The objects that an
+evaluation makes need a {term}`literal type`, one whose objects the
+evaluation can build and destroy.
 :::
 
 :::{principle} CE-P2
-:rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16
+:rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16 CE-21 CE-24
 
 An evaluation is closed. It can use only what translation already
 knows: functions declared `constexpr` or `consteval` and defined before
-the evaluation, variables whose values are fixed at translation time,
-and objects that the evaluation itself created. It can change only its
-own objects, because anything else exists at run time. Its result must
-outlive it, so it cannot be a pointer to an automatic or temporary
-object, and storage that the evaluation allocated must be freed before
-the evaluation ends.
+the evaluation, variables whose values are fixed at translation time
+because they have a {term}`constant initializer`, and objects that the
+evaluation itself created. It can change only its own objects, because
+anything else exists at run time. Its result must outlive it, so it
+cannot be a pointer to an automatic or temporary object, and storage
+that the evaluation allocated must be freed before the evaluation ends.
+Its result must also be complete, with a value in every part.
 :::
 
 :::{principle} CE-P3
-:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22
 
 An evaluation must give one answer that every implementation can agree
 on. So it rejects every operation whose result depends on the machine
 or on an order the language does not fix: reinterpreting a pointer,
 reading a volatile object, reading a union member that is not active,
 comparing the addresses of string literals, ordering pointers to
-unrelated objects, and any operation that is undefined. An exception
+unrelated objects, and any operation that is undefined. Copying an
+object reads each of its parts, so a copy of an object with a part that
+has no value is undefined too. An exception
 has no handler at translation time, so a `throw` that the evaluation
 reaches ends it.
 :::
@@ -92,11 +97,11 @@ During constant evaluation, the program can call only `constexpr` and
 :tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp
 
 Constant evaluation must not read the value of a variable that is not
-usable in constant expressions. A variable is usable if it is `constexpr`,
-or if it is a `const` variable of integer or enumeration type with a
-constant initializer (CV-8). A `const volatile` variable is not usable.
-A function parameter is usable only during an evaluation that called the
-function.
+usable in constant expressions. A variable is usable if it is
+`constexpr`, or if it is a `const` variable of integer or enumeration
+type with a {term}`constant initializer` (CV-8). A `const volatile`
+variable is not usable. A function parameter is usable only during an
+evaluation that called the function.
 :::
 
 :::{rule} CE-4
@@ -149,9 +154,9 @@ throw-expression on a path that the evaluation does not take is valid.
 :tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
-behavior. MUL-9, ADD-10, REF-5, INIT-1, CV-5, and OBJ-2 give such
-operations. OBJ-2 includes a read through a pointer to a local variable
-whose block has ended.
+behavior. Each rule of class `undefined` gives such an operation. The
+Evidence segment lists these rules and the compilers that reject each
+one during constant evaluation.
 :::
 
 :::{rule} CE-11
@@ -219,11 +224,12 @@ definition later in the translation unit does not help.
 
 :::{rule} CE-17
 :kind: required
-:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp
+:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp
 
-A `constexpr` function can contain a `goto`, a `static` or `thread_local`
-variable, and a variable of a type that is not a literal type. CE-20
-rejects a call only if the evaluation reaches one of them.
+A `constexpr` function can contain a `goto`, a `static` or
+`thread_local` variable, and a variable of a type that is not a
+{term}`literal type`. CE-20 rejects a call only if the evaluation
+reaches one of them.
 :::
 
 :::{rule} CE-20
@@ -231,8 +237,51 @@ rejects a call only if the evaluation reaches one of them.
 :tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp
 
 Constant evaluation must not reach a `goto`, a `static` or
-`thread_local` variable, or a variable of a type that is not a literal
-type (CE-17).
+`thread_local` variable, or a variable of a type that is not a
+{term}`literal type` (CE-17).
+:::
+
+:::{rule} CE-21
+:kind: reject
+:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp
+
+The value of a constant expression of class or array type must give a
+value to each of its scalar parts, including each element of an array
+member. The result of a {term}`constant initializer` must meet the same
+condition.
+:::
+
+:::{rule} CE-22
+:kind: reject
+:tests: expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp expressions/constant-expressions/unset-member-not-copied.cpp expressions/constant-expressions/copy-after-every-part-set.cpp
+
+A copy or move of an object during constant evaluation reads each of
+its scalar parts (CPY-8). Constant evaluation must not copy or move an
+object that has a scalar part with no value (OBJ-2).
+:::
+
+:::{rule} CE-23
+:kind: required
+:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp
+
+A *literal type* is one of these:
+
+- a scalar type or a reference type,
+- an array of a literal type,
+- the closure type of a lambda whose captures have literal types,
+- a class whose destructor is implicit, defaulted, or `constexpr`, and
+  whose bases and non-static data members have literal types that are
+  not `volatile`. A union can have `volatile` members if at least one
+  member is not `volatile`.
+:::
+
+:::{rule} CE-24
+:kind: required
+:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp
+
+A *constant initializer* is an initializer whose whole initialization of
+the variable, with each conversion and constructor call in it, is a
+constant expression.
 :::
 
 :::{rule} CE-18
@@ -295,7 +344,7 @@ void use() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 43 of 46 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 60 of 65 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000 and
   a loop of 100000000 steps by default. Clang stops at a depth of 512
@@ -311,5 +360,28 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 43 of 46 tes
   ({question}`Q-0078`).
 - CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
   EDG accept it ({question}`Q-0090`).
+- CE-21: every compiler rejects a constant whose value has a scalar part
+  with no value, for `constexpr` and `constinit` alike.
+- CE-22: Clang and EDG reject a copy of an object that has a part with
+  no value, and name the part in a note. GCC 14 and 16 accept the copy
+  ({question}`Q-0115`).
+- CE-23: Clang and GCC reject a `constexpr` variable of a type that is
+  not literal and name the condition that fails. EDG rejects the same
+  programs, reporting the call of a destructor that is not `constexpr`
+  or a type that is not literal. CE-23 lists only conditions that a test
+  can observe.
+
+### Undefined rules
+
+The table lists each rule of class `undefined` and the compilers whose
+constant evaluation rejects it (CE-9). It is generated from the test
+expectations, which the matrix checks. Each test of a rule that expects
+a rejection from some compiler is one case. A compiler "rejects" if it
+rejects every case, "accepts" if it rejects none, and rejects "some
+cases" otherwise. Where the versions of a compiler differ, the entry
+names each version. "no test" means that the rule has no case.
+
+:::{tidal-undefined-index}
+:::
 
 Inputs: clang-sema-expr, clang-diag-sema.
