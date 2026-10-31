@@ -50,32 +50,36 @@ A program cannot take the address of a constructor.
 
 :::{rule} CTOR-2
 :kind: required
-:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/no-implicit-default-with-copy-ctor.cpp classes/constructors/no-implicit-default-with-ctor.cpp
+:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/no-implicit-default-with-copy-ctor.cpp classes/constructors/no-implicit-default-with-ctor.cpp classes/constructors/inherited-ctors-keep-default.cpp
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
-constructor, removes the implicit one. `= default` declares it again.
+constructor, removes the implicit one. `= default` declares it again. A
+using-declaration that inherits constructors does not declare a
+constructor, so the implicit default constructor stays.
 :::
 
 :::{rule} CTOR-3
 :kind: required
-:tests: classes/constructors/deleted-default-base.cpp classes/constructors/deleted-default-const-class-member.cpp classes/constructors/deleted-default-const-member.cpp classes/constructors/deleted-default-const-aggregate-member.cpp classes/constructors/deleted-default-member-no-default.cpp classes/constructors/deleted-default-member-private.cpp classes/constructors/deleted-default-only-if-used.cpp classes/constructors/deleted-default-reference-init.cpp classes/constructors/deleted-default-reference.cpp classes/constructors/explicitly-defaulted-but-deleted.cpp
+:tests: classes/constructors/deleted-default-base.cpp classes/constructors/deleted-default-const-class-member.cpp classes/constructors/deleted-default-const-member.cpp classes/constructors/deleted-default-const-aggregate-member.cpp classes/constructors/deleted-default-member-no-default.cpp classes/constructors/deleted-default-member-private.cpp classes/constructors/deleted-default-only-if-used.cpp classes/constructors/deleted-default-reference-init.cpp classes/constructors/deleted-default-reference.cpp classes/constructors/explicitly-defaulted-but-deleted.cpp classes/constructors/const-member-all-default-inits.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp
 
 The implicit or defaulted default constructor is deleted if one of these
 has no default member initializer:
 
 - a reference member,
-- a `const` member whose class has no user-provided default constructor,
-  or a `const` member of a type that is not a class.
+- a `const` member of a type that is not a class,
+- a `const` member of a class that has no user-provided default
+  constructor and leaves a member without a value.
 
 It is also deleted if a base or member has no default constructor that is
-accessible and not deleted. A deleted default constructor makes only its
+accessible and not deleted, or has a destructor that is deleted or not
+accessible. A deleted default constructor makes only its
 use invalid.
 :::
 
 :::{rule} CTOR-4
 :kind: reject
-:tests: classes/constructors/const-object-defaulted-in-class.cpp classes/constructors/const-object-empty.cpp classes/constructors/const-object-member-init.cpp classes/constructors/const-object-no-init.cpp classes/constructors/const-object-user-ctor.cpp
+:tests: classes/constructors/const-object-defaulted-in-class.cpp classes/constructors/const-object-empty.cpp classes/constructors/const-object-member-init.cpp classes/constructors/const-object-no-init.cpp classes/constructors/const-object-user-ctor.cpp classes/constructors/const-object-base-leaves-member.cpp classes/constructors/const-object-base-initialized.cpp
 
 A `const` object without an initializer must have a class type that
 gives each member a value. One of these must be true:
@@ -84,6 +88,8 @@ gives each member a value. One of these must be true:
 - Each data member has a default member initializer or is itself such a
   class.
 - The class has no data members.
+
+Each base class must meet the same condition.
 
 A default constructor defaulted on its first declaration is not
 user-provided.
@@ -178,7 +184,7 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp
 
 If the destructor of a class is deleted or not accessible, a program must
 not:
@@ -188,7 +194,8 @@ not:
 - create a temporary of the class,
 - apply `delete` to an object of the class.
 
-A `new` expression for the class is valid. The implicit destructor is
+A `new` expression for the class is valid, also for an array (question
+pending). The implicit destructor is
 deleted if a base or member has a destructor that is deleted or not
 accessible.
 :::
@@ -209,6 +216,16 @@ implicit and user-declared destructors.
 A program must call a destructor with `()`. It cannot take the address of
 a destructor. In an explicit destructor call, the name after `~` must
 denote the type of the object. This also applies to a scalar type.
+:::
+
+:::{rule} CTOR-18
+:kind: reject
+:tests: classes/constructors/nested-default-member-init-before-complete.cpp
+
+A default member initializer of a nested class can only be used after the
+enclosing class is complete. A default argument of a constructor of the
+enclosing class must not use it, for example with empty braces (question
+pending).
 :::
 
 ## Dynamic Semantics
@@ -272,11 +289,13 @@ through a type name.
 
 :::{rule} CTOR-12
 :kind: undefined
-:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/init-order-reads-later.cpp
+:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp
 
 If a member is read before it has a value, the behavior is undefined.
 This includes a member that a later `mem_init` initializes, and a member
-that default initialization leaves without a value.
+that default initialization leaves without a value. A call of a member
+function from the `mem_init` of a base, before all bases are initialized,
+is also undefined.
 :::
 
 :::{rule} DTOR-7
@@ -297,6 +316,16 @@ the block after an explicit call ({question}`Q-0054`).
 Constructors must not delegate to each other in a cycle. An
 implementation need not diagnose a cycle that does not delegate directly
 to itself ({question}`Q-0053`).
+:::
+
+:::{rule} CTOR-17
+:kind: no-diagnostic
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp
+
+A constructor must not bind a reference member to a temporary object,
+through a `mem_init` or a default member initializer. The temporary ends
+with the constructor. An implementation need not diagnose it (question
+pending).
 :::
 
 ## Recommended Practice
@@ -334,13 +363,18 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 108 of
-110 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 114 of 120 tests.
 
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).
 - DTOR-7: EDG 7.0 accepts a second destruction during constant evaluation
   ({question}`Q-0054`).
+- DTOR-3: Clang rejects an array `new` of a class with a deleted
+  destructor. GCC and EDG accept it ({question}`Q-0082`).
+- CTOR-18: EDG accepts the nested default member initializer. Clang and
+  GCC reject it ({question}`Q-0083`).
+- CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
+  EDG accepts it ({question}`Q-0084`).
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.

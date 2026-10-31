@@ -26,10 +26,10 @@ own type. A pointer to its own type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/sizeof-in-class-incomplete.cpp classes/members/complete-in-default-argument.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/sizeof-in-class-incomplete.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp
 
 The class is complete inside member function bodies, default arguments,
-and default member initializers. These can use members that are declared
+default member initializers, and the operands of `noexcept` specifiers. These can use members that are declared
 later. At other places inside the definition, the class is not complete.
 :::
 
@@ -59,12 +59,13 @@ object, or take its address with `&S::f`.
 
 :::{rule} CLS-5
 :kind: required
-:tests: classes/members/this-type.cpp classes/members/const-member-modifies.cpp classes/members/non-const-on-const-object.cpp classes/members/mutable-member.cpp
+:tests: classes/members/this-type.cpp classes/members/const-member-modifies.cpp classes/members/non-const-on-const-object.cpp classes/members/mutable-member.cpp classes/members/volatile-object-nonvolatile-call.cpp
 
 In a member function of `S`, `this` has type `S*` with the member
 function's {term}`cv-qualifiers <cv-qualifier>`. A `const` member function
 must not change a data member, unless the member is `mutable`. A program
-must not call a member function that is not `const` on a `const` object.
+must not call a member function that is not `const` on a `const` object,
+or one that is not `volatile` on a `volatile` object.
 :::
 
 :::{rule} CLS-6
@@ -96,13 +97,20 @@ members. Code outside the class names them as `S::name`.
 
 :::{rule} CLS-9
 :kind: reject
-:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp classes/members/member-function-declared-twice.cpp classes/members/mutable-const.cpp classes/members/mutable-reference.cpp classes/members/mutable-static.cpp classes/members/paren-default-member-init.cpp
+:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp classes/members/member-function-declared-twice.cpp classes/members/mutable-const.cpp classes/members/mutable-reference.cpp classes/members/mutable-static.cpp classes/members/paren-default-member-init.cpp classes/members/data-and-function-same-name.cpp classes/members/class-name-nested-class.cpp classes/members/class-name-alias.cpp classes/members/class-name-enumerator.cpp classes/members/class-name-function.cpp classes/members/class-name-anon-union-member.cpp classes/members/static-and-nonstatic-same-params.cpp classes/members/thread-local-nonstatic.cpp classes/members/extern-member.cpp classes/members/register-member.cpp classes/members/unnamed-class-static-member.cpp classes/members/nested-in-unnamed-static-member.cpp
 
 A class must not declare:
 
-- two data members with the same name,
-- the same member function two times,
-- a static data member with the name of the class,
+- two data members with the same name, or a data member and a member
+  function with the same name,
+- the same member function two times, also if only one is `static`,
+- a static data member, nested class, member type alias, member
+  function, or unscoped enumerator with the name of the class, or a
+  member of an anonymous union with that name,
+- a non-static data member that is `thread_local`, `extern`, or
+  `register`,
+- a static data member in a class with no name, or in a class nested in
+  one,
 - a non-static data member with the name of the class, if the class
   declares a constructor,
 - a non-static data member with a {term}`placeholder type`,
@@ -114,13 +122,15 @@ A class must not declare:
 
 :::{rule} CLS-12
 :kind: required
-:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp
+:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp classes/members/local-class-friend-definition.cpp classes/members/local-class-constexpr-double.cpp
 
 A class can be defined in a function. Such a local class must not have a
-static data member or a member template. Its member functions must be
-defined in the class. They must not use an automatic variable of the
-function in an evaluated operand. They can use its static variables, and
-its `const` integer variables with constant initializers.
+static data member, a member template, or the definition of a friend
+function. Its member functions must be defined in the class. They must
+not use an automatic variable of the function in an evaluated operand.
+They can use its static variables. They can also read a variable that is
+usable in constant expressions, such as a `constexpr` variable of any
+literal type, if the read does not need its address.
 :::
 
 :::{rule} CLS-13
@@ -134,10 +144,10 @@ parameter.
 
 :::{rule} CLS-14
 :kind: reject
-:tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp
+:tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp classes/members/explicit-object-virtual.cpp
 
 A member function with an explicit object parameter has no `this`. It
-must not be static, and it must not have a cv-qualifier or a
+must not be static or virtual, and it must not have a cv-qualifier or a
 ref-qualifier.
 :::
 
@@ -149,16 +159,55 @@ ref-qualifier.
 can have any number of parameters *(operator overloading referenced)*.
 :::
 
+:::{rule} CLS-16
+:kind: required
+:tests: classes/members/static-member-own-type.cpp classes/members/thread-local-static-member.cpp
+
+A static data member can have the type of its own class, which is still
+incomplete at the declaration. Its definition comes after the class. A
+static data member can be `thread_local`.
+:::
+
+:::{rule} CLS-17
+:kind: required
+:tests: classes/members/explicit-object-address-ordinary.cpp
+
+The address of a member function with an explicit object parameter is an
+ordinary pointer to function. It is not a pointer to member. A call
+through it passes the object as the first argument.
+:::
+
+:::{rule} CLS-20
+:kind: reject
+:tests: classes/members/static-const-init-not-constant.cpp
+
+The initializer of a `const` static data member of integer or
+enumeration type in its class must be a constant expression.
+:::
+
+:::{rule} CLS-19
+:kind: required
+:tests: classes/members/standard-layout-reinterpret.cpp classes/members/first-member-same-address.cpp
+
+A *standard-layout class* has no virtual functions and no virtual bases,
+gives all its non-static data members the same access, and has
+standard-layout bases and members. An object of such a class and its
+first non-static data member have the same address. A `reinterpret_cast`
+between pointers to them gives a pointer that the program can use.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} CLS-10
 :kind: required
-:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp classes/members/member-order-mixed-access.cpp
+:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp classes/members/member-order-mixed-access.cpp classes/members/first-member-same-address.cpp classes/members/empty-base-shares-address.cpp
 
 Non-static data members of nonzero size have increasing addresses in the
 order of their declarations. Members of an anonymous union are not in
 this order. An object of an empty class has a size greater than zero. Two
-distinct objects have distinct addresses.
+distinct complete objects have distinct addresses. The first data member
+of an object and a base subobject of an empty class can have the address
+of the object.
 :::
 
 ## Implementation Requirements
@@ -168,6 +217,16 @@ distinct objects have distinct addresses.
 :tests: classes/members/empty-class-size-one.cpp
 
 The size of an empty class is implementation-defined.
+:::
+
+:::{rule} CLS-21
+:kind: no-diagnostic
+:tests: classes/members/static-const-odr-use-no-definition.cpp
+
+A `const` static data member with an initializer in its class, and not
+`constexpr` or `inline`, needs a definition outside the class if the
+program uses its address, for example by binding a reference to it. An
+implementation need not diagnose a missing definition before linking.
 :::
 
 ## Examples
@@ -195,8 +254,7 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 38 of
-39 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 83 of 84 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports it.
@@ -205,6 +263,8 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 38 of
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject it only under `-pedantic-errors`.
 - CLS-11: the size is 1 on every compiler in the matrix.
+- CLS-19: the tests check the consequence for a simple standard-layout
+  class. They do not check each condition of the definition.
 
 Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, edg-class-
 decl.

@@ -46,12 +46,14 @@ object of its class.
 
 :::{rule} ACC-3
 :kind: reject
-:tests: classes/access/access-after-overload-resolution.cpp
+:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp
 
 The implementation checks access after overload resolution
 *(referenced)* selects a function. If the selected function is not
 accessible, the call is not valid. An accessible overload that is a worse
-match does not make the call valid.
+match does not make the call valid. Access does not change name lookup,
+so a private member of a derived class hides a public member of a base
+with the same name.
 :::
 
 :::{rule} ACC-11
@@ -84,7 +86,7 @@ A static protected member has no such limit.
 
 :::{rule} ACC-5
 :kind: required
-:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-member-function-only.cpp classes/access/friend-ignores-label.cpp
+:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-member-function-only.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp
 
 A friend declaration gives a function or a class the access of a member.
 A friend can be:
@@ -93,7 +95,10 @@ A friend can be:
 - a member function of another class, and only that function,
 - a class, and all its member functions.
 
-An access label has no effect on a friend declaration.
+A friend class can be named with its class key, or by a type name or type
+alias of a class that is already declared. A friend declaration that
+names a type that is not a class is ignored. An access label has no
+effect on a friend declaration.
 :::
 
 :::{rule} ACC-6
@@ -116,7 +121,7 @@ also declares it.
 
 :::{rule} ACC-8
 :kind: required
-:tests: classes/access/private-base.cpp classes/access/struct-base-default-public.cpp classes/access/protected-base-in-derived.cpp classes/access/private-base-name-in-derived.cpp
+:tests: classes/access/private-base.cpp classes/access/struct-base-default-public.cpp classes/access/protected-base-in-derived.cpp classes/access/private-base-name-in-derived.cpp classes/access/access-best-path.cpp
 
 The access specifier of a base sets the access of the base's public and
 protected members in the derived class:
@@ -129,7 +134,8 @@ protected members in the derived class:
 
 If the base has no access specifier, a `class` makes the base private and
 a `struct` makes the base public. Private members of a base are not
-accessible in the derived class.
+accessible in the derived class. If a member can be reached through
+several paths, the path that gives the most access applies.
 :::
 
 :::{rule} ACC-12
@@ -161,11 +167,39 @@ derived class.
 
 :::{rule} ACC-10
 :kind: required
-:tests: classes/access/nested-accesses-enclosing.cpp classes/access/enclosing-not-access-nested.cpp
+:tests: classes/access/nested-accesses-enclosing.cpp classes/access/enclosing-not-access-nested.cpp classes/access/local-class-member-access.cpp
 
 A nested class is a member of its enclosing class. It has access to the
 private and protected members of the enclosing class. The enclosing class
-has no special access to the members of the nested class.
+has no special access to the members of the nested class. A local class
+in a member function has the access of that member function.
+:::
+
+:::{rule} ACC-14
+:kind: reject
+:tests: classes/access/injected-name-private-base.cpp classes/access/injected-name-qualified.cpp
+
+The name of a class is also a member of the class. In a class derived
+from a class with a private base, the unqualified name of that base
+refers to that member, which is private. A qualified name, such as
+`::A`, names the class through its namespace and is accessible.
+:::
+
+:::{rule} ACC-15
+:kind: reject
+:tests: classes/access/friend-private-member-of-other.cpp
+
+A friend declaration that names a member function of another class needs
+access to that member function.
+:::
+
+:::{rule} ACC-16
+:kind: required
+:tests: classes/access/default-argument-private.cpp
+
+Access for names in a default argument is checked at the declaration of
+the function, not at the call. A caller outside the class can use a
+default argument that names a private member.
 :::
 
 ## Examples
@@ -197,8 +231,7 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of
-38 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 45 of 46 tests.
 
 - ACC-9: EDG 7.0 accepts a use of a member that a using-declaration makes
   private, if the member is public in the base ({question}`Q-0052`).

@@ -43,7 +43,7 @@ constructor, an initializer-list constructor receives an empty list.
 
 :::{rule} ILC-3
 :kind: required
-:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp
+:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp classes/initializer-lists/explicit-best-match-braced.cpp classes/initializer-lists/explicit-not-candidate-equals.cpp
 
 Constructor selection from a braced list has two phases:
 
@@ -54,8 +54,12 @@ Constructor selection from a braced list has two phases:
 
 The first phase wins even if another constructor matches the elements
 better. A list with one object of the same class also uses the first
-phase ({question}`Q-0081`). Copy list initialization must not select an
-`explicit` constructor. Nested braces initialize the elements.
+phase ({question}`Q-0081`). Nested braces initialize the elements.
+
+In copy list initialization, `explicit` constructors are candidates too.
+If the best match is `explicit`, the program is not valid, and a worse
+match is not used. Copy initialization with `=` and one value is
+different, because `explicit` constructors are not candidates there.
 :::
 
 :::{rule} ILC-4
@@ -112,8 +116,7 @@ Point q{1.5, 2};       // rejected: narrowing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
-28 tests. The tests declare a minimal `std::initializer_list`.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 29 of 30 tests. The tests declare a minimal `std::initializer_list`.
 
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that

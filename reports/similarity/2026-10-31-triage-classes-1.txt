@@ -1,0 +1,113 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   access.md:Access control and friends longest=0   overlap=0.10
+ok   access.md:Syntax                 longest=0   overlap=0.00
+ok   ACC-1                            longest=0   overlap=0.00
+ok   ACC-2                            longest=0   overlap=0.05
+ok   ACC-3                            longest=0   overlap=0.02
+ok   ACC-11                           longest=0   overlap=0.00
+ok   ACC-4                            longest=0   overlap=0.09
+ok   ACC-5                            longest=0   overlap=0.07
+ok   ACC-6                            longest=0   overlap=0.08
+ok   ACC-7                            longest=0   overlap=0.12
+ok   ACC-8                            longest=0   overlap=0.04
+ok   ACC-12                           longest=0   overlap=0.00
+ok   ACC-9                            longest=0   overlap=0.00
+ok   ACC-13                           longest=0   overlap=0.00
+ok   ACC-10                           longest=0   overlap=0.17
+ok   ACC-14                           longest=0   overlap=0.06
+ok   ACC-15                           longest=0   overlap=0.00
+ok   ACC-16                           longest=0   overlap=0.03
+ok   access.md:Examples               longest=0   overlap=0.00
+ok   access.md:Evidence               longest=0   overlap=0.00
+ok   constructors.md:Constructors and destructors longest=0   overlap=0.04
+ok   constructors.md:Syntax           longest=0   overlap=0.00
+ok   CTOR-1                           longest=0   overlap=0.07
+ok   CTOR-2                           longest=0   overlap=0.00
+ok   CTOR-3                           longest=0   overlap=0.11
+ok   CTOR-4                           longest=0   overlap=0.10
+ok   CTOR-5                           longest=0   overlap=0.05
+ok   CTOR-15                          longest=0   overlap=0.04
+ok   CTOR-8                           longest=0   overlap=0.00
+ok   CTOR-16                          longest=0   overlap=0.00
+ok   CTOR-9                           longest=0   overlap=0.02
+ok   CTOR-10                          longest=0   overlap=0.05
+ok   DTOR-1                           longest=0   overlap=0.02
+ok   DTOR-2                           longest=0   overlap=0.00
+ok   DTOR-3                           longest=0   overlap=0.11
+ok   DTOR-4                           longest=0   overlap=0.14
+ok   DTOR-8                           longest=0   overlap=0.15
+ok   CTOR-18                          longest=0   overlap=0.09
+ok   CTOR-6                           longest=0   overlap=0.05
+ok   CTOR-7                           longest=0   overlap=0.00
+ok   CTOR-11                          longest=0   overlap=0.00
+ok   DTOR-5                           longest=0   overlap=0.00
+ok   DTOR-6                           longest=0   overlap=0.03
+ok   CTOR-12                          longest=0   overlap=0.02
+ok   DTOR-7                           longest=0   overlap=0.03
+ok   CTOR-14                          longest=0   overlap=0.00
+ok   CTOR-17                          longest=0   overlap=0.00
+ok   CTOR-13                          longest=0   overlap=0.00
+ok   constructors.md:Examples         longest=0   overlap=0.00
+ok   constructors.md:Evidence         longest=0   overlap=0.00
+ok   copy-move.md:Copy and move       longest=0   overlap=0.00
+ok   copy-move.md:Syntax              longest=0   overlap=0.00
+ok   CPY-1                            longest=0   overlap=0.08
+ok   CPY-15                           longest=0   overlap=0.24
+ok   CPY-2                            longest=0   overlap=0.12
+ok   CPY-3                            longest=0   overlap=0.06
+ok   CPY-16                           longest=0   overlap=0.00
+ok   CPY-4                            longest=0   overlap=0.20
+ok   CPY-5                            longest=0   overlap=0.15
+ok   CPY-6                            longest=0   overlap=0.04
+ok   CPY-7                            longest=0   overlap=0.05
+ok   CPY-14                           longest=0   overlap=0.05
+ok   CPY-17                           longest=0   overlap=0.04
+ok   CPY-9                            longest=0   overlap=0.00
+ok   CPY-10                           longest=0   overlap=0.00
+ok   CPY-11                           longest=0   overlap=0.02
+ok   CPY-8                            longest=0   overlap=0.06
+ok   CPY-19                           longest=0   overlap=0.01
+ok   CPY-12                           longest=0   overlap=0.00
+ok   CPY-18                           longest=0   overlap=0.08
+ok   CPY-13                           longest=0   overlap=0.05
+ok   copy-move.md:Examples            longest=0   overlap=0.00
+ok   copy-move.md:Evidence            longest=0   overlap=0.00
+ok   initializer-lists.md:List initialization of classes longest=0   overlap=0.08
+ok   initializer-lists.md:Syntax      longest=0   overlap=0.10
+ok   ILC-1                            longest=0   overlap=0.03
+ok   ILC-2                            longest=0   overlap=0.04
+ok   ILC-3                            longest=0   overlap=0.00
+ok   ILC-4                            longest=0   overlap=0.02
+ok   ILC-6                            longest=0   overlap=0.06
+ok   ILC-5                            longest=0   overlap=0.00
+ok   initializer-lists.md:Examples    longest=0   overlap=0.00
+ok   initializer-lists.md:Evidence    longest=0   overlap=0.00
+ok   members.md:Class definitions and members longest=0   overlap=0.10
+ok   members.md:Syntax                longest=0   overlap=0.00
+ok   CLS-1                            longest=0   overlap=0.03
+ok   CLS-2                            longest=0   overlap=0.00
+ok   CLS-3                            longest=0   overlap=0.06
+ok   CLS-4                            longest=0   overlap=0.07
+ok   CLS-5                            longest=0   overlap=0.02
+ok   CLS-6                            longest=0   overlap=0.00
+ok   CLS-7                            longest=0   overlap=0.00
+ok   CLS-8                            longest=0   overlap=0.00
+ok   CLS-9                            longest=0   overlap=0.12
+FLAG CLS-12                           longest=8   overlap=0.08
+     shared run (Tidal text): a variable that is usable in constant expressions
+ok   CLS-13                           longest=0   overlap=0.05
+ok   CLS-14                           longest=0   overlap=0.15
+ok   CLS-15                           longest=0   overlap=0.00
+ok   CLS-16                           longest=0   overlap=0.07
+ok   CLS-17                           longest=0   overlap=0.19
+ok   CLS-20                           longest=0   overlap=0.00
+FLAG CLS-19                           longest=8   overlap=0.14
+     shared run (Tidal text): class has no virtual functions and no virtual
+ok   CLS-10                           longest=0   overlap=0.08
+ok   CLS-11                           longest=0   overlap=0.00
+ok   CLS-21                           longest=0   overlap=0.00
+ok   members.md:Examples              longest=0   overlap=0.00
+ok   members.md:Evidence              longest=0   overlap=0.02
+
+2 flagged
