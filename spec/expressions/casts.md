@@ -213,7 +213,8 @@ value.
 
 A `static_cast` must do one of the conversions that CAST-1 lists. A
 cast `(T)e` or `T(e)` with one operand must match one of the steps of
-CAST-9.
+CAST-9. CAST-2 names the most common conversions that `static_cast`
+cannot do (decision 0042).
 :::
 
 ## Runtime Behavior

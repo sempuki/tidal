@@ -220,9 +220,14 @@ exception (IF-16). The same condition applies to:
 :kind: reject
 :tests: expressions/constant-expressions/array-bound-floating.cpp expressions/constant-expressions/array-bound-not-constant.cpp expressions/constant-expressions/enumerator-floating.cpp expressions/constant-expressions/case-label-floating.cpp expressions/constant-expressions/case-label-not-constant.cpp
 
-An array bound, an enumerator value, and a case label must be constant
-expressions (CE-11). A value of floating-point type, or a value that is
-not known during translation, is not valid in these places.
+These must be constant expressions (CE-11):
+
+- an array bound, which also follows {rule}`DCL-19`,
+- an enumerator value,
+- a case label, which also follows {rule}`SW-3`.
+
+A value of floating-point type, or a value that is not known during
+translation, is not valid in these places.
 :::
 
 :::{rule} CE-12
