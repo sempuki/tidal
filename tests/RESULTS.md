@@ -1487,6 +1487,16 @@ compilers affect the Status column.
 | `declarations/initialization/references/base-ref-to-derived.cpp` | REF-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/bit-field-const-ref.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/bit-field-nonconst-ref.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-list-array-temporary.cpp` | REF-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/references/braced-list-array-too-many.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-list-binds-directly.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/braced-list-class-temporary.cpp` | REF-14 REF-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/references/braced-list-explicit-constructor.cpp` | REF-11 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` | REF-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-list-scalar-two-values.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` | REF-11 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `declarations/initialization/references/braced-list-unknown-bound-values.cpp` | REF-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/references/braced-list-unknown-bound.cpp` | REF-14 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/references/const-ref-binds-lvalue-directly.cpp` | REF-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1506,6 +1516,7 @@ compilers affect the Status column.
 | `declarations/initialization/references/lvalue-ref-drops-const.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/lvalue-ref-other-type.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/null-dereference-bind-constant.cpp` | REF-5 | reject | reject | reject | accept | skip | reject | accept | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/parenthesized-list-aggregate.cpp` | REF-11 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/initialization/references/reference-member-not-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/reference-multiple-values.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp` | REF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3366,6 +3377,10 @@ compilers affect the Status column.
 | `foundations/odr/enumeration-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/enumeration-differs-across-units.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/function-address-is-use.cpp` | ODR-3 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
+| `foundations/odr/guard-comments-outside.cpp` | INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/guard-define-with-value.cpp` | INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/guard-nested-conditionals.cpp` | INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/guard-text-after-endif.cpp` | ODR-1 INC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/guarded-header-twice.cpp` | INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/header-class-shared.cpp` | ODR-7 INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/header-enumeration-shared.cpp` | ODR-7 INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3385,6 +3400,8 @@ compilers affect the Status column.
 | `foundations/odr/local-object-uses-destructor.cpp` | ODR-4 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `foundations/odr/mutable-member-read-in-lambda.cpp` | ODR-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/new-uses-deallocation-function.cpp` | ODR-5 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/pragma-once-after-comment.cpp` | INC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/pragma-once-after-text.cpp` | INC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/pragma-once-header-twice.cpp` | INC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/prvalue-initializer-no-copy.cpp` | ODR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/static-member-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3395,6 +3412,106 @@ compilers affect the Status column.
 | `foundations/odr/variable-without-initializer-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` | ODR-5 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
 | `foundations/odr/virtual-function-not-called-is-used.cpp` | ODR-6 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
+| `foundations/overload-resolution/address-ambiguous.cpp` | OVL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-exact-type.cpp` | OVL-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-member-kinds.cpp` | OVL-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-more-constrained.cpp` | OVL-19 | accept | accept | accept | reject | skip | reject | reject | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-more-specialized.cpp` | OVL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-no-conversion.cpp` | OVL-20 OVL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-no-target-single.cpp` | OVL-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-no-target-template.cpp` | OVL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-noexcept-target.cpp` | OVL-20 OVL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-of-deleted-chosen.cpp` | DEL-1 OVL-37 OVL-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-plain-over-template.cpp` | OVL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/address-targets.cpp` | OVL-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/best-beats-each.cpp` | OVL-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/best-no-single-winner.cpp` | OVL-36 OVL-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/better-crossing-arguments.cpp` | OVL-36 OVL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/better-one-argument.cpp` | OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-arithmetic.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-assignment.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-bool-increment.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-chosen-other-operand.cpp` | OVL-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-chosen-then-checked.cpp` | OVL-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-enumeration.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-integer-only.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-member-pointer-equality.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-member-pointer-order.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-none-for-address-comma.cpp` | OVL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-other-shape-kept.cpp` | OVL-36 OVL-10 OPR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-pointer.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-removed-by-rewritten.cpp` | OVL-10 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/builtin-same-shape-removed.cpp` | OVL-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-three-way.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/call-by-name-candidates.cpp` | OVL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/call-through-address-nonstatic.cpp` | OVL-3 OVL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/call-through-address-static-member.cpp` | OVL-21 | accept | accept | reject | reject | skip | reject | reject | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/call-through-address.cpp` | OVL-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/chosen-deleted.cpp` | DEL-1 OVL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/chosen-not-accessible.cpp` | ACC-3 OVL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/current-object-argument.cpp` | OVL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` | OVL-35 OVL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/current-object-explicit-parameter.cpp` | OVL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/default-from-two-scopes-passed.cpp` | OVL-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/default-from-two-scopes-same.cpp` | OVL-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/default-from-two-scopes.cpp` | OVL-38 | reject | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/defaults-take-no-part.cpp` | OVL-36 OVL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/enum-operand-no-parameter.cpp` | OPR-15 OVL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/enum-operand-parameter.cpp` | OVL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/explicit-condition-after-deduction.cpp` | OVL-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/inherited-copy-shape-excluded.cpp` | OVL-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/init-constructor-against-conversion.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/init-constructor-conversion-tie.cpp` | OVL-36 OVL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/init-conversion-to-derived.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/init-copy-explicit-conversion.cpp` | OVL-14 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` | OVL-14 OVL-35 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/init-direct-explicit-conversion.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/init-qualified-result.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/member-call-object.cpp` | OVL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` | OVL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/no-object-static-chosen.cpp` | OVL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` | OVL-36 OVL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/no-viable-function.cpp` | OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/object-call-candidates.cpp` | OVL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/operator-call-by-name-hidden.cpp` | OVL-7 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/operator-lookup-skips-members.cpp` | OVL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/operator-sets.cpp` | OVL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` | OVL-36 OVL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/overload-set-argument.cpp` | OVL-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/reference-conversion-kind.cpp` | OVL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/rewritten-not-equal-result.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/rewritten-swapped-member-object.cpp` | OVL-13 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/rewritten-three-way-result.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/static-slot-no-part.cpp` | OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/surrogate-explicit-not-candidate.cpp` | OVL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/surrogate-forms.cpp` | OVL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/surrogate-from-base.cpp` | OVL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/surrogate-qualifiers.cpp` | OVL-6 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/surrogate-same-parameters.cpp` | OVL-36 OVL-6 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/overload-resolution/template-exact-over-plain.cpp` | OVL-27 OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-constraints-different-parameters.cpp` | OVL-36 OVL-28 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/tie-conversion-result-before-constraints.cpp` | OVL-26 OVL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-conversion-result-before-template.cpp` | OVL-26 OVL-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-conversion-result.cpp` | OVL-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-derived-over-inherited.cpp` | OVL-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-function-reference-kind.cpp` | OVL-29 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/overload-resolution/tie-more-constrained.cpp` | OVL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-more-specialized-constraints.cpp` | OVL-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-more-specialized.cpp` | OVL-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-plain-over-template.cpp` | OVL-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-reference-kind-before-constraints.cpp` | OVL-29 OVL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-swapped-same-function.cpp` | OVL-36 OVL-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/tie-template-before-inherited.cpp` | OVL-27 OVL-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-template-before-reference-kind.cpp` | OVL-27 OVL-29 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/tie-template-before-rewritten.cpp` | OVL-27 OVL-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-template-before-swapped.cpp` | OVL-27 OVL-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-written-order.cpp` | OVL-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-written-over-rewritten.cpp` | OVL-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/viable-constraints.cpp` | OVL-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/viable-count.cpp` | OVL-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/viable-sequence.cpp` | OVL-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3677,7 +3794,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 
-3659/3659 tests pass on baseline compilers.
+3776/3776 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -10063,6 +10180,47 @@ check that the rejection has the intended cause.
 - `declarations/initialization/references/bit-field-nonconst-ref.cpp` (gcc-16-o2): error: cannot bind bit-field 'b.B::v' to 'int&'
 - `declarations/initialization/references/bit-field-nonconst-ref.cpp` (clang-22): error: non-const reference cannot bind to bit-field 'v'
 - `declarations/initialization/references/bit-field-nonconst-ref.cpp` (clang-22-o2): error: non-const reference cannot bind to bit-field 'v'
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (clang-host): error: excess elements in array initializer / note: in initialization of temporary of type 'const int[2]' created to list-initialize this reference
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (gcc-host): error: invalid initialization of reference of type ‘const int (&)[2]’ from expression of type ‘<brace-enclosed initializer list>’
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (gcc-14): error: invalid initialization of reference of type 'const int (&)[2]' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (clang-18): error: excess elements in array initializer / note: in initialization of temporary of type 'const int[2]' created to list-initialize this reference
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (gcc-16): error: invalid initialization of reference of type 'const int (&)[2]' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (gcc-16-o2): error: invalid initialization of reference of type 'const int (&)[2]' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (clang-22): error: excess elements in array initializer / note: in initialization of temporary of type 'const int[2]' created to list-initialize this reference
+- `declarations/initialization/references/braced-list-array-too-many.cpp` (clang-22-o2): error: excess elements in array initializer / note: in initialization of temporary of type 'const int[2]' created to list-initialize this reference
+- `declarations/initialization/references/braced-list-explicit-constructor.cpp` (gcc-host): error: converting to ‘const Meters’ from initializer list would use explicit constructor ‘Meters::Meters(int)’
+- `declarations/initialization/references/braced-list-explicit-constructor.cpp` (edg-7.0): error: copy-list-initialization cannot use a constructor marked "explicit"
+- `declarations/initialization/references/braced-list-explicit-constructor.cpp` (gcc-14): error: converting to 'const Meters' from initializer list would use explicit constructor 'Meters::Meters(int)'
+- `declarations/initialization/references/braced-list-explicit-constructor.cpp` (gcc-16): error: converting to 'const Meters' from initializer list would use explicit constructor 'Meters::Meters(int)'
+- `declarations/initialization/references/braced-list-explicit-constructor.cpp` (gcc-16-o2): error: converting to 'const Meters' from initializer list would use explicit constructor 'Meters::Meters(int)'
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (clang-host): error: non-const lvalue reference to type 'Point' cannot bind to an initializer list temporary
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘Point&’ to an rvalue of type ‘Point’
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (edg-7.0): error: initial value of reference to non-const must be an lvalue
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'Point&' to an rvalue of type 'Point'
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (clang-18): error: non-const lvalue reference to type 'Point' cannot bind to an initializer list temporary
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'Point&' to an rvalue of type 'Point'
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (gcc-16-o2): error: cannot bind non-const lvalue reference of type 'Point&' to an rvalue of type 'Point'
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (clang-22): error: non-const lvalue reference to type 'Point' cannot bind to an initializer list temporary
+- `declarations/initialization/references/braced-list-nonconst-lvalue.cpp` (clang-22-o2): error: non-const lvalue reference to type 'Point' cannot bind to an initializer list temporary
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (clang-host): error: excess elements in scalar initializer
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (gcc-host): error: invalid initialization of reference of type ‘const int&’ from expression of type ‘<brace-enclosed initializer list>’
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (edg-7.0): error: too many initializer values
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (gcc-14): error: invalid initialization of reference of type 'const int&' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (clang-18): error: excess elements in scalar initializer
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (gcc-16): error: invalid initialization of reference of type 'const int&' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (gcc-16-o2): error: invalid initialization of reference of type 'const int&' from expression of type '<brace-enclosed initializer list>'
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (clang-22): error: excess elements in scalar initializer
+- `declarations/initialization/references/braced-list-scalar-two-values.cpp` (clang-22-o2): error: excess elements in scalar initializer
+- `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` (clang-host): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` (edg-7.0): error: an empty initializer is invalid for an array with unspecified bound
+- `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` (clang-18): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` (clang-22): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/initialization/references/braced-list-unknown-bound-empty.cpp` (clang-22-o2): error: zero size arrays are an extension [-Werror,-Wzero-length-array]
+- `declarations/initialization/references/braced-list-unknown-bound.cpp` (clang-host): error: static assertion failed due to requirement 'same<int (&&)[3], int (&&)[]>'
+- `declarations/initialization/references/braced-list-unknown-bound.cpp` (clang-18): error: static assertion failed due to requirement 'same<int (&&)[3], int (&&)[]>'
+- `declarations/initialization/references/braced-list-unknown-bound.cpp` (clang-22): error: static assertion failed due to requirement 'same<int (&&)[3], int (&&)[]>'
+- `declarations/initialization/references/braced-list-unknown-bound.cpp` (clang-22-o2): error: static assertion failed due to requirement 'same<int (&&)[3], int (&&)[]>'
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘2.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
@@ -10125,6 +10283,11 @@ check that the rejection has the intended cause.
 - `declarations/initialization/references/null-dereference-bind-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: dereferencing a null pointer
 - `declarations/initialization/references/null-dereference-bind-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: dereferencing a null pointer is not allowed in a constant expression
 - `declarations/initialization/references/null-dereference-bind-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: dereferencing a null pointer is not allowed in a constant expression
+- `declarations/initialization/references/parenthesized-list-aggregate.cpp` (clang-host): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/parenthesized-list-aggregate.cpp` (edg-7.0): error: too many initializer values / error: no suitable constructor exists to convert from "int" to "Point"
+- `declarations/initialization/references/parenthesized-list-aggregate.cpp` (clang-18): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/parenthesized-list-aggregate.cpp` (clang-22): error: reference cannot be initialized with multiple values
+- `declarations/initialization/references/parenthesized-list-aggregate.cpp` (clang-22-o2): error: reference cannot be initialized with multiple values
 - `declarations/initialization/references/reference-multiple-values.cpp` (clang-host): error: reference cannot be initialized with multiple values
 - `declarations/initialization/references/reference-multiple-values.cpp` (gcc-host): error: expression list treated as compound expression in initializer [-fpermissive]
 - `declarations/initialization/references/reference-multiple-values.cpp` (edg-7.0): error: too many initializer values
@@ -17302,6 +17465,15 @@ check that the rejection has the intended cause.
 - `foundations/odr/function-address-is-use.cpp` (clang-18): link: undefined reference to `declared_only()'
 - `foundations/odr/function-address-is-use.cpp` (gcc-16): link: undefined reference to `declared_only()'
 - `foundations/odr/function-address-is-use.cpp` (clang-22): link: undefined reference to `declared_only()'
+- `foundations/odr/guard-text-after-endif.cpp` (clang-host): error: redefinition of 'Outside' / note: '/home/ryanm/Code/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: '/home/ryanm/Code/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/guard-text-after-endif.cpp` (gcc-host): error: redefinition of ‘struct Outside’ / note: previous definition of ‘struct Outside’
+- `foundations/odr/guard-text-after-endif.cpp` (edg-7.0): error: class "Outside" has already been defined (previous definition at line 5)
+- `foundations/odr/guard-text-after-endif.cpp` (gcc-14): error: redefinition of 'struct Outside' / note: previous definition of 'struct Outside'
+- `foundations/odr/guard-text-after-endif.cpp` (clang-18): error: redefinition of 'Outside' / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/guard-text-after-endif.cpp` (gcc-16): error: redefinition of 'struct Outside' / note: previous definition of 'struct Outside'
+- `foundations/odr/guard-text-after-endif.cpp` (gcc-16-o2): error: redefinition of 'struct Outside' / note: previous definition of 'struct Outside'
+- `foundations/odr/guard-text-after-endif.cpp` (clang-22): error: redefinition of 'Outside' / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/guard-text-after-endif.cpp` (clang-22-o2): error: redefinition of 'Outside' / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/guard-text-after.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
 - `foundations/odr/header-function-in-two-units.cpp` (clang-host): link: multiple definition of `twice(int)';
 - `foundations/odr/header-function-in-two-units.cpp` (gcc-host): link: multiple definition of `twice(int)';
 - `foundations/odr/header-function-in-two-units.cpp` (gcc-14): link: multiple definition of `twice(int)';
@@ -17428,6 +17600,313 @@ check that the rejection has the intended cause.
 - `foundations/odr/virtual-function-not-called-is-used.cpp` (clang-18): link: undefined reference to `vtable
 - `foundations/odr/virtual-function-not-called-is-used.cpp` (gcc-16): link: undefined reference to `vtable
 - `foundations/odr/virtual-function-not-called-is-used.cpp` (clang-22): link: undefined reference to `vtable
+- `foundations/overload-resolution/address-ambiguous.cpp` (clang-host): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-ambiguous.cpp` (gcc-host): error: unable to deduce ‘auto’ from ‘& pick’ / note:   couldn’t deduce template parameter ‘auto’
+- `foundations/overload-resolution/address-ambiguous.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `foundations/overload-resolution/address-ambiguous.cpp` (gcc-14): error: unable to deduce 'auto' from '& pick' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-ambiguous.cpp` (clang-18): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-ambiguous.cpp` (gcc-16): error: unable to deduce 'auto' from '& pick' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-ambiguous.cpp` (gcc-16-o2): error: unable to deduce 'auto' from '& pick' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-ambiguous.cpp` (clang-22): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-ambiguous.cpp` (clang-22-o2): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-more-constrained.cpp` (edg-7.0): error: more than one instance of overloaded function "Box<T>::pick [with T=int]" matches the required type
+- `foundations/overload-resolution/address-more-constrained.cpp` (gcc-14): error: converting overloaded function 'pick' to type 'int (* const)()' is ambiguous / note: candidates are: 'static constexpr int Box<T>::pick() requires  Small<T> [with T = int]' / note:                 'static constexpr int Box<T>::pick() requires  SmallWhole<T> [with T = int]' / error: non-constant condition for static assertion
+- `foundations/overload-resolution/address-more-constrained.cpp` (clang-18): error: address of overloaded function 'pick' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/address-no-conversion.cpp` (clang-host): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
+- `foundations/overload-resolution/address-no-conversion.cpp` (gcc-host): error: no matches converting function ‘pick’ to type ‘void (*)(struct Derived*)’
+- `foundations/overload-resolution/address-no-conversion.cpp` (edg-7.0): error: no instance of overloaded function "pick" matches the required type
+- `foundations/overload-resolution/address-no-conversion.cpp` (gcc-14): error: no matches converting function 'pick' to type 'void (*)(struct Derived*)' / note: candidates are: 'void pick(int)' / note:                 'void pick(Base*)'
+- `foundations/overload-resolution/address-no-conversion.cpp` (clang-18): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
+- `foundations/overload-resolution/address-no-conversion.cpp` (gcc-16): error: no matches converting function 'pick' to type 'void (*)(struct Derived*)'
+- `foundations/overload-resolution/address-no-conversion.cpp` (gcc-16-o2): error: no matches converting function 'pick' to type 'void (*)(struct Derived*)'
+- `foundations/overload-resolution/address-no-conversion.cpp` (clang-22): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
+- `foundations/overload-resolution/address-no-conversion.cpp` (clang-22-o2): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
+- `foundations/overload-resolution/address-no-target-template.cpp` (clang-host): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
+- `foundations/overload-resolution/address-no-target-template.cpp` (gcc-host): error: ‘decltype’ cannot resolve address of overloaded function
+- `foundations/overload-resolution/address-no-target-template.cpp` (edg-7.0): error: cannot determine which instance of overloaded function "pick" is intended
+- `foundations/overload-resolution/address-no-target-template.cpp` (gcc-14): error: 'decltype' cannot resolve address of overloaded function
+- `foundations/overload-resolution/address-no-target-template.cpp` (clang-18): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
+- `foundations/overload-resolution/address-no-target-template.cpp` (gcc-16): error: 'decltype' cannot resolve address of overloaded function
+- `foundations/overload-resolution/address-no-target-template.cpp` (gcc-16-o2): error: 'decltype' cannot resolve address of overloaded function
+- `foundations/overload-resolution/address-no-target-template.cpp` (clang-22): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
+- `foundations/overload-resolution/address-no-target-template.cpp` (clang-22-o2): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
+- `foundations/overload-resolution/address-noexcept-target.cpp` (clang-host): error: address of overloaded function 'pick' does not match required type 'void (int) noexcept' / note: candidate function has type mismatch at 1st parameter (expected 'int' but has 'long') / note: candidate function has different exception specification
+- `foundations/overload-resolution/address-noexcept-target.cpp` (gcc-host): error: no matches converting function ‘pick’ to type ‘void (*)(int) noexcept’
+- `foundations/overload-resolution/address-noexcept-target.cpp` (edg-7.0): error: no instance of overloaded function "pick" matches the required type
+- `foundations/overload-resolution/address-noexcept-target.cpp` (gcc-14): error: no matches converting function 'pick' to type 'void (*)(int) noexcept' / note: candidates are: 'void pick(long int)' / note:                 'void pick(int)'
+- `foundations/overload-resolution/address-noexcept-target.cpp` (clang-18): error: address of overloaded function 'pick' does not match required type 'void (int) noexcept' / note: candidate function has type mismatch at 1st parameter (expected 'int' but has 'long') / note: candidate function has different exception specification
+- `foundations/overload-resolution/address-noexcept-target.cpp` (gcc-16): error: no matches converting function 'pick' to type 'void (*)(int) noexcept'
+- `foundations/overload-resolution/address-noexcept-target.cpp` (gcc-16-o2): error: no matches converting function 'pick' to type 'void (*)(int) noexcept'
+- `foundations/overload-resolution/address-noexcept-target.cpp` (clang-22): error: address of overloaded function 'pick' does not match required type 'void (int) noexcept' / note: candidate function has type mismatch at 1st parameter (expected 'int' but has 'long') / note: candidate function has different exception specification
+- `foundations/overload-resolution/address-noexcept-target.cpp` (clang-22-o2): error: address of overloaded function 'pick' does not match required type 'void (int) noexcept' / note: candidate function has type mismatch at 1st parameter (expected 'int' but has 'long') / note: candidate function has different exception specification
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (clang-host): error: overload resolution selected deleted operator '&' / note: candidate function has been explicitly deleted
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (gcc-host): error: use of deleted function ‘void Item::operator&() const’
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (edg-7.0): error: function "Item::operator&() const" (declared at line 7) cannot be referenced -- it is a deleted function / error: cannot deduce "auto" type
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (gcc-14): error: use of deleted function 'void Item::operator&() const'
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (clang-18): error: overload resolution selected deleted operator '&' / note: candidate function has been explicitly deleted
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (gcc-16): error: use of deleted function 'void Item::operator&() const'
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (gcc-16-o2): error: use of deleted function 'void Item::operator&() const'
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (clang-22): error: overload resolution selected deleted operator '&' / note: candidate function has been explicitly deleted
+- `foundations/overload-resolution/address-of-deleted-chosen.cpp` (clang-22-o2): error: overload resolution selected deleted operator '&' / note: candidate function has been explicitly deleted
+- `foundations/overload-resolution/best-no-single-winner.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/best-no-single-winner.cpp` (gcc-host): error: call of overloaded ‘f(int, int)’ is ambiguous
+- `foundations/overload-resolution/best-no-single-winner.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `foundations/overload-resolution/best-no-single-winner.cpp` (gcc-14): error: call of overloaded 'f(int, int)' is ambiguous / note: candidate: 'void f(int, long int)' / note: candidate: 'void f(long int, long int)' / note: candidate: 'void f(long int, int)'
+- `foundations/overload-resolution/best-no-single-winner.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/best-no-single-winner.cpp` (gcc-16): error: call of overloaded 'f(int, int)' is ambiguous
+- `foundations/overload-resolution/best-no-single-winner.cpp` (gcc-16-o2): error: call of overloaded 'f(int, int)' is ambiguous
+- `foundations/overload-resolution/best-no-single-winner.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/best-no-single-winner.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (gcc-host): error: call of overloaded ‘f(int, int)’ is ambiguous
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (gcc-14): error: call of overloaded 'f(int, int)' is ambiguous / note: candidate: 'void f(int, long int)' / note: candidate: 'void f(long int, int)'
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (gcc-16): error: call of overloaded 'f(int, int)' is ambiguous
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (gcc-16-o2): error: call of overloaded 'f(int, int)' is ambiguous
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/better-crossing-arguments.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (clang-host): error: cannot increment value of type 'ToBoolRef'
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (gcc-host): error: no match for ‘operator++’ (operand type is ‘ToBoolRef’)
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (edg-7.0): error: no operator "++" matches these operands / note: built-in operator++(<non-bool arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator++(<pointer to object>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (gcc-14): error: no match for 'operator++' (operand type is 'ToBoolRef')
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (clang-18): error: cannot increment value of type 'ToBoolRef'
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (gcc-16): error: no match for 'operator++' (operand type is 'ToBoolRef')
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (gcc-16-o2): error: no match for 'operator++' (operand type is 'ToBoolRef')
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (clang-22): error: cannot increment value of type 'ToBoolRef'
+- `foundations/overload-resolution/builtin-bool-increment.cpp` (clang-22-o2): error: cannot increment value of type 'ToBoolRef'
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (clang-host): error: invalid operands to binary expression ('int *' and 'ToDouble') / note: second operand was implicitly converted to type 'double'
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘int*’ and ‘ToDouble’)
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'int*' and 'ToDouble')
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (clang-18): error: invalid operands to binary expression ('int *' and 'ToDouble') / note: second operand was implicitly converted to type 'double'
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'int*' and 'ToDouble')
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (gcc-16-o2): error: no match for 'operator+' (operand types are 'int*' and 'ToDouble')
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (clang-22): error: invalid operands to binary expression ('int *' and 'ToDouble') / note: second operand was implicitly converted to type 'double'
+- `foundations/overload-resolution/builtin-chosen-other-operand.cpp` (clang-22-o2): error: invalid operands to binary expression ('int *' and 'ToDouble') / note: second operand was implicitly converted to type 'double'
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (clang-host): error: invalid operands to binary expression ('Holder' and 'double') / note: first operand was implicitly converted to type 'int *'
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘Holder’ and ‘double’)
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #2 does not match parameter / note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'Holder' and 'double')
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (clang-18): error: invalid operands to binary expression ('Holder' and 'double') / note: first operand was implicitly converted to type 'int *'
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'Holder' and 'double')
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (gcc-16-o2): error: no match for 'operator+' (operand types are 'Holder' and 'double')
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (clang-22): error: invalid operands to binary expression ('Holder' and 'double') / note: first operand was implicitly converted to type 'int *'
+- `foundations/overload-resolution/builtin-chosen-then-checked.cpp` (clang-22-o2): error: invalid operands to binary expression ('Holder' and 'double') / note: first operand was implicitly converted to type 'int *'
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (clang-host): error: invalid operands to binary expression ('ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘ToMode’ and ‘ToMode’)
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter / note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (clang-18): error: invalid operands to binary expression ('ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (gcc-16-o2): error: no match for 'operator+' (operand types are 'ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (clang-22): error: invalid operands to binary expression ('ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp` (clang-22-o2): error: invalid operands to binary expression ('ToMode' and 'ToMode')
+- `foundations/overload-resolution/builtin-integer-only.cpp` (clang-host): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
+- `foundations/overload-resolution/builtin-integer-only.cpp` (gcc-host): error: no match for ‘operator%’ (operand types are ‘ToDouble’ and ‘int’)
+- `foundations/overload-resolution/builtin-integer-only.cpp` (edg-7.0): error: no operator "%" matches these operands / note: built-in operator%(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-integer-only.cpp` (gcc-14): error: no match for 'operator%' (operand types are 'ToDouble' and 'int')
+- `foundations/overload-resolution/builtin-integer-only.cpp` (clang-18): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
+- `foundations/overload-resolution/builtin-integer-only.cpp` (gcc-16): error: no match for 'operator%' (operand types are 'ToDouble' and 'int')
+- `foundations/overload-resolution/builtin-integer-only.cpp` (gcc-16-o2): error: no match for 'operator%' (operand types are 'ToDouble' and 'int')
+- `foundations/overload-resolution/builtin-integer-only.cpp` (clang-22): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
+- `foundations/overload-resolution/builtin-integer-only.cpp` (clang-22-o2): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (clang-host): error: invalid operands to binary expression ('ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (gcc-host): error: no match for ‘operator<’ (operand types are ‘ToMember’ and ‘ToMember’)
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (edg-7.0): error: no operator "<" matches these operands / note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter / note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (gcc-14): error: no match for 'operator<' (operand types are 'ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (clang-18): error: invalid operands to binary expression ('ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (gcc-16): error: no match for 'operator<' (operand types are 'ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (gcc-16-o2): error: no match for 'operator<' (operand types are 'ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (clang-22): error: invalid operands to binary expression ('ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-member-pointer-order.cpp` (clang-22-o2): error: invalid operands to binary expression ('ToMember' and 'ToMember')
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (clang-host): error: use of overloaded operator '==' is ambiguous (with operand types 'Color' and 'Color') / note: candidate function / note: built-in candidate operator==(enum Color, enum Color)
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (gcc-host): error: ambiguous overload for ‘operator==’ (operand types are ‘Color’ and ‘Color’)
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (edg-7.0): error: more than one operator "==" matches these operands: / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (gcc-14): error: ambiguous overload for 'operator==' (operand types are 'Color' and 'Color') / note: candidate: 'operator==(Color, Color)' (built-in) / note: candidate: 'operator==(int, int)' (built-in) / note: candidate: 'bool operator==(const Color&, const Color&)'
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (clang-18): error: use of overloaded operator '==' is ambiguous (with operand types 'Color' and 'Color') / note: candidate function / note: built-in candidate operator==(enum Color, enum Color)
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (gcc-16): error: ambiguous overload for 'operator==' (operand types are 'Color' and 'Color')
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (gcc-16-o2): error: ambiguous overload for 'operator==' (operand types are 'Color' and 'Color')
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (clang-22): error: use of overloaded operator '==' is ambiguous (with operand types 'Color' and 'Color') / note: candidate function / note: built-in candidate operator==(enum Color, enum Color)
+- `foundations/overload-resolution/builtin-other-shape-kept.cpp` (clang-22-o2): error: use of overloaded operator '==' is ambiguous (with operand types 'Color' and 'Color') / note: candidate function / note: built-in candidate operator==(enum Color, enum Color)
+- `foundations/overload-resolution/builtin-removed-by-rewritten.cpp` (gcc-host): error: static assertion failed
+- `foundations/overload-resolution/builtin-removed-by-rewritten.cpp` (gcc-14): error: static assertion failed
+- `foundations/overload-resolution/builtin-removed-by-rewritten.cpp` (gcc-16): error: static assertion failed
+- `foundations/overload-resolution/builtin-removed-by-rewritten.cpp` (gcc-16-o2): error: static assertion failed
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (clang-host): error: no matching function for call to 'reset' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (gcc-host): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (edg-7.0): error: no instance of overloaded function "Item::reset" matches the argument list / note: number of parameters of function "Item::reset(int)" does not match the call
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (gcc-14): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (clang-18): error: reference to overloaded function could not be resolved; did you mean to call it?
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (gcc-16): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (gcc-16-o2): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (clang-22): error: no matching function for call to 'reset' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `foundations/overload-resolution/call-through-address-nonstatic.cpp` (clang-22-o2): error: no matching function for call to 'reset' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-host): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (edg-7.0): "/tidal/tests/foundations/overload-resolution/call-through-address-static-membe r.cpp", line 13: internal error: assertion failed at: "overload.c", line 4005 in determine_selector_match_level void use
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-14): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (clang-18): error: reference to overloaded function could not be resolved; did you mean to call it?
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-16): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-16-o2): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/chosen-deleted.cpp` (clang-host): error: call to deleted function 'put' / note: candidate function has been explicitly deleted / note: candidate function
+- `foundations/overload-resolution/chosen-deleted.cpp` (gcc-host): error: use of deleted function ‘void put(int)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `foundations/overload-resolution/chosen-deleted.cpp` (edg-7.0): error: function "put(int)" (declared at line 7) cannot be referenced -- it is a deleted function
+- `foundations/overload-resolution/chosen-deleted.cpp` (gcc-14): error: use of deleted function 'void put(int)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `foundations/overload-resolution/chosen-deleted.cpp` (clang-18): error: call to deleted function 'put' / note: candidate function has been explicitly deleted / note: candidate function
+- `foundations/overload-resolution/chosen-deleted.cpp` (gcc-16): error: use of deleted function 'void put(int)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `foundations/overload-resolution/chosen-deleted.cpp` (gcc-16-o2): error: use of deleted function 'void put(int)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `foundations/overload-resolution/chosen-deleted.cpp` (clang-22): error: call to deleted function 'put' / note: candidate function has been explicitly deleted / note: candidate function
+- `foundations/overload-resolution/chosen-deleted.cpp` (clang-22-o2): error: call to deleted function 'put' / note: candidate function has been explicitly deleted / note: candidate function
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (clang-host): error: 'put' is a private member of 'Item' / note: implicitly declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (gcc-host): error: ‘void Item::put(int)’ is private within this context / note: declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (edg-7.0): error: function "Item::put(int)" (declared at line 8) is inaccessible
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (gcc-14): error: 'void Item::put(int)' is private within this context / note: declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (clang-18): error: 'put' is a private member of 'Item' / note: implicitly declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (gcc-16): error: 'void Item::put(int)' is private within this context / note: declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (gcc-16-o2): error: 'void Item::put(int)' is private within this context / note: declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (clang-22): error: 'put' is a private member of 'Item' / note: implicitly declared private here
+- `foundations/overload-resolution/chosen-not-accessible.cpp` (clang-22-o2): error: 'put' is a private member of 'Item' / note: implicitly declared private here
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (clang-host): error: too many non-object arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (gcc-host): error: no matching function for call to ‘Self::take(Self&, int)’
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (edg-7.0): error: no suitable conversion function from "Self" to "int" exists / error: too many arguments in function call
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (gcc-14): error: no matching function for call to 'Self::take(Self&, int)' / note: candidate: 'void Self::take(this Self&, int)' / note:   candidate expects 1 argument, 2 provided
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (clang-18): error: too many non-object arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (gcc-16): error: no matching function for call to 'Self::take(Self&, int)'
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (gcc-16-o2): error: no matching function for call to 'Self::take(Self&, int)'
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (clang-22): error: too many non-object arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` (clang-22-o2): error: too many non-object arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/default-from-two-scopes.cpp` (gcc-host): error: default argument mismatch in overload resolution [-fpermissive] / note:  candidate 1: ‘void low::tidal_ovl_f(int = 5)’ / note:  candidate 2: ‘void high::tidal_ovl_f(int = 7)’
+- `foundations/overload-resolution/default-from-two-scopes.cpp` (gcc-14): error: default argument mismatch in overload resolution [-fpermissive] / note:  candidate 1: 'void low::tidal_ovl_f(int = 5)' / note:  candidate 2: 'void high::tidal_ovl_f(int = 7)'
+- `foundations/overload-resolution/default-from-two-scopes.cpp` (gcc-16): error: default argument mismatch in overload resolution [-fpermissive] / note:  candidate 1: 'void low::tidal_ovl_f(int = 5)' / note:  candidate 2: 'void high::tidal_ovl_f(int = 7)'
+- `foundations/overload-resolution/default-from-two-scopes.cpp` (gcc-16-o2): error: default argument mismatch in overload resolution [-fpermissive] / note:  candidate 1: 'void low::tidal_ovl_f(int = 5)' / note:  candidate 2: 'void high::tidal_ovl_f(int = 7)'
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (gcc-host): error: call of overloaded ‘f(int)’ is ambiguous
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (gcc-14): error: call of overloaded 'f(int)' is ambiguous / note: candidate: 'void f(int)' / note: candidate: 'void f(int, int)'
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (gcc-16): error: call of overloaded 'f(int)' is ambiguous
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/defaults-take-no-part.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (clang-host): error: invalid operands to binary expression ('Mode' and 'Mode') / note: no implicit conversion for scoped enum; consider casting to underlying type / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘Mode’ and ‘Mode’)
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter / note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'Mode' and 'Mode')
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (clang-18): error: invalid operands to binary expression ('Mode' and 'Mode')
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'Mode' and 'Mode')
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (gcc-16-o2): error: no match for 'operator+' (operand types are 'Mode' and 'Mode')
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (clang-22): error: invalid operands to binary expression ('Mode' and 'Mode') / note: no implicit conversion for scoped enum; consider casting to underlying type / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `foundations/overload-resolution/enum-operand-no-parameter.cpp` (clang-22-o2): error: invalid operands to binary expression ('Mode' and 'Mode') / note: no implicit conversion for scoped enum; consider casting to underlying type / note: no implicit conversion for scoped enum; consider casting to underlying type
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (clang-host): error: conversion from 'Source' to 'Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (gcc-host): error: conversion from ‘Source’ to ‘Target’ is ambiguous
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (edg-7.0): error: more than one user-defined conversion from "Source" to "Target" applies:
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (gcc-14): error: conversion from 'Source' to 'Target' is ambiguous / note: candidate: 'Source::operator Target() const' / note: candidate: 'Target::Target(const Source&)'
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (clang-18): error: conversion from 'Source' to 'Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (gcc-16): error: conversion from 'Source' to 'Target' is ambiguous
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (gcc-16-o2): error: conversion from 'Source' to 'Target' is ambiguous
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (clang-22): error: conversion from 'Source' to 'Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/init-constructor-conversion-tie.cpp` (clang-22-o2): error: conversion from 'Source' to 'Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (clang-host): error: no viable conversion from 'Source' to 'Target' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Source' to 'const Target &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'Source' to 'Target &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'Source' to 'int' for 1st argument / note: explicit conversion function is not a candidate
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (gcc-host): error: conversion from ‘Source’ to non-scalar type ‘Target’ requested / note: explicit conversion function was not considered
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (edg-7.0): error: no suitable user-defined conversion from "Source" to "Target" exists
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (gcc-14): error: conversion from 'Source' to non-scalar type 'Target' requested
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (clang-18): error: no viable conversion from 'Source' to 'Target' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Source' to 'const Target &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'Source' to 'Target &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'Source' to 'int' for 1st argument / note: explicit conversion function is not a candidate
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (gcc-16): error: conversion from 'Source' to non-scalar type 'Target' requested / note: explicit conversion function was not considered
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (gcc-16-o2): error: conversion from 'Source' to non-scalar type 'Target' requested / note: explicit conversion function was not considered
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (clang-22): error: no viable conversion from 'Source' to 'Target' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Source' to 'const Target &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'Source' to 'Target &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'Source' to 'int' for 1st argument / note: explicit conversion function is not a candidate
+- `foundations/overload-resolution/init-copy-explicit-conversion.cpp` (clang-22-o2): error: no viable conversion from 'Source' to 'Target' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'Source' to 'const Target &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'Source' to 'Target &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'Source' to 'int' for 1st argument / note: explicit conversion function is not a candidate
+- `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` (gcc-host): error: could not convert ‘{s}’ from ‘<brace-enclosed initializer list>’ to ‘Target’
+- `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` (edg-7.0): error: no instance of constructor "Target::Target" matches the argument list / note: function "Target::Target(const Target &) noexcept" does not match because argument #1 does not match parameter / note: function "Target::Target(Target &&) noexcept" does not match because argument #1 does not match parameter / note: number of parameters of function "Target::Target()" does not match the call
+- `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` (gcc-14): error: could not convert '{s}' from '<brace-enclosed initializer list>' to 'Target'
+- `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` (gcc-16): error: could not convert '{s}' from '<brace-enclosed initializer list>' to 'Target'
+- `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` (gcc-16-o2): error: could not convert '{s}' from '<brace-enclosed initializer list>' to 'Target'
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-host): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (gcc-host): error: cannot call member function ‘void Item::reset()’ without object
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (edg-7.0): error: a nonstatic member reference must be relative to a specific object
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (gcc-14): error: cannot call member function 'void Item::reset()' without object
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-18): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (gcc-16): error: cannot call member function 'void Item::reset()' without object
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (gcc-16-o2): error: cannot call member function 'void Item::reset()' without object
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-22): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-22-o2): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (clang-host): error: call to 'reset' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (gcc-host): error: call of overloaded ‘reset()’ is ambiguous
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (edg-7.0): error: more than one instance of overloaded function "Item::reset" matches the argument list:
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (gcc-14): error: call of overloaded 'reset()' is ambiguous / note: candidate: 'static void Item::reset(int)' / note: candidate: 'void Item::reset()'
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (clang-18): error: call to 'reset' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (gcc-16): error: call of overloaded 'reset()' is ambiguous
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (gcc-16-o2): error: call of overloaded 'reset()' is ambiguous
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (clang-22): error: call to 'reset' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (clang-22-o2): error: call to 'reset' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/no-viable-function.cpp` (clang-host): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'Empty' to 'int' for 1st argument / note: candidate function not viable: no known conversion from 'Empty' to 'double' for 1st argument
+- `foundations/overload-resolution/no-viable-function.cpp` (gcc-host): error: no matching function for call to ‘f(Empty)’
+- `foundations/overload-resolution/no-viable-function.cpp` (edg-7.0): error: no instance of overloaded function "f" matches the argument list / note: function "f(double)" does not match because argument #1 does not match parameter / note: function "f(int)" does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/no-viable-function.cpp` (gcc-14): error: no matching function for call to 'f(Empty)' / note: candidate: 'void f(int)' / note:   no known conversion for argument 1 from 'Empty' to 'int' / note: candidate: 'void f(double)' / note:   no known conversion for argument 1 from 'Empty' to 'double'
+- `foundations/overload-resolution/no-viable-function.cpp` (clang-18): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'Empty' to 'int' for 1st argument / note: candidate function not viable: no known conversion from 'Empty' to 'double' for 1st argument
+- `foundations/overload-resolution/no-viable-function.cpp` (gcc-16): error: no matching function for call to 'f(Empty)'
+- `foundations/overload-resolution/no-viable-function.cpp` (gcc-16-o2): error: no matching function for call to 'f(Empty)'
+- `foundations/overload-resolution/no-viable-function.cpp` (clang-22): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'Empty' to 'int' for 1st argument / note: candidate function not viable: no known conversion from 'Empty' to 'double' for 1st argument
+- `foundations/overload-resolution/no-viable-function.cpp` (clang-22-o2): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'Empty' to 'int' for 1st argument / note: candidate function not viable: no known conversion from 'Empty' to 'double' for 1st argument
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (clang-host): error: too many arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (gcc-host): error: no matching function for call to ‘Panel::operator==(Key&, Key&)’
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (edg-7.0): error: no suitable user-defined conversion from "Key" to "Panel" exists / error: too many arguments in function call
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (gcc-14): error: no matching function for call to 'Panel::operator==(Key&, Key&)' / note: candidate: 'bool Panel::operator==(Panel) const' / note:   candidate expects 1 argument, 2 provided
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (clang-18): error: too many arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (gcc-16): error: no matching function for call to 'Panel::operator==(Key&, Key&)'
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (gcc-16-o2): error: no matching function for call to 'Panel::operator==(Key&, Key&)'
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (clang-22): error: too many arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/operator-call-by-name-hidden.cpp` (clang-22-o2): error: too many arguments to function call, expected 1, have 2
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (clang-host): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (gcc-host): error: call of overloaded ‘g(<unresolved overloaded function type>)’ is ambiguous
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (edg-7.0): error: more than one instance of overloaded function "g" matches the argument list:
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (gcc-14): error: call of overloaded 'g(<unresolved overloaded function type>)' is ambiguous / note: candidate: 'void g(void (*)(int))' / note: candidate: 'void g(void (*)(char))'
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (clang-18): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (gcc-16): error: call of overloaded 'g(<unresolved overloaded function type>)' is ambiguous
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (gcc-16-o2): error: call of overloaded 'g(<unresolved overloaded function type>)' is ambiguous
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (clang-22): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/overload-set-argument-ambiguous.cpp` (clang-22-o2): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-host): error: invalid operands to binary expression ('Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘Left’ and ‘Maker’)
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-18): error: invalid operands to binary expression ('Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-22): error: invalid operands to binary expression ('Left' and 'Maker')
+- `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-22-o2): error: invalid operands to binary expression ('Left' and 'Maker')
+- `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-host): error: call of ‘(const Thing) (int)’ is ambiguous / error: call of ‘(const Thing) (int)’ is ambiguous / error: template argument 1 is invalid
+- `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-14): error: call of '(const Thing) (int)' is ambiguous / note: candidate: 'Fn' {aka 'One (*)(int)'} (conversion) / note: candidate: 'Two Thing::operator()(long int) const' / error: call of '(const Thing) (int)' is ambiguous / note: candidate: 'Fn' {aka 'One (*)(int)'} (conversion) / note: candidate: 'Two Thing::operator()(long int) const' / error: template argument 1 is invalid
+- `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-16): error: call of '(const Thing) (int)' is ambiguous / error: call of '(const Thing) (int)' is ambiguous / error: template argument 1 is invalid
+- `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-16-o2): error: call of '(const Thing) (int)' is ambiguous / error: call of '(const Thing) (int)' is ambiguous / error: template argument 1 is invalid
+- `foundations/overload-resolution/surrogate-same-parameters.cpp` (clang-host): error: call to object of type 'Thing' is ambiguous / note: conversion candidate of type 'int (*)(int)' / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/surrogate-same-parameters.cpp` (edg-7.0): error: there is more than one way an object of type "Thing" can be called for the argument list:
+- `foundations/overload-resolution/surrogate-same-parameters.cpp` (clang-18): error: call to object of type 'Thing' is ambiguous / note: conversion candidate of type 'int (*)(int)' / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/surrogate-same-parameters.cpp` (clang-22): error: call to object of type 'Thing' is ambiguous / note: conversion candidate of type 'int (*)(int)' / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/surrogate-same-parameters.cpp` (clang-22-o2): error: call to object of type 'Thing' is ambiguous / note: conversion candidate of type 'int (*)(int)' / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (gcc-host): error: call of overloaded ‘f(int&)’ is ambiguous
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (gcc-14): error: call of overloaded 'f(int&)' is ambiguous / note: candidate: 'void f(const T&) [with T = int]' / note: candidate: 'void f(T) [with T = int]'
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (gcc-16): error: call of overloaded 'f(int&)' is ambiguous
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (gcc-16-o2): error: call of overloaded 'f(int&)' is ambiguous
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `foundations/overload-resolution/tie-constraints-different-parameters.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `foundations/overload-resolution/tie-function-reference-kind.cpp` (clang-host): error: reference initialization of type 'F &&' (aka 'int (&&)()') with initializer of type 'Source' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/tie-function-reference-kind.cpp` (clang-18): error: reference initialization of type 'F &&' (aka 'int (&&)()') with initializer of type 'Source' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/tie-function-reference-kind.cpp` (clang-22): error: reference initialization of type 'F &&' (aka 'int (&&)()') with initializer of type 'Source' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/tie-function-reference-kind.cpp` (clang-22-o2): error: reference initialization of type 'F &&' (aka 'int (&&)()') with initializer of type 'Source' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (clang-host): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'Item' and 'Item') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed / note: mark 'operator==' as const or add a matching 'operator!=' to resolve the ambiguity
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (gcc-host): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: ‘bool Item::operator==(const Item&)’ / note: candidate 2: ‘bool Item::operator==(const Item&)’ (reversed) / note: try making the operator a ‘const’ member function
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (edg-7.0): error: more than one operator "==" matches these operands: / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (gcc-14): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: 'bool Item::operator==(const Item&)' / note: candidate 2: 'bool Item::operator==(const Item&)' (reversed) / note: try making the operator a 'const' member function
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (clang-18): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'Item' and 'Item') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed / note: mark 'operator==' as const or add a matching 'operator!=' to resolve the ambiguity
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (gcc-16): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: 'bool Item::operator==(const Item&)' / note: candidate 2: 'bool Item::operator==(const Item&)' (reversed) / note: try making the operator a 'const' member function
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (gcc-16-o2): error: C++20 says that these are ambiguous, even though the second is reversed: / note: candidate 1: 'bool Item::operator==(const Item&)' / note: candidate 2: 'bool Item::operator==(const Item&)' (reversed) / note: try making the operator a 'const' member function
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (clang-22): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'Item' and 'Item') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed / note: mark 'operator==' as const or add a matching 'operator!=' to resolve the ambiguity
+- `foundations/overload-resolution/tie-swapped-same-function.cpp` (clang-22-o2): error: ISO C++20 considers use of overloaded operator '==' (with operand types 'Item' and 'Item') to be ambiguous despite there being a unique best viable function [-Werror,-Wambiguous-reversed-operator] / note: ambiguity is between a regular call to this operator and a call with the argument order reversed / note: mark 'operator==' as const or add a matching 'operator!=' to resolve the ambiguity
+- `foundations/overload-resolution/tie-template-before-reference-kind.cpp` (gcc-host): error: static assertion failed
+- `foundations/overload-resolution/tie-template-before-reference-kind.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(2 == 1)'
+- `foundations/overload-resolution/tie-template-before-reference-kind.cpp` (gcc-16): error: static assertion failed
+- `foundations/overload-resolution/tie-template-before-reference-kind.cpp` (gcc-16-o2): error: static assertion failed
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
