@@ -208,6 +208,7 @@ def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> t
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():
+        entry.touch()  # marks the entry as used, so CI can prune the others
         return tuple(json.loads(entry.read_text()))
     result = outcome(test, c)
     if result == ("run-fail", "timeout"):

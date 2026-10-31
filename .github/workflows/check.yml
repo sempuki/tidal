@@ -34,10 +34,35 @@ jobs:
             --cache-to type=gha,mode=max,scope={id}
         run: python3 -I tools/containers.py build
 
+      # Test results are cached per test, compiler image, and expectation
+      # (tools/run_tests.py), so a push retests only what changed. Each run
+      # saves a new cache entry; restore-keys picks up the latest one.
+      - name: Restore test result cache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/cache
+          key: tidal-results-${{ github.run_id }}
+          restore-keys: tidal-results-
+
       # The runner has no copy of the host compilers, so CI uses the
       # containerized compilers, which include the same versions.
       - name: Conformance tests
-        run: python3 -I tools/run_tests.py --compilers containers --report build/RESULTS.md
+        run: |
+          mkdir -p build && touch build/run-start
+          python3 -I tools/run_tests.py --compilers containers --report build/RESULTS.md
+
+      # Entries that this run did not use belong to old tests or old
+      # images. Dropping them keeps the cache from growing without bound.
+      - name: Prune test result cache
+        if: always()
+        run: find build/cache -type f ! -newer build/run-start -delete 2>/dev/null || true
+
+      - name: Save test result cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: build/cache
+          key: tidal-results-${{ github.run_id }}
 
       # The reference corpus is fetched outside the checkout and never printed.
       - name: Similarity check
