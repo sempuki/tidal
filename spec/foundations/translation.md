@@ -313,12 +313,18 @@ results come from the rule's tests, compiled with no flag, with
 `-Werror` makes each warning an error. Older versions can differ. For
 example, Clang 18 gives no warning for CMP-14 ({question}`Q-0029`).
 
+A test of a warning passes `-Werror` and a flag that turns the warning
+on in both compilers, so the two columns give one result. The flag is
+the warning's own flag, or a group that holds the warning in both
+columns. For SEQ-7 the tests pass `-Wall`, because GCC needs `-Wall`
+and Clang warns with no flag.
+
 | Rule | Clang | GCC |
 |---|---|---|
 | {rule}`ADD-16` | on: `-Wdeprecated-enum-enum-conversion` | on: `-Wdeprecated-enum-enum-conversion` |
 | {rule}`ATTR-4` | on: `-Wdeprecated-declarations` | on: `-Wdeprecated-declarations` |
 | {rule}`ATTR-5` | on: `-Wunused-result`, `-Wunused-value` | on: `-Wunused-result` |
-| {rule}`ATTR-6` | `-Wall`: `-Wunused-variable`, `-Wunused-but-set-variable` | `-Wall`: `-Wunused-variable`, `-Wunused-but-set-variable` |
+| {rule}`ATTR-6` | `-Wall` or `-Wunused`: `-Wunused-variable`, `-Wunused-but-set-variable` | `-Wall` or `-Wunused`: `-Wunused-variable`, `-Wunused-but-set-variable` |
 | {rule}`ATTR-7` | `-Wimplicit-fallthrough` only | `-Wextra`: `-Wimplicit-fallthrough` |
 | {rule}`ATTR-14` | on: `-Winvalid-noreturn` | on, with no flag name |
 | {rule}`BF-8` | on: `-Wbitfield-constant-conversion`, `-Wbitfield-width` | on: `-Woverflow`; the width warning has no flag name |
