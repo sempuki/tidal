@@ -7,26 +7,29 @@ current state only. The history of how it got here is in `git log`.
 
 | Section | Rules | Classes | Tests | Questions | Similarity |
 |---|---|---|---|---|---|
-| [Expression statements and blocks](../spec/statements/blocks.md) | 6 | 5 required, 1 recommended | 11 |  | 0 flagged |
-| [The if statement](../spec/statements/if.md) | 20 | 14 required, 6 reject | 61 |  | 0 flagged |
-| [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 26 |  | 0 flagged |
-| [Iteration statements](../spec/statements/loops.md) | 6 | 4 required, 2 reject | 14 | Q-0044 | 0 flagged |
-| [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 22 | Q-0020, Q-0026 | 0 flagged |
-| [Jump statements and labels](../spec/statements/jumps.md) | 11 | 8 required, 2 reject, 1 unspecified | 30 | Q-0041 | 0 flagged |
-| [Value categories and temporaries](../spec/expressions/value-categories.md) | 10 | 8 required, 1 unspecified, 1 impl-defined | 33 |  | 0 flagged |
-| [Standard conversions](../spec/expressions/conversions.md) | 16 | 9 required, 4 reject, 1 undefined, 2 impl-defined | 34 | Q-0028 | 0 flagged |
-| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 16 |  | 0 flagged |
+| [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 0 |  | 0 |  | 0 flagged |
+| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 27 |  | 0 flagged |
+| [Names, scopes, and lookup](../spec/foundations/names.md) | 0 |  | 0 |  | 0 flagged |
+| [Expression statements and blocks](../spec/statements/blocks.md) | 7 | 6 required, 1 recommended | 15 | Q-0096 | 0 flagged |
+| [The if statement](../spec/statements/if.md) | 21 | 14 required, 7 reject | 65 |  | 0 flagged |
+| [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 32 | Q-0097 | 0 flagged |
+| [Iteration statements](../spec/statements/loops.md) | 7 | 4 required, 3 reject | 19 | Q-0044 | 0 flagged |
+| [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 26 | Q-0020, Q-0026, Q-0098 | 0 flagged |
+| [Jump statements and labels](../spec/statements/jumps.md) | 12 | 8 required, 3 reject, 1 unspecified | 40 | Q-0041, Q-0097 | 0 flagged |
+| [Value categories and temporaries](../spec/expressions/value-categories.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
+| [Standard conversions](../spec/expressions/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
+| [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 18 |  | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 5 impl-defined, 1 recommended | 94 | Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 9 | 5 required, 2 reject, 2 recommended | 49 | Q-0065, Q-0089 | 0 flagged |
-| [Multiplicative operators](../spec/expressions/multiplicative.md) | 16 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 29 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
-| [Additive operators](../spec/expressions/additive.md) | 15 | 7 required, 1 reject, 4 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 33 | Q-0005, Q-0031, Q-0049 | 0 flagged |
-| [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 20 |  | 0 flagged |
-| [Comparison operators](../spec/expressions/comparison.md) | 21 | 12 required, 3 reject, 2 unspecified, 4 recommended | 46 | Q-0029, Q-0030, Q-0050, Q-0051 | 0 flagged |
-| [Bitwise operators](../spec/expressions/bitwise.md) | 8 | 4 required, 1 reject, 3 recommended | 18 |  | 0 flagged |
-| [Logical operators](../spec/expressions/logical.md) | 11 | 8 required, 1 reject, 2 recommended | 18 |  | 0 flagged |
-| [The conditional operator](../spec/expressions/conditional.md) | 10 | 6 required, 4 reject | 30 |  | 0 flagged |
-| [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 24 | Q-0032 | 0 flagged |
-| [The comma operator](../spec/expressions/comma.md) | 7 | 5 required, 1 reject, 1 recommended | 13 |  | 0 flagged |
+| [Multiplicative operators](../spec/expressions/multiplicative.md) | 18 | 7 required, 2 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 34 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
+| [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 38 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
+| [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 23 |  | 0 flagged |
+| [Comparison operators](../spec/expressions/comparison.md) | 22 | 13 required, 3 reject, 2 unspecified, 4 recommended | 67 | Q-0029, Q-0030, Q-0050, Q-0051, Q-0103, Q-0104 | 0 flagged |
+| [Bitwise operators](../spec/expressions/bitwise.md) | 8 | 4 required, 1 reject, 3 recommended | 21 |  | 0 flagged |
+| [Logical operators](../spec/expressions/logical.md) | 13 | 10 required, 1 reject, 2 recommended | 21 | Q-0101 | 0 flagged |
+| [The conditional operator](../spec/expressions/conditional.md) | 12 | 8 required, 4 reject | 37 | Q-0102 | 0 flagged |
+| [Assignment operators](../spec/expressions/assignment.md) | 10 | 7 required, 2 reject, 1 unspecified | 29 | Q-0032 | 0 flagged |
+| [The comma operator](../spec/expressions/comma.md) | 8 | 5 required, 2 reject, 1 recommended | 17 |  | 0 flagged |
 | [Unary operators](../spec/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 54 | Q-0031 | 0 flagged |
 | [Pointers to members](../spec/expressions/member-pointers.md) | 11 | 5 required, 4 reject, 1 undefined, 1 unspecified | 66 |  | 0 flagged |
 | [Postfix expressions](../spec/expressions/postfix.md) | 15 | 7 required, 5 reject, 2 undefined, 1 impl-defined | 39 | Q-0034 | 0 flagged |
@@ -34,28 +37,28 @@ current state only. The history of how it got here is in `git log`.
 | [Constant expressions](../spec/expressions/constant-expressions.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 15 | 8 required, 4 reject, 2 undefined, 1 unspecified | 46 | Q-0035, Q-0036, Q-0091 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 21 | 15 required, 3 reject, 1 undefined, 1 unspecified, 1 recommended | 55 | Q-0037, Q-0092 | 0 flagged |
-| [Placeholder types in variable declarations](../spec/declarations/auto.md) | 14 | 12 required, 2 reject | 43 | Q-0010 | 0 flagged |
+| [Placeholder types in variable declarations](../spec/declarations/auto.md) | 15 | 12 required, 3 reject | 49 | Q-0010 | 0 flagged |
 | [Type aliases and class names](../spec/declarations/type-names.md) | 7 | 4 required, 2 reject, 1 no-diagnostic | 60 | Q-0066, Q-0067, Q-0093 | 0 flagged |
-| [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 20 | 14 required, 3 reject, 1 undefined, 2 no-diagnostic | 47 | Q-0011, Q-0045 | 0 flagged |
+| [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 20 | 14 required, 3 reject, 1 undefined, 2 no-diagnostic | 54 | Q-0011, Q-0045, Q-0105 | 0 flagged |
 | [The inline specifier](../spec/declarations/inline.md) | 7 | 4 required, 1 reject, 2 no-diagnostic | 34 | Q-0068 | 0 flagged |
-| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 23 | 16 required, 4 reject, 1 undefined, 1 impl-defined, 1 recommended | 75 | Q-0012 | 0 flagged |
+| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 25 | 17 required, 5 reject, 1 undefined, 1 impl-defined, 1 recommended | 80 | Q-0012, Q-0106 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 6 | 2 required, 2 reject, 1 impl-defined, 1 no-diagnostic | 31 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 7 | 4 required, 1 reject, 1 undefined, 1 recommended | 33 | Q-0080 | 0 flagged |
-| [Forms of initialization](../spec/declarations/initialization/forms.md) | 5 | 4 required, 1 undefined | 18 | Q-0013, Q-0039 | 0 flagged |
-| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 10 | 8 required, 2 reject | 48 | Q-0042, Q-0043 | 0 flagged |
-| [Reference binding](../spec/declarations/initialization/references.md) | 7 | 6 required, 1 undefined | 24 | Q-0040 | 0 flagged |
-| [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 5 | 2 required, 2 unspecified, 1 impl-defined | 9 | Q-0014 | 0 flagged |
-| [Structured bindings](../spec/declarations/structured-bindings.md) | 10 | 8 required, 2 reject | 43 | Q-0007, Q-0015, Q-0016, Q-0048 | 0 flagged |
-| [Enumerations](../spec/declarations/enumerations.md) | 10 | 8 required, 1 undefined, 1 impl-defined | 46 | Q-0017, Q-0018, Q-0047 | 0 flagged |
-| [Namespaces and using](../spec/declarations/namespaces.md) | 8 | 8 required | 36 | Q-0019 | 0 flagged |
+| [Forms of initialization](../spec/declarations/initialization/forms.md) | 6 | 5 required, 1 undefined | 22 | Q-0013, Q-0039 | 0 flagged |
+| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 10 | 8 required, 2 reject | 54 | Q-0042, Q-0043 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 7 | 6 required, 1 undefined | 31 | Q-0040, Q-0109, Q-0110 | 0 flagged |
+| [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | Q-0014 | 0 flagged |
+| [Structured bindings](../spec/declarations/structured-bindings.md) | 12 | 9 required, 3 reject | 49 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
+| [Enumerations](../spec/declarations/enumerations.md) | 12 | 9 required, 1 reject, 1 undefined, 1 impl-defined | 52 | Q-0017, Q-0018, Q-0047 | 0 flagged |
+| [Namespaces and using](../spec/declarations/namespaces.md) | 9 | 8 required, 1 reject | 41 | Q-0019 | 0 flagged |
 | [Linkage specifications](../spec/declarations/linkage-specifications.md) | 6 | 3 required, 1 reject, 2 impl-defined | 29 | Q-0074, Q-0075, Q-0076 | 0 flagged |
-| [Standard attributes](../spec/declarations/attributes.md) | 16 | 6 required, 2 reject, 2 undefined, 1 impl-defined, 5 recommended | 36 | Q-0020, Q-0021, Q-0046 | 0 flagged |
-| [Function definitions](../spec/declarations/functions/definitions.md) | 10 | 3 required, 3 reject, 1 undefined, 2 impl-defined, 1 recommended | 32 | Q-0022, Q-0024 | 0 flagged |
-| [Default arguments](../spec/declarations/functions/default-arguments.md) | 6 | 3 required, 3 reject | 18 | Q-0038 | 0 flagged |
+| [Standard attributes](../spec/declarations/attributes.md) | 17 | 6 required, 3 reject, 2 undefined, 1 impl-defined, 5 recommended | 46 | Q-0020, Q-0021, Q-0046, Q-0108 | 0 flagged |
+| [Function definitions](../spec/declarations/functions/definitions.md) | 12 | 3 required, 4 reject, 1 undefined, 3 impl-defined, 1 recommended | 38 | Q-0022, Q-0024, Q-0076 | 0 flagged |
+| [Default arguments](../spec/declarations/functions/default-arguments.md) | 7 | 3 required, 3 reject, 1 no-diagnostic | 21 | Q-0038, Q-0111 | 0 flagged |
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | Q-0007, Q-0023 | 0 flagged |
-| [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 16 |  | 0 flagged |
+| [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 20 |  | 0 flagged |
 | [Exception specifications](../spec/declarations/exception-specifications.md) | 6 | 3 required, 1 reject, 1 impl-defined, 1 no-diagnostic | 36 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
-| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 46 | Q-0020, Q-0025 | 0 flagged |
+| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 52 | Q-0020, Q-0025 | 0 flagged |
 | [Static assertions](../spec/declarations/static-assert.md) | 5 | 4 required, 1 reject | 28 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 20 | 14 required, 4 reject, 1 impl-defined, 1 no-diagnostic | 84 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 16 | 8 required, 8 reject | 46 | Q-0052 | 0 flagged |
@@ -64,7 +67,7 @@ current state only. The history of how it got here is in `git log`.
 | [Copy and move](../spec/classes/copy-move.md) | 19 | 13 required, 3 reject, 2 unspecified, 1 recommended | 87 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 18 | 9 required, 8 reject, 1 undefined | 73 | Q-0085 | 0 flagged |
 | [Virtual functions and abstract classes](../spec/classes/virtual.md) | 20 | 7 required, 9 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 107 | Q-0056, Q-0086, Q-0087 | 0 flagged |
-| [Unions and bit-fields](../spec/classes/unions.md) | 19 | 11 required, 5 reject, 1 undefined, 1 impl-defined, 1 recommended | 86 | Q-0057, Q-0058, Q-0088 | 0 flagged |
+| [Unions and bit-fields](../spec/classes/unions.md) | 20 | 11 required, 5 reject, 1 undefined, 2 impl-defined, 1 recommended | 87 | Q-0057, Q-0058, Q-0088 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 8 | 5 required, 2 reject, 1 recommended | 60 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 12 | 8 required, 2 reject, 1 unspecified, 1 recommended | 89 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 8 | 5 required, 1 reject, 1 no-diagnostic, 1 recommended | 63 | Q-0061, Q-0062 | 0 flagged |
@@ -75,12 +78,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-second-triage.txt`. The table above comes from
+`reports/similarity/2026-10-31-all-pages.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 2618/2618 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 2841/2841 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -96,7 +99,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Ninety-four questions are open for opinions, each with a provisional answer the
+One hundred and ten questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -124,11 +127,11 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-0. Judge the principles-first format (decision 0024) on its two pilot
-   pages, value categories and copy and move. Then write the Foundations
-   chapter and add a `Principles` segment to every page. The third gap
-   review triage waits on branch `wip/third-triage` until the format
-   settles.
+0. Continue the Foundations chapter in the principles-first format
+   (decision 0024). The objects page is drafted; translation and names
+   come next, then values, conversions, evaluation order, and constant
+   evaluation move here from Expressions. After that, add a Principles
+   segment to every other page.
 1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
@@ -138,9 +141,8 @@ forward-progress rule belongs with threads, which are out of scope.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
 7. Plan the exception handling chapter (decision 0023).
-8. Run a gap review over the pages that neither review covered closely:
-   statements, the operator families, and the earlier declaration pages,
-   after the triage changes of 2026-10-31.
+8. Build the generated rule index and the rule annotations planned in
+   decision 0024.
 
 ## Size estimate
 
