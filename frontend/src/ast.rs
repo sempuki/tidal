@@ -155,6 +155,8 @@ pub enum EK {
     /// Value-initialization of a scalar, as in `int()`.
     ZeroInit,
     Throw(Option<Box<Expr>>),
+    /// A constructor call: the constructor and its converted arguments.
+    Construct(DeclId, Vec<Expr>),
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
@@ -191,6 +193,8 @@ pub enum Stmt {
     Expr(Expr),
     Decl(Vec<DeclId>),
     Block(Vec<Stmt>),
+    /// `[[assume(e)]];` (ATTR-10, ATTR-15).
+    Assume(Expr),
     If { init: Option<Box<Stmt>>, cond: Option<CondK>, then: Box<Stmt>, els: Option<Box<Stmt>>, kind: IfKind },
     While { cond: CondK, body: Box<Stmt> },
     Do { body: Box<Stmt>, cond: Expr },
@@ -204,4 +208,34 @@ pub enum Stmt {
     Goto(String),
     Label(String, Box<Stmt>),
     Unsupported(String),
+}
+
+/// Call `f` on `e` and on each of its subexpressions.
+pub fn walk_expr(e: &Expr, f: &mut dyn FnMut(&Expr)) {
+    f(e);
+    match &e.k {
+        EK::BoundMember(a, _) | EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) => walk_expr(a, f),
+        EK::Binary(_, a, b) | EK::Assign(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) => {
+            walk_expr(a, f);
+            walk_expr(b, f);
+        }
+        EK::Cond(a, b, c) => {
+            walk_expr(a, f);
+            walk_expr(b, f);
+            walk_expr(c, f);
+        }
+        EK::Call(a, args, _) => {
+            walk_expr(a, f);
+            for x in args {
+                walk_expr(x, f);
+            }
+        }
+        EK::InitList(v) | EK::Construct(_, v) => {
+            for x in v {
+                walk_expr(x, f);
+            }
+        }
+        EK::Throw(Some(a)) => walk_expr(a, f),
+        _ => {}
+    }
 }

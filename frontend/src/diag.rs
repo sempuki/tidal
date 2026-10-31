@@ -13,6 +13,9 @@ pub enum Severity {
 pub struct Diag {
     pub sev: Severity,
     pub rule: Option<&'static str>,
+    /// A second rule: the rule that the constant evaluation broke, when
+    /// `rule` only says that a constant was needed.
+    pub cause: Option<&'static str>,
     pub msg: String,
     pub line: u32,
 }
@@ -30,19 +33,19 @@ impl Diags {
         if self.muted > 0 {
             return;
         }
-        self.list.push(Diag { sev: Severity::Error, rule, msg: msg.into(), line });
+        self.list.push(Diag { sev: Severity::Error, rule, cause: None, msg: msg.into(), line });
     }
     pub fn unsupported(&mut self, line: u32, msg: impl Into<String>) {
         if self.muted > 0 {
             return;
         }
-        self.list.push(Diag { sev: Severity::Unsupported, rule: None, msg: msg.into(), line });
+        self.list.push(Diag { sev: Severity::Unsupported, rule: None, cause: None, msg: msg.into(), line });
     }
     pub fn warning(&mut self, line: u32, rule: &'static str, msg: impl Into<String>) {
         if self.muted > 0 {
             return;
         }
-        self.list.push(Diag { sev: Severity::Warning, rule: Some(rule), msg: msg.into(), line });
+        self.list.push(Diag { sev: Severity::Warning, rule: Some(rule), cause: None, msg: msg.into(), line });
     }
     pub fn has_errors(&self) -> bool {
         self.list.iter().any(|d| d.sev == Severity::Error)

@@ -83,7 +83,7 @@ https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. Every page
 opens with its principles (decision 0024), and the Foundations chapter
 holds the models that the other pages cite. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-abstract-machine.txt`. The table above comes from
+`reports/similarity/2026-10-31-lists.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
@@ -120,7 +120,8 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2331 of 3084 tests.
+- The clean-room front end passes 2545 of 3130 tests, with no false
+  rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 

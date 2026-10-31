@@ -70,6 +70,28 @@ pub struct FuncInfo {
     pub explicit_obj: bool,
     pub default_exprs: Vec<Option<Rc<Expr>>>,
     pub ret_auto: Option<(crate::decl::DeclSpec, crate::decl::Declarator)>,
+    /// The mem-initializers of a constructor.
+    pub mem_inits: Vec<MemInit>,
+    /// The attributes of the first declaration (ATTR-2).
+    pub first_attrs: Vec<String>,
+}
+
+/// One attribute: its name without namespace, whether it had a
+/// namespace, its argument expression for `assume`, and its line.
+#[derive(Clone, Debug)]
+pub struct Attr {
+    pub name: String,
+    pub ns: bool,
+    pub assume: Option<Expr>,
+    pub line: u32,
+}
+
+/// One mem-initializer. `field` is None for a base or a delegating
+/// constructor, which the evaluator does not model.
+#[derive(Clone, Debug)]
+pub struct MemInit {
+    pub field: Option<DeclId>,
+    pub init: Option<Rc<Expr>>,
 }
 
 #[derive(Clone, Debug)]
@@ -305,6 +327,20 @@ pub struct P {
     pub dmi_depth: u32,
     pub cx_branches: Vec<usize>,
     pub cx_counter: usize,
+    /// Attributes parsed since the start of the current statement or
+    /// declaration (spec/declarations/attributes.md).
+    pub pending_attrs: Vec<Attr>,
+    /// The standard attributes of each entity, over all its declarations
+    /// (ATTR-4, ATTR-5, ATTR-14).
+    pub entity_attrs: HashMap<DeclId, Vec<String>>,
+    /// Pure virtual functions (VIRT-8).
+    pub pure_fns: std::collections::HashSet<DeclId>,
+    /// The standard attributes of each class.
+    pub class_attrs: HashMap<usize, Vec<String>>,
+    /// The leading attributes of the declaration being parsed.
+    pub decl_attrs: Vec<Attr>,
+    /// ENUM-10: the type of an enumerator inside its enumerator list.
+    pub enumerator_ty: HashMap<DeclId, Ty>,
 }
 
 impl P {
@@ -343,6 +379,12 @@ impl P {
             dmi_depth: 0,
             cx_branches: Vec::new(),
             cx_counter: 0,
+            enumerator_ty: HashMap::new(),
+            pending_attrs: Vec::new(),
+            entity_attrs: HashMap::new(),
+            class_attrs: HashMap::new(),
+            pure_fns: std::collections::HashSet::new(),
+            decl_attrs: Vec::new(),
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;
@@ -492,6 +534,171 @@ impl P {
 
     pub fn error(&mut self, line: u32, rule: &'static str, msg: impl Into<String>) {
         self.d.error(line, Some(rule), msg);
+    }
+    /// An error under `rule` whose cause is a broken `cause` rule, such as
+    /// a constant that needs a constant expression (CX-1) and an
+    /// evaluation that reached an undefined operation.
+    pub fn error_because(&mut self, line: u32, rule: &'static str, cause: &'static str, msg: impl Into<String>) {
+        self.d.error(line, Some(rule), msg);
+        if self.d.muted == 0 {
+            if let Some(d) = self.d.list.last_mut() {
+                if rule != cause {
+                    d.cause = Some(cause);
+                }
+            }
+        }
+    }
+    /// Record the current declaration's attributes on an entity.
+    pub fn record_attrs(&mut self, id: DeclId) {
+        let names: Vec<String> = self.decl_attrs.iter().map(|a| a.name.clone()).collect();
+        if !names.is_empty() {
+            let e = self.entity_attrs.entry(id).or_default();
+            for n in names {
+                if !e.contains(&n) {
+                    e.push(n);
+                }
+            }
+        }
+    }
+    /// VIRT-8: the pure virtual functions of a class without a final
+    /// overrider, by name and parameter types. None when the front end
+    /// does not model the class.
+    fn pure_left(&self, c: usize, depth: u32) -> Option<Vec<(String, Vec<QTy>)>> {
+        let ci = &self.classes[c];
+        if ci.template || ci.opaque || !ci.complete || depth > 32 {
+            return None;
+        }
+        let mut own: Vec<(String, Vec<QTy>, bool)> = Vec::new();
+        for (n, ids) in &self.scopes[ci.scope].names {
+            for &i in ids {
+                if let DK::Func(f) = &self.decls[i].k {
+                    if f.class == Some(c) {
+                        own.push((n.clone(), f.fty.params.clone(), self.pure_fns.contains(&i)));
+                    }
+                }
+            }
+        }
+        let mut out = Vec::new();
+        for b in &ci.bases {
+            let bc = b.class?;
+            for (n, ps) in self.pure_left(bc, depth + 1)? {
+                if n.starts_with('~') {
+                    continue;
+                }
+                if !own.iter().any(|(on, ops, _)| *on == n && *ops == ps) {
+                    out.push((n, ps));
+                }
+            }
+        }
+        for (n, ps, pure) in own {
+            if pure {
+                out.push((n, ps));
+            }
+        }
+        Some(out)
+    }
+    pub fn is_abstract(&self, t: &Ty) -> bool {
+        match t {
+            Ty::Class(c) => self.pure_left(*c, 0).is_some_and(|v| !v.is_empty()),
+            Ty::Array(el, _) => self.is_abstract(&el.t),
+            _ => false,
+        }
+    }
+    /// CTOR-3: whether the implicit or defaulted default constructor of a
+    /// class is deleted. None when the front end cannot tell, or when the
+    /// class has a user-provided default constructor.
+    pub fn default_ctor_deleted(&self, c: usize, depth: u32) -> Option<bool> {
+        let ci = &self.classes[c];
+        if ci.template || ci.opaque || !ci.complete || depth > 16 {
+            return None;
+        }
+        if !ci.ctors.is_empty() {
+            let d = self.default_ctor(c)?;
+            let f = self.func(d)?;
+            if f.deleted {
+                return Some(true);
+            }
+            if !f.defaulted {
+                return Some(false);
+            }
+        }
+        // a base or member that cannot be default-constructed or destroyed
+        let unusable = |t: &Ty| -> Option<bool> {
+            let t = match t {
+                Ty::Array(e, _) => &e.t,
+                t => t,
+            };
+            let Ty::Class(m) = t else { return Some(false) };
+            let mi = &self.classes[*m];
+            if let Some(dt) = mi.dtor {
+                if self.func(dt)?.deleted {
+                    return Some(true);
+                }
+            }
+            if !mi.ctors.is_empty() && self.default_ctor(*m).is_none() {
+                let all_known = mi.ctors.iter().all(|&i| self.func(i).is_some_and(|f| !f.template));
+                return if all_known { Some(true) } else { None };
+            }
+            self.default_ctor_deleted(*m, depth + 1)
+        };
+        for b in &ci.bases {
+            if unusable(&Ty::Class(b.class?))? {
+                return Some(true);
+            }
+        }
+        for &fd in &ci.fields {
+            let DK::Field(fi) = &self.decls[fd].k else { continue };
+            if ci.key == 2 {
+                continue;
+            }
+            if fi.init.is_none() {
+                if fi.ty.t.is_ref() {
+                    return Some(true);
+                }
+                if fi.ty.c {
+                    match &fi.ty.t {
+                        Ty::Class(m) => {
+                            let user_default = self.default_ctor(*m).and_then(|d| self.func(d)).is_some_and(|f| !f.defaulted);
+                            let leaves_unset = self.classes[*m].fields.iter().any(|&g| matches!(&self.decls[g].k, DK::Field(x) if x.init.is_none()));
+                            if !user_default && leaves_unset {
+                                return Some(true);
+                            }
+                        }
+                        Ty::Array(..) => {}
+                        _ => return Some(true),
+                    }
+                }
+            }
+            if fi.init.is_none() {
+                if unusable(&fi.ty.t)? {
+                    return Some(true);
+                }
+            } else if let Ty::Class(m) = &fi.ty.t {
+                if let Some(dt) = self.classes[*m].dtor {
+                    if self.func(dt)?.deleted {
+                        return Some(true);
+                    }
+                }
+            }
+        }
+        Some(false)
+    }
+
+    /// Whether a class is nested in a class with no name (CLS-9).
+    pub fn enclosing_unnamed(&self, c: usize) -> bool {
+        let mut s = self.scopes[self.classes[c].scope].parent;
+        while let Some(x) = s {
+            if let SK::Class(o) = self.scopes[x].kind {
+                if self.classes[o].name.is_empty() {
+                    return true;
+                }
+            }
+            s = self.scopes[x].parent;
+        }
+        false
+    }
+    pub fn has_attr(&self, id: DeclId, name: &str) -> bool {
+        self.entity_attrs.get(&id).is_some_and(|v| v.iter().any(|n| n == name))
     }
     pub fn error_norule(&mut self, line: u32, msg: impl Into<String>) {
         self.d.error(line, None, msg);

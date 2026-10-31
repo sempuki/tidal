@@ -30,6 +30,59 @@ impl P {
         r
     }
 
+    /// Check the attributes of a statement (ATTR-2, ATTR-13). Returns the
+    /// statement when the attributes make it an attribute statement such
+    /// as `[[fallthrough]];` or `[[assume(e)]];`.
+    fn statement_attrs(&mut self, attrs: Vec<Attr>) -> PR<Option<Stmt>> {
+        let null = self.at(";");
+        let mut stmt = None;
+        if attrs.iter().any(|a| a.name == "likely") && attrs.iter().any(|a| a.name == "unlikely") {
+            // ATTR-2: not both likely and unlikely.
+            self.error(attrs[0].line, "ATTR-2", "'likely' and 'unlikely' on the same statement");
+        }
+        for a in &attrs {
+            match a.name.as_str() {
+                "fallthrough" if !null => self.error(a.line, "ATTR-2", "'fallthrough' must be a statement on its own"),
+                "fallthrough" => {
+                    // ATTR-2: immediately before a case or default label.
+                    let mut k = 1;
+                    while self.at_k(k, "[") && self.at_k(k + 1, "[") {
+                        let mut depth = 0;
+                        while self.peek(k).kind != TK::Eof {
+                            if self.at_k(k, "[") {
+                                depth += 1;
+                            } else if self.at_k(k, "]") {
+                                depth -= 1;
+                            }
+                            k += 1;
+                            if depth == 0 {
+                                break;
+                            }
+                        }
+                    }
+                    if !(self.at_k(k, "case") || self.at_k(k, "default")) {
+                        self.error(a.line, "ATTR-2", "'fallthrough' is not immediately before a case or default label");
+                    }
+                    stmt = Some(Stmt::Null);
+                }
+                "assume" if !null => self.error(a.line, "ATTR-13", "an assumption must be a statement on its own"),
+                "assume" => {
+                    stmt = Some(match &a.assume {
+                        Some(e) => Stmt::Assume(e.clone()),
+                        None => Stmt::Null,
+                    });
+                }
+                _ => {}
+            }
+        }
+        if stmt.is_some() {
+            self.pos += 1; // ;
+            return Ok(stmt);
+        }
+        self.pending_attrs = attrs;
+        Ok(None)
+    }
+
     pub fn parse_statement_recover(&mut self) -> Stmt {
         let start = self.pos;
         match self.parse_statement() {
@@ -53,7 +106,14 @@ impl P {
     }
 
     pub fn parse_statement(&mut self) -> PR<Stmt> {
+        self.pending_attrs.clear();
         self.skip_attributes();
+        let attrs = std::mem::take(&mut self.pending_attrs);
+        if !attrs.is_empty() {
+            if let Some(s) = self.statement_attrs(attrs)? {
+                return Ok(s);
+            }
+        }
         let line = self.line();
         let t = self.tok().clone();
         if t.kind == TK::Punct {
@@ -155,7 +215,7 @@ impl P {
         };
         if f.labels.contains_key(name) {
             // JMP-5, NAM-7: a label once per function.
-            self.error(line, "JMP-5", format!("label '{}' defined twice", name));
+            self.error(line, "JMP-14", format!("label '{}' defined twice", name));
             return;
         }
         f.labels.insert(name.to_string(), line);
@@ -317,7 +377,7 @@ impl P {
             }
             Err(crate::consteval::CeErr::NotConst(r, m)) => {
                 if !self.in_template() {
-                    self.error(line, "SW-3", format!("case value is not a constant expression ({}: {})", r, m));
+                    self.error_because(line, "SW-3", r, format!("case value is not a constant expression ({}: {})", r, m));
                 }
                 None
             }
@@ -484,6 +544,13 @@ impl P {
                 _ => false,
             }
         }
+        // ATTR-5: the result of a nodiscard call is discarded.
+        if let EK::Call(_, _, Some(f)) = &e.k {
+            let by_value_class = matches!(&e.ty.t, Ty::Class(c) if e.cat == Cat::PR && self.class_attrs.get(c).is_some_and(|v| v.iter().any(|n| n == "nodiscard")));
+            if self.has_attr(*f, "nodiscard") || by_value_class {
+                self.warn(e.line, "ATTR-5", "result of a 'nodiscard' call discarded");
+            }
+        }
         if e.ty.is_unknown() {
             return;
         }
@@ -525,7 +592,7 @@ impl P {
             // return type deduction (spec/declarations/functions/return-deduction.md)
             if let Some(x) = &e {
                 if matches!(x.k, EK::InitList(_)) {
-                    self.error(line, "RET-1", "return type deduced from a braced list");
+                    self.error(line, "RET-7", "return type deduced from a braced list");
                     return Ok(Stmt::Return(None));
                 }
                 let mut x0 = x.clone();
@@ -563,7 +630,7 @@ impl P {
                         None => fl.deduced = Some(t.clone()),
                         Some(prev) => {
                             if *prev != t && !prev.is_unknown() && !t.is_unknown() {
-                                self.error(line, "RET-1", "return statements deduce different types");
+                                self.error(line, "RET-7", "return statements deduce different types");
                             }
                         }
                     }
@@ -574,7 +641,7 @@ impl P {
                 } else if t.t.is_ref() {
                     let mut x = x;
                     x.cat = x0.cat;
-                    self.bind_ref(x, &t, line, "RET-1")
+                    self.bind_ref(x, &t, line, "RET-7")
                 } else {
                     self.implicit(x, &t, false).unwrap_or_else(|_| Expr::unknown(line, "return"))
                 };
@@ -583,7 +650,7 @@ impl P {
                 if self.discarded == 0 {
                     let bad = self.fns.last().unwrap().deduced.as_ref().is_some_and(|t| t.t != Ty::Void && !t.is_unknown());
                     if bad {
-                        self.error(line, "RET-1", "return without a value after a return with a value");
+                        self.error(line, "RET-7", "return without a value after a return with a value");
                     }
                     let fl = self.fns.last_mut().unwrap();
                     if fl.deduced.is_none() {
@@ -601,7 +668,7 @@ impl P {
             if let Some(x) = &e {
                 if x.ty.t != Ty::Void && !x.ty.is_unknown() {
                     // JMP-3: a void function returns no value.
-                    self.error(line, "JMP-3", "return with a value in a void function");
+                    self.error(line, "JMP-13", "return with a value in a void function");
                 }
             }
             return Ok(Stmt::Return(e));
@@ -609,7 +676,7 @@ impl P {
         let Some(x) = e else {
             if !self.fns.last().and_then(|f| f.func).is_some_and(|fid| self.func(fid).is_some_and(|fi| fi.is_main)) {
                 // JMP-3: a function that returns a value needs an expression.
-                self.error(line, "JMP-3", "return without a value in a function that returns a value");
+                self.error(line, "JMP-13", "return without a value in a function that returns a value");
             }
             return Ok(Stmt::Return(None));
         };
@@ -632,7 +699,7 @@ impl P {
         }
         let form = if matches!(x.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
         let c = if ret.t.is_ref() {
-            self.bind_ref(x, &ret, line, "JMP-3")
+            self.bind_ref(x, &ret, line, "JMP-13")
         } else {
             self.convert_init(x, &ret, form, line)
         };
@@ -846,7 +913,7 @@ impl P {
                 if !self.in_template() {
                     match self.const_eval_bool(&ce) {
                         Ok(b) => selected = Some(b),
-                        Err(crate::consteval::CeErr::NotConst(r, m)) => self.error(line, "IF-16", format!("if constexpr condition is not a constant expression ({}: {})", r, m)),
+                        Err(crate::consteval::CeErr::NotConst(r, m)) => self.error_because(line, "IF-16", r, format!("if constexpr condition is not a constant expression ({}: {})", r, m)),
                         Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(line, format!("if constexpr: {}", m)),
                     }
                 }
@@ -967,7 +1034,7 @@ impl P {
             };
             fc.switches.push(SwitchCtx { cond_ty, start_set, ..Default::default() });
             fc.breakable += 1;
-            let body = self.parse_substatement(Some((cs, "SW-4")));
+            let body = self.parse_substatement(Some((cs, "SW-6")));
             let fc = self.fns.last_mut().unwrap();
             fc.switches.pop();
             fc.breakable -= 1;
@@ -1021,7 +1088,7 @@ impl P {
         let r = (|| -> PR<Stmt> {
             let cond = self.parse_condition("LOOP-5")?;
             self.expect(")")?;
-            let body = self.loop_body(Some((cs, "LOOP-4")))?;
+            let body = self.loop_body(Some((cs, "LOOP-8")))?;
             Ok(Stmt::While { cond, body: Box::new(body) })
         })();
         self.pop_scope();
@@ -1116,7 +1183,7 @@ impl P {
             self.expect(";")?;
             let inc = if self.at(")") { None } else { Some(self.parse_expression()?) };
             self.expect(")")?;
-            let body = self.loop_body(Some((cs, "LOOP-4")))?;
+            let body = self.loop_body(Some((cs, "LOOP-8")))?;
             Ok(Stmt::For { init, cond, inc, body: Box::new(body) })
         })();
         self.pop_scope();
@@ -1182,7 +1249,7 @@ impl P {
             _ => None,
         };
         if !rt.is_unknown() && self.is_scalar(&rt) {
-            self.error(line, "RFOR-2", "range-for over a value that is not a range");
+            self.error(line, "RFOR-7", "range-for over a value that is not a range");
         }
         let s = self.cur_scope();
         if let Some(d) = decl {

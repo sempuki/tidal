@@ -44,6 +44,8 @@ pub enum Val {
     Null,
     Agg(Vec<Val>),
     Uninit,
+    /// A union member that is not the active member (CE-6).
+    Inactive,
     Void,
     /// The value of a variable that constant evaluation must not read
     /// (CE-3).
@@ -81,6 +83,8 @@ pub struct Eval<'a> {
     in_consteval_fn: bool,
     locals_created: Vec<usize>,
     local_mark: Vec<usize>,
+    /// Whether each active call returns a reference.
+    ret_ref: Vec<bool>,
 }
 
 const STEP_LIMIT: u64 = 2_000_000;
@@ -101,6 +105,7 @@ impl<'a> Eval<'a> {
             in_consteval_fn: false,
             locals_created: Vec::new(),
             local_mark: Vec::new(),
+            ret_ref: Vec::new(),
         }
     }
 
@@ -194,6 +199,9 @@ impl<'a> Eval<'a> {
         let v = self.get_at(p)?.clone();
         match v {
             Val::Uninit => nc("INIT-1", "read of an uninitialized object"),
+            Val::Inactive => nc("CE-6", "read of a union member that is not active"),
+            // CE-22: a copy of an object reads each of its scalar parts.
+            Val::Agg(_) if has_unset(&v) => nc("CE-22", "copy of an object that has a scalar part with no value"),
             Val::NotUsable(m) => nc("CE-3", m),
             v => Ok(v),
         }
@@ -363,9 +371,6 @@ impl<'a> Eval<'a> {
                     return nc("UN-7", "member access through a pointer past the end");
                 }
                 // a union member must be the active one (CE-6)
-                if self.p.classes[fi.class].key == 2 {
-                    return unsup("union member access");
-                }
                 if self.p.classes[fi.class].fields.len() != self.p.classes[fi.class].fields.iter().filter(|&&f| matches!(self.p.decls[f].k, DK::Field(_))).count() {
                     return unsup("class layout");
                 }
@@ -489,6 +494,11 @@ impl<'a> Eval<'a> {
                 if e.cat == Cat::PR {
                     return unsup("prvalue member");
                 }
+                if let Ty::Class(c) = &e.ty.t {
+                    if self.p.has_user_copy(*c) {
+                        return unsup("copy with a user-provided copy or move constructor");
+                    }
+                }
                 let p = self.lvalue(e)?;
                 self.read(&p, e.ty.v)
             }
@@ -513,8 +523,40 @@ impl<'a> Eval<'a> {
                         self.convert_val(res, &ct.t, &l.ty.t)?
                     }
                 };
+                // BF-10: a bit-field keeps the low bits of the value.
+                let mut nv = nv;
+                if let EK::Member(_, fid) = &l.k {
+                    if let DK::Field(fi) = &self.p.decls[*fid].k {
+                        if let (Some(w), Val::Int(x)) = (fi.bits, &nv) {
+                            if w > 0 && w < 64 && fi.ty.t.is_integral() && fi.ty.t != Ty::Bool {
+                                let m = 1i128 << w;
+                                let mut y = x.rem_euclid(m);
+                                if fi.ty.t.is_signed() && y >= m / 2 {
+                                    y -= m;
+                                }
+                                nv = Val::Int(y);
+                            }
+                        }
+                    }
+                }
                 let slot = self.get_mut_at(&place)?;
                 *slot = nv.clone();
+                // CE-6: an assignment to a union member makes it active.
+                if let EK::Member(_, fid) = &l.k {
+                    if let DK::Field(fi) = &self.p.decls[*fid].k {
+                        if self.p.classes[fi.class].key == 2 && !place.array && !place.path.is_empty() {
+                            let idx = fi.index;
+                            let parent = Ptr { path: place.path[..place.path.len() - 1].to_vec(), ..place.clone() };
+                            if let Ok(Val::Agg(items)) = self.get_mut_at(&parent) {
+                                for (j, it) in items.iter_mut().enumerate() {
+                                    if j != idx {
+                                        *it = Val::Inactive;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 Ok(nv)
             }
             EK::Cond(c, a, b) => {
@@ -532,6 +574,10 @@ impl<'a> Eval<'a> {
             EK::Call(..) => self.eval_call(e, false),
             EK::InitList(items) => self.eval_list(items, &e.ty),
             EK::Throw(_) => nc("CE-8", "throw expression evaluated"),
+            EK::Construct(cid, args) => {
+                let Ty::Class(c) = e.ty.t else { return unsup("constructor of a non-class type") };
+                self.construct(*cid, args, c)
+            }
             EK::Unknown(why) => self.unknown(why),
             EK::Overloads(_) | EK::BoundMember(..) => unsup("overload set"),
         }
@@ -558,7 +604,13 @@ impl<'a> Eval<'a> {
                 let mut v = Vec::new();
                 for (i, &f) in fields.iter().enumerate() {
                     let DK::Field(fi) = &self.p.decls[f].k else { return unsup("class layout") };
-                    if i < items.len() {
+                    let union = self.p.classes[*c].key == 2;
+                    // UNI-4: with no value given, the member with a default
+                    // member initializer is active, else the first.
+                    let active = if items.is_empty() { fields.iter().position(|&g| matches!(&self.p.decls[g].k, DK::Field(x) if x.init.is_some())).unwrap_or(0) } else { 0 };
+                    if union && i != active {
+                        v.push(Val::Inactive);
+                    } else if i < items.len() {
                         v.push(self.eval(&items[i])?);
                     } else if let Some(init) = &fi.init {
                         let init = init.clone();
@@ -585,9 +637,14 @@ impl<'a> Eval<'a> {
             Ty::Array(el, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(el)).collect()),
             Ty::Class(c) => {
                 let mut v = Vec::new();
+                let union = self.p.classes[*c].key == 2;
                 for &f in &self.p.classes[*c].fields {
                     if let DK::Field(fi) = &self.p.decls[f].k {
-                        v.push(self.zero(&fi.ty));
+                        if union && !v.is_empty() {
+                            v.push(Val::Inactive);
+                        } else {
+                            v.push(self.zero(&fi.ty));
+                        }
                     }
                 }
                 Val::Agg(v)
@@ -607,8 +664,14 @@ impl<'a> Eval<'a> {
                 Val::Agg(v)
             }
             Ty::Class(c) => {
-                if !self.p.classes[*c].ctors.is_empty() || self.p.class_uncertain(*c) {
+                if self.p.class_uncertain(*c) {
                     return unsup("default constructor");
+                }
+                if !self.p.classes[*c].ctors.is_empty() {
+                    return match self.p.default_ctor(*c) {
+                        Some(cid) => self.construct(cid, &[], *c),
+                        None => unsup("default constructor"),
+                    };
                 }
                 let mut v = Vec::new();
                 for &f in &self.p.classes[*c].fields.clone() {
@@ -1110,49 +1173,22 @@ impl<'a> Eval<'a> {
         } else {
             None
         };
-        // arguments, evaluated in the caller's frame
-        let mut frame = HashMap::new();
-        let mut refs = HashMap::new();
-        for (i, a) in args.iter().enumerate() {
-            let Some(&pid) = f.params.get(i) else { continue };
-            let pty = self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
-            if pty.t.is_ref() {
-                let pl = self.lvalue(&strip_bind(a))?;
-                refs.insert(pid, pl);
-            } else {
-                let v = self.eval(a)?;
-                let o = self.new_obj(v, true);
-                frame.insert(pid, o);
+        let (frame, refs) = match self.bind_args(&f, args) {
+            Ok(x) => x,
+            Err(e) => {
+                self.depth -= 1;
+                return Err(e);
             }
-        }
-        // default arguments
-        for i in args.len()..f.params.len() {
-            let pid = f.params[i];
-            let Some(mut v) = self.p.var(pid).cloned() else { continue };
-            if v.init.is_none() {
-                v.init = f.default_exprs.get(i).cloned().flatten();
-            }
-            match &v.init {
-                Some(d) => {
-                    if v.ty.t.is_ref() {
-                        let pl = self.lvalue(&strip_bind(d))?;
-                        refs.insert(pid, pl);
-                    } else {
-                        let val = self.eval(d)?;
-                        let o = self.new_obj(val, true);
-                        frame.insert(pid, o);
-                    }
-                }
-                None => return unsup("missing argument"),
-            }
-        }
+        };
         self.frames.push(frame);
         self.refs.push(refs);
         self.this.push(this);
         self.local_mark.push(self.locals_created.len());
         let save = self.in_consteval_fn;
         self.in_consteval_fn = f.consteval;
+        self.ret_ref.push(f.fty.ret.t.is_ref() || f.fty.ret.is_unknown());
         let r = self.exec(&body, &mut None);
+        self.ret_ref.pop();
         self.in_consteval_fn = save;
         // The function's automatic objects end with the call; a pointer
         // to one of them dangles (UN-7, CE-9).
@@ -1185,6 +1221,147 @@ impl<'a> Eval<'a> {
         })
     }
 
+    /// Bind the arguments of a call to the parameters, in the caller's
+    /// frame, with default arguments for the rest.
+    fn bind_args(&mut self, f: &FuncInfo, args: &[Expr]) -> R<(HashMap<DeclId, usize>, HashMap<DeclId, Ptr>)> {
+        let mut frame = HashMap::new();
+        let mut refs = HashMap::new();
+        for (i, a) in args.iter().enumerate() {
+            let Some(&pid) = f.params.get(i) else { continue };
+            let pty = self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
+            if pty.t.is_ref() {
+                let pl = self.lvalue(&strip_bind(a))?;
+                refs.insert(pid, pl);
+            } else {
+                let v = self.eval(a)?;
+                let o = self.new_obj(v, true);
+                frame.insert(pid, o);
+            }
+        }
+        for i in args.len()..f.params.len() {
+            let pid = f.params[i];
+            let Some(mut v) = self.p.var(pid).cloned() else { continue };
+            if v.init.is_none() {
+                v.init = f.default_exprs.get(i).cloned().flatten();
+            }
+            match &v.init {
+                Some(d) => {
+                    if v.ty.t.is_ref() {
+                        let pl = self.lvalue(&strip_bind(d))?;
+                        refs.insert(pid, pl);
+                    } else {
+                        let val = self.eval(d)?;
+                        let o = self.new_obj(val, true);
+                        frame.insert(pid, o);
+                    }
+                }
+                None => return unsup("missing argument"),
+            }
+        }
+        Ok((frame, refs))
+    }
+
+    /// Run a constructor: initialize each member in order from its
+    /// mem-initializer, its default member initializer, or by
+    /// default-initialization, then run the body.
+    fn construct(&mut self, cid: DeclId, args: &[Expr], c: usize) -> R<Val> {
+        let Some(f) = self.p.func(cid) else { return unsup("constructor") };
+        let f = f.clone();
+        let cname = self.p.classes[c].name.clone();
+        if !f.constexpr && !f.consteval && !f.defaulted {
+            // CE-2: only constexpr constructors.
+            return nc("CE-2", format!("call of non-constexpr constructor of '{}'", cname));
+        }
+        if self.p.class_uncertain(c) || !self.p.classes[c].bases.is_empty() {
+            return unsup("constructor of a class with bases");
+        }
+        // The evaluator does not run destructors, so it gives up on a
+        // class whose destructor does something.
+        if let Some(d) = self.p.classes[c].dtor {
+            let trivial = self.p.func(d).is_some_and(|df| df.defaulted || matches!(df.body.as_deref(), Some(Stmt::Block(v)) if v.is_empty()));
+            if !trivial {
+                return unsup("destructor evaluation");
+            }
+        }
+        if f.opaque || f.mem_inits.iter().any(|m| m.field.is_none() || m.init.is_none()) {
+            return unsup("constructor with an initializer the front end does not model");
+        }
+        let body = if f.defaulted {
+            None
+        } else {
+            match f.body.clone() {
+                Some(b) => Some(b),
+                None if f.defined => return unsup(format!("body of the constructor of '{}' is not available yet", cname)),
+                None => return nc("CE-16", format!("constructor of '{}' is declared but not defined at this point", cname)),
+            }
+        };
+        let fields: Vec<DeclId> = self.p.classes[c].fields.clone();
+        if fields.iter().any(|&fd| !matches!(self.p.decls[fd].k, DK::Field(_))) {
+            return unsup("class layout");
+        }
+        let union = self.p.classes[c].key == 2;
+        self.depth += 1;
+        if self.depth > DEPTH_LIMIT {
+            self.depth -= 1;
+            return nc("CE-10", "constant evaluation recursion limit exceeded");
+        }
+        let o = self.new_obj(Val::Agg(vec![Val::Uninit; fields.len()]), true);
+        let this = Ptr { obj: o, path: vec![], off: 0, array: false };
+        let (frame, refs) = match self.bind_args(&f, args) {
+            Ok(x) => x,
+            Err(e) => {
+                self.depth -= 1;
+                return Err(e);
+            }
+        };
+        self.frames.push(frame);
+        self.refs.push(refs);
+        self.this.push(Some(this));
+        self.local_mark.push(self.locals_created.len());
+        let r = (|| -> R<Flow> {
+            for (i, &fd) in fields.iter().enumerate() {
+                let DK::Field(fi) = &self.p.decls[fd].k else { unreachable!() };
+                let fi = fi.clone();
+                if fi.ty.t.is_ref() || fi.bits.is_some() {
+                    return unsup("reference or bit-field member in a constructor");
+                }
+                let mi = f.mem_inits.iter().find(|m| m.field == Some(fd)).and_then(|m| m.init.clone());
+                let v = if let Some(init) = mi.or(fi.init.clone()) {
+                    self.rvalue_init(&init, &fi.ty)?
+                } else if union {
+                    Val::Inactive
+                } else {
+                    self.default_val(&fi.ty)?
+                };
+                if let Val::Agg(items) = &mut self.objs[o].val {
+                    items[i] = v;
+                }
+            }
+            match &body {
+                Some(b) => {
+                    self.ret_ref.push(false);
+                    let r = self.exec(b, &mut None);
+                    self.ret_ref.pop();
+                    r
+                }
+                None => Ok(Flow::Normal),
+            }
+        })();
+        let mut ended: Vec<usize> = self.frames.last().unwrap().values().copied().collect();
+        ended.extend(self.locals_created.drain(self.local_mark.pop().unwrap_or(0)..));
+        for x in ended {
+            if let Some(ob) = self.objs.get_mut(x) {
+                ob.alive = false;
+            }
+        }
+        self.frames.pop();
+        self.refs.pop();
+        self.this.pop();
+        self.depth -= 1;
+        r?;
+        Ok(self.objs[o].val.clone())
+    }
+
     /// Initialize a variable's value from its converted initializer.
     pub fn rvalue_init(&mut self, init: &Expr, ty: &QTy) -> R<Val> {
         if let Ty::Array(..) = ty.t {
@@ -1204,6 +1381,11 @@ impl<'a> Eval<'a> {
         }
         match s {
             Stmt::Null => Ok(Flow::Normal),
+            // ATTR-10: an assumption that is false is undefined.
+            Stmt::Assume(e) => match self.eval_bool(e) {
+                Ok(false) => nc("ATTR-10", "assumption is false"),
+                _ => Ok(Flow::Normal),
+            },
             Stmt::Expr(e) => {
                 self.eval(e)?;
                 Ok(Flow::Normal)
@@ -1305,7 +1487,8 @@ impl<'a> Eval<'a> {
             Stmt::Return(e) => match e {
                 None => Ok(Flow::Return(None)),
                 Some(e) => {
-                    if e.cat != Cat::PR && !matches!(e.k, EK::Conv(..)) {
+                    let ret_ref = self.ret_ref.last().copied().unwrap_or(true);
+                    if e.cat != Cat::PR && !matches!(e.k, EK::Conv(..)) && ret_ref {
                         // returning a reference
                         let p = self.lvalue(e)?;
                         return Ok(Flow::Return(Some(Val::Ptr(p))));
@@ -1314,8 +1497,8 @@ impl<'a> Eval<'a> {
                     Ok(Flow::Return(Some(v)))
                 }
             },
-            // CX-3: a goto in constant evaluation.
-            Stmt::Goto(_) => nc("CX-3", "goto evaluated in constant evaluation"),
+            // CE-20: a goto in constant evaluation.
+            Stmt::Goto(_) => nc("CE-20", "goto evaluated in constant evaluation"),
             Stmt::Unsupported(m) => unsup(m.clone()),
         }
     }
@@ -1402,8 +1585,12 @@ impl<'a> Eval<'a> {
             if v.constexpr {
                 return Ok(());
             }
-            // CX-3, CE-17: a static or thread_local variable.
-            return nc("CX-3", "definition of a static or thread_local variable in constant evaluation");
+            // CE-20: a static or thread_local variable.
+            return nc("CE-20", "definition of a static or thread_local variable in constant evaluation");
+        }
+        if self.p.literal_type(&v.ty) == Some(false) {
+            // CE-20: no variable of a type that is not literal.
+            return nc("CE-20", "definition of a variable of a type that is not a literal type");
         }
         if v.ty.t.is_ref() {
             let Some(init) = &v.init else { return unsup("reference without initializer") };
@@ -1447,9 +1634,19 @@ impl<'a> Eval<'a> {
                 }
                 Ok(())
             }
-            Val::Uninit => nc("INIT-1", "result has an uninitialized part"),
+            // CE-21: every scalar part of the result has a value.
+            Val::Uninit => nc("CE-21", "result has a scalar part with no value"),
             _ => Ok(()),
         }
+    }
+}
+
+/// A value with a scalar part that has no value (CE-21, CE-22).
+fn has_unset(v: &Val) -> bool {
+    match v {
+        Val::Uninit => true,
+        Val::Agg(items) => items.iter().any(has_unset),
+        _ => false,
     }
 }
 
@@ -1555,7 +1752,16 @@ impl P {
     /// initializer (CX-1, CINIT-1, CLS-20).
     pub fn const_eval_init(&self, id: DeclId) -> R<()> {
         let Some(v) = self.var(id) else { return Ok(()) };
-        let Some(init) = v.init.clone() else { return Ok(()) };
+        let Some(init) = v.init.clone() else {
+            // Default-initialization of a class object: CX-1 and CE-21 need
+            // every scalar part to have a value.
+            if matches!(v.ty.t, Ty::Class(_)) {
+                let mut ev = Eval::new(self);
+                let val = ev.default_val(&v.ty)?;
+                return ev.check_result(&val);
+            }
+            return Ok(());
+        };
         let mut ev = Eval::new(self);
         if v.ty.t.is_ref() {
             let p = ev.lvalue(&strip_bind(&init))?;
@@ -1574,6 +1780,67 @@ impl P {
         ev.check_result(&val)
     }
 
+    /// A class with a copy or move constructor that is not defaulted.
+    pub fn has_user_copy(&self, c: usize) -> bool {
+        self.classes[c].ctors.iter().any(|&i| {
+            self.func(i).is_some_and(|f| {
+                !f.defaulted
+                    && !f.params.is_empty()
+                    && self.var(f.params[0]).is_some_and(|v| match &v.ty.t {
+                        Ty::LRef(x) | Ty::RRef(x) => x.t == Ty::Class(c),
+                        _ => false,
+                    })
+            })
+        })
+    }
+
+    /// CE-23: whether a type is a literal type. None when the front end
+    /// does not model the type well enough to say.
+    pub fn literal_type(&self, t: &QTy) -> Option<bool> {
+        match &t.t {
+            Ty::Unknown => None,
+            Ty::Array(el, _) => self.literal_type(el),
+            Ty::Class(c) => {
+                let c = *c;
+                let ci = &self.classes[c];
+                if self.class_uncertain(c) || !ci.complete {
+                    return None;
+                }
+                // The destructor is implicit, defaulted, or constexpr.
+                if let Some(d) = ci.dtor {
+                    let f = self.func(d)?;
+                    if !f.constexpr && !f.defaulted {
+                        return Some(false);
+                    }
+                }
+                // Bases and members have literal types that are not
+                // volatile; a union needs one member that is not volatile.
+                for b in &ci.bases {
+                    let bc = b.class?;
+                    if self.literal_type(&QTy::new(Ty::Class(bc)))? == false {
+                        return Some(false);
+                    }
+                }
+                let mut any_nonvolatile = false;
+                let mut any_volatile = false;
+                for &fd in &ci.fields {
+                    let DK::Field(fi) = &self.decls[fd].k else { continue };
+                    if self.literal_type(&fi.ty)? == false {
+                        return Some(false);
+                    }
+                    let vol = fi.ty.v || matches!(&fi.ty.t, Ty::Array(el, _) if el.v);
+                    any_volatile |= vol;
+                    any_nonvolatile |= !vol;
+                }
+                if any_volatile && (ci.key != 2 || !any_nonvolatile) {
+                    return Some(false);
+                }
+                Some(true)
+            }
+            _ => Some(true),
+        }
+    }
+
     pub fn eval_bool_const(&mut self, e: &Expr, line: u32, rule: &'static str) -> Option<bool> {
         if self.in_template() || e.ty.is_unknown() {
             return None;
@@ -1582,7 +1849,7 @@ impl P {
         match self.const_eval_bool(&b) {
             Ok(v) => Some(v),
             Err(CeErr::NotConst(r, m)) => {
-                self.error(line, rule, format!("not a constant expression ({}: {})", r, m));
+                self.error_because(line, rule, r, format!("not a constant expression ({}: {})", r, m));
                 None
             }
             Err(CeErr::Unsupported(m)) => {

@@ -180,14 +180,14 @@ impl P {
             }
             if const_blocked {
                 // CLS-5: no call of a non-const member function on a const object.
-                self.error(line, "CLS-5", "non-const member function called on a const object");
+                self.error(line, "CLS-25", "non-const member function called on a const object");
                 return Expr::unknown(line, "bad call");
             }
             if !arity_ok_any {
                 // PFX-5: one argument for each parameter without a default.
                 self.error(line, "PFX-5", "wrong number of arguments in a function call");
             } else {
-                self.error(line, "PFX-6", "no viable function: an argument cannot be converted to the parameter type");
+                self.error(line, "PFX-16", "no viable function: an argument cannot be converted to the parameter type");
             }
             return Expr::unknown(line, "bad call");
         }
@@ -238,6 +238,10 @@ impl P {
             Some(o) if f.class.is_some() && !f.is_static => o,
             _ => Expr::new(EK::Func(fid), QTy::new(Ty::Func(Box::new(f.fty.clone()))), Cat::L, line),
         };
+        if cat == Cat::PR && !self.in_template() && self.is_abstract(&t.t) {
+            // VIRT-8: a call that returns an abstract class.
+            self.error(line, "VIRT-8", "call of a function that returns an abstract class");
+        }
         let call = Expr::new(EK::Call(Box::new(callee), args, Some(fid)), t, cat, line);
         let in_lambda = self.fns.iter().any(|f| f.is_lambda);
         if f.consteval && !self.in_immediate_context() && self.in_unevaluated == 0 && !self.in_template() && !in_lambda {
@@ -246,7 +250,7 @@ impl P {
             // CEV-1: each call of a consteval function is a constant expression.
             match self.const_check(&call) {
                 Ok(()) => {}
-                Err(crate::consteval::CeErr::NotConst(r, m)) => self.error(line, "CEV-1", format!("call of consteval function is not a constant expression ({}: {})", r, m)),
+                Err(crate::consteval::CeErr::NotConst(r, m)) => self.error_because(line, "CEV-1", r, format!("call of consteval function is not a constant expression ({}: {})", r, m)),
                 Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(line, format!("consteval call: {}", m)),
             }
         }
@@ -344,7 +348,7 @@ impl P {
                     match self.implicit(a, &p, false) {
                         Ok(x) => x,
                         Err(m) => {
-                            self.error(al, "PFX-6", format!("argument {}: {}", i + 1, m));
+                            self.error(al, "PFX-16", format!("argument {}: {}", i + 1, m));
                             Expr::unknown(al, "bad argument")
                         }
                     }
@@ -374,6 +378,9 @@ impl P {
             return Expr::new(EK::Unknown("cast of unknown operand".into()), target, cat, line);
         }
         if kind == CastKind::Dynamic {
+            if !self.in_template() {
+                self.check_dynamic_cast(&e, &ty, line);
+            }
             return Expr::new(EK::Unknown("dynamic_cast".into()), target, cat, line);
         }
         if kind == CastKind::Reinterpret {
@@ -525,7 +532,7 @@ impl P {
                 (Some(v), true) => {
                     if v.len() != 1 {
                         if !(is_list && v.is_empty() && false) {
-                            self.error(line, "REF-6", "reference initializer must hold exactly one expression");
+                            self.error(line, "REF-11", "reference initializer must hold exactly one expression");
                         }
                         return Expr::unknown(line, "bad reference init");
                     }
@@ -541,7 +548,7 @@ impl P {
                 }
                 _ => e,
             };
-            return self.bind_ref(one, ty, line, "INIT-4");
+            return self.bind_ref(one, ty, line, "INIT-7");
         }
         match &ty.t {
             Ty::Array(el, n) => {
@@ -563,13 +570,13 @@ impl P {
                             || (st == Ty::Char && matches!(el.t, Ty::SChar | Ty::UChar));
                         if !compatible {
                             // LIST-6: the literal's character type must match.
-                            self.error(line, "LIST-6", "string literal of the wrong character type for the array");
+                            self.error(line, "LIST-15", "string literal of the wrong character type for the array");
                         }
                         if let (Some(n), EK::Str(u)) = (n, &s.k) {
                             if (u.len() as u64) + 1 > *n && (u.len() as u64) > *n {
-                                self.error(line, "LIST-6", "string literal too long for the array");
+                                self.error(line, "LIST-15", "string literal too long for the array");
                             } else if (u.len() as u64) + 1 > *n {
-                                self.error(line, "LIST-6", "string literal and its null character do not fit in the array");
+                                self.error(line, "LIST-15", "string literal and its null character do not fit in the array");
                             }
                         }
                         return Expr::new(EK::Conv(Conv::NoOp, Box::new(s)), ty.clone(), Cat::PR, line);
@@ -578,9 +585,9 @@ impl P {
                 let Some(v) = items else {
                     if matches!(e.ty.t, Ty::Array(..)) {
                         // INIT-5: an array must not be initialized from an array.
-                        self.error(line, "INIT-5", "array initialized from another array");
+                        self.error(line, "INIT-8", "array initialized from another array");
                     } else if !e.ty.is_unknown() {
-                        self.error(line, "INIT-5", "array initialized from a value that is not a list");
+                        self.error(line, "INIT-8", "array initialized from a value that is not a list");
                     }
                     return Expr::unknown(line, "bad array init");
                 };
@@ -588,7 +595,7 @@ impl P {
                     let nested_elision = matches!(el.t, Ty::Array(..) | Ty::Class(_)) && v.iter().any(|x| !matches!(x.k, EK::InitList(_)));
                     if !nested_elision && v.len() as u64 > *n {
                         // DCL-5: not more elements than the bound.
-                        self.error(line, "DCL-5", "too many initializers for the array");
+                        self.error(line, "DCL-19", "too many initializers for the array");
                         return Expr::unknown(line, "bad array init");
                     }
                     if nested_elision {
@@ -625,7 +632,7 @@ impl P {
                         let any_nested_aggr = fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if matches!(fi.ty.t, Ty::Array(..) | Ty::Class(_))));
                         if v.len() > nfields && !any_nested_aggr {
                             // LIST-3: not more values than members.
-                            self.error(line, "LIST-3", "too many initializers for the aggregate");
+                            self.error(line, "LIST-12", "too many initializers for the aggregate");
                             return Expr::unknown(line, "bad aggregate init");
                         }
                         if any_nested_aggr {
@@ -647,7 +654,7 @@ impl P {
                             if let DK::Field(fi) = &self.decls[f].k {
                                 if fi.ty.t.is_ref() && fi.init.is_none() {
                                     // LIST-3: a reference member needs a value.
-                                    self.error(line, "LIST-3", "reference member without an initializer in the list");
+                                    self.error(line, "LIST-12", "reference member without an initializer in the list");
                                 }
                             }
                         }
@@ -664,10 +671,25 @@ impl P {
                             }
                         }
                         if simple_aggr && !self.class_uncertain(c) && form == InitForm::Copy {
-                            self.error(line, "INIT-4", "no conversion to an aggregate class");
+                            self.error(line, "INIT-7", "no conversion to an aggregate class");
                             return Expr::unknown(line, "bad init");
                         }
+                        if form == InitForm::Copy && !self.classes[c].ctors.is_empty() && !matches!(et.t, Ty::Class(_)) {
+                            let x = self.ctor_call(c, std::slice::from_ref(&e), ty, line);
+                            self.check_explicit_copy(&x, line);
+                            return x;
+                        }
                         Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line)
+                    }
+                    (Some(v), false) if (is_list || is_paren) && !self.classes[c].ctors.is_empty() => {
+                        if v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c) {
+                            return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+                        }
+                        let x = self.ctor_call(c, v, ty, line);
+                        if form == InitForm::CopyList {
+                            self.check_explicit_copy(&x, line);
+                        }
+                        x
                     }
                     _ => Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line),
                 }
@@ -683,12 +705,12 @@ impl P {
                         }
                         if v.len() > 1 {
                             // LIST-1: at most one expression.
-                            self.error(line, "LIST-1", "braced initializer for a scalar with more than one value");
+                            self.error(line, "LIST-11", "braced initializer for a scalar with more than one value");
                             return Expr::unknown(line, "bad scalar init");
                         }
                         let x = v[0].clone();
                         if matches!(x.k, EK::InitList(_)) {
-                            self.error(line, "LIST-1", "nested braces in a scalar initializer");
+                            self.error(line, "LIST-11", "nested braces in a scalar initializer");
                             return Expr::unknown(line, "bad scalar init");
                         }
                         // ENUM-8: an enumeration from an integer in braces.
@@ -696,11 +718,11 @@ impl P {
                             let xt = nonref(&x.ty).t;
                             if xt != target.t && !xt.contains_unknown() && (xt.is_integral() || self.is_unscoped_enum(&xt)) {
                                 let Some(fixed) = self.enums[*en].fixed.clone() else {
-                                    self.error(line, "ENUM-8", "enumeration without a fixed underlying type initialized from an integer");
+                                    self.error(line, "ENUM-19", "enumeration without a fixed underlying type initialized from an integer");
                                     return Expr::unknown(line, "bad enum init");
                                 };
                                 if form != InitForm::DirectList {
-                                    self.error(line, "ENUM-8", "copy-list-initialization of an enumeration from an integer");
+                                    self.error(line, "ENUM-19", "copy-list-initialization of an enumeration from an integer");
                                     return Expr::unknown(line, "bad enum init");
                                 }
                                 if self.is_narrowing(&x, &fixed) {
@@ -718,7 +740,7 @@ impl P {
                         match self.implicit(x, &target, direct) {
                             Ok(c) => c,
                             Err(m) => {
-                                self.error(line, "INIT-4", m);
+                                self.error(line, "INIT-7", m);
                                 Expr::unknown(line, "bad init")
                             }
                         }
@@ -726,18 +748,18 @@ impl P {
                     Some(v) => {
                         // parentheses
                         if v.len() != 1 {
-                            self.error(line, "INIT-4", "parenthesized initializer for a scalar must hold exactly one expression");
+                            self.error(line, "INIT-7", "parenthesized initializer for a scalar must hold exactly one expression");
                             return Expr::unknown(line, "bad scalar init");
                         }
                         let x = v[0].clone();
                         if matches!(x.k, EK::InitList(_)) {
-                            self.error(line, "INIT-4", "braced list in parentheses for a scalar");
+                            self.error(line, "INIT-7", "braced list in parentheses for a scalar");
                             return Expr::unknown(line, "bad scalar init");
                         }
                         match self.implicit(x, &target, true) {
                             Ok(c) => c,
                             Err(m) => {
-                                self.error(line, "INIT-4", m);
+                                self.error(line, "INIT-7", m);
                                 Expr::unknown(line, "bad init")
                             }
                         }
@@ -745,13 +767,172 @@ impl P {
                     None => match self.implicit(e, &target, false) {
                         Ok(c) => c,
                         Err(m) => {
-                            self.error(line, "INIT-4", m);
+                            self.error(line, "INIT-7", m);
                             Expr::unknown(line, "bad init")
                         }
                     },
                 }
             }
         }
+    }
+
+    /// VIRT-18: the conditions on a dynamic_cast.
+    fn check_dynamic_cast(&mut self, e: &Expr, ty: &QTy, line: u32) {
+        let et = nonref(&e.ty);
+        // (target class or void, operand class) with their qualifiers
+        let (tq, oq) = match &ty.t {
+            Ty::Ptr(t) => {
+                let Ty::Ptr(o) = &et.t else {
+                    self.error(line, "VIRT-18", "dynamic_cast to a pointer needs a pointer operand");
+                    return;
+                };
+                ((**t).clone(), (**o).clone())
+            }
+            Ty::LRef(t) | Ty::RRef(t) => {
+                if e.cat == Cat::PR && matches!(ty.t, Ty::LRef(_)) {
+                    self.error(line, "VIRT-18", "dynamic_cast to a reference needs an lvalue or xvalue operand");
+                    return;
+                }
+                ((**t).clone(), et.clone())
+            }
+            _ => {
+                self.error(line, "VIRT-18", "dynamic_cast target must be a pointer or reference to a class, or void*");
+                return;
+            }
+        };
+        let tc = match tq.t {
+            Ty::Class(c) => Some(c),
+            Ty::Void if matches!(ty.t, Ty::Ptr(_)) => None,
+            _ => {
+                self.error(line, "VIRT-18", "dynamic_cast target must be a pointer or reference to a class, or void*");
+                return;
+            }
+        };
+        if let Some(c) = tc {
+            if !self.classes[c].complete {
+                self.error(line, "VIRT-18", "dynamic_cast to an incomplete class");
+                return;
+            }
+        }
+        if (oq.c && !tq.c) || (oq.v && !tq.v) {
+            self.error(line, "VIRT-18", "dynamic_cast removes a cv-qualifier");
+            return;
+        }
+        let Ty::Class(oc) = oq.t else { return };
+        if self.class_uncertain(oc) || tc.is_some_and(|c| self.class_uncertain(c)) {
+            return;
+        }
+        match tc {
+            Some(c) if c == oc => {}
+            Some(c) if self.is_base_of(c, oc) => {
+                let (paths, open) = self.base_paths(c, oc);
+                if paths > 1 {
+                    self.error(line, "VIRT-18", "dynamic_cast to an ambiguous base");
+                } else if !open {
+                    self.error(line, "VIRT-18", "dynamic_cast to an inaccessible base");
+                }
+            }
+            _ => {
+                if !self.polymorphic(oc) {
+                    self.error(line, "VIRT-18", "dynamic_cast operand of a class that is not polymorphic");
+                }
+            }
+        }
+    }
+
+    /// The number of non-virtual paths from `derived` to `base`, and
+    /// whether one of them goes only through public bases.
+    fn base_paths(&self, base: usize, derived: usize) -> (u32, bool) {
+        let mut n = 0;
+        let mut open = false;
+        let mut virt_seen = false;
+        for b in &self.classes[derived].bases {
+            let Some(bc) = b.class else { continue };
+            let (k, o) = if bc == base { (1, true) } else { self.base_paths(base, bc) };
+            if k > 0 {
+                if b.virt && bc == base {
+                    if virt_seen {
+                        continue;
+                    }
+                    virt_seen = true;
+                }
+                n += k;
+                open |= o && b.access == 0;
+            }
+        }
+        (n, open)
+    }
+
+    fn polymorphic(&self, c: usize) -> bool {
+        self.classes[c].has_virtual || self.classes[c].bases.iter().any(|b| b.class.is_some_and(|bc| self.polymorphic(bc)))
+    }
+
+    /// CTOR-9: copy-initialization does not use an explicit constructor.
+    fn check_explicit_copy(&mut self, x: &Expr, line: u32) {
+        if let EK::Construct(cid, _) = &x.k {
+            if self.func(*cid).is_some_and(|f| f.explicit) {
+                self.error(line, "CTOR-9", "copy-initialization uses an explicit constructor");
+            }
+        }
+    }
+
+    /// The default constructor of a class, when exactly one constructor
+    /// takes no arguments and none is a template.
+    pub fn default_ctor(&self, c: usize) -> Option<DeclId> {
+        let ctors = &self.classes[c].ctors;
+        if ctors.iter().any(|&i| self.func(i).is_none_or(|f| f.template)) {
+            return None;
+        }
+        let v: Vec<DeclId> = ctors.iter().copied().filter(|&i| self.func(i).is_some_and(|f| f.params.len() <= f.defaults)).collect();
+        if v.len() == 1 {
+            Some(v[0])
+        } else {
+            None
+        }
+    }
+
+    /// A constructor call with the given arguments. The front end picks a
+    /// constructor only when every candidate of the right arity has scalar
+    /// parameters and exactly one accepts the arguments; otherwise the
+    /// call stays unknown.
+    pub fn ctor_call(&mut self, c: usize, args: &[Expr], ty: &QTy, line: u32) -> Expr {
+        let unknown = Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+        if self.class_uncertain(c) || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_))) {
+            return unknown;
+        }
+        let mut viable = Vec::new();
+        for cid in self.classes[c].ctors.clone() {
+            let Some(f) = self.func(cid).cloned() else { return unknown };
+            if f.template {
+                return unknown;
+            }
+            let np = f.params.len();
+            if args.len() > np || args.len() + f.defaults < np {
+                continue;
+            }
+            let mut conv = Vec::new();
+            for (i, a) in args.iter().enumerate() {
+                let pt = self.var(f.params[i]).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
+                if pt.is_unknown() || pt.t.is_ref() || matches!(pt.t, Ty::Class(_) | Ty::Array(..)) || matches!(nonref(&a.ty).t, Ty::Class(_)) {
+                    return unknown;
+                }
+                match self.implicit(a.clone(), &pt.unqual(), false) {
+                    Ok(x) => conv.push(x),
+                    Err(_) => break,
+                }
+            }
+            if conv.len() == args.len() {
+                if f.deleted {
+                    return unknown;
+                }
+                viable.push((cid, conv));
+            }
+        }
+        if viable.len() != 1 {
+            return unknown;
+        }
+        let (cid, conv) = viable.pop().unwrap();
+        Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line)
     }
 
     pub fn is_simple_aggregate(&self, c: usize) -> bool {
@@ -772,7 +953,7 @@ impl P {
                 // AUTO-7: std::initializer_list, a library type.
                 if let EK::InitList(v) = &e.k {
                     if v.is_empty() {
-                        self.error(line, "AUTO-7", "auto deduced from an empty braced list");
+                        self.error(line, "AUTO-21", "auto deduced from an empty braced list");
                     }
                 }
                 return Some(QTy::unknown());
@@ -780,11 +961,11 @@ impl P {
             InitForm::DirectList | InitForm::Paren(_) => {
                 let EK::InitList(v) = &e.k else { return None };
                 if v.len() != 1 {
-                    self.error(line, if decltype_auto { "AUTO-11" } else { "AUTO-6" }, "placeholder initializer must contain exactly one expression");
+                    self.error(line, if decltype_auto { "AUTO-11" } else { "AUTO-20" }, "placeholder initializer must contain exactly one expression");
                     return None;
                 }
                 if matches!(v[0].k, EK::InitList(_)) {
-                    self.error(line, "AUTO-6", "braced list in parentheses for a placeholder");
+                    self.error(line, "AUTO-20", "braced list in parentheses for a placeholder");
                     return None;
                 }
                 init = v[0].clone();
@@ -845,7 +1026,7 @@ impl P {
                 let mut t = et.clone();
                 t.c |= cvq.0;
                 if init.cat != Cat::L && !t.c {
-                    self.error(line, "AUTO-3", "auto& bound to an rvalue");
+                    self.error(line, "AUTO-18", "auto& bound to an rvalue");
                     return None;
                 }
                 Some(QTy::new(Ty::LRef(Box::new(t))))
@@ -856,7 +1037,7 @@ impl P {
                     let mut t = et.clone();
                     t.c |= cvq.0;
                     if init.cat == Cat::L {
-                        self.error(line, "REF-3", "const auto&& bound to an lvalue");
+                        self.error(line, "REF-10", "const auto&& bound to an lvalue");
                         return None;
                     }
                     return Some(QTy::new(Ty::RRef(Box::new(t))));
@@ -874,7 +1055,7 @@ impl P {
                     Ty::Array(el, _) => (**el).clone(),
                     Ty::Func(_) => et.clone(),
                     Ty::NullPtr | _ => {
-                        self.error(line, "AUTO-5", "auto* initialized from a value that is not a pointer");
+                        self.error(line, "AUTO-19", "auto* initialized from a value that is not a pointer");
                         return None;
                     }
                 };

@@ -117,8 +117,8 @@ fn run_one(t: &Test) -> Outcome2 {
                 }
             }
             Ok(Ok(Outcome::Unsupported(d))) => unsup.extend(d),
-            Ok(Err(())) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, msg: "front end crashed".into(), line: 0 }),
-            Err(_) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, msg: "front end timed out".into(), line: 0 }),
+            Ok(Err(())) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end crashed".into(), line: 0 }),
+            Err(_) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end timed out".into(), line: 0 }),
         }
     }
     if let Some(d) = any_reject {
@@ -236,7 +236,7 @@ pub fn run(args: &[String]) {
             }
         }
         if o.res == Res::Pass && t.expect_reject {
-            if o.diags.iter().any(|d| d.rule.is_some_and(|r| t.rules.iter().any(|x| x == r))) {
+            if o.diags.iter().any(|d| d.rule.into_iter().chain(d.cause).any(|r| t.rules.iter().any(|x| x == r))) {
                 rule_match += 1;
             }
         }

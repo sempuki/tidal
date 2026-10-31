@@ -30,9 +30,15 @@ Diagnostics go to standard error, one per line:
 
 ```
 FILE:LINE: error [SW-3]: duplicate case value 1
+FILE:LINE: error [CX-1, CE-22]: initializer is not a constant expression (...)
 FILE:LINE: unsupported: static_assert: new expression
 FILE:LINE: warning [STMT-4]: expression result unused
 ```
+
+An error names a rule of a class that allows rejection (decision 0034).
+When a constant was needed and the evaluation failed, the error names
+two rules: the rule that needs the constant, then the rule that the
+evaluation broke. The conformance count of matching rules accepts either.
 
 `--m32` switches the target from LP64 (x86-64 Linux) to ILP32.
 `--werror` turns the warnings for `recommended` rules into errors.
@@ -77,4 +83,4 @@ writes the table and one line per test to FILE.
 | `src/conform.rs` | the conformance harness |
 
 The findings about the specification are in
-`reports/clean-room/rust-frontend/report.md`.
+`reports/clean-room/rust-frontend/report.md` and `report-2.md`.

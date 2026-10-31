@@ -1,0 +1,25 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   report-2.md:Front end update: items A, C, and D longest=0   overlap=0.00
+ok   report-2.md:1. Conformance       longest=0   overlap=0.00
+ok   report-2.md:2.1 The false reject (ENUM-10) longest=0   overlap=0.01
+ok   report-2.md:2.2 CE-21 to CE-24   longest=0   overlap=0.00
+ok   report-2.md:2.3 Reject rules in diagnostics longest=0   overlap=0.00
+ok   report-2.md:2.4 Missed rejects   longest=0   overlap=0.01
+ok   report-2.md:G1. The type of an enumerator inside its longest=0   overlap=0.03
+ok   report-2.md:G2. CE-21 and unions longest=0   overlap=0.03
+ok   report-2.md:G3. Which copies CE-22 covers longest=0   overlap=0.00
+ok   report-2.md:G4. The literal type list longest=0   overlap=0.00
+ok   report-2.md:G5. An implicit default constructor in a longest=0   overlap=0.01
+ok   report-2.md:G6. No initializer and CE-24 longest=0   overlap=0.03
+ok   report-2.md:G7. Two rules for one constant-evaluatio longest=0   overlap=0.00
+ok   report-2.md:G8. Prohibitions still in required rules longest=0   overlap=0.02
+ok   report-2.md:G9. Default arguments on operator functi longest=0   overlap=0.00
+ok   report-2.md:G10. Where `fallthrough` may stand longest=0   overlap=0.01
+ok   report-2.md:G11. Arguments of other standard attribu longest=0   overlap=0.00
+ok   report-2.md:G12. RET-3 for member functions longest=0   overlap=0.00
+ok   report-2.md:G13. Tests without rule text longest=0   overlap=0.00
+ok   report-2.md:4. Crates            longest=0   overlap=0.00
+ok   report-2.md:5. Files changed     longest=0   overlap=0.00
+
+0 flagged

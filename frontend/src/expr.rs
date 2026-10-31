@@ -326,7 +326,7 @@ impl P {
         let found = self.lookup_member(c, &name);
         let Some(ids) = found else {
             if !self.class_uncertain(c) {
-                self.error(line, "NAM-1", format!("no member named '{}'", name));
+                self.error(line, "NAM-8", format!("no member named '{}'", name));
             }
             return Ok(Expr::unknown(line, "pointer to member"));
         };
@@ -408,12 +408,12 @@ impl P {
                 let et = nonref(&e.ty);
                 if matches!(et.t, Ty::Ptr(_)) {
                     // NEW-2: the size converts to the type of sizeof.
-                    self.error(bl, "NEW-2", "array size in new must not be a pointer");
+                    self.error(bl, "NEW-17", "array size in new must not be a pointer");
                 }
                 if !bounds.is_empty() {
                     match self.const_int(&e) {
                         Ok(v) if v > 0 => b = Some(v as u64),
-                        Ok(_) => self.error(bl, "NEW-2", "array bound after the first must be positive"),
+                        Ok(_) => self.error(bl, "NEW-17", "array bound after the first must be positive"),
                         Err(crate::consteval::CeErr::NotConst(..)) => self.error(bl, "NEW-11", "array bound after the first is not a constant"),
                         Err(_) => b = Some(u64::MAX),
                     }
@@ -613,7 +613,7 @@ impl P {
         }
         let Some(ids) = self.lookup_member(c, &name) else {
             if !self.class_uncertain(c) {
-                self.error(line, "NAM-1", format!("no member named '{}'", name));
+                self.error(line, "NAM-8", format!("no member named '{}'", name));
             }
             return Ok(Expr::unknown(line, "unknown member"));
         };
@@ -902,7 +902,7 @@ impl P {
                 return Ok(match self.lookup_member(c, &name) {
                     Some(ids) => self.name_expr(ids, line),
                     None => {
-                        self.error(line, "NAM-4", format!("no member named '{}'", name));
+                        self.error(line, "NAM-9", format!("no member named '{}'", name));
                         Expr::unknown(line, "member")
                     }
                 });
@@ -1101,7 +1101,7 @@ impl P {
         r?;
         for (l, ln) in &ctx.gotos {
             if !ctx.labels.contains_key(l) {
-                self.error(*ln, "JMP-5", format!("goto names an undefined label '{}' (a lambda body is a separate function)", l));
+                self.error(*ln, "JMP-14", format!("goto names an undefined label '{}' (a lambda body is a separate function)", l));
             }
         }
         Ok(Expr::new(EK::Unknown("lambda".into()), QTy::unknown(), Cat::PR, line))
@@ -1190,7 +1190,7 @@ impl P {
                         }
                         None => {
                             if !self.lookup_uncertain() {
-                                self.error(cl, "NAM-1", format!("captured name '{}' is not declared", name));
+                                self.error(cl, "NAM-8", format!("captured name '{}' is not declared", name));
                             }
                         }
                     }
@@ -1274,7 +1274,7 @@ impl P {
                 if !self.lookup_uncertain() && !in_class_body && args.iter().all(|a| !a.ty.is_unknown() && !matches!(nonref(&a.ty).t, Ty::Class(_) | Ty::Enum(_) | Ty::Ptr(_))) && !self.in_template() {
                     // NAM-1: no declaration, and argument-dependent lookup
                     // has nothing to search for fundamental types (NAM-5).
-                    self.error(line, "NAM-1", format!("call of undeclared function '{}'", name));
+                    self.error(line, "NAM-8", format!("call of undeclared function '{}'", name));
                 }
                 return Ok(Expr::unknown(line, "unqualified call to an undeclared name"));
             }
@@ -1287,14 +1287,14 @@ impl P {
                 if self.scopes[s].uncertain {
                     return Ok(Expr::unknown(line, "uncertain namespace"));
                 }
-                self.error(line, "NAM-4", format!("no member named '{}' in the named scope", name));
+                self.error(line, "NAM-9", format!("no member named '{}' in the named scope", name));
                 return Ok(Expr::unknown(line, "undeclared"));
             }
             if self.lookup_uncertain() {
                 return Ok(Expr::unknown(line, "name in uncertain scope"));
             }
             // NAM-1: a name must be declared before use.
-            self.error(line, "NAM-1", format!("use of undeclared name '{}'", name));
+            self.error(line, "NAM-8", format!("use of undeclared name '{}'", name));
             return Ok(Expr::unknown(line, "undeclared"));
         };
         // template-id
@@ -1423,6 +1423,29 @@ impl P {
     /// Build the expression for a name that lookup found (PRIM-12).
     pub fn name_expr(&mut self, ids: Vec<DeclId>, line: u32) -> Expr {
         let id = ids[0];
+        if ids.len() == 1 && self.func(id).is_some_and(|f| f.deleted) && !self.in_template() {
+            // DEL-1: no reference to a deleted function.
+            self.error(line, "DEL-1", format!("use of the deleted function '{}'", self.decls[id].name));
+        }
+        if ids.len() == 1 && !self.in_template() {
+            if let Some(f) = self.func(id) {
+                // RET-3: no use before the return type is known.
+                if f.ret_auto.is_some() && f.fty.ret.is_unknown() && f.class.is_none() && !f.template {
+                    let own = self.fns.iter().find(|c| c.func == Some(id));
+                    let known = match own {
+                        Some(c) => c.deduced.is_some(),
+                        None => false,
+                    };
+                    if !known {
+                        self.error(line, "RET-3", format!("'{}' is used before its return type is deduced", self.decls[id].name));
+                    }
+                }
+            }
+        }
+        if ids.len() == 1 && self.has_attr(id, "deprecated") {
+            // ATTR-4: warn at each use of a deprecated entity.
+            self.warn(line, "ATTR-4", format!("'{}' is deprecated", self.decls[id].name));
+        }
         if Some(id) == self.auto_in_own_init {
             // AUTO-8: an auto variable must not occur in its own initializer.
             self.error(line, "AUTO-8", "variable declared with 'auto' used in its own initializer");
@@ -1453,9 +1476,11 @@ impl P {
             DK::Enumerator(e, val) => {
                 // Inside the enumerator list the enumeration is incomplete;
                 // an enumerator then has the underlying type (fixed) or an
-                // integer type that holds its value. ENUM-10 does not say so.
+                // integer type that holds its value (ENUM-10, ENUM-13).
                 let t = if self.enums[e].complete {
                     QTy::new(Ty::Enum(e))
+                } else if let Some(t) = self.enumerator_ty.get(&id) {
+                    QTy::new(t.clone())
                 } else if let Some(f) = &self.enums[e].fixed {
                     QTy::new(f.clone())
                 } else {
@@ -1497,14 +1522,14 @@ impl P {
                     None => {
                         if self.in_unevaluated == 0 && !self.in_template() && self.fns.iter().all(|f| !f.is_lambda) {
                             // PRIM-12: elsewhere only in an unevaluated operand.
-                            self.error(line, "PRIM-12", "non-static member used without an object");
+                            self.error(line, "PRIM-25", "non-static member used without an object");
                         }
                         Expr::new(EK::Member(Box::new(Expr::unknown(line, "member without object")), id), nonref(&f.ty), Cat::L, line)
                     }
                 }
             }
             DK::Namespace(_) => {
-                self.error(line, "NAM-1", "namespace name used as a value");
+                self.error(line, "NAM-8", "namespace name used as a value");
                 Expr::unknown(line, "namespace")
             }
             _ => Expr::unknown(line, "name"),
@@ -1760,7 +1785,7 @@ impl P {
         }
         let target = to.unqual();
         match &target.t {
-            Ty::LRef(_) | Ty::RRef(_) => return Ok(self.bind_ref(e, to, line, "INIT-4")),
+            Ty::LRef(_) | Ty::RRef(_) => return Ok(self.bind_ref(e, to, line, "INIT-7")),
             Ty::Class(tc) => {
                 let et = nonref(&e.ty);
                 if let Ty::Class(sc) = et.t {
@@ -1935,26 +1960,26 @@ impl P {
                 if matches!(inner.t, Ty::Func(_)) {
                     return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
                 }
-                self.error(line, "REF-1", format!("non-const lvalue reference cannot bind to an rvalue ({})", rule));
+                self.error(line, "REF-8", format!("non-const lvalue reference cannot bind to an rvalue ({})", rule));
             } else if !related {
                 if let Ty::Class(_) = et.t {
                     // conversion function to a reference: not modeled
                     return Expr::new(EK::Unknown("conversion to reference".into()), inner, Cat::L, line);
                 }
-                self.error(line, "REF-1", format!("non-const lvalue reference to {} cannot bind to {}", show(&inner), show(&et)));
+                self.error(line, "REF-8", format!("non-const lvalue reference to {} cannot bind to {}", show(&inner), show(&et)));
             } else if !cv_ok {
-                self.error(line, "REF-1", "reference binding drops a cv-qualifier");
+                self.error(line, "REF-8", "reference binding drops a cv-qualifier");
             }
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
         if !is_l && related && e.cat == Cat::L && !matches!(inner.t, Ty::Func(_)) {
             // REF-3: an rvalue reference must not bind to an lvalue of the
             // same type.
-            self.error(line, "REF-3", "rvalue reference cannot bind to an lvalue");
+            self.error(line, "REF-10", "rvalue reference cannot bind to an lvalue");
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
         if related && !cv_ok {
-            self.error(line, "REF-3", "reference binding drops a cv-qualifier");
+            self.error(line, "REF-10", "reference binding drops a cv-qualifier");
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
         if related && (e.cat != Cat::PR || matches!(et.t, Ty::Class(_))) {
@@ -2245,7 +2270,7 @@ impl P {
             BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne => self.build_compare(op, l, r, lnull, rnull, line),
             BOp::Spaceship => {
                 if ls != rs || (ls && lt != rt) {
-                    self.error(line, "CMP-10", "three-way comparison of a scoped enumeration with another type");
+                    self.error(line, "CMP-23", "three-way comparison of a scoped enumeration with another type");
                 }
                 Expr::new(EK::Unknown("<=> (comparison category types are library types)".into()), QTy::unknown(), Cat::PR, line)
             }
@@ -2289,7 +2314,7 @@ impl P {
                 return mk(l, r);
             }
             // ENUM-3, CMP-10: a scoped value compares only with its own type.
-            self.error(line, "CMP-10", "comparison of a scoped enumeration with another type (ENUM-3)");
+            self.error(line, "CMP-23", "comparison of a scoped enumeration with another type (ENUM-3)");
             return Expr::unknown(line, "bad comparison");
         }
         if self.is_arith_like(&lt) && self.is_arith_like(&rt) {
@@ -2570,7 +2595,7 @@ impl P {
             let rhs = if let EK::InitList(items) = &r.k {
                 // ASN-6: a braced list for a scalar has zero or one value.
                 if items.len() > 1 {
-                    self.error(line, "ASN-6", "braced list with more than one value assigned to a scalar");
+                    self.error(line, "ASN-14", "braced list with more than one value assigned to a scalar");
                     return Expr::unknown(line, "bad assignment");
                 }
                 if items.is_empty() {
@@ -2583,7 +2608,7 @@ impl P {
                     match self.implicit(it, &lt.unqual(), false) {
                         Ok(x) => x,
                         Err(m) => {
-                            self.error(line, "ASN-1", m);
+                            self.error(line, "ASN-12", m);
                             return Expr::unknown(line, "bad assignment");
                         }
                     }
@@ -2592,7 +2617,7 @@ impl P {
                 match self.implicit(r, &lt.unqual(), false) {
                     Ok(x) => x,
                     Err(m) => {
-                        self.error(line, "ASN-1", m);
+                        self.error(line, "ASN-12", m);
                         return Expr::unknown(line, "bad assignment");
                     }
                 }
@@ -2601,7 +2626,7 @@ impl P {
         }
         // compound assignment: ASN-5
         if matches!(r.k, EK::InitList(_)) {
-            self.error(line, "ASN-6", "braced list in a compound assignment to a scalar");
+            self.error(line, "ASN-14", "braced list in a compound assignment to a scalar");
             return Expr::unknown(line, "bad assignment");
         }
         let bop = BOp::from_str(&op[..op.len() - 1]).unwrap();
@@ -2628,7 +2653,7 @@ impl P {
             self.rvalue(r)
         };
         if self.is_scoped_enum(&lt.t) || (matches!(lt.t, Ty::Enum(_)) && !matches!(ct.t, Ty::Enum(_))) {
-            self.error(line, "ASN-5", "compound assignment to an enumeration");
+            self.error(line, "ASN-13", "compound assignment to an enumeration");
         }
         Expr::new(EK::Assign(Some((bop, ct)), Box::new(l), Box::new(r)), lt, Cat::L, line)
     }
@@ -2664,7 +2689,7 @@ impl P {
             if at.t == bt.t {
                 return mk(self, a, b, QTy::new(Ty::Void), Cat::PR);
             }
-            self.error(line, "COND-4", "conditional with one void operand");
+            self.error(line, "COND-13", "conditional with one void operand");
             return Expr::unknown(line, "bad conditional");
         }
         if matches!(at.t, Ty::Class(_)) || matches!(bt.t, Ty::Class(_)) {

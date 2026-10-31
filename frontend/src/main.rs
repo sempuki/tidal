@@ -71,6 +71,7 @@ fn main() {
                     Severity::Warning => "warning",
                 };
                 match d.rule {
+                    Some(r) if d.cause.is_some() => eprintln!("{}:{}: {} [{}, {}]: {}", path, d.line, kind, r, d.cause.unwrap(), d.msg),
                     Some(r) => eprintln!("{}:{}: {} [{}]: {}", path, d.line, kind, r, d.msg),
                     None => eprintln!("{}:{}: {}: {}", path, d.line, kind, d.msg),
                 }

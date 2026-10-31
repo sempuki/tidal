@@ -289,17 +289,125 @@ impl P {
     }
 
     /// Attributes (spec/declarations/attributes.md). The front end parses
-    /// and skips them.
+    /// each attribute, checks its arguments (ATTR-2, ATTR-13, ATTR-17),
+    /// and records it in `pending_attrs` for the statement or declaration.
     fn check_attributes(&mut self) {
-        self.pos += 1; // first [
-        let start = self.pos;
-        self.skip_balanced(); // [ ... ]
-        for k in start..self.pos {
-            if self.toks[k].text == "no_unique_address" {
-                self.saw_nua = true;
+        let open = self.pos;
+        self.pos += 2; // [[
+        let using = if self.eat("using") {
+            if self.is_ident() {
+                self.pos += 1;
+            }
+            self.eat(":");
+            true
+        } else {
+            false
+        };
+        loop {
+            if self.at("]") || self.tok().kind == TK::Eof {
+                break;
+            }
+            if self.eat(",") {
+                continue;
+            }
+            let line = self.line();
+            if !self.is_ident() {
+                break;
+            }
+            let mut name = self.tok().text.clone();
+            self.pos += 1;
+            let mut ns = false;
+            if self.at("::") {
+                self.pos += 1;
+                ns = true;
+                if self.is_ident() {
+                    name = self.tok().text.clone();
+                    self.pos += 1;
+                }
+            }
+            if using && ns {
+                // ATTR-17: with a `using` prefix, no attribute namespace.
+                self.error(line, "ATTR-17", "attribute with its own namespace in a specifier with a 'using' prefix");
+            }
+            let std = !ns && !using;
+            let mut assume = None;
+            let mut nargs: Option<(usize, bool)> = None; // (count, all string literals)
+            if self.at("(") {
+                let start = self.pos;
+                if std && name == "assume" {
+                    self.pos += 1;
+                    match self.parse_assignment() {
+                        Ok(e) => {
+                            if self.at(",") {
+                                // ATTR-13: no comma operator at the top level.
+                                self.error(line, "ATTR-13", "assumption with a comma operator at its top level");
+                            } else if self.at(")") {
+                                let b = self.contextual_bool(e, "ATTR-13");
+                                assume = Some(b);
+                            }
+                        }
+                        Err(_) => {}
+                    }
+                    self.pos = start;
+                    self.skip_balanced();
+                } else {
+                    self.skip_balanced();
+                    // count the top-level arguments
+                    let mut count = 0;
+                    let mut all_str = true;
+                    let mut depth = 0;
+                    let mut cur = 0;
+                    for k in start + 1..self.pos - 1 {
+                        let t = &self.toks[k];
+                        match t.text.as_str() {
+                            "(" | "[" | "{" => depth += 1,
+                            ")" | "]" | "}" => depth -= 1,
+                            "," if depth == 0 => {
+                                count += 1;
+                                if cur == 0 {
+                                    all_str = false;
+                                }
+                                cur = 0;
+                                continue;
+                            }
+                            _ => {}
+                        }
+                        cur += 1;
+                        if t.kind != TK::Str {
+                            all_str = false;
+                        }
+                    }
+                    if self.pos - 1 > start + 1 {
+                        count += 1;
+                    }
+                    nargs = Some((count, all_str));
+                }
+            }
+            self.eat("...");
+            if std {
+                match (name.as_str(), nargs) {
+                    ("deprecated" | "nodiscard", Some((n, all_str))) if n > 1 || (n == 1 && !all_str) => {
+                        // ATTR-2: no argument or one string literal.
+                        self.error(line, "ATTR-2", format!("'{}' takes no argument or one string literal", name));
+                    }
+                    ("noreturn", Some(_)) => {
+                        // ATTR-2: noreturn has no argument.
+                        self.error(line, "ATTR-2", "'noreturn' takes no argument");
+                    }
+                    _ => {}
+                }
+                if name == "no_unique_address" {
+                    self.saw_nua = true;
+                }
+                self.pending_attrs.push(Attr { name: name.clone(), ns, assume, line });
             }
         }
-        self.eat("]");
+        // close the specifier
+        if !(self.eat("]") && self.eat("]")) {
+            self.pos = open + 1;
+            self.skip_balanced();
+            self.eat("]");
+        }
     }
 
     pub fn parse_decl_specs(&mut self, in_class: Option<usize>) -> PR<DeclSpec> {
@@ -338,8 +446,22 @@ impl P {
                 "explicit" => {
                     ds.explicit = true;
                     if self.at_k(1, "(") {
-                        self.pos += 1;
-                        self.skip_balanced();
+                        // CTOR-9: explicit(c) needs a constant c.
+                        self.pos += 2;
+                        let start = self.pos - 1;
+                        let l = self.line();
+                        match self.parse_assignment() {
+                            Ok(e) if self.at(")") => {
+                                self.pos += 1;
+                                if let Some(v) = self.eval_bool_const(&e, l, "CTOR-9") {
+                                    ds.explicit = v;
+                                }
+                            }
+                            _ => {
+                                self.pos = start;
+                                self.skip_balanced();
+                            }
+                        }
                         continue;
                     }
                 }
@@ -819,7 +941,7 @@ impl P {
                 DOp::Ptr(c, v) => {
                     if t.t.is_ref() {
                         // DCL-2: no pointer to a reference.
-                        self.error(line, "DCL-2", "pointer to a reference");
+                        self.error(line, "DCL-17", "pointer to a reference");
                     }
                     if let Ty::Func(f) = &t.t {
                         if f.cv_c || f.cv_v || f.refq != 0 {
@@ -832,7 +954,7 @@ impl P {
                     let is_l = matches!(op, DOp::LRef);
                     if t.t == Ty::Void {
                         // DCL-3: no reference to void.
-                        self.error(line, "DCL-3", "reference to void");
+                        self.error(line, "DCL-18", "reference to void");
                     }
                     if let Ty::Func(f) = &t.t {
                         if f.cv_c || f.cv_v || f.refq != 0 {
@@ -854,7 +976,7 @@ impl P {
                 }
                 DOp::MemPtr(c, cc, vv) => {
                     if t.t.is_ref() {
-                        self.error(line, "DCL-12", "pointer to member of reference type");
+                        self.error(line, "DCL-23", "pointer to member of reference type");
                     }
                     match c {
                         Some(c) => QTy { t: Ty::MemPtr(*c, Box::new(t)), c: *cc, v: *vv },
@@ -863,12 +985,12 @@ impl P {
                 }
                 DOp::Array(n) => {
                     match &t.t {
-                        Ty::Void => self.error(line, "DCL-6", "array of void"),
-                        Ty::Func(_) => self.error(line, "DCL-6", "array of functions"),
-                        Ty::LRef(_) | Ty::RRef(_) => self.error(line, "DCL-3", "array of references"),
-                        Ty::Array(_, None) => self.error(line, "DCL-6", "only the first array bound can be omitted"),
+                        Ty::Void => self.error(line, "DCL-20", "array of void"),
+                        Ty::Func(_) => self.error(line, "DCL-20", "array of functions"),
+                        Ty::LRef(_) | Ty::RRef(_) => self.error(line, "DCL-18", "array of references"),
+                        Ty::Array(_, None) => self.error(line, "DCL-20", "only the first array bound can be omitted"),
                         Ty::Class(c) if !self.classes[*c].complete && !self.in_template() => {
-                            self.error(line, "DCL-6", "array of incomplete class type")
+                            self.error(line, "DCL-20", "array of incomplete class type")
                         }
                         _ => {}
                     }
@@ -883,8 +1005,8 @@ impl P {
                 DOp::Func(f) => {
                     match &t.t {
                         // DCL-7: no function returning an array or a function.
-                        Ty::Array(..) => self.error(line, "DCL-7", "function returning an array"),
-                        Ty::Func(_) => self.error(line, "DCL-7", "function returning a function"),
+                        Ty::Array(..) => self.error(line, "DCL-21", "function returning an array"),
+                        Ty::Func(_) => self.error(line, "DCL-21", "function returning a function"),
                         _ => {}
                     }
                     let ret = if let Some(tr) = &f.trailing {
@@ -1166,6 +1288,11 @@ impl P {
                     self.expect("]")?;
                     "[]".to_string()
                 }
+                "." | ".*" | "::" | "?" | ":" => {
+                    // OPR-2: these operators cannot be overloaded.
+                    self.error(t.line, "OPR-2", format!("'operator{}' cannot be overloaded", s));
+                    s
+                }
                 _ => s,
             };
             d.kind = NameKind::Operator(op.clone());
@@ -1325,7 +1452,7 @@ impl P {
                 let e = e?;
                 self.expect(")")?;
                 // EXS-1 / CE-11: the operand is a constant of type bool.
-                if let Some(v) = self.eval_bool_const(&e, l, "EXS-1") {
+                if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
                     f.noexcept = v;
                 }
             }
@@ -1393,7 +1520,7 @@ impl P {
             let mut ty = self.apply_ops(base, &d.ops, d.line);
             if ty.t == Ty::Void && d.ops.is_empty() {
                 // DCL-9: `void` only as the whole list.
-                self.error(line, "DCL-9", "'void' in a parameter list with other parameters or a name");
+                self.error(line, "DCL-22", "'void' in a parameter list with other parameters or a name");
             }
             if let Ty::Func(ft) = &ty.t {
                 if ft.cv_c || ft.cv_v || ft.refq != 0 {
@@ -1430,7 +1557,13 @@ impl P {
                     }
                     defer_default = Some((start, self.pos));
                 } else {
+                    let dl = self.line();
                     let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
+                    // DEFARG-5: the default argument is valid for the
+                    // parameter type at the declaration.
+                    let form = if matches!(e.k, EK::InitList(_)) { crate::decl2::InitForm::CopyList } else { crate::decl2::InitForm::Copy };
+                    let e = if ty.is_unknown() || self.in_template() { e } else { self.convert_init(e, &ty, form, dl) };
+                    self.check_default_arg(&e, dl);
                     default = Some(e);
                 }
             }
@@ -1477,6 +1610,31 @@ impl P {
         }
     }
 
+    /// DEFARG-4: a default argument must not use `this`, a parameter, or a
+    /// local variable of an enclosing function.
+    pub fn check_default_arg(&mut self, e: &Expr, line: u32) {
+        let mut bad: Option<String> = None;
+        walk_expr(e, &mut |x| {
+            if bad.is_some() {
+                return;
+            }
+            match &x.k {
+                EK::This => bad = Some("'this'".into()),
+                EK::Var(id) => {
+                    if let DK::Var(v) = &self.decls[*id].k {
+                        if v.param || (v.local && v.storage == Storage::Auto) {
+                            bad = Some(format!("'{}'", self.decls[*id].name));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        });
+        if let Some(what) = bad {
+            self.error(line, "DEFARG-4", format!("default argument uses {}", what));
+        }
+    }
+
     /// The class whose body is being parsed, through parameter scopes.
     pub fn current_class_any(&self) -> Option<usize> {
         for &s in self.stack.iter().rev() {
@@ -1517,20 +1675,20 @@ impl P {
         }
         let t = nonref(&e.ty);
         if self.is_scoped_enum(&t.t) || !(t.t.is_integral() || self.is_unscoped_enum(&t.t) || matches!(t.t, Ty::Class(_))) {
-            self.error(line, "DCL-5", "array bound must have integer or unscoped enumeration type");
+            self.error(line, "DCL-19", "array bound must have integer or unscoped enumeration type");
             return Some(u64::MAX);
         }
         match self.const_int(e) {
             Ok(v) => {
                 if v <= 0 {
-                    self.error(line, "DCL-5", "array bound must be greater than zero");
+                    self.error(line, "DCL-19", "array bound must be greater than zero");
                     return Some(1);
                 }
                 Some(v as u64)
             }
             Err(crate::consteval::CeErr::NotConst(rule, msg)) => {
                 if !self.in_template() {
-                    self.error(line, "DCL-5", format!("array bound is not a constant expression ({}: {})", rule, msg));
+                    self.error_because(line, "DCL-19", rule, format!("array bound is not a constant expression ({}: {})", rule, msg));
                 }
                 Some(u64::MAX)
             }

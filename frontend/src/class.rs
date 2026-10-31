@@ -18,7 +18,9 @@ impl P {
         };
         self.pos += 1;
         self.last_align = 0;
+        let outer_attrs = std::mem::take(&mut self.pending_attrs);
         self.skip_attributes();
+        let own_attrs: Vec<String> = std::mem::replace(&mut self.pending_attrs, outer_attrs).into_iter().map(|a| a.name).collect();
         let class_align = self.last_align;
         // name
         let mut name = String::new();
@@ -30,6 +32,14 @@ impl P {
             if self.at("<") {
                 self.skip_template_args()?;
                 spec_args = true;
+            }
+        }
+        if !name.is_empty() && qual.is_none() && (self.at("{") || self.at(":") || self.at("final")) {
+            if let Some(oc) = self.current_class() {
+                if self.classes[oc].name == name {
+                    // CLS-9: no nested class with the name of the class.
+                    self.error(line, "CLS-9", format!("nested class with the name of its class '{}'", name));
+                }
             }
         }
         let is_final = self.at("final") && (self.at_k(1, "{") || self.at_k(1, ":"));
@@ -98,7 +108,7 @@ impl P {
                     self.error(line, "TYN-7", format!("class '{}' defined twice", name));
                 }
                 if (self.classes[c].key == 2) != (key == 2) {
-                    self.error(line, "TYN-4", "class key does not match the earlier declaration");
+                    self.error(line, "TYN-10", "class key does not match the earlier declaration");
                 }
                 c
             }
@@ -131,6 +141,9 @@ impl P {
             }
         };
         self.classes[c].template |= is_template;
+        if !own_attrs.is_empty() {
+            self.class_attrs.entry(c).or_default().extend(own_attrs.clone());
+        }
         self.classes[c].align = self.classes[c].align.max(class_align);
         let class_scope = self.classes[c].scope;
         // bases
@@ -260,19 +273,19 @@ impl P {
                         let c = *c;
                         if (self.classes[c].key == 2) != (key == 2) {
                             // TYN-4: union for a class, or the reverse.
-                            self.error(line, "TYN-4", "class key does not match the declaration");
+                            self.error(line, "TYN-10", "class key does not match the declaration");
                         }
                         return Ok(QTy::new(Ty::Class(c)));
                     }
                     DK::Template(TemplKind::Class(_)) => return Ok(QTy::unknown()),
                     DK::Enum(_) => {
-                        self.error(line, "TYN-4", "class key used for an enumeration");
+                        self.error(line, "TYN-10", "class key used for an enumeration");
                         return Ok(QTy::unknown());
                     }
                     DK::Type(q) => {
                         if let Ty::Class(c) = q.t {
                             // an alias after a class key is not valid
-                            self.error(line, "TYN-4", "elaborated type specifier names a typedef");
+                            self.error(line, "TYN-10", "elaborated type specifier names a typedef");
                             return Ok(QTy::new(Ty::Class(c)));
                         }
                     }
@@ -285,7 +298,7 @@ impl P {
                 // TYN-7: a class key and a qualified name alone.
                 self.error(line, "TYN-7", "declaration of a qualified class name without a body");
             } else {
-                self.error(line, "NAM-1", format!("no class named '{}' in the named scope", name));
+                self.error(line, "NAM-8", format!("no class named '{}' in the named scope", name));
             }
             return Ok(QTy::unknown());
         }
@@ -364,12 +377,12 @@ impl P {
                 Ty::Unknown => fixed = Some(Ty::Int),
                 Ty::Enum(e) => {
                     let _ = e;
-                    self.error(fl, "ENUM-4", "underlying type must be an integer type");
+                    self.error(fl, "ENUM-17", "underlying type must be an integer type");
                     fixed = Some(Ty::Int);
                 }
                 _ => {
                     // ENUM-4: a fixed underlying type must be an integer type.
-                    self.error(fl, "ENUM-4", "underlying type must be an integer type");
+                    self.error(fl, "ENUM-17", "underlying type must be an integer type");
                     fixed = Some(Ty::Int);
                 }
             }
@@ -395,7 +408,7 @@ impl P {
                     match &self.decls[id].k {
                         DK::Enum(e) => eid = Some(*e),
                         DK::Class(_) => {
-                            self.error(line, "TYN-4", "enum key used for a class");
+                            self.error(line, "TYN-10", "enum key used for a class");
                             return Ok((QTy::unknown(), false));
                         }
                         DK::Type(q) => {
@@ -414,7 +427,7 @@ impl P {
             // elaborated reference
             if scoped {
                 // TYN-4: `enum class` in a reference to an enumeration.
-                self.error(line, "TYN-4", "'enum class' in a reference to an enumeration");
+                self.error(line, "TYN-10", "'enum class' in a reference to an enumeration");
             }
             return match eid {
                 Some(e) => Ok((QTy::new(Ty::Enum(e)), false)),
@@ -430,18 +443,18 @@ impl P {
         let opaque = !is_def;
         if opaque && !scoped && fixed.is_none() {
             // ENUM-7 / TYN-7: an opaque unscoped declaration needs a fixed type.
-            self.error(line, "ENUM-7", "opaque declaration of an unscoped enumeration without a fixed underlying type");
+            self.error(line, "ENUM-18", "opaque declaration of an unscoped enumeration without a fixed underlying type");
         }
         let e = match eid {
             Some(e) => {
                 let ei = self.enums[e].clone();
                 if ei.scoped != scoped {
-                    self.error(line, "ENUM-7", "enumeration redeclared with a different scope kind");
+                    self.error(line, "ENUM-18", "enumeration redeclared with a different scope kind");
                 }
                 let old_fixed = if ei.scoped && ei.fixed.is_none() { Some(Ty::Int) } else { ei.fixed.clone() };
                 let new_fixed = if scoped && fixed.is_none() { Some(Ty::Int) } else { fixed.clone() };
                 if old_fixed != new_fixed {
-                    self.error(line, "ENUM-7", "enumeration redeclared with a different underlying type");
+                    self.error(line, "ENUM-18", "enumeration redeclared with a different underlying type");
                 }
                 if is_def && ei.complete {
                     self.error(line, "TYN-7", "enumeration defined twice");
@@ -490,20 +503,31 @@ impl P {
         let mut next: i128 = 0;
         let mut prev_overflow = false;
         let mut values = Vec::new();
+        let mut prev_ty: Option<Ty> = None;
+        let mut init_ty: Option<Ty>;
         while !self.at("}") {
+            init_ty = None;
             let line = self.line();
             let name = self.ident()?;
+            self.pending_attrs.clear();
             self.skip_attributes();
+            let en_attrs: Vec<String> = std::mem::take(&mut self.pending_attrs).into_iter().map(|a| a.name).collect();
             let mut v = next;
             if prev_overflow && !self.at("=") {
                 // ENUM-1: an implicit value must fit the underlying type.
-                self.error(line, "ENUM-1", "implicit enumerator value does not fit");
+                self.error(line, "ENUM-14", "implicit enumerator value does not fit");
             }
             if self.eat("=") {
                 // ENUM-12: the name is not in scope in its own value.
                 let el = self.line();
                 let ex = self.parse_conditional()?;
                 let et = nonref(&ex.ty);
+                init_ty = match &et.t {
+                    Ty::Enum(x) if self.enums[*x].complete => Some(Ty::Enum(*x)),
+                    t if t.is_integral() => Some(crate::types::Ty::clone(t)),
+                    Ty::Enum(_) => None,
+                    _ => None,
+                };
                 if !(et.t.is_integral() || matches!(et.t, Ty::Enum(_) | Ty::Unknown)) {
                     self.error(el, "CE-11", "enumerator value must have integer or enumeration type");
                 }
@@ -511,7 +535,7 @@ impl P {
                     Ok(x) => v = x,
                     Err(crate::consteval::CeErr::NotConst(r, m)) => {
                         if !self.in_template() {
-                            self.error(el, "ENUM-1", format!("enumerator value is not a constant expression ({}: {})", r, m));
+                            self.error_because(el, "ENUM-14", r, format!("enumerator value is not a constant expression ({}: {})", r, m));
                         }
                     }
                     Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(el, format!("enumerator value: {}", m)),
@@ -519,7 +543,7 @@ impl P {
                 if let Some(f) = &fixed {
                     if !fits(v, f) && !ex.ty.is_unknown() {
                         // ENUM-4: each value must fit without narrowing.
-                        self.error(el, "ENUM-4", format!("enumerator value {} does not fit the underlying type", v));
+                        self.error(el, "ENUM-17", format!("enumerator value {} does not fit the underlying type", v));
                     }
                 }
             }
@@ -532,16 +556,33 @@ impl P {
             values.push((name.clone(), v));
             // declare
             if self.scopes[escope].names.contains_key(&name) {
-                self.error(line, "ENUM-1", format!("enumerator '{}' declared twice", name));
+                self.error(line, "ENUM-14", format!("enumerator '{}' declared twice", name));
             }
-            let ty = if fixed.is_some() || scoped { Ty::Enum(e) } else { Ty::Enum(e) };
-            let _ = ty;
             let id = self.add_decl_in(escope, &name, DK::Enumerator(e, v), line);
+            if !en_attrs.is_empty() {
+                self.entity_attrs.insert(id, en_attrs);
+            }
+            // ENUM-10: the type inside the list. A fixed type gives that
+            // type. Otherwise the initializer's type, or the type of the
+            // enumerator before if it holds the value (else ENUM-13).
+            let in_ty = if let Some(f) = &fixed {
+                f.clone()
+            } else if let Some(t) = init_ty.take() {
+                t
+            } else {
+                match &prev_ty {
+                    Some(p) if fits(v, p) => p.clone(),
+                    Some(p) => [Ty::Int, Ty::UInt, Ty::Long, Ty::ULong, Ty::LLong, Ty::ULLong].into_iter().find(|t| fits(v, t) && t.int_max() >= p.int_max()).unwrap_or(Ty::LLong),
+                    None => Ty::Int,
+                }
+            };
+            prev_ty = Some(in_ty.clone());
+            self.enumerator_ty.insert(id, in_ty);
             if !scoped {
                 // ENUM-2: unscoped enumerators go in the enclosing scope.
                 if let Some(prev) = self.scopes[outer].names.get(&name) {
                     if !prev.is_empty() {
-                        self.error(line, "ENUM-2", format!("enumerator '{}' conflicts with an earlier declaration", name));
+                        self.error(line, "ENUM-15", format!("enumerator '{}' conflicts with an earlier declaration", name));
                     }
                 }
                 self.scopes[outer].names.entry(name.clone()).or_default().push(id);
@@ -574,7 +615,7 @@ impl P {
             if scoped {
                 for (_, v) in &values {
                     if !fits(*v, f) {
-                        self.error(self.line(), "ENUM-4", "enumerator value does not fit in int");
+                        self.error(self.line(), "ENUM-17", "enumerator value does not fit in int");
                         break;
                     }
                 }
