@@ -156,8 +156,6 @@ current phase is phase 2, foundations that later pages need:
 1. Repairs from the front-end and designer reports
    (`reports/clean-room/rust-frontend/report-2.md`,
    `reports/clean-room/roadmap/designer.md`):
-   - G7: a convention for which rules a test of a failed constant cites,
-     the rule that needs the constant or the rule the evaluation broke.
    - D2: PRIM-16 and the literal grammar allow only built-in suffixes,
      and OPR-8 accepts user-defined ones.
    - D7, D8: ADD-P4 and MUL-P4 cite SEQ-1 for operand order, and the
