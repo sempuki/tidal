@@ -40,8 +40,8 @@ out a part that has no content.
 | Part | Contents | Normative |
 |---|---|---|
 | Title and summary | One or two sentences that say what the page covers. | No |
-| `Syntax` | A `productionlist` grammar block. | Yes |
 | `Principles` | Prose that states the model the rules follow from. Each principle lists the rules that are its evidence. | Yes |
+| `Syntax` | A `productionlist` grammar block. | Yes |
 | `Constraints` | Rules that an implementation checks before the program runs. | Yes |
 | `Dynamic Semantics` | What the program does when it runs. | Yes |
 | `Undefined Behavior` | Conditions that have no requirements. | Yes |
@@ -69,7 +69,13 @@ A principle is a `principle` directive:
 - A principle is one to three paragraphs in plain prose. It says what the
   construct is for and what model the rules follow from. It can say why.
 - `:rules:` lists the rules on the same page that are its evidence. Every
-  rule on a page with principles must appear in one `:rules:` list.
+  rule on a page with principles must appear in one `:rules:` or
+  `:exceptions:` list.
+- `:exceptions:` lists the rules that depart from the principle. State
+  the principle plainly and put its exceptions here, instead of hedging
+  the wording.
+- A principle comes before the grammar. The reader meets the model, then
+  the syntax, then the rules.
 - Write a principle from the rules and the tests, not from memory of any
   text. The similarity check covers principles.
 

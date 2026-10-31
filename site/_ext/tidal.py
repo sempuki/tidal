@@ -67,7 +67,7 @@ class PrincipleDirective(SphinxDirective):
     """One principle: prose that the listed rules follow from."""
     required_arguments = 1
     has_content = True
-    option_spec = {"rules": directives.unchanged}
+    option_spec = {"rules": directives.unchanged, "exceptions": directives.unchanged}
 
     def run(self):
         pid = self.arguments[0]
@@ -84,6 +84,16 @@ class PrincipleDirective(SphinxDirective):
             foot = nodes.paragraph(classes=["tidal-principle-rules"])
             foot += nodes.inline("", "Rules: ")
             for i, rid in enumerate(rules):
+                if i:
+                    foot += nodes.inline("", ", ")
+                foot += nodes.reference("", rid, refid="rule-" + rid.lower(),
+                                        classes=["tidal-rule-ref"])
+            box += foot
+        exceptions = self.options.get("exceptions", "").split()
+        if exceptions:
+            foot = nodes.paragraph(classes=["tidal-principle-rules"])
+            foot += nodes.inline("", "Exceptions: ")
+            for i, rid in enumerate(exceptions):
                 if i:
                     foot += nodes.inline("", ", ")
                 foot += nodes.reference("", rid, refid="rule-" + rid.lower(),

@@ -67,7 +67,7 @@ def units(spec: Path):
                     or (m := PRINCIPLE_DIRECTIVE.match(line)):
                 yield label, "\n".join(buf)
                 label, buf = m.group(1), []
-            elif line.startswith((":tests:", ":kind:", ":rules:")) or line == ":::":
+            elif line.startswith((":tests:", ":kind:", ":rules:", ":exceptions:")) or line == ":::":
                 continue
             elif line.startswith("#"):
                 yield label, "\n".join(buf)

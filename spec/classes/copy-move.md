@@ -10,22 +10,6 @@ do, and when a copy or move does not occur.
 Depends on: constructors and destructors, reference binding, overload
 resolution *(referenced)*, deleted and defaulted functions.
 
-## Syntax
-
-```{eval-rst}
-.. productionlist:: copy
-   copy_ctor: `class_name` "(" [`cv`] `class_name` "&" {`default_param`} ")"
-   move_ctor: `class_name` "(" [`cv`] `class_name` "&&" {`default_param`} ")"
-   copy_assign: `return_type` "operator" "=" "(" `copy_param` ")"
-   copy_param: `class_name` | [`cv`] `class_name` "&"
-   move_assign: `return_type` "operator" "=" "(" [`cv`] `class_name` "&&" ")"
-   default_param: "," `parameter` "=" `expression`
-```
-
-The four functions are the *copy and move functions* of a class. A
-*user-declared* function is one that the class declares, including with
-`= default` or `= delete`.
-
 ## Principles
 
 :::{principle} CPY-P1
@@ -105,6 +89,22 @@ A class whose copying is part-by-part all the way down, with nothing
 virtual and nothing user-provided, is *trivially copyable*. Copying its
 bytes copies its value.
 :::
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: copy
+   copy_ctor: `class_name` "(" [`cv`] `class_name` "&" {`default_param`} ")"
+   move_ctor: `class_name` "(" [`cv`] `class_name` "&&" {`default_param`} ")"
+   copy_assign: `return_type` "operator" "=" "(" `copy_param` ")"
+   copy_param: `class_name` | [`cv`] `class_name` "&"
+   move_assign: `return_type` "operator" "=" "(" [`cv`] `class_name` "&&" ")"
+   default_param: "," `parameter` "=" `expression`
+```
+
+The four functions are the *copy and move functions* of a class. A
+*user-declared* function is one that the class declares, including with
+`= default` or `= delete`.
 
 ## Constraints
 

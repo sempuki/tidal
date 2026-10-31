@@ -20,20 +20,34 @@ from.
 
 ## Decision
 
-- Each page gets a `Principles` segment after `Syntax`. It holds a few
-  principles in plain prose. A principle states the model that a group
-  of rules follows from, in the writer's own words.
-- A principle is a `principle` directive with an ID (`CPY-P1`) and a
-  `:rules:` list. The listed rules are its evidence. `check_spec`
-  rejects a principle with no rules and a rule that no principle cites,
-  on a page that has principles.
+- Each page gets a `Principles` segment between the summary and
+  `Syntax`. It holds a few principles in plain prose. A principle states
+  the model that a group of rules follows from, in the writer's own
+  words.
+- A principle is a `principle` directive with an ID (`CPY-P1`), a
+  `:rules:` list, and an optional `:exceptions:` list. The listed rules
+  are its evidence, and the exceptions are the rules that depart from
+  it, named instead of hedged. `check_spec` rejects a principle with no
+  rules and a rule that no principle cites, on a page that has
+  principles.
 - The rule segments stay as they are, with their IDs, classes, and
   tests. The site sets them smaller, below the principles, as notes.
 - The similarity check covers principles as units of their own.
-- A `Foundations` chapter will hold the models that many pages share:
-  objects and lifetimes, values and objects, names and scopes,
-  conversions, synthesized members, constant evaluation, dynamic
-  dispatch, and observable behavior. Pages refer to it.
+- A `Foundations` chapter comes first in the specification. It holds
+  the models that many pages share, each as a page with its own
+  principles, rules, and tests: translation, execution, and the behavior
+  classes; objects, storage, and lifetime; values and value categories;
+  types and conversions; names, scopes, and lookup; evaluation order;
+  constant evaluation. A topic page states which scopes, objects, or
+  conversions its construct introduces and cites the foundations page
+  for the general rule. The sequencing page moves there.
+- Later steps, after the pilot settles: a generated rule index grouped
+  by page and principle, and short informative annotations on rules
+  that say why a rule holds or what follows from it.
+
+The survey in `reports/review/2026-10-31-spec-structure-survey.md`
+informs the placement of principles, the exceptions list, the shape of
+the foundations chapter, and the later steps.
 
 ## Consequences
 

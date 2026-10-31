@@ -30,7 +30,7 @@ HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
 TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
 DIRECTIVE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
 PRINCIPLE = re.compile(r"^:::\{principle\}\s+([A-Z]+-P\d+)\s*$")
-PRULES = re.compile(r"^:rules:\s*(.*)$")
+PRULES = re.compile(r"^:(rules|exceptions):\s*(.*)$")
 OPTION = re.compile(r"^:(kind|tests):\s*(.*)$")
 SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Which classes each segment may hold (docs/style-guide.md, decision 0016).
@@ -66,7 +66,8 @@ def parse_spec():
                 continue
             if principle:
                 if m := PRULES.match(line):
-                    principles[principle] = (f, n, m.group(1).split())
+                    f0, n0, ids = principles[principle]
+                    principles[principle] = (f0, n0, ids + m.group(2).split())
                 elif line.startswith(":::"):
                     principle = None
                 continue
