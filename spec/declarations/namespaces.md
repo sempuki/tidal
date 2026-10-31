@@ -8,6 +8,42 @@ visible to unqualified lookup in the current scope.
 Name lookup in general, argument-dependent lookup, and using declarations
 in classes are other topics *(referenced)*.
 
+## Principles
+
+:::{principle} NS-P1
+:rules: NS-1 NS-2 NS-6 NS-5
+
+A namespace is a scope with a name that never closes. A program can
+reopen it, nest it by a path, define a member outside it with a
+qualified name, and give it a second name. From outside, a member is
+reached through its namespace ({principle}`NAM-P2`), and the namespace
+itself takes a name in the scope that contains it, so no other entity
+there can have that name.
+:::
+
+:::{principle} NS-P2
+:rules: NS-3 NS-4
+
+Two kinds of namespace lend their members to the enclosing namespace.
+An `inline` namespace does so by name, so a qualified name through the
+enclosing namespace finds them. An unnamed namespace does so without a
+name, and its members have internal linkage. In both cases a name
+declared in both places is ambiguous, because neither declaration hides
+the other.
+:::
+
+:::{principle} NS-P3
+:rules: NS-7 NS-8 NS-9
+
+There are two ways to use a namespace's names without qualification,
+and they differ in strength. A using declaration is a declaration in the
+current scope, so it conflicts with other declarations there as any
+declaration does, and it carries the overloads it saw. A using directive
+is weaker. It only makes the members visible to lookup, so a declaration
+in the current scope hides them, and two directives can make a name
+ambiguous. Neither form belongs in a class.
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -4,6 +4,41 @@ A structured binding declaration declares several names at one time. Each
 name refers to one element of an object. An element is an array element,
 a data member of a class, or an element from the tuple protocol.
 
+## Principles
+
+:::{principle} SB-P1
+:rules: SB-1 SB-6 SB-12
+
+A structured binding declaration is one ordinary variable with several
+names for its parts. The declaration creates a hidden variable from the
+initializer, with the `auto`, the cv-qualifiers, and the reference that
+the declaration writes. Each name then refers to one element of that
+variable. So each name is an lvalue, whatever the initializer was, and a
+temporary that the hidden variable binds to lives as long as the names
+do ({principle}`OBJ-P3`).
+:::
+
+:::{principle} SB-P2
+:rules: SB-2 SB-3 SB-4 SB-5 SB-9 SB-10
+
+The type of the hidden variable decides what its elements are, in a
+fixed order of tests: an array gives its elements, a type with a tuple
+size gives the results of `get`, and any other class gives its data
+members in declaration order. The number of names must equal the number
+of elements. Each name has the declared type of its element, with the
+qualifiers of the hidden variable added, so a binding to a `mutable`
+member or a bit-field behaves as that member does.
+:::
+
+:::{principle} SB-P3
+:rules: SB-7 SB-8 SB-11
+
+The declaration is deliberately narrow. It uses `auto`, takes a few
+specifiers, and has one declarator with one list of names. Each name is
+a new declaration in the enclosing scope, so the names must be distinct
+and must not repeat a name of that scope ({principle}`NAM-P1`).
+:::
+
 ## Syntax
 
 ```{eval-rst}

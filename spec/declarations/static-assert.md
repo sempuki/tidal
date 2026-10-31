@@ -7,6 +7,27 @@ condition, and its message.
 
 Depends on: constant expressions, standard conversions.
 
+## Principles
+
+:::{principle} SA-P1
+:rules: SA-1 SA-3 SA-4
+
+A static assertion is a check that constant evaluation performs on the
+program's behalf. The condition is a constant expression, converted as
+a condition is, and it must be `true`. A `false` condition makes the
+program invalid, and the message, a string literal for the reader, goes
+into the diagnostic.
+:::
+
+:::{principle} SA-P2
+:rules: SA-2 SA-5
+
+A static assertion is a declaration, so it can stand wherever a
+declaration can, including in a class body and in a block. Like other
+code in a template, it is checked for each instantiation and not before,
+and a template that is never instantiated is never checked.
+:::
+
 ## Syntax
 
 ```{eval-rst}

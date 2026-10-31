@@ -12,6 +12,48 @@ for redeclarations and pointer conversions.
 Depends on: declarators, standard conversions, virtual functions,
 constructors and destructors, constant expressions.
 
+## Principles
+
+:::{principle} EXS-P1
+:rules: EXS-1 EXS-2
+
+A `noexcept` specifier is part of the function's type, and the type is
+what travels: through type aliases, pointers, references, and
+`decltype`. So a call through a pointer to a non-throwing function is
+itself non-throwing, and two functions that differ only in the
+specifier are the same function declared twice. The specifier is a
+constant, decided at translation time from an expression that can see
+the parameters and the whole class.
+:::
+
+:::{principle} EXS-P2
+:rules: EXS-3
+
+A caller that holds a pointer to a base relies on the base's promise.
+So an override can make the promise but cannot take it back. A
+non-throwing virtual function can be overridden only by a non-throwing
+function, and a destructor is no exception.
+:::
+
+:::{principle} EXS-P3
+:rules: EXS-4
+
+A function the program writes is potentially throwing unless it says
+otherwise, because only the program knows its body. A function the
+implementation writes gets its specifier from the functions it calls:
+a defaulted special member or comparison is non-throwing when every
+part it touches is, and a deallocation function is non-throwing by
+default.
+:::
+
+:::{principle} EXS-P4
+:rules: EXS-5 EXS-6
+
+Two points are left open. An implementation can accept the old `throw()`
+form as `noexcept`. And an operand that refers to the function it
+qualifies is a cycle that an implementation need not detect.
+:::
+
 ## Syntax
 
 ```{eval-rst}

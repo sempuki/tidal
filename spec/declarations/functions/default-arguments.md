@@ -3,6 +3,30 @@
 A parameter can have a default argument. A call that leaves out the
 argument uses the default argument.
 
+## Principles
+
+:::{principle} DEFARG-P1
+:rules: DEFARG-3 DEFARG-4
+
+A default argument is an expression that the caller leaves out and the
+call fills in. It is evaluated at each call that uses it, as if written
+at the call, but its names mean what they meant at the declaration. So
+it cannot name other parameters, `this`, or the locals of an enclosing
+function, because those exist only inside a call.
+:::
+
+:::{principle} DEFARG-P2
+:rules: DEFARG-1 DEFARG-2 DEFARG-5 DEFARG-6 DEFARG-7
+
+Default arguments belong to the declarations of a function, and the
+declarations in one scope add them up. Each later declaration can add
+defaults, and none can repeat one. A call matches arguments to
+parameters from the left, so defaults fill the parameter list from the
+right. A pointer to the function carries none of this, and an operator
+function has no use for it. Across translation units, an `inline`
+function must end up with the same defaults everywhere.
+:::
+
 ## Syntax
 
 ```{eval-rst}

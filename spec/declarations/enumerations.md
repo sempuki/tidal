@@ -6,6 +6,44 @@ its enumerators in its own scope. An *unscoped* enumeration (`enum`) puts
 its enumerators in the enclosing scope. The *underlying type* is the
 integer type that holds the values.
 
+## Principles
+
+:::{principle} ENUM-P1
+:rules: ENUM-10 ENUM-1 ENUM-12
+
+An enumeration is a type of its own whose values are integers. It is
+different from its underlying type and from every other enumeration,
+and each enumerator has the enumeration type. Enumerators take values in
+sequence, each one more than the last unless the program gives a value,
+and a value can use the enumerators before it. An enumerator's name
+exists only after its value, so the value cannot name it
+({principle}`NAM-P1`).
+:::
+
+:::{principle} ENUM-P2
+:rules: ENUM-2 ENUM-3 ENUM-11 ENUM-9
+
+The two kinds of enumeration differ in where their names go and how
+freely their values convert. An unscoped enumeration puts its
+enumerators into the enclosing scope and lets a value promote to an
+integer, as C does. A scoped enumeration keeps its enumerators inside
+and converts to or from an integer only with a cast, so its values take
+part in no arithmetic and stand in no condition. `using enum` brings
+the enumerators of either kind into a scope by name.
+:::
+
+:::{principle} ENUM-P3
+:rules: ENUM-4 ENUM-5 ENUM-6 ENUM-7 ENUM-8
+
+The underlying type holds the values. If the program fixes it, or the
+enumeration is scoped, the type is known from the first declaration, so
+the enumeration can be declared before its enumerators, every value of
+the type is a value of the enumeration, and an integer in braces can
+initialize it. If the program does not fix it, the implementation
+chooses a type wide enough, the range is only the bits the enumerators
+need, and a value outside that range has no meaning.
+:::
+
 ## Syntax
 
 ```{eval-rst}

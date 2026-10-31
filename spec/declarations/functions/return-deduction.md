@@ -3,6 +3,29 @@
 A function with `auto` or `decltype(auto)` as its return type gets its
 return type from its `return` statements.
 
+## Principles
+
+:::{principle} RET-P1
+:rules: RET-1 RET-2 RET-6
+
+A deduced return type is found as if each `return` statement initialized
+a variable declared with the placeholder, and all statements must
+agree. The rules for variables then carry over: `auto` drops references
+and qualifiers, `auto&` keeps them, and `decltype(auto)` takes the exact
+type. That last form can deduce a reference to a local variable, which
+is already gone when the caller uses it.
+:::
+
+:::{principle} RET-P2
+:rules: RET-3 RET-4 RET-5
+
+The type is known only after a `return` statement has been seen, so a
+call before the definition, or a recursion before a `return`, has no
+type to use. Every declaration must write the placeholder, because the
+deduced type is a result and not a declaration. A virtual function
+cannot deduce, because its callers never see its definition.
+:::
+
 ## Constraints
 
 :::{rule} RET-1

@@ -12,6 +12,56 @@ These specifiers control when evaluation occurs.
 Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 `CINIT` for `constinit`.
 
+## Principles
+
+:::{principle} CX-P1
+:rules: CX-3 CX-4 CX-5
+
+`constexpr` on a function is a permission, not a demand. It lets
+constant evaluation call the function ({principle}`TR-P4`), and the same
+function still runs at run time with the same meaning. The body can
+contain operations that constant evaluation cannot do, as long as no
+constant evaluation reaches them. Because every translation unit that
+evaluates the function needs its body, the function is `inline`. The
+specifier applies to functions and variables only, and all declarations
+of a function must agree on it.
+:::
+
+:::{principle} CX-P2
+:rules: CX-1 CX-2
+
+`constexpr` on a variable makes it a constant: it is `const`, its
+initializer is a constant expression, and its type can be evaluated at
+translation time. A constant that is a pointer or reference must refer
+to something that exists at translation time and still exists at run
+time, which means a function or an object with static storage
+duration, never an automatic variable.
+:::
+
+:::{principle} CX-P3
+:rules: CEV-1 CEV-2 CEV-3 CEV-4
+
+`consteval` on a function is a demand. Every call is evaluated at
+translation time, so a call with arguments that are not constant is an
+error unless it sits inside another function that constant evaluation
+is already running. A function that makes such a call becomes
+`consteval` itself when the language allows, and otherwise the call is
+rejected. The function has no run-time existence, so its address can be
+taken only where constant evaluation is in progress. It is `inline` for
+the same reason as a `constexpr` function.
+:::
+
+:::{principle} CX-P4
+:rules: CINIT-1 CINIT-2
+
+`constinit` is about initialization only. The variable must live for
+the whole program or the whole thread, and its initializer must be a
+constant, so that it already has its value before any other static
+object can look at it. The specifier does not make the variable `const`
+and asks nothing of the destructor. A variable is either `constinit` or
+`constexpr`, and every declaration of it says which.
+:::
+
 ## Constraints
 
 :::{rule} CX-1

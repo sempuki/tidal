@@ -8,6 +8,48 @@ This page covers the standard attributes `assume`, `carries_dependency`,
 `deprecated`, `fallthrough`, `likely`, `maybe_unused`, `no_unique_address`,
 `nodiscard`, `noreturn`, and `unlikely`.
 
+## Principles
+
+:::{principle} ATTR-P1
+:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13
+
+An attribute attaches information to a declaration, a statement, or a
+type, in a form that an implementation can skip. The double brackets
+make an attribute specifier, several attributes can share one, and an
+attribute that the implementation does not know is ignored. The
+standard attributes are not skippable in this sense: each has a fixed
+set of arguments and a fixed set of places where it can go.
+:::
+
+:::{principle} ATTR-P2
+:rules: ATTR-8 ATTR-11 ATTR-12 ATTR-15 ATTR-16 ATTR-9
+
+A standard attribute does not change what a valid program does. A
+likelihood hint changes nothing. A dependency hint changes nothing in
+a single thread. An assumption is not evaluated, so its side effects
+never occur. The one attribute that can change a program's layout is
+`no_unique_address`, and even it keeps two members of one type at
+different addresses.
+:::
+
+:::{principle} ATTR-P3
+:rules: ATTR-3 ATTR-10
+
+Two attributes are promises that the program makes to the
+implementation. `noreturn` promises that a call never returns, and
+`assume` promises that an expression is true. The implementation can
+rely on a promise, so a broken promise has no defined behavior.
+:::
+
+:::{principle} ATTR-P4
+:rules: ATTR-4 ATTR-5 ATTR-6 ATTR-7 ATTR-14
+
+The other attributes exist to turn warnings on or off. `deprecated` and
+`nodiscard` ask for a warning at a use. `maybe_unused` and
+`fallthrough` ask that a usual warning stay silent. These are advice to
+the implementation, and a program that ignores them stays valid.
+:::
+
 ## Syntax
 
 ```{eval-rst}

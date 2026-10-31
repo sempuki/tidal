@@ -4,6 +4,26 @@
 error. `= default` asks for the implicit definition of a special member
 function *(classes referenced)*.
 
+## Principles
+
+:::{principle} DEL-P1
+:rules: DEL-1 DEL-2 DEL-3 DEL-5
+
+A deleted function is declared so that it can be chosen and then
+refused. It takes part in overload resolution like any function, and a
+use of it is an error, even in an operand that is never evaluated. The
+deletion is on the first declaration, so no earlier code could use the
+function, and it is the function's only definition.
+:::
+
+:::{principle} DEL-P2
+:rules: DEL-4
+
+`= default` asks the implementation for its own version of a function.
+Only the functions the implementation knows how to write can be
+defaulted: the special members and the comparison operators.
+:::
+
 ## Constraints
 
 :::{rule} DEL-1

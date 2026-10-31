@@ -4,6 +4,52 @@ A function definition gives the body of a function. This page covers
 parameters, the end of a function body, the predefined variable
 `__func__`, and the function `main`.
 
+## Principles
+
+:::{principle} FN-P1
+:rules: FN-2 FN-9 FN-12
+
+A function can be declared many times and defined once in a
+translation unit ({principle}`TR-P2`). A definition is the whole
+function, so it needs complete types for its parameters and its return
+value, where a declaration can leave them incomplete. A definition
+stands at namespace scope or in a class, never inside another function.
+:::
+
+:::{principle} FN-P2
+:rules: FN-1 FN-10
+
+A parameter is a local variable of the outermost block of the body,
+declared by the caller's argument. So the body cannot declare its name
+again at that level ({principle}`NAM-P1`), and a nested block can. The
+implementation chooses whether the parameter object ends when the
+function returns or when the caller's full expression ends.
+:::
+
+:::{principle} FN-P3
+:rules: FN-3 FN-7 FN-8
+
+A function that promises a value must return one. If control reaches
+the end of its body, there is no value, and the behavior is undefined.
+`main` is the one exception: reaching its end returns zero.
+:::
+
+:::{principle} FN-P4
+:rules: FN-4 FN-6
+
+`main` is the program's entry point ({principle}`TR-P3`) and nothing
+else, so it keeps a fixed shape and the program cannot treat it as an
+ordinary function. The two parameter lists that every implementation
+accepts carry the program's arguments.
+:::
+
+:::{principle} FN-P5
+:rules: FN-5 FN-11
+
+Inside every function body, `__func__` names a string that holds the
+function's name, in a form the implementation chooses.
+:::
+
 ## Syntax
 
 ```{eval-rst}
