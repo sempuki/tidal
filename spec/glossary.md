@@ -65,6 +65,12 @@ linkage
   linkage refers to the same entity in one translation unit only. A name
   with no linkage refers only to the entity of its own declaration.
 
+observable behavior
+  The part of an execution that an implementation must reproduce: each
+  read and write of a `volatile` object, in program order; the data that
+  the program writes out *(library referenced)*; and the exit status. An
+  implementation can change anything else (TR-P5).
+
 placeholder type
   `auto` or `decltype(auto)` in the position of a type. The actual type
   comes from an initializer or from `return` statements. A concept name can

@@ -83,7 +83,8 @@
       "unsupported_flags": [
         "-m32",
         "-Wall",
-        "-Werror"
+        "-Werror",
+        "-O2"
       ]
     },
     {

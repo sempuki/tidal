@@ -204,7 +204,7 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
 def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> tuple[str, str]:
     key = hashlib.sha256(json.dumps([
         [s.read_text() for s in [test.path, *test.sources]],
-        c.id, identity, c.check, c.build, test.expect(c), OUTCOME_VERSION,
+        c.id, identity, c.check, c.build, sorted(c.unsupported_flags), test.expect(c), OUTCOME_VERSION,
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():

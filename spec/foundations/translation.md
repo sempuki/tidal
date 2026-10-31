@@ -59,6 +59,28 @@ address, or give it a form other than the two that the runtime knows how
 to call.
 :::
 
+:::{principle} TR-P5
+:rules: TR-7 TR-8
+
+This specification describes an *abstract machine*: what each
+construct does, in what order, with what effect on objects. An
+implementation does not have to build that machine. It has to produce
+the same {term}`observable behavior`, which is the reads and writes of
+`volatile` objects in their order, the data the program writes out, and
+the exit status. Everything else is invisible, so an implementation can
+reorder, merge, or drop work that the observable behavior does not
+depend on. That freedom is where optimization lives, and it is why the
+rules about evaluation order ({principle}`SEQ-P2`) and copies
+({principle}`VC-P4`) leave choices open.
+
+Undefined behavior is the point where the abstract machine has no next
+step. From there this specification requires nothing of the execution,
+including the parts that came before, because the implementation was
+free to reorder them. Constant evaluation runs the abstract machine
+exactly, so it stops at that point and the program is rejected, even
+when the value that the undefined step produced is never used.
+:::
+
 :::{principle} TR-P4
 :rules: TR-5
 
@@ -126,6 +148,30 @@ value that is never zero is valid. `if consteval` selects its first
 branch in constant evaluation and its second at run time.
 :::
 
+:::{rule} TR-7
+:kind: required
+:tests: foundations/translation/observable-volatile-kept-optimized.cpp foundations/translation/volatile-order-kept-optimized.cpp foundations/translation/exit-status-kept-optimized.cpp
+
+An implementation produces the observable behavior of the abstract
+machine at every optimization level. Each read and write of a
+`volatile` object happens, in the order of the program, and the exit
+status is the value that `main` returns. Work whose result the
+observable behavior does not depend on can be removed.
+:::
+
+## Undefined Behavior
+
+:::{rule} TR-8
+:kind: undefined
+:tests: foundations/translation/undefined-taints-whole-evaluation.cpp foundations/translation/undefined-on-taken-path-only.cpp
+
+If an execution reaches an operation that has undefined behavior, this
+specification sets no requirement on the whole execution, before or
+after that point. Constant evaluation rejects such an evaluation, also
+when the result of the operation is not used. An operation on a path
+that the evaluation does not take has no effect on it.
+:::
+
 ## Recommended Practice
 
 :::{rule} TR-6
@@ -154,8 +200,9 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 20 of
-21 tests. EDG runs and links no programs, so its results for the run and
+The results are in `tests/RESULTS.md`. All seven compilers agree on 25 of
+26 tests. EDG takes no optimization flag, so the three `-O2` tests are
+skipped there. EDG runs and links no programs, so its results for the run and
 link tests say only that the programs are valid.
 
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
