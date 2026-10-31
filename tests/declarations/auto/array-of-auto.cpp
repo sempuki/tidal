@@ -1,5 +1,8 @@
 // tidal-rules: AUTO-8
 // tidal-expect: reject
+// tidal-error-clang: cannot deduce actual type .*auto\[\]
+// tidal-error-gcc: unable to deduce .*initializer_list<auto> \[\]
+// tidal-error-edg: cannot appear in top-level array type
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

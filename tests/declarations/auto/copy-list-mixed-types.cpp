@@ -1,5 +1,8 @@
 // tidal-rules: AUTO-7
 // tidal-expect: reject
+// tidal-error-clang: deduced conflicting types
+// tidal-error-gcc: unable to deduce .*initializer_list<auto>
+// tidal-error-edg: cannot deduce .auto. type
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

@@ -1,5 +1,7 @@
 // tidal-rules: AUTO-11
 // tidal-expect: reject
+// tidal-error-clang: cannot deduce .decltype\(auto\). from initializer list
+// tidal-error-edg: cannot deduce .decltype\(auto\). type
 namespace std {
 template <class E> class initializer_list {
   const E* b_;

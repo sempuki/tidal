@@ -3,6 +3,9 @@
 // tidal-expect-gcc-14: reject
 // tidal-expect-clang-18: reject
 // tidal-expect-edg: reject
+// tidal-error-clang: cannot be narrowed
+// tidal-error-gcc: narrowing conversion
+// tidal-error-edg: invalid narrowing conversion
 // tidal-note: Gap review 2026-10-30. Q-0042. a bit-field whose width fits the target is not narrowing in Clang 22 and GCC 16; Clang 18, GCC 14, and EDG reject it.
 struct B { unsigned v : 4; };
 char f(B b) {

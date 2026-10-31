@@ -1,6 +1,7 @@
 // tidal-rules: DEFARG-2
 // tidal-expect: accept
 // tidal-expect-clang: reject
+// tidal-error-clang: no matching function for call to .f
 // tidal-note: Q-0111. Clang does not see a default argument that a later namespace declaration adds, through an earlier using declaration. GCC and EDG accept the call.
 // tidal-note: Gap review 2026-10-31.
 namespace n { void f(int); }

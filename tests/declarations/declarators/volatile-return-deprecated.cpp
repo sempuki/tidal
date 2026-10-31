@@ -1,5 +1,7 @@
 // tidal-rules: CV-9
 // tidal-expect: reject
+// tidal-error-clang: volatile-qualified return type .* is deprecated
+// tidal-error-gcc: qualified return type is deprecated
 // tidal-flags: -Werror -Wdeprecated
 // tidal-note: Gap review 2026-10-30.
 volatile int f();
