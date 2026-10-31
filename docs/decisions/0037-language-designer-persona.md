@@ -5,20 +5,24 @@ Status: Accepted. Extends 0029 and 0030.
 
 ## Context
 
-The maintainer asked for a reader who wants to add a feature to C++ and
-uses Tidal as the base for the proposal. Such a reader tests breadth and
-depth together. A proposal has to say how a new feature meets every
-part of the language it touches: lookup, overloads, templates,
-constant evaluation, object lifetime, and the rules a change would
-break. The Java programmer and the front end test what a user and an
-implementer need. Neither tests what a designer needs.
+The clean-room readers test what a user needs (the Java programmer) and
+what an implementer needs (the front end). No reader tests what a
+language designer needs. A proposal for a new feature has to say how the
+feature meets every part of the language it touches, such as:
 
-The maintainer described the persona as a WG21 participant who has read
-many WG21 papers. AGENTS.md lists WG21 papers as protected material, so
-an agent that draws on them is a source reader. A source reader writes
-no files and gives only summaries without code or proposed wording. It
-would also fill gaps in Tidal from memory, and those gaps are what the
-exercise is meant to find.
+- lookup and overloads,
+- templates,
+- constant evaluation,
+- object lifetime,
+- the existing programs whose meaning it changes.
+
+So a designer tests breadth and depth together.
+
+AGENTS.md lists WG21 papers as protected material. A designer who draws
+on them is a source reader, who writes no files and gives only summaries
+without code or proposed wording. Such a reader would also fill gaps in
+Tidal from memory, and those gaps are what the exercise is meant to
+find.
 
 ## Decision
 

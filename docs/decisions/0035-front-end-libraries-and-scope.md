@@ -5,13 +5,12 @@ Status: Accepted. Amends 0029.
 
 ## Context
 
-Decision 0029 limits the clean-room front end to the Rust standard
-library. The front end has 13,679 lines, and all of it is hand-written,
+The clean-room front end exists to exercise the specification. It is
+not meant to be a complete compiler. Decision 0029 limits it to the Rust
+standard library, so all 13,679 of its lines are hand-written,
 including the lexer, the parser, and exact arithmetic. Phases 3 and 4 of
-the roadmap add name lookup, overload resolution, and templates, so the
-code would keep growing. The maintainer asked for less code to be
-written for the front end. Its purpose is to exercise the
-specification. It is not meant to be a complete compiler.
+the roadmap add name lookup, overload resolution, and templates, and
+the code would grow with each.
 
 A library helps only if it brings no C++ knowledge with it. A front end
 that gets its C++ knowledge from a library passes tests because of that

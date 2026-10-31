@@ -6,9 +6,9 @@
 ## Context
 
 Decision 0037 adds a language-designer persona that takes all of its
-C++ knowledge from Tidal. The maintainer first described a reader who
-has read many WG21 papers. AGENTS.md makes such a reader a source
-reader.
+C++ knowledge from Tidal. A designer who has read many WG21 papers would
+know which design questions proposals usually raise. AGENTS.md makes
+such a reader a source reader.
 
 ## Evidence
 
