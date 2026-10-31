@@ -23,6 +23,8 @@ Maintenance Group. The rules below are the ones that apply most often.
 | Do not define a thing by what it is not. | `This is a design decision.` | `This is not a bug but a design decision.` |
 | Do not use a colon to hold back the point. | `The index is rebuilt on every write.` | `There is one catch: the index is rebuilt on every write.` |
 | Do not use dashes for asides. | Write a new sentence. | `The parser — which is old — still works.` |
+| Do not set up a puzzle and then answer it. Say the thing. | `` `decltype(x)` gives the declared type, and `decltype((x))` gives the type of the expression. `` | `` `decltype` answers one of two questions, and the parentheses choose which. `` |
+| Do not end a passage with a line that restates it. | Stop after the last fact. | `So the rule is simple.` |
 
 STE limits writers to an approved dictionary. Tidal keeps that rule in a
 relaxed form:
