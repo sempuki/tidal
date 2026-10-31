@@ -4,9 +4,11 @@ Tidal is an open specification of a language that is compatible with
 ISO C++23. The {doc}`glossary <glossary>` defines the terms that the pages
 use.
 
-Each page lists its rules in fixed segments. Each rule has an ID, a class,
-and links to the tests that support it. `docs/style-guide.md` in the
-repository describes the format.
+The Foundations pages state the models that the other pages build on.
+Each page opens with its principles, then its grammar, then its rules in
+fixed segments. A principle names the rules that are its evidence. Each
+rule has an ID, a class, and links to the tests that support it.
+`docs/style-guide.md` in the repository describes the format.
 
 ## Acknowledgements
 
@@ -23,6 +25,7 @@ ASD Simplified Technical English Maintenance Group maintains.
 :numbered:
 :maxdepth: 2
 
+foundations/index
 statements/index
 expressions/index
 declarations/index

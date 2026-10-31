@@ -52,7 +52,7 @@ def row(page: Path) -> str:
 
 def main() -> int:
     rows = []
-    for section in ["statements", "expressions", "declarations", "classes"]:
+    for section in ["foundations", "statements", "expressions", "declarations", "classes"]:
         rows += [row(p) for p in pages(SPEC / section / "index.md")]
     glossary = (SPEC / "glossary.md").read_text()
     terms = len(re.findall(r"^\S.*$", glossary.split(":::{glossary}")[1].split(":::")[0], flags=re.M))
