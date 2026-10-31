@@ -110,3 +110,19 @@ Each of these habits prevents a commit that claims more than it did.
 - When a commit describes an edit made by a script, check
   `git show --stat` before pushing. If a commit message turns out to be
   wrong, make a follow-up commit that says what the first one missed.
+
+### While checks run
+
+Each of these habits keeps a running check from failing or caching a
+wrong result.
+
+- Do not edit `tools/check_all.sh` or any other shell script while it
+  runs. `sh` reads a script as it executes, so it resumes at its old
+  byte offset in the new text and can run a fragment of a line.
+- Mount `tests/` or `build/` into a container with `:z`, never `:Z`.
+  `:Z` labels the directory private to that one container, the
+  matrix containers then cannot read it, and the runner caches the
+  failures. If it happens, delete the cache entries that report
+  "Permission denied" or "no such file" for `/tidal/tests`.
+- Do not run `git stash` or `git checkout` on tracked files while a
+  check reads them.
