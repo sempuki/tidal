@@ -37,22 +37,20 @@ occur between two digits. A *raw string* has no escape sequences.
 :kind: required
 :tests: expressions/primary/int-decimal-types.cpp expressions/primary/int-hex-fits-unsigned-ll.cpp expressions/primary/int-hex-types.cpp expressions/primary/int-negative-is-unary.cpp expressions/primary/int-size-suffix.cpp expressions/primary/int-suffix-types.cpp
 
-The type of an integer literal is the first type in its list that can
-hold its value:
+An integer literal has the first type from its candidate list that can
+hold its value. The list is built in four steps:
 
-| Literal | Types, in order |
-|---|---|
-| decimal, no suffix | `int`, `long`, `long long` |
-| octal, hex, or binary, no suffix | `int`, `unsigned int`, `long`, `unsigned long`, `long long`, `unsigned long long` |
-| `u` | `unsigned int`, `unsigned long`, `unsigned long long` |
-| `l` | `long`, `long long`, or the unsigned types for octal, hex, and binary |
-| `ul` | `unsigned long`, `unsigned long long` |
-| `ll` | `long long`, or `unsigned long long` for octal, hex, and binary |
-| `ull` | `unsigned long long` |
-| `z` | the signed type that matches `std::size_t` |
-| `uz` | `std::size_t` |
+1. Start with the signed types `int`, `long`, and `long long`, in that
+   order.
+2. For an octal, hexadecimal, or binary literal, add the unsigned form of
+   each type directly after it.
+3. With a `u` suffix, use only the unsigned forms of the types.
+4. An `l` suffix removes the `int` forms. An `ll` suffix keeps only the
+   `long long` forms.
 
-A minus sign is a unary operator. It is not part of the literal.
+A `z` suffix gives the signed type that matches `std::size_t`, and `uz`
+gives `std::size_t`. A minus sign is a unary operator. It is not part of
+the literal.
 :::
 
 :::{rule} PRIM-2
@@ -213,7 +211,9 @@ category as the expression.
 :kind: undefined
 :tests: expressions/primary/string-modify-constant.cpp
 
-If a program changes a string literal, the behavior is undefined.
+The characters of a string literal are constant. If a program writes to
+one of them, for example through a pointer from `const_cast`, the
+behavior is undefined.
 :::
 
 ## Implementation Requirements
