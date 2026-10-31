@@ -137,6 +137,18 @@
       "repo": "edg",
       "path": "src/class_decl.c",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-lex-literal",
+      "repo": "llvm",
+      "path": "clang/lib/Lex/LiteralSupport.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-diag-lex",
+      "repo": "llvm",
+      "path": "clang/include/clang/Basic/DiagnosticLexKinds.td",
+      "class": "sanitized"
     }
   ]
 }

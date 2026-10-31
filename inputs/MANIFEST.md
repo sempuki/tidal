@@ -35,3 +35,5 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | edg-statements | edg | `src/statements.c` | sanitized | `a4b9476b67189ea0ed2034239f4494bc32a4f50a885bb258ab01eb8e01bac703` |
 | clang-sema-access | llvm | `clang/lib/Sema/SemaAccess.cpp` | sanitized | `985ab07ab7873ebd7c951ac6c5efb61db2566664af35506df4c90a3f2534367b` |
 | edg-class-decl | edg | `src/class_decl.c` | sanitized | `9a014800a411bc25e6bb2395c3c68b0c61eef1a55ccb5b274dfd323e2d586ce3` |
+| clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `4c0dcf0757557885412a691c9ea716d4cfd7f8a796ce85aeffee7da7c7cfdd28` |
+| clang-diag-lex | llvm | `clang/include/clang/Basic/DiagnosticLexKinds.td` | sanitized | `9af1667ed59e8d7c9e5ec7abb3acbcff57ad6f4148517a4bf21631d0f186e720` |
