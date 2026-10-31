@@ -265,20 +265,22 @@ creates and the program discards.
 
 :::{rule} ATTR-6
 :kind: recommended
-:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp declarations/attributes/unused-plain-class-warns.cpp declarations/attributes/unused-set-not-read-warns.cpp declarations/attributes/unused-structured-binding-warns.cpp declarations/attributes/unused-class-object-no-warning.cpp
+:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp declarations/attributes/unused-plain-class-warns.cpp declarations/attributes/unused-set-not-read-warns.cpp declarations/attributes/unused-structured-binding-warns.cpp declarations/attributes/unused-class-object-no-warning.cpp declarations/attributes/unused-member-ctor-no-warning.cpp declarations/attributes/unused-base-dtor-no-warning.cpp declarations/attributes/unused-nested-member-no-warning.cpp declarations/attributes/unused-member-plain-class-warns.cpp
 
 An implementation should warn about a variable in a block that the
 program never reads, including:
 
 - a variable that the program only assigns,
 - a structured binding declaration,
-- a variable of a class type without a user-provided constructor or
-  destructor.
+- a variable of a class type, if creating and destroying the variable
+  runs no user-provided constructor or destructor.
 
-An implementation should not warn about a variable of a class type with
-a user-provided constructor or destructor. An implementation should not
-warn that a variable, parameter, function, or type with
-`[[maybe_unused]]` is unused.
+Creating a variable runs the constructors of its class, its bases, and
+its members, also of array elements. Destroying the variable runs the
+destructors of the same classes. An implementation should not warn about
+a variable whose creation or destruction runs a user-provided
+constructor or destructor, or about a variable, parameter, function, or
+type with `[[maybe_unused]]`.
 :::
 
 :::{rule} ATTR-7
@@ -334,8 +336,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 66 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 70 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -345,7 +347,9 @@ of 66 tests. EDG skips the tests that use `-Werror`.
   through"). The tests change the warnings to errors with `-Werror`.
   {doc}`/foundations/translation` gives the flag for each warning.
 - ATTR-6: Clang, GCC, and EDG give no warning for an unused variable of
-  a class type with a user-provided constructor or destructor. For a
+  a class type with a user-provided constructor or destructor. The three
+  also give no warning when a base, a member, or an element of an array
+  member has a user-provided constructor or destructor. For a
   class whose only special feature is a default member initializer,
   Clang and EDG warn and GCC does not. Clang and GCC warn for an unused
   condition variable and an unused range-based `for` variable. EDG does

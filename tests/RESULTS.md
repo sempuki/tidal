@@ -32,7 +32,13 @@ compilers affect the Status column.
 | `classes/access/friend-not-transitive.cpp` | ACC-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/friend-plain-type-name.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/friend-private-member-of-other.cpp` | ACC-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend-block-declaration-scope.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend-block-declaration.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/access/hidden-friend-declared-after-use.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend-declared-before-use.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/hidden-friend-not-visible.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend-qualified-after-declaration.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/access/hidden-friend-qualified-redeclaration.cpp` | ACC-17 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `classes/access/hidden-friend.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/injected-name-private-base.cpp` | ACC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/injected-name-qualified.cpp` | ACC-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -143,9 +149,14 @@ compilers affect the Status column.
 | `classes/constructors/const-object-user-ctor.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/converting-ctor-multi-arg-list.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/converting-ctor.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `classes/constructors/ctor-address.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-address.cpp` | CTOR-1 NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/ctor-const-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/ctor-explicit-object.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-no-match-braces.cpp` | CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-no-match-direct.cpp` | CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-no-match-functional-cast.cpp` | CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-no-match-mem-init.cpp` | CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-no-match-new.cpp` | CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/ctor-on-const-this-type.cpp` | CTOR-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/ctor-out-of-line.cpp` | CTOR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/ctor-redeclared.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -174,11 +185,17 @@ compilers affect the Status column.
 | `classes/constructors/deleted-default-reference-init.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/deleted-default-reference.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-decltype-braces.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-decltype-call-argument.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-decltype-call.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-dtor-decltype-comma.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/deleted-dtor-delete.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-new-from-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-new.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-dtor-noexcept.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-return-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-sizeof-call.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-sizeof.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -247,6 +264,7 @@ compilers affect the Status column.
 | `classes/constructors/one-user-conversion-plus-standard.cpp` | CTOR-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/one-user-conversion.cpp` | CTOR-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/private-dtor-member.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/constructors/private-dtor-sizeof.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/private-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/pseudo-dtor-scalar.cpp` | DTOR-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -991,7 +1009,11 @@ compilers affect the Status column.
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-base-dtor-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unused-class-object-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unused-member-ctor-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unused-member-plain-class-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-nested-member-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unused-plain-class-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/unused-set-not-read-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/unused-structured-binding-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2633,8 +2655,11 @@ compilers affect the Status column.
 | `expressions/new-delete/new-auto-two-values.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/new-void.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/parenthesized-type.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/new-delete/placement-argument-converts.cpp` | NEW-20 NEW-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/placement-arguments.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/placement-form-undeclared.cpp` | NEW-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/placement-form-wrong-count.cpp` | NEW-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/placement-form-wrong-type.cpp` | NEW-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/reference-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/uninitialized-read.cpp` | NEW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/uninitialized-write-then-read.cpp` | NEW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3051,11 +3076,11 @@ compilers affect the Status column.
 | `foundations/language-support/strong-ordering-missing-member.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/strong-ordering-missing.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/tuple-protocol-minimal.cpp` | LSUP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-alias-namespace.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-alias-namespace.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-array.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-base-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-base.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-braced-list.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-braced-list.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-class-in-inline-namespace.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-enum-in-class-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3064,13 +3089,13 @@ compilers affect the Status column.
 | `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/adl-friend-declared-later.cpp` | NAM-29 ACC-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-friend-in-namespace.cpp` | NAM-29 ACC-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-friend-not-through-conversion.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-friend-of-other-class.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-friend-not-through-conversion.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-friend-of-other-class.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-function-name.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-function-pointer-fundamental.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-function-pointer-fundamental.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-function-pointer-parameter.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-function-pointer-return.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-ignores-base-access.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-ignores-base-access.cpp` | NAM-30 ACC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-ignores-non-function.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-incomplete-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-indirect-base.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3078,8 +3103,8 @@ compilers affect the Status column.
 | `foundations/names/adl-lambda-class-member.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-lambda-function.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-lambda-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-lambda-parameter-type.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-local-class-member-function.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-lambda-parameter-type.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-local-class-member-function.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-local-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-local-enum.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-member-function-pointer-parameter.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3087,13 +3112,13 @@ compilers affect the Status column.
 | `foundations/names/adl-member-pointer-type.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-nested-class-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-nested-class-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-not-block-declaration.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-not-derived.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-block-declaration.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-derived.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-not-later-declaration.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-not-static-member.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-not-through-directive.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-null-pointer.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-later-declaration.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-static-member.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-through-directive.cpp` | NAM-30 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-null-pointer.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-parenthesized-name.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-plus-ordinary.cpp` | NAM-5 NAM-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/adl-pointer.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3103,12 +3128,12 @@ compilers affect the Status column.
 | `foundations/names/adl-suppressed-by-block-function.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-suppressed-by-member.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-suppressed-by-object.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-suppressed-by-type.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-suppressed-by-type.cpp` | NAM-32 CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-suppressed-by-variable.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-template-argument.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-template-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-template-template-argument.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-template-value-argument.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/adl-template-value-argument.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-union.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-using-declaration-in-namespace.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-with-block-using.cpp` | NAM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3133,16 +3158,23 @@ compilers affect the Status column.
 | `foundations/names/definition-return-type-namespace.cpp` | NAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/definition-trailing-return-sees-class.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-block-ends.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/directive-chain-between-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/directive-chain-found.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/directive-chain-level-ambiguous.cpp` | NAM-23 NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-enclosing-level-ambiguous.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-function-and-variable.cpp` | NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-inline-members.cpp` | NAM-23 NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-inner-namespace-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/directive-level-functions-merge.cpp` | NAM-24 NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/directive-level-same-entity.cpp` | NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/directive-level-two-directives-ambiguous.cpp` | NAM-24 NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-local-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-namespace-only.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-namespace-reopened.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-overloads-merge.cpp` | NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-same-entity.cpp` | NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-type-and-variable.cpp` | NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/directive-unnamed-namespace-ambiguous.cpp` | NAM-23 NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/enum-qualified-in-namespace.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/enum-qualified-missing.cpp` | NAM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/enum-qualified-scoped.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3196,6 +3228,8 @@ compilers affect the Status column.
 | `foundations/names/qualified-reaches-hidden-global.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/qualified-same-entity-two-paths.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/qualified-same-entity-using-declarations.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-unnamed-namespace-member.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-unnamed-namespace-second.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/qualified-using-declaration.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/qualifier-decltype.cpp` | NAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/qualifier-enum-alias.cpp` | NAM-15 NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3242,6 +3276,50 @@ compilers affect the Status column.
 | `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/class-constant-copy-in-lambda.cpp` | ODR-2 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
+| `foundations/odr/class-differs-across-units.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/constant-address-is-use.cpp` | ODR-3 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
+| `foundations/odr/constant-reads-in-lambda.cpp` | ODR-3 ODR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/constant-value-read-not-use.cpp` | ODR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/constructor-uses-member-constructor.cpp` | ODR-4 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/copy-uses-copy-constructor.cpp` | ODR-4 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/declarations-and-one-definition.cpp` | ODR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/default-argument-not-used.cpp` | ODR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/default-argument-used.cpp` | ODR-6 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/delete-uses-destructor.cpp` | ODR-5 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/destructor-uses-pure-base-destructor.cpp` | ODR-4 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/enumeration-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/enumeration-differs-across-units.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/function-address-is-use.cpp` | ODR-3 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
+| `foundations/odr/guarded-header-twice.cpp` | INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/header-class-shared.cpp` | ODR-7 INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/header-enumeration-shared.cpp` | ODR-7 INC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/header-function-in-two-units.cpp` | ODR-8 INC-1 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/header-included-twice.cpp` | ODR-1 INC-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/include-missing-file.cpp` | INC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/include-replaces-line.cpp` | INC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/include-searches-own-directory.cpp` | INC-2 INC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/inline-same-tokens-different-meaning.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/inline-variable-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/inline-variable-differs-across-units.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/internal-declarations-not-used.cpp` | ODR-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/internal-function-not-defined-warns.cpp` | ODR-11 ODR-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/internal-function-used-in-unused-inline.cpp` | ODR-9 | reject | reject | run | reject | skip | run | run | run | run | reject | reject | pass |
+| `foundations/odr/local-class-binds-constant.cpp` | ODR-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/local-class-reads-constant.cpp` | ODR-3 ODR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/local-object-uses-destructor.cpp` | ODR-4 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/mutable-member-read-in-lambda.cpp` | ODR-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/new-uses-deallocation-function.cpp` | ODR-5 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/odr/pragma-once-header-twice.cpp` | INC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/prvalue-initializer-no-copy.cpp` | ODR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/static-member-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/unevaluated-name-not-use.cpp` | ODR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` | ODR-11 ODR-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/unused-member-function-no-definition.cpp` | ODR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/variable-defined-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/variable-without-initializer-twice.cpp` | ODR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` | ODR-5 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
+| `foundations/odr/virtual-function-not-called-is-used.cpp` | ODR-6 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
 | `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3524,7 +3602,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 
-3506/3506 tests pass on baseline compilers.
+3584/3584 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -3594,6 +3672,24 @@ check that the rejection has the intended cause.
 - `classes/access/friend-private-member-of-other.cpp` (gcc-16-o2): error: 'void Other::hidden()' is private within this context / note: declared private here
 - `classes/access/friend-private-member-of-other.cpp` (clang-22): error: friend function 'hidden' is a private member of 'Other' / note: implicitly declared private here
 - `classes/access/friend-private-member-of-other.cpp` (clang-22-o2): error: friend function 'hidden' is a private member of 'Other' / note: implicitly declared private here
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (clang-host): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (gcc-host): error: ‘make_seven’ was not declared in this scope
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (edg-7.0): error: identifier "make_seven" is undefined
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (gcc-14): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (clang-18): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (gcc-16): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (gcc-16-o2): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (clang-22): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-block-declaration-scope.cpp` (clang-22-o2): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-declared-after-use.cpp` (clang-host): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-declared-after-use.cpp` (gcc-host): error: ‘make_seven’ was not declared in this scope
+- `classes/access/hidden-friend-declared-after-use.cpp` (edg-7.0): error: identifier "make_seven" is undefined / error: "make_seven" has already been declared in the current scope
+- `classes/access/hidden-friend-declared-after-use.cpp` (gcc-14): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-declared-after-use.cpp` (clang-18): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-declared-after-use.cpp` (gcc-16): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-declared-after-use.cpp` (gcc-16-o2): error: 'make_seven' was not declared in this scope
+- `classes/access/hidden-friend-declared-after-use.cpp` (clang-22): error: use of undeclared identifier 'make_seven'
+- `classes/access/hidden-friend-declared-after-use.cpp` (clang-22-o2): error: use of undeclared identifier 'make_seven'
 - `classes/access/hidden-friend-not-visible.cpp` (clang-host): error: use of undeclared identifier 'make_zero'
 - `classes/access/hidden-friend-not-visible.cpp` (gcc-host): error: ‘make_zero’ was not declared in this scope
 - `classes/access/hidden-friend-not-visible.cpp` (edg-7.0): error: identifier "make_zero" is undefined
@@ -3603,6 +3699,11 @@ check that the rejection has the intended cause.
 - `classes/access/hidden-friend-not-visible.cpp` (gcc-16-o2): error: 'make_zero' was not declared in this scope
 - `classes/access/hidden-friend-not-visible.cpp` (clang-22): error: use of undeclared identifier 'make_zero'
 - `classes/access/hidden-friend-not-visible.cpp` (clang-22-o2): error: use of undeclared identifier 'make_zero'
+- `classes/access/hidden-friend-qualified-redeclaration.cpp` (gcc-host): error: ‘int geo::make_seven()’ has not been declared within ‘geo’ / note: only here as a ‘friend’
+- `classes/access/hidden-friend-qualified-redeclaration.cpp` (edg-7.0): error: function "geo::make_seven" may not be redeclared in the current scope
+- `classes/access/hidden-friend-qualified-redeclaration.cpp` (gcc-14): error: 'int geo::make_seven()' has not been declared within 'geo' / note: only here as a 'friend'
+- `classes/access/hidden-friend-qualified-redeclaration.cpp` (gcc-16): error: 'int geo::make_seven()' has not been declared within 'geo' / note: only here as a 'friend'
+- `classes/access/hidden-friend-qualified-redeclaration.cpp` (gcc-16-o2): error: 'int geo::make_seven()' has not been declared within 'geo' / note: only here as a 'friend'
 - `classes/access/injected-name-private-base.cpp` (clang-host): error: 'A' is a private member of 'A' / note: constrained by private inheritance here
 - `classes/access/injected-name-private-base.cpp` (gcc-host): error: ‘struct A A::A’ is private within this context / note: declared private here
 - `classes/access/injected-name-private-base.cpp` (edg-7.0): error: type "A::A" (declared at line 7) is inaccessible
@@ -4048,6 +4149,51 @@ check that the rejection has the intended cause.
 - `classes/constructors/ctor-explicit-object.cpp` (gcc-16-o2): error: expected unqualified-id before 'this' / error: expected ')' before 'this'
 - `classes/constructors/ctor-explicit-object.cpp` (clang-22): error: an explicit object parameter cannot appear in a constructor
 - `classes/constructors/ctor-explicit-object.cpp` (clang-22-o2): error: an explicit object parameter cannot appear in a constructor
+- `classes/constructors/ctor-no-match-braces.cpp` (clang-host): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument / note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+- `classes/constructors/ctor-no-match-braces.cpp` (gcc-host): error: no matching function for call to ‘Span::Span(<brace-enclosed initializer list>)’
+- `classes/constructors/ctor-no-match-braces.cpp` (edg-7.0): error: no instance of constructor "Span::Span" matches the argument list / note: function "Span::Span(const Span &) noexcept" does not match because argument #1 does not match parameter / note: function "Span::Span(Span &&) noexcept" does not match because argument #1 does not match parameter / note: number of parameters of function "Span::Span(double, double)" does not match the call / note: function "Span::Span(int)" does not match because argument #1 does not match parameter
+- `classes/constructors/ctor-no-match-braces.cpp` (gcc-14): error: no matching function for call to 'Span::Span(<brace-enclosed initializer list>)' / note: candidate: 'Span::Span(double, double)' / note:   candidate expects 2 arguments, 1 provided / note: candidate: 'Span::Span(int)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'int' / note: candidate: 'constexpr Span::Span(const Span&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'const Span&' / note: candidate: 'constexpr Span::Span(Span&&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'Span&&'
+- `classes/constructors/ctor-no-match-braces.cpp` (clang-18): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument / note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+- `classes/constructors/ctor-no-match-braces.cpp` (gcc-16): error: no matching function for call to 'Span::Span(<brace-enclosed initializer list>)'
+- `classes/constructors/ctor-no-match-braces.cpp` (gcc-16-o2): error: no matching function for call to 'Span::Span(<brace-enclosed initializer list>)'
+- `classes/constructors/ctor-no-match-braces.cpp` (clang-22): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument / note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+- `classes/constructors/ctor-no-match-braces.cpp` (clang-22-o2): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument / note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+- `classes/constructors/ctor-no-match-direct.cpp` (clang-host): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor not viable: requires 3 arguments, but 2 were provided
+- `classes/constructors/ctor-no-match-direct.cpp` (gcc-host): error: no matching function for call to ‘Span::Span(int, int)’
+- `classes/constructors/ctor-no-match-direct.cpp` (edg-7.0): error: no instance of constructor "Span::Span" matches the argument list / note: number of parameters of function "Span::Span(const Span &) noexcept" does not match the call / note: number of parameters of function "Span::Span(Span &&) noexcept" does not match the call / note: number of parameters of function "Span::Span(double, double, double)" does not match the call / note: number of parameters of function "Span::Span(int)" does not match the call
+- `classes/constructors/ctor-no-match-direct.cpp` (gcc-14): error: no matching function for call to 'Span::Span(int, int)' / note: candidate: 'Span::Span(double, double, double)' / note:   candidate expects 3 arguments, 2 provided / note: candidate: 'Span::Span(int)' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr Span::Span(const Span&)' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr Span::Span(Span&&)' / note:   candidate expects 1 argument, 2 provided
+- `classes/constructors/ctor-no-match-direct.cpp` (clang-18): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor not viable: requires 3 arguments, but 2 were provided
+- `classes/constructors/ctor-no-match-direct.cpp` (gcc-16): error: no matching function for call to 'Span::Span(int, int)'
+- `classes/constructors/ctor-no-match-direct.cpp` (gcc-16-o2): error: no matching function for call to 'Span::Span(int, int)'
+- `classes/constructors/ctor-no-match-direct.cpp` (clang-22): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor not viable: requires 3 arguments, but 2 were provided
+- `classes/constructors/ctor-no-match-direct.cpp` (clang-22-o2): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor not viable: requires 3 arguments, but 2 were provided
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (clang-host): error: no matching conversion for functional-style cast from 'std::nullptr_t' to 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (gcc-host): error: no matching function for call to ‘Span::Span(std::nullptr_t)’
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (edg-7.0): error: no instance of constructor "Span::Span" matches the argument list / note: function "Span::Span(const Span &) noexcept" does not match because argument #1 does not match parameter / note: function "Span::Span(Span &&) noexcept" does not match because argument #1 does not match parameter / note: function "Span::Span(int)" does not match because argument #1 does not match parameter
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (gcc-14): error: no matching function for call to 'Span::Span(std::nullptr_t)' / note: candidate: 'Span::Span(int)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'int' / note: candidate: 'constexpr Span::Span(const Span&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'const Span&' / note: candidate: 'constexpr Span::Span(Span&&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'Span&&'
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (clang-18): error: no matching conversion for functional-style cast from 'std::nullptr_t' to 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (gcc-16): error: no matching function for call to 'Span::Span(std::nullptr_t)'
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (gcc-16-o2): error: no matching function for call to 'Span::Span(std::nullptr_t)'
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (clang-22): error: no matching conversion for functional-style cast from 'std::nullptr_t' to 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-functional-cast.cpp` (clang-22-o2): error: no matching conversion for functional-style cast from 'std::nullptr_t' to 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-mem-init.cpp` (clang-host): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-mem-init.cpp` (gcc-host): error: no matching function for call to ‘Span::Span(std::nullptr_t)’
+- `classes/constructors/ctor-no-match-mem-init.cpp` (edg-7.0): error: no instance of constructor "Span::Span" matches the argument list / note: function "Span::Span(const Span &) noexcept" does not match because argument #1 does not match parameter / note: function "Span::Span(Span &&) noexcept" does not match because argument #1 does not match parameter / note: function "Span::Span(int)" does not match because argument #1 does not match parameter
+- `classes/constructors/ctor-no-match-mem-init.cpp` (gcc-14): error: no matching function for call to 'Span::Span(std::nullptr_t)' / note: candidate: 'Span::Span(int)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'int' / note: candidate: 'constexpr Span::Span(const Span&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'const Span&' / note: candidate: 'constexpr Span::Span(Span&&)' / note:   no known conversion for argument 1 from 'std::nullptr_t' to 'Span&&'
+- `classes/constructors/ctor-no-match-mem-init.cpp` (clang-18): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-mem-init.cpp` (gcc-16): error: no matching function for call to 'Span::Span(std::nullptr_t)'
+- `classes/constructors/ctor-no-match-mem-init.cpp` (gcc-16-o2): error: no matching function for call to 'Span::Span(std::nullptr_t)'
+- `classes/constructors/ctor-no-match-mem-init.cpp` (clang-22): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-mem-init.cpp` (clang-22-o2): error: no matching constructor for initialization of 'Span' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'std::nullptr_t' to 'const Span' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'std::nullptr_t' to 'Span' for 1st argument / note: candidate constructor not viable: no known conversion from 'std::nullptr_t' to 'int' for 1st argument
+- `classes/constructors/ctor-no-match-new.cpp` (clang-host): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/constructors/ctor-no-match-new.cpp` (gcc-host): error: no matching function for call to ‘Span::Span(int, int)’
+- `classes/constructors/ctor-no-match-new.cpp` (edg-7.0): error: no instance of constructor "Span::Span" matches the argument list / note: number of parameters of function "Span::Span(const Span &) noexcept" does not match the call / note: number of parameters of function "Span::Span(Span &&) noexcept" does not match the call / note: number of parameters of function "Span::Span(int)" does not match the call
+- `classes/constructors/ctor-no-match-new.cpp` (gcc-14): error: no matching function for call to 'Span::Span(int, int)' / note: candidate: 'Span::Span(int)' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr Span::Span(const Span&)' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr Span::Span(Span&&)' / note:   candidate expects 1 argument, 2 provided
+- `classes/constructors/ctor-no-match-new.cpp` (clang-18): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/constructors/ctor-no-match-new.cpp` (gcc-16): error: no matching function for call to 'Span::Span(int, int)'
+- `classes/constructors/ctor-no-match-new.cpp` (gcc-16-o2): error: no matching function for call to 'Span::Span(int, int)'
+- `classes/constructors/ctor-no-match-new.cpp` (clang-22): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided
+- `classes/constructors/ctor-no-match-new.cpp` (clang-22-o2): error: no matching constructor for initialization of 'Span' / note: candidate constructor not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided
 - `classes/constructors/ctor-redeclared.cpp` (clang-host): error: constructor cannot be redeclared / note: previous declaration is here
 - `classes/constructors/ctor-redeclared.cpp` (gcc-host): error: ‘S::S()’ cannot be overloaded with ‘S::S()’ / note: previous declaration ‘S::S()’
 - `classes/constructors/ctor-redeclared.cpp` (edg-7.0): error: invalid redeclaration of member function "S::S()" (declared at line 6)
@@ -4210,6 +4356,24 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (gcc-16-o2): error: use of deleted function 'S::~S()' / error: use of deleted function 'S::~S()'
 - `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (clang-host): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (gcc-host): error: use of deleted function ‘Pinned::~Pinned()’ / error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (edg-7.0): error: function "Pinned::~Pinned() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (gcc-14): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (clang-18): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (gcc-16): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (gcc-16-o2): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (clang-22): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-braces.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (clang-host): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (gcc-host): error: use of deleted function ‘Pinned::~Pinned()’ / error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (edg-7.0): error: function "Pinned::~Pinned() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (gcc-14): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (clang-18): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (gcc-16): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (gcc-16-o2): error: use of deleted function 'Pinned::~Pinned()' / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (clang-22): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-decltype-call-argument.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-delete.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-delete.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
 - `classes/constructors/deleted-dtor-delete.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
@@ -4228,6 +4392,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (gcc-16-o2): error: use of deleted function 'S::~S()'
 - `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-noexcept.cpp` (clang-host): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-noexcept.cpp` (gcc-host): error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-noexcept.cpp` (edg-7.0): error: function "Pinned::~Pinned() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-noexcept.cpp` (gcc-14): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-noexcept.cpp` (clang-18): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-noexcept.cpp` (gcc-16): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-noexcept.cpp` (gcc-16-o2): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-noexcept.cpp` (clang-22): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-noexcept.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function / error: "S::~S() noexcept" (declared at line 6), required for copy that was eliminated, cannot be referenced -- it is a deleted function
@@ -4237,6 +4410,24 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (gcc-16-o2): error: use of deleted function 'S::~S()'
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (clang-host): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (gcc-host): error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (edg-7.0): error: function "Pinned::~Pinned() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (gcc-14): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (clang-18): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (gcc-16): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (gcc-16-o2): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (clang-22): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof-call.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof.cpp` (clang-host): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof.cpp` (gcc-host): error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-sizeof.cpp` (edg-7.0): error: function "Pinned::~Pinned() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-sizeof.cpp` (gcc-14): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof.cpp` (clang-18): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof.cpp` (gcc-16): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof.cpp` (gcc-16-o2): error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-sizeof.cpp` (clang-22): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-sizeof.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~Pinned' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-temporary.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-temporary.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
 - `classes/constructors/deleted-dtor-temporary.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
@@ -4585,6 +4776,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/one-user-conversion.cpp` (gcc-16-o2): error: could not convert '1' from 'int' to 'B'
 - `classes/constructors/one-user-conversion.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
 - `classes/constructors/one-user-conversion.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
+- `classes/constructors/private-dtor-sizeof.cpp` (clang-host): error: temporary of type 'Sealed' has private destructor / note: implicitly declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (gcc-host): error: ‘Sealed::~Sealed()’ is private within this context / note: declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (edg-7.0): error: "Sealed::~Sealed() noexcept" (declared at line 6) is inaccessible
+- `classes/constructors/private-dtor-sizeof.cpp` (gcc-14): error: 'Sealed::~Sealed()' is private within this context / note: declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (clang-18): error: temporary of type 'Sealed' has private destructor / note: implicitly declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (gcc-16): error: 'Sealed::~Sealed()' is private within this context / note: declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (gcc-16-o2): error: 'Sealed::~Sealed()' is private within this context / note: declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (clang-22): error: temporary of type 'Sealed' has private destructor / note: implicitly declared private here
+- `classes/constructors/private-dtor-sizeof.cpp` (clang-22-o2): error: temporary of type 'Sealed' has private destructor / note: implicitly declared private here
 - `classes/constructors/private-dtor-variable.cpp` (clang-host): error: variable of type 'S' has private destructor / note: implicitly declared private here
 - `classes/constructors/private-dtor-variable.cpp` (gcc-host): error: ‘S::~S()’ is private within this context / note: declared private here
 - `classes/constructors/private-dtor-variable.cpp` (edg-7.0): error: "S::~S() noexcept" (declared at line 6) is inaccessible
@@ -7687,6 +7887,14 @@ check that the rejection has the intended cause.
 - `declarations/attributes/unlikely-with-argument.cpp` (gcc-16-o2): error: 'unlikely' attribute does not take any arguments
 - `declarations/attributes/unlikely-with-argument.cpp` (clang-22): error: attribute 'unlikely' cannot have an argument list
 - `declarations/attributes/unlikely-with-argument.cpp` (clang-22-o2): error: attribute 'unlikely' cannot have an argument list
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (clang-host): error: unused variable 'holder' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (gcc-host): error: unused variable ‘holder’ [-Werror=unused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (gcc-14): error: unused variable 'holder' [-Werror=unused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (clang-18): error: unused variable 'holder' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (gcc-16): error: unused variable 'holder' [-Werror=unused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (gcc-16-o2): error: unused variable 'holder' [-Werror=unused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (clang-22): error: unused variable 'holder' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-member-plain-class-warns.cpp` (clang-22-o2): error: unused variable 'holder' [-Werror,-Wunused-variable]
 - `declarations/attributes/unused-plain-class-warns.cpp` (clang-host): error: unused variable 'point' [-Werror,-Wunused-variable]
 - `declarations/attributes/unused-plain-class-warns.cpp` (gcc-host): error: unused variable ‘point’ [-Werror=unused-variable]
 - `declarations/attributes/unused-plain-class-warns.cpp` (gcc-14): error: unused variable 'point' [-Werror=unused-variable]
@@ -14083,6 +14291,24 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/placement-form-undeclared.cpp` (gcc-16-o2): error: no matching function for call to 'operator new(sizetype, int*)'
 - `expressions/new-delete/placement-form-undeclared.cpp` (clang-22): error: no matching 'operator new' function for non-allocating placement new expression; include <new>
 - `expressions/new-delete/placement-form-undeclared.cpp` (clang-22-o2): error: no matching 'operator new' function for non-allocating placement new expression; include <new>
+- `expressions/new-delete/placement-form-wrong-count.cpp` (clang-host): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 3 were provided
+- `expressions/new-delete/placement-form-wrong-count.cpp` (gcc-host): error: no matching function for call to ‘operator new(sizetype, arena&, int)’
+- `expressions/new-delete/placement-form-wrong-count.cpp` (edg-7.0): error: no instance of overloaded "operator new" matches the argument list / note: number of parameters of function "operator new(unsigned long, arena &)" does not match the call
+- `expressions/new-delete/placement-form-wrong-count.cpp` (gcc-14): error: no matching function for call to 'operator new(sizetype, arena&, int)' / note: candidate: 'void* operator new(long unsigned int, arena&)' / note:   candidate expects 2 arguments, 3 provided
+- `expressions/new-delete/placement-form-wrong-count.cpp` (clang-18): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 3 were provided
+- `expressions/new-delete/placement-form-wrong-count.cpp` (gcc-16): error: no matching function for call to 'operator new(sizetype, arena&, int)'
+- `expressions/new-delete/placement-form-wrong-count.cpp` (gcc-16-o2): error: no matching function for call to 'operator new(sizetype, arena&, int)'
+- `expressions/new-delete/placement-form-wrong-count.cpp` (clang-22): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 3 were provided
+- `expressions/new-delete/placement-form-wrong-count.cpp` (clang-22-o2): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 3 were provided
+- `expressions/new-delete/placement-form-wrong-type.cpp` (clang-host): error: no matching function for call to 'operator new' / note: candidate function not viable: no known conversion from 'label' to 'arena &' for 2nd argument
+- `expressions/new-delete/placement-form-wrong-type.cpp` (gcc-host): error: no matching function for call to ‘operator new(sizetype, label&)’
+- `expressions/new-delete/placement-form-wrong-type.cpp` (edg-7.0): error: no instance of overloaded "operator new" matches the argument list / note: function "operator new(unsigned long, arena &)" does not match because argument #2 does not match parameter
+- `expressions/new-delete/placement-form-wrong-type.cpp` (gcc-14): error: no matching function for call to 'operator new(sizetype, label&)' / note: candidate: 'void* operator new(long unsigned int, arena&)' / note:   no known conversion for argument 2 from 'label' to 'arena&'
+- `expressions/new-delete/placement-form-wrong-type.cpp` (clang-18): error: no matching function for call to 'operator new' / note: candidate function not viable: no known conversion from 'label' to 'arena &' for 2nd argument
+- `expressions/new-delete/placement-form-wrong-type.cpp` (gcc-16): error: no matching function for call to 'operator new(sizetype, label&)'
+- `expressions/new-delete/placement-form-wrong-type.cpp` (gcc-16-o2): error: no matching function for call to 'operator new(sizetype, label&)'
+- `expressions/new-delete/placement-form-wrong-type.cpp` (clang-22): error: no matching function for call to 'operator new' / note: candidate function not viable: no known conversion from 'label' to 'arena &' for 2nd argument
+- `expressions/new-delete/placement-form-wrong-type.cpp` (clang-22-o2): error: no matching function for call to 'operator new' / note: candidate function not viable: no known conversion from 'label' to 'arena &' for 2nd argument
 - `expressions/new-delete/reference-type.cpp` (clang-host): error: cannot allocate reference type 'int &' with new
 - `expressions/new-delete/reference-type.cpp` (gcc-host): error: new cannot be applied to a reference type
 - `expressions/new-delete/reference-type.cpp` (edg-7.0): error: type must be an object type
@@ -16433,6 +16659,15 @@ check that the rejection has the intended cause.
 - `foundations/names/directive-block-ends.cpp` (gcc-16-o2): error: 'value' was not declared in this scope; did you mean 'm::value'?
 - `foundations/names/directive-block-ends.cpp` (clang-22): error: use of undeclared identifier 'value'; did you mean 'm::value'?
 - `foundations/names/directive-block-ends.cpp` (clang-22-o2): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-chain-level-ambiguous.cpp` (clang-host): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::core::limit'
+- `foundations/names/directive-chain-level-ambiguous.cpp` (gcc-host): error: reference to ‘limit’ is ambiguous
+- `foundations/names/directive-chain-level-ambiguous.cpp` (edg-7.0): error: "app::user::limit" is ambiguous
+- `foundations/names/directive-chain-level-ambiguous.cpp` (gcc-14): error: reference to 'limit' is ambiguous / note: candidates are: 'int app::limit' / note:                 'int app::core::limit'
+- `foundations/names/directive-chain-level-ambiguous.cpp` (clang-18): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::core::limit'
+- `foundations/names/directive-chain-level-ambiguous.cpp` (gcc-16): error: reference to 'limit' is ambiguous
+- `foundations/names/directive-chain-level-ambiguous.cpp` (gcc-16-o2): error: reference to 'limit' is ambiguous
+- `foundations/names/directive-chain-level-ambiguous.cpp` (clang-22): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::core::limit'
+- `foundations/names/directive-chain-level-ambiguous.cpp` (clang-22-o2): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::core::limit'
 - `foundations/names/directive-enclosing-level-ambiguous.cpp` (clang-host): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::lib::value'
 - `foundations/names/directive-enclosing-level-ambiguous.cpp` (gcc-host): error: reference to ‘value’ is ambiguous
 - `foundations/names/directive-enclosing-level-ambiguous.cpp` (edg-7.0): error: "outer::user::value" is ambiguous
@@ -16451,6 +16686,15 @@ check that the rejection has the intended cause.
 - `foundations/names/directive-function-and-variable.cpp` (gcc-16-o2): error: reference to 'pick' is ambiguous
 - `foundations/names/directive-function-and-variable.cpp` (clang-22): error: reference to 'pick' is ambiguous / note: candidate found by name lookup is 'a::pick' / note: candidate found by name lookup is 'b::pick'
 - `foundations/names/directive-function-and-variable.cpp` (clang-22-o2): error: reference to 'pick' is ambiguous / note: candidate found by name lookup is 'a::pick' / note: candidate found by name lookup is 'b::pick'
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (clang-host): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::two::value' / note: candidate found by name lookup is 'outer::one::value'
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (gcc-host): error: reference to ‘value’ is ambiguous
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (edg-7.0): error: "outer::user::value" is ambiguous
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (gcc-14): error: reference to 'value' is ambiguous / note: candidates are: 'int outer::two::value' / note:                 'int outer::value' / note:                 'int outer::one::value'
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (clang-18): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::two::value' / note: candidate found by name lookup is 'outer::one::value'
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (gcc-16): error: reference to 'value' is ambiguous
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (gcc-16-o2): error: reference to 'value' is ambiguous
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (clang-22): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::two::value' / note: candidate found by name lookup is 'outer::one::value'
+- `foundations/names/directive-level-two-directives-ambiguous.cpp` (clang-22-o2): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::two::value' / note: candidate found by name lookup is 'outer::one::value'
 - `foundations/names/directive-namespace-only.cpp` (clang-host): error: use of undeclared identifier 'value'; did you mean 'm::value'?
 - `foundations/names/directive-namespace-only.cpp` (gcc-host): error: ‘value’ was not declared in this scope; did you mean ‘m::value’?
 - `foundations/names/directive-namespace-only.cpp` (edg-7.0): error: identifier "value" is undefined
@@ -16469,6 +16713,15 @@ check that the rejection has the intended cause.
 - `foundations/names/directive-type-and-variable.cpp` (gcc-16-o2): error: reference to 'item' is ambiguous
 - `foundations/names/directive-type-and-variable.cpp` (clang-22): error: reference to 'item' is ambiguous / note: candidate found by name lookup is 'a::item' / note: candidate found by name lookup is 'b::item'
 - `foundations/names/directive-type-and-variable.cpp` (clang-22-o2): error: reference to 'item' is ambiguous / note: candidate found by name lookup is 'a::item' / note: candidate found by name lookup is 'b::item'
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-host): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (gcc-host): error: reference to ‘limit’ is ambiguous
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (edg-7.0): error: "app::limit" is ambiguous
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (gcc-14): error: reference to 'limit' is ambiguous / note: candidates are: 'int app::{anonymous}::limit' / note:                 'int app::limit'
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-18): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (gcc-16): error: reference to 'limit' is ambiguous
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (gcc-16-o2): error: reference to 'limit' is ambiguous
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-22): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
+- `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-22-o2): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
 - `foundations/names/enum-qualified-missing.cpp` (clang-host): error: no member named 'idle' in 'mode'
 - `foundations/names/enum-qualified-missing.cpp` (gcc-host): error: ‘idle’ is not a member of ‘mode’
 - `foundations/names/enum-qualified-missing.cpp` (edg-7.0): error: enum "mode" has no member "idle"
@@ -16820,6 +17073,197 @@ check that the rejection has the intended cause.
 - `foundations/objects/uninitialized-member-read-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing uninitialized member 'P::y'
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-host): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-18): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-22): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-22-o2): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/constant-address-is-use.cpp` (clang-host): link: undefined reference to `Limits::top'
+- `foundations/odr/constant-address-is-use.cpp` (gcc-host): link: undefined reference to `Limits::top'
+- `foundations/odr/constant-address-is-use.cpp` (gcc-14): link: undefined reference to `Limits::top'
+- `foundations/odr/constant-address-is-use.cpp` (clang-18): link: undefined reference to `Limits::top'
+- `foundations/odr/constant-address-is-use.cpp` (gcc-16): link: undefined reference to `Limits::top'
+- `foundations/odr/constant-address-is-use.cpp` (clang-22): link: undefined reference to `Limits::top'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (clang-host): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (gcc-host): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (gcc-14): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (clang-18): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (gcc-16): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (gcc-16-o2): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (clang-22): link: undefined reference to `Part::Part()'
+- `foundations/odr/constructor-uses-member-constructor.cpp` (clang-22-o2): link: undefined reference to `Part::Part()'
+- `foundations/odr/copy-uses-copy-constructor.cpp` (clang-host): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (gcc-host): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (gcc-14): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (clang-18): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (gcc-16): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (gcc-16-o2): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (clang-22): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/copy-uses-copy-constructor.cpp` (clang-22-o2): link: undefined reference to `Tag::Tag(Tag
+- `foundations/odr/default-argument-used.cpp` (clang-host): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (gcc-host): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (gcc-14): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (clang-18): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (gcc-16): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (gcc-16-o2): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (clang-22): link: undefined reference to `seed()'
+- `foundations/odr/default-argument-used.cpp` (clang-22-o2): link: undefined reference to `seed()'
+- `foundations/odr/delete-uses-destructor.cpp` (clang-host): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (gcc-host): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (gcc-14): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (clang-18): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (gcc-16): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (gcc-16-o2): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (clang-22): link: undefined reference to `Item::~Item()'
+- `foundations/odr/delete-uses-destructor.cpp` (clang-22-o2): link: undefined reference to `Item::~Item()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (clang-host): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (gcc-host): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (gcc-14): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (clang-18): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (gcc-16): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (gcc-16-o2): link: undefined reference to `Base::~Base()' / link: undefined reference to `Base::~Base()' / link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (clang-22): link: undefined reference to `Base::~Base()'
+- `foundations/odr/destructor-uses-pure-base-destructor.cpp` (clang-22-o2): link: undefined reference to `Base::~Base()' / link: undefined reference to `Base::~Base()' / link: undefined reference to `Base::~Base()'
+- `foundations/odr/enumeration-defined-twice.cpp` (clang-host): error: redefinition of 'Color' / note: previous definition is here
+- `foundations/odr/enumeration-defined-twice.cpp` (gcc-host): link: multiple definition of ‘enum / note: previous definition here
+- `foundations/odr/enumeration-defined-twice.cpp` (edg-7.0): error: enum "Color" has already been defined (previous definition at line 6)
+- `foundations/odr/enumeration-defined-twice.cpp` (gcc-14): link: multiple definition of 'enum / note: previous definition here
+- `foundations/odr/enumeration-defined-twice.cpp` (clang-18): error: redefinition of 'Color' / note: previous definition is here
+- `foundations/odr/enumeration-defined-twice.cpp` (gcc-16): link: multiple definition of 'enum / note: previous definition here
+- `foundations/odr/enumeration-defined-twice.cpp` (gcc-16-o2): link: multiple definition of 'enum / note: previous definition here
+- `foundations/odr/enumeration-defined-twice.cpp` (clang-22): error: redefinition of 'Color' / note: previous definition is here
+- `foundations/odr/enumeration-defined-twice.cpp` (clang-22-o2): error: redefinition of 'Color' / note: previous definition is here
+- `foundations/odr/function-address-is-use.cpp` (clang-host): link: undefined reference to `declared_only()'
+- `foundations/odr/function-address-is-use.cpp` (gcc-host): link: undefined reference to `declared_only()'
+- `foundations/odr/function-address-is-use.cpp` (gcc-14): link: undefined reference to `declared_only()'
+- `foundations/odr/function-address-is-use.cpp` (clang-18): link: undefined reference to `declared_only()'
+- `foundations/odr/function-address-is-use.cpp` (gcc-16): link: undefined reference to `declared_only()'
+- `foundations/odr/function-address-is-use.cpp` (clang-22): link: undefined reference to `declared_only()'
+- `foundations/odr/header-function-in-two-units.cpp` (clang-host): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (gcc-host): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (gcc-14): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (clang-18): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (gcc-16): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (gcc-16-o2): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (clang-22): link: multiple definition of `twice(int)';
+- `foundations/odr/header-function-in-two-units.cpp` (clang-22-o2): link: multiple definition of `twice(int)';
+- `foundations/odr/header-included-twice.cpp` (clang-host): error: redefinition of 'counter' / note: '/home/ryanm/Code/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/home/ryanm/Code/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/header-included-twice.cpp` (gcc-host): error: redefinition of ‘int counter’ / note: ‘int counter’ previously defined here
+- `foundations/odr/header-included-twice.cpp` (edg-7.0): error: variable "counter" has already been defined (previous definition at line 1)
+- `foundations/odr/header-included-twice.cpp` (gcc-14): error: redefinition of 'int counter' / note: 'int counter' previously defined here
+- `foundations/odr/header-included-twice.cpp` (clang-18): error: redefinition of 'counter' / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/header-included-twice.cpp` (gcc-16): error: redefinition of 'int counter' / note: 'int counter' previously defined here
+- `foundations/odr/header-included-twice.cpp` (gcc-16-o2): error: redefinition of 'int counter' / note: 'int counter' previously defined here
+- `foundations/odr/header-included-twice.cpp` (clang-22): error: redefinition of 'counter' / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/header-included-twice.cpp` (clang-22-o2): error: redefinition of 'counter' / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/include-missing-file.cpp` (clang-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: 'no-such-header.h' file not found 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ 1 error generated.
+- `foundations/odr/include-missing-file.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: no-such-header.h: No such file or directory 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ compilation te
+- `foundations/odr/include-missing-file.cpp` (edg-7.0): "/tidal/tests/foundations/odr/include-missing-file.cpp", line 6: catastrophic error: cannot open source file "no-such-header.h" #include "no-such-header.h" ^ 1 catastrophic error detected in the compi
+- `foundations/odr/include-missing-file.cpp` (gcc-14): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: no-such-header.h: No such file or directory 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ compilation terminated.
+- `foundations/odr/include-missing-file.cpp` (clang-18): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: 'no-such-header.h' file not found 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ 1 error generated.
+- `foundations/odr/include-missing-file.cpp` (gcc-16): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: no-such-header.h: No such file or directory 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ compilation terminated.
+- `foundations/odr/include-missing-file.cpp` (gcc-16-o2): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: no-such-header.h: No such file or directory 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ compilation terminated.
+- `foundations/odr/include-missing-file.cpp` (clang-22): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: 'no-such-header.h' file not found 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ 1 error generated.
+- `foundations/odr/include-missing-file.cpp` (clang-22-o2): /tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: 'no-such-header.h' file not found 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ 1 error generated.
+- `foundations/odr/inline-variable-defined-twice.cpp` (clang-host): error: redefinition of 'limit' / note: previous definition is here
+- `foundations/odr/inline-variable-defined-twice.cpp` (gcc-host): error: redefinition of ‘int limit’ / note: ‘int limit’ previously defined here
+- `foundations/odr/inline-variable-defined-twice.cpp` (edg-7.0): error: variable "limit" has already been defined (previous definition at line 6)
+- `foundations/odr/inline-variable-defined-twice.cpp` (gcc-14): error: redefinition of 'int limit' / note: 'int limit' previously defined here
+- `foundations/odr/inline-variable-defined-twice.cpp` (clang-18): error: redefinition of 'limit' / note: previous definition is here
+- `foundations/odr/inline-variable-defined-twice.cpp` (gcc-16): error: redefinition of 'int limit' / note: 'int limit' previously defined here
+- `foundations/odr/inline-variable-defined-twice.cpp` (gcc-16-o2): error: redefinition of 'int limit' / note: 'int limit' previously defined here
+- `foundations/odr/inline-variable-defined-twice.cpp` (clang-22): error: redefinition of 'limit' / note: previous definition is here
+- `foundations/odr/inline-variable-defined-twice.cpp` (clang-22-o2): error: redefinition of 'limit' / note: previous definition is here
+- `foundations/odr/internal-function-not-defined-warns.cpp` (clang-host): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-not-defined-warns.cpp` (gcc-host): error: ‘int hidden()’ used but never defined
+- `foundations/odr/internal-function-not-defined-warns.cpp` (gcc-14): error: 'int hidden()' used but never defined
+- `foundations/odr/internal-function-not-defined-warns.cpp` (clang-18): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-not-defined-warns.cpp` (gcc-16): error: 'int hidden()' used but never defined
+- `foundations/odr/internal-function-not-defined-warns.cpp` (gcc-16-o2): error: 'int hidden()' used but never defined
+- `foundations/odr/internal-function-not-defined-warns.cpp` (clang-22): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-not-defined-warns.cpp` (clang-22-o2): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-used-in-unused-inline.cpp` (clang-host): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-used-in-unused-inline.cpp` (edg-7.0): error: function "hidden" was referenced but not defined
+- `foundations/odr/internal-function-used-in-unused-inline.cpp` (clang-22): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/internal-function-used-in-unused-inline.cpp` (clang-22-o2): error: function 'hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/local-class-binds-constant.cpp` (clang-host): error: reference to local variable 'limit' declared in enclosing function 'main'
+- `foundations/odr/local-class-binds-constant.cpp` (gcc-host): error: use of local variable with automatic storage from containing function
+- `foundations/odr/local-class-binds-constant.cpp` (gcc-14): error: use of local variable with automatic storage from containing function
+- `foundations/odr/local-class-binds-constant.cpp` (clang-18): error: reference to local variable 'limit' declared in enclosing function 'main'
+- `foundations/odr/local-class-binds-constant.cpp` (gcc-16): error: use of local variable with automatic storage from containing function
+- `foundations/odr/local-class-binds-constant.cpp` (gcc-16-o2): error: use of local variable with automatic storage from containing function
+- `foundations/odr/local-class-binds-constant.cpp` (clang-22): error: reference to local variable 'limit' declared in enclosing function 'main'
+- `foundations/odr/local-class-binds-constant.cpp` (clang-22-o2): error: reference to local variable 'limit' declared in enclosing function 'main'
+- `foundations/odr/local-object-uses-destructor.cpp` (clang-host): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (gcc-host): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (gcc-14): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (clang-18): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (gcc-16): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (gcc-16-o2): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (clang-22): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/local-object-uses-destructor.cpp` (clang-22-o2): link: undefined reference to `Guard::~Guard()'
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (clang-host): error: variable 'settings' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'settings' by value / note: capture 'settings' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (gcc-host): error: ‘settings’ is not captured / note: the lambda has no capture-default
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (gcc-14): error: 'settings' is not captured / note: the lambda has no capture-default
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (clang-18): error: variable 'settings' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'settings' by value / note: capture 'settings' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (gcc-16): error: 'settings' is not captured / note: the lambda has no capture-default
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (gcc-16-o2): error: 'settings' is not captured / note: the lambda has no capture-default
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (clang-22): error: variable 'settings' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'settings' by value / note: capture 'settings' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/mutable-member-read-in-lambda.cpp` (clang-22-o2): error: variable 'settings' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'settings' by value / note: capture 'settings' by reference / note: default capture by value / note: default capture by reference
+- `foundations/odr/new-uses-deallocation-function.cpp` (clang-host): link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (gcc-host): link: undefined reference to `Node::operator / link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (gcc-14): link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (clang-18): link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (gcc-16): link: undefined reference to `Node::operator / link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (gcc-16-o2): link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (clang-22): link: undefined reference to `Node::operator
+- `foundations/odr/new-uses-deallocation-function.cpp` (clang-22-o2): link: undefined reference to `Node::operator
+- `foundations/odr/static-member-defined-twice.cpp` (clang-host): error: redefinition of 'count' / note: previous definition is here
+- `foundations/odr/static-member-defined-twice.cpp` (gcc-host): error: redefinition of ‘int Box::count’ / note: ‘int Box::count’ previously defined here
+- `foundations/odr/static-member-defined-twice.cpp` (edg-7.0): error: member "Box::count" has already been defined (previous definition at line 7)
+- `foundations/odr/static-member-defined-twice.cpp` (gcc-14): error: redefinition of 'int Box::count' / note: 'int Box::count' previously defined here
+- `foundations/odr/static-member-defined-twice.cpp` (clang-18): error: redefinition of 'count' / note: previous definition is here
+- `foundations/odr/static-member-defined-twice.cpp` (gcc-16): error: redefinition of 'int Box::count' / note: 'int Box::count' previously defined here
+- `foundations/odr/static-member-defined-twice.cpp` (gcc-16-o2): error: redefinition of 'int Box::count' / note: 'int Box::count' previously defined here
+- `foundations/odr/static-member-defined-twice.cpp` (clang-22): error: redefinition of 'count' / note: previous definition is here
+- `foundations/odr/static-member-defined-twice.cpp` (clang-22-o2): error: redefinition of 'count' / note: previous definition is here
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (clang-host): error: function '(anonymous namespace)::hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (gcc-host): error: ‘int {anonymous}::hidden()’ used but never defined
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (gcc-14): error: 'int {anonymous}::hidden()' used but never defined
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (clang-18): error: function '(anonymous namespace)::hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (gcc-16): error: 'int {anonymous}::hidden()' used but never defined
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (gcc-16-o2): error: 'int {anonymous}::hidden()' used but never defined
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (clang-22): error: function '(anonymous namespace)::hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/unnamed-namespace-function-not-defined-warns.cpp` (clang-22-o2): error: function '(anonymous namespace)::hidden' has internal linkage but is not defined [-Werror,-Wundefined-internal] / note: used here
+- `foundations/odr/variable-defined-twice.cpp` (clang-host): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-defined-twice.cpp` (gcc-host): error: redefinition of ‘int total’ / note: ‘int total’ previously defined here
+- `foundations/odr/variable-defined-twice.cpp` (edg-7.0): error: variable "total" has already been defined (previous definition at line 6)
+- `foundations/odr/variable-defined-twice.cpp` (gcc-14): error: redefinition of 'int total' / note: 'int total' previously defined here
+- `foundations/odr/variable-defined-twice.cpp` (clang-18): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-defined-twice.cpp` (gcc-16): error: redefinition of 'int total' / note: 'int total' previously defined here
+- `foundations/odr/variable-defined-twice.cpp` (gcc-16-o2): error: redefinition of 'int total' / note: 'int total' previously defined here
+- `foundations/odr/variable-defined-twice.cpp` (clang-22): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-defined-twice.cpp` (clang-22-o2): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-without-initializer-twice.cpp` (clang-host): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-without-initializer-twice.cpp` (gcc-host): error: redefinition of ‘int total’
+- `foundations/odr/variable-without-initializer-twice.cpp` (edg-7.0): error: variable "total" has already been defined (previous definition at line 6)
+- `foundations/odr/variable-without-initializer-twice.cpp` (gcc-14): error: redefinition of 'int total'
+- `foundations/odr/variable-without-initializer-twice.cpp` (clang-18): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-without-initializer-twice.cpp` (gcc-16): error: redefinition of 'int total'
+- `foundations/odr/variable-without-initializer-twice.cpp` (gcc-16-o2): error: redefinition of 'int total'
+- `foundations/odr/variable-without-initializer-twice.cpp` (clang-22): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/variable-without-initializer-twice.cpp` (clang-22-o2): error: redefinition of 'total' / note: previous definition is here
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (clang-host): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (gcc-host): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (gcc-14): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (clang-18): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (gcc-16): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-destructor-uses-deallocation-function.cpp` (clang-22): link: undefined reference to `Shape::operator
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (clang-host): link: undefined reference to `vtable
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (gcc-host): link: undefined reference to `vtable
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (gcc-14): link: undefined reference to `vtable
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (clang-18): link: undefined reference to `vtable
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (gcc-16): link: undefined reference to `vtable
+- `foundations/odr/virtual-function-not-called-is-used.cpp` (clang-22): link: undefined reference to `vtable
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero

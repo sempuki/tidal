@@ -47,7 +47,9 @@ to the classes derived from a friend. A class can befriend:
 The class needs access to a member function before the class can name
 that function. A friend function first declared in the class lives in
 the enclosing namespace. The friend function is found only through its
-arguments, so the function stays with the class that it serves.
+arguments, so the function stays with the class that it serves. A
+declaration of the function in the namespace makes the function an
+ordinary namespace member from that point on.
 :::
 
 :::{principle} ACC-P4
@@ -178,21 +180,31 @@ access.
 
 :::{rule} ACC-7
 :kind: required
-:tests: classes/access/hidden-friend.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp foundations/names/qualified-hidden-friend.cpp
+:tests: classes/access/hidden-friend.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp foundations/names/qualified-hidden-friend.cpp classes/access/hidden-friend-declared-before-use.cpp classes/access/hidden-friend-block-declaration.cpp classes/access/hidden-friend-qualified-after-declaration.cpp
 
 A friend function that is first declared in a class is a member of the
-enclosing namespace. Only argument-dependent lookup
-({rule}`NAM-29`) finds the function, unless the namespace also
-declares the function.
+enclosing namespace. Argument-dependent lookup ({rule}`NAM-29`) finds
+the function. Ordinary and qualified lookup find the function in these
+places only:
+
+- after a declaration of the function in the namespace, at namespace
+  scope,
+- in a block that declares the function, after that declaration.
 :::
 
 :::{rule} ACC-17
 :kind: reject
-:tests: classes/access/hidden-friend-not-visible.cpp
+:tests: classes/access/hidden-friend-not-visible.cpp classes/access/hidden-friend-declared-after-use.cpp classes/access/hidden-friend-block-declaration-scope.cpp classes/access/hidden-friend-qualified-redeclaration.cpp
 
-Ordinary name lookup does not find a friend function that ACC-7
-describes. A use of the function's name that needs ordinary lookup is
-not valid.
+Outside the places that ACC-7 lists, ordinary and qualified lookup do
+not find a friend function that ACC-7 describes. A use of the
+function's name that needs one of these lookups is not valid there.
+Such uses include these:
+
+- a use before a declaration of the function in the namespace,
+- a use outside the block that declares the function,
+- a declaration with a qualified name outside the namespace, such as
+  `int geo::make();` ({question}`Q-0131`).
 :::
 
 :::{rule} ACC-8
@@ -223,7 +235,7 @@ ACC-8 gives the access of the other members.
 
 :::{rule} ACC-12
 :kind: reject
-:tests: classes/access/private-base-conversion.cpp
+:tests: classes/access/private-base-conversion.cpp foundations/names/adl-ignores-base-access.cpp
 
 A conversion from a derived class to one of its bases needs access to
 that base. The rule applies to:
@@ -326,11 +338,16 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 52 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
+of 59 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base
   ({question}`Q-0052`).
+- ACC-7, ACC-17: all compilers find a hidden friend with ordinary lookup
+  after a declaration in the namespace, and not before it. A
+  declaration in a block makes the function visible in that block only.
+- ACC-17: Clang accepts a declaration `int geo::make_seven();` outside
+  `geo` of a hidden friend. GCC and EDG reject it ({question}`Q-0131`).
 
 Inputs: clang-sema-access, edg-class-decl.

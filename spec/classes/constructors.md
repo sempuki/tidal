@@ -93,12 +93,14 @@ the object again is undefined ({principle}`OBJ-P4`).
 :::
 
 :::{principle} CTOR-P5
-:rules: CTOR-9 CTOR-10 CTOR-22
+:rules: CTOR-9 CTOR-10 CTOR-22 CTOR-25
 
-A constructor that takes one argument is a conversion from that argument
-type, and an implicit conversion can use the constructor. `explicit`
-withdraws that offer, so the constructor then runs only where the
-program names the type.
+An initialization of a class object calls a constructor with the
+initializer's arguments, as a function call passes arguments to a
+function. A constructor that takes one argument is a conversion from
+that argument type, and an implicit conversion can use the constructor.
+`explicit` withdraws that offer, so the constructor then runs only where
+the program names the type.
 :::
 
 ## Syntax
@@ -294,6 +296,25 @@ conversions can come before the converting constructor.
 An implicit conversion uses at most one converting constructor.
 :::
 
+:::{rule} CTOR-25
+:kind: reject
+:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp
+
+An initialization of a class object by a constructor must find a
+constructor that accepts its arguments. A constructor accepts the
+arguments if their number fits its parameters ({rule}`PFX-5`) and each
+argument converts implicitly to its parameter type. If more than one
+constructor accepts them, overload resolution picks one *(overload
+resolution referenced)*.
+
+These rules name specific cases of this rule (decision 0042):
+
+- {rule}`CTOR-19`, an initialization that needs a default constructor
+  that the class does not have,
+- {rule}`CTOR-9`, an `explicit` constructor in copy-initialization,
+- {rule}`CTOR-22`, a conversion through two converting constructors.
+:::
+
 :::{rule} DTOR-1
 :kind: reject
 :tests: classes/constructors/dtor-const.cpp classes/constructors/dtor-explicit-object.cpp classes/constructors/dtor-out-of-line.cpp classes/constructors/dtor-params.cpp classes/constructors/dtor-ref-qualified.cpp classes/constructors/dtor-return-type.cpp classes/constructors/dtor-specifiers.cpp classes/constructors/dtor-static.cpp classes/constructors/dtor-two.cpp classes/constructors/dtor-variadic.cpp classes/constructors/dtor-void-param.cpp classes/constructors/dtor-wrong-name.cpp
@@ -323,16 +344,20 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/private-dtor-sizeof.cpp
 
 If the destructor of a class is deleted or not accessible, a program
 must not:
 
 - declare a variable of the class with automatic, static, or thread
   storage duration,
-- write a prvalue of the class outside the operand of `decltype`, also
-  where the prvalue initializes an object directly, as in `return S{};`,
+- write a prvalue of the class, also where the prvalue initializes an
+  object directly, as in `return S{};`,
 - apply `delete` to an object of the class.
+
+The prvalue rule also covers the operands of `sizeof`, `noexcept`, and
+`typeid`. The one exception is a function call that is the operand of
+`decltype`, also in parentheses or as the right operand of a comma.
 
 A `new` expression for the class is valid, also for an array
 ({question}`Q-0082`). The implicit destructor is deleted if a base or
@@ -533,8 +558,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 147
+of 157 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -565,8 +590,12 @@ of 144 tests.
 
   Each row follows the majority.
 - DTOR-3: all compilers reject each prvalue of the class, also where no
-  temporary is made, as in `return S{};`. All accept the operand of
-  `decltype`.
+  temporary is made, as in `return S{};`. All reject the prvalue in the
+  operand of `sizeof`, `noexcept`, and `typeid`, and in `decltype(S{})`.
+  All accept a function call as the operand of `decltype`.
+- CTOR-25: all compilers reject a direct initialization, a functional
+  cast, a member initializer, and a `new` initializer whose arguments
+  fit no constructor.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.

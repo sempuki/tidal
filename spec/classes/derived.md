@@ -180,7 +180,10 @@ overloads from different bases. These exceptions apply:
   virtual bases of that class, on every path.
 
 A qualified name or a using-declaration can remove the ambiguity. A name
-that is ambiguous but not used is valid.
+that is ambiguous but not used is valid. Two rules name specific cases
+of this rule (decision 0042): {rule}`NAM-18` for a qualified name
+`C::x`, and {rule}`NAM-36` for an injected class name inherited from
+two different bases.
 :::
 
 :::{rule} DER-5

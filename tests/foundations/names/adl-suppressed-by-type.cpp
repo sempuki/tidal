@@ -1,4 +1,4 @@
-// tidal-rules: NAM-32
+// tidal-rules: NAM-32 CTOR-25
 // tidal-expect: reject
 // tidal-error-clang: no matching conversion for functional-style cast from .n::S. to .probe.
 // tidal-error-gcc: no matching function for call to .probe::probe.n::S..

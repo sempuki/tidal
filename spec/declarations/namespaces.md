@@ -141,7 +141,9 @@ namespace, a qualified use through the enclosing namespace is ambiguous.
 
 The enclosing scope can use the members of an unnamed namespace without
 qualification. These members have internal {term}`linkage` (LNK-5).
-NS-13 lists what is not valid.
+NS-13 lists what is not valid. Lookup treats an unnamed namespace as a
+using directive in the namespace that contains it ({rule}`NAM-13`,
+{rule}`NAM-23`).
 :::
 
 :::{rule} NS-13

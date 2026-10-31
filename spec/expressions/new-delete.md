@@ -158,7 +158,7 @@ pointer to a `const` object are valid.
 
 :::{rule} NEW-10
 :kind: required
-:tests: expressions/new-delete/placement-arguments.cpp expressions/new-delete/parenthesized-type.cpp
+:tests: expressions/new-delete/placement-arguments.cpp expressions/new-delete/parenthesized-type.cpp expressions/new-delete/placement-argument-converts.cpp
 
 A `new` expression can pass placement arguments in parentheses before
 the type, as in `new (a) T`. The placement arguments become extra
@@ -206,11 +206,14 @@ own forms of `operator new` or `operator delete`.
 
 :::{rule} NEW-20
 :kind: reject
-:tests: expressions/new-delete/placement-form-undeclared.cpp
+:tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp
 
 A `new` expression with placement arguments must find a declared
-allocation function that accepts them. The functions of NEW-19 accept
-no placement arguments.
+allocation function that accepts them. The function accepts them if
+their number fits its parameters after the size, and each placement
+argument converts implicitly to its parameter type, as in a function
+call ({rule}`PFX-6`). The functions of NEW-19 accept no placement
+arguments.
 :::
 
 :::{rule} NEW-15
@@ -318,8 +321,8 @@ new (&x) int(3);                // rejected without a declared placement form
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 53 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 56 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -335,6 +338,9 @@ of 53 tests.
   global functions with no declaration in the program, also next to a
   global placement form and a class's own functions. All three reject
   `new (&x) int` when no placement form is declared.
+- NEW-20: all compilers reject a placement argument that does not
+  convert to the parameter type of the only declared placement form.
+  All accept an argument that converts through a constructor.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that the
   deletion is undefined. Clang (pedantic) and EDG reject it
   ({question}`Q-0035`).

@@ -141,6 +141,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0128](Q-0128-internal-linkage-missing-definition.md) | Must an implementation diagnose a used function with internal linkage that has no definition? | provisional | no; the rule needs no diagnostic and a warning is recommended; GCC is silent when the only use is in an uncalled inline function |
 | [Q-0129](Q-0129-copy-of-class-constant.md) | Is a copy of a whole class-type constant a use of the constant? | provisional | no; Clang differs |
 | [Q-0130](Q-0130-edg-enclosing-constant-use.md) | Does EDG's acceptance of some uses of an enclosing function's constant change ODR-2? | provisional | no; EDG differs |
+| [Q-0131](Q-0131-hidden-friend-qualified-redeclaration.md) | Can a declaration with a qualified name outside the namespace redeclare a friend function that only a class has declared? | provisional | no; GCC and EDG reject, Clang accepts |
 
 ## Status values
 

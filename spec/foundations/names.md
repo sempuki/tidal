@@ -137,9 +137,15 @@ namespace outer                  ◄── lib's members act as if declared here
 ```
 
 So any declaration between the use and that level hides the members. A
-declaration at that level conflicts with them, and the use is
-ambiguous. Two directives that bring the same name are ambiguous only
-when the declarations differ in entity and are not all functions.
+declaration at that level joins them. All the declarations of the name
+at one level, from directives or not, are ambiguous only when they
+differ in entity and are not all functions.
+
+If the named namespace has its own using directives, the members of the
+namespaces that those directives name act at the innermost namespace
+around the first directive and the namespace that declares them. An
+unnamed namespace acts as a directive in the
+namespace that contains the unnamed namespace.
 :::
 
 :::{principle} NAM-P7
@@ -193,7 +199,7 @@ sees the names declared before the function in its translation unit.
 
 :::{rule} NAM-8
 :kind: reject
-:tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp expressions/primary/name-undeclared.cpp foundations/names/adl-not-for-fundamental.cpp statements/blocks/block-scope.cpp statements/if/init-scope-ends.cpp statements/loops/for-init-scope.cpp statements/loops/body-own-scope.cpp
+:tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp expressions/primary/name-undeclared.cpp foundations/names/adl-not-for-fundamental.cpp statements/blocks/block-scope.cpp statements/if/init-scope-ends.cpp statements/loops/for-init-scope.cpp statements/loops/body-own-scope.cpp foundations/names/adl-null-pointer.cpp foundations/names/adl-alias-namespace.cpp foundations/names/adl-lambda-parameter-type.cpp foundations/names/adl-template-value-argument.cpp foundations/names/adl-not-derived.cpp foundations/names/adl-braced-list.cpp foundations/names/adl-function-pointer-fundamental.cpp foundations/names/adl-local-class-member-function.cpp foundations/names/adl-not-static-member.cpp foundations/names/adl-not-through-directive.cpp foundations/names/adl-friend-of-other-class.cpp foundations/names/adl-friend-not-through-conversion.cpp foundations/names/adl-not-later-declaration.cpp foundations/names/adl-not-block-declaration.cpp
 
 A use of a name must find a declaration that is visible at that point
 (NAM-1). These uses are rejected:
@@ -202,7 +208,11 @@ A use of a name must find a declaration that is visible at that point
 - a use after the scope of the declaration ends,
 - a use of a name that only another translation unit declares.
 
-In a class body, NAM-6 makes later members visible.
+In a class body, NAM-6 makes later members visible. A function call
+that ordinary lookup and argument-dependent lookup together resolve to
+no declaration breaks this rule. If argument-dependent lookup misses the
+function for a reason that {rule}`NAM-28` or {rule}`NAM-30` lists, a
+test cites that rule as the specific one (decision 0042).
 :::
 
 :::{rule} NAM-2
@@ -254,7 +264,7 @@ qualification (NAM-4).
 
 :::{rule} NAM-13
 :kind: required
-:tests: foundations/names/qualified-using-declaration.cpp foundations/names/qualified-follows-directive.cpp foundations/names/qualified-direct-member-wins.cpp foundations/names/qualified-directive-transitive.cpp foundations/names/qualified-directive-stops.cpp foundations/names/qualified-same-entity-two-paths.cpp foundations/names/qualified-same-entity-using-declarations.cpp foundations/names/qualified-inline-nested.cpp foundations/names/qualified-directive-cycle.cpp foundations/names/qualified-global-directive.cpp
+:tests: foundations/names/qualified-using-declaration.cpp foundations/names/qualified-follows-directive.cpp foundations/names/qualified-direct-member-wins.cpp foundations/names/qualified-directive-transitive.cpp foundations/names/qualified-directive-stops.cpp foundations/names/qualified-same-entity-two-paths.cpp foundations/names/qualified-same-entity-using-declarations.cpp foundations/names/qualified-inline-nested.cpp foundations/names/qualified-directive-cycle.cpp foundations/names/qualified-global-directive.cpp foundations/names/qualified-unnamed-namespace-second.cpp foundations/names/qualified-unnamed-namespace-member.cpp
 
 A qualified name `N::x`, where `N` names a namespace, finds `x` in
 these steps:
@@ -262,7 +272,8 @@ these steps:
 1. The search looks at the declarations and using declarations in `N`
    and in the inline namespaces of `N`, at any depth.
 2. If step 1 finds nothing, the search repeats for each namespace that a
-   using directive in `N` names.
+   using directive in `N` names. An unnamed namespace in `N` counts as
+   a namespace that a using directive in `N` names.
 3. Along each path of directives, the search stops at the first
    namespace that declares `x`.
 
@@ -330,8 +341,8 @@ not look in these places:
 - the namespace that contains `C`,
 - a scoped enumeration in `C`.
 
-If the search finds `x` in two base subobjects, `C::x` is ambiguous
-({rule}`DER-4`).
+If the search finds `x` in two base subobjects, `C::x` is ambiguous.
+This ambiguity is a specific case of {rule}`DER-4` (decision 0042).
 :::
 
 :::{rule} NAM-19
@@ -375,7 +386,7 @@ members of `N` or `C`. A member type there needs qualification.
 
 :::{rule} NAM-23
 :kind: required
-:tests: foundations/names/directive-local-hides.cpp foundations/names/directive-inner-namespace-hides.cpp foundations/names/directive-namespace-reopened.cpp foundations/names/directive-inline-members.cpp
+:tests: foundations/names/directive-local-hides.cpp foundations/names/directive-inner-namespace-hides.cpp foundations/names/directive-namespace-reopened.cpp foundations/names/directive-inline-members.cpp foundations/names/directive-chain-level-ambiguous.cpp foundations/names/directive-chain-between-hides.cpp foundations/names/directive-chain-found.cpp foundations/names/directive-unnamed-namespace-ambiguous.cpp
 
 A using directive makes the members of a namespace visible in these
 regions ({rule}`NS-8`):
@@ -384,27 +395,38 @@ regions ({rule}`NS-8`):
 - in a namespace, to the end of that definition and in later
   definitions of the same namespace.
 
-For unqualified lookup, the members act as members of the innermost
-namespace around both the directive and the named namespace. A
-declaration in a scope inside that namespace hides them.
+For unqualified lookup, the members act as members of the namespace
+that the table gives. A declaration in a scope inside that namespace
+hides them.
+
+| Members of | Act as members of |
+|---|---|
+| The namespace that the directive names | The innermost namespace around both the directive and the named namespace |
+| A namespace that a directive in the named namespace names, directly or through more directives | The innermost namespace around both the first directive and that namespace |
+| An unnamed namespace | The namespace that contains the unnamed namespace |
+
+The first directive is the directive in the region of the use.
 :::
 
 :::{rule} NAM-24
 :kind: reject
-:tests: foundations/names/directive-block-ends.cpp foundations/names/directive-namespace-only.cpp foundations/names/directive-enclosing-level-ambiguous.cpp
+:tests: foundations/names/directive-block-ends.cpp foundations/names/directive-namespace-only.cpp foundations/names/directive-enclosing-level-ambiguous.cpp foundations/names/directive-chain-level-ambiguous.cpp foundations/names/directive-unnamed-namespace-ambiguous.cpp foundations/names/directive-level-two-directives-ambiguous.cpp foundations/names/directive-level-functions-merge.cpp
 
 Outside the regions of NAM-23, the members need qualification. If the
-namespace where the members act as members declares the same name, an
-unqualified use of the name is ambiguous.
+namespace where the members act as members declares the same name for a
+different entity, an unqualified use of the name is ambiguous. The use
+is valid if NAM-25 allows it, for example if all the declarations are
+functions.
 :::
 
 :::{rule} NAM-25
 :kind: required
-:tests: foundations/names/directive-same-entity.cpp foundations/names/directive-overloads-merge.cpp foundations/names/directive-inline-members.cpp
+:tests: foundations/names/directive-same-entity.cpp foundations/names/directive-overloads-merge.cpp foundations/names/directive-inline-members.cpp foundations/names/directive-level-functions-merge.cpp foundations/names/directive-level-same-entity.cpp
 
 A using directive also makes visible the members of the inline
 namespaces in the named namespace. If several directives make one name
-visible, the use is valid in these cases:
+visible, or a directive and a declaration in the namespace where the
+members act, the use is valid in these cases:
 
 - All the declarations refer to one entity, also through using
   declarations.
@@ -414,11 +436,13 @@ visible, the use is valid in these cases:
 
 :::{rule} NAM-26
 :kind: reject
-:tests: foundations/names/directive-function-and-variable.cpp foundations/names/directive-type-and-variable.cpp
+:tests: foundations/names/directive-function-and-variable.cpp foundations/names/directive-type-and-variable.cpp foundations/names/directive-level-two-directives-ambiguous.cpp
 
 If using directives make one name visible for different entities, and
 the entities are not all functions, an unqualified use is ambiguous
 (NAM-25). This rule also applies to a class and a variable.
+{rule}`NAM-24` is the specific rule for a declaration in the namespace
+where the members act (decision 0042).
 :::
 
 :::{rule} NAM-5
@@ -545,10 +569,12 @@ in a list of bases.
 
 :::{rule} NAM-34
 :kind: reject
-:tests: foundations/names/injected-constructor-declaration.cpp foundations/names/injected-constructor-pointer.cpp foundations/names/injected-constructor-alias.cpp foundations/names/injected-constructor-template-argument.cpp foundations/names/injected-constructor-call.cpp foundations/names/injected-constructor-sizeof.cpp
+:tests: foundations/names/injected-constructor-declaration.cpp foundations/names/injected-constructor-pointer.cpp foundations/names/injected-constructor-alias.cpp foundations/names/injected-constructor-template-argument.cpp foundations/names/injected-constructor-call.cpp foundations/names/injected-constructor-sizeof.cpp classes/constructors/ctor-address.cpp
 
 Outside the places that NAM-33 lists, `C::C` names the constructors of
 `C`. A program must not use `C::C` as a type there, or call `C::C()`.
+{rule}`CTOR-1` is the specific rule for taking the address with
+`&C::C` (decision 0042).
 :::
 
 :::{rule} NAM-35
@@ -571,6 +597,9 @@ These uses of an inherited base name are not valid:
 - an unqualified use outside the derived class,
 - a use that reaches a private base of another class
   ({rule}`ACC-14`).
+
+The first case is a specific case of {rule}`DER-4`, and
+{rule}`ACC-14` is the specific rule for the third case (decision 0042).
 :::
 
 :::{rule} NAM-6
@@ -681,7 +710,7 @@ File::File* q = nullptr;        // rejected: names the constructor
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-168 tests.
+178 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,
@@ -689,6 +718,17 @@ GCC 16, and EDG 7.0, and checked the tests on Clang 18, GCC 14, and EDG
 7.0 for ILP32. The compilers agree on every probe. The
 argument-dependent lookup grid of NAM-27 and NAM-28 has one test for
 each row, and a rejected test for each kind of type that adds nothing.
+
+- NAM-23: for a namespace that a chain of using directives reaches, all
+  compilers put the members at the level of the first directive in the
+  chain. A declaration at that level makes a use ambiguous, and a
+  declaration between the use and that level hides the members.
+- NAM-13, NAM-23: all compilers treat an unnamed namespace as a using
+  directive in the namespace that contains it. `N::x` prefers a
+  declaration of `x` in `N` to one in an unnamed namespace in `N`.
+- NAM-8, NAM-18, NAM-24, NAM-26, NAM-34, NAM-36: each of these rules
+  overlaps another `reject` rule. The rule text says which of the two
+  is the specific one, and the tests cite that rule (decision 0042).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls,
 clang-sema-lookup, clang-sema-cxxscopespec, edg-lookup, edg-scope-stk.

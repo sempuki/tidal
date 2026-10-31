@@ -1,4 +1,4 @@
-// tidal-rules: NAM-30
+// tidal-rules: NAM-30 ACC-12
 // tidal-expect: reject
 // tidal-error-clang: cannot cast .B. to its private base class
 // tidal-error-gcc: lib::A. is an inaccessible base of .B
