@@ -14,7 +14,7 @@ current state only. The history of how the project got here is in
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 52 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 29 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
-| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 8 | 4 required, 1 undefined, 2 unspecified, 1 recommended | 24 | 1 | 0 | 60 |  | 0 flagged |
+| [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 9 | 5 required, 1 undefined, 2 unspecified, 1 recommended | 25 | 2 | 0 | 60 |  | 0 flagged |
 | [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 74 | 7 | 6 | 107 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 8 | 6 required, 1 reject, 1 recommended | 15 | 3 | 2 | 2 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 65 | 9 | 0 | 23 |  | 0 flagged |
@@ -90,7 +90,7 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3217/3217 tests pass on each. Tests may
+All compilers are baseline. 3218/3218 tests pass on each. Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
@@ -124,7 +124,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2604 of 3217 tests. The front end
+- The clean-room front end passes 2605 of 3218 tests. The front end
   rejects one valid test, `new-placement-and-bound-order.cpp`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -163,9 +163,10 @@ current phase is phase 2, foundations that later pages need:
    nonterminal an error.
 2. Item G1: keywords, reserved names, and the literal suffix grammar.
 3. Item K: the language-support types, then the task-level guides.
-4. Act on the findings of exercises X1 to X4
-   (`reports/clean-room/X1/` to `X4/`). The most cited gap left is a list
-   of implicit calls (X2-1).
+4. Act on the remaining findings of exercises X1 to X4
+   (`reports/clean-room/X1/` to `X4/`). The most cited gaps, the orders
+   that no rule gave, default initialization, skipped declarations, and
+   the list of implicit calls, are done.
 
 Waiting on the maintainer:
 

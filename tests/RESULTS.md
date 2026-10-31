@@ -2759,6 +2759,7 @@ compilers affect the Status column.
 | `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/implicit-calls.cpp` | SEQ-9 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/sequencing/init-capture-order.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/sequencing/member-operator-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -3233,7 +3234,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3217/3217 tests pass on baseline compilers.
+3218/3218 tests pass on baseline compilers.
 
 ## Rejections
 

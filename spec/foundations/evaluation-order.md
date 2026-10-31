@@ -15,7 +15,7 @@ For other operands the order is not fixed.
 ## Principles
 
 :::{principle} SEQ-P1
-:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6
+:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9
 
 The language fixes the order of evaluation only where meaning needs it.
 A full expression finishes, with all its side effects, before the next
@@ -58,6 +58,26 @@ In a function call, the expression that gives the function is evaluated
 before the arguments. For a member function call, the expression that
 gives the function includes the object expression. In operator syntax
 the object is an operand, and SEQ-8 gives the order of the object.
+:::
+
+:::{rule} SEQ-9
+:kind: required
+:tests: expressions/sequencing/implicit-calls.cpp
+
+A program calls a function without naming it in these places:
+
+| Place | Functions called | Rule |
+|---|---|---|
+| The start of an object's life | its constructor, and the constructors of its bases and members | {rule}`CTOR-6` |
+| The end of an object's life, also during unwinding | its destructor, and the destructors of its members and bases | {rule}`DTOR-5`, {rule}`UNW-1` |
+| An implicit conversion | a converting constructor or a conversion function | {rule}`CTOR-10`, {rule}`CVF-2` |
+| A function argument or parameter of class type | a constructor that initializes the parameter, and its destructor | {rule}`PFX-6` |
+| Operator syntax on a class or enumeration operand | the selected operator function, also a rewritten or reversed comparison | {rule}`OPR-7`, {rule}`DCMP-6` |
+| A braced list for a class | the selected constructor, also an initializer-list constructor | {rule}`ILC-1` |
+| A `new` or `delete` expression | the allocation or deallocation function | {rule}`NEW-9` |
+| A range-based `for` | `begin`, `end`, and the iterator operations | {rule}`RFOR-1`, {rule}`RFOR-2` |
+| A structured binding by the tuple protocol | `get` | {rule}`SB-5` |
+| A `throw` | the constructor that initializes the exception object | {rule}`THR-1` |
 :::
 
 :::{rule} SEQ-3
@@ -172,7 +192,7 @@ pair(i++, i++);       // fine: the order is unspecified
 
 ## Evidence
 
-All eight compilers agree on all 24 tests. The results are in
+All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang 22 evaluates function arguments from left to right and

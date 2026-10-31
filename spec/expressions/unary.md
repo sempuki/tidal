@@ -242,7 +242,8 @@ The operand must not be one of these:
 `e` contains:
 
 - a call to a function that is not `noexcept`, also an implicit call
-  such as the constructor of a temporary or a conversion function,
+  from the list in {rule}`SEQ-9`, such as the constructor of a
+  temporary or a conversion function,
 - a `new` expression whose allocation function is not `noexcept`, such
   as the default one,
 - a `dynamic_cast` to a reference type that can fail,
