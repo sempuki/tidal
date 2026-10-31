@@ -113,10 +113,10 @@ and almost surely wrong:
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: cmp
-   equality: `relational` {("==" | "!=") `relational`}
-   relational: `three_way` {("<" | ">" | "<=" | ">=") `three_way`}
-   three_way: `shift_expr` {"<=>" `shift_expr`}
+.. productionlist:: tidal
+   three_way_expr: `shift_expr` {"<=>" `shift_expr`}
+   relational_expr: `three_way_expr` {("<" | ">" | "<=" | ">=") `three_way_expr`}
+   equality_expr: `relational_expr` {("==" | "!=") `relational_expr`}
 ```
 
 ## Constraints

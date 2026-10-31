@@ -88,8 +88,9 @@ a polymorphic class, except for the harmless direction toward a base.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: virtual
-   virtual_decl: "virtual" `member_function_decl`
+.. productionlist:: tidal
+   virtual_decl: "virtual" [`decl_specifiers`] `declarator`
+               :    [`virt_specifiers`] [`pure_specifier`] ";"
    virt_specifiers: `virt_specifier` [`virt_specifier`]
    virt_specifier: "override" | "final"
    pure_specifier: "=" "0"

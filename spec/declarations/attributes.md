@@ -20,7 +20,7 @@ This page covers these standard attributes:
 ## Principles
 
 :::{principle} ATTR-P1
-:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13
+:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13 ATTR-18
 
 An attribute attaches information to a declaration, a statement, or a
 type, in a form that an implementation can skip. The double brackets
@@ -70,10 +70,16 @@ ignores the attributes stays valid.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: attributes
-   attribute_spec: "[[" ["using" `attr_namespace` ":"]
-                 : [`attribute` {"," `attribute`}] "]]"
-   attribute: [`attr_namespace` "::"] `name` ["(" `tokens` ")"]
+.. productionlist:: tidal
+   attribute_spec: "[[" ["using" `identifier` ":"]
+                 :    [`attribute` {"," `attribute`}] "]]"
+   attribute: [`identifier` "::"] `identifier` [`attribute_args`]
+   attribute_args: "(" {`balanced_token`} ")"
+   balanced_token: "(" {`balanced_token`} ")"
+                 : | "[" {`balanced_token`} "]"
+                 : | "{" {`balanced_token`} "}"
+                 : | `token`
+   token: any single token other than "(", ")", "[", "]", "{", or "}"
 ```
 
 An attribute specifier comes before the declaration or statement that it
@@ -167,6 +173,14 @@ Two adjacent `[` tokens start an attribute specifier. A subscript whose
 index starts with a lambda needs parentheses around the index. A `using`
 prefix in an attribute specifier applies to every attribute in the
 specifier, so each of those attributes must not have its own namespace.
+:::
+
+:::{rule} ATTR-18
+:kind: reject
+:tests: declarations/attributes/pointer-attribute-after-cv.cpp declarations/attributes/pointer-attribute-before-cv.cpp
+
+In a pointer declarator, an attribute specifier comes after the
+cv-qualifiers of the `*` ({question}`Q-0123`).
 :::
 
 ## Runtime Behavior
@@ -310,7 +324,7 @@ switch (k) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 45
-of 55 tests. EDG skips the tests that use `-Werror`.
+of 57 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should

@@ -92,12 +92,13 @@ initialization. A signature that two bases both offer is ambiguous.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: derived
+.. productionlist:: tidal
    base_clause: ":" `base_spec` {"," `base_spec`}
-   base_spec: [`access_specifier`] ["virtual"] `class_name`
-            : "virtual" `access_specifier` `class_name`
-   class_head: ("class" | "struct") `class_name` ["final"] [`base_clause`]
-   inheriting_decl: "using" `class_name` "::" `class_name` ";"
+   base_spec: [`access_specifier`] ["virtual"] [`nested_name`] `class_name`
+            : | "virtual" `access_specifier` [`nested_name`] `class_name`
+   class_head: ("class" | "struct") {`attribute_spec` | `alignment_specifier`}
+             :    [[`nested_name`] `class_name` ["final"]] [`base_clause`]
+   inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ";"
 ```
 
 A *direct base* is a class in the base list. An *indirect base* is a base

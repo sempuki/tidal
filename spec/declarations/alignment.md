@@ -45,9 +45,9 @@ can be asked for depend on the target.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: aln
-   alignment_specifier: "alignas" "(" `constant_expression` ")"
-                      : "alignas" "(" `type_id` ")"
+.. productionlist:: tidal
+   alignment_specifier: "alignas" "(" `constant_expr` ")"
+                      : | "alignas" "(" `type_id` ")"
 ```
 
 An `alignment_specifier` occurs before a variable or member declaration,

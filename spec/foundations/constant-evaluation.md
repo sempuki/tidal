@@ -92,6 +92,13 @@ a run does not. Each implementation sets and documents its own limits on
 the depth of recursion and on the number of steps.
 :::
 
+## Syntax
+
+```{eval-rst}
+.. productionlist:: tidal
+   constant_expr: `conditional_expr`
+```
+
 ## Constraints
 
 :::{rule} CE-1

@@ -41,10 +41,10 @@ should warn when the rewrites make a comparison ambiguous.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: dcmp
+.. productionlist:: tidal
    defaulted_comparison: `comparison_decl` "=" "default" ";"
-   comparison_decl: `return_type` "operator" `comparison_op` "(" `params` ")" ["const"] [`ref_qualifier`]
-                  : "friend" `return_type` "operator" `comparison_op` "(" `params` ")"
+   comparison_decl: `type_id` "operator" `comparison_op` "(" `parameters` ")" ["const"] [`ref_qualifier`]
+                  : | "friend" `type_id` "operator" `comparison_op` "(" `parameters` ")"
    comparison_op: "==" | "!=" | "<" | ">" | "<=" | ">=" | "<=>"
 ```
 

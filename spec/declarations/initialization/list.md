@@ -56,12 +56,12 @@ null included.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: init_list
-   braced: "{" [`clause` ("," `clause`)* [","]] "}"
-   clause: `expression` | `braced`
-         : | `designator` "=" (`expression` | `braced`)
-         : | `designator` `braced`
-   designator: "." `name`
+.. productionlist:: tidal
+   braced_init: "{" [`init_clause` {"," `init_clause`} [","]] "}"
+   init_clause: `assignment_expr` | `braced_init`
+              : | `designator` "=" (`assignment_expr` | `braced_init`)
+              : | `designator` `braced_init`
+   designator: "." `identifier`
 ```
 
 ## Constraints

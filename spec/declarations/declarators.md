@@ -99,15 +99,36 @@ deprecated.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: declarators
-   declarator: `ptr_part` `declarator` | `direct`
-   ptr_part: "*" {`cv`} | "&" | "&&"
-   direct: `name`
-         : | "(" `declarator` ")"
-         : | `direct` "[" [`constant`] "]"
-         : | `direct` "(" `params` ")" {`cv`} ["->" `type`]
-   params: [`param` {"," `param`} [[","] "..."]] | "void"
+.. productionlist:: tidal
+   declarator: `ptr_part` `declarator`
+             : | `direct_declarator`
+   ptr_part: "*" {`cv`} {`attribute_spec`}
+           : | `nested_name` "*" {`cv`} {`attribute_spec`}
+           : | "&" {`attribute_spec`}
+           : | "&&" {`attribute_spec`}
+   direct_declarator: `declarator_id` {`attribute_spec`}
+                    : | "(" `declarator` ")"
+                    : | `direct_declarator` `array_suffix`
+                    : | `direct_declarator` `function_suffix`
+   declarator_id: `id_expression`
+                : | [`nested_name`] `operator_function_id`
+                : | [`nested_name`] `literal_operator_id`
+                : | [`nested_name`] `conversion_function_id`
+                : | [`nested_name`] "~" `class_name`
+   array_suffix: "[" [`constant_expr`] "]" {`attribute_spec`}
+   function_suffix: "(" `parameters` ")" {`cv`} [`ref_qualifier`]
+                  :    [`noexcept_specifier`] {`attribute_spec`} ["->" `type_id`]
+   parameters: [`parameter` {"," `parameter`} [[","] "..."]]
+             : | "..."
+             : | "void"
    cv: "const" | "volatile"
+   ref_qualifier: "&" | "&&"
+   type_id: `type_specifiers` [`abstract_declarator`]
+   abstract_declarator: `ptr_part` [`abstract_declarator`]
+                      : | `abstract_direct`
+   abstract_direct: "(" `abstract_declarator` ")"
+                  : | [`abstract_direct`] `array_suffix`
+                  : | [`abstract_direct`] `function_suffix`
 ```
 
 ## Constraints

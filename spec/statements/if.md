@@ -99,15 +99,16 @@ form is never mistaken for the ordinary one.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: if
-   if_stmt: "if" ["constexpr"] "(" [`if_init`] `if_cond` ")"
+.. productionlist:: tidal
+   if_stmt: "if" ["constexpr"] "(" [`init_stmt`] `condition` ")"
           :    `branch` ["else" `branch`]
-          : "if" ["!"] "consteval" `block` ["else" `block`]
-   if_init: `expression_stmt` | `simple_declaration` | `alias_declaration` | ";"
-   if_cond: `expression` | `cond_decl`
-   cond_decl: `decl_specifiers` `declarator` ("=" `expression` | "=" `braced_init` | `braced_init`)
+          : | "if" ["!"] "consteval" `block` ["else" `block`]
+   init_stmt: `expression_stmt` | `null_stmt` | `simple_decl` | `alias_decl`
+   condition: `expression` | `cond_decl`
+   cond_decl: {`attribute_spec`} `decl_specifiers` `declarator`
+            :    ("=" `assignment_expr` | "=" `braced_init` | `braced_init`)
    branch: `statement`
-   block: `compound_statement`
+   block: `compound_stmt`
 ```
 
 The *then branch* is the first `branch` or `block`. The *else branch* is

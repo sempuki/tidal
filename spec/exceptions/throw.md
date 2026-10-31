@@ -83,8 +83,8 @@ time.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: throw
-   throw_expr: "throw" [`assignment_expression`]
+.. productionlist:: tidal
+   throw_expr: "throw" [`assignment_expr`]
 ```
 
 A `throw` with no operand is a *rethrow*.

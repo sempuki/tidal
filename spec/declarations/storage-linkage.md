@@ -92,7 +92,7 @@ or duplicated definition is found when the program is linked, if at all.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: storage_linkage
+.. productionlist:: tidal
    storage_class: "static" | "extern" | "thread_local" | "mutable"
 ```
 

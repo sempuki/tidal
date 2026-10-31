@@ -46,10 +46,10 @@ a null pointer, has no defined meaning.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: init_references
-   ref_init: "=" `expression`
-           : | "(" `expression` ")"
-           : | "{" `expression` "}"
+.. productionlist:: tidal
+   ref_init: "=" `assignment_expr`
+           : | "(" `assignment_expr` ")"
+           : | "{" `assignment_expr` "}"
 ```
 
 ## Constraints

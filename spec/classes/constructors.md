@@ -104,16 +104,17 @@ program names the type.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: ctor
-   ctor_decl: {`ctor_specifier`} `class_name` "(" [`parameters`] ")" [`noexcept`]
+.. productionlist:: tidal
+   ctor_decl: {`ctor_specifier`} `class_name` "(" `parameters` ")" [`noexcept_specifier`]
    ctor_specifier: "constexpr" | "consteval" | "inline" | `explicit_spec`
-   explicit_spec: "explicit" ["(" `constant_expression` ")"]
-   ctor_def: `ctor_decl` [":" `mem_init` {"," `mem_init`}] `function_body`
+   explicit_spec: "explicit" ["(" `constant_expr` ")"]
+   ctor_def: `ctor_decl` [`ctor_init`] `function_body`
+   ctor_init: ":" `mem_init` {"," `mem_init`}
    mem_init: `mem_init_id` ("(" [`expression_list`] ")" | `braced_init`)
-   mem_init_id: `identifier` | `class_name`
-   dtor_decl: {`dtor_specifier`} "~" `class_name` "(" ["void"] ")" [`noexcept`]
+   mem_init_id: `identifier` | [`nested_name`] `class_name`
+   dtor_decl: {`dtor_specifier`} "~" `class_name` "(" ["void"] ")" [`noexcept_specifier`]
    dtor_specifier: "constexpr" | "inline" | "virtual"
-   dtor_call: `postfix_expression` ("." | "->") "~" `type_name` "(" ")"
+   dtor_call: `postfix_expr` ("." | "->") [`nested_name`] "~" `identifier` "(" ")"
 ```
 
 A *member initializer list* is the list of `mem_init` after the colon. A

@@ -62,10 +62,9 @@ comparison. In both forms, precedence suggests a mistake.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: logical
-   logical_or: `logical_and` {"||" `logical_and`}
-   logical_and: `inclusive_or` {"&&" `inclusive_or`}
-   logical_not: "!" `unary_expr`
+.. productionlist:: tidal
+   logical_and_expr: `or_expr` {"&&" `or_expr`}
+   logical_or_expr: `logical_and_expr` {"||" `logical_and_expr`}
 ```
 
 ## Constraints

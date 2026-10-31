@@ -200,6 +200,7 @@ A Syntax segment holds a `productionlist` with the group `tidal`
 | `( x )` | grouping |
 | `x \| y` | `x` or `y` |
 | a line that starts with `:` | continues the right-hand side above; `: \|` starts a new alternative |
+| words without quotes or backticks | a set too large to list, such as "any letter" or "any token other than a bracket" |
 
 Shared nonterminals have these names and defining pages:
 

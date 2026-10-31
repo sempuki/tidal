@@ -46,9 +46,10 @@ function.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: cvf
-   conversion_decl: {`cvf_specifier`} "operator" `conversion_type` "(" ")" [`cv`] [`ref_qualifier`]
+.. productionlist:: tidal
+   conversion_decl: {`cvf_specifier`} `conversion_function_id` "(" ")" [`cv`] [`ref_qualifier`]
    cvf_specifier: "constexpr" | "virtual" | "inline" | `explicit_spec`
+   conversion_function_id: "operator" `conversion_type`
    conversion_type: `type_specifiers` {"*" | "&" | "&&"}
 ```
 

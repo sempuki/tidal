@@ -85,9 +85,9 @@ should warn.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: dty
-   decltype_specifier: "decltype" "(" `expression` ")"
-                     : "decltype" "(" "auto" ")"
+.. productionlist:: tidal
+   decltype_spec: "decltype" "(" `expression` ")"
+                : | "decltype" "(" "auto" ")"
 ```
 
 `decltype(auto)` is a placeholder type. The rules for `decltype(auto)`

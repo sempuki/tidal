@@ -52,13 +52,13 @@ initialize a variable of the enumeration type.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: enumerations
-   enum_def: `enum_head` [":" `type`]
+.. productionlist:: tidal
+   enum_def: `enum_head` [":" `type_specifiers`]
            :    "{" [`enumerator` {"," `enumerator`} [","]] "}"
-   enum_opaque: `enum_head` ":" `type` ";"
-              : | ("enum" "class" | "enum" "struct") `name` ";"
-   enum_head: "enum" ["class" | "struct"] `name`
-   enumerator: `name` ["=" `constant`]
+   enum_opaque: `enum_head` ":" `type_specifiers` ";"
+              : | ("enum" "class" | "enum" "struct") `identifier` ";"
+   enum_head: "enum" ["class" | "struct"] {`attribute_spec`} [[`nested_name`] `identifier`]
+   enumerator: `identifier` {`attribute_spec`} ["=" `constant_expr`]
 ```
 
 ## Constraints

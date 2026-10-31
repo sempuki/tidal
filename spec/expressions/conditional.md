@@ -63,7 +63,7 @@ bit-field.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_conditional
+.. productionlist:: tidal
    conditional_expr: `logical_or_expr` ["?" `expression` ":" `assignment_expr`]
 ```
 

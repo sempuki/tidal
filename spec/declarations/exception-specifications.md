@@ -70,8 +70,8 @@ cycle that an implementation need not detect.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: exs
-   noexcept_specifier: "noexcept" ["(" `constant_expression` ")"]
+.. productionlist:: tidal
+   noexcept_specifier: "noexcept" ["(" `constant_expr` ")"]
 ```
 
 The specifier follows the parameter list and the qualifiers of a

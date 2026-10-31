@@ -125,11 +125,12 @@ the end of the function, and an implementation should warn.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: try
-   try_block: "try" `compound_statement` `handler` {`handler`}
-   handler: "catch" "(" `exception_decl` ")" `compound_statement`
-   exception_decl: `type_specifiers` [`declarator`] | "..."
-   function_try_block: "try" [`ctor_initializer`] `compound_statement` `handler` {`handler`}
+.. productionlist:: tidal
+   try_block: "try" `compound_stmt` `handler` {`handler`}
+   handler: "catch" "(" `exception_decl` ")" `compound_stmt`
+   exception_decl: `type_specifiers` [`declarator` | `abstract_declarator`]
+                 : | "..."
+   function_try_block: "try" [`ctor_init`] `compound_stmt` `handler` {`handler`}
 ```
 
 A `function_try_block` takes the place of a function body. The

@@ -43,7 +43,7 @@ operand is intended.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_comma
+.. productionlist:: tidal
    expression: `assignment_expr` {"," `assignment_expr`}
 ```
 

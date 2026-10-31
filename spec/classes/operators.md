@@ -67,15 +67,15 @@ implementation should warn about such suffixes.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: opr
+.. productionlist:: tidal
    operator_function_id: "operator" `overloadable_operator`
    overloadable_operator: "new" | "delete" | "new" "[" "]" | "delete" "[" "]"
-                        : "co_await" | "(" ")" | "[" "]" | "->" | "->*"
-                        : "~" | "!" | "+" | "-" | "*" | "/" | "%" | "^" | "&"
-                        : "|" | "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "^="
-                        : "&=" | "|=" | "==" | "!=" | "<" | ">" | "<=" | ">="
-                        : "<=>" | "&&" | "||" | "<<" | ">>" | "<<=" | ">>="
-                        : "++" | "--" | ","
+                        : | "co_await" | "(" ")" | "[" "]" | "->" | "->*"
+                        : | "~" | "!" | "+" | "-" | "*" | "/" | "%" | "^" | "&"
+                        : | "|" | "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "^="
+                        : | "&=" | "|=" | "==" | "!=" | "<" | ">" | "<=" | ">="
+                        : | "<=>" | "&&" | "||" | "<<" | ">>" | "<<=" | ">>="
+                        : | "++" | "--" | ","
    literal_operator_id: "operator" '""' `identifier`
 ```
 

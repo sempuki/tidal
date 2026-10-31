@@ -41,11 +41,11 @@ initialized from left to right.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: init_forms
-   init: "=" `expression`
+.. productionlist:: tidal
+   init: "=" `assignment_expr`
        : | "(" `expression_list` ")"
-       : | `braced`
-       : | "=" `braced`
+       : | `braced_init`
+       : | "=" `braced_init`
 ```
 
 These terms name the forms of initialization:

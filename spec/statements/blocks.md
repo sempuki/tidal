@@ -45,12 +45,14 @@ an expression statement.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: stmt_blocks
+.. productionlist:: tidal
    expression_stmt: `expression` ";"
    null_stmt: ";"
-   compound_stmt: "{" `block_item`* `label`* "}"
-   block_item: `statement` | `declaration`
-   label: `identifier` ":"
+   compound_stmt: "{" {`statement`} {`label`} "}"
+   labeled_stmt: `label` `statement`
+   label: {`attribute_spec`} `identifier` ":"
+        : | {`attribute_spec`} "case" `constant_expr` ":"
+        : | {`attribute_spec`} "default" ":"
 ```
 
 ## Constraints

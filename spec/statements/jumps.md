@@ -67,12 +67,11 @@ storage belongs to the caller.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: stmt_jumps
+.. productionlist:: tidal
    jump_stmt: "break" ";"
-            : "continue" ";"
-            : "return" [`expression` | `braced_init`] ";"
-            : "goto" `identifier` ";"
-   labeled_stmt: `identifier` ":" `statement`
+            : | "continue" ";"
+            : | "return" [`expression` | `braced_init`] ";"
+            : | "goto" `identifier` ";"
 ```
 
 ## Constraints

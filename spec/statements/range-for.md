@@ -41,13 +41,13 @@ would give the name two meanings, so both are rejected.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: stmt_range_for
-   range_for: "for" "(" [`for_init`] `for_range_decl` ":" `for_range_init` ")"
-            :    `statement`
-   for_init: `expression_stmt` | `simple_declaration` | `alias_declaration`
-   for_range_decl: `decl_specifiers` `declarator`
-                 : `decl_specifiers` [`ref_qualifier`] "[" `identifier_list` "]"
-   for_range_init: `expression` | `braced_init`
+.. productionlist:: tidal
+   range_for_stmt: "for" "(" [`init_stmt`]
+                 :    `range_decl` ":" `range_init` ")" `statement`
+   range_decl: {`attribute_spec`} `decl_specifiers` `declarator`
+             : | {`attribute_spec`} `decl_specifiers` [`ref_qualifier`]
+             :    "[" `identifier` {"," `identifier`} "]"
+   range_init: `expression` | `braced_init`
 ```
 
 ## Constraints
@@ -118,7 +118,7 @@ element initializes the loop variable. A braced list gives a
 
 :::{rule} RFOR-3
 :kind: required
-:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp
+:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp statements/range-for/empty-init-statement.cpp
 
 The range expression is evaluated one time, before the first iteration.
 The loop variable is not yet in scope there, so a name in the range

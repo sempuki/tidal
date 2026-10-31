@@ -86,15 +86,16 @@ A placeholder means the same thing wherever a variable is declared:
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: auto
+.. productionlist:: tidal
    placeholder: [`type_constraint`] ("auto" | "decltype" "(" "auto" ")")
-   auto_var_decl: `decl_specifier`* `placeholder` `decl_specifier`*
-                : `auto_declarator` ("," `auto_declarator`)* ";"
+   type_constraint: [`nested_name`] `identifier`
+   auto_var_decl: {`decl_specifier`} `placeholder` {`decl_specifier`}
+                :    `auto_declarator` {"," `auto_declarator`} ";"
    auto_declarator: `declarator` `auto_init`
-   auto_init: "=" `expression`
-            : | "=" "{" [`expression` ("," `expression`)*] "}"
-            : | "(" `expression` ")"
-            : | "{" `expression` "}"
+   auto_init: "=" `assignment_expr`
+            : | "=" "{" [`assignment_expr` {"," `assignment_expr`}] "}"
+            : | "(" `assignment_expr` ")"
+            : | "{" `assignment_expr` "}"
 ```
 
 `decl_specifier` includes `const`, `volatile`, `static`, `constexpr`,

@@ -68,11 +68,11 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: tyn
+.. productionlist:: tidal
    typedef_decl: "typedef" `decl_specifiers` `declarator` {"," `declarator`} ";"
-   alias_decl: "using" `identifier` "=" `type_id` ";"
+   alias_decl: "using" `identifier` {`attribute_spec`} "=" `type_id` ";"
    elaborated_type: `class_key` [`nested_name`] `identifier`
-                  : "enum" [`nested_name`] `identifier`
+                  : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
    forward_class: `class_key` `identifier` ";"
    opaque_enum: "enum" ["class" | "struct"] `identifier` [":" `type_specifiers`] ";"

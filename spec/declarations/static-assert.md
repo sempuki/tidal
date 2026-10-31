@@ -35,8 +35,8 @@ checked.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: sa
-   static_assert_decl: "static_assert" "(" `constant_expression` ["," `string_literal`] ")" ";"
+.. productionlist:: tidal
+   static_assert_decl: "static_assert" "(" `constant_expr` ["," `string_literal`] ")" ";"
 ```
 
 ## Constraints

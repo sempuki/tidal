@@ -67,10 +67,10 @@ be distinct and must not repeat a name of that scope
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: structured-bindings
+.. productionlist:: tidal
    sb_decl: ["static" | "thread_local"] {`cv`} "auto" ["&" | "&&"]
-          :    "[" `name` {"," `name`} "]" `sb_init` ";"
-   sb_init: "=" `expression` | "(" `expression` ")" | "{" `expression` "}"
+          :    "[" `identifier` {"," `identifier`} "]" `sb_init` ";"
+   sb_init: "=" `assignment_expr` | "(" `assignment_expr` ")" | "{" `assignment_expr` "}"
 ```
 
 ## Constraints

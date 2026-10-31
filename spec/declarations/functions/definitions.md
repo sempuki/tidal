@@ -56,9 +56,13 @@ function's name, in a form the implementation chooses.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: fn_definitions
-   function_definition: `decl_specifiers` `declarator` `function_body`
-   function_body: `compound_statement` | "=" "delete" ";" | "=" "default" ";"
+.. productionlist:: tidal
+   function_definition: {`attribute_spec`} [`decl_specifiers`] `declarator`
+                      :    [`virt_specifiers`] `function_body`
+   function_body: [`ctor_init`] `compound_stmt`
+                : | `function_try_block`
+                : | "=" "delete" ";"
+                : | "=" "default" ";"
 ```
 
 ## Constraints

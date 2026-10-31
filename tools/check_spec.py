@@ -16,9 +16,8 @@ Fails when:
 - a *(TOPIC referenced)* marker names no topic, or a topic that is not in
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
-- a grammar nonterminal is defined in more than one production. A
-  nonterminal that is used and not defined is a warning until the grammar
-  is consolidated (roadmap item F).
+- a grammar nonterminal is defined in more than one production, or used
+  and not defined (decision 0040).
 """
 
 import re
@@ -179,7 +178,7 @@ PRODUCTION = re.compile(r"^\s+([A-Za-z_][\w-]*)\s*:(.*)$")
 NONTERMINAL = re.compile(r"`([A-Za-z_][\w-]*)`")
 
 
-def check_grammar(errors: list[str], warnings: list[str]) -> None:
+def check_grammar(errors: list[str]) -> None:
     defined, used = {}, set()
     for f in sorted(SPEC.rglob("*.md")):
         inside = False
@@ -199,9 +198,8 @@ def check_grammar(errors: list[str], warnings: list[str]) -> None:
     for name, places in sorted(defined.items()):
         if len(places) > 1:
             errors.append(f"{places[1]}: nonterminal {name} is also defined at {places[0]}")
-    missing = sorted(used - defined.keys())
-    if missing:
-        warnings.append(f"{len(missing)} grammar nonterminals are used and not defined: {', '.join(missing)}")
+    for name in sorted(used - defined.keys()):
+        errors.append(f"grammar nonterminal {name} is used and not defined")
 
 
 def main() -> int:
@@ -263,7 +261,7 @@ def main() -> int:
     for f in sorted(SPEC.rglob("*.md")):
         if not agreement.current(f.read_text()):
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
-    check_grammar(errors, warnings)
+    check_grammar(errors)
 
     for w in warnings:
         print("warning: " + w)

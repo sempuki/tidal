@@ -62,12 +62,12 @@ Neither form belongs in a class.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: namespaces
+.. productionlist:: tidal
    namespace_def: ["inline"] "namespace" [`ns_path`]
-                : "{" {`declaration`} "}"
-   ns_path: ["inline"] `name` {"::" ["inline"] `name`}
-   namespace_alias: "namespace" `name` "=" `qualified_name` ";"
-   using_decl: "using" `qualified_name` ";"
+                :    "{" {`declaration`} "}"
+   ns_path: ["inline"] `identifier` {"::" ["inline"] `identifier`}
+   namespace_alias: "namespace" `identifier` "=" `qualified_name` ";"
+   using_decl: "using" `qualified_name` {"," `qualified_name`} ";"
    using_directive: "using" "namespace" `qualified_name` ";"
 ```
 

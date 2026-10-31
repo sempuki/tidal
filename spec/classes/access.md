@@ -65,13 +65,12 @@ enclosing class gets no special access in return.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: access
+.. productionlist:: tidal
    access_label: `access_specifier` ":"
    access_specifier: "public" | "protected" | "private"
-   base_specifier: [`access_specifier`] ["virtual"] `class_name`
-   friend_decl: "friend" `function_decl`
-              : "friend" `function_definition`
-              : "friend" ("class" | "struct" | "union") `class_name` ";"
+   friend_decl: "friend" [`decl_specifiers`] `declarator` ";"
+              : | "friend" `function_definition`
+              : | "friend" `class_key` [`nested_name`] `class_name` ";"
 ```
 
 An *access label* is an `access_label` in a class body. A *friend

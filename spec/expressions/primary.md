@@ -93,18 +93,78 @@ An implementation should warn where such a literal is likely a mistake.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: prim
+.. productionlist:: tidal
    primary: `literal` | "this" | "(" `expression` ")" | `id_expression`
-          : `lambda_expression`
-   integer_literal: `integer_digits` [`integer_suffix`]
-   integer_digits: `decimal` | "0" `octal_digits` | ("0x" | "0X") `hex_digits` | ("0b" | "0B") `binary_digits`
-   integer_suffix: ["u" | "U"] ["l" | "L" | "ll" | "LL" | "z" | "Z"]
-                 : ("l" | "L" | "ll" | "LL" | "z" | "Z") ("u" | "U")
+          : | `lambda_expr`
+   id_expression: `unqualified_id` | `qualified_name`
+   unqualified_id: `identifier` | "~" `class_name`
+                 : | `operator_function_id` | `literal_operator_id`
+                 : | `conversion_function_id`
+   qualified_name: `nested_name` `unqualified_id`
+   nested_name: "::"
+              : | [`nested_name`] `identifier` "::"
+              : | `decltype_spec` "::"
+   identifier: `id_start` {`id_start` | `digit`}
+   id_start: `letter` | "_" | `ucn`
+           : | a character outside the basic character set that Unicode lets start an identifier
+   letter: one of the 26 Latin letters, in lower case or upper case
+   literal: `integer_literal` | `floating_literal` | `char_literal`
+          : | `string_literal` {`string_literal`}
+          : | "true" | "false" | "nullptr"
+   integer_literal: `integer_digits` [`integer_suffix` | `ud_suffix`]
+   integer_digits: `decimal_digits` | `octal_digits` | `hex_digits` | `binary_digits`
+   decimal_digits: `nonzero_digit` {["'"] `digit`}
+   octal_digits: "0" {["'"] `octal_digit`}
+   hex_digits: ("0x" | "0X") `hex_digit` {["'"] `hex_digit`}
+   binary_digits: ("0b" | "0B") `binary_digit` {["'"] `binary_digit`}
+   integer_suffix: `unsigned_suffix` [`length_suffix`]
+                 : | `length_suffix` [`unsigned_suffix`]
+   unsigned_suffix: "u" | "U"
+   length_suffix: "l" | "L" | "ll" | "LL" | "z" | "Z"
+   digit: "0" | `nonzero_digit`
+   nonzero_digit: `nonzero_octal` | "8" | "9"
+   octal_digit: "0" | `nonzero_octal`
+   nonzero_octal: "1" | "2" | "3" | "4" | "5" | "6" | "7"
+   binary_digit: "0" | "1"
+   hex_digit: `digit` | `hex_letter`
+   hex_letter: one of the letters a to f, in lower case or upper case
+   digit_seq: `digit` {["'"] `digit`}
+   hex_digit_seq: `hex_digit` {["'"] `hex_digit`}
+   floating_literal: (`decimal_float` | `hex_float`) [`float_suffix` | `ud_suffix`]
+   decimal_float: `digit_seq` "." [`digit_seq`] [`exponent`]
+                : | "." `digit_seq` [`exponent`]
+                : | `digit_seq` `exponent`
+   exponent: ("e" | "E") ["+" | "-"] `digit_seq`
+   hex_float: ("0x" | "0X") `hex_digit_seq` ["." [`hex_digit_seq`]] `binary_exponent`
+            : | ("0x" | "0X") "." `hex_digit_seq` `binary_exponent`
+   binary_exponent: ("p" | "P") ["+" | "-"] `digit_seq`
+   float_suffix: "f" | "F" | "l" | "L"
+               : | "f16" | "F16" | "f32" | "F32" | "f64" | "F64" | "f128" | "F128"
+               : | "bf16" | "BF16"
    char_prefix: "u8" | "u" | "U" | "L"
-   string_literal: [`char_prefix`] '"' {`s_char`} '"'
-                 : [`char_prefix`] 'R"' `delimiter` "(" {`raw_char`} ")" `delimiter` '"'
-   id_expression: [`nested_name`] `identifier`
-   nested_name: "::" | `name` "::" | `nested_name` `name` "::"
+   char_literal: [`char_prefix`] "'" `c_char` {`c_char`} "'" [`ud_suffix`]
+   c_char: `escape`
+         : | a character other than "'", "\", or a new-line
+   string_literal: [`char_prefix`] '"' {`s_char`} '"' [`ud_suffix`]
+                 : | [`char_prefix`] 'R"' `delimiter` "(" {`raw_char`} ")" `delimiter` '"' [`ud_suffix`]
+   s_char: `escape`
+         : | a character other than '"', "\", or a new-line
+   raw_char: a character, including a new-line, that does not end the raw string
+   delimiter: {`d_char`}
+   d_char: a basic character other than a space, "(", ")", "\", or a control character
+   escape: "\" `simple_escape`
+         : | "\" `octal_digit` [`octal_digit` [`octal_digit`]]
+         : | "\o{" `octal_digit` {`octal_digit`} "}"
+         : | "\x" `hex_digit` {`hex_digit`}
+         : | "\x{" `hex_digit` {`hex_digit`} "}"
+         : | `ucn`
+         : | "\N{" `char_name` "}"
+   simple_escape: "'" | '"' | "?" | "\" | "a" | "b" | "f" | "n" | "r" | "t" | "v"
+   ucn: "\u" `hex_quad` | "\U" `hex_quad` `hex_quad`
+      : | "\u{" `hex_digit` {`hex_digit`} "}"
+   hex_quad: `hex_digit` `hex_digit` `hex_digit` `hex_digit`
+   char_name: the name of a Unicode character
+   ud_suffix: `identifier`
 ```
 
 A single quote `'` can separate digits in any numeric literal. The

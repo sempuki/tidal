@@ -66,11 +66,15 @@ is undefined:
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_casts
-   named_cast: ("static_cast" | "const_cast" | "reinterpret_cast") "<" `type` ">" "(" `expression` ")"
-   cast_notation: "(" `type` ")" `expression`
-                : `type` "(" [`expression_list`] ")"
-                : `type` `braced_init`
+.. productionlist:: tidal
+   cast_expr: `unary_expr` | "(" `type_id` ")" `cast_expr`
+   named_cast: `cast_keyword` "<" `type_id` ">" "(" `expression` ")"
+   cast_keyword: "static_cast" | "const_cast" | "reinterpret_cast"
+   functional_cast: `cast_type` "(" [`expression_list`] ")"
+                  : | `cast_type` `braced_init`
+   cast_type: [`nested_name`] `identifier` | `decltype_spec` | "auto"
+            : | "bool" | "void" | "int" | "short" | "long" | "signed" | "unsigned"
+            : | "float" | "double" | "char" | "wchar_t" | "char8_t" | "char16_t" | "char32_t"
 ```
 
 ## Constraints

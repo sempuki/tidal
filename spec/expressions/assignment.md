@@ -52,9 +52,10 @@ exception to the usual freedom (SEQ-1).
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_assignment
+.. productionlist:: tidal
    assignment_expr: `conditional_expr`
-                  : `logical_or_expr` `assign_op` (`assignment_expr` | `braced_init`)
+                  : | `logical_or_expr` `assign_op` (`assignment_expr` | `braced_init`)
+                  : | `throw_expr`
    assign_op: "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | "&=" | "^=" | "|="
 ```
 

@@ -59,12 +59,15 @@ limits are the same and the result cannot be changed.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_postfix
-   postfix_expr: `primary_expr`
-               : `postfix_expr` "[" `expression` "]"
-               : `postfix_expr` "(" [`expression_list`] ")"
-               : `postfix_expr` ("." | "->") `name`
-               : `postfix_expr` ("++" | "--")
+.. productionlist:: tidal
+   postfix_expr: `primary`
+               : | `postfix_expr` "[" [`expression_list`] "]"
+               : | `postfix_expr` "(" [`expression_list`] ")"
+               : | `postfix_expr` ("." | "->") `id_expression`
+               : | `postfix_expr` ("++" | "--")
+               : | `functional_cast` | `named_cast` | `dynamic_cast`
+   expression_list: `argument` {"," `argument`}
+   argument: `assignment_expr` | `braced_init`
 ```
 
 ## Constraints

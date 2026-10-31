@@ -128,13 +128,13 @@ an object of such a class copies the value of the object.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: copy
+.. productionlist:: tidal
    copy_ctor: `class_name` "(" [`cv`] `class_name` "&" {`default_param`} ")"
    move_ctor: `class_name` "(" [`cv`] `class_name` "&&" {`default_param`} ")"
-   copy_assign: `return_type` "operator" "=" "(" `copy_param` ")"
+   copy_assign: `type_id` "operator" "=" "(" `copy_param` ")"
    copy_param: `class_name` | [`cv`] `class_name` "&"
-   move_assign: `return_type` "operator" "=" "(" [`cv`] `class_name` "&&" ")"
-   default_param: "," `parameter` "=" `expression`
+   move_assign: `type_id` "operator" "=" "(" [`cv`] `class_name` "&&" ")"
+   default_param: "," `parameter`
 ```
 
 The four functions are the *copy and move functions* of a class. A

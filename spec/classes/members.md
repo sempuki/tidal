@@ -80,10 +80,20 @@ the layout of such a class.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: cls_members
-   class_def: ("class" | "struct") `name` [`base_clause`] "{" {`member`} "}" ";"
-   member: `member_declaration` | `function_definition` | `access_label`
-   member_function_suffix: [`cv`] ["&" | "&&"]
+.. productionlist:: tidal
+   class_def: `class_head` "{" {`member_decl`} "}"
+   class_name: `identifier`
+   member_decl: {`attribute_spec` | `alignment_specifier`} [`decl_specifiers`]
+              :    [`member_declarator` {"," `member_declarator`}] ";"
+              : | `function_definition`
+              : | `access_label`
+              : | `friend_decl`
+              : | `alias_decl`
+              : | `using_decl`
+              : | `static_assert_decl`
+   member_declarator: `declarator` [`virt_specifiers`] [`pure_specifier` | `member_init`]
+                    : | `bitfield`
+   member_init: "=" `assignment_expr` | "=" `braced_init` | `braced_init`
 ```
 
 ## Constraints

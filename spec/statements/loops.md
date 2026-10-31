@@ -45,7 +45,7 @@ names.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: stmt_loops
+.. productionlist:: tidal
    while_stmt: "while" "(" `condition` ")" `statement`
    do_stmt: "do" `statement` "while" "(" `expression` ")" ";"
    for_stmt: "for" "(" `init_stmt` [`condition`] ";" [`expression`] ")"

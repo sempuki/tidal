@@ -46,9 +46,9 @@ work everywhere treats a pointer to a C function as a type of its own.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: lsp
+.. productionlist:: tidal
    linkage_spec: "extern" `string_literal` "{" {`declaration`} "}"
-               : "extern" `string_literal` `declaration`
+               : | "extern" `string_literal` `declaration`
 ```
 
 The string names the language, `"C"` or `"C++"`. Declarations without a

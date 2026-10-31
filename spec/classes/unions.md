@@ -90,10 +90,10 @@ the declared type or a constant does not fit.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: unions
-   union_def: "union" [`name`] "{" {`member`} "}" ";"
-   anonymous_union: ["static"] "union" "{" {`member_declaration`} "}" ";"
-   bitfield_member: `type_specifiers` [`identifier`] ":" `constant_expression` [`brace_or_equal_init`]
+.. productionlist:: tidal
+   union_def: "union" {`attribute_spec`} [`class_name`] "{" {`member_decl`} "}"
+   anonymous_union: ["static"] "union" "{" {`member_decl`} "}" ";"
+   bitfield: [`identifier`] ":" `constant_expr` [`member_init`]
 ```
 
 The *active member* of a union is the member that holds a value. A

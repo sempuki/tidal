@@ -86,8 +86,8 @@ enumerations, is deprecated, and an implementation should say so.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_additive
-   add_expr: `mul_expr` { ("+" | "-") `mul_expr` }
+.. productionlist:: tidal
+   add_expr: `mul_expr` {("+" | "-") `mul_expr`}
 ```
 
 ## Constraints

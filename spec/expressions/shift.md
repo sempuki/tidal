@@ -49,8 +49,8 @@ the overloaded operators too (OPR-7).
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_shift
-   shift_expr: `add_expr` { ("<<" | ">>") `add_expr` }
+.. productionlist:: tidal
+   shift_expr: `add_expr` {("<<" | ">>") `add_expr`}
 ```
 
 ## Constraints

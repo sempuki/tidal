@@ -966,6 +966,8 @@ compilers affect the Status column.
 | `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/noreturn-returns-sanitizer.cpp` | ATTR-3 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/pointer-attribute-after-cv.cpp` | ATTR-18 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/attributes/pointer-attribute-before-cv.cpp` | ATTR-18 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -2900,6 +2902,15 @@ compilers affect the Status column.
 | `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/language-support/initializer-list-missing.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/language-support/initializer-list-no-members.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/language-support/initializer-list-not-template.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/language-support/initializer-list-pointer-and-size.cpp` | LSUP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/language-support/size-and-null-types.cpp` | LSUP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/language-support/strong-ordering-minimal.cpp` | LSUP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/language-support/strong-ordering-missing-member.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/language-support/strong-ordering-missing.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/language-support/tuple-protocol-minimal.cpp` | LSUP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
 | `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/adl-plus-ordinary.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -3179,6 +3190,7 @@ compilers affect the Status column.
 | `statements/range-for/callable-data-members.cpp` | RFOR-2 | run | run | run | reject | skip | run | run | run | run | pass |
 | `statements/range-for/data-member-begin-counts.cpp` | RFOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
 | `statements/range-for/data-member-named-begin.cpp` | RFOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/range-for/empty-init-statement.cpp` | RFOR-3 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
 | `statements/range-for/end-computed-once.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/range-for/equality-only-iterator.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/range-for/extern-loop-variable.cpp` | RFOR-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3234,7 +3246,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3218/3218 tests pass on baseline compilers.
+3230/3230 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -6402,6 +6414,13 @@ check that the rejection has the intended cause.
 - `declarations/attributes/noreturn-returns.cpp` (clang-18): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
 - `declarations/attributes/noreturn-returns.cpp` (gcc-16): error: 'noreturn' function does return [-Werror]
 - `declarations/attributes/noreturn-returns.cpp` (clang-22): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/pointer-attribute-after-cv.cpp` (clang-host): error: an attribute list cannot appear here
+- `declarations/attributes/pointer-attribute-after-cv.cpp` (clang-18): error: an attribute list cannot appear here
+- `declarations/attributes/pointer-attribute-after-cv.cpp` (clang-22): error: an attribute list cannot appear here
+- `declarations/attributes/pointer-attribute-before-cv.cpp` (gcc-host): error: expected unqualified-id before ‘const’
+- `declarations/attributes/pointer-attribute-before-cv.cpp` (edg-7.0): error: expected an identifier
+- `declarations/attributes/pointer-attribute-before-cv.cpp` (gcc-14): error: expected unqualified-id before 'const'
+- `declarations/attributes/pointer-attribute-before-cv.cpp` (gcc-16): error: expected unqualified-id before 'const'
 - `declarations/attributes/unlikely-with-argument.cpp` (clang-host): error: attribute 'unlikely' cannot have an argument list
 - `declarations/attributes/unlikely-with-argument.cpp` (gcc-host): error: ‘unlikely’ attribute does not take any arguments
 - `declarations/attributes/unlikely-with-argument.cpp` (edg-7.0): error: attribute "unlikely" does not take arguments
@@ -12235,6 +12254,41 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/language-support/initializer-list-missing.cpp` (clang-host): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `foundations/language-support/initializer-list-missing.cpp` (gcc-host): error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’
+- `foundations/language-support/initializer-list-missing.cpp` (edg-7.0): error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use / error: cannot deduce "auto" type
+- `foundations/language-support/initializer-list-missing.cpp` (gcc-14): error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `foundations/language-support/initializer-list-missing.cpp` (clang-18): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `foundations/language-support/initializer-list-missing.cpp` (gcc-16): error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `foundations/language-support/initializer-list-missing.cpp` (clang-22): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `foundations/language-support/initializer-list-no-members.cpp` (clang-host): error: 'std::initializer_list<int>' layout not recognized. Must be a non-polymorphic class type with no bases and two fields: a 'const E *' and either another 'const E *' or a 'std::size_t'
+- `foundations/language-support/initializer-list-no-members.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/language-support/initializer-list-no-members.cpp:7:26: fatal error: definition of ‘class std::initializer_list<E>’ does not match ‘#include <initializer_list>’
+- `foundations/language-support/initializer-list-no-members.cpp` (edg-7.0): error: too many initializer values
+- `foundations/language-support/initializer-list-no-members.cpp` (gcc-14): /tidal/tests/foundations/language-support/initializer-list-no-members.cpp:7:26: fatal error: definition of 'class std::initializer_list<E>' does not match '#include <initializer_list>' 7 \| template <c
+- `foundations/language-support/initializer-list-no-members.cpp` (clang-18): error: cannot compile this weird std::initializer_list yet
+- `foundations/language-support/initializer-list-no-members.cpp` (gcc-16): /tidal/tests/foundations/language-support/initializer-list-no-members.cpp:7:26: fatal error: definition of 'class std::initializer_list<E>' does not match '#include <initializer_list>' 7 \| template <c
+- `foundations/language-support/initializer-list-no-members.cpp` (clang-22): error: 'std::initializer_list<int>' layout not recognized. Must be a non-polymorphic class type with no bases and two fields: a 'const E *' and either another 'const E *' or a 'std::size_t'
+- `foundations/language-support/initializer-list-not-template.cpp` (clang-host): error: std::initializer_list must be a class template with a single type parameter
+- `foundations/language-support/initializer-list-not-template.cpp` (gcc-host): error: declaration of ‘std::initializer_list’ does not match ‘#include <initializer_list>’, isn’t a template / error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’
+- `foundations/language-support/initializer-list-not-template.cpp` (edg-7.0): error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use / error: cannot deduce "auto" type
+- `foundations/language-support/initializer-list-not-template.cpp` (gcc-14): error: declaration of 'std::initializer_list' does not match '#include <initializer_list>', isn't a template / error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `foundations/language-support/initializer-list-not-template.cpp` (clang-18): error: std::initializer_list must be a class template with a single type parameter
+- `foundations/language-support/initializer-list-not-template.cpp` (gcc-16): error: declaration of 'std::initializer_list' does not match '#include <initializer_list>', isn't a template / error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+- `foundations/language-support/initializer-list-not-template.cpp` (clang-22): error: std::initializer_list must be a class template with a single type parameter
+- `foundations/language-support/strong-ordering-missing-member.cpp` (clang-host): error: standard library implementation of 'std::strong_ordering' is not supported; member 'equal' is missing
+- `foundations/language-support/strong-ordering-missing-member.cpp` (gcc-host): error: ‘equal’ is not a member of ‘std::strong_ordering’ / note: determining value of ‘operator<=>’
+- `foundations/language-support/strong-ordering-missing-member.cpp` (edg-7.0): error: no constexpr static data member "equal" found in "std::strong_ordering"
+- `foundations/language-support/strong-ordering-missing-member.cpp` (gcc-14): error: 'equal' is not a member of 'std::strong_ordering' / note: determining value of 'operator<=>'
+- `foundations/language-support/strong-ordering-missing-member.cpp` (clang-18): error: standard library implementation of 'std::strong_ordering' is not supported; member 'equal' is missing
+- `foundations/language-support/strong-ordering-missing-member.cpp` (gcc-16): error: 'equal' is not a member of 'std::strong_ordering' / note: determining value of 'operator<=>'
+- `foundations/language-support/strong-ordering-missing-member.cpp` (clang-22): error: standard library implementation of 'std::strong_ordering' is not supported; member 'equal' is missing
+- `foundations/language-support/strong-ordering-missing.cpp` (clang-host): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `foundations/language-support/strong-ordering-missing.cpp` (gcc-host): error: ‘strong_ordering’ is not a member of ‘std’ / note: ‘std::strong_ordering’ is defined in header ‘<compare>’; this is probably fixable by adding ‘#include <compare>’ / note: forming type of ‘operator<=>’
+- `foundations/language-support/strong-ordering-missing.cpp` (edg-7.0): error: no valid std::strong_ordering type found (<compare> must be included)
+- `foundations/language-support/strong-ordering-missing.cpp` (gcc-14): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>' / note: forming type of 'operator<=>'
+- `foundations/language-support/strong-ordering-missing.cpp` (clang-18): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `foundations/language-support/strong-ordering-missing.cpp` (gcc-16): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>' / note: forming type of 'operator<=>'
+- `foundations/language-support/strong-ordering-missing.cpp` (clang-22): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
 - `foundations/names/adl-not-for-fundamental.cpp` (clang-host): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
 - `foundations/names/adl-not-for-fundamental.cpp` (gcc-host): error: ‘twice’ was not declared in this scope; did you mean ‘n::twice’?
 - `foundations/names/adl-not-for-fundamental.cpp` (edg-7.0): error: identifier "twice" is undefined
@@ -13044,6 +13098,9 @@ check that the rejection has the intended cause.
 - `statements/range-for/data-member-begin-counts.cpp` (clang-18): error: called object type 'int' is not a function or function pointer / note: when looking up 'begin' function for range expression of type 'r::Odd'
 - `statements/range-for/data-member-begin-counts.cpp` (gcc-16): error: expression cannot be used as a function
 - `statements/range-for/data-member-begin-counts.cpp` (clang-22): error: called object type 'int' is not a function or function pointer / note: when looking up 'begin' function for range expression of type 'r::Odd'
+- `statements/range-for/empty-init-statement.cpp` (gcc-host): error: found ‘:’ in nested-name-specifier, expected ‘::’ / error: ‘x’ has not been declared / error: qualified-id in declaration before ‘)’ token / error: expected ‘;’ before ‘)’ token / error: ‘x’ was not declared in this scope
+- `statements/range-for/empty-init-statement.cpp` (gcc-14): error: found ':' in nested-name-specifier, expected '::' / error: 'x' has not been declared / error: qualified-id in declaration before ')' token / error: expected ';' before ')' token / error: 'x' was not declared in this scope
+- `statements/range-for/empty-init-statement.cpp` (gcc-16): error: found ':' in nested-name-specifier, expected '::' / error: 'x' has not been declared / error: qualified-id in declaration before ')' token / error: expected ';' before ')' token / error: 'x' was not declared in this scope
 - `statements/range-for/extern-loop-variable.cpp` (clang-host): error: loop variable 'v' may not be declared 'extern'
 - `statements/range-for/extern-loop-variable.cpp` (gcc-host): error: for-range-declaration cannot be ‘extern’ / error: ‘v’ has both ‘extern’ and initializer / error: ‘v’ was not declared in this scope
 - `statements/range-for/extern-loop-variable.cpp` (edg-7.0): error: a storage class may not be specified here

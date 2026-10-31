@@ -34,8 +34,9 @@ operator function has no use for them. Across translation units, an
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: fn_defarg
-   parameter: `decl_specifiers` `declarator` ["=" `expression`]
+.. productionlist:: tidal
+   parameter: `decl_specifiers` [`declarator` | `abstract_declarator`]
+            :    ["=" (`assignment_expr` | `braced_init`)]
 ```
 
 ## Constraints

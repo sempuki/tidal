@@ -71,12 +71,8 @@ so applying either is undefined.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: mptr
-   member_pointer_declarator: `nested_name` "*" [`cv`] `declarator`
-   member_pointer_expr: "&" `nested_name` `identifier`
-   pm_expression: `cast_expression`
-                : `pm_expression` ".*" `cast_expression`
-                : `pm_expression` "->*" `cast_expression`
+.. productionlist:: tidal
+   pm_expr: `cast_expr` {(".*" | "->*") `cast_expr`}
 ```
 
 `int S::* p` declares `p` as a pointer to a data member of `S` with type

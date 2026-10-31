@@ -87,13 +87,15 @@ warn about the implicit capture.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_lambda
-   lambda: "[" [`captures`] "]" [`params`] [`specifiers`] ["->" `type`] `compound_statement`
-   captures: `capture_default` | `capture_default` "," `capture_list` | `capture_list`
+.. productionlist:: tidal
+   lambda_expr: "[" [`captures`] "]" ["(" `parameters` ")"] {`lambda_specifier`}
+              : [`noexcept_specifier`] ["->" `type_id`] `compound_stmt`
+   captures: `capture_default` {"," `capture`}
+           : | `capture` {"," `capture`}
    capture_default: "=" | "&"
-   capture: `name` | "&" `name` | `name` "=" `expression` | "&" `name` "=" `expression`
-          : "this" | "*" "this"
-   specifiers: ["mutable" | "static"] ["constexpr" | "consteval"] ["noexcept"]
+   capture: ["&"] `identifier` [`init`]
+          : | "this" | "*" "this"
+   lambda_specifier: "mutable" | "static" | "constexpr" | "consteval"
 ```
 
 ## Constraints

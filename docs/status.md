@@ -20,7 +20,7 @@ current state only. The history of how the project got here is in
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 65 | 9 | 0 | 23 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 14 | Q-0097 | 0 flagged |
 | [Iteration statements](../spec/statements/loops.md) | 8 | 4 required, 4 reject | 19 | 3 | 1 | 2 | Q-0044 | 0 flagged |
-| [The range-based for statement](../spec/statements/range-for.md) | 7 | 4 required, 3 reject | 26 | 1 | 5 | 16 | Q-0020, Q-0026, Q-0098 | 0 flagged |
+| [The range-based for statement](../spec/statements/range-for.md) | 7 | 4 required, 3 reject | 27 | 1 | 6 | 16 | Q-0020, Q-0026, Q-0098 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 16 | 9 required, 6 reject, 1 unspecified | 52 | 3 | 3 | 24 | Q-0041, Q-0097 | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 25 | 9 required, 8 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | 6 | 4 | 9 | Q-0033, Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 49 | 4 | 3 | 9 | Q-0065, Q-0089 | 0 flagged |
@@ -54,7 +54,7 @@ current state only. The history of how the project got here is in
 | [Enumerations](../spec/declarations/enumerations.md) | 20 | 9 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 58 | 4 | 3 | 17 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
 | [Namespaces and using](../spec/declarations/namespaces.md) | 17 | 8 required, 9 reject | 41 | 5 | 1 | 1 | Q-0019 | 0 flagged |
 | [Linkage specifications](../spec/declarations/linkage-specifications.md) | 7 | 3 required, 2 reject, 2 impl-defined | 29 | 1 | 4 | 0 | Q-0074, Q-0075, Q-0076 | 0 flagged |
-| [Standard attributes](../spec/declarations/attributes.md) | 17 | 6 required, 3 reject, 2 undefined, 1 impl-defined, 5 recommended | 55 | 6 | 10 | 15 | Q-0020, Q-0021, Q-0046, Q-0108 | 0 flagged |
+| [Standard attributes](../spec/declarations/attributes.md) | 18 | 6 required, 4 reject, 2 undefined, 1 impl-defined, 5 recommended | 57 | 6 | 12 | 15 | Q-0020, Q-0021, Q-0046, Q-0108, Q-0123 | 0 flagged |
 | [Function definitions](../spec/declarations/functions/definitions.md) | 14 | 3 required, 6 reject, 1 undefined, 3 impl-defined, 1 recommended | 40 | 5 | 6 | 19 | Q-0022, Q-0024, Q-0076 | 0 flagged |
 | [Default arguments](../spec/declarations/functions/default-arguments.md) | 9 | 3 required, 5 reject, 1 no-diagnostic | 21 | 3 | 2 | 15 | Q-0038, Q-0111 | 0 flagged |
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | 2 | 1 | 6 | Q-0007, Q-0023 | 0 flagged |
@@ -108,7 +108,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and twenty questions are open for opinions, each with a
+One hundred and twenty-two questions are open for opinions, each with a
 provisional answer the spec follows. Nine of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
@@ -158,12 +158,9 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Item F: a grammar notation, then one grammar in which every
-   nonterminal is defined. `tools/check_spec.py` then makes an undefined
-   nonterminal an error.
-2. Item G1: keywords, reserved names, and the literal suffix grammar.
-3. Item K: the language-support types, then the task-level guides.
-4. Act on the remaining findings of exercises X1 to X4
+1. Item G1: keywords, reserved names, and the literal suffix grammar.
+2. Item K: the language-support types, then the task-level guides.
+3. Act on the remaining findings of exercises X1 to X4
    (`reports/clean-room/X1/` to `X4/`). The most cited gaps, the orders
    that no rule gave, default initialization, skipped declarations, and
    the list of implicit calls, are done.

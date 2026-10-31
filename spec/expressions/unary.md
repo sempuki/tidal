@@ -96,12 +96,14 @@ implicit calls that `e` makes, and answers with a `bool` constant. Like
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: unary
+.. productionlist:: tidal
    unary_expr: `postfix_expr`
-             : | ("+" | "-" | "*" | "&" | "++" | "--") `unary_expr`
+             : | ("+" | "-" | "*" | "&" | "!" | "~") `cast_expr`
+             : | ("++" | "--") `unary_expr`
              : | "sizeof" `unary_expr` | "sizeof" "(" `type_id` ")"
              : | "alignof" "(" `type_id` ")"
              : | "noexcept" "(" `expression` ")"
+             : | `new_expr` | `delete_expr`
 ```
 
 ## Constraints

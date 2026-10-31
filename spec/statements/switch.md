@@ -40,10 +40,8 @@ a variable that is in scope at the label.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: stmt_switch
+.. productionlist:: tidal
    switch_stmt: "switch" "(" [`init_stmt`] `condition` ")" `statement`
-   case_label: "case" `constant_expression` ":"
-   default_label: "default" ":"
 ```
 
 ## Constraints

@@ -68,14 +68,13 @@ evaluation ends.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: expr_new
-   new_expr: ["::"] "new" [`placement`] `new_type` [`new_init`]
-           : ["::"] "new" [`placement`] `type` "[" [`expression`] "]" {"[" `constant_expression` "]"} [`new_init`]
+.. productionlist:: tidal
+   new_expr: ["::"] "new" [`placement`] (`new_type` | "(" `type_id` ")") [`new_init`]
    placement: "(" `expression_list` ")"
-   new_type: `type` | "(" `type` ")"
+   new_type: `type_specifier` {`type_specifier`} {"*" {`cv`}} [`new_bounds`]
+   new_bounds: "[" [`expression`] "]" {"[" `constant_expr` "]"}
    new_init: "(" [`expression_list`] ")" | `braced_init`
-   delete_expr: ["::"] "delete" `expression`
-              : ["::"] "delete" "[" "]" `expression`
+   delete_expr: ["::"] "delete" ["[" "]"] `cast_expr`
 ```
 
 ## Constraints

@@ -54,11 +54,10 @@ or the operand types suggest a mistake:
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: bitwise
-   or_expr: `xor_expr` {"|" `xor_expr`}
-   xor_expr: `and_expr` {"^" `and_expr`}
+.. productionlist:: tidal
    and_expr: `equality_expr` {"&" `equality_expr`}
-   complement: "~" `unary_expr`
+   xor_expr: `and_expr` {"^" `and_expr`}
+   or_expr: `xor_expr` {"|" `xor_expr`}
 ```
 
 ## Constraints

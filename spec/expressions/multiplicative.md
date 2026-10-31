@@ -76,9 +76,8 @@ the mix.
 ## Syntax
 
 ```{eval-rst}
-.. productionlist:: multiplicative
-   mul_expr: `operand` (("*" | "/" | "%") `operand`)*
-   operand: `unary_expression`
+.. productionlist:: tidal
+   mul_expr: `pm_expr` {("*" | "/" | "%") `pm_expr`}
 ```
 
 ## Constraints
