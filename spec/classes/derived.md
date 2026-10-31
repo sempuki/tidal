@@ -132,20 +132,22 @@ to a derived class.
 
 :::{rule} DER-12
 :kind: reject
-:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp
+:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-dtor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp
 
-A class with a virtual base must not have a `constexpr` constructor. An
-object of such a class cannot be a `constexpr` variable.
+A class with a virtual base must not have a `constexpr` constructor or a
+`constexpr` destructor. An object of such a class cannot be a `constexpr`
+variable.
 :::
 
 :::{rule} DER-13
 :kind: reject
-:tests: classes/derived/most-derived-must-init-virtual-base.cpp
+:tests: classes/derived/abstract-skips-virtual-base-init.cpp classes/derived/most-derived-must-init-virtual-base.cpp
 
 Each constructor of the most derived class must be able to initialize
 every virtual base. If a virtual base has no default constructor, each
 such constructor must name the virtual base in its member initializer
-list.
+list. An abstract class is never the most derived class, so its
+constructors need not initialize its virtual bases.
 :::
 
 :::{rule} DER-14
@@ -181,6 +183,24 @@ A call must not select a constructor signature that two bases both
 provide through inherited constructors.
 :::
 
+:::{rule} DER-16
+:kind: required
+:tests: classes/derived/static-cast-downcast.cpp
+
+`static_cast` can convert a pointer or reference to a base `B` into a
+pointer or reference to a derived class `D`. `B` must be a non-virtual,
+accessible, and unambiguous base of `D`.
+:::
+
+:::{rule} DER-18
+:kind: required
+:tests: classes/derived/direct-and-indirect-base-use.cpp classes/derived/direct-and-indirect-base.cpp
+
+A class can be both a direct base and an indirect base of the same
+derived class. The declaration is valid. A use of a member of that base
+through the derived class is ambiguous.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} DER-7
@@ -191,6 +211,17 @@ The constructor of the most derived class initializes each virtual base
 once, before the other bases. The member initializers for a virtual base
 in other classes have no effect. Each virtual base is destroyed after the
 other bases.
+:::
+
+## Undefined Behavior
+
+:::{rule} DER-17
+:kind: undefined
+:tests: classes/derived/static-cast-downcast-wrong-object-constant.cpp
+
+If a `static_cast` to a derived class `D` applies to an object that is
+not a `D` subobject, the behavior is undefined. Constant evaluation
+rejects such a cast.
 :::
 
 ## Examples
@@ -218,8 +249,11 @@ struct Drive : Disk, Tape {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
-67 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 72 of
+73 tests.
+
+- DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
+  base. Clang and GCC reject it ({question}`Q-0085`).
 
 Inputs: clang-sema-declcxx, clang-sema-access, clang-diag-sema,
 edg-class-decl.

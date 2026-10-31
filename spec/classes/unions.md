@@ -27,11 +27,11 @@ no variable.
 
 :::{rule} UNI-1
 :kind: required
-:tests: classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-private-members.cpp classes/unions/union-static-member.cpp
+:tests: classes/unions/alignment-strictest-not-largest.cpp classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-private-members.cpp classes/unions/union-static-member.cpp
 
 Each data member of a union that is not static begins at the first byte
-of the union. A union is at least as large and as aligned as its largest
-member. A union can have member functions, constructors, a
+of the union. A union is at least as large as its largest member, and at
+least as aligned as its most strictly aligned member. A union can have member functions, constructors, a
 destructor, static data members, and array members. Its members are
 public unless an access label says otherwise.
 :::
@@ -46,12 +46,13 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
 
 If a variant member has a non-trivial default constructor, copy or move
 function, or destructor, the matching special member of the union is
-deleted. The union must then declare that function itself. A default
-member initializer on a variant member gives the union a usable default
+deleted. The union must then declare that function itself. The same
+applies to a class with an anonymous union member. A default member
+initializer on a variant member gives the union a usable default
 constructor.
 :::
 
@@ -153,10 +154,12 @@ temporary that holds a copy of the value.
 
 :::{rule} BF-6
 :kind: required
-:tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp
+:tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-promotes-unsigned-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp
 
 A bit-field promotes to `int` if `int` can hold all values of its width.
-If not, the promotion uses its declared type as other integers do. The
+If not, it promotes to `unsigned int` if `unsigned int` can hold them.
+If neither can, the promotion uses its declared type as other integers
+do. The
 type of the bit-field for `auto` deduction is the declared type.
 :::
 
@@ -175,9 +178,10 @@ narrowing uses the declared type, not the width.
 :kind: required
 :tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp
 
-An assignment to a member whose type has a trivial default constructor
-makes that member active. A copy of a union copies its active member.
-Constant evaluation follows these rules.
+An assignment to a member makes that member active if the assignment
+uses the built-in operator or a trivial assignment operator
+*(referenced)*. A copy of a union copies its active member. Constant
+evaluation follows these rules.
 :::
 
 :::{rule} BF-5
@@ -189,15 +193,28 @@ bit-field of a signed type, including plain `int`, holds negative values.
 Constant evaluation gives the same result.
 :::
 
+:::{rule} UNI-10
+:kind: required
+:tests: classes/unions/common-initial-sequence-constant.cpp classes/unions/common-initial-sequence.cpp
+
+Two standard-layout *(referenced)* structs that are members of a union
+can begin with members of the same types, a *common initial sequence*.
+While one struct is active, a program can read a member of that sequence
+through the other struct. The read gives the stored value. Constant
+evaluation does not permit such a read.
+:::
+
 ## Undefined Behavior
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp
+:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. A compound assignment to a member that is not active reads
-it.
+it. An assignment to a member that is not active, through an assignment
+operator that is user-provided, uses an object that does not exist yet
+({question}`Q-0088`).
 :::
 
 ## Implementation Requirements
@@ -247,14 +264,17 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 78 of
-80 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 83 of
+86 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject it ({question}`Q-0057`).
 - BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and EDG
   reject it ({question}`Q-0058`).
 - BF-8: Clang and GCC warn under `-Wall` for both cases.
+- UNI-6: EDG accepts the assignment through a user-provided operator to
+  a member that is not active during constant evaluation. Clang and GCC
+  reject it ({question}`Q-0088`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

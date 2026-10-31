@@ -31,7 +31,7 @@ a virtual function.
 
 :::{rule} VIRT-2
 :kind: reject
-:tests: classes/virtual/static-overrides-virtual.cpp classes/virtual/virtual-auto-return.cpp classes/virtual/virtual-data-member.cpp classes/virtual/virtual-in-union.cpp classes/virtual/virtual-nonmember.cpp classes/virtual/virtual-out-of-class.cpp classes/virtual/virtual-static.cpp classes/virtual/virtual-template.cpp classes/virtual/virtual-trailing-return.cpp
+:tests: classes/virtual/explicit-object-virtual.cpp classes/virtual/static-overrides-virtual.cpp classes/virtual/virtual-auto-return.cpp classes/virtual/virtual-data-member.cpp classes/virtual/virtual-in-union.cpp classes/virtual/virtual-nonmember.cpp classes/virtual/virtual-out-of-class.cpp classes/virtual/virtual-static.cpp classes/virtual/virtual-template.cpp classes/virtual/virtual-trailing-return.cpp
 
 `virtual` can only occur on a declaration of a non-static member function
 in its class definition. A program must not declare these as virtual:
@@ -40,7 +40,8 @@ in its class definition. A program must not declare these as virtual:
 - a function outside a class, or a definition outside its class,
 - a member function template,
 - a function with a deduced return type,
-- a member of a union.
+- a member of a union,
+- a member function with an explicit object parameter.
 
 A static member function must not have the name and parameters of a
 virtual function in a base. A trailing return type is valid.
@@ -66,7 +67,7 @@ override each other.
 
 :::{rule} VIRT-4
 :kind: required
-:tests: classes/virtual/covariant-less-cv-ok.cpp classes/virtual/covariant-pointer.cpp classes/virtual/covariant-private-base.cpp classes/virtual/covariant-reference.cpp classes/virtual/covariant-through-base-pointer.cpp
+:tests: classes/virtual/covariant-less-cv-ok.cpp classes/virtual/covariant-own-class.cpp classes/virtual/covariant-pointer.cpp classes/virtual/covariant-private-base.cpp classes/virtual/covariant-reference.cpp classes/virtual/covariant-through-base-pointer.cpp
 
 An override has the same return type as the function that it overrides,
 or a *covariant* return type. A covariant return type is a pointer or
@@ -88,7 +89,8 @@ overridden function.
 An override must not have a return type that is different and not
 covariant. A return by value of a derived class is not covariant. The
 class in a covariant pointer or reference must be complete at the
-declaration of the override.
+declaration of the override, unless it is the class that declares the
+override.
 :::
 
 :::{rule} VIRT-5
@@ -104,7 +106,7 @@ paths, each subobject has its own final overrider.
 
 :::{rule} VIRT-8
 :kind: reject
-:tests: classes/virtual/abstract-array.cpp classes/virtual/abstract-capture-by-reference.cpp classes/virtual/abstract-capture-by-value.cpp classes/virtual/abstract-cast-temporary.cpp classes/virtual/abstract-function-declaration-ok.cpp classes/virtual/abstract-member.cpp classes/virtual/abstract-new.cpp classes/virtual/abstract-param-definition.cpp classes/virtual/abstract-pointer-ref-ok.cpp classes/virtual/abstract-return-definition.cpp classes/virtual/abstract-sizeof.cpp classes/virtual/abstract-variable.cpp classes/virtual/derived-concrete.cpp classes/virtual/derived-still-abstract.cpp classes/virtual/pure-override-makes-abstract.cpp
+:tests: classes/virtual/abstract-array.cpp classes/virtual/abstract-capture-by-reference.cpp classes/virtual/abstract-capture-by-value.cpp classes/virtual/abstract-cast-temporary.cpp classes/virtual/abstract-function-declaration-ok.cpp classes/virtual/abstract-member.cpp classes/virtual/abstract-new.cpp classes/virtual/abstract-param-definition.cpp classes/virtual/abstract-pointer-ref-ok.cpp classes/virtual/abstract-return-definition.cpp classes/virtual/abstract-sizeof.cpp classes/virtual/abstract-variable.cpp classes/virtual/call-returning-abstract.cpp classes/virtual/derived-concrete.cpp classes/virtual/derived-still-abstract.cpp classes/virtual/pure-override-makes-abstract.cpp
 
 A class with at least one pure virtual function, declared or inherited
 without a final overrider, is *abstract*. A program must not create an
@@ -113,6 +115,7 @@ object of an abstract class. This includes:
 - a variable, an array, a temporary, or a member,
 - a `new` expression,
 - a parameter or a return value in a function definition,
+- a call to a function that returns the class ({question}`Q-0086`),
 - a lambda capture by copy.
 
 Pointers and references to an abstract class are valid. A function
@@ -140,7 +143,7 @@ virtual destructor of its base, so that destructor needs a definition.
 
 :::{rule} VIRT-18
 :kind: reject
-:tests: classes/virtual/dynamic-cast-casts-away-const.cpp classes/virtual/dynamic-cast-from-nonpointer.cpp classes/virtual/dynamic-cast-incomplete.cpp classes/virtual/dynamic-cast-nonpolymorphic.cpp classes/virtual/dynamic-cast-not-pointer.cpp classes/virtual/dynamic-cast-to-nonclass.cpp classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp
+:tests: classes/virtual/dynamic-cast-ambiguous-base.cpp classes/virtual/dynamic-cast-casts-away-const.cpp classes/virtual/dynamic-cast-from-nonpointer.cpp classes/virtual/dynamic-cast-inaccessible-base.cpp classes/virtual/dynamic-cast-incomplete.cpp classes/virtual/dynamic-cast-nonpolymorphic.cpp classes/virtual/dynamic-cast-not-pointer.cpp classes/virtual/dynamic-cast-to-nonclass.cpp classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp
 
 A `dynamic_cast` must meet these conditions:
 
@@ -151,6 +154,18 @@ A `dynamic_cast` must meet these conditions:
 - The target keeps every cv-qualifier of the operand.
 - A cast that does not go to a base needs an operand of polymorphic
   class type, through a pointer or reference.
+- A cast that goes to a base needs a base that is accessible and
+  unambiguous.
+:::
+
+:::{rule} VIRT-19
+:kind: reject
+:tests: classes/virtual/explicit-object-overrides.cpp classes/virtual/override-both-deleted.cpp classes/virtual/override-deleted-mismatch.cpp classes/virtual/override-of-deleted.cpp
+
+An override and the function that it overrides must both be deleted or
+both be not deleted. A member function with an explicit object parameter
+must not have the name and parameters of a virtual function of a base
+({question}`Q-0087`).
 :::
 
 ## Dynamic Semantics
@@ -200,7 +215,7 @@ the destructor of the most derived class.
 
 :::{rule} VIRT-10
 :kind: required
-:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp
+:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-during-construction.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp
 
 `dynamic_cast` converts with a check at run time:
 
@@ -212,15 +227,16 @@ the destructor of the most derived class.
 - To `void*`, the result points to the most derived object.
 
 If the check fails for a pointer, the result is a null pointer. A null
-pointer converts to a null pointer. Constant evaluation can do these
-casts.
+pointer converts to a null pointer. During a constructor or destructor
+of class `C`, the object counts as a `C`, so a cast to a class derived
+from `C` fails. Constant evaluation can do these casts.
 :::
 
 ## Undefined Behavior
 
 :::{rule} VIRT-12
 :kind: undefined
-:tests: classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp
+:tests: classes/virtual/delete-array-through-base-constant.cpp classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp
 
 The behavior is undefined in these cases:
 
@@ -228,6 +244,8 @@ The behavior is undefined in these cases:
   through a virtual call.
 - `delete` destroys a derived object through a pointer to a base whose
   destructor is not virtual ({question}`Q-0056`).
+- `delete[]` destroys an array of derived objects through a pointer to a
+  base, also when the destructor is virtual.
 :::
 
 ## Implementation Requirements
@@ -238,6 +256,15 @@ The behavior is undefined in these cases:
 
 A pure virtual destructor that a derived class uses must have a
 definition. An implementation need not diagnose a missing one before
+linking.
+:::
+
+:::{rule} VIRT-20
+:kind: no-diagnostic
+:tests: classes/virtual/virtual-not-defined.cpp
+
+A virtual function that is not pure must have a definition, even if no
+code calls it. An implementation need not diagnose a missing one before
 linking.
 :::
 
@@ -278,14 +305,20 @@ delete p;                          // calls ~Circle, then ~Shape
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 94 of
-95 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 104 of
+107 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject it
   ({question}`Q-0056`).
 - VIRT-17: Clang and GCC report the missing destructor at link time. EDG
   does not link.
+- VIRT-8: Clang accepts a call to a function that returns an abstract
+  class. GCC and EDG reject it ({question}`Q-0086`).
+- VIRT-19: EDG accepts an explicit object member function with the name
+  and parameters of a base virtual function. Clang and GCC reject it
+  ({question}`Q-0087`).
+- VIRT-20: Clang and GCC report the missing definition at link time.
 - VIRT-13: Clang and GCC give both warnings under `-Wall`.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,

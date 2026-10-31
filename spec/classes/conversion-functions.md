@@ -25,7 +25,7 @@ name of the function is `operator` followed by the target type.
 
 :::{rule} CVF-1
 :kind: required
-:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/const-qualified-needed.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp
+:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/const-qualified-needed.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/explicit-object-conversion.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp
 
 A conversion function is a non-static member function. Its target type
 can be:
@@ -34,8 +34,8 @@ can be:
 - a reference type, which makes the result an lvalue or xvalue,
 - `auto`, deduced from the `return` statements ({question}`Q-0059`).
 
-It can be `const`, `virtual`, or `constexpr`, and it can be defined
-outside its class. A call by name, such as `s.operator int()`, is valid.
+It can be `const`, `virtual`, or `constexpr`, can have an explicit
+object parameter, and can be defined outside its class. A call by name, such as `s.operator int()`, is valid.
 A conversion function that is not `const` cannot convert a `const`
 object.
 :::
@@ -58,13 +58,14 @@ function needs a type alias.
 
 :::{rule} CVF-2
 :kind: required
-:tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp classes/conversion-functions/two-converting-ctors.cpp classes/conversion-functions/two-user-conversions.cpp
+:tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/call-through-function-reference.cpp classes/conversion-functions/delete-class-operand.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp classes/conversion-functions/two-converting-ctors.cpp classes/conversion-functions/two-user-conversions.cpp
 
 An implicit conversion can call a conversion function that is not
 `explicit`. This applies in initialization, function arguments, `return`
-statements, operands of built-in operators, `switch` conditions, and
-array bounds in `new`. A standard conversion can follow the conversion
-function. An implicit conversion uses at most one conversion function or
+statements, operands of built-in operators, `switch` conditions, array
+bounds in `new`, and the operand of `delete`. A call `s(args)` can use a
+conversion to a pointer or reference to function. A standard conversion
+can follow the conversion function. An implicit conversion uses at most one conversion function or
 converting constructor.
 :::
 
@@ -102,6 +103,15 @@ Conversion functions of a base are members of the derived class too.
 Two conversion functions with the same target type have the same name, so
 the one in the derived class hides the one in the base. A type alias for
 the target type counts as the same type. Other targets are not hidden.
+:::
+
+:::{rule} CVF-8
+:kind: reject
+:tests: classes/conversion-functions/new-size-two-integral-conversions.cpp classes/conversion-functions/switch-two-integral-conversions.cpp
+
+A `switch` condition and an array bound in `new` need one conversion to
+an integral or enumeration type. A class with two conversion functions
+to different integral types makes these uses ambiguous.
 :::
 
 ## Recommended Practice
@@ -143,8 +153,8 @@ store(Celsius{});        // rejected: two user-defined conversions
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 54 of
-55 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 59 of
+60 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

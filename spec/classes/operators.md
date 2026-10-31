@@ -121,7 +121,7 @@ rewritten as `a = a @ b`.
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-integer.cpp classes/operators/literal-not-found.cpp classes/operators/literal-raw.cpp classes/operators/literal-string.cpp classes/operators/literal-raw-float.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-integer.cpp classes/operators/literal-not-found.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp
 
 A literal with a suffix calls a literal operator with that suffix. The
 form of the literal selects the parameter list:
@@ -132,29 +132,47 @@ form of the literal selects the parameter list:
 - a character literal: the character type,
 - a string literal: a pointer to the character type and the length.
 
-A literal for which no matching literal operator exists is not valid. A
-literal operator can be `constexpr`.
+If both a numeric form and the `const char*` form exist for a suffix, a
+numeric or floating literal uses the numeric form. Adjacent string
+literals with the same suffix, or with a suffix on only one of them,
+are joined and then passed to the literal operator. A literal for which
+no matching literal operator exists is not valid. A literal operator can
+be `constexpr`.
 :::
 
 :::{rule} OPR-10
 :kind: reject
-:tests: classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-member.cpp classes/operators/literal-three-params.cpp
+:tests: classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp
 
-A literal operator must be a non-member at namespace scope with C++
-linkage. It must have one of the parameter lists that OPR-8 gives, and no
-default argument ({question}`Q-0060`).
+A literal operator must be a non-member function with C++ linkage. It
+can be declared at namespace scope or as a friend in a class, also with
+a definition there. It must have one of the parameter lists that OPR-8
+gives, and no default argument ({question}`Q-0060`). Adjacent string
+literals must not have two different suffixes.
 :::
 
 ## Dynamic Semantics
 
 :::{rule} OPR-7
 :kind: required
-:tests: classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/subscript-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/compound-assign-order-kept.cpp
+:tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp
 
 An expression that selects an operator function calls it with the
 operands as arguments. Both operands of an overloaded `&&` or `||` are
-evaluated. For `<<`, `>>`, `=`, compound assignment, `[]`, and `,`, the operands are
-evaluated in the order of the built-in operator.
+evaluated, the left one first. For `<<`, `>>`, `=`, compound assignment,
+`[]`, `->*`, and `,`, the operands are evaluated in the order of the
+built-in operator.
+:::
+
+## Implementation Requirements
+
+:::{rule} OPR-12
+:kind: unspecified
+:tests: classes/operators/address-of-incomplete-unspecified.cpp
+
+If unary `&` applies to an object of a class that is incomplete at that
+point, and the complete class overloads `operator&`, it is unspecified
+if the built-in operator or the operator function is used.
 :::
 
 ## Recommended Practice
@@ -189,8 +207,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 81 of
-82 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 88 of
+89 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang and
   EDG reject it ({question}`Q-0060`).

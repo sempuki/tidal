@@ -28,7 +28,7 @@ defaulted `<=>` must declare them, usually through the standard library
 
 :::{rule} DCMP-3
 :kind: reject
-:tests: classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp classes/comparisons/eq-rvalue-ref-qualified.cpp declarations/volatile/defaulted-comparison-volatile.cpp
+:tests: declarations/volatile/defaulted-comparison-volatile.cpp classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-rvalue-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp
 
 A defaulted comparison of class `C` must be one of these:
 
@@ -56,11 +56,12 @@ constant evaluation, and it has access to private members.
 
 :::{rule} DCMP-2
 :kind: required
-:tests: classes/comparisons/eq-anonymous-union-member.cpp classes/comparisons/eq-member-eq-private.cpp classes/comparisons/eq-member-not-comparable-unused.cpp classes/comparisons/eq-member-not-comparable.cpp classes/comparisons/eq-reference-member.cpp classes/comparisons/eq-union.cpp
+:tests: classes/comparisons/eq-anonymous-union-member.cpp classes/comparisons/eq-member-eq-private.cpp classes/comparisons/eq-member-not-comparable-unused.cpp classes/comparisons/eq-member-not-comparable.cpp classes/comparisons/eq-reference-member.cpp classes/comparisons/eq-union.cpp classes/comparisons/member-eq-returns-int.cpp
 
 A defaulted `==` is deleted if one of these is true:
 
-- a base or member has no usable `==` that returns `bool`,
+- a base or member has no usable `==`, or its result does not convert to
+  `bool` as a condition does,
 - the class has a reference member,
 - the class is a union, or has an anonymous union member.
 
@@ -69,11 +70,12 @@ A deleted defaulted `==` makes only its use invalid.
 
 :::{rule} DCMP-4
 :kind: required
-:tests: classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp classes/comparisons/spaceship-no-header-types.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp
+:tests: classes/comparisons/empty-class-compares-equal.cpp classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp classes/comparisons/spaceship-no-header-types.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp
 
 A defaulted `<=>` compares the bases and members in the same order as
 `==`. The result is the first result that is not equal, or equal if all
-are equal. These rules apply:
+are equal. A class with no bases and no members compares equal. These
+rules apply:
 
 - With the return type `auto`, the type is the weakest category among
   the members. `partial_ordering` is weaker than `weak_ordering`, which
@@ -87,16 +89,21 @@ are equal. These rules apply:
 
 :::{rule} DCMP-5
 :kind: required
-:tests: classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-wrong-return-used.cpp classes/comparisons/spaceship-wrong-return.cpp
+:tests: classes/comparisons/secondary-without-spaceship.cpp classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-member-returns-non-category.cpp classes/comparisons/spaceship-wrong-return-used.cpp classes/comparisons/spaceship-wrong-return.cpp
 
-A defaulted `<=>` is deleted if its return type is not `auto` or a
-comparison category type. It is also deleted if the return type is `auto`
-and a member has no `<=>`.
+A defaulted `<=>` is deleted in these cases:
+
+- Its return type is not `auto` or a comparison category type.
+- The return type is `auto`, and a member has no `<=>`, or its `<=>`
+  does not return a comparison category type.
+
+A defaulted secondary operator is deleted if the class has no usable
+`<=>`.
 :::
 
 :::{rule} DCMP-6
 :kind: required
-:tests: classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp
+:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp
 
 An expression with `==`, `!=`, `<`, `>`, `<=`, `>=` also considers these
 candidates:
@@ -108,7 +115,9 @@ candidates:
   `x == y`.
 
 An `==` used to rewrite `!=` must return `bool`. `<=>` is never used to
-rewrite `==` or `!=`. A declared `!=` is used before a rewritten one.
+rewrite `==` or `!=`. A declared `!=` is used before a rewritten one. If
+the scope of an `==` declares a matching `!=`, that `==` is not used for
+reversed or rewritten candidates.
 :::
 
 ## Implementation Requirements
@@ -157,8 +166,8 @@ bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 54 of
-56 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 61 of
+63 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
