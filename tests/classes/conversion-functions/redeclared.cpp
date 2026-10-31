@@ -1,3 +1,3 @@
-// tidal-rules: CVF-1
+// tidal-rules: CVF-7
 // tidal-expect: reject
 struct S { operator int(); operator int(); };
