@@ -1,0 +1,18 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   names.md:Names, scopes, and lookup longest=0   overlap=0.01
+ok   NAM-P1                           longest=0   overlap=0.01
+ok   NAM-P2                           longest=0   overlap=0.00
+ok   NAM-P3                           longest=0   overlap=0.00
+ok   NAM-P4                           longest=0   overlap=0.00
+ok   NAM-1                            longest=0   overlap=0.02
+ok   NAM-2                            longest=0   overlap=0.06
+ok   NAM-3                            longest=0   overlap=0.06
+ok   NAM-4                            longest=0   overlap=0.00
+ok   NAM-5                            longest=0   overlap=0.00
+ok   NAM-6                            longest=0   overlap=0.00
+ok   NAM-7                            longest=0   overlap=0.02
+ok   names.md:Examples                longest=0   overlap=0.00
+ok   names.md:Evidence                longest=0   overlap=0.00
+
+0 flagged

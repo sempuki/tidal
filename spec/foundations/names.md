@@ -9,3 +9,158 @@ pages on statements, namespaces, and classes cite it.
 
 Depends on: namespaces and using, class definitions and members, access
 control.
+
+## Principles
+
+:::{principle} NAM-P1
+:rules: NAM-1 NAM-3
+:exceptions: NAM-6
+
+A scope is a region of the program where names can be declared: a
+block, a function's parameter list, a class body, a namespace, or the
+whole translation unit. A declaration puts its name into the scope
+that contains it, and the name is visible from that point to the end of
+the scope. Before that point the name does not exist, and after the
+scope ends it is gone. A scope holds one declaration for each name,
+unless the language says that two declarations of the name describe
+one entity, as it does for a function declared twice.
+:::
+
+:::{principle} NAM-P2
+:rules: NAM-2 NAM-4
+
+A use of a name searches the scope that contains the use, then the
+scope that contains that one, and so on outward. The search stops at the
+first scope that declares the name, whatever kind of thing the name is.
+So an inner declaration hides an outer one, and a variable in an inner
+scope hides a function of the same name outside it. A qualified name
+skips the search and goes to the scope it names, which is how a program
+reaches a hidden name. A namespace is a scope that a program can reopen
+and add to, and a member declared in it can be defined outside it with
+a qualified name.
+:::
+
+:::{principle} NAM-P3
+:rules: NAM-5
+
+A function call with an unqualified name also searches the namespaces
+of the argument types. A function that takes a class is usually declared
+beside the class, and this search finds it from any scope. It adds to
+the ordinary search and does not replace it, and it does nothing for
+arguments of fundamental type.
+:::
+
+:::{principle} NAM-P4
+:rules: NAM-6 NAM-7
+
+Two scopes depart from the plain model. In a class body, member function
+bodies and default member initializers see every member of the class,
+also those declared later, because the class is complete there. The
+other parts of the body see only earlier members. Labels have their own
+scope, the whole function, and their own name space, so a label and a
+variable can share a name.
+:::
+
+## Constraints
+
+:::{rule} NAM-1
+:kind: required
+:tests: foundations/names/visible-from-declaration.cpp foundations/names/use-before-declaration.cpp foundations/names/visible-in-own-initializer.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-sees-earlier-globals.cpp foundations/names/function-not-later-global.cpp
+
+A name is visible from its point of declaration to the end of its scope.
+The point of declaration comes before the initializer, so a variable is
+in scope in its own initializer. A use before the declaration, or after
+the scope ends, is not valid. A function body sees the names declared
+before the function in its translation unit, and not those declared
+after it.
+:::
+
+:::{rule} NAM-2
+:kind: required
+:tests: foundations/names/inner-hides-outer.cpp foundations/names/hiding-ignores-kind.cpp foundations/names/qualified-reaches-hidden-global.cpp foundations/names/parameter-hides-global.cpp
+
+A declaration in an inner scope hides a declaration of the same name in
+an outer scope, for the rest of the inner scope. Hiding does not depend
+on the kind of entity, so a variable hides a function. A parameter hides
+a name outside the function. The qualified name `::x` finds the global
+`x` through any hiding.
+:::
+
+:::{rule} NAM-3
+:kind: reject
+:tests: foundations/names/redeclare-same-scope.cpp foundations/names/redeclare-parameter-in-body.cpp foundations/names/redeclare-different-kind.cpp foundations/names/redeclare-function-ok.cpp
+
+A name must not be declared twice in one scope, except by declarations
+that refer to one entity, such as two declarations of one function. The
+outermost block of a function is one scope with its parameter list. A
+variable and a function with one name in one scope are not valid.
+:::
+
+:::{rule} NAM-4
+:kind: required
+:tests: foundations/names/namespace-reopened.cpp foundations/names/namespace-qualified-use.cpp foundations/names/namespace-member-defined-outside.cpp
+
+A namespace can be reopened, and a later part sees the names of an
+earlier part. From outside the namespace, a name in it needs
+qualification. A function declared in a namespace can be defined outside
+it with a qualified name.
+:::
+
+:::{rule} NAM-5
+:kind: required
+:tests: foundations/names/adl-finds-function.cpp foundations/names/adl-not-for-fundamental.cpp foundations/names/adl-plus-ordinary.cpp
+
+An unqualified function call also looks in the namespaces of its
+argument types for the function name. This finds a function declared in
+the same namespace as a class argument from any scope. Arguments of
+fundamental type add no namespaces. The functions found this way join
+the functions that ordinary lookup finds.
+:::
+
+:::{rule} NAM-6
+:kind: required
+:tests: foundations/names/class-members-any-order.cpp foundations/names/class-member-type-needs-order.cpp foundations/names/class-scope-outside-needs-qualification.cpp
+
+A member function body sees all members of its class, including those
+declared after it (CLS-2). A member declaration sees only the members
+declared before it, so a member type must be declared before a member
+that uses it. Outside the class, a static member needs the class name
+as qualification.
+:::
+
+:::{rule} NAM-7
+:kind: required
+:tests: foundations/names/label-scope-function.cpp foundations/names/label-and-variable-same-name.cpp foundations/names/label-duplicate.cpp
+
+A label is visible in the whole function that contains it, before and
+after its definition. Labels do not share a name space with other
+names, so a label and a variable can have the same name. One function
+must not define a label twice.
+:::
+
+## Examples
+
+```cpp
+int count = 0;                  // global
+
+int bump(int count) {           // parameter hides the global
+  return ::count + count;       // ::count reaches the global
+}
+
+namespace geo {
+  struct Point { int x, y; };
+  int sum(Point p);             // found by a call sum(p) from anywhere
+}
+
+struct Timer {
+  int read() const { return ticks; }   // sees ticks, declared later
+  int ticks = 0;
+};
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on all
+26 tests.
+
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.
