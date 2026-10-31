@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 2894/2894 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3027/3027 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -113,16 +113,19 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- A `reject` test passes whenever compilation fails, even for an unrelated
-  reason. The report lists each compiler's errors so a reviewer can check
-  the cause, but nothing checks it automatically.
+- A `reject` test without a `tidal-error` pattern passes whenever
+  compilation fails, even for an unrelated reason. Patterns are being
+  added (next step 1).
 - Undefined-behavior evidence comes from constant evaluation and warnings.
   Cases that constant evaluation can't express (some pointer and lifetime
   errors) will need sanitizers.
 - EDG runs with its x86-64 Linux configuration only.
 - MSVC is not in the matrix.
-- The `if` section draws on Clang's source only. GCC's and EDG's parsers
-  are unread for it.
+- The `if` section draws on Clang's source only. EDG's parser is unread
+  for it.
+- CI caches test results between runs (`actions/cache`). A full rebuild
+  of the cache happens when the cache key format changes
+  (`OUTCOME_VERSION` in `tools/run_tests.py`) or a compiler image changes.
 
 ## Topics in scope with no page yet
 
@@ -131,17 +134,18 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-0. Draft the Exceptions chapter (decision 0025): throw expressions,
-   handlers, unwinding. Then ask the reviewer who prompted the
-   principles-first change to read the Foundations chapter and two topic
-   pages, and decide whether rules also want short annotations.
-2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-3. Add a `tidal-error` directive that matches the expected diagnostic, so
-   `reject` tests check their cause.
+1. Write `tidal-error` patterns for the reject tests, chapter by chapter.
+   Each pattern confirms that a test is rejected for the reason its rule
+   gives; a test rejected for another reason is a bug to fix.
+2. Ask the reviewer who prompted the principles-first change to read the
+   Foundations chapter and two topic pages, and decide whether rules also
+   want short annotations (decision 0024).
+3. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
-6. Read EDG's sanitized source for the `if` section.
-7. Plan the exception handling chapter (decision 0023).
+6. Read EDG's sanitized source for the `if` section. GCC's source is read
+   only by source readers (decision 0021).
+
 ## Size estimate
 
 The `if` section is typical of a statement. The multiplicative section is
