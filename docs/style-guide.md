@@ -29,7 +29,7 @@ relaxed form:
 - C++ terms are STE *technical names*. Examples are `lvalue`, `translation
   unit`, `enumerator`, and every keyword. Define each term once in the
   glossary.
-- Use the verbs in the word list (section 4) for requirements.
+- Use the verbs in the word list (section 5) for requirements.
 - Do not use a synonym for a defined term.
 
 ## 2. Page structure
@@ -41,6 +41,7 @@ out a part that has no content.
 |---|---|---|
 | Title and summary | One or two sentences that say what the page covers. | No |
 | `Syntax` | A `productionlist` grammar block. | Yes |
+| `Principles` | Prose that states the model the rules follow from. Each principle lists the rules that are its evidence. | Yes |
 | `Constraints` | Rules that an implementation checks before the program runs. | Yes |
 | `Dynamic Semantics` | What the program does when it runs. | Yes |
 | `Undefined Behavior` | Conditions that have no requirements. | Yes |
@@ -53,7 +54,26 @@ The `Constraints` segment states a general requirement: an
 implementation rejects a program that does not obey a rule in it. A rule
 need not repeat it.
 
-## 3. Rules
+## 3. Principles
+
+A principle is a `principle` directive:
+
+    :::{principle} CPY-P2
+    :rules: CPY-4 CPY-5 CPY-6
+
+    The implementation writes the copy and move functions for a class
+    unless the class writes them. ...
+    :::
+
+- The ID is the page prefix, `P`, and a number.
+- A principle is one to three paragraphs in plain prose. It says what the
+  construct is for and what model the rules follow from. It can say why.
+- `:rules:` lists the rules on the same page that are its evidence. Every
+  rule on a page with principles must appear in one `:rules:` list.
+- Write a principle from the rules and the tests, not from memory of any
+  text. The similarity check covers principles.
+
+## 4. Rules
 
 Write each rule in a `rule` directive:
 
@@ -74,7 +94,7 @@ Write each rule in a `rule` directive:
   a rule.
 - Do not explain a rule in prose. Put an example in `Examples`.
 
-## 4. Word list
+## 5. Word list
 
 Use these words with these meanings only.
 
@@ -92,7 +112,7 @@ Use these words with these meanings only.
 
 Do not use `shall`, `may`, `might`, or `will` in rules.
 
-## 5. Examples
+## 6. Examples
 
 - Each example is a short `cpp` code block in the `Examples` segment.
 - A comment on a line gives the result, for example `// int` or
@@ -100,7 +120,7 @@ Do not use `shall`, `may`, `might`, or `will` in rules.
 - Use names that show the purpose, such as `limit` or `make`.
 - Do not copy an example from another source.
 
-## 6. Evidence
+## 7. Evidence
 
 The `Evidence` segment is informative. It records compiler results, links
 to questions in `questions/`, and notes divergences. Each divergence names

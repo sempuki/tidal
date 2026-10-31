@@ -26,6 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(")
 RULE_DIRECTIVE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
+PRINCIPLE_DIRECTIVE = re.compile(r"^:::\{principle\}\s+([A-Z]+-P\d+)\s*$")
 WORD = re.compile(r"[a-z0-9_]+")
 LATEX_CMD = re.compile(r"\\[a-zA-Z@]+\*?(?:\[[^\]]*\])?")
 HTML_TAG = re.compile(r"<[^>]+>")
@@ -62,10 +63,11 @@ def units(spec: Path):
         label = f"{f.relative_to(spec)}:intro"
         buf = []
         for line in f.read_text().splitlines():
-            if (m := HEADING.match(line)) or (m := RULE_DIRECTIVE.match(line)):
+            if (m := HEADING.match(line)) or (m := RULE_DIRECTIVE.match(line)) \
+                    or (m := PRINCIPLE_DIRECTIVE.match(line)):
                 yield label, "\n".join(buf)
                 label, buf = m.group(1), []
-            elif line.startswith(":tests:") or line.startswith(":kind:") or line == ":::":
+            elif line.startswith((":tests:", ":kind:", ":rules:")) or line == ":::":
                 continue
             elif line.startswith("#"):
                 yield label, "\n".join(buf)

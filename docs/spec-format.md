@@ -9,6 +9,14 @@ prefix and a number, such as `IF-3`. IDs are never reused. A withdrawn
 rule keeps its directive with the class `withdrawn` and a sentence that
 says why.
 
+## Principles
+
+A page leads with a `Principles` segment (decision 0024). Each principle
+is a `principle` directive with an ID and a `:rules:` list naming the
+rules that are its evidence. `tools/check_spec.py` checks that each
+principle cites at least one rule on its page and that every rule on
+such a page is cited. The rules keep their IDs, classes, and tests.
+
 ## Rule classes
 
 | Class | Meaning | Typical evidence |

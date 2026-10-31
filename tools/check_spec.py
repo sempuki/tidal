@@ -29,6 +29,8 @@ CLASSES = {
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
 TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
 DIRECTIVE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
+PRINCIPLE = re.compile(r"^:::\{principle\}\s+([A-Z]+-P\d+)\s*$")
+PRULES = re.compile(r"^:rules:\s*(.*)$")
 OPTION = re.compile(r"^:(kind|tests):\s*(.*)$")
 SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Which classes each segment may hold (docs/style-guide.md, decision 0016).
@@ -45,13 +47,29 @@ def parse_spec():
     """Return {rule_id: (spec_file, class, [test paths])}."""
     rules = {}
     errors = []
+    principles = {}  # id -> (file, line, [rule ids])
     for f in sorted(SPEC.rglob("*.md")):
         current = None
         segment = None
         directive = None
+        principle = None
         for n, line in enumerate(f.read_text().splitlines(), 1):
             if m := SEGMENT.match(line):
                 segment = m.group(1)
+            if m := PRINCIPLE.match(line):
+                principle = m.group(1)
+                if principle in principles:
+                    errors.append(f"{f}:{n}: duplicate principle {principle}")
+                principles[principle] = (f, n, [])
+                if segment != "Principles":
+                    errors.append(f"{f}:{n}: {principle} is outside the Principles segment")
+                continue
+            if principle:
+                if m := PRULES.match(line):
+                    principles[principle] = (f, n, m.group(1).split())
+                elif line.startswith(":::"):
+                    principle = None
+                continue
             if m := DIRECTIVE.match(line):
                 directive = m.group(1)
                 if directive in rules:
@@ -95,6 +113,19 @@ def parse_spec():
             elif current and (m := TESTS_LINE.match(line)):
                 tests = [t.strip() for t in m.group(1).split(",") if t.strip()]
                 rules[current] = (rules[current][0], rules[current][1], tests)
+    for pid, (f, n, cited) in principles.items():
+        if not cited:
+            errors.append(f"{f}:{n}: {pid} lists no rules; a principle needs evidence")
+        for rid in cited:
+            if rid not in rules:
+                errors.append(f"{f}:{n}: {pid} cites unknown rule {rid}")
+            elif rules[rid][0] != f:
+                errors.append(f"{f}:{n}: {pid} cites {rid}, which is on another page")
+    pages_with_principles = {f for f, _, _ in principles.values()}
+    cited = {rid for _, _, ids in principles.values() for rid in ids}
+    for rid, (f, cls, _) in rules.items():
+        if f in pages_with_principles and rid not in cited and cls != "withdrawn":
+            errors.append(f"{f}: {rid} is not cited by any principle")
     return rules, errors
 
 

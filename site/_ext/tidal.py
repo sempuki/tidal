@@ -1,6 +1,8 @@
 """Sphinx extension for Tidal specification pages.
 
 Provides:
+- the `principle` directive, which renders one principle with the rules that
+  are its evidence;
 - the `rule` directive, which renders one rule with its ID, class, and tests;
 - the `rule` role, which links to a rule by ID: {rule}`IF-3`;
 - the `question` role, which links to a question file: {question}`Q-0001`.
@@ -58,6 +60,37 @@ class RuleDirective(SphinxDirective):
 
         std = self.env.get_domain("std")
         std.note_object("tidalrule", rid, target_id, location=box)
+        return [box]
+
+
+class PrincipleDirective(SphinxDirective):
+    """One principle: prose that the listed rules follow from."""
+    required_arguments = 1
+    has_content = True
+    option_spec = {"rules": directives.unchanged}
+
+    def run(self):
+        pid = self.arguments[0]
+        target_id = "principle-" + pid.lower()
+        box = nodes.container(classes=["tidal-principle"], ids=[target_id])
+        head = nodes.paragraph(classes=["tidal-principle-head"])
+        head += nodes.reference("", pid, refid=target_id, classes=["tidal-principle-id"])
+        box += head
+        body = nodes.container(classes=["tidal-principle-body"])
+        self.state.nested_parse(self.content, self.content_offset, body)
+        box += body
+        rules = self.options.get("rules", "").split()
+        if rules:
+            foot = nodes.paragraph(classes=["tidal-principle-rules"])
+            foot += nodes.inline("", "Rules: ")
+            for i, rid in enumerate(rules):
+                if i:
+                    foot += nodes.inline("", ", ")
+                foot += nodes.reference("", rid, refid="rule-" + rid.lower(),
+                                        classes=["tidal-rule-ref"])
+            box += foot
+        std = self.env.get_domain("std")
+        std.note_object("tidalprinciple", pid, target_id, location=box)
         return [box]
 
 
@@ -151,6 +184,8 @@ def setup(app):
     app.add_config_value("tidal_repository", "", "env")
     app.add_config_value("tidal_root", "", "env")
     app.add_crossref_type("tidalrule", "rule")
+    app.add_crossref_type("tidalprinciple", "principle")
+    app.add_directive("principle", PrincipleDirective)
     app.add_directive("rule", RuleDirective, override=True)
     app.add_role("question", question_role)
     app.add_directive("tidal-pages", PagesDirective)

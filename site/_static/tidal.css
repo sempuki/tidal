@@ -38,3 +38,26 @@ article div.tidal-rule {
 .tidal-kind-no-diagnostic { border-left-color: #7c3aed; }
 .tidal-kind-recommended { border-left-color: #0f766e; }
 .tidal-kind-required { border-left-color: #2563eb; }
+
+/* Principles lead a page. Rules below them are the evidence, set smaller. */
+article div.tidal-principle {
+  position: relative;
+  margin: 0.8rem 0 1.2rem 0;
+  padding: 0.3rem 0 0.3rem 0.9rem;
+  border-left: 3px solid var(--color-brand-primary);
+}
+.tidal-principle-head { margin: 0; font-size: 0.75rem; }
+.tidal-principle-id {
+  font-family: var(--font-stack--monospace);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-foreground-muted);
+}
+.tidal-principle-body > p:first-child { margin-top: 0.2rem; }
+.tidal-principle-rules {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-foreground-muted);
+}
+.tidal-principle-rules a { color: inherit; font-family: var(--font-stack--monospace); }
+article div.tidal-rule { font-size: 0.92rem; }
