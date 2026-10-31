@@ -14,28 +14,34 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 
 | ID | Repo | Path | Class | SHA-256 (raw) |
 |---|---|---|---|---|
-| clang-parse-stmt | llvm | `clang/lib/Parse/ParseStmt.cpp` | sanitized | `2924c7fd490855f3b63d1c4abdca050a7599d6382a1b2bc9f2735eef05217ec5` |
-| clang-parse-expr | llvm | `clang/lib/Parse/ParseExpr.cpp` | sanitized | `be659823e85cf4401510fed6b6f3a9a2d266499c6714165e7d8ab17f7a3936e7` |
-| clang-sema-stmt | llvm | `clang/lib/Sema/SemaStmt.cpp` | sanitized | `9096f553080b34b16e041f09d35f4aefd0f2086be8bc88a247002ffb9e94d3c9` |
-| clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `a644acb7cbeadf71a57c6061348168eec9a8b9c0459eb26d6877787cffa631c1` |
-| clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `e57a3ba7476665663ffc3d3961540a06bb062dcbecca92a1a293d74bf9baa5a6` |
-| clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `da146d0a392bc261867828d7da6eeb1a6247a01351dacef710b6b2541855fdd0` |
-| clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `1509b492df7bed0c7d4e5a1f15a9e7e478b5fd913ffa50c4a07475aba2152e70` |
-| clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
-| edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
-| edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
-| clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `17023d2296e5b1c0c4ad79f5f350189475432b8a4cf2f7ef0dfd494cfc379637` |
-| clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `eb0670eeaca76abb9dbc88f9a808d03d8854619b3fde6c6af8a422d7dacd97c1` |
-| edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `8d66e24839804eb5e636c960fde1598553b646179a199611ee1d38eca8277bc7` |
-| clang-sema-declcxx | llvm | `clang/lib/Sema/SemaDeclCXX.cpp` | sanitized | `7df48f0b089ba9a96e4d6db9e2d19ee8d6421f0b6154d073af78442986c9352e` |
-| clang-sema-declattr | llvm | `clang/lib/Sema/SemaDeclAttr.cpp` | sanitized | `451b6439c5700437f06b3cfca5ebd8819fb988aee98ce12d074f445a7aff2ac5` |
-| clang-sema-stmtattr | llvm | `clang/lib/Sema/SemaStmtAttr.cpp` | sanitized | `466eb44b65a27dd10d7b8734f33d18e4b1e7cbe9ac10b7801f5215c144670ef1` |
-| edg-attribute | edg | `src/attribute.c` | sanitized | `2f8d8ca144761e1006726169029d98d4186936cc2350531af3b21f4a137c7b24` |
-| edg-func-def | edg | `src/func_def.c` | sanitized | `b2a378a42cbfc99187de5998aa960e1a4c046c56c6cc26f81e53ddf25f4f175f` |
-| edg-statements | edg | `src/statements.c` | sanitized | `a4b9476b67189ea0ed2034239f4494bc32a4f50a885bb258ab01eb8e01bac703` |
-| clang-sema-access | llvm | `clang/lib/Sema/SemaAccess.cpp` | sanitized | `985ab07ab7873ebd7c951ac6c5efb61db2566664af35506df4c90a3f2534367b` |
-| edg-class-decl | edg | `src/class_decl.c` | sanitized | `9a014800a411bc25e6bb2395c3c68b0c61eef1a55ccb5b274dfd323e2d586ce3` |
-| clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `4c0dcf0757557885412a691c9ea716d4cfd7f8a796ce85aeffee7da7c7cfdd28` |
-| clang-diag-lex | llvm | `clang/include/clang/Basic/DiagnosticLexKinds.td` | sanitized | `9af1667ed59e8d7c9e5ec7abb3acbcff57ad6f4148517a4bf21631d0f186e720` |
-| clang-ast-exprconstant | llvm | `clang/lib/AST/ExprConstant.cpp` | sanitized | `50c474805f9914a2c54d75f2ddd56d82dc20c128069855155f3c37db26e5bcf9` |
-| clang-diag-ast | llvm | `clang/include/clang/Basic/DiagnosticASTKinds.td` | sanitized | `08b4b3233bf2cb43846ad96ed80390419a28a432bf07d2cee0627149f1e9ebca` |
+| clang-parse-stmt | llvm | `clang/lib/Parse/ParseStmt.cpp` | sanitized | `(not fetched)` |
+| clang-parse-expr | llvm | `clang/lib/Parse/ParseExpr.cpp` | sanitized | `(not fetched)` |
+| clang-sema-stmt | llvm | `clang/lib/Sema/SemaStmt.cpp` | sanitized | `(not fetched)` |
+| clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `(not fetched)` |
+| clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `(not fetched)` |
+| clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `(not fetched)` |
+| clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `(not fetched)` |
+| clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `(not fetched)` |
+| edg-overload | edg | `src/overload.c` | sanitized | `(not fetched)` |
+| edg-decls | edg | `src/decls.c` | sanitized | `(not fetched)` |
+| clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `(not fetched)` |
+| clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `(not fetched)` |
+| edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `(not fetched)` |
+| clang-sema-declcxx | llvm | `clang/lib/Sema/SemaDeclCXX.cpp` | sanitized | `(not fetched)` |
+| clang-sema-declattr | llvm | `clang/lib/Sema/SemaDeclAttr.cpp` | sanitized | `(not fetched)` |
+| clang-sema-stmtattr | llvm | `clang/lib/Sema/SemaStmtAttr.cpp` | sanitized | `(not fetched)` |
+| edg-attribute | edg | `src/attribute.c` | sanitized | `(not fetched)` |
+| edg-func-def | edg | `src/func_def.c` | sanitized | `(not fetched)` |
+| edg-statements | edg | `src/statements.c` | sanitized | `(not fetched)` |
+| clang-sema-access | llvm | `clang/lib/Sema/SemaAccess.cpp` | sanitized | `(not fetched)` |
+| edg-class-decl | edg | `src/class_decl.c` | sanitized | `(not fetched)` |
+| clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `(not fetched)` |
+| clang-diag-lex | llvm | `clang/include/clang/Basic/DiagnosticLexKinds.td` | sanitized | `(not fetched)` |
+| clang-ast-exprconstant | llvm | `clang/lib/AST/ExprConstant.cpp` | sanitized | `(not fetched)` |
+| clang-diag-ast | llvm | `clang/include/clang/Basic/DiagnosticASTKinds.td` | sanitized | `(not fetched)` |
+| clang-targets-x86 | llvm | `clang/lib/Basic/Targets/X86.h` | sanitized | `3178f3bea538017d17aa9c23713f1a7e9440e2e2b2ece4f956763ca4c947e06d` |
+| clang-targetinfo-h | llvm | `clang/include/clang/Basic/TargetInfo.h` | sanitized | `562290266dec99e3b31fe9e65c7877015f93b8b668b8168e8e180d697bd5823a` |
+| clang-targetinfo | llvm | `clang/lib/Basic/TargetInfo.cpp` | sanitized | `beef7bb59174dd684b22d2a9c8f944debd804b9ab31f47e6465d0ca108575c76` |
+| clang-ast-context | llvm | `clang/lib/AST/ASTContext.cpp` | sanitized | `53e3000328ded3ef4f6a32591dd2e9c34721518a99e7bdcc791ebc20fecef257` |
+| edg-targ-def | edg | `src/targ_def.h` | sanitized | `e39ed09cdd9d150092231dce1d2b39032ffd442efe57ced0ad7636e12cf1958b` |
+| edg-target-i686 | edg | `cmake/macro-conf/support/target/linux_i686/base.cmakedef` | sanitized | `a3fafc3c61867e2b4f624b5ebd70c2571011b5f599a9980fb519e704822a0aee` |

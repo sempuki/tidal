@@ -161,6 +161,42 @@
       "repo": "llvm",
       "path": "clang/include/clang/Basic/DiagnosticASTKinds.td",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-targets-x86",
+      "repo": "llvm",
+      "path": "clang/lib/Basic/Targets/X86.h",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-targetinfo-h",
+      "repo": "llvm",
+      "path": "clang/include/clang/Basic/TargetInfo.h",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-targetinfo",
+      "repo": "llvm",
+      "path": "clang/lib/Basic/TargetInfo.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-ast-context",
+      "repo": "llvm",
+      "path": "clang/lib/AST/ASTContext.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-targ-def",
+      "repo": "edg",
+      "path": "src/targ_def.h",
+      "class": "sanitized"
+    },
+    {
+      "id": "edg-target-i686",
+      "repo": "edg",
+      "path": "cmake/macro-conf/support/target/linux_i686/base.cmakedef",
+      "class": "sanitized"
     }
   ]
 }
