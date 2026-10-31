@@ -10,3 +10,110 @@ alignment.
 
 Depends on: declarators, class definitions and members, unary operators,
 `new` and `delete`.
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: aln
+   alignment_specifier: "alignas" "(" `constant_expression` ")"
+                      : "alignas" "(" `type_id` ")"
+```
+
+An `alignment_specifier` occurs before a variable or member declaration,
+or after the class key of a class definition, as in
+`struct alignas(16) S { ... };`.
+
+## Constraints
+
+:::{rule} ALN-1
+:kind: required
+:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/enum.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp
+
+`alignas` applies to a variable, a non-static data member, or a class
+definition. `alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has
+no effect. If a declaration has several `alignas`, the strictest applies
+({question}`Q-0071`). It does not apply to an enumeration
+({question}`Q-0073`).
+
+The alignment of a class is the strictest of its own `alignas` and of its
+members. The size of a class is a multiple of its alignment, so an array
+of it keeps each element aligned. `alignas` on a variable does not change
+the type of the variable.
+:::
+
+:::{rule} ALN-2
+:kind: reject
+:tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp
+
+The operand of `alignas` must be a constant expression whose value is
+zero or a positive power of two. The result must not be weaker than the
+natural alignment of the entity ({question}`Q-0069`). `alignas` must not
+apply to a function, a parameter, a bit-field, or a type alias
+({question}`Q-0072`).
+:::
+
+:::{rule} ALN-3
+:kind: reject
+:tests: declarations/alignment/definition-without-earlier-with.cpp declarations/alignment/redeclare-different.cpp declarations/alignment/redeclare-without.cpp
+
+If a declaration of a variable has `alignas`, its definition must have
+the same alignment ({question}`Q-0070`). A definition can add `alignas` if
+the earlier declarations have none.
+:::
+
+## Dynamic Semantics
+
+:::{rule} ALN-4
+:kind: required
+:tests: declarations/alignment/extended-new.cpp declarations/alignment/extended-supported.cpp
+
+An object has the alignment of its declaration or type. This applies to
+static, automatic, and dynamic storage, including objects and arrays
+that `new` creates with an alignment larger than the largest fundamental
+alignment.
+:::
+
+## Implementation Requirements
+
+:::{rule} ALN-5
+:kind: impl-defined
+:tests: declarations/alignment/extended-huge.cpp declarations/alignment/max-fundamental.cpp
+
+The alignments of the fundamental types and the largest extended
+alignment that an implementation supports are implementation-defined. On
+the x86-64 Linux targets in the matrix, `long double` has alignment 16.
+EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
+:::
+
+## Examples
+
+```cpp
+struct alignas(64) CacheLine {   // one line per object
+  int counter;
+};
+static_assert(sizeof(CacheLine) == 64);
+
+struct Packet {
+  char kind;
+  alignas(8) int payload;        // starts at offset 8
+};
+
+alignas(16) unsigned char buffer[256];
+alignas(2) int bad;              // rejected: weaker than alignof(int)
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 16 of
+27 tests. Each divergence has a question.
+
+- ALN-1: GCC uses the last of several `alignas` on a class
+  ({question}`Q-0071`). EDG and GCC 14 accept `alignas` on an enumeration
+  ({question}`Q-0073`).
+- ALN-2: GCC accepts `alignas` weaker than the natural alignment
+  ({question}`Q-0069`). GCC 14 accepts it on a function, a type alias,
+  and a bit-field ({question}`Q-0072`).
+- ALN-3: GCC accepts declarations with different `alignas`
+  ({question}`Q-0070`).
+
+Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.
