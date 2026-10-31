@@ -14,6 +14,7 @@ namespaces
 attributes
 functions/index
 constexpr
+static-assert
 :::
 
 :::{toctree}
@@ -31,4 +32,5 @@ namespaces
 attributes
 functions/index
 constexpr
+static-assert
 :::
