@@ -28,19 +28,24 @@ value, and the behavior is undefined. Constant evaluation rejects it
 :::
 
 :::{principle} ADD-P3
-:rules: ADD-6 ADD-7 ADD-8 ADD-10 ADD-11 ADD-12 ADD-14
+:rules: ADD-6 ADD-7 ADD-8 ADD-12
 
 A pointer into an array is a position in that array, counted in
 elements of the array's own type. Adding moves the position, and
 subtracting two positions in one array gives the count between them, in
-a signed type that the implementation chooses. A single object is an
-array of one, and every array has one extra valid position just past
-its last element, so a loop can run to the end. Outside those positions
-there is nothing to point at, and the behavior is undefined. Two
-pointers into different arrays have no distance. A null pointer is no
-position at all, so only moving it by zero means anything. The element
-type must be the array's element type, because the arithmetic counts in
-that type's size.
+a signed type that the implementation chooses. A null pointer is no
+position at all, so only moving it by zero means anything.
+:::
+
+:::{principle} ADD-P6
+:rules: ADD-10 ADD-11 ADD-14
+
+A single object is an array of one, and every array has one extra
+valid position just past its last element, so a loop can run to the
+end. Outside those positions there is nothing to point at, and the
+behavior is undefined. Two pointers into different arrays have no
+distance. The element type must be the array's element type, because
+the arithmetic counts in that type's size.
 :::
 
 :::{principle} ADD-P4

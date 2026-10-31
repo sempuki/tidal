@@ -20,16 +20,23 @@ unless an alias repeats it.
 :::
 
 :::{principle} DCL-P2
-:rules: DCL-2 DCL-3 DCL-4 DCL-11 DCL-5 DCL-6 DCL-7 DCL-12 DCL-10
+:rules: DCL-2 DCL-3 DCL-4 DCL-11 DCL-12
 
-Each compound type has the shape that its purpose requires. A pointer
-holds the address of anything that has one. A reference is another name
-for an existing object or function, so it must be bound when it is
-created, it cannot refer to nothing or to another reference, and a
-reference to a reference collapses into one. An array holds a known,
-positive number of complete elements, so its bound is a constant, or
-comes from the initializer or from a definition elsewhere, and its
-elements cannot be functions or references. A function returns a value,
+A pointer holds the address of anything that has one: an object, a
+function, `void`, or another pointer, and a pointer to member names a
+member without an object. A reference is another name for an existing
+object or function, so it is bound when it is created, it refers to
+something, and a reference to a reference collapses into one, because
+there is nothing to refer to in between.
+:::
+
+:::{principle} DCL-P5
+:rules: DCL-5 DCL-6 DCL-7 DCL-10
+
+An array holds a known, positive number of complete elements, so its
+bound is a constant, or comes from the initializer or from a definition
+elsewhere. Only the first bound of an array of arrays can be left out,
+because the element type must be complete. A function returns a value,
 so it cannot return an array or a function, though it can return a
 pointer or a reference to one. The largest array is a limit of the
 implementation.

@@ -21,20 +21,26 @@ its own.
 :::
 
 :::{principle} CONV-P2
-:rules: CONV-2 CONV-3 CONV-4 CONV-6 CONV-5 CONV-7 CONV-11
+:rules: CONV-2 CONV-3
 :exceptions: CONV-12
 
-A conversion between arithmetic types keeps the value when the target
-type can hold it. When it cannot, each family has its own answer. An
-integer target keeps the low bits of the value, so the result is the
-value modulo the target's range, for signed and unsigned targets alike.
-A floating-point target that cannot hold the value exactly takes one of
-the two nearest values, and a value beyond its range becomes the largest
-finite value or infinity, by the implementation's choice. An integer
-target of a floating-point value takes the value with its fraction
-dropped, and if that value does not fit, there is no answer, so the
-behavior is undefined. A conversion to `bool` asks one question, zero
-or not zero, and a null pointer counts as zero.
+A conversion between integer types keeps the value when the target can
+hold it. When it cannot, the target keeps the low bits, so the result is
+the value modulo the target's range, for signed and unsigned targets
+alike. A conversion to `bool` asks one question, zero or not zero, and a
+null pointer counts as zero.
+:::
+
+:::{principle} CONV-P4
+:rules: CONV-4 CONV-5 CONV-6 CONV-7 CONV-11
+
+A conversion to or from a floating-point type keeps the value when the
+target can hold it exactly. A floating-point target that cannot takes
+one of the two nearest values, and a value beyond its range becomes the
+largest finite value or infinity, by the implementation's choice. An
+integer target of a floating-point value takes the value with its
+fraction dropped, and if that value does not fit, there is no answer, so
+the behavior is undefined.
 :::
 
 :::{principle} CONV-P3

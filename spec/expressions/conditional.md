@@ -18,7 +18,7 @@ parentheses.
 :::
 
 :::{principle} COND-P2
-:rules: COND-3 COND-4 COND-5 COND-8 COND-9 COND-11 COND-12
+:rules: COND-3 COND-4 COND-5 COND-11
 
 Two operands have to give one result, with one type and one value
 category, and that is decided before either is evaluated. If both are
@@ -30,9 +30,18 @@ conversions, with overload resolution choosing when the types differ.
 An operand that throws takes no part, because it gives no value. A
 `void` operand can pair only with another `void`. If two class types
 each convert to the other, there is no single answer, and the
-expression is rejected. A prvalue result of class type initializes its
-target directly ({principle}`VC-P2`), so no copy happens when both
-operands are prvalues, and a copy is needed only when one is an lvalue.
+expression is rejected.
+:::
+
+:::{principle} COND-P3
+:rules: COND-8 COND-9 COND-12
+
+The selected operand becomes the result with as little copying as the
+categories allow. A prvalue result of class type initializes its target
+directly ({principle}`VC-P2`), so no copy happens when both operands
+are prvalues, and a copy is needed only when one of them is an lvalue.
+An lvalue result that names a bit-field keeps the limits of a
+bit-field.
 :::
 
 ## Syntax

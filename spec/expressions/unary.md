@@ -43,19 +43,25 @@ as it is for `+` and `-`.
 :::
 
 :::{principle} UN-P4
-:rules: UN-12 UN-13 UN-14 UN-15 UN-16 UN-17 UN-18 UN-19
+:rules: UN-12 UN-13 UN-14 UN-15 UN-16 UN-17 UN-19
 
-`sizeof`, `alignof`, and `noexcept` ask a question about a type or an
-expression and answer it at translation time. Their operands are never
-evaluated, so side effects in them do not happen. The questions need a
-complete object type to answer: a function type, `void`, and an
-incomplete class have no size or alignment. A reference answers for the
-type it refers to, and an array for all its elements. The sizes of most
-types are an implementation's choice, with the character types fixed at
-one. `noexcept(e)` is `true` when nothing in `e` can throw, counting
-the implicit calls `e` makes. An implementation should warn when
-`sizeof` is applied to a parameter declared as an array, since that
-parameter is a pointer.
+`sizeof` and `alignof` ask a question about a type and answer it at
+translation time. Their operands are never evaluated, so side effects in
+them do not happen. The question needs a complete object type: a
+function type, `void`, and an incomplete class have no size or
+alignment. A reference answers for the type it refers to, and an array
+for all its elements. The sizes of most types are an implementation's
+choice, with the character types fixed at one. An implementation should
+warn when `sizeof` is applied to a parameter declared as an array,
+since that parameter is a pointer.
+:::
+
+:::{principle} UN-P5
+:rules: UN-18
+
+`noexcept(e)` asks whether anything in `e` can throw, counting the
+implicit calls that `e` makes, and answers with a `bool` constant. Like
+`sizeof`, it never evaluates its operand.
 :::
 
 ## Syntax

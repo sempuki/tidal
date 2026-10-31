@@ -25,20 +25,27 @@ with no ambiguity.
 :::
 
 :::{principle} IF-P2
-:rules: IF-7 IF-21 IF-8 IF-9 IF-10 IF-11 IF-12
+:rules: IF-7 IF-21 IF-8 IF-9 IF-10
 
-The statement introduces scopes and objects that follow the general
-rules ({principle}`NAM-P1`, {principle}`OBJ-P2`). The initializer and
-the condition declare names into a scope that encloses both branches, so
-the else branch sees the condition variable too. Each branch is a scope
-of its own, with or without braces. A branch that redeclares a name of
-the enclosing scope at its top level would make that name mean two
-things in one place, so it is rejected, while a block inside the branch
-can hide it. Temporaries of the condition end before a branch runs, and
-the statement's variables end with the statement. The initializer can
-be any declaration that a block can hold, which excludes the kinds that
-declare no variable. A jump into a branch skips the condition, as a
-jump skips any statement.
+The statement's names follow the general rules of scopes
+({principle}`NAM-P1`). The initializer and the condition declare names
+into a scope that encloses both branches, so the else branch sees the
+condition variable too. Each branch is a scope of its own, with or
+without braces. A branch that redeclares one of those names at its top
+level would make the name mean two things in one place, so it is
+rejected, while a block inside the branch can hide it. The initializer
+can be any declaration that a block can hold, which excludes the kinds
+that declare no variable.
+:::
+
+:::{principle} IF-P5
+:rules: IF-11 IF-12
+
+The statement's objects follow the general rules of lifetime
+({principle}`OBJ-P2`). Temporaries of the condition end before a branch
+runs, and the variables of the initializer and the condition end with
+the statement. A jump into a branch skips the condition, as a jump skips
+any statement.
 :::
 
 :::{principle} IF-P3

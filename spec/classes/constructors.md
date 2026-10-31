@@ -42,17 +42,29 @@ from its parts.
 :::
 
 :::{principle} CTOR-P3
-:rules: CTOR-5 CTOR-6 CTOR-7 CTOR-8 CTOR-11 CTOR-12 CTOR-13 CTOR-14 CTOR-15 CTOR-16 CTOR-17 CTOR-18
+:rules: CTOR-5 CTOR-6 CTOR-11 CTOR-12 CTOR-13 CTOR-18
 
 A constructor builds the parts first and then runs its body. The parts
 are built in declaration order, bases before members, whatever order the
 member initializer list has, because the destructor must undo them in
-one fixed order. A member initializer names a part and gives it its
-value; it cannot name anything else, and a reference member it binds to
-a temporary is dead before the body runs. A delegating constructor hands
-the whole job to another constructor and adds only its own body. Until
-the constructor completes, the object is not yet `const`, and a part has
-no value until its turn, so reading it earlier is undefined.
+one fixed order. An implementation should warn when the list suggests
+another order. Until the constructor completes, the object is not yet
+`const`, and a part has no value until its turn, so reading it earlier
+is undefined. A nested class's default member initializer is part of
+the enclosing class, so it is usable only once that class is complete.
+:::
+
+:::{principle} CTOR-P6
+:rules: CTOR-7 CTOR-8 CTOR-14 CTOR-15 CTOR-16 CTOR-17
+
+A member initializer names one part of the object and gives it its
+value. It cannot name anything else, and a reference member that it
+binds to a temporary is dead before the body runs. A delegating
+constructor hands the whole job to one other constructor and adds only
+its own body, so its list names that constructor and nothing else. It
+cannot hand the job back to itself, directly or through a cycle, and an
+implementation need not find a cycle that runs through several
+constructors.
 :::
 
 :::{principle} CTOR-P4

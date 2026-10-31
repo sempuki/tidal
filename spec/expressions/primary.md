@@ -14,17 +14,26 @@ Depends on: value categories, standard conversions.
 ## Principles
 
 :::{principle} PRIM-P1
-:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-4 PRIM-17 PRIM-5 PRIM-18 PRIM-10
+:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10
 
 A literal is a value written in the source. Its spelling alone decides
 its type and its value, and no context changes them. The base and the
-suffix of an integer literal, the point and exponent of a floating
-literal, and the prefix of a character literal are the whole story. An
-integer literal gets the first type in a fixed list that can hold it, so
-a literal never loses part of its value in silence. A literal that no
-type in its list can hold is rejected for the same reason. A spelling
-that fits none of the forms is rejected, because a literal has no other
-meaning to fall back on.
+suffix of an integer literal are the whole story: the literal gets the
+first type in a fixed list that can hold it, so a literal never loses
+part of its value in silence, and a literal that no type in its list can
+hold is rejected for the same reason. A spelling that fits none of the
+forms is rejected, because a literal has no other meaning to fall back
+on. `true`, `false`, and `nullptr` are literals of their own types.
+:::
+
+:::{principle} PRIM-P5
+:rules: PRIM-4 PRIM-17 PRIM-5 PRIM-18
+
+A floating literal is `double` unless a suffix says otherwise, and a
+hexadecimal one needs an exponent, because without it the spelling could
+be an integer. A character literal's prefix sets its type, and the
+literal must hold one character of that type: one with no character, or
+one that does not fit a single code unit, is rejected.
 :::
 
 :::{principle} PRIM-P2
