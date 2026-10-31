@@ -1,4 +1,4 @@
-// tidal-rules: VIRT-9
+// tidal-rules: VIRT-16
 // tidal-expect: run
 struct A { virtual int f() = 0; };
 int A::f() { return 5; }

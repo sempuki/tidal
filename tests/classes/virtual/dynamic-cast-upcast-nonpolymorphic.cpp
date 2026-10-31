@@ -1,4 +1,4 @@
-// tidal-rules: VIRT-10
+// tidal-rules: VIRT-18
 // tidal-expect: accept
 struct B {};
 struct D : B {};

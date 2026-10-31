@@ -1,4 +1,4 @@
-// tidal-rules: VIRT-9
+// tidal-rules: VIRT-16
 // tidal-expect: run
 int count = 0;
 struct A { virtual ~A() = 0; };
