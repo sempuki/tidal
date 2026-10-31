@@ -219,8 +219,11 @@ Shared nonterminals have these names and defining pages:
 
 ## 9. Guides
 
-A guide under `spec/guides/` is informative and has no rules. It walks
-through one task in these parts:
+The specification is reference material only. A tutorial, a how-to
+guide, or an explanation is not part of it (decision 0045). Guides live
+in `guides/`, outside `spec/`, and the site's front page links them in
+a Diátaxis table. A guide has no rules. It walks through one task in
+these parts:
 
 - the task, in one or two sentences,
 - the steps, each with a short example and the rule IDs it relies on,

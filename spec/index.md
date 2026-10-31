@@ -1,8 +1,10 @@
-# Tidal
+# The specification
 
 Tidal is an open specification of a language that is compatible with
-ISO C++23. The {doc}`glossary <glossary>` defines the terms that the pages
-use.
+ISO C++23. The specification is reference material. Each page states
+what the language does. The guides that teach tasks are a separate part
+of the site. The {doc}`glossary <glossary>` defines the terms that the
+pages use.
 
 The Foundations pages state the models that the other pages build on.
 Each page opens with its principles, then its grammar, then its rules in
@@ -31,7 +33,6 @@ expressions/index
 declarations/index
 classes/index
 exceptions/index
-guides/index
 glossary
 rules
 :::

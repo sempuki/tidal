@@ -17,7 +17,13 @@ Fails when:
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a grammar nonterminal is defined in more than one production, or used
-  and not defined (decision 0040).
+  and not defined (decision 0040),
+- a page of spec/ or guides/ refers with {rule} or {principle} to an ID
+  that no page defines, or a spec page links to a guide.
+
+guides/ holds the tutorials and how-to guides, which are not part of the
+specification (decision 0045). The question, marker, and reference checks
+cover the guides too.
 """
 
 import re
@@ -29,6 +35,7 @@ from run_tests import TESTS, parse_test, test_files  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
+GUIDES = ROOT / "guides"
 CLASSES = {
     "required", "reject", "no-diagnostic", "impl-defined",
     "unspecified", "undefined", "recommended", "conditionally-supported",
@@ -159,6 +166,9 @@ MARKER = re.compile(r"\*\(([^()*]*?)\breferenced\)\*")
 
 def check_markers(errors: list[str]) -> None:
     for f in sorted(SPEC.rglob("*.md")):
+        if re.search(r"\{doc\}`[^`]*guides/", f.read_text()):
+            errors.append(f"{f.relative_to(ROOT)}: a spec page links to a guide (decision 0045)")
+    for f in sorted([*SPEC.rglob("*.md"), *GUIDES.rglob("*.md")]):
         text = f.read_text()
         for m in MARKER.finditer(text):
             topic = " ".join(m.group(1).split())
@@ -247,12 +257,24 @@ def main() -> int:
         errors.append(f"rules.md: the prefix table lists {prefix} ({page}), which has no rules")
 
     questions = {q.name[:6] for q in (ROOT / "questions").glob("Q-[0-9][0-9][0-9][0-9]-*.md")}
-    for f in [*SPEC.rglob("*.md"), *TESTS.rglob("*.cpp"), *(ROOT / "docs").rglob("*.md")]:
+    for f in [*SPEC.rglob("*.md"), *GUIDES.rglob("*.md"), *TESTS.rglob("*.cpp"),
+              *(ROOT / "docs").rglob("*.md")]:
         for ref in set(re.findall(r"\bQ-\d{4}\b", f.read_text())):
             if ref not in questions:
                 errors.append(f"{f.relative_to(ROOT)}: refers to missing question {ref}")
 
     check_markers(errors)
+    principles = set()
+    for f in SPEC.rglob("*.md"):
+        principles.update(re.findall(r"^:::\{principle\} (\S+)$", f.read_text(), re.M))
+    for f in sorted(SPEC.rglob("*.md")):
+        if re.search(r"\{doc\}`[^`]*guides/", f.read_text()):
+            errors.append(f"{f.relative_to(ROOT)}: a spec page links to a guide (decision 0045)")
+    for f in sorted([*SPEC.rglob("*.md"), *GUIDES.rglob("*.md")]):
+        text = f.read_text()
+        for role, ref in re.findall(r"\{(rule|principle)\}`([^`<]+?)`", text):
+            if ref not in (rules if role == "rule" else principles):
+                errors.append(f"{f.relative_to(ROOT)}: {{{role}}} refers to {ref}, which no page defines")
     import agreement
     for f in sorted(SPEC.rglob("*.md")):
         if not agreement.current(f.read_text()):

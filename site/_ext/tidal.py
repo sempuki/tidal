@@ -385,7 +385,7 @@ class UndefinedIndexDirective(SphinxDirective):
 def in_progress_notice(app, docname, source):
     """Put a notice at the top of a spec page that has no rules yet."""
     text = source[0]
-    if (docname.endswith("index") or docname in ("glossary", "rules") or docname.startswith("guides/")
+    if (docname.endswith("index") or docname in ("glossary", "rules", "specification") or docname.startswith("guides/")
             or ":::{rule}" in text):
         return
     lines = text.split("\n", 1)

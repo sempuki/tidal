@@ -15,7 +15,7 @@ A unit is flagged when longest >= --run (default 8) or overlap > --overlap
 (default 0.25).
 
 Usage:
-    tools/similarity.py --reference DIR [--spec spec/] [--out FILE] [--fail-on-flag]
+    tools/similarity.py --reference DIR [--spec DIR ...] [--out FILE] [--fail-on-flag]
 """
 
 import argparse
@@ -96,7 +96,8 @@ def longest_shared(ws: list[str], big: set, n: int) -> tuple[int, int]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--reference", type=Path, required=True)
-    ap.add_argument("--spec", type=Path, default=ROOT / "spec")
+    ap.add_argument("--spec", type=Path, nargs="+", default=[ROOT / "spec", ROOT / "guides"],
+                    help="directories of Markdown text to check (default: spec and guides)")
     ap.add_argument("--run", type=int, default=8)
     ap.add_argument("--overlap", type=float, default=0.25)
     ap.add_argument("--out", type=Path)
@@ -113,7 +114,9 @@ def main() -> int:
         "",
     ]
     flagged = 0
-    for label, text in units(args.spec):
+    checked = [(label if d.name == "spec" else f"{d.name}/{label}", text)
+               for d in args.spec for label, text in units(d)]
+    for label, text in checked:
         ws = words(text)
         if not ws:
             continue

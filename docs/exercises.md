@@ -17,9 +17,12 @@ findings by rule ID, and never cites ISO wording. Reports go under
 | Predict (R) | reads a Tidal test with its directives removed, and says whether it compiles, links, runs, or has undefined behavior, citing rules | wrong, ambiguous, and missing rules | automatic, against the test's expectations |
 | Diagnose (D) | gets a program and a compiler or sanitizer message, names the rule that explains it, and fixes the program | rules that do not match how compilers report errors | automatic for the rule ID; the fix is built and run |
 | Propose (X) | writes the design and impact sections of a proposal for a new feature, citing the rules it changes or meets | missing rules that a change to the language must state its effect on | by hand, from the report |
+| Guide (G) | writes a tutorial or a how-to guide for a task from the specification alone, citing a rule for every claim | facts that a task needs and no rule states, rules that are hard to combine | by hand, from the report; the guide goes to `guides/` |
 
 Write and Port need tasks written by hand, and they test whether a
-person can use the spec. Predict and Diagnose are generated from the
+person can use the spec. Guide asks the same question in writing: a
+guide that needs a fact no rule states is a finding against the
+specification, and the guide waits for the rule (decision 0045). Predict and Diagnose are generated from the
 test suite, one batch per page, and together they reach every rule.
 
 ## 2. Personas
@@ -132,7 +135,8 @@ catalog counts as done.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | done: 2589/3199 pass, 0 false rejects (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 5 done: 3161/3776 pass (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Guides | done: one tutorial and four how-to guides | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
 | X1, X2, X3, X4 | done: 30, 20, 22, and 17 rule changes; findings X1-1 to X4-16 | `reports/clean-room/X1/` to `X4/` |
