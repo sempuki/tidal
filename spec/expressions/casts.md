@@ -4,6 +4,54 @@ A cast converts a value to a named type. The casts are `static_cast`,
 `const_cast`, `reinterpret_cast`, and the cast notations `(T)e`, `T(e)`,
 and `T{e}`. `dynamic_cast` applies to classes *(referenced)*.
 
+## Principles
+
+:::{principle} CAST-P1
+:rules: CAST-1 CAST-2 CAST-4 CAST-7 CAST-15 CAST-3
+
+Each named cast has one job, so a reader sees what a cast is for.
+`static_cast` does the conversions that an initialization could do, and
+the inverses of implicit conversions that are safe to undo, such as base
+to derived and `void*` to an object pointer. `const_cast` changes
+qualifiers and nothing else, and its result is the same object.
+`reinterpret_cast` changes how storage is read and nothing else. A cast
+that would need two jobs, such as a change of qualifiers inside a
+`static_cast`, is rejected, because the reader could not tell which was
+intended.
+:::
+
+:::{principle} CAST-P2
+:rules: CAST-9 CAST-10 CAST-11 CAST-13 CAST-18
+:exceptions: CAST-17
+
+The older cast notations are defined by the named casts. `(T)e` and
+`T(e)` try the named casts in a fixed order and take the first that
+works. `T{e}` is list initialization, so it refuses to narrow. `T(a, b)`
+is construction. `auto(e)` makes a plain prvalue copy, and `T()` makes a
+value-initialized one. The one power the old notation keeps for itself
+is a conversion to or from a base that is not accessible.
+:::
+
+:::{principle} CAST-P3
+:rules: CAST-6 CAST-8 CAST-12 CAST-16
+
+`reinterpret_cast` promises only that a round trip gives back the
+original value. What the bits mean in between is the implementation's,
+so the integer that a pointer becomes, and whether a function pointer
+can become an object pointer at all, are implementation-defined, and
+constant evaluation refuses the cast because it has no bits to show.
+:::
+
+:::{principle} CAST-P4
+:rules: CAST-5 CAST-14
+
+A cast changes the type through which an object is seen, and never the
+object. So writing through a `const_cast` to an object that is `const`,
+treating an object as a derived class that it is not, and giving an
+enumeration a value it cannot hold are all undefined. The cast was
+valid; the use of its result was not.
+:::
+
 ## Syntax
 
 ```{eval-rst}

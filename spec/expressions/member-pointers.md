@@ -9,6 +9,58 @@ comparisons.
 Depends on: primary expressions, unary operators, derived classes,
 virtual functions.
 
+## Principles
+
+:::{principle} MPTR-P1
+:rules: MPTR-1 MPTR-8 MPTR-2 MPTR-9
+
+A pointer to member names a member without naming an object. Its type
+therefore records two things, the class and the type of the member, and
+the class can be incomplete because nothing is accessed through the type
+alone. Only a non-static member can be named this way. A static member
+is an ordinary object or function, so `&` on it gives an ordinary
+pointer, and so does a member function with an explicit object
+parameter. The form `&C::m` with a qualified name is the only way to
+make one, because only that form says which class the member belongs to
+without supplying an object.
+:::
+
+:::{principle} MPTR-P2
+:rules: MPTR-3 MPTR-10
+
+`.*` and `->*` supply the missing object. The result is the member as if
+it had been accessed on that object: it takes its value category and its
+cv-qualifiers from the object, and a virtual function dispatches on the
+object's dynamic type. The object must be of the member's class or a
+class derived from it, because only those objects have the member. A
+pointer to member function names no object by itself, so its result
+exists only to be called.
+:::
+
+:::{principle} MPTR-P3
+:rules: MPTR-4 MPTR-11
+
+Conversions between pointers to members run the opposite way to
+conversions between pointers to objects. A pointer to a member of a base
+works with every derived object, so base to derived is implicit. Derived
+to base is not, because a base object may lack the member, so it needs
+`static_cast`. Through a virtual base the offset of the member is not
+known from the type, so no conversion exists. A pointer to member is not
+an address, so it never converts to an ordinary pointer, and data members
+and member functions stay apart. The qualifier rules follow those of
+ordinary pointers.
+:::
+
+:::{principle} MPTR-P4
+:rules: MPTR-5 MPTR-7 MPTR-6
+
+Pointers to members have no order, so only equality is defined. Pointers
+to virtual functions compare by implementation detail, so their
+equality is unspecified. A null pointer to member names nothing, and a
+pointer to a member that the object lacks names nothing in that object,
+so applying either is undefined.
+:::
+
 ## Syntax
 
 ```{eval-rst}

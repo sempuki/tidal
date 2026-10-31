@@ -4,6 +4,53 @@ A `new` expression creates an object with dynamic {term}`storage
 duration` and gives a pointer to it. A `delete` expression destroys the
 object and frees its storage.
 
+## Principles
+
+:::{principle} NEW-P1
+:rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3
+
+`new` creates an object whose life does not depend on any scope
+({principle}`OBJ-P2`). It first obtains storage and then initializes
+the object in it, so the allocation happens before the initializer's
+arguments are evaluated. `delete` reverses the two steps. The object
+must have a complete object type, because its size and its constructor
+are needed, and an array can have a size known only at run time. An
+object that `new` leaves without an initializer has no value, as any
+object does before its first write ({principle}`OBJ-P4`).
+:::
+
+:::{principle} NEW-P2
+:rules: NEW-8 NEW-4 NEW-5 NEW-15
+
+A `delete` must match its `new`. The single form matches a single
+object, the array form matches an array, each object is deleted once,
+and only a pointer that `new` gave can be deleted, because the
+implementation keeps its records by that pointer. A null pointer has no
+object, so deleting it does nothing. The operand needs a pointer to an
+object type, or a class object that converts to one, so that the
+implementation knows which destructor to run.
+:::
+
+:::{principle} NEW-P3
+:rules: NEW-10 NEW-13 NEW-14
+
+The storage comes from an allocation function, and a program can
+supply its own: for one class, through its member `operator new` and
+`operator delete`, or with extra placement arguments. `::new` reaches
+past a class's own functions to the global ones. How often the global
+functions are called is the implementation's choice, because a program
+only ever sees the objects, so two `new` expressions may share one
+allocation.
+:::
+
+:::{principle} NEW-P4
+:rules: NEW-6
+
+Constant evaluation can use `new`, since it runs the same program
+({principle}`TR-P4`), and nothing can outlive the evaluation, so each
+object made in it must be deleted before it ends.
+:::
+
 ## Syntax
 
 ```{eval-rst}

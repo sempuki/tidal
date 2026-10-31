@@ -11,6 +11,60 @@ expressions belong with templates *(referenced)*.
 
 Depends on: value categories, standard conversions.
 
+## Principles
+
+:::{principle} PRIM-P1
+:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-4 PRIM-17 PRIM-5 PRIM-18 PRIM-10
+
+A literal is a value written in the source. Its spelling alone decides
+its type and its value, and no context changes them. The base and the
+suffix of an integer literal, the point and exponent of a floating
+literal, and the prefix of a character literal are the whole story. An
+integer literal gets the first type in a fixed list that can hold it, so
+a literal never loses part of its value in silence. A literal that no
+type in its list can hold is rejected for the same reason. A spelling
+that fits none of the forms is rejected, because a literal has no other
+meaning to fall back on.
+:::
+
+:::{principle} PRIM-P2
+:rules: PRIM-7 PRIM-19 PRIM-8 PRIM-9
+
+A string literal is unlike the other literals. It denotes an array
+object that lives for the whole program, so it is an lvalue, with an
+address and a size that counts the terminating null. Its characters are
+constant, and writing to them is undefined. Adjacent literals join into
+one array because they spell one value. Whether two equal spellings
+share one object is left to the implementation, because a program has
+no reason to ask.
+:::
+
+:::{principle} PRIM-P3
+:rules: PRIM-11 PRIM-20 PRIM-12 PRIM-14
+
+A name is not a value. It denotes the entity that lookup finds
+({principle}`NAM-P2`), and its value category follows from what that
+entity is ({principle}`VC-P1`): a variable or function is an lvalue, an
+enumerator a prvalue. Inside a member function, a bare member name means
+the member of the current object, and `this` is a prvalue pointer to
+that object with the qualifiers of the function. Where there is no
+current object, there is no `this`. Parentheses group and change nothing
+else.
+:::
+
+:::{principle} PRIM-P4
+:rules: PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
+
+The character sets and the floating-point formats of a target belong to
+the implementation, so the parts of a literal that depend on them are
+implementation-defined. These are the value of a multi-character
+literal, the signedness of `char`, the rounding of a floating value with
+no exact representation, a floating value outside its type's range, the
+extended floating suffixes, and a character that needs more than one
+code unit. An implementation should warn where such a literal is likely
+a mistake.
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -4,6 +4,68 @@ A lambda expression creates an object of a unique class type, the
 *closure type*. A program can call the object like a function. The object
 can capture variables from the enclosing scope.
 
+## Principles
+
+:::{principle} LAM-P1
+:rules: LAM-1 LAM-2 LAM-3 LAM-12 LAM-13 LAM-15 LAM-16 LAM-14
+
+A lambda expression is a class written in place. It makes a closure
+type that no other expression shares, with a call operator whose
+parameters and body are the ones written. Everything a class member
+function can do follows: a trailing return type or a deduced one,
+`constexpr` where the body permits it, `static` where there is nothing
+to capture, a template parameter from `auto`, and an explicit object
+parameter. The call operator is `const` unless the lambda says
+`mutable`, because a copy of the enclosing variables should not change
+under a caller's hands. A lambda is an expression, so it can stand where
+no evaluation happens.
+:::
+
+:::{principle} LAM-P2
+:rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-18
+
+Captures are how the closure reaches the automatic variables of the
+enclosing function. A capture by copy is a member that the enclosing
+variable initializes when the lambda expression is evaluated, so later
+changes to the variable are invisible. A capture by reference is an
+alias of the variable itself. An init capture is a member with any
+initializer. `this` is captured as a pointer, or the object is copied
+with `*this`. The captures exist before the call operator is declared,
+so its parameter list and return type can see them.
+:::
+
+:::{principle} LAM-P3
+:rules: LAM-9 LAM-6 LAM-17
+
+A closure must capture what its body uses and nothing it cannot. Only a
+variable with automatic storage needs capturing, because statics and
+globals are reachable from anywhere, and a constant read as a value is
+not used as an object. Every such use must be covered, through each
+enclosing lambda in turn. A capture list that names a variable twice,
+repeats the default, or captures what has no automatic storage is
+rejected, and so is a body that reaches a member or a local object
+without a capture that holds it.
+:::
+
+:::{principle} LAM-P4
+:rules: LAM-10 LAM-11
+
+A closure with no captures carries no state, so it is as good as a
+function. It converts to a pointer to function, and its type can be
+default-constructed and assigned. A closure with captures is an object
+with state, and must be made from the lambda expression.
+:::
+
+:::{principle} LAM-P5
+:rules: LAM-19 LAM-20 LAM-21
+
+A reference capture is an alias, so it dangles when the variable ends,
+and using it then is undefined. The layout of a closure is the
+implementation's, since a program names its members only through the
+captures. An implicit capture of `this` through `[=]` hides a pointer
+behind a copy default, so an implementation should warn about it.
+:::
+
 ## Syntax
 
 ```{eval-rst}
