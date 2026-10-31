@@ -297,8 +297,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 88 of
-89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 89 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

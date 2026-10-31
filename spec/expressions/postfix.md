@@ -264,8 +264,8 @@ int old = i++;    // old is 5, i is 6
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 37
-of 39 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 45
+of 47 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).

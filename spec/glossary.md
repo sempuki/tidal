@@ -6,8 +6,9 @@ topic that Tidal does not specify yet.
 
 :::{glossary}
 automatic storage
-  Storage that exists from the declaration of an object to the end of
-  its block. See {term}`storage duration`.
+  Storage that exists while the block of an object runs, until the end
+  of the block. A jump past the declaration does not remove the object
+  ({rule}`JMP-16`). See {term}`storage duration`.
 
 constant evaluation
   Evaluation of an expression during translation, before the program

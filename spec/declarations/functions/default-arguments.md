@@ -147,7 +147,7 @@ int k(int v = next());      // next() is called at each k()
 
 ## Evidence
 
-All seven compilers agree on 19 of 21 tests. The results are in
+All eight compilers agree on 19 of 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by

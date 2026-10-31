@@ -10,7 +10,7 @@ current state only. The history of how the project got here is in
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 30 | Q-0112 | 0 flagged |
 | [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 2 | 4 | Q-0120 | 0 flagged |
-| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 33 | 4 | 2 | 31 |  | 0 flagged |
+| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 34 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 52 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 29 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
@@ -21,7 +21,7 @@ current state only. The history of how the project got here is in
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 14 | Q-0097 | 0 flagged |
 | [Iteration statements](../spec/statements/loops.md) | 8 | 4 required, 4 reject | 19 | 3 | 1 | 2 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 7 | 4 required, 3 reject | 26 | 1 | 5 | 16 | Q-0020, Q-0026, Q-0098 | 0 flagged |
-| [Jump statements and labels](../spec/statements/jumps.md) | 15 | 8 required, 6 reject, 1 unspecified | 49 | 3 | 2 | 24 | Q-0041, Q-0097 | 0 flagged |
+| [Jump statements and labels](../spec/statements/jumps.md) | 16 | 9 required, 6 reject, 1 unspecified | 52 | 3 | 3 | 24 | Q-0041, Q-0097 | 0 flagged |
 | [Primary expressions](../spec/expressions/primary.md) | 25 | 9 required, 8 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | 6 | 4 | 9 | Q-0033, Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 49 | 4 | 3 | 9 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 19 | 7 required, 3 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 38 | 9 | 5 | 26 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
@@ -90,7 +90,7 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3214/3214 tests pass on each. Tests may
+All compilers are baseline. 3217/3217 tests pass on each. Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
@@ -108,7 +108,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and nineteen questions are open for opinions, each with a
+One hundred and twenty questions are open for opinions, each with a
 provisional answer the spec follows. Nine of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
@@ -164,9 +164,8 @@ current phase is phase 2, foundations that later pages need:
 2. Item G1: keywords, reserved names, and the literal suffix grammar.
 3. Item K: the language-support types, then the task-level guides.
 4. Act on the findings of exercises X1 to X4
-   (`reports/clean-room/X1/` to `X4/`). The most cited gaps: a list of
-   implicit calls (X2-1) and the state of an object whose declaration a
-   jump skips (X3-2). The orders that no rule gave (X1-2 to X1-8) are done.
+   (`reports/clean-room/X1/` to `X4/`). The most cited gap left is a list
+   of implicit calls (X2-1).
 
 Waiting on the maintainer:
 

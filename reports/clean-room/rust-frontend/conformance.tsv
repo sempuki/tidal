@@ -3115,6 +3115,7 @@ pass	statements/jumps/goto-other-function.cpp
 pass	statements/jumps/goto-out-destroys.cpp
 pass	statements/jumps/goto-out-of-lambda.cpp
 pass	statements/jumps/goto-past-class-object.cpp
+pass	statements/jumps/goto-past-declaration-then-write.cpp
 pass	statements/jumps/goto-past-initialization.cpp
 pass	statements/jumps/goto-past-nontrivial-destructor.cpp
 pass	statements/jumps/goto-past-static.cpp
@@ -3213,4 +3214,6 @@ pass	statements/switch/jump-past-uninitialized.cpp
 pass	statements/switch/nested-switch-labels.cpp
 pass	statements/switch/no-match-no-default.cpp
 pass	statements/switch/scoped-enum-int-case.cpp
+pass	statements/switch/skipped-declaration-read-first.cpp
+EDG-ONLY	statements/switch/skipped-declaration-written-then-read.cpp
 pass	statements/switch/two-defaults.cpp

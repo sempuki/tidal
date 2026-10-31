@@ -3130,6 +3130,7 @@ compilers affect the Status column.
 | `statements/jumps/goto-out-destroys.cpp` | JMP-9 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/jumps/goto-out-of-lambda.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `statements/jumps/goto-past-class-object.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-declaration-then-write.cpp` | JMP-16 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/jumps/goto-past-initialization.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `statements/jumps/goto-past-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
 | `statements/jumps/goto-past-static.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -3228,9 +3229,11 @@ compilers affect the Status column.
 | `statements/switch/nested-switch-labels.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/skipped-declaration-read-first.cpp` | JMP-16 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3214/3214 tests pass on baseline compilers.
+3217/3217 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -13203,6 +13206,17 @@ check that the rejection has the intended cause.
 - `statements/switch/scoped-enum-int-case.cpp` (clang-18): error: value of type 'int' is not implicitly convertible to 'E'
 - `statements/switch/scoped-enum-int-case.cpp` (gcc-16): error: could not convert '0' from 'int' to 'E'
 - `statements/switch/scoped-enum-int-case.cpp` (clang-22): error: value of type 'int' is not implicitly convertible to 'E'
+- `statements/switch/skipped-declaration-read-first.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `statements/switch/skipped-declaration-read-first.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘x’ is not usable in a constant expression / note: ‘int x’ is not const
+- `statements/switch/skipped-declaration-read-first.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "x" (declared at line 8) cannot be used as a constant
+- `statements/switch/skipped-declaration-read-first.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'x' is not usable in a constant expression / note: 'int x' is not const
+- `statements/switch/skipped-declaration-read-first.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `statements/switch/skipped-declaration-read-first.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'x' is not usable in a constant expression / note: 'int x' is not const
+- `statements/switch/skipped-declaration-read-first.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `statements/switch/skipped-declaration-written-then-read.cpp` (gcc-host): error: non-constant condition for static assertion / error: modification of ‘x’ from outside current evaluation is not a constant expression
+- `statements/switch/skipped-declaration-written-then-read.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access run-time storage
+- `statements/switch/skipped-declaration-written-then-read.cpp` (gcc-14): error: non-constant condition for static assertion / error: modification of 'x' from outside current evaluation is not a constant expression
+- `statements/switch/skipped-declaration-written-then-read.cpp` (gcc-16): error: non-constant condition for static assertion / error: modification of 'x' from outside current evaluation is not a constant expression
 - `statements/switch/two-defaults.cpp` (clang-host): error: multiple default labels in one switch / note: previous case defined here
 - `statements/switch/two-defaults.cpp` (gcc-host): error: multiple default labels in one switch / note: this is the first default label
 - `statements/switch/two-defaults.cpp` (edg-7.0): error: default label has already appeared in this switch

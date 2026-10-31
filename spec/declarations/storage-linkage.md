@@ -356,7 +356,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All seven compilers agree on 52 of 54 tests. The results are in
+All eight compilers agree on 52 of 54 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

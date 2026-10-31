@@ -266,7 +266,7 @@ auto n = sizeof(log_once()); // log_once is not called
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 46
+The results are in `tests/RESULTS.md`. All eight compilers agree on 46
 of 49 tests.
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member

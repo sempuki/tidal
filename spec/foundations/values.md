@@ -280,7 +280,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All seven compilers agree on 41 of 42 tests. The results are in
+All eight compilers agree on 51 of 52 tests. The results are in
 `tests/RESULTS.md`.
 
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC

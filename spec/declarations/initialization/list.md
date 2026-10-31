@@ -273,7 +273,7 @@ char8_t k[] = "x";        // rejected: wrong character type
 
 ## Evidence
 
-All seven compilers agree on 53 of 55 tests. The results are in
+All eight compilers agree on 53 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-14.** Clang accepts array designators, chained designators, and

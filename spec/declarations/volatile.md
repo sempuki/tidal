@@ -189,7 +189,7 @@ void send(volatile Uart& u, unsigned c) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 32
+The results are in `tests/RESULTS.md`. All eight compilers agree on 32
 of 33 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile

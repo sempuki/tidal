@@ -519,7 +519,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All seven compilers agree on 78 of 80 tests. The results are in
+All eight compilers agree on 80 of 82 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of

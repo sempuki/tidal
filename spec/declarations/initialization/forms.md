@@ -199,7 +199,7 @@ int f[2] = d;        // rejected
 
 ## Evidence
 
-All seven compilers agree on 29 of 30 tests. The results are in
+All eight compilers agree on 29 of 30 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

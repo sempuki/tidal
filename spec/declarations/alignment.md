@@ -162,7 +162,7 @@ alignas(2) int bad;              // rejected: weaker than alignof(int)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 18
+The results are in `tests/RESULTS.md`. All eight compilers agree on 18
 of 31 tests. Each divergence has a question.
 
 - ALN-1: GCC uses the last of several `alignas` on a class

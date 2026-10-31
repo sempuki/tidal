@@ -506,7 +506,8 @@ struct Owner {                     // owns an array, so it writes its copies
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 95 of 97 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 96
+of 98 tests.
 
 - CPY-14: GCC 14 rejects a defaulted constructor whose parameter type
   differs from the implicit one. GCC 16, Clang, and EDG accept it and

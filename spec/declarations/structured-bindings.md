@@ -268,7 +268,7 @@ auto [c, d]{a};           // valid: braced initializer
 
 ## Evidence
 
-All seven compilers agree on 45 of 49 tests. The results are in
+All eight compilers agree on 45 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and

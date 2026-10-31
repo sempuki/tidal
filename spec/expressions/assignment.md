@@ -201,8 +201,8 @@ x += {1};         // rejected: braced list in compound assignment
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 28
-of 29 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 31
+of 32 tests.
 
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.

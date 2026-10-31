@@ -216,7 +216,7 @@ void closed() noexcept { throw 2; }   // ends the program
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
 30 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Regenerate the specification table in docs/status.md from the pages.
 
+It also rewrites the agreement sentence in each page's Evidence segment
+(tools/agreement.py).
+
 The table lists every page that a section index includes, in site order,
 with its rule count, rule classes, test count, and questions. It replaces
 the lines between the table header and the first blank line after it.
@@ -13,6 +16,9 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import agreement  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
@@ -65,7 +71,10 @@ def row(page: Path) -> str:
 def main() -> int:
     rows = []
     for section in ["foundations", "statements", "expressions", "declarations", "classes", "exceptions"]:
-        rows += [row(p) for p in pages(SPEC / section / "index.md")]
+        for p in pages(SPEC / section / "index.md"):
+            if agreement.rewrite(p):
+                print(f"agreement sentence updated: {p.relative_to(ROOT)}")
+            rows.append(row(p))
     glossary = (SPEC / "glossary.md").read_text()
     terms = len(re.findall(r"^\S.*$", glossary.split(":::{glossary}")[1].split(":::")[0], flags=re.M))
     rows.append(f"| [Glossary](../spec/glossary.md) | {terms} terms | | | | | | | 0 flagged |")

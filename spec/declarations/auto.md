@@ -372,9 +372,8 @@ Int auto ib = 1.0;              // rejected
 
 ## Evidence
 
-All rules on this page are `required` or `reject`. All seven compilers
-in the matrix agree on all 49 tests. The results are in
-`tests/RESULTS.md`.
+All rules on this page are `required` or `reject`. All eight compilers
+agree on all 49 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list`, because tests include no headers. Without that

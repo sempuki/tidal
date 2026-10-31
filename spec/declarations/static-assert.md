@@ -138,7 +138,7 @@ int h = half(10);                     // checked for T = int: valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
 28 tests. Clang, GCC, and EDG each show the message of a failed
 assertion.
 

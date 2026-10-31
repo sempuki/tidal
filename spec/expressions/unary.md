@@ -354,7 +354,7 @@ alignof(char);          // 1
 
 ## Evidence
 
-All seven compilers agree on 53 of 54 tests. The results are in
+All eight compilers agree on 59 of 60 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-21: GCC accepts a pointer moved two past the end of an array during

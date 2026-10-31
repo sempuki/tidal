@@ -367,7 +367,7 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 72
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
 of 74 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.

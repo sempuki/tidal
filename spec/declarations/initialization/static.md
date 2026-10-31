@@ -127,7 +127,7 @@ int read_y() { return y; }
 
 ## Evidence
 
-All seven compilers agree on all 11 tests. The results are in
+All eight compilers agree on all 11 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order

@@ -297,7 +297,7 @@ int{2.5};                       // rejected: narrowing
 
 ## Evidence
 
-All seven compilers agree on 44 of 45 tests. The results are in
+All eight compilers agree on 48 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

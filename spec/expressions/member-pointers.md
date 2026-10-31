@@ -270,7 +270,7 @@ int Point3::* any = &Point::x;     // base to derived: implicit
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
-66 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
+67 tests.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

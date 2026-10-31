@@ -227,7 +227,7 @@ a || b && c                     // a || (b && c); compilers warn
 
 ## Evidence
 
-All seven compilers agree on 20 of 21 tests. The results are in
+All eight compilers agree on 20 of 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - LOG-8: Clang warns under `-Wlogical-op-parentheses` and GCC under

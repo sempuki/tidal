@@ -268,8 +268,9 @@ static_assert(char(200) < 0);           // char is signed on both targets
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on
-every test. EDG skips the `-m32` tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
+of 51 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both
   targets. Clang's target description for x86 gives the same sizes and

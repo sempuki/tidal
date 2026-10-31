@@ -285,8 +285,8 @@ delete n;                       // does nothing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 44
-of 47 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 47
+of 50 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so

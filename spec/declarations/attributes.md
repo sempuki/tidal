@@ -309,8 +309,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 44
-of 53 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 45
+of 55 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should

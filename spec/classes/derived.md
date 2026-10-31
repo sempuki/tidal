@@ -373,8 +373,8 @@ struct Drive : Disk, Tape {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 72 of
-73 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 73 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

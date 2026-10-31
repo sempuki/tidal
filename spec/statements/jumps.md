@@ -31,7 +31,7 @@ in either direction.
 :::
 
 :::{principle} JMP-P2
-:rules: JMP-4 JMP-6 JMP-9
+:rules: JMP-4 JMP-6 JMP-9 JMP-16
 
 Control that leaves a scope ends the scope's objects, and control that
 enters a scope must not skip the creation of an object at the target
@@ -141,6 +141,15 @@ these:
 - an array of these types.
 
 A jump can skip the declaration of a `static` local variable.
+:::
+
+:::{rule} JMP-16
+:kind: required
+:tests: statements/jumps/goto-past-declaration-then-write.cpp statements/switch/skipped-declaration-written-then-read.cpp statements/switch/skipped-declaration-read-first.cpp
+
+A variable whose declaration a jump skips (JMP-6) still exists in its
+block after the jump. The variable has no value until the program
+writes one (OBJ-2).
 :::
 
 :::{rule} JMP-10
@@ -258,8 +267,8 @@ skip:
 
 ## Evidence
 
-All seven compilers agree on every test, except where a question is
-noted. The results are in `tests/RESULTS.md`.
+All eight compilers agree on 49 of 52 tests. The results are in
+`tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
   whose destructor is not trivial. Clang and EDG reject the `goto`, so a

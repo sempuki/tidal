@@ -408,7 +408,7 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 83
+The results are in `tests/RESULTS.md`. All eight compilers agree on 83
 of 84 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each

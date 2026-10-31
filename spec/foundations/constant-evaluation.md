@@ -400,8 +400,8 @@ void use() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 63
-of 69 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 74 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.

@@ -196,7 +196,7 @@ struct File : Base { void close() override; };  // rejected: throwing override
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 30
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
 of 36 tests.
 
 - EXS-1: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC

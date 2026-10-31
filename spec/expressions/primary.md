@@ -431,8 +431,8 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 89
-of 93 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 94 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

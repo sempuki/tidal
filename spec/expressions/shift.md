@@ -158,8 +158,8 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
-23 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
+25 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The

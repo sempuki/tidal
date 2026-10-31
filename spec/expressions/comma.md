@@ -139,7 +139,7 @@ arr[(i, j)];               // fine: the comma operator, the value j
 
 ## Evidence
 
-All seven compilers agree on all 17 tests. The results are in
+All eight compilers agree on all 17 tests. The results are in
 `tests/RESULTS.md`.
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no

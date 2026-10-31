@@ -387,8 +387,8 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 54
-of 56 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 55
+of 57 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

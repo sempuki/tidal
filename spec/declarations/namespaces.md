@@ -275,7 +275,7 @@ int y = x;               // rejected: x is ambiguous
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 40
+The results are in `tests/RESULTS.md`. All eight compilers agree on 40
 of 41 tests.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang

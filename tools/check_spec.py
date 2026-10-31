@@ -15,6 +15,7 @@ Fails when:
   link, or fail to run,
 - a *(TOPIC referenced)* marker names no topic, or a topic that is not in
   REFERENCED_TOPICS,
+- a page's agreement sentence is out of date (run tools/status_table.py),
 - a grammar nonterminal is defined in more than one production. A
   nonterminal that is used and not defined is a warning until the grammar
   is consolidated (roadmap item F).
@@ -258,6 +259,10 @@ def main() -> int:
                 errors.append(f"{f.relative_to(ROOT)}: refers to missing question {ref}")
 
     check_markers(errors)
+    import agreement
+    for f in sorted(SPEC.rglob("*.md")):
+        if not agreement.current(f.read_text()):
+            errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
     check_grammar(errors, warnings)
 
     for w in warnings:

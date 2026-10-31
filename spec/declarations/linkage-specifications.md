@@ -164,7 +164,7 @@ extern "C" int c_add(double, double);  // rejected: C functions cannot overload
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 25
+The results are in `tests/RESULTS.md`. All eight compilers agree on 25
 of 29 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.

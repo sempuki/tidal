@@ -234,8 +234,8 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 49
-of 54 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 63 tests.
 
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both

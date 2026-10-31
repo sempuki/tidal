@@ -228,7 +228,7 @@ struct Timer {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
-26 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
+32 tests.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

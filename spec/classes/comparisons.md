@@ -235,8 +235,8 @@ bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 61 of
-63 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 63 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).

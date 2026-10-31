@@ -209,7 +209,7 @@ const int& w = pass(1);      // the temporary ends here; w dangles
 
 ## Evidence
 
-All seven compilers agree on 28 of 31 tests. The results are in
+All eight compilers agree on 28 of 31 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during

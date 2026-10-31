@@ -255,7 +255,7 @@ Mode current();
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 57
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
 of 60 tests.
 
 - TYN-5: GCC rejects the class. Clang and EDG accept the class

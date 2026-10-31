@@ -327,8 +327,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 45
-of 46 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 47
+of 48 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base

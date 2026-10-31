@@ -133,7 +133,7 @@ constexpr auto fact(int n) {
 
 ## Evidence
 
-All seven compilers agree on all 21 tests. The results are in
+All eight compilers agree on all 22 tests. The results are in
 `tests/RESULTS.md`.
 
 Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, edg-func-def.

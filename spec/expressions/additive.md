@@ -275,8 +275,8 @@ int b[2];
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 33
-of 38 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 35
+of 41 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject

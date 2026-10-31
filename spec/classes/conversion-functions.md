@@ -235,8 +235,8 @@ store(Celsius{});        // rejected: two user-defined conversions
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 59 of
-60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 60 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

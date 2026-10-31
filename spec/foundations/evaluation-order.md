@@ -172,7 +172,7 @@ pair(i++, i++);       // fine: the order is unspecified
 
 ## Evidence
 
-All seven compilers agree on all 24 tests. The results are in
+All eight compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang 22 evaluates function arguments from left to right and

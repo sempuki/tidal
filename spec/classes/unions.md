@@ -399,7 +399,8 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 98 of 101 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 100 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0057`).

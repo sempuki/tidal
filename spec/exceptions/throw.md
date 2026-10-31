@@ -220,11 +220,11 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all
-27 tests. EDG runs no programs, so its results for the run and
-run-fail tests say only that the programs are valid. A `run-fail` test
-shows that the program ended with a nonzero status or a signal; the
-harness cannot see that termination was the reason.
+The results are in `tests/RESULTS.md`. All eight compilers agree on all
+27 tests. EDG runs no programs, so its results for the run and run-fail
+tests say only that the programs are valid. A `run-fail` test shows that
+the program ended with a nonzero status or a signal; the harness cannot
+see that termination was the reason.
 
 
 Inputs: clang-sema-expr, clang-diag-sema, clang-diag-ast, edg-statements.

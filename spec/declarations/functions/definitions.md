@@ -226,7 +226,7 @@ void name() {
 
 ## Evidence
 
-All seven compilers agree on 33 of 38 tests. The results are in
+All eight compilers agree on 34 of 40 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function

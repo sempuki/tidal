@@ -173,7 +173,7 @@ Mode::Read | Mode::Write   // rejected without an operator|
 
 ## Evidence
 
-All seven compilers agree on all 21 tests. The results are in
+All eight compilers agree on all 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - BIT-6: Clang warns "& has lower precedence than ==" and GCC warns

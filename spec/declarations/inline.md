@@ -184,7 +184,7 @@ struct Config {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 33
+The results are in `tests/RESULTS.md`. All eight compilers agree on 32
 of 34 tests.
 
 - INL-2: GCC accepts `inline` on a declaration after the definition.

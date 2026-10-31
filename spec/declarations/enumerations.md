@@ -323,7 +323,7 @@ Color k = Red;                 // Red without Color::
 
 ## Evidence
 
-All seven compilers agree on 52 of 55 tests. The results are in
+All eight compilers agree on 55 of 58 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`

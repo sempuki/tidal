@@ -394,5 +394,5 @@ static_assert(where() == 1);   // at run time, where() returns 2
 
 ## Evidence
 
-All rules in this page are `required` or `reject`. All seven compilers in
-the matrix agree on all 65 tests. The results are in `tests/RESULTS.md`.
+All rules in this page are `required` or `reject`. All eight compilers
+agree on all 65 tests. The results are in `tests/RESULTS.md`.

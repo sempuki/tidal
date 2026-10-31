@@ -519,8 +519,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 127
-of 133 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 135 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default

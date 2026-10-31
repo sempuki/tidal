@@ -227,7 +227,7 @@ auto bad = c ? &x : 1;         // rejected: no common type
 
 ## Evidence
 
-All seven compilers agree on 36 of 37 tests. The results are in
+All eight compilers agree on 36 of 37 tests. The results are in
 `tests/RESULTS.md`.
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
