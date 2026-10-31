@@ -2714,6 +2714,8 @@ compilers affect the Status column.
 | `expressions/primary/nullptr-member-pointer.cpp` | PRIM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/primary/nullptr-to-bool-copy.cpp` | PRIM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/primary/nullptr-to-int.cpp` | PRIM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/number-ends-at-space.cpp` | PRIM-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/number-extends-over-sign.cpp` | PRIM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/primary/paren-function-call.cpp` | PRIM-14 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/primary/paren-lvalue.cpp` | PRIM-14 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/primary/paren-same-type.cpp` | PRIM-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -2902,6 +2904,102 @@ compilers affect the Status column.
 | `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/keywords/alternative-tokens.cpp` | KW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/keywords/contextual-final-class.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/keywords/contextual-names.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/keywords/keyword-alignas.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-alignof.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-and-eq.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-and.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-asm.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-auto.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-bitand.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-bitor.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-bool.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-break.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-case.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-catch.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-char.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-char16-t.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-char32-t.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-char8-t.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-class.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-co-await.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-co-return.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-co-yield.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-compl.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-concept.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-const-cast.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-const.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-consteval.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-constexpr.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-constinit.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-continue.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-decltype.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-default.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-delete.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-do.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-double.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-dynamic-cast.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-else.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-enum.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-explicit.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-export.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-extern.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-false.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-float.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-for.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-friend.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-goto.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-if.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-inline.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-int.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-long.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-mutable.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-namespace.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-new.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-noexcept.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-not-eq.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-not.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-nullptr.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-operator.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-or-eq.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-or.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-private.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-protected.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-public.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-register.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-reinterpret-cast.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-requires.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-return.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-short.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-signed.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-sizeof.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-static-assert.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-static-cast.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-static.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-struct.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-switch.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-template.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-this.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-thread-local.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-throw.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-true.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-try.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-typedef.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-typeid.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-typename.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-union.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-unsigned.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-using.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-virtual.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-void.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-volatile.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-wchar-t.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-while.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-xor-eq.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/keyword-xor.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/keywords/reserved-double-underscore.cpp` | KW-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/language-support/initializer-list-missing.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/language-support/initializer-list-no-members.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/language-support/initializer-list-not-template.cpp` | LSUP-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3246,7 +3344,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3230/3230 tests pass on baseline compilers.
+3328/3328 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -11809,6 +11907,13 @@ check that the rejection has the intended cause.
 - `expressions/primary/nullptr-to-int.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
 - `expressions/primary/nullptr-to-int.cpp` (gcc-16): error: cannot convert 'std::nullptr_t' to 'int' in initialization
 - `expressions/primary/nullptr-to-int.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/number-extends-over-sign.cpp` (clang-host): error: invalid suffix '+1' on integer constant
+- `expressions/primary/number-extends-over-sign.cpp` (gcc-host): error: unable to find numeric literal operator ‘operator""+1’ / note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+- `expressions/primary/number-extends-over-sign.cpp` (edg-7.0): error: extra text after expected end of number
+- `expressions/primary/number-extends-over-sign.cpp` (gcc-14): error: unable to find numeric literal operator 'operator""+1' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/number-extends-over-sign.cpp` (clang-18): error: invalid suffix '+1' on integer constant
+- `expressions/primary/number-extends-over-sign.cpp` (gcc-16): error: unable to find numeric literal operator 'operator""+1' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/number-extends-over-sign.cpp` (clang-22): error: invalid suffix '+1' on integer constant
 - `expressions/primary/string-compare-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
 - `expressions/primary/string-compare-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: comparison of addresses of literals has unspecified value
 - `expressions/primary/string-compare-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
@@ -12254,6 +12359,650 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/keywords/keyword-alignas.cpp` (clang-host): error: expected '(' / error: expected unqualified-id
+- `foundations/keywords/keyword-alignas.cpp` (gcc-host): error: expected ‘(’ before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-alignas.cpp` (edg-7.0): error: expected a "(" / error: declaration does not declare anything
+- `foundations/keywords/keyword-alignas.cpp` (gcc-14): error: expected '(' before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-alignas.cpp` (clang-18): error: expected '(' / error: expected unqualified-id
+- `foundations/keywords/keyword-alignas.cpp` (gcc-16): error: expected '(' before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-alignas.cpp` (clang-22): error: expected '(' / error: expected unqualified-id
+- `foundations/keywords/keyword-alignof.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-alignof.cpp` (gcc-host): error: expected unqualified-id before ‘alignof’
+- `foundations/keywords/keyword-alignof.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-alignof.cpp` (gcc-14): error: expected unqualified-id before 'alignof'
+- `foundations/keywords/keyword-alignof.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-alignof.cpp` (gcc-16): error: expected unqualified-id before 'alignof'
+- `foundations/keywords/keyword-alignof.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-and-eq.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-and-eq.cpp` (gcc-host): error: expected unqualified-id before ‘and_eq’ token
+- `foundations/keywords/keyword-and-eq.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-and-eq.cpp` (gcc-14): error: expected unqualified-id before 'and_eq' token
+- `foundations/keywords/keyword-and-eq.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-and-eq.cpp` (gcc-16): error: expected unqualified-id before 'and_eq' token
+- `foundations/keywords/keyword-and-eq.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-and.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-and.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-and.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-and.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-and.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-and.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-and.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-asm.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-asm.cpp` (gcc-host): error: expected unqualified-id before ‘asm’
+- `foundations/keywords/keyword-asm.cpp` (edg-7.0): error: expected an identifier / error: "asm" must be used with a function definition
+- `foundations/keywords/keyword-asm.cpp` (gcc-14): error: expected unqualified-id before 'asm'
+- `foundations/keywords/keyword-asm.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-asm.cpp` (gcc-16): error: expected unqualified-id before 'asm'
+- `foundations/keywords/keyword-asm.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-auto.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-auto.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-auto.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-auto.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-auto.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-auto.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-auto.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-bitand.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-bitand.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-bitand.cpp` (edg-7.0): error: expected an identifier / error: initial value of reference to non-const must be an lvalue
+- `foundations/keywords/keyword-bitand.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-bitand.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-bitand.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-bitand.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-bitor.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-bitor.cpp` (gcc-host): error: expected unqualified-id before ‘bitor’ token
+- `foundations/keywords/keyword-bitor.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-bitor.cpp` (gcc-14): error: expected unqualified-id before 'bitor' token
+- `foundations/keywords/keyword-bitor.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-bitor.cpp` (gcc-16): error: expected unqualified-id before 'bitor' token
+- `foundations/keywords/keyword-bitor.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-bool.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-bool.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-bool.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-bool.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-bool.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-bool.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-bool.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-break.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-break.cpp` (gcc-host): error: expected unqualified-id before ‘break’
+- `foundations/keywords/keyword-break.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-break.cpp` (gcc-14): error: expected unqualified-id before 'break'
+- `foundations/keywords/keyword-break.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-break.cpp` (gcc-16): error: expected unqualified-id before 'break'
+- `foundations/keywords/keyword-break.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-case.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-case.cpp` (gcc-host): error: expected unqualified-id before ‘case’
+- `foundations/keywords/keyword-case.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-case.cpp` (gcc-14): error: expected unqualified-id before 'case'
+- `foundations/keywords/keyword-case.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-case.cpp` (gcc-16): error: expected unqualified-id before 'case'
+- `foundations/keywords/keyword-case.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-catch.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-catch.cpp` (gcc-host): error: expected unqualified-id before ‘catch’
+- `foundations/keywords/keyword-catch.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-catch.cpp` (gcc-14): error: expected unqualified-id before 'catch'
+- `foundations/keywords/keyword-catch.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-catch.cpp` (gcc-16): error: expected unqualified-id before 'catch'
+- `foundations/keywords/keyword-catch.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-char.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-char.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-char.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char16-t.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char16-t.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-char16-t.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-char16-t.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char16-t.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char16-t.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char16-t.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char32-t.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char32-t.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-char32-t.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-char32-t.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char32-t.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char32-t.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char32-t.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char8-t.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char8-t.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-char8-t.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-char8-t.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char8-t.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-char8-t.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-char8-t.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-class.cpp` (clang-host): error: declaration of anonymous class must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-class.cpp` (gcc-host): error: expected identifier before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-class.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected either a definition or a tag name
+- `foundations/keywords/keyword-class.cpp` (gcc-14): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-class.cpp` (clang-18): error: declaration of anonymous class must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-class.cpp` (gcc-16): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-class.cpp` (clang-22): error: declaration of anonymous class must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-co-await.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-co-await.cpp` (gcc-host): error: expected unqualified-id before ‘co_await’
+- `foundations/keywords/keyword-co-await.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-co-await.cpp` (gcc-14): error: expected unqualified-id before 'co_await'
+- `foundations/keywords/keyword-co-await.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-co-await.cpp` (gcc-16): error: expected unqualified-id before 'co_await'
+- `foundations/keywords/keyword-co-await.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-co-return.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-co-return.cpp` (gcc-host): error: expected unqualified-id before ‘co_return’
+- `foundations/keywords/keyword-co-return.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-co-return.cpp` (gcc-14): error: expected unqualified-id before 'co_return'
+- `foundations/keywords/keyword-co-return.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-co-return.cpp` (gcc-16): error: expected unqualified-id before 'co_return'
+- `foundations/keywords/keyword-co-return.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-co-yield.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-co-yield.cpp` (gcc-host): error: expected unqualified-id before ‘co_yield’
+- `foundations/keywords/keyword-co-yield.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-co-yield.cpp` (gcc-14): error: expected unqualified-id before 'co_yield'
+- `foundations/keywords/keyword-co-yield.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-co-yield.cpp` (gcc-16): error: expected unqualified-id before 'co_yield'
+- `foundations/keywords/keyword-co-yield.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-compl.cpp` (clang-host): error: expected a class name after '~' to name a destructor
+- `foundations/keywords/keyword-compl.cpp` (gcc-host): error: expected class-name before ‘=’ token
+- `foundations/keywords/keyword-compl.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-compl.cpp` (gcc-14): error: expected class-name before '=' token
+- `foundations/keywords/keyword-compl.cpp` (clang-18): error: expected a class name after '~' to name a destructor
+- `foundations/keywords/keyword-compl.cpp` (gcc-16): error: expected class-name before '=' token
+- `foundations/keywords/keyword-compl.cpp` (clang-22): error: expected a class name after '~' to name a destructor
+- `foundations/keywords/keyword-concept.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-concept.cpp` (gcc-host): error: C++20 concept definition syntax is ‘concept <name> = <expr>’ / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-concept.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-concept.cpp` (gcc-14): error: C++20 concept definition syntax is 'concept <name> = <expr>' / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-concept.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-concept.cpp` (gcc-16): error: C++20 concept definition syntax is 'concept <name> = <expr>' / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-concept.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-const-cast.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-const-cast.cpp` (gcc-host): error: expected unqualified-id before ‘const_cast’
+- `foundations/keywords/keyword-const-cast.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-const-cast.cpp` (gcc-14): error: expected unqualified-id before 'const_cast'
+- `foundations/keywords/keyword-const-cast.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-const-cast.cpp` (gcc-16): error: expected unqualified-id before 'const_cast'
+- `foundations/keywords/keyword-const-cast.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-const.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-const.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-const.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-const.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-const.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-const.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-const.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-consteval.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-consteval.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-consteval.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-consteval.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-consteval.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-consteval.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-consteval.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-constexpr.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-constexpr.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-constexpr.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-constexpr.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-constexpr.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-constexpr.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-constexpr.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-constinit.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-constinit.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-constinit.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-constinit.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-constinit.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-constinit.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-constinit.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-continue.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-continue.cpp` (gcc-host): error: expected unqualified-id before ‘continue’
+- `foundations/keywords/keyword-continue.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-continue.cpp` (gcc-14): error: expected unqualified-id before 'continue'
+- `foundations/keywords/keyword-continue.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-continue.cpp` (gcc-16): error: expected unqualified-id before 'continue'
+- `foundations/keywords/keyword-continue.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-decltype.cpp` (clang-host): error: expected '(' after 'decltype' / error: expected unqualified-id
+- `foundations/keywords/keyword-decltype.cpp` (gcc-host): error: expected ‘(’ before ‘=’ token / error: expected unqualified-id before ‘decltype’
+- `foundations/keywords/keyword-decltype.cpp` (edg-7.0): error: expected a "(" / error: expected an expression / error: expected a ")"
+- `foundations/keywords/keyword-decltype.cpp` (gcc-14): error: expected '(' before '=' token / error: expected unqualified-id before 'decltype'
+- `foundations/keywords/keyword-decltype.cpp` (clang-18): error: expected '(' after 'decltype' / error: expected unqualified-id
+- `foundations/keywords/keyword-decltype.cpp` (gcc-16): error: expected '(' before '=' token / error: expected unqualified-id before 'decltype'
+- `foundations/keywords/keyword-decltype.cpp` (clang-22): error: expected '(' after 'decltype' / error: expected unqualified-id
+- `foundations/keywords/keyword-default.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-default.cpp` (gcc-host): error: expected unqualified-id before ‘default’
+- `foundations/keywords/keyword-default.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-default.cpp` (gcc-14): error: expected unqualified-id before 'default'
+- `foundations/keywords/keyword-default.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-default.cpp` (gcc-16): error: expected unqualified-id before 'default'
+- `foundations/keywords/keyword-default.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-delete.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-delete.cpp` (gcc-host): error: expected unqualified-id before ‘delete’
+- `foundations/keywords/keyword-delete.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-delete.cpp` (gcc-14): error: expected unqualified-id before 'delete'
+- `foundations/keywords/keyword-delete.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-delete.cpp` (gcc-16): error: expected unqualified-id before 'delete'
+- `foundations/keywords/keyword-delete.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-do.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-do.cpp` (gcc-host): error: expected unqualified-id before ‘do’
+- `foundations/keywords/keyword-do.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-do.cpp` (gcc-14): error: expected unqualified-id before 'do'
+- `foundations/keywords/keyword-do.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-do.cpp` (gcc-16): error: expected unqualified-id before 'do'
+- `foundations/keywords/keyword-do.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-double.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-double.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-double.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-double.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-double.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-double.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-double.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-dynamic-cast.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-dynamic-cast.cpp` (gcc-host): error: expected unqualified-id before ‘dynamic_cast’
+- `foundations/keywords/keyword-dynamic-cast.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-dynamic-cast.cpp` (gcc-14): error: expected unqualified-id before 'dynamic_cast'
+- `foundations/keywords/keyword-dynamic-cast.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-dynamic-cast.cpp` (gcc-16): error: expected unqualified-id before 'dynamic_cast'
+- `foundations/keywords/keyword-dynamic-cast.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-else.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-else.cpp` (gcc-host): error: expected unqualified-id before ‘else’
+- `foundations/keywords/keyword-else.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-else.cpp` (gcc-14): error: expected unqualified-id before 'else'
+- `foundations/keywords/keyword-else.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-else.cpp` (gcc-16): error: expected unqualified-id before 'else'
+- `foundations/keywords/keyword-else.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-enum.cpp` (clang-host): error: expected identifier or '{'
+- `foundations/keywords/keyword-enum.cpp` (gcc-host): error: expected identifier before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-enum.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected either a definition or a tag name
+- `foundations/keywords/keyword-enum.cpp` (gcc-14): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-enum.cpp` (clang-18): error: expected identifier or '{'
+- `foundations/keywords/keyword-enum.cpp` (gcc-16): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-enum.cpp` (clang-22): error: expected identifier or '{'
+- `foundations/keywords/keyword-explicit.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-explicit.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-explicit.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-explicit.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-explicit.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-explicit.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-explicit.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-export.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-export.cpp` (gcc-host): error: expected unqualified-id before ‘export’
+- `foundations/keywords/keyword-export.cpp` (edg-7.0): error: "export" is not allowed / error: expected an identifier
+- `foundations/keywords/keyword-export.cpp` (gcc-14): error: expected unqualified-id before 'export'
+- `foundations/keywords/keyword-export.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-export.cpp` (gcc-16): error: expected unqualified-id before 'export'
+- `foundations/keywords/keyword-export.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-extern.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-extern.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-extern.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-extern.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-extern.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-extern.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-extern.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-false.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-false.cpp` (gcc-host): error: expected unqualified-id before ‘false’
+- `foundations/keywords/keyword-false.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-false.cpp` (gcc-14): error: expected unqualified-id before 'false'
+- `foundations/keywords/keyword-false.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-false.cpp` (gcc-16): error: expected unqualified-id before 'false'
+- `foundations/keywords/keyword-false.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-float.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-float.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-float.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-float.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-float.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-float.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-float.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-for.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-for.cpp` (gcc-host): error: expected unqualified-id before ‘for’
+- `foundations/keywords/keyword-for.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-for.cpp` (gcc-14): error: expected unqualified-id before 'for'
+- `foundations/keywords/keyword-for.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-for.cpp` (gcc-16): error: expected unqualified-id before 'for'
+- `foundations/keywords/keyword-for.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-friend.cpp` (clang-host): error: 'friend' used outside of class / error: expected unqualified-id
+- `foundations/keywords/keyword-friend.cpp` (gcc-host): error: ‘friend’ used outside of class / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-friend.cpp` (edg-7.0): error: invalid specifier outside a class declaration / error: expected an identifier
+- `foundations/keywords/keyword-friend.cpp` (gcc-14): error: 'friend' used outside of class / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-friend.cpp` (clang-18): error: 'friend' used outside of class / error: expected unqualified-id
+- `foundations/keywords/keyword-friend.cpp` (gcc-16): error: 'friend' used outside of class / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-friend.cpp` (clang-22): error: 'friend' used outside of class / error: expected unqualified-id
+- `foundations/keywords/keyword-goto.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-goto.cpp` (gcc-host): error: expected unqualified-id before ‘goto’
+- `foundations/keywords/keyword-goto.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-goto.cpp` (gcc-14): error: expected unqualified-id before 'goto'
+- `foundations/keywords/keyword-goto.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-goto.cpp` (gcc-16): error: expected unqualified-id before 'goto'
+- `foundations/keywords/keyword-goto.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-if.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-if.cpp` (gcc-host): error: expected unqualified-id before ‘if’
+- `foundations/keywords/keyword-if.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-if.cpp` (gcc-14): error: expected unqualified-id before 'if'
+- `foundations/keywords/keyword-if.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-if.cpp` (gcc-16): error: expected unqualified-id before 'if'
+- `foundations/keywords/keyword-if.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-inline.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-inline.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-inline.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-inline.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-inline.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-inline.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-inline.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-int.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-int.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-int.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-int.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-int.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-int.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-int.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-long.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-long.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-long.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-long.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-long.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-long.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-long.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-mutable.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-mutable.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-mutable.cpp` (edg-7.0): error: mutable is not allowed / error: expected an identifier
+- `foundations/keywords/keyword-mutable.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-mutable.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-mutable.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-mutable.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-namespace.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-namespace.cpp` (gcc-host): error: expected unqualified-id before ‘namespace’
+- `foundations/keywords/keyword-namespace.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-namespace.cpp` (gcc-14): error: expected unqualified-id before 'namespace'
+- `foundations/keywords/keyword-namespace.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-namespace.cpp` (gcc-16): error: expected unqualified-id before 'namespace'
+- `foundations/keywords/keyword-namespace.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-new.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-new.cpp` (gcc-host): error: expected unqualified-id before ‘new’
+- `foundations/keywords/keyword-new.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-new.cpp` (gcc-14): error: expected unqualified-id before 'new'
+- `foundations/keywords/keyword-new.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-new.cpp` (gcc-16): error: expected unqualified-id before 'new'
+- `foundations/keywords/keyword-new.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-noexcept.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-noexcept.cpp` (gcc-host): error: expected unqualified-id before ‘noexcept’
+- `foundations/keywords/keyword-noexcept.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-noexcept.cpp` (gcc-14): error: expected unqualified-id before 'noexcept'
+- `foundations/keywords/keyword-noexcept.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-noexcept.cpp` (gcc-16): error: expected unqualified-id before 'noexcept'
+- `foundations/keywords/keyword-noexcept.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-not-eq.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-not-eq.cpp` (gcc-host): error: expected unqualified-id before ‘not_eq’ token
+- `foundations/keywords/keyword-not-eq.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-not-eq.cpp` (gcc-14): error: expected unqualified-id before 'not_eq' token
+- `foundations/keywords/keyword-not-eq.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-not-eq.cpp` (gcc-16): error: expected unqualified-id before 'not_eq' token
+- `foundations/keywords/keyword-not-eq.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-not.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-not.cpp` (gcc-host): error: expected unqualified-id before ‘not’ token
+- `foundations/keywords/keyword-not.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-not.cpp` (gcc-14): error: expected unqualified-id before 'not' token
+- `foundations/keywords/keyword-not.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-not.cpp` (gcc-16): error: expected unqualified-id before 'not' token
+- `foundations/keywords/keyword-not.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-nullptr.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-nullptr.cpp` (gcc-host): error: expected unqualified-id before ‘nullptr’
+- `foundations/keywords/keyword-nullptr.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-nullptr.cpp` (gcc-14): error: expected unqualified-id before 'nullptr'
+- `foundations/keywords/keyword-nullptr.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-nullptr.cpp` (gcc-16): error: expected unqualified-id before 'nullptr'
+- `foundations/keywords/keyword-nullptr.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-operator.cpp` (clang-host): error: 'operator=' cannot be the name of a variable or data member / error: expected ';' after top level declarator
+- `foundations/keywords/keyword-operator.cpp` (gcc-host): error: expected initializer before numeric constant
+- `foundations/keywords/keyword-operator.cpp` (edg-7.0): error: "operator=" must be a member function / error: expected a ";"
+- `foundations/keywords/keyword-operator.cpp` (gcc-14): error: expected initializer before numeric constant
+- `foundations/keywords/keyword-operator.cpp` (clang-18): error: 'operator=' cannot be the name of a variable or data member / error: expected ';' after top level declarator
+- `foundations/keywords/keyword-operator.cpp` (gcc-16): error: expected initializer before numeric constant
+- `foundations/keywords/keyword-operator.cpp` (clang-22): error: 'operator=' cannot be the name of a variable or data member / error: expected ';' after top level declarator
+- `foundations/keywords/keyword-or-eq.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-or-eq.cpp` (gcc-host): error: expected unqualified-id before ‘or_eq’ token
+- `foundations/keywords/keyword-or-eq.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-or-eq.cpp` (gcc-14): error: expected unqualified-id before 'or_eq' token
+- `foundations/keywords/keyword-or-eq.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-or-eq.cpp` (gcc-16): error: expected unqualified-id before 'or_eq' token
+- `foundations/keywords/keyword-or-eq.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-or.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-or.cpp` (gcc-host): error: expected unqualified-id before ‘or’ token
+- `foundations/keywords/keyword-or.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-or.cpp` (gcc-14): error: expected unqualified-id before 'or' token
+- `foundations/keywords/keyword-or.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-or.cpp` (gcc-16): error: expected unqualified-id before 'or' token
+- `foundations/keywords/keyword-or.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-private.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-private.cpp` (gcc-host): error: expected unqualified-id before ‘private’
+- `foundations/keywords/keyword-private.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-private.cpp` (gcc-14): error: expected unqualified-id before 'private'
+- `foundations/keywords/keyword-private.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-private.cpp` (gcc-16): error: expected unqualified-id before 'private'
+- `foundations/keywords/keyword-private.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-protected.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-protected.cpp` (gcc-host): error: expected unqualified-id before ‘protected’
+- `foundations/keywords/keyword-protected.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-protected.cpp` (gcc-14): error: expected unqualified-id before 'protected'
+- `foundations/keywords/keyword-protected.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-protected.cpp` (gcc-16): error: expected unqualified-id before 'protected'
+- `foundations/keywords/keyword-protected.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-public.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-public.cpp` (gcc-host): error: expected unqualified-id before ‘public’
+- `foundations/keywords/keyword-public.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-public.cpp` (gcc-14): error: expected unqualified-id before 'public'
+- `foundations/keywords/keyword-public.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-public.cpp` (gcc-16): error: expected unqualified-id before 'public'
+- `foundations/keywords/keyword-public.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-register.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-register.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-register.cpp` (edg-7.0): error: use of the "register" storage class specifier is not allowed / error: expected an identifier
+- `foundations/keywords/keyword-register.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-register.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-register.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-register.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (gcc-host): error: expected unqualified-id before ‘reinterpret_cast’
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (gcc-14): error: expected unqualified-id before 'reinterpret_cast'
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (gcc-16): error: expected unqualified-id before 'reinterpret_cast'
+- `foundations/keywords/keyword-reinterpret-cast.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-requires.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-requires.cpp` (gcc-host): error: expected unqualified-id before ‘requires’
+- `foundations/keywords/keyword-requires.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-requires.cpp` (gcc-14): error: expected unqualified-id before 'requires'
+- `foundations/keywords/keyword-requires.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-requires.cpp` (gcc-16): error: expected unqualified-id before 'requires'
+- `foundations/keywords/keyword-requires.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-return.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-return.cpp` (gcc-host): error: expected unqualified-id before ‘return’
+- `foundations/keywords/keyword-return.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-return.cpp` (gcc-14): error: expected unqualified-id before 'return'
+- `foundations/keywords/keyword-return.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-return.cpp` (gcc-16): error: expected unqualified-id before 'return'
+- `foundations/keywords/keyword-return.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-short.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-short.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-short.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-short.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-short.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-short.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-short.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-signed.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-signed.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-signed.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-signed.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-signed.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-signed.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-signed.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-sizeof.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-sizeof.cpp` (gcc-host): error: expected unqualified-id before ‘sizeof’
+- `foundations/keywords/keyword-sizeof.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-sizeof.cpp` (gcc-14): error: expected unqualified-id before 'sizeof'
+- `foundations/keywords/keyword-sizeof.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-sizeof.cpp` (gcc-16): error: expected unqualified-id before 'sizeof'
+- `foundations/keywords/keyword-sizeof.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-static-assert.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-static-assert.cpp` (gcc-host): error: expected unqualified-id before ‘static_assert’
+- `foundations/keywords/keyword-static-assert.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-static-assert.cpp` (gcc-14): error: expected unqualified-id before 'static_assert'
+- `foundations/keywords/keyword-static-assert.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-static-assert.cpp` (gcc-16): error: expected unqualified-id before 'static_assert'
+- `foundations/keywords/keyword-static-assert.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-static-cast.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-static-cast.cpp` (gcc-host): error: expected unqualified-id before ‘static_cast’
+- `foundations/keywords/keyword-static-cast.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-static-cast.cpp` (gcc-14): error: expected unqualified-id before 'static_cast'
+- `foundations/keywords/keyword-static-cast.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-static-cast.cpp` (gcc-16): error: expected unqualified-id before 'static_cast'
+- `foundations/keywords/keyword-static-cast.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-static.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-static.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-static.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-static.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-static.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-static.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-static.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-struct.cpp` (clang-host): error: declaration of anonymous struct must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-struct.cpp` (gcc-host): error: expected identifier before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-struct.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected either a definition or a tag name
+- `foundations/keywords/keyword-struct.cpp` (gcc-14): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-struct.cpp` (clang-18): error: declaration of anonymous struct must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-struct.cpp` (gcc-16): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-struct.cpp` (clang-22): error: declaration of anonymous struct must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-switch.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-switch.cpp` (gcc-host): error: expected unqualified-id before ‘switch’
+- `foundations/keywords/keyword-switch.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-switch.cpp` (gcc-14): error: expected unqualified-id before 'switch'
+- `foundations/keywords/keyword-switch.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-switch.cpp` (gcc-16): error: expected unqualified-id before 'switch'
+- `foundations/keywords/keyword-switch.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-template.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-template.cpp` (gcc-host): error: expected unqualified-id before ‘template’
+- `foundations/keywords/keyword-template.cpp` (edg-7.0): error: "template" is not allowed / error: expected an identifier
+- `foundations/keywords/keyword-template.cpp` (gcc-14): error: expected unqualified-id before 'template'
+- `foundations/keywords/keyword-template.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-template.cpp` (gcc-16): error: expected unqualified-id before 'template'
+- `foundations/keywords/keyword-template.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-this.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-this.cpp` (gcc-host): error: expected unqualified-id before ‘this’
+- `foundations/keywords/keyword-this.cpp` (edg-7.0): error: "this" is not allowed here / error: expected an identifier
+- `foundations/keywords/keyword-this.cpp` (gcc-14): error: expected unqualified-id before 'this'
+- `foundations/keywords/keyword-this.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-this.cpp` (gcc-16): error: expected unqualified-id before 'this'
+- `foundations/keywords/keyword-this.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-thread-local.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-thread-local.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-thread-local.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-thread-local.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-thread-local.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-thread-local.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-thread-local.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-throw.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-throw.cpp` (gcc-host): error: expected unqualified-id before ‘throw’
+- `foundations/keywords/keyword-throw.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-throw.cpp` (gcc-14): error: expected unqualified-id before 'throw'
+- `foundations/keywords/keyword-throw.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-throw.cpp` (gcc-16): error: expected unqualified-id before 'throw'
+- `foundations/keywords/keyword-throw.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-true.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-true.cpp` (gcc-host): error: expected unqualified-id before ‘true’
+- `foundations/keywords/keyword-true.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-true.cpp` (gcc-14): error: expected unqualified-id before 'true'
+- `foundations/keywords/keyword-true.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-true.cpp` (gcc-16): error: expected unqualified-id before 'true'
+- `foundations/keywords/keyword-true.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-try.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-try.cpp` (gcc-host): error: expected unqualified-id before ‘try’
+- `foundations/keywords/keyword-try.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-try.cpp` (gcc-14): error: expected unqualified-id before 'try'
+- `foundations/keywords/keyword-try.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-try.cpp` (gcc-16): error: expected unqualified-id before 'try'
+- `foundations/keywords/keyword-try.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-typedef.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-typedef.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-typedef.cpp` (edg-7.0): error: expected an identifier / error: expected a ";"
+- `foundations/keywords/keyword-typedef.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-typedef.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-typedef.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-typedef.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-typeid.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-typeid.cpp` (gcc-host): error: expected unqualified-id before ‘typeid’
+- `foundations/keywords/keyword-typeid.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-typeid.cpp` (gcc-14): error: expected unqualified-id before 'typeid'
+- `foundations/keywords/keyword-typeid.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-typeid.cpp` (gcc-16): error: expected unqualified-id before 'typeid'
+- `foundations/keywords/keyword-typeid.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-typename.cpp` (clang-host): error: expected a qualified name after 'typename' / error: expected unqualified-id
+- `foundations/keywords/keyword-typename.cpp` (gcc-host): error: expected nested-name-specifier before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-typename.cpp` (edg-7.0): error: "typename" may not be specified here / error: expected an identifier
+- `foundations/keywords/keyword-typename.cpp` (gcc-14): error: expected nested-name-specifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-typename.cpp` (clang-18): error: expected a qualified name after 'typename' / error: expected unqualified-id
+- `foundations/keywords/keyword-typename.cpp` (gcc-16): error: expected nested-name-specifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-typename.cpp` (clang-22): error: expected a qualified name after 'typename' / error: expected unqualified-id
+- `foundations/keywords/keyword-union.cpp` (clang-host): error: declaration of anonymous union must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-union.cpp` (gcc-host): error: expected identifier before ‘=’ token / error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-union.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected either a definition or a tag name
+- `foundations/keywords/keyword-union.cpp` (gcc-14): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-union.cpp` (clang-18): error: declaration of anonymous union must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-union.cpp` (gcc-16): error: expected identifier before '=' token / error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-union.cpp` (clang-22): error: declaration of anonymous union must be a definition / error: declaration does not declare anything [-Werror,-Wmissing-declarations]
+- `foundations/keywords/keyword-unsigned.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-unsigned.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-unsigned.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-unsigned.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-unsigned.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-unsigned.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-unsigned.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-using.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-using.cpp` (gcc-host): error: expected unqualified-id before ‘using’
+- `foundations/keywords/keyword-using.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-using.cpp` (gcc-14): error: expected unqualified-id before 'using'
+- `foundations/keywords/keyword-using.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-using.cpp` (gcc-16): error: expected unqualified-id before 'using'
+- `foundations/keywords/keyword-using.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-virtual.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-virtual.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-virtual.cpp` (edg-7.0): error: invalid specifier outside a class declaration / error: expected an identifier
+- `foundations/keywords/keyword-virtual.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-virtual.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-virtual.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-virtual.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-void.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-void.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-void.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-void.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-void.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-void.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-void.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-volatile.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-volatile.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-volatile.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-volatile.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-volatile.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-volatile.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-volatile.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-wchar-t.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-wchar-t.cpp` (gcc-host): error: expected unqualified-id before ‘=’ token
+- `foundations/keywords/keyword-wchar-t.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `foundations/keywords/keyword-wchar-t.cpp` (gcc-14): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-wchar-t.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-wchar-t.cpp` (gcc-16): error: expected unqualified-id before '=' token
+- `foundations/keywords/keyword-wchar-t.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: expected unqualified-id
+- `foundations/keywords/keyword-while.cpp` (clang-host): error: while loop outside of a function
+- `foundations/keywords/keyword-while.cpp` (gcc-host): error: expected unqualified-id before ‘while’
+- `foundations/keywords/keyword-while.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-while.cpp` (gcc-14): error: expected unqualified-id before 'while'
+- `foundations/keywords/keyword-while.cpp` (clang-18): error: while loop outside of a function
+- `foundations/keywords/keyword-while.cpp` (gcc-16): error: expected unqualified-id before 'while'
+- `foundations/keywords/keyword-while.cpp` (clang-22): error: while loop outside of a function
+- `foundations/keywords/keyword-xor-eq.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-xor-eq.cpp` (gcc-host): error: expected unqualified-id before ‘xor_eq’ token
+- `foundations/keywords/keyword-xor-eq.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-xor-eq.cpp` (gcc-14): error: expected unqualified-id before 'xor_eq' token
+- `foundations/keywords/keyword-xor-eq.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-xor-eq.cpp` (gcc-16): error: expected unqualified-id before 'xor_eq' token
+- `foundations/keywords/keyword-xor-eq.cpp` (clang-22): error: expected unqualified-id
+- `foundations/keywords/keyword-xor.cpp` (clang-host): error: expected unqualified-id
+- `foundations/keywords/keyword-xor.cpp` (gcc-host): error: expected unqualified-id before ‘xor’ token
+- `foundations/keywords/keyword-xor.cpp` (edg-7.0): error: expected an identifier
+- `foundations/keywords/keyword-xor.cpp` (gcc-14): error: expected unqualified-id before 'xor' token
+- `foundations/keywords/keyword-xor.cpp` (clang-18): error: expected unqualified-id
+- `foundations/keywords/keyword-xor.cpp` (gcc-16): error: expected unqualified-id before 'xor' token
+- `foundations/keywords/keyword-xor.cpp` (clang-22): error: expected unqualified-id
 - `foundations/language-support/initializer-list-missing.cpp` (clang-host): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
 - `foundations/language-support/initializer-list-missing.cpp` (gcc-host): error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’
 - `foundations/language-support/initializer-list-missing.cpp` (edg-7.0): error: an #include <initializer_list> is needed prior to a use of std::initializer_list, including an implicit use / error: cannot deduce "auto" type

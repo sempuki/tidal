@@ -24,7 +24,7 @@ Depends on: value categories, standard conversions.
 ## Principles
 
 :::{principle} PRIM-P1
-:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10 PRIM-24
+:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10 PRIM-24 PRIM-26
 
 A literal is a value written in the source. The spelling alone decides
 the type and the value of a literal, and no context changes either. For
@@ -224,6 +224,16 @@ These requirements apply to an integer literal:
 
 In an integer or floating literal, a digit separator must have a digit
 on each side.
+:::
+
+:::{rule} PRIM-26
+:kind: reject
+:tests: expressions/primary/number-extends-over-sign.cpp expressions/primary/number-ends-at-space.cpp
+
+A numeric literal runs over every letter, digit, `'`, and `.` that
+follows it, and over a `+` or `-` right after `e`, `E`, `p`, or `P`.
+The whole run must form one valid literal, so `0xe+1` is not valid,
+and `0xe + 1` is.
 :::
 
 :::{rule} PRIM-4
@@ -491,8 +501,8 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 90
-of 94 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 92
+of 96 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

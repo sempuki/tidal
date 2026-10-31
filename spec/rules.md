@@ -51,6 +51,7 @@ Every rule ID starts with the prefix of its page.
 | `INIT` | `declarations/initialization/forms.md` |
 | `INL` | `declarations/inline.md` |
 | `JMP` | `statements/jumps.md` |
+| `KW` | `foundations/keywords.md` |
 | `LAM` | `expressions/lambdas.md` |
 | `LIST` | `declarations/initialization/list.md` |
 | `LNK` | `declarations/storage-linkage.md` |
