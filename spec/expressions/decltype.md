@@ -3,9 +3,11 @@
 `decltype` gives the type of an expression without evaluating it. Its
 operand is one of the *unevaluated operands* of the language, with those
 of `sizeof` and `noexcept`. A *discarded-value expression* is evaluated
-only for its effects, and its value is not used. This page covers the
-type that `decltype` gives, what an unevaluated operand allows, and what
-happens to a discarded value.
+only for its effects, and its value is not used. This page covers:
+
+- the type that `decltype` gives,
+- what an unevaluated operand allows,
+- what happens to a discarded value.
 
 Depends on: primary expressions, value categories, unary operators.
 
@@ -19,10 +21,14 @@ which. For a plain name it reports the declared type of the entity, with
 the reference and the qualifiers the declaration wrote, because that is
 what the programmer meant by the name. For any other expression,
 including a name in parentheses, it reports the type of the expression
-marked with its value category ({principle}`VC-P1`): a reference for an
-lvalue, an rvalue reference for an xvalue, and the bare type for a
-prvalue. An overloaded function name has no single type, so it fits
-neither question.
+marked with its value category ({principle}`VC-P1`):
+
+- a reference for an lvalue,
+- an rvalue reference for an xvalue,
+- the bare type for a prvalue.
+
+An overloaded function name has no single type, so it fits neither
+question.
 :::
 
 :::{principle} DTY-P2
@@ -39,25 +45,37 @@ written out.
 :rules: UNEV-1 UNEV-4 UNEV-5
 
 Some operands exist only to be asked about. The operands of `decltype`,
-`sizeof`, and `noexcept` are never evaluated, so they cause no side
-effect, need no definition for what they name, and may describe an
-operation that would be undefined if it ran. A member can be named there
-without an object. The implementation still has to understand the
-expression, so lookup, access control, and deleted functions are checked
-as anywhere else. A side effect written in such an operand never
-happens, and an implementation should say so.
+`sizeof`, and `noexcept` are never evaluated. So they:
+
+- cause no side effect,
+- need no definition for what they name,
+- may describe an operation that would be undefined if it ran.
+
+A member can be named there without an object. The implementation still
+has to understand the expression. So these are checked as anywhere else:
+
+- lookup,
+- access control,
+- deleted functions.
+
+A side effect written in such an operand never happens, and an
+implementation should say so.
 :::
 
 :::{principle} UNEV-P2
 :rules: UNEV-2 UNEV-3 UNEV-6
 
 A discarded value is the opposite case. The expression is evaluated in
-full and its result is dropped, so its effects are the point. A class
-prvalue becomes a temporary and is destroyed at once, a glvalue is not
-copied, and a volatile object named by the expression is read, because
-the read is an effect. A cast to `void` says the discard is intended. An
-expression with no effect in that position is probably a mistake, and an
-implementation should warn.
+full and its result is dropped, so its effects are the point.
+
+- A class prvalue becomes a temporary and is destroyed at once.
+- A glvalue is not copied.
+- A volatile object named by the expression is read, because the read
+  is an effect.
+
+A cast to `void` says the discard is intended. An expression with no
+effect in that position is probably a mistake, and an implementation
+should warn.
 :::
 
 ## Syntax
@@ -69,8 +87,11 @@ implementation should warn.
 ```
 
 `decltype(auto)` is a placeholder type. Its rules are with placeholder
-types. A discarded-value expression is the expression of an expression
-statement, the left operand of `,`, or the operand of a cast to `void`.
+types. A discarded-value expression is one of these:
+
+- the expression of an expression statement,
+- the left operand of `,`,
+- the operand of a cast to `void`.
 
 ## Constraints
 
@@ -117,10 +138,13 @@ reference. A prvalue of a non-class type has no cv-qualifiers.
 :kind: required
 :tests: expressions/decltype/as-type-specifier.cpp expressions/decltype/base-specifier.cpp expressions/decltype/decltype-auto-function.cpp expressions/decltype/nested-name.cpp expressions/decltype/trailing-return.cpp expressions/decltype/destructor-call.cpp
 
-`decltype` can occur where a type name can occur. This includes a
-variable or function type, a trailing return type, a base list, and the
-qualified name of a member, such as `decltype(s)::type`, and the name
-after `~` in an explicit destructor call.
+`decltype` can occur where a type name can occur. This includes:
+
+- a variable or function type,
+- a trailing return type,
+- a base list,
+- the qualified name of a member, such as `decltype(s)::type`,
+- the name after `~` in an explicit destructor call.
 :::
 
 :::{rule} DTY-5
@@ -186,9 +210,15 @@ destroyed. A glvalue is not copied. A cast to `void` makes any
 expression a discarded-value expression and stops warnings about an
 unused result. Constant evaluation follows these rules.
 
-If the expression is a name, a member access, a subscript, or an
-indirection that refers to a volatile object, the program reads that
-object. A volatile operand of an operator is read too.
+If the expression is one of these and refers to a volatile object, the
+program reads that object:
+
+- a name,
+- a member access,
+- a subscript,
+- an indirection.
+
+A volatile operand of an operator is read too.
 :::
 
 ## Recommended Practice

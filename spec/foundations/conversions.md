@@ -1,9 +1,12 @@
 # Standard conversions
 
 A standard conversion changes a value to another type where an operator,
-an initialization, or a call needs that type. This page covers the
-conversions between arithmetic types, to `bool`, and between pointer
-types.
+an initialization, or a call needs that type. This page covers these
+conversions:
+
+- between arithmetic types,
+- to `bool`,
+- between pointer types.
 
 ## Principles
 
@@ -11,13 +14,15 @@ types.
 :rules: CONV-1 CONV-13
 
 An operand takes the shape that the operation needs before the operation
-sees it. An integer narrower than `int` becomes an `int`, and for a
-bit-field the width decides, because the width is what the value can
-hold. An array used as a value becomes a pointer to its first element,
-and a function name becomes a pointer to the function, because the
-operations on values have no use for an array or a function itself. A
-`float` keeps its type, because arithmetic on `float` is an operation of
-its own.
+sees it:
+
+- An integer narrower than `int` becomes an `int`, and for a bit-field
+  the width decides, because the width is what the value can hold.
+- An array used as a value becomes a pointer to its first element, and
+  a function name becomes a pointer to the function, because the
+  operations on values have no use for an array or a function itself.
+- A `float` keeps its type, because arithmetic on `float` is an
+  operation of its own.
 :::
 
 :::{principle} CONV-P2
@@ -47,16 +52,22 @@ the behavior is undefined.
 :rules: CONV-8 CONV-9 CONV-10 CONV-14 CONV-15 CONV-16 CONV-17 CONV-18
 
 A pointer converts implicitly only in the direction that loses no
-safety: toward `void`, toward a base class, toward more cv-qualifiers at
-every level, toward a function type without `noexcept`, toward a pointer
-to member of a derived class, and from an array of known bound to one of
-unknown bound. Each reverse direction would claim something the pointer
-cannot promise, so none of them is implicit. A null pointer comes only
-from `nullptr` or a literal zero, because any other value with the value
-zero is a number, and a number is not a pointer. For the same reason a
-pointer is not a number, so no pointer converts implicitly to an
-integer. Through a base that is virtual, ambiguous, or not accessible,
-there is no single path, so no implicit conversion.
+safety:
+
+- toward `void`,
+- toward a base class,
+- toward more cv-qualifiers at every level,
+- toward a function type without `noexcept`,
+- toward a pointer to member of a derived class,
+- from an array of known bound to one of unknown bound.
+
+Each reverse direction would claim something the pointer cannot promise,
+so none of them is implicit. A null pointer comes only from `nullptr` or
+a literal zero, because any other value with the value zero is a number,
+and a number is not a pointer. For the same reason a pointer is not a
+number, so no pointer converts implicitly to an integer. Through a base
+that is virtual, ambiguous, or not accessible, there is no single path,
+so no implicit conversion.
 :::
 
 ## Constraints
@@ -170,11 +181,16 @@ These conversions must not occur implicitly:
 :kind: reject
 :tests: expressions/conversions/pointer-to-integer.cpp expressions/conversions/nullptr-to-integer.cpp expressions/conversions/member-pointer-to-integer.cpp foundations/translation/ill-formed-diagnosed.cpp
 
-A pointer, a pointer to member, and `nullptr` must not convert
-implicitly to an integer type. An array, such as a string literal,
-becomes a pointer first, so it does not convert either. The conversion
-to `bool` is the exception (CONV-3, CONV-12), and `reinterpret_cast` can
-convert a pointer explicitly (CAST-6).
+These must not convert implicitly to an integer type:
+
+- a pointer,
+- a pointer to member,
+- `nullptr`.
+
+An array, such as a string literal, becomes a pointer first, so it does
+not convert either. The conversion to `bool` is the exception (CONV-3,
+CONV-12), and `reinterpret_cast` can convert a pointer explicitly
+(CAST-6).
 :::
 
 :::{rule} CONV-16
@@ -200,9 +216,13 @@ or unsigned. Signed types use two's complement.
 :kind: required
 :tests: expressions/conversions/to-bool.cpp expressions/conversions/member-pointer-to-bool.cpp expressions/conversions/nan-to-bool.cpp
 
-A conversion to `bool` gives `false` for zero, negative zero, a null
-pointer, and a null pointer to member. It gives `true` for other values,
-including a NaN.
+A conversion to `bool` gives `false` for these values:
+
+- zero and negative zero,
+- a null pointer,
+- a null pointer to member.
+
+It gives `true` for other values, including a NaN.
 :::
 
 :::{rule} CONV-4

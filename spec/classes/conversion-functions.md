@@ -2,9 +2,12 @@
 
 A conversion function is a member function that converts an object of its
 class to another type. An implicit conversion can use it, unless it is
-`explicit`. This page covers how to declare conversion functions, where
-implicit and explicit conversions use them, and how they combine with
-converting constructors and standard conversions.
+`explicit`. This page covers:
+
+- how to declare conversion functions,
+- where implicit and explicit conversions use them,
+- how they combine with converting constructors and standard
+  conversions.
 
 Depends on: constructors and destructors, standard conversions, overload
 resolution *(overload resolution referenced)*.
@@ -27,9 +30,13 @@ would.
 
 An implicit conversion may call one conversion function, as one of its
 user-defined steps, wherever a value of the target type is needed.
-`explicit` withdraws the function from implicit use and leaves it for
-direct initialization, casts, and the conditions where `bool` is asked
-for. Overload resolution chooses among conversion functions as among
+`explicit` withdraws the function from implicit use and leaves it for:
+
+- direct initialization,
+- casts,
+- the conditions where `bool` is asked for.
+
+Overload resolution chooses among conversion functions as among
 other functions, and a context that needs one integral value cannot pick
 between two. A conversion to the class itself, a base, or `void` can
 never be chosen, so an implementation should warn about one.
@@ -60,8 +67,13 @@ can be:
 - a reference type, which makes the result an lvalue or xvalue,
 - `auto`, deduced from the `return` statements ({question}`Q-0059`).
 
-It can be `const`, `virtual`, or `constexpr`, can have an explicit
-object parameter, and can be defined outside its class. A call by name,
+It can:
+
+- be `const`, `virtual`, or `constexpr`,
+- have an explicit object parameter,
+- be defined outside its class.
+
+A call by name,
 such as `s.operator int()`, is valid.
 :::
 
@@ -94,9 +106,17 @@ function needs a type alias.
 :tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/call-through-function-reference.cpp classes/conversion-functions/delete-class-operand.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp
 
 An implicit conversion can call a conversion function that is not
-`explicit`. This applies in initialization, function arguments, `return`
-statements, operands of built-in operators, `switch` conditions, array
-bounds in `new`, and the operand of `delete`. A call `s(args)` can use a
+`explicit`. This applies in:
+
+- initialization,
+- function arguments,
+- `return` statements,
+- operands of built-in operators,
+- `switch` conditions,
+- array bounds in `new`,
+- the operand of `delete`.
+
+A call `s(args)` can use a
 conversion to a pointer or reference to function. A standard conversion
 can follow the conversion function.
 :::
@@ -118,8 +138,14 @@ An `explicit` conversion function can be used by these:
 - direct initialization, including `T(e)`, `T{e}`, and `static_cast`,
 - {term}`contextual conversion` to `bool`, if the target type is `bool`.
 
-Contextual conversion occurs in conditions, the operands of `!`, `&&`,
-and `||`, the first operand of `?:`, `static_assert`, and `noexcept`.
+Contextual conversion occurs in:
+
+- conditions,
+- the operands of `!`, `&&`, and `||`,
+- the first operand of `?:`,
+- `static_assert`,
+- `noexcept`.
+
 `explicit(c)` makes the function `explicit` if `c` is `true`.
 :::
 

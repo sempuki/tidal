@@ -1,8 +1,13 @@
 # Class definitions and members
 
 A class definition introduces a class type and declares its members. The
-members are data members, member functions, static members, nested types,
-and type aliases.
+members are:
+
+- data members,
+- member functions,
+- static members,
+- nested types,
+- type aliases.
 
 ## Principles
 
@@ -13,9 +18,14 @@ A class definition is a scope and a type under construction. Inside its
 body the class is incomplete, so a data member needs a type that is
 already complete, and a class cannot hold an object of its own type. The
 parts of the body that the implementation can read after the closing
-brace, such as member function bodies, default arguments, default member
-initializers, and `noexcept` operands, see the class as complete. A
-static data member can have the class's own type for the same reason:
+brace see the class as complete. These parts include:
+
+- member function bodies,
+- default arguments,
+- default member initializers,
+- `noexcept` operands.
+
+A static data member can have the class's own type for the same reason:
 its definition comes after the class.
 
 The class body is one scope, so each member name has one meaning in it
@@ -44,10 +54,14 @@ A non-static member function acts on an object. Its `this` has the type
 of that object with the function's own cv-qualifiers, and its
 ref-qualifier selects the function by the value category of the object.
 A member function can instead write that object out as its first
-parameter. It then has no `this`, cannot be static or virtual or
-qualified, and its address is an ordinary function pointer, because the
-object is now an ordinary argument. The call and subscript operators can
-be static for the same reason: they need no object at all.
+parameter. The object is then an ordinary argument, so the function:
+
+- has no `this`,
+- cannot be static or virtual or qualified,
+- has an ordinary function pointer as its address.
+
+The call and subscript operators can be static for the same reason:
+they need no object at all.
 :::
 
 :::{principle} CLS-P4
@@ -84,9 +98,15 @@ own type. A pointer to its own type is valid.
 :kind: required
 :tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp
 
-The class is complete inside member function bodies, default arguments,
-default member initializers, and the operands of `noexcept` specifiers. These can use members that are declared
-later. At other places inside the definition, the class is not complete.
+The class is complete inside:
+
+- member function bodies,
+- default arguments,
+- default member initializers,
+- the operands of `noexcept` specifiers.
+
+These can use members that are declared later. At other places inside
+the definition, the class is not complete.
 :::
 
 :::{rule} CLS-22
@@ -184,16 +204,24 @@ the class name or through an object.
 :kind: reject
 :tests: classes/members/static-uses-this.cpp classes/members/static-member-function-const.cpp classes/members/static-ref-qualified.cpp classes/members/static-virtual.cpp
 
-A static member function must not use `this`. It must not have a
-cv-qualifier or a ref-qualifier, and it must not be virtual.
+A static member function must not:
+
+- use `this`,
+- have a cv-qualifier or a ref-qualifier,
+- be virtual.
 :::
 
 :::{rule} CLS-8
 :kind: required
 :tests: classes/members/nested-types.cpp
 
-A class can declare nested classes, enumerations, and type aliases as
-members. Code outside the class names them as `S::name`.
+A class can declare these members:
+
+- nested classes,
+- enumerations,
+- type aliases.
+
+Code outside the class names them as `S::name`.
 :::
 
 :::{rule} CLS-9
@@ -261,8 +289,11 @@ parameter.
 :tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp classes/members/explicit-object-virtual.cpp
 
 A member function with an explicit object parameter has no `this`. It
-must not be static or virtual, and it must not have a cv-qualifier or a
-ref-qualifier.
+must not:
+
+- be static,
+- be virtual,
+- have a cv-qualifier or a ref-qualifier.
 :::
 
 :::{rule} CLS-15

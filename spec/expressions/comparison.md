@@ -23,9 +23,13 @@ tightly than both, and each group associates to the left, which is why
 :rules: CMP-6 CMP-9 CMP-10 CMP-11 CMP-19 CMP-23 CMP-24
 
 Two operands can be compared when they are the same kind of thing, or
-one converts to the other's kind. Two pointers compare when one
-converts to the other's type, which includes adding cv-qualifiers,
-converting to `void*`, and converting from a derived class to its base.
+one converts to the other's kind. Two pointers compare when one converts
+to the other's type. Such a conversion includes:
+
+- adding cv-qualifiers,
+- converting to `void*`,
+- converting from a derived class to its base.
+
 A pointer compares with `nullptr` and with a literal `0` for equality
 only, because a null pointer has no order. Two values of one scoped
 enumeration compare, and values of two different scoped enumerations do
@@ -62,23 +66,32 @@ greater than anything. So every comparison with a NaN is `false`, except
 :::{principle} CMP-P5
 :rules: CMP-12 CMP-13 CMP-17 CMP-18 CMP-25
 
-`<=>` compares once and gives an ordering value: `strong_ordering`
-where equal values are the same, as for integers and object pointers,
-and `partial_ordering` where some values are unordered or equal values
-can differ, as for floating-point types, with NaN as the unordered
-case. Because `<=>` stands in for all six comparisons, its operands must
-be comparable without loss. A narrowing conversion, a `bool` against
-another type, a pointer against `0`, and two different enumerations are
-rejected. Function pointers and pointers to members have no order, so
-`<=>` does not apply to them.
+`<=>` compares once and gives an ordering value: `strong_ordering` where
+equal values are the same, as for integers and object pointers, and
+`partial_ordering` where some values are unordered or equal values can
+differ, as for floating-point types, with NaN as the unordered case.
+Because `<=>` stands in for all six comparisons, its operands must be
+comparable without loss. These are rejected:
+
+- a narrowing conversion,
+- a `bool` against another type,
+- a pointer against `0`,
+- two different enumerations.
+
+Function pointers and pointers to members have no order, so `<=>` does
+not apply to them.
 :::
 
 :::{principle} CMP-P6
 :rules: CMP-4 CMP-14 CMP-16 CMP-21
 
 An implementation should warn where a comparison is valid and almost
-surely wrong: a signed operand converted to unsigned, a chained
-comparison, two array operands, and the deprecated mixes of enumerations.
+surely wrong. These cases are:
+
+- a signed operand converted to unsigned,
+- a chained comparison,
+- two array operands,
+- the deprecated mixes of enumerations.
 :::
 
 ## Syntax
@@ -178,20 +191,25 @@ the addresses.
 :kind: reject
 :tests: expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-function-pointers.cpp expressions/comparison/three-way-member-pointers.cpp expressions/comparison/three-way-nullptr-values.cpp expressions/comparison/three-way-function-pointer-nullptr.cpp
 
-The types that CMP-12 gives must be declared before `<=>` is used.
-`<=>` must not compare two function pointers, a function pointer and
-`nullptr`, two pointers to members, or two values of the type of
-`nullptr`.
+The types that CMP-12 gives must be declared before `<=>` is used. `<=>`
+must not compare:
+
+- two function pointers,
+- a function pointer and `nullptr`,
+- two pointers to members,
+- two values of the type of `nullptr`.
 :::
 
 :::{rule} CMP-13
 :kind: reject
 :tests: expressions/comparison/three-way-narrowing.cpp expressions/comparison/three-way-bool-int.cpp expressions/comparison/three-way-pointer-zero.cpp expressions/comparison/three-way-int-to-double.cpp
 
-The operands of `<=>` must not need a narrowing conversion. The conversion
-of an integer to a floating-point type is not counted as narrowing here. A
-`bool` must not be compared with another type. A pointer must not be
-compared with the literal `0`.
+These operands of `<=>` are not valid:
+
+- operands that need a narrowing conversion. The conversion of an
+  integer to a floating-point type is not counted as narrowing here.
+- a `bool` and an operand of another type,
+- a pointer and the literal `0`.
 :::
 
 :::{rule} CMP-18
@@ -288,11 +306,15 @@ pointers to members.
 :tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp
 
 If no rule orders two pointers, each relational operator and `<=>` gives
-an unspecified result. The results of `a < b` and `a > b` need not agree.
-This applies to pointers to unrelated objects or functions, to members
-of a union, and to members that occupy no storage. During
-{term}`constant evaluation`, a comparison of pointers to unrelated
-objects or functions is not a constant expression.
+an unspecified result. The results of `a < b` and `a > b` need not
+agree. This applies to pointers to these:
+
+- unrelated objects or functions,
+- members of a union,
+- members that occupy no storage.
+
+During {term}`constant evaluation`, a comparison of pointers to
+unrelated objects or functions is not a constant expression.
 :::
 
 :::{rule} CMP-20

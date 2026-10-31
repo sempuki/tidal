@@ -68,6 +68,8 @@ A principle is a `principle` directive:
 - The ID is the page prefix, `P`, and a number.
 - A principle is one to three paragraphs in plain prose. It says what the
   construct is for and what model the rules follow from. It can say why.
+  Where it names three or more items, cases, or steps, it uses a list,
+  as everywhere else (section 1).
 - `:rules:` lists the rules on the same page that are its evidence. Every
   rule on a page with principles must appear in one `:rules:` or
   `:exceptions:` list.

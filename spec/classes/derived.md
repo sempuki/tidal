@@ -1,10 +1,14 @@
 # Derived classes
 
 A class can derive from one or more base classes. An object of the
-derived class contains a subobject for each base. This page covers the
-base list, name lookup in derived classes, conversions to a base, virtual
-bases, the order of construction with virtual bases, and inherited
-constructors.
+derived class contains a subobject for each base. This page covers:
+
+- the base list,
+- name lookup in derived classes,
+- conversions to a base,
+- virtual bases,
+- the order of construction with virtual bases,
+- inherited constructors.
 
 Access to bases is with access control. Virtual functions have their own
 page.
@@ -40,9 +44,12 @@ subobjects is ambiguous until the program picks a path.
 A derived object is a base object with more parts, so a pointer or
 reference to it converts to the base implicitly and lands on the base
 subobject. The other direction is a claim about what the object really
-is, so it needs `static_cast`, is undefined when the claim is false, and
-is impossible from a virtual base, whose location depends on the most
-derived class.
+is, so the conversion:
+
+- needs `static_cast`,
+- is undefined when the claim is false,
+- is impossible from a virtual base, whose location depends on the most
+  derived class.
 :::
 
 :::{principle} DER-P4
@@ -113,8 +120,13 @@ initializer list gives the bases first.
 :tests: classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp
 
 A name declared in a derived class hides every member with that name in
-its bases. This includes all overloads of a function, and data members
-and types. A qualified name such as `d.B::f()` finds the base member. A
+its bases. This includes:
+
+- all overloads of a function,
+- data members,
+- types.
+
+A qualified name such as `d.B::f()` finds the base member. A
 using-declaration of a base member makes its overloads visible in the
 derived class. A derived member with the same parameters hides the one
 that the using-declaration brings.
@@ -269,8 +281,12 @@ provide through inherited constructors.
 :tests: classes/derived/static-cast-downcast.cpp
 
 `static_cast` can convert a pointer or reference to a base `B` into a
-pointer or reference to a derived class `D`. `B` must be a non-virtual,
-accessible, and unambiguous base of `D`.
+pointer or reference to a derived class `D`. `B` must be a base of `D`
+that is:
+
+- non-virtual,
+- accessible,
+- unambiguous.
 :::
 
 :::{rule} DER-18

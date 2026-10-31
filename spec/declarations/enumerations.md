@@ -36,12 +36,18 @@ the enumerators of either kind into a scope by name.
 :rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-7 ENUM-18 ENUM-8 ENUM-19
 
 The underlying type holds the values. If the program fixes it, or the
-enumeration is scoped, the type is known from the first declaration, so
-the enumeration can be declared before its enumerators, every value of
-the type is a value of the enumeration, and an integer in braces can
-initialize it. If the program does not fix it, the implementation
-chooses a type wide enough, the range is only the bits the enumerators
-need, and a value outside that range has no meaning.
+enumeration is scoped, the type is known from the first declaration,
+so:
+
+- the enumeration can be declared before its enumerators,
+- every value of the type is a value of the enumeration,
+- an integer in braces can initialize it.
+
+If the program does not fix it:
+
+- the implementation chooses a type wide enough,
+- the range is only the bits the enumerators need,
+- a value outside that range has no meaning.
 :::
 
 ## Syntax
@@ -213,11 +219,14 @@ enumerator has the type of its enumeration. Unary `+` on an unscoped
 value gives its promoted integer type.
 
 Inside the enumerator list, the enumeration is not complete, so an
-enumerator has another type there. With a fixed underlying type, which
-every scoped enumeration has, it has that type. Without one, an
-enumerator with an initializer has the type of the initializer, and one
-without an initializer has the type of the enumerator before it, if
-that type can hold its value (ENUM-13).
+enumerator has another type there:
+
+- With a fixed underlying type, which every scoped enumeration has, it
+  has that type.
+- Without one, an enumerator with an initializer has the type of the
+  initializer.
+- Without one, an enumerator without an initializer has the type of the
+  enumerator before it, if that type can hold its value (ENUM-13).
 :::
 
 :::{rule} ENUM-11

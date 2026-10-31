@@ -1,10 +1,13 @@
 # Volatile
 
 A `volatile` qualifier marks an object whose accesses the program must
-perform as written, for example a device register. This page covers what
-`volatile` means for accesses, volatile member functions, references and
-pointers to volatile objects, copies of volatile class objects, and the
-operations on volatile objects that implementations warn about.
+perform as written, for example a device register. This page covers:
+
+- what `volatile` means for accesses,
+- volatile member functions,
+- references and pointers to volatile objects,
+- copies of volatile class objects,
+- the operations on volatile objects that implementations warn about.
 
 Depends on: declarators and cv-qualifiers, reference binding, standard
 conversions, copy and move.
@@ -55,11 +58,14 @@ parameter list, as `const` can.
 :tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
 
 A member function declared `volatile` can be called on a volatile object
-and on other objects. Two member functions can overload on
-`volatile`. A member of a volatile object is volatile. A `static const
-volatile` integer member can have an initializer in its class
-({question}`Q-0080`). A volatile object of class type is initialized by
-an ordinary constructor. It is volatile after the constructor ends.
+and on other objects. These rules also apply:
+
+- Two member functions can overload on `volatile`.
+- A member of a volatile object is volatile.
+- A `static const volatile` integer member can have an initializer in
+  its class ({question}`Q-0080`).
+- A volatile object of class type is initialized by an ordinary
+  constructor. It is volatile after the constructor ends.
 :::
 
 :::{rule} VOL-9

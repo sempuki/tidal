@@ -3,9 +3,12 @@
 A class can default its equality and three-way comparison operators. A
 defaulted comparison compares the bases and members of two objects in
 order. An expression can also use a comparison operator that the
-implementation rewrites in terms of `==` or `<=>`. This page covers
-defaulted comparison functions, their return types, when they are
-deleted, and rewritten and reversed comparisons.
+implementation rewrites in terms of `==` or `<=>`. This page covers:
+
+- defaulted comparison functions,
+- their return types,
+- when they are deleted,
+- rewritten and reversed comparisons.
 
 Depends on: comparison operators, operator overloading, derived classes.
 
@@ -43,8 +46,13 @@ should warn when the rewrites make a comparison ambiguous.
    comparison_op: "==" | "!=" | "<" | ">" | "<=" | ">=" | "<=>"
 ```
 
-The *comparison category types* are `std::strong_ordering`,
-`std::weak_ordering`, and `std::partial_ordering`. A program that uses a
+The *comparison category types* are:
+
+- `std::strong_ordering`,
+- `std::weak_ordering`,
+- `std::partial_ordering`.
+
+A program that uses a
 defaulted `<=>` must declare them, usually through the standard library
 *(library referenced)*.
 
@@ -59,8 +67,13 @@ A defaulted comparison of class `C` must be one of these:
 - a `const` member function with one parameter of type `const C&`,
 - a friend of `C` with two parameters, both `const C&` or both `C`.
 
-It must not be a template, a non-member that is not a friend, or a
-friend first declared outside `C` ({question}`Q-0061`). A defaulted `==`
+It must not be:
+
+- a template,
+- a non-member that is not a friend,
+- a friend first declared outside `C` ({question}`Q-0061`).
+
+A defaulted `==`
 or secondary operator (`!=`, `<`, `>`, `<=`, `>=`) must return `bool`.
 The return type of a defaulted `<=>` must be written as `auto` if it is
 deduced. A ref-qualifier `&` is valid. A ref-qualifier `&&` and `volatile`

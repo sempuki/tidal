@@ -11,28 +11,38 @@ permits most operations. This page lists the operations that it rejects.
 
 Constant evaluation is the same program run at translation time
 ({principle}`TR-P4`). Within one evaluation it can do what a run can do:
-arithmetic, loops, calls, virtual calls, changes to the objects it has
-made, and allocation. A function is not rejected for containing a
-construct that constant evaluation cannot handle. It is rejected only
-when an evaluation reaches that construct, so a function can serve both
-modes. A reference whose object the evaluation does not know is a
-problem only when the evaluation reads through it. The objects that an
-evaluation makes need a {term}`literal type`, one whose objects the
-evaluation can build and destroy.
+
+- arithmetic,
+- loops,
+- calls and virtual calls,
+- changes to the objects it has made,
+- allocation.
+
+A function is not rejected for containing a construct that constant
+evaluation cannot handle. It is rejected only when an evaluation reaches
+that construct, so a function can serve both modes. A reference whose
+object the evaluation does not know is a problem only when the
+evaluation reads through it. The objects that an evaluation makes need a
+{term}`literal type`, one whose objects the evaluation can build and
+destroy.
 :::
 
 :::{principle} CE-P2
 :rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16 CE-21 CE-24
 
-An evaluation is closed. It can use only what translation already
-knows: functions declared `constexpr` or `consteval` and defined before
-the evaluation, variables whose values are fixed at translation time
-because they have a {term}`constant initializer`, and objects that the
-evaluation itself created. It can change only its own objects, because
-anything else exists at run time. Its result must outlive it, so it
-cannot be a pointer to an automatic or temporary object, and storage
-that the evaluation allocated must be freed before the evaluation ends.
-Its result must also be complete, with a value in every part.
+An evaluation is closed. It can use only what translation already knows:
+
+- functions declared `constexpr` or `consteval` and defined before the
+  evaluation,
+- variables whose values are fixed at translation time because they
+  have a {term}`constant initializer`,
+- objects that the evaluation itself created.
+
+It can change only its own objects, because anything else exists at run
+time. Its result must outlive it, so it cannot be a pointer to an
+automatic or temporary object, and storage that the evaluation allocated
+must be freed before the evaluation ends. Its result must also be
+complete, with a value in every part.
 :::
 
 :::{principle} CE-P3
@@ -40,24 +50,34 @@ Its result must also be complete, with a value in every part.
 
 An evaluation must give one answer that every implementation can agree
 on. So it rejects every operation whose result depends on the machine
-or on an order the language does not fix: reinterpreting a pointer,
-reading a volatile object, reading a union member that is not active,
-comparing the addresses of string literals, ordering pointers to
-unrelated objects, and any operation that is undefined. Copying an
-object reads each of its parts, so a copy of an object with a part that
-has no value is undefined too. An exception
-has no handler at translation time, so a `throw` that the evaluation
-reaches ends it.
+or on an order the language does not fix:
+
+- reinterpreting a pointer,
+- reading a volatile object,
+- reading a union member that is not active,
+- comparing the addresses of string literals,
+- ordering pointers to unrelated objects,
+- any operation that is undefined.
+
+Copying an object reads each of its parts, so a copy of an object with
+a part that has no value is undefined too. An exception has no handler
+at translation time, so a `throw` that the evaluation reaches ends it.
 :::
 
 :::{principle} CE-P4
 :rules: CE-11 CE-19
 
 Where the language needs a constant to build the program, it needs the
-exact value: an array bound, an enumerator, a case label, the operands
-of `explicit` and `noexcept`. A conversion that could lose information
-is not a constant there. The condition of `if constexpr` is the one
-place that only needs a yes or no.
+exact value. These places need one:
+
+- an array bound,
+- an enumerator,
+- a case label,
+- the operands of `explicit` and `noexcept`.
+
+A conversion that could lose information is not a constant there. The
+condition of `if constexpr` is the one place that only needs a yes or
+no.
 :::
 
 :::{principle} CE-P5
@@ -163,8 +183,11 @@ one during constant evaluation.
 :kind: required
 :tests: expressions/constant-expressions/integral-constant-array-bound.cpp
 
-An array bound, an enumerator value, and a case label need a constant
-expression of integer or enumeration type.
+These need a constant expression of integer or enumeration type:
+
+- an array bound,
+- an enumerator value,
+- a case label.
 :::
 
 :::{rule} CE-19
@@ -172,10 +195,12 @@ expression of integer or enumeration type.
 :tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
 
 Where a constant converts to another type for a use in CE-11, the
-conversion must not narrow. This also applies to the condition of
-`explicit(...)`, to the operand of a `noexcept` specifier (EXS-1), and
-to a non-type template argument *(templates referenced)*. The condition
-of `if constexpr` is an exception (IF-16).
+conversion must not narrow. The condition of `if constexpr` is an
+exception (IF-16). This also applies to:
+
+- the condition of `explicit(...)`,
+- the operand of a `noexcept` specifier (EXS-1),
+- a non-type template argument *(templates referenced)*.
 :::
 
 :::{rule} CE-12
@@ -226,19 +251,24 @@ definition later in the translation unit does not help.
 :kind: required
 :tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp
 
-A `constexpr` function can contain a `goto`, a `static` or
-`thread_local` variable, and a variable of a type that is not a
-{term}`literal type`. CE-20 rejects a call only if the evaluation
-reaches one of them.
+A `constexpr` function can contain these:
+
+- a `goto`,
+- a `static` or `thread_local` variable,
+- a variable of a type that is not a {term}`literal type`.
+
+CE-20 rejects a call only if the evaluation reaches one of them.
 :::
 
 :::{rule} CE-20
 :kind: reject
 :tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp
 
-Constant evaluation must not reach a `goto`, a `static` or
-`thread_local` variable, or a variable of a type that is not a
-{term}`literal type` (CE-17).
+Constant evaluation must not reach any of these (CE-17):
+
+- a `goto`,
+- a `static` or `thread_local` variable,
+- a variable of a type that is not a {term}`literal type`.
 :::
 
 :::{rule} CE-21
@@ -347,11 +377,13 @@ void use() {
 The results are in `tests/RESULTS.md`. All seven compilers agree on 60 of 65 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000 and
-  a loop of 100000000 steps by default. Clang stops at a depth of 512
-  calls and at its step limit (`-fconstexpr-depth`, `-fconstexpr-steps`).
-  GCC stops at a depth of 512 and at 262144 loop iterations
-  (`-fconstexpr-depth`, `-fconstexpr-loop-limit`, `-fconstexpr-ops-limit`).
-  All accept a depth of 400.
+  a loop of 100000000 steps by default. All accept a depth of 400.
+
+  - Clang stops at a depth of 512 calls and at its step limit
+    (`-fconstexpr-depth`, `-fconstexpr-steps`).
+  - GCC stops at a depth of 512 and at 262144 loop iterations
+    (`-fconstexpr-depth`, `-fconstexpr-loop-limit`,
+    `-fconstexpr-ops-limit`).
 - CE-12: Clang 18 also reports the `constexpr` function as never constant
   (compare {question}`Q-0020`).
 - CE-13: Clang rejects the comparison of two string literal addresses.
@@ -376,10 +408,14 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 60 of 65 tes
 The table lists each rule of class `undefined` and the compilers whose
 constant evaluation rejects it (CE-9). It is generated from the test
 expectations, which the matrix checks. Each test of a rule that expects
-a rejection from some compiler is one case. A compiler "rejects" if it
-rejects every case, "accepts" if it rejects none, and rejects "some
-cases" otherwise. Where the versions of a compiler differ, the entry
-names each version. "no test" means that the rule has no case.
+a rejection from some compiler is one case. Each entry is one of these:
+
+- "rejects": the compiler rejects every case.
+- "accepts": the compiler rejects no case.
+- "some cases": the compiler rejects some cases and not others.
+
+Where the versions of a compiler differ, the entry names each version.
+"no test" means that the rule has no case.
 
 :::{tidal-undefined-index}
 :::

@@ -1,8 +1,11 @@
 # Reference binding
 
 The initializer of a reference binds the reference to an object or a
-function. This page covers which expressions each kind of reference
-accepts, when a temporary object is created, and how long it lives.
+function. This page covers:
+
+- which expressions each kind of reference accepts,
+- when a temporary object is created,
+- how long it lives.
 
 ## Principles
 
@@ -11,14 +14,17 @@ accepts, when a temporary object is created, and how long it lives.
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives it that object. What a
-reference accepts follows from what it may do with its referent. A
-reference that can change the object binds only to an lvalue of that
-type or a derived type. A `const` lvalue reference changes nothing, so
-it also binds to rvalues and to values of other types, through a
-temporary object when there is no object to bind to. An rvalue
-reference exists to take from an object that is going away, so it binds
-to rvalues and never to an lvalue of its own type. In every form the
-initializer is one expression.
+reference accepts follows from what it may do with its referent.
+
+- A reference that can change the object binds only to an lvalue of
+  that type or a derived type.
+- A `const` lvalue reference changes nothing, so it also binds to
+  rvalues and to values of other types, through a temporary object when
+  there is no object to bind to.
+- An rvalue reference exists to take from an object that is going away,
+  so it binds to rvalues and never to an lvalue of its own type.
+
+In every form the initializer is one expression.
 :::
 
 :::{principle} REF-P2
@@ -27,10 +33,15 @@ initializer is one expression.
 A temporary made for a reference holds the converted value and lives as
 long as the reference variable, because a reference to nothing would be
 useless. This extension belongs to the variable's binding, including
-bindings through a member, a subscript, or a plain cast. It does not
-reach a function parameter or a returned reference. A reference used
-after its object has ended, or bound through a null pointer, has no
-defined meaning.
+bindings through:
+
+- a member,
+- a subscript,
+- a plain cast.
+
+It does not reach a function parameter or a returned reference. A
+reference used after its object has ended, or bound through a null
+pointer, has no defined meaning.
 :::
 
 ## Syntax
@@ -49,11 +60,14 @@ defined meaning.
 :tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp
 
 A non-`const` lvalue reference binds directly to an lvalue. The reference
-and the lvalue are then the same object. The lvalue can have the same
-type, the same type with fewer {term}`cv-qualifiers <cv-qualifier>`, or
-a class derived from the type through an accessible base. A reference
-to an array of unknown bound binds to an array of known bound. REF-8
-lists what is not valid.
+and the lvalue are then the same object. The lvalue can have:
+
+- the same type,
+- the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
+- a class derived from the type through an accessible base.
+
+A reference to an array of unknown bound binds to an array of known
+bound. REF-8 lists what is not valid.
 :::
 
 :::{rule} REF-8
@@ -128,12 +142,16 @@ braces, a narrowing conversion must not occur (LIST-2).
 
 If a reference variable binds to a temporary object, or to a member of
 one, the temporary lives as long as the reference. This also applies to a
-reference member of an aggregate initialized with braces, and through
-parentheses, the selected operand of `?:`, the right operand of a
-comma, a cast without a user-defined conversion such as `static_cast`,
-and a subscript of an array member of the temporary ({question}`Q-0109`
-for the subscript). The temporary is destroyed when the reference goes out of scope,
-in order with the other objects of that scope. A reference with static
+reference member of an aggregate initialized with braces, and through:
+
+- parentheses,
+- the selected operand of `?:`,
+- the right operand of a comma,
+- a cast without a user-defined conversion such as `static_cast`,
+- a subscript of an array member of the temporary ({question}`Q-0109`).
+
+The temporary is destroyed when the reference goes out of scope, in
+order with the other objects of that scope. A reference with static
 storage keeps its temporary until the program ends.
 :::
 
@@ -151,12 +169,17 @@ A later change to the source expression does not change the temporary.
 :kind: undefined
 :tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp
 
-Only the bindings in REF-4 extend the life of a temporary. A binding to a
-function parameter, a returned reference, or a reference member of an
-aggregate initialized with parentheses does not extend it
-({question}`Q-0040`). Use of a reference after the life of its object ends
-is undefined. Binding a reference to `*p` where `p` is a null pointer is
-undefined, and constant evaluation rejects it ({question}`Q-0110`).
+Only the bindings in REF-4 extend the life of a temporary. These
+bindings do not extend it ({question}`Q-0040`):
+
+- a binding to a function parameter,
+- a binding to a returned reference,
+- a binding to a reference member of an aggregate initialized with
+  parentheses.
+
+Use of a reference after the life of its object ends is undefined.
+Binding a reference to `*p` where `p` is a null pointer is undefined,
+and constant evaluation rejects it ({question}`Q-0110`).
 :::
 
 ## Examples

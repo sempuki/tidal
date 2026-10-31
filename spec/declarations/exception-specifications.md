@@ -1,9 +1,12 @@
 # Exception specifications
 
 A `noexcept` specifier states that a function does not let an exception
-leave it. It is part of the function type. This page covers the forms of
-the specifier, its place in function and pointer types, overriding, and
-the functions that are `noexcept` without the keyword.
+leave it. It is part of the function type. This page covers:
+
+- the forms of the specifier,
+- its place in function and pointer types,
+- overriding,
+- the functions that are `noexcept` without the keyword.
 
 What happens when an exception does leave a `noexcept` function belongs
 with exception handling ({rule}`THR-9`). DCL-14 and CONV-10 give the rules
@@ -18,12 +21,18 @@ constructors and destructors, constant expressions.
 :rules: EXS-1 EXS-7 EXS-2 EXS-8
 
 A `noexcept` specifier is part of the function's type, and the type is
-what travels: through type aliases, pointers, references, and
-`decltype`. So a call through a pointer to a non-throwing function is
-itself non-throwing, and two functions that differ only in the
-specifier are the same function declared twice. The specifier is a
-constant, decided at translation time from an expression that can see
-the parameters and the whole class.
+what travels through:
+
+- type aliases,
+- pointers,
+- references,
+- `decltype`.
+
+So a call through a pointer to a non-throwing function is itself
+non-throwing, and two functions that differ only in the specifier are
+the same function declared twice. The specifier is a constant, decided
+at translation time from an expression that can see the parameters and
+the whole class.
 :::
 
 :::{principle} EXS-P2

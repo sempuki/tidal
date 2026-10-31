@@ -2,9 +2,11 @@
 
 A linkage specification gives declarations a *language linkage*, such as
 `extern "C"`. A function with C language linkage can be called from code
-in C, and its name is not mangled. This page covers the forms of a linkage
-specification, where it can occur, and the rules for names with C
-language linkage.
+in C, and its name is not mangled. This page covers:
+
+- the forms of a linkage specification,
+- where it can occur,
+- the rules for names with C language linkage.
 
 Depends on: storage duration and linkage, namespaces, function
 definitions.
@@ -75,9 +77,11 @@ innermost applies. These rules apply:
 :tests: declarations/linkage-specifications/block-scope.cpp declarations/linkage-specifications/c-linkage-main.cpp declarations/linkage-specifications/c-linkage-template.cpp declarations/linkage-specifications/class-scope.cpp declarations/linkage-specifications/single-form-static.cpp
 
 A linkage specification can only occur at namespace scope. It must not
-occur in a block or a class. A template must not have C language linkage.
-The form without braces must not declare a `static` entity.
-`main` must not have C language linkage ({question}`Q-0076`).
+occur in a block or a class. These rules also apply:
+
+- A template must not have C language linkage.
+- The form without braces must not declare a `static` entity.
+- `main` must not have C language linkage ({question}`Q-0076`).
 :::
 
 :::{rule} LSP-3

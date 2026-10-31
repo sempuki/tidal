@@ -5,8 +5,12 @@ A variable declaration can use a {term}`placeholder type`, `auto` or
 comes from its initializer.
 
 This page covers variables, including variables in conditions and
-initializer statements. Placeholders in return types, parameters, and
-template parameters are on other pages *(templates referenced)*.
+initializer statements. Placeholders in these positions are on other
+pages *(templates referenced)*:
+
+- return types,
+- parameters,
+- template parameters.
 
 ## Principles
 
@@ -14,56 +18,69 @@ template parameters are on other pages *(templates referenced)*.
 :rules: AUTO-1 AUTO-2
 
 A variable declared with `auto` holds a value, so its type is the type
-of the value that the initializer produces. A reference in the
-initializer's type is dropped, because the variable is a new object and
-does not refer to the old one. The top-level `const` and `volatile` are
-dropped for the same reason: they belonged to the old object. An array
-or a function cannot be held as a value, so the variable gets the
-pointer that the initializer converts to ({principle}`VC-P1`).
+of the value that the initializer produces.
+
+- A reference in the initializer's type is dropped, because the variable
+  is a new object and does not refer to the old one.
+- The top-level `const` and `volatile` are dropped for the same reason:
+  they belonged to the old object.
+- An array or a function cannot be held as a value, so the variable gets
+  the pointer that the initializer converts to ({principle}`VC-P1`).
 :::
 
 :::{principle} AUTO-P2
 :rules: AUTO-3 AUTO-18 AUTO-4 AUTO-5 AUTO-19 AUTO-13 AUTO-16
 
 What the declaration writes around `auto` applies to the deduced type.
-`auto&` makes a reference, so it keeps the initializer's type whole,
-with its qualifiers and without decay, and it needs something to refer
-to. `auto&&` binds to anything and becomes an lvalue or an rvalue
-reference as the initializer is one or the other. `const`, `volatile`,
-and `*` add to the deduced type as they would to a written one, and a
-concept before `auto` is a check on the result.
+
+- `auto&` makes a reference, so it keeps the initializer's type whole,
+  with its qualifiers and without decay, and it needs something to
+  refer to.
+- `auto&&` binds to anything and becomes an lvalue or an rvalue
+  reference as the initializer is one or the other.
+- `const`, `volatile`, and `*` add to the deduced type as they would to
+  a written one.
+- A concept before `auto` is a check on the result.
 :::
 
 :::{principle} AUTO-P3
 :rules: AUTO-6 AUTO-20 AUTO-7 AUTO-21 AUTO-10
 
 The form of the initializer sets how the type is read from it.
-Parentheses and braces without `=` hold one expression and read its
-type. A braced list after `=` is a list, so the variable becomes a
-`std::initializer_list`. `decltype(auto)` reads the initializer as
-`decltype` does, so a name gives its declared type and the value
-category of any other expression decides between a reference and a
-plain type.
+
+- Parentheses and braces without `=` hold one expression and read its
+  type.
+- A braced list after `=` is a list, so the variable becomes a
+  `std::initializer_list`.
+- `decltype(auto)` reads the initializer as `decltype` does, so a name
+  gives its declared type and the value category of any other
+  expression decides between a reference and a plain type.
 :::
 
 :::{principle} AUTO-P4
 :rules: AUTO-8 AUTO-9 AUTO-22 AUTO-11 AUTO-15
 
-Deduction must have exactly one answer. The constraints follow from
-that. The variable needs an initializer, the initializer must have a
-type to give (so no `void`, no overloaded name, and no use of the
-variable itself), and `auto` cannot be mixed with another type or
-spread over an array. Several declarators in one declaration must agree
-on what `auto` stands for. `decltype(auto)` takes no decoration and no
-list, and it can name an array type, which no initializer can copy.
+Deduction must have exactly one answer. These constraints follow from
+that:
+
+- The variable needs an initializer.
+- The initializer must have a type to give (so no `void`, no
+  overloaded name, and no use of the variable itself).
+- `auto` cannot be mixed with another type or spread over an array.
+- Several declarators in one declaration must agree on what `auto`
+  stands for.
+- `decltype(auto)` takes no decoration and no list, and it can name an
+  array type, which no initializer can copy.
 :::
 
 :::{principle} AUTO-P5
 :rules: AUTO-12 AUTO-14 AUTO-17
 
-A placeholder means the same thing wherever a variable is declared: in a
-condition, in the initializer statement of `if`, `switch`, or `for`, and
-in a static data member that carries its initializer in the class.
+A placeholder means the same thing wherever a variable is declared:
+
+- in a condition,
+- in the initializer statement of `if`, `switch`, or `for`,
+- in a static data member that carries its initializer in the class.
 :::
 
 ## Syntax
@@ -99,10 +116,12 @@ removed. Qualifiers below the top level stay.
 :kind: required
 :tests: declarations/auto/decays-arrays-and-functions.cpp declarations/auto/string-literal-prefixes.cpp
 
-An initializer of array type gives a pointer to its first element. A
-function gives a pointer to the function. A string literal gives a
-pointer to `const` of its character type, for example `const char*` or
-`const char8_t*`.
+These initializers give a pointer:
+
+- an initializer of array type gives a pointer to its first element,
+- a function gives a pointer to the function,
+- a string literal gives a pointer to `const` of its character type,
+  for example `const char*` or `const char8_t*`.
 :::
 
 :::{rule} AUTO-3
@@ -178,9 +197,12 @@ AUTO-21 lists what is not valid.
 :kind: reject
 :tests: declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp
 
-In `auto x = { ... };` (AUTO-7), each element must give the same `T`, and
-the list must not be empty. A declaration of `std::initializer_list` must
-come first *(library referenced)*.
+In `auto x = { ... };` (AUTO-7):
+
+- each element must give the same `T`,
+- the list must not be empty,
+- a declaration of `std::initializer_list` must come first
+  *(library referenced)*.
 :::
 
 :::{rule} AUTO-8

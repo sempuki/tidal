@@ -2,8 +2,11 @@
 
 A static assertion checks a condition during translation. If the
 condition is `false`, the implementation rejects the program and can show
-a message. This page covers where a static assertion can occur, its
-condition, and its message.
+a message. This page covers:
+
+- where a static assertion can occur,
+- its condition,
+- its message.
 
 Depends on: constant expressions, standard conversions.
 
@@ -50,9 +53,15 @@ if there is one.
 :kind: required
 :tests: declarations/static-assert/in-block-not-statement-position.cpp declarations/static-assert/in-block.cpp declarations/static-assert/in-class.cpp declarations/static-assert/in-extern-c.cpp declarations/static-assert/in-namespace.cpp
 
-A static assertion is a declaration. It can occur at namespace scope, in
-a class, in a block, as the body of a statement such as `if`, and in a
-linkage specification. SA-6 lists what is not valid.
+A static assertion is a declaration. It can occur:
+
+- at namespace scope,
+- in a class,
+- in a block,
+- as the body of a statement such as `if`,
+- in a linkage specification.
+
+SA-6 lists what is not valid.
 :::
 
 :::{rule} SA-6

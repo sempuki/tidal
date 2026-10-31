@@ -1,9 +1,16 @@
 # Sequencing and evaluation order
 
 Sequencing rules say which parts of an expression are evaluated before
-others. Some operators fix the order of their operands. These are `&&`,
-`||`, the comma operator, `?:`, the shift operators, assignment, and
-subscripts. For other operands the order is not fixed.
+others. These operators fix the order of their operands:
+
+- `&&` and `||`,
+- the comma operator,
+- `?:`,
+- the shift operators,
+- assignment,
+- subscripts.
+
+For other operands the order is not fixed.
 
 ## Principles
 
@@ -13,13 +20,17 @@ subscripts. For other operands the order is not fixed.
 The language fixes the order of evaluation only where meaning needs it.
 A full expression finishes, with all its side effects, before the next
 one starts, so a program is a sequence of steps at that level. Within a
-full expression, the function is known before its arguments are
-evaluated, the right side of an assignment is complete before the left
-side is touched, an array is known before its index, the object before
-the member pointer applied to it, and the elements of a braced list come
-in the order written. An overloaded operator keeps the order of the
-built-in operator it replaces, because the program reads the same
-either way.
+full expression, these orders are fixed:
+
+- The function is known before its arguments are evaluated.
+- The right side of an assignment is complete before the left side is
+  touched.
+- An array is known before its index.
+- The object is known before the member pointer applied to it.
+- The elements of a braced list come in the order written.
+
+An overloaded operator keeps the order of the built-in operator it
+replaces, because the program reads the same either way.
 :::
 
 :::{principle} SEQ-P2
@@ -73,9 +84,16 @@ that they create, belong to the full expression that contains the call.
 :tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp
 
 An overloaded operator ({rule}`OPR-7`) keeps the order of the built-in
-operator for shifts, assignment, compound assignment, subscripts, the
-comma operator, and the pointer-to-member operators. An overloaded `&&`
-or `||` evaluates both operands, the left one first (OPR-7).
+operator for these operators:
+
+- shifts,
+- assignment and compound assignment,
+- subscripts,
+- the comma operator,
+- the pointer-to-member operators.
+
+An overloaded `&&` or `||` evaluates both operands, the left one first
+(OPR-7).
 :::
 
 ## Undefined Behavior

@@ -10,9 +10,14 @@ body. The value of its condition selects the label.
 
 A `switch` is a computed jump. Its condition is an integer or an
 enumeration, or a class that converts to exactly one of these,
-evaluated one time. Control jumps to the `case` label with that value,
-or to `default`, or past the statement, and then runs on through the
-later labels until a `break` stops it. A case value is a constant of the
+evaluated one time. Control jumps to one of these places, and then runs
+on through the later labels until a `break` stops it:
+
+- the `case` label with that value,
+- `default`,
+- past the statement.
+
+A case value is a constant of the
 condition's promoted type, because the jump table is built at
 translation time. Two equal case values or two `default` labels would
 give the jump two targets, so they are rejected. A label belongs to the
@@ -96,9 +101,12 @@ must not be declared again in the outermost block of the body (SW-4).
 
 A transfer to a `case` or `default` label must not skip the
 initialization of a variable that is in scope at the label. A transfer can
-skip a whole block, or a declaration without an initializer whose type
-JMP-6 permits: a scalar, a class whose default constructor and destructor
-are both trivial, or an array of these ({question}`Q-0097`).
+skip a whole block. It can also skip a declaration without an
+initializer whose type JMP-6 permits ({question}`Q-0097`):
+
+- a scalar,
+- a class whose default constructor and destructor are both trivial,
+- an array of these.
 :::
 
 ## Runtime Behavior

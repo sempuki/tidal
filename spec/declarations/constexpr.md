@@ -30,12 +30,16 @@ of a function must agree on it.
 :::{principle} CX-P2
 :rules: CX-1 CX-2
 
-`constexpr` on a variable makes it a constant: it is `const`, its
-initializer is a constant expression, and its type can be evaluated at
-translation time. A constant that is a pointer or reference must refer
-to something that exists at translation time and still exists at run
-time, which means a function or an object with static storage
-duration, never an automatic variable.
+`constexpr` on a variable makes it a constant:
+
+- it is `const`,
+- its initializer is a constant expression,
+- its type can be evaluated at translation time.
+
+A constant that is a pointer or reference must refer to something that
+exists at translation time and still exists at run time, which means a
+function or an object with static storage duration, never an automatic
+variable.
 :::
 
 :::{principle} CX-P3
@@ -68,13 +72,15 @@ and asks nothing of the destructor. A variable is either `constinit` or
 :kind: reject
 :tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp
 
-A `constexpr` variable is `const`. It must be initialized, and the
-initialization must be a constant expression. A variable of class type
-can have no initializer if a `constexpr` default constructor gives every
-member a value. Its type must be a {term}`literal type` (CE-23). A
-`constexpr` reference at namespace scope can bind to a temporary,
-because that temporary has static storage. In a block without `static`,
-it cannot.
+A `constexpr` variable is `const`.
+
+- It must be initialized, and the initialization must be a constant
+  expression. A variable of class type can have no initializer if a
+  `constexpr` default constructor gives every member a value.
+- Its type must be a {term}`literal type` (CE-23).
+- A `constexpr` reference at namespace scope can bind to a temporary,
+  because that temporary has static storage. In a block without
+  `static`, it cannot.
 :::
 
 :::{rule} CX-2

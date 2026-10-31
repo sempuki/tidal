@@ -2,10 +2,16 @@
 
 A declaration introduces a name into a scope. A use of a name finds a
 declaration by lookup, which searches the scopes that enclose the use.
-Hiding, redeclaration, the visibility of a name from its declaration to
-the end of its scope, and the scopes that statements and classes
-introduce all follow from this model. This page states it once; the
-pages on statements, namespaces, and classes cite it.
+These follow from this model:
+
+- hiding,
+- redeclaration,
+- the visibility of a name from its declaration to the end of its
+  scope,
+- the scopes that statements and classes introduce.
+
+This page states it once; the pages on statements, namespaces, and
+classes cite it.
 
 Depends on: namespaces and using, class definitions and members, access
 control.
@@ -16,14 +22,21 @@ control.
 :rules: NAM-1 NAM-3 NAM-8
 :exceptions: NAM-6
 
-A scope is a region of the program where names can be declared: a
-block, a function's parameter list, a class body, a namespace, or the
-whole translation unit. A declaration puts its name into the scope
-that contains it, and the name is visible from that point to the end of
-the scope. Before that point the name does not exist, and after the
-scope ends it is gone. A scope holds one declaration for each name,
-unless the language says that two declarations of the name describe
-one entity, as it does for a function declared twice.
+A scope is a region of the program where names can be declared. It is
+one of these:
+
+- a block,
+- a function's parameter list,
+- a class body,
+- a namespace,
+- the whole translation unit.
+
+A declaration puts its name into the scope that contains it, and the
+name is visible from that point to the end of the scope. Before that
+point the name does not exist, and after the scope ends it is gone. A
+scope holds one declaration for each name, unless the language says that
+two declarations of the name describe one entity, as it does for a
+function declared twice.
 :::
 
 :::{principle} NAM-P2
@@ -80,10 +93,13 @@ unit.
 :tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp expressions/primary/name-undeclared.cpp foundations/names/adl-not-for-fundamental.cpp statements/blocks/block-scope.cpp statements/if/init-scope-ends.cpp statements/loops/for-init-scope.cpp statements/loops/body-own-scope.cpp
 
 A use of a name must find a declaration that is visible at that point
-(NAM-1). A use before the declaration, a use after the scope of the
-declaration ends, and a use of a name that only another translation unit
-declares are rejected. In a class body, NAM-6 makes later members
-visible.
+(NAM-1). These uses are rejected:
+
+- a use before the declaration,
+- a use after the scope of the declaration ends,
+- a use of a name that only another translation unit declares.
+
+In a class body, NAM-6 makes later members visible.
 :::
 
 :::{rule} NAM-2

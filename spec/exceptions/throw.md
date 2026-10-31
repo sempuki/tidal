@@ -2,9 +2,13 @@
 
 A `throw` expression leaves the current point of execution with a value.
 The value becomes the exception object, which lives until the last
-handler for it finishes. This page covers the operand of `throw`, how the
-exception object is made from it, its type and lifetime, `throw` with no
-operand, and `throw` during constant evaluation.
+handler for it finishes. This page covers:
+
+- the operand of `throw`,
+- how the exception object is made from it,
+- its type and lifetime,
+- `throw` with no operand,
+- `throw` during constant evaluation.
 
 Depends on: value categories and temporaries, copy and move, constant
 evaluation, objects and lifetime.
@@ -15,26 +19,34 @@ evaluation, objects and lifetime.
 :rules: THR-1 THR-2 THR-3
 
 A `throw` makes the exception object from its operand the way a
-declaration makes a variable from an initializer. A prvalue operand
-becomes the exception object directly, so no copy or move happens and
-none needs to exist ({principle}`VC-P2`). A local variable is about to
-end, so it is moved. Any other lvalue is copied. Arrays and functions
-decay to pointers, and cv-qualifiers are dropped, because the exception
-object is a fresh object of its own. So the operand's type must be
-complete and not abstract, and the copy or move that would run must be
-usable, as must the destructor that ends the exception object.
+declaration makes a variable from an initializer.
+
+- A prvalue operand becomes the exception object directly, so no copy
+  or move happens and none needs to exist ({principle}`VC-P2`).
+- A local variable is about to end, so it is moved.
+- Any other lvalue is copied.
+
+Arrays and functions decay to pointers, and cv-qualifiers are dropped,
+because the exception object is a fresh object of its own. So the
+operand's type must be complete and not abstract, and the copy or move
+that would run must be usable, as must the destructor that ends the
+exception object.
 :::
 
 :::{principle} THR-P2
 :rules: THR-4 THR-6 THR-8
 
 The exception object belongs to no scope ({principle}`OBJ-P2` does not
-apply to it). It begins at the `throw`, outlives every block that the
-exception leaves, and ends when the last handler for it ends. Its type
-is fixed at the `throw` as the static type of the operand, so a derived
-object thrown through a base reference is sliced. A rethrow passes the
-same object on, with any changes a handler made to it, and a handler
-that takes it by value works on a copy.
+apply to it). The object:
+
+- begins at the `throw`,
+- outlives every block that the exception leaves,
+- ends when the last handler for it ends.
+
+Its type is fixed at the `throw` as the static type of the operand, so a
+derived object thrown through a base reference is sliced. A rethrow
+passes the same object on, with any changes a handler made to it, and a
+handler that takes it by value works on a copy.
 :::
 
 :::{principle} THR-P3
@@ -112,9 +124,11 @@ called at run time and throws then.
 :kind: required
 :tests: exceptions/throw/prvalue-initializes-directly.cpp exceptions/throw/deleted-copy-prvalue.cpp exceptions/throw/global-lvalue-copied.cpp exceptions/throw/local-variable-moved.cpp
 
-A `throw` initializes the exception object from its operand. A prvalue
-operand initializes it directly, with no copy or move. A local variable
-operand is moved. Any other lvalue operand is copied.
+A `throw` initializes the exception object from its operand:
+
+- A prvalue operand initializes it directly, with no copy or move.
+- A local variable operand is moved.
+- Any other lvalue operand is copied.
 :::
 
 :::{rule} THR-2

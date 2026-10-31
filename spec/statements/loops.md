@@ -1,7 +1,11 @@
 # Iteration statements
 
-The `while`, `do`, and `for` statements execute a statement again and
-again while a condition is true.
+These statements execute a statement again and again while a condition
+is true:
+
+- `while`,
+- `do`,
+- `for`.
 
 ## Principles
 
@@ -10,12 +14,15 @@ again while a condition is true.
 
 A loop repeats a body while a condition, converted to `bool` by
 {term}`contextual conversion`, holds. The three forms differ only in
-when the condition is tested and what runs around the body. `while`
-tests first. `do` tests after, so the body runs at least once, and its
-condition cannot be a declaration, because a declaration there would
-have no place to live. `for` adds a step that runs once before the loop
-and a step that runs after each body, and leaves any part out, with an
-absent condition meaning `true`.
+when the condition is tested and what runs around the body.
+
+- `while` tests first.
+- `do` tests after, so the body runs at least once, and its condition
+  cannot be a declaration, because a declaration there would have no
+  place to live.
+- `for` adds a step that runs once before the loop and a step that runs
+  after each body, and leaves any part out, with an absent condition
+  meaning `true`.
 :::
 
 :::{principle} LOOP-P2
@@ -73,10 +80,14 @@ the body (LOOP-4).
 :kind: reject
 :tests: statements/loops/for-init-redeclared-in-condition.cpp statements/loops/for-init-static-assert.cpp statements/loops/do-body-name-not-in-condition.cpp
 
-In a `for` statement, the condition must not declare a name that the
-initializer declares, and the initializer must not be a declaration that
-IF-21 excludes. The condition of a `do` statement must not use a name
-that the body block declares.
+These conditions apply:
+
+- In a `for` statement, the condition must not declare a name that the
+  initializer declares.
+- In a `for` statement, the initializer must not be a declaration that
+  IF-21 excludes.
+- The condition of a `do` statement must not use a name that the body
+  block declares.
 :::
 
 :::{rule} LOOP-5
@@ -117,9 +128,14 @@ executes at least one time.
 :kind: required
 :tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp
 
-`for` executes its initializer one time. Each iteration evaluates the
-condition, executes the body, and then evaluates the iteration
-expression. A variable that the condition declares is destroyed after the
+`for` executes its initializer one time. Each iteration does these
+steps:
+
+1. It evaluates the condition.
+2. It executes the body.
+3. It evaluates the iteration expression.
+
+A variable that the condition declares is destroyed after the
 iteration expression. Each part can be absent, and an absent condition is
 `true`. A variable that the initializer declares is created one time and
 destroyed one time, when the statement ends, also after a `break`.

@@ -1,10 +1,13 @@
 # The inline specifier
 
 `inline` lets a program define a function or variable in each translation
-unit that uses it. All these definitions are one entity. This page covers
-where `inline` can occur, which declarations are inline without the
-keyword, inline static data members, and inline functions across
-translation units.
+unit that uses it. All these definitions are one entity. This page
+covers:
+
+- where `inline` can occur,
+- which declarations are inline without the keyword,
+- inline static data members,
+- inline functions across translation units.
 
 Inline namespaces are with namespaces. LNK-4 gives the rule for one
 entity with one address.
@@ -19,13 +22,15 @@ definitions and members.
 
 `inline` means that each translation unit that uses an entity defines
 it, and that all the definitions are one entity ({principle}`STO-P4`).
-Everything else follows. A unit that uses the entity must define it,
-because no other unit's definition is promised. A unit that does not use
-it need not. Every unit must agree that the entity is `inline`, and the
-definitions must match, because a static local variable inside an
-inline function is still one object for the program. An entity with
-internal linkage is never shared, so `inline` on it changes nothing
-across units.
+Everything else follows.
+
+- A unit that uses the entity must define it, because no other unit's
+  definition is promised. A unit that does not use it need not.
+- Every unit must agree that the entity is `inline`, and the
+  definitions must match, because a static local variable inside an
+  inline function is still one object for the program.
+- An entity with internal linkage is never shared, so `inline` on it
+  changes nothing across units.
 :::
 
 :::{principle} INL-P2
@@ -41,11 +46,14 @@ inline function once.
 :rules: INL-3 INL-4 INL-8
 
 What is defined inside a class body is meant to be seen in every unit
-that sees the class, so it is inline without the keyword: member and
-friend functions defined there, `constexpr` members, and the special
-members the implementation writes. A static data member can join them by
-being declared `inline` in the class, and then needs no definition
-outside it.
+that sees the class, so it is inline without the keyword:
+
+- member and friend functions defined there,
+- `constexpr` members,
+- the special members the implementation writes.
+
+A static data member can join them by being declared `inline` in the
+class, and then needs no definition outside it.
 :::
 
 ## Syntax

@@ -4,9 +4,15 @@ A virtual function is a member function that a derived class can
 override. A call through a pointer or reference to a base calls the
 override for the class that the object was created as. An abstract class
 has a pure virtual function, and a program cannot create an object of it.
-This page covers declaring and overriding virtual functions, `override`
-and `final`, return types of overrides, calls during construction and
-destruction, virtual destructors, abstract classes, and `dynamic_cast`.
+This page covers:
+
+- declaring and overriding virtual functions,
+- `override` and `final`,
+- return types of overrides,
+- calls during construction and destruction,
+- virtual destructors,
+- abstract classes,
+- `dynamic_cast`.
 
 Depends on: derived classes, constructors and destructors, access
 control, `new` and `delete`.
@@ -28,10 +34,15 @@ run time, so every virtual function needs a definition, called or not.
 :rules: VIRT-2 VIRT-3 VIRT-4 VIRT-14 VIRT-15 VIRT-19
 
 An override replaces a function, so it must fit where the original
-stood: declared as a member in a class, with the same return type or a
-pointer or reference to a more derived class, and with the same
-`consteval` and deleted status. `override` and `final` let a class say
-what it means, and the implementation holds it to that.
+stood:
+
+- declared as a member in a class,
+- with the same return type or a pointer or reference to a more derived
+  class,
+- with the same `consteval` and deleted status.
+
+`override` and `final` let a class say what it means, and the
+implementation holds it to that.
 :::
 
 :::{principle} VIRT-P3
@@ -179,9 +190,11 @@ return type. An override can make a function pure again.
 :kind: reject
 :tests: classes/virtual/pure-friend.cpp classes/virtual/pure-inline-definition.cpp classes/virtual/pure-nonvirtual.cpp classes/virtual/pure-not-zero.cpp
 
-A pure specifier is `= 0` on a virtual function. It must not occur on a
-function that is not virtual, a friend, or a function defined in the
-class.
+A pure specifier is `= 0` on a virtual function. It must not occur on:
+
+- a function that is not virtual,
+- a friend,
+- a function defined in the class.
 :::
 
 :::{rule} VIRT-16
@@ -227,10 +240,16 @@ must not have the name and parameters of a virtual function of a base
 :tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp
 
 A member function overrides a virtual function of a base if it has the
-same name, parameter types, cv-qualifiers, and ref-qualifier. It is then
-virtual, with or without the keyword. A call through a pointer or
-reference calls the final overrider for the class of the object. These
-calls do not use the final overrider:
+same:
+
+- name,
+- parameter types,
+- cv-qualifiers,
+- ref-qualifier.
+
+It is then virtual, with or without the keyword. A call through a
+pointer or reference calls the final overrider for the class of the
+object. These calls do not use the final overrider:
 
 - a qualified call such as `p->B::f()`,
 - a call on an object, not a pointer or reference.

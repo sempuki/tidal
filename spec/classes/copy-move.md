@@ -3,9 +3,13 @@
 A copy constructor and a copy assignment operator make an object equal to
 another object of its class. A move constructor and a move assignment
 operator do the same, and they can take resources from an object that a
-program no longer needs. This page covers how to declare them, when a
-class gets them implicitly, when they are deleted, what the implicit ones
-do, and when a copy or move does not occur.
+program no longer needs. This page covers:
+
+- how to declare them,
+- when a class gets them implicitly,
+- when they are deleted,
+- what the implicit ones do,
+- when a copy or move does not occur.
 
 Depends on: constructors and destructors, reference binding, overload
 resolution *(overload resolution referenced)*, deleted and defaulted
@@ -20,10 +24,13 @@ A class object is copied or moved part by part: the bases in the order
 of the base list, then the members in the order of their declarations,
 and an array member element by element. The functions that do this are
 the copy and move constructors and the copy and move assignment
-operators. The language recognizes them by their signatures. A copy
-function takes a reference to the class, a move function takes an rvalue
-reference, and the assignment operators are members of the class. A
-constructor that takes the class by value cannot exist, because it
+operators. The language recognizes them by their signatures:
+
+- A copy function takes a reference to the class.
+- A move function takes an rvalue reference.
+- The assignment operators are members of the class.
+
+A constructor that takes the class by value cannot exist, because it
 would need itself to copy its argument.
 :::
 
@@ -54,11 +61,15 @@ resource, and both objects release it (NEW-5).
 :rules: CPY-7 CPY-14 CPY-17 CPY-23 CPY-26
 
 When a part cannot be copied or moved part by part, the implicit function
-is not an error. It is deleted, so the problem appears only at a use. A
-reference member, a `const` member, or a part whose own function is
-deleted or hidden each makes the containing function deleted. The same
-holds for a function that the class defaults in its definition, also
-when its signature differs from the implicit one. A deleted move
+is not an error. It is deleted, so the problem appears only at a use.
+Each of these makes the containing function deleted:
+
+- a reference member,
+- a `const` member,
+- a part whose own function is deleted or hidden.
+
+The same holds for a function that the class defaults in its definition,
+also when its signature differs from the implicit one. A deleted move
 function that the implementation produced steps aside, so an rvalue
 copies instead. A move function that the class deletes by name does not
 step aside. A function defaulted after the class definition must be one
@@ -119,8 +130,14 @@ The four functions are the *copy and move functions* of a class. A
 :tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp
 
 A *copy constructor* of class `T` is a constructor that is not a template.
-Its first parameter is `T&`, `const T&`, `volatile T&`, or
-`const volatile T&`. Each other parameter has a default argument. A
+Its first parameter is one of these:
+
+- `T&`,
+- `const T&`,
+- `volatile T&`,
+- `const volatile T&`.
+
+Each other parameter has a default argument. A
 constructor template is never a copy constructor.
 :::
 
@@ -300,7 +317,11 @@ copy-initialization.
 
 A prvalue of class type initializes the target object directly. No copy
 or move constructor is called, and none needs to be accessible or not
-deleted. This applies to nested prvalues, return values, and arguments.
+deleted. This applies to:
+
+- nested prvalues,
+- return values,
+- arguments.
 :::
 
 :::{rule} CPY-11
@@ -315,9 +336,13 @@ In a `return` statement, a name of one of these is an xvalue:
 
 Parentheses around the name do not change this. The return value is then
 initialized by a move, or by a converting constructor that takes an
-rvalue. A name of a variable of lvalue reference type, a global variable,
-or a member is an lvalue. A parameter is always moved to the return value,
-once.
+rvalue. A name of one of these is an lvalue:
+
+- a variable of lvalue reference type,
+- a global variable,
+- a member.
+
+A parameter is always moved to the return value, once.
 :::
 
 :::{rule} CPY-25

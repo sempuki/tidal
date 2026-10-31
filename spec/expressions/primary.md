@@ -1,9 +1,18 @@
 # Primary expressions
 
-Primary expressions are the simplest expressions. They are literals,
-`this`, names, and an expression in parentheses. This page covers the
-types and values of literals, the meaning of `this`, the value category
-of names, and qualified names.
+Primary expressions are the simplest expressions. They are these:
+
+- literals,
+- `this`,
+- names,
+- an expression in parentheses.
+
+This page covers:
+
+- the types and values of literals,
+- the meaning of `this`,
+- the value category of names,
+- qualified names.
 
 Lambda expressions, fold expressions, and requires expressions are
 primary expressions too. Lambdas have their own page. Fold and requires
@@ -66,12 +75,16 @@ else.
 
 The character sets and the floating-point formats of a target belong to
 the implementation, so the parts of a literal that depend on them are
-implementation-defined. These are the value of a multi-character
-literal, the signedness of `char`, the rounding of a floating value with
-no exact representation, a floating value outside its type's range, the
-extended floating suffixes, and a character that needs more than one
-code unit. An implementation should warn where such a literal is likely
-a mistake.
+implementation-defined. These are:
+
+- the value of a multi-character literal,
+- the signedness of `char`,
+- the rounding of a floating value with no exact representation,
+- a floating value outside its type's range,
+- the extended floating suffixes,
+- a character that needs more than one code unit.
+
+An implementation should warn where such a literal is likely a mistake.
 :::
 
 ## Syntax
@@ -138,10 +151,12 @@ can come before or after the length suffix.
 :kind: reject
 :tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp expressions/primary/int-prefix-no-digits-hex.cpp expressions/primary/int-prefix-no-digits-binary.cpp
 
-A base prefix must have at least one digit after it. Each digit must be
-valid for the base of the literal. A digit separator
-must have a digit on each side. A suffix must be one of the forms in the
-syntax.
+These requirements apply:
+
+- A base prefix must have at least one digit after it.
+- Each digit must be valid for the base of the literal.
+- A digit separator must have a digit on each side.
+- A suffix must be one of the forms in the syntax.
 :::
 
 :::{rule} PRIM-4
@@ -158,8 +173,11 @@ and has a binary exponent `p`, which is a power of 2.
 :kind: reject
 :tests: expressions/primary/float-exponent-no-digits.cpp expressions/primary/float-exponent-sign-no-digits.cpp expressions/primary/float-hex-needs-exponent.cpp expressions/primary/float-integer-suffix.cpp
 
-A hexadecimal floating literal must have an exponent. An exponent must
-have digits. A floating literal must not have an integer suffix.
+These requirements apply:
+
+- A hexadecimal floating literal must have an exponent.
+- An exponent must have digits.
+- A floating literal must not have an integer suffix.
 :::
 
 :::{rule} PRIM-5
@@ -176,10 +194,15 @@ The prefix of a character literal sets its type:
 | `u` | `char16_t` |
 | `U` | `char32_t` |
 
-An escape sequence gives one code unit or character. The forms are simple
-escapes such as `\n`, octal `\101` or `\o{101}`, hexadecimal `\x41` or
-`\x{41}`, and universal character names `\u00e9` and `\U0001F600`. A
-universal character name can name a basic or a control character. A
+An escape sequence gives one code unit or character. The forms are
+these:
+
+- simple escapes such as `\n`,
+- octal `\101` or `\o{101}`,
+- hexadecimal `\x41` or `\x{41}`,
+- universal character names `\u00e9` and `\U0001F600`.
+
+A universal character name can name a basic or a control character. A
 named escape `\N{...}` gives the character with that Unicode name.
 :::
 
@@ -214,11 +237,15 @@ each character as written.
 :kind: reject
 :tests: expressions/primary/string-concat-mixed.cpp expressions/primary/string-raw-bad-delimiter.cpp expressions/primary/string-to-nonconst-pointer.cpp expressions/primary/string-raw-delimiter-too-long.cpp expressions/primary/string-raw-delimiter-backslash.cpp expressions/primary/string-concat-u8-u.cpp expressions/primary/string-raw-delimiter-paren.cpp expressions/primary/string-raw-delimiter-tab.cpp
 
-If two adjacent string literals both have a prefix, the prefixes must be
-the same. A string literal does not convert to a pointer to non-const
-characters. A raw string delimiter must have at most 16 characters and
-must not contain a space, a parenthesis, a backslash, or a control
-character such as a tab.
+These requirements apply:
+
+- If two adjacent string literals both have a prefix, the prefixes must
+  be the same.
+- A string literal does not convert to a pointer to non-const
+  characters.
+- A raw string delimiter must have at most 16 characters. It must not
+  contain a space, a parenthesis, a backslash, or a control character
+  such as a tab.
 :::
 
 :::{rule} PRIM-10
@@ -252,8 +279,11 @@ initializer and in the trailing return type of a member function.
 :kind: reject
 :tests: expressions/primary/this-namespace.cpp expressions/primary/this-static.cpp expressions/primary/this-explicit-object.cpp
 
-A program must not use `this` in a static member function, in a member
-function with an explicit object parameter, or outside a class.
+A program must not use `this` in these places:
+
+- a static member function,
+- a member function with an explicit object parameter,
+- outside a class.
 :::
 
 :::{rule} PRIM-12

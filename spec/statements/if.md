@@ -53,12 +53,16 @@ any statement.
 
 `if constexpr` moves the decision to translation. The condition is a
 constant, so the implementation knows which branch is dead and discards
-it. A discarded branch is still parsed and, outside a template, still
-checked, because it is still part of the program. In a template it is
-not instantiated, so it can hold code that is wrong for the template
-arguments. Its `return` statements do not deduce the return type, and
-nothing it names needs a definition, because it never runs. A jump
-cannot enter a branch that was never selected.
+it. For a discarded branch:
+
+- It is still parsed and, outside a template, still checked, because it
+  is still part of the program.
+- In a template it is not instantiated, so it can hold code that is
+  wrong for the template arguments.
+- Its `return` statements do not deduce the return type, and nothing it
+  names needs a definition, because it never runs.
+
+A jump cannot enter a branch that was never selected.
 :::
 
 :::{principle} IF-P4
@@ -151,8 +155,11 @@ initializer. The initializer can be:
 :kind: reject
 :tests: statements/if/init-static-assert.cpp statements/if/init-using-declaration.cpp statements/if/init-using-directive.cpp
 
-The initializer must not be a declaration of another kind, such as a
-`static_assert`, a using-declaration, or a using-directive.
+The initializer must not be a declaration of another kind, such as:
+
+- a `static_assert`,
+- a using-declaration,
+- a using-directive.
 :::
 
 :::{rule} IF-8
@@ -243,9 +250,12 @@ information is permitted.
 :kind: reject
 :tests: statements/if/constexpr-goto-into.cpp statements/if/constexpr-case-into.cpp statements/if/consteval-goto-into.cpp
 
-A `goto`, `case` label, or `default` label must not transfer control from
-outside an `if constexpr` or `if consteval` statement into one of its
-branches.
+These must not transfer control from outside an `if constexpr` or
+`if consteval` statement into one of its branches:
+
+- a `goto`,
+- a `case` label,
+- a `default` label.
 :::
 
 :::{rule} IF-19
@@ -294,8 +304,12 @@ there is one.
 
 A condition declaration declares and initializes one variable. The value
 of the variable, after contextual conversion to `bool`, selects the
-branch. The declaration can use `auto` and `constexpr`. Its initializer can be
-`= e`, `= {e}`, or `{e}`.
+branch. The declaration can use `auto` and `constexpr`. Its initializer
+can have one of these forms:
+
+- `= e`
+- `= {e}`
+- `{e}`
 :::
 
 :::{rule} IF-11
@@ -312,10 +326,14 @@ last is destroyed first.
 :kind: required
 :tests: statements/if/goto-into-branch.cpp statements/if/case-into-branch.cpp
 
-In the ordinary form, a `goto` or a `case` or `default` label of an
-enclosing `switch` can transfer control into a branch. The condition is
-not evaluated in that case. The general rules for jumps over
-initialization apply ({rule}`JMP-6`).
+In the ordinary form, these can transfer control into a branch:
+
+- a `goto`,
+- a `case` label of an enclosing `switch`,
+- a `default` label of an enclosing `switch`.
+
+The condition is not evaluated in that case. The general rules for jumps
+over initialization apply ({rule}`JMP-6`).
 :::
 
 :::{rule} IF-18

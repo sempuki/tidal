@@ -10,12 +10,15 @@ and `T{e}`. `dynamic_cast` applies to classes ({rule}`VIRT-10`).
 :rules: CAST-1 CAST-2 CAST-4 CAST-7 CAST-15 CAST-3
 
 Each named cast has one job, so a reader sees what a cast is for.
-`static_cast` does the conversions that an initialization could do, and
-the inverses of implicit conversions that are safe to undo, such as base
-to derived and `void*` to an object pointer. `const_cast` changes
-qualifiers and nothing else, and its result is the same object.
-`reinterpret_cast` changes how storage is read and nothing else. A cast
-that would need two jobs, such as a change of qualifiers inside a
+
+- `static_cast` does the conversions that an initialization could do,
+  and the inverses of implicit conversions that are safe to undo, such
+  as base to derived and `void*` to an object pointer.
+- `const_cast` changes qualifiers and nothing else, and its result is
+  the same object.
+- `reinterpret_cast` changes how storage is read and nothing else.
+
+A cast that would need two jobs, such as a change of qualifiers inside a
 `static_cast`, is rejected, because the reader could not tell which was
 intended.
 :::
@@ -24,12 +27,17 @@ intended.
 :rules: CAST-9 CAST-10 CAST-11 CAST-13 CAST-18
 :exceptions: CAST-17
 
-The older cast notations are defined by the named casts. `(T)e` and
-`T(e)` try the named casts in a fixed order and take the first that
-works. `T{e}` is list initialization, so it refuses to narrow. `T(a, b)`
-is construction. `auto(e)` makes a plain prvalue copy, and `T()` makes a
-value-initialized one. The one power the old notation keeps for itself
-is a conversion to or from a base that is not accessible.
+The older cast notations are defined by the named casts.
+
+- `(T)e` and `T(e)` try the named casts in a fixed order and take the
+  first that works.
+- `T{e}` is list initialization, so it refuses to narrow.
+- `T(a, b)` is construction.
+- `auto(e)` makes a plain prvalue copy.
+- `T()` makes a value-initialized prvalue.
+
+The one power the old notation keeps for itself is a conversion to or
+from a base that is not accessible.
 :::
 
 :::{principle} CAST-P3
@@ -46,10 +54,13 @@ constant evaluation refuses the cast because it has no bits to show.
 :rules: CAST-5 CAST-14
 
 A cast changes the type through which an object is seen, and never the
-object. So writing through a `const_cast` to an object that is `const`,
-treating an object as a derived class that it is not, and giving an
-enumeration a value it cannot hold are all undefined. The cast was
-valid; the use of its result was not.
+object. So these uses are all undefined:
+
+- writing through a `const_cast` to an object that is `const`,
+- treating an object as a derived class that it is not,
+- giving an enumeration a value it cannot hold.
+
+The cast was valid; the use of its result was not.
 :::
 
 ## Syntax
@@ -84,21 +95,29 @@ valid; the use of its result was not.
 :kind: reject
 :tests: expressions/casts/static-cast-unrelated-pointer.cpp expressions/casts/static-cast-removes-const.cpp expressions/casts/static-cast-pointer-to-integer.cpp expressions/casts/static-cast-integer-to-pointer.cpp expressions/casts/static-cast-function-to-object-pointer.cpp expressions/casts/static-cast-downcast-private-base.cpp
 
-`static_cast` must not convert between unrelated pointer types. It must
-not remove a cv-qualifier. It must not convert a pointer to an integer,
-or an integer other than a null pointer constant to a pointer. It must
-not convert between a pointer to a function and a pointer to an object,
-or to a derived class through a base that is not accessible.
+`static_cast` must not:
+
+- convert between unrelated pointer types,
+- remove a cv-qualifier,
+- convert a pointer to an integer,
+- convert an integer other than a null pointer constant to a pointer,
+- convert between a pointer to a function and a pointer to an object,
+- convert to a derived class through a base that is not accessible.
 :::
 
 :::{rule} CAST-4
 :kind: reject
 :tests: expressions/casts/const-cast-changes-type.cpp expressions/casts/const-cast-value.cpp expressions/casts/const-cast-member-pointer.cpp expressions/casts/const-cast-function-pointer.cpp
 
-`const_cast` can only add or remove cv-qualifiers. Its target type must be
-a pointer, a pointer to data member, or a reference. It can change each
-level of a multi-level pointer. It must not change a pointer to a
-function.
+`const_cast` can only add or remove cv-qualifiers. Its target type must
+be one of these:
+
+- a pointer,
+- a pointer to data member,
+- a reference.
+
+It can change each level of a multi-level pointer. It must not change a
+pointer to a function.
 :::
 
 :::{rule} CAST-7
@@ -193,12 +212,14 @@ The result of `const_cast` refers to the same object as its operand.
 :kind: required
 :tests: expressions/casts/reinterpret-round-trip.cpp expressions/casts/reinterpret-unrelated-pointer.cpp expressions/casts/reinterpret-reference.cpp expressions/casts/reinterpret-nullptr-to-integer.cpp
 
-`reinterpret_cast` can convert a pointer to a large enough integer type.
-Converting that integer back gives the original pointer.
-`reinterpret_cast` can also convert between unrelated pointer types. A
-cast to a reference type `T&` gives an lvalue that refers to the operand
-as type `T`. A null pointer value of type `std::nullptr_t` converts to an
-integer type.
+`reinterpret_cast` can do these conversions:
+
+- a pointer to a large enough integer type. Converting that integer
+  back gives the original pointer.
+- between unrelated pointer types.
+- to a reference type `T&`. The result is an lvalue that refers to the
+  operand as type `T`.
+- a null pointer value of type `std::nullptr_t` to an integer type.
 :::
 
 ## Undefined Behavior

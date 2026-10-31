@@ -42,12 +42,16 @@ declaration are initialized from left to right.
        : | "=" `braced`
 ```
 
-An initializer after `=` is *copy-initialization*. An initializer in
-parentheses is *direct-initialization*. A braced initializer is
-*list-initialization*. A variable without an initializer is
-*default-initialized*. Empty parentheses or braces give
-*value-initialization*. Objects with static or thread storage are
-*zero-initialized* first (STO-3).
+These terms name the forms of initialization:
+
+- An initializer after `=` is *copy-initialization*.
+- An initializer in parentheses is *direct-initialization*.
+- A braced initializer is *list-initialization*.
+- A variable without an initializer is *default-initialized*.
+- Empty parentheses or braces give *value-initialization*.
+
+Objects with static or thread storage are *zero-initialized* first
+(STO-3).
 
 ## Constraints
 
@@ -108,10 +112,14 @@ An array must not be initialized from another array.
 :kind: required
 :tests: declarations/initialization/forms/value-init-forms.cpp
 
-Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is `0`
-for an integer, `0.0` for a floating-point type, `false` for `bool`, and
-a null pointer for a pointer. An array element without a value in the
-list also gets zero.
+Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is:
+
+- `0` for an integer,
+- `0.0` for a floating-point type,
+- `false` for `bool`,
+- a null pointer for a pointer.
+
+An array element without a value in the list also gets zero.
 :::
 
 :::{rule} INIT-6

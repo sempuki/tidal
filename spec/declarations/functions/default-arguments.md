@@ -11,8 +11,11 @@ argument uses the default argument.
 A default argument is an expression that the caller leaves out and the
 call fills in. It is evaluated at each call that uses it, as if written
 at the call, but its names mean what they meant at the declaration. So
-it cannot name other parameters, `this`, or the locals of an enclosing
-function, because those exist only inside a call.
+it cannot name these, because they exist only inside a call:
+
+- other parameters,
+- `this`,
+- the locals of an enclosing function.
 :::
 
 :::{principle} DEFARG-P2
@@ -143,6 +146,7 @@ int k(int v = next());      // next() is called at each k()
 
 All seven compilers agree on 19 of 21 tests. The results are in
 `tests/RESULTS.md`.
+
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
   GCC and EDG accept it ({question}`Q-0111`).

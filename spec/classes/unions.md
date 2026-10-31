@@ -2,9 +2,12 @@
 
 A union is a class whose non-static data members share storage. At most
 one member is active at a time. A bit-field is a data member with a width
-in bits. This page covers union declarations and their special members,
-initialization and the active member, anonymous unions, and bit-field
-declarations, values, and their limits.
+in bits. This page covers:
+
+- union declarations and their special members,
+- initialization and the active member,
+- anonymous unions,
+- bit-field declarations, values, and their limits.
 
 Depends on: class definitions and members, constructors and destructors,
 copy and move, list initialization and aggregates, standard conversions.
@@ -82,9 +85,15 @@ no variable.
 
 Each data member of a union that is not static begins at the first byte
 of the union. A union is at least as large as its largest member, and at
-least as aligned as its most strictly aligned member. A union can have member functions, constructors, a
-destructor, static data members, and array members. Its members are
-public unless an access label says otherwise.
+least as aligned as its most strictly aligned member. A union can have:
+
+- member functions,
+- constructors,
+- a destructor,
+- static data members,
+- array members.
+
+Its members are public unless an access label says otherwise.
 :::
 
 :::{rule} UNI-2
@@ -99,11 +108,16 @@ give the limits on bases and virtual functions.
 :kind: required
 :tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
 
-If a variant member has a non-trivial default constructor, copy or move
-function, or destructor, the matching special member of the union is
-deleted. The same applies to a class with an anonymous union member. A
-default member initializer on a variant member gives the union a usable
-default constructor.
+If a variant member has one of these non-trivial functions, the matching
+special member of the union is deleted:
+
+- a default constructor,
+- a copy or move function,
+- a destructor.
+
+The same applies to a class with an anonymous union member. A default
+member initializer on a variant member gives the union a usable default
+constructor.
 :::
 
 :::{rule} UNI-11
@@ -151,7 +165,11 @@ A braced initializer for the first member must not narrow.
 The members of an anonymous union are members of the enclosing scope. In
 a class, they are variant members of the class. A braced list
 initializes an anonymous union member with its own braces. An anonymous
-union can be local, a class member, or `static` at namespace scope.
+union can be:
+
+- local,
+- a class member,
+- `static` at namespace scope.
 :::
 
 :::{rule} UNI-9
@@ -205,20 +223,28 @@ type.
 :kind: reject
 :tests: classes/unions/bitfield-address.cpp classes/unions/bitfield-alignof-type-ok.cpp classes/unions/bitfield-const-ref-temp.cpp classes/unions/bitfield-nonconst-ref.cpp classes/unions/bitfield-sizeof.cpp
 
-A program must not take the address of a bit-field, apply `sizeof` to
-it, or bind a non-const reference to it. A `const` reference binds to a
-temporary that holds a copy of the value.
+A program must not:
+
+- take the address of a bit-field,
+- apply `sizeof` to it,
+- bind a non-const reference to it.
+
+A `const` reference binds to a temporary that holds a copy of the value.
 :::
 
 :::{rule} BF-6
 :kind: required
 :tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-promotes-unsigned-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp
 
-A bit-field promotes to `int` if `int` can hold all values of its width.
-If not, it promotes to `unsigned int` if `unsigned int` can hold them.
-If neither can, the promotion uses its declared type as other integers
-do. The
-type of the bit-field for `auto` deduction is the declared type.
+A bit-field promotes as follows:
+
+1. If `int` can hold all values of its width, it promotes to `int`.
+2. If not, it promotes to `unsigned int` if `unsigned int` can hold
+   them.
+3. If neither can, the promotion uses its declared type as other
+   integers do.
+
+The type of the bit-field for `auto` deduction is the declared type.
 :::
 
 :::{rule} BF-7

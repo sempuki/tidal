@@ -1,8 +1,11 @@
 # List initialization and aggregates
 
 List-initialization uses a braced list, as in `int x{1};` or
-`S s = {1, 2};`. This page covers scalars, aggregates, and character
-arrays.
+`S s = {1, 2};`. This page covers:
+
+- scalars,
+- aggregates,
+- character arrays.
 
 An *aggregate* is an array, or a class with these properties (the
 {doc}`classes chapter </classes/index>` defines the terms):
@@ -29,12 +32,17 @@ next. A scalar takes one value, and no nesting.
 
 An aggregate is a class or array with nothing to hide, so a braced list
 initializes its parts directly, in the order they are declared, bases
-first. Inner braces can be left out where the values fill a member
-without ambiguity. A member with no value in the list gets its default
-member initializer or an empty list. A designator names the member that
-a value goes to, in declaration order. A list of one value of the
-aggregate's own type copies it. Parentheses give the same
-initialization with one value per part and no elision.
+first.
+
+- Inner braces can be left out where the values fill a member without
+  ambiguity.
+- A member with no value in the list gets its default member
+  initializer or an empty list.
+- A designator names the member that a value goes to, in declaration
+  order.
+- A list of one value of the aggregate's own type copies it.
+- Parentheses give the same initialization with one value per part and
+  no elision.
 :::
 
 :::{principle} LIST-P3

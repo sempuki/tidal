@@ -2,9 +2,13 @@
 
 A class or enumeration can give an operator a meaning for its own values.
 An expression that uses the operator then calls an *operator function*.
-This page covers how to declare operator functions, which operators a
-program can overload, how an expression selects an operator function,
-the increment and member-access operators, and literal operators.
+This page covers:
+
+- how to declare operator functions,
+- which operators a program can overload,
+- how an expression selects an operator function,
+- the increment and member-access operators,
+- literal operators.
 
 Defaulted comparison operators have their own page.
 
@@ -18,24 +22,36 @@ move, sequencing and evaluation order, overload resolution
 :rules: OPR-1 OPR-6 OPR-7 OPR-11 OPR-12 OPR-15
 
 An operator applied to a class or enumeration operand is a function call
-in operator syntax. The function is chosen by overload resolution among
-the member operators of the left operand, the non-member operators that
-lookup finds, and the built-in operators after conversion. The syntax
-does not change: precedence and associativity stay, and the operands
-become ordinary arguments, evaluated in the built-in order only where the
-language promises that order.
+in operator syntax. The function is chosen by overload resolution among:
+
+- the member operators of the left operand,
+- the non-member operators that lookup finds,
+- the built-in operators after conversion.
+
+The syntax does not change: precedence and associativity stay, and the
+operands become ordinary arguments, evaluated in the built-in order only
+where the language promises that order.
 :::
 
 :::{principle} OPR-P2
 :rules: OPR-2 OPR-3 OPR-4 OPR-5 OPR-13 OPR-14
 
 An operator function keeps the shape of the operator it stands for. It
-has the same number of operands, no default arguments, and no new
-tokens. The
-operators that reach into the object, assignment, call, subscript, and
-arrow, must be members. The postfix increment takes a dummy `int` to
-tell it from the prefix form, and `operator->` chains until a pointer
-appears.
+has:
+
+- the same number of operands,
+- no default arguments,
+- no new tokens.
+
+The operators that reach into the object must be members. These are:
+
+- assignment,
+- call,
+- subscript,
+- arrow.
+
+The postfix increment takes a dummy `int` to tell it from the prefix
+form, and `operator->` chains until a pointer appears.
 :::
 
 :::{principle} OPR-P3
@@ -207,11 +223,15 @@ A literal for which no matching literal operator exists is not valid.
 :kind: reject
 :tests: classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp
 
-A literal operator must be a non-member function with C++ linkage. It
-can be declared at namespace scope or as a friend in a class, also with
-a definition there. It must have one of the parameter lists that OPR-8
-gives, and no default argument ({question}`Q-0060`). Adjacent string
-literals must not have two different suffixes.
+A literal operator must:
+
+- be a non-member function with C++ linkage,
+- have one of the parameter lists that OPR-8 gives,
+- have no default argument ({question}`Q-0060`).
+
+It can be declared at namespace scope or as a friend in a class, also
+with a definition there. Adjacent string literals must not have two
+different suffixes.
 :::
 
 ## Runtime Behavior
@@ -222,9 +242,14 @@ literals must not have two different suffixes.
 
 An expression that selects an operator function calls it with the
 operands as arguments. Both operands of an overloaded `&&` or `||` are
-evaluated, the left one first. For `<<`, `>>`, `=`, compound assignment,
-`[]`, `->*`, and `,`, the operands are evaluated in the order of the
-built-in operator.
+evaluated, the left one first. For these operators, the operands are
+evaluated in the order of the built-in operator:
+
+- `<<` and `>>`,
+- `=` and compound assignment,
+- `[]`,
+- `->*`,
+- `,`.
 :::
 
 ## Implementation Requirements

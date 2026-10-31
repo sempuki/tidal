@@ -9,16 +9,21 @@ operation with the assignment.
 :::{principle} ASN-P1
 :rules: ASN-1 ASN-2 ASN-3 ASN-6 ASN-7 ASN-10 ASN-12 ASN-14
 
-Assignment stores a value into an object. So the left operand must be
-an object that can be changed: an lvalue, not `const`, not an array, and
-not a function. A `volatile` object can be assigned. The right operand
-is converted to the object's type by an implicit conversion, and a
-braced list converts as list initialization does, without narrowing. The
-result is the object itself, as an lvalue, so assignments chain from
-the right. A bit-field is an object with no address, so the result of
-assigning to it has none either. For a class, assignment is a call to
-the class's own operator, so the class decides what its left operand
-can be.
+Assignment stores a value into an object. So the left operand must be an
+object that can be changed. It must be:
+
+- an lvalue,
+- not `const`,
+- not an array,
+- not a function.
+
+A `volatile` object can be assigned. The right operand is converted to
+the object's type by an implicit conversion, and a braced list converts
+as list initialization does, without narrowing. The result is the object
+itself, as an lvalue, so assignments chain from the right. A bit-field
+is an object with no address, so the result of assigning to it has none
+either. For a class, assignment is a call to the class's own operator,
+so the class decides what its left operand can be.
 :::
 
 :::{principle} ASN-P2

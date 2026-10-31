@@ -32,8 +32,11 @@ result can overflow.
 :rules: BIT-6 BIT-7 BIT-8
 
 An implementation should warn where the precedence or the operand types
-suggest a mistake: a comparison as an operand of a bitwise operator
-without parentheses, `~` on a `bool`, and two different enumerations.
+suggest a mistake. These cases suggest one:
+
+- a comparison as an operand of a bitwise operator without parentheses,
+- `~` on a `bool`,
+- two different enumerations.
 :::
 
 ## Syntax
@@ -61,19 +64,31 @@ right. `~` is a unary operator and binds more tightly than all of them.
 :kind: required
 :tests: expressions/bitwise/operands-arithmetic.cpp expressions/bitwise/different-enum-types.cpp
 
-The operands of `&`, `^`, `|`, and `~` can have integer, character,
-`bool`, or unscoped enumeration type. The two operands of a binary
-operator can be of different types, including two different enumerations.
+The operands of `&`, `^`, `|`, and `~` can have one of these types:
+
+- an integer type,
+- a character type,
+- `bool`,
+- an unscoped enumeration type.
+
+The two operands of a binary operator can be of different types,
+including two different enumerations.
 :::
 
 :::{rule} BIT-3
 :kind: reject
 :tests: expressions/bitwise/operands-floating.cpp expressions/bitwise/operands-pointer.cpp expressions/bitwise/operands-scoped-enum.cpp expressions/bitwise/complement-floating.cpp expressions/bitwise/complement-pointer.cpp expressions/bitwise/class-operand.cpp expressions/bitwise/nullptr-operand.cpp expressions/bitwise/member-pointer-operand.cpp
 
-An operand of `&`, `^`, `|`, or `~` must not have floating-point type,
-pointer type, scoped enumeration type, pointer-to-member type, or the
-type of `nullptr`. A class operand is valid only through a usable
-conversion or an operator function ({rule}`OPR-6`).
+An operand of `&`, `^`, `|`, or `~` must not have one of these types:
+
+- a floating-point type,
+- a pointer type,
+- a scoped enumeration type,
+- a pointer-to-member type,
+- the type of `nullptr`.
+
+A class operand is valid only through a usable conversion or an operator
+function ({rule}`OPR-6`).
 :::
 
 :::{rule} BIT-4

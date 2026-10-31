@@ -12,13 +12,19 @@ operands ({rule}`OPR-7`).
 :rules: LOG-1 LOG-2 LOG-3 LOG-6 LOG-10 LOG-12 LOG-13
 
 The logical operators work on truth values. Each operand is converted to
-`bool` by contextual conversion, the same conversion a condition uses,
-so any arithmetic value, pointer, pointer to member, `nullptr`, or
-class with an `explicit operator bool` is a valid operand, and anything
-that does not convert that way is rejected. The result is a `bool`
-prvalue ({principle}`VC-P1`). `&&` binds more tightly than `||`, both
-bind less tightly than the bitwise operators, and each operator has an
-alternative spelling as a word.
+`bool` by contextual conversion, the same conversion a condition uses.
+So each of these is a valid operand:
+
+- any arithmetic value,
+- a pointer,
+- a pointer to member,
+- `nullptr`,
+- a class with an `explicit operator bool`.
+
+Anything that does not convert that way is rejected. The result is a
+`bool` prvalue ({principle}`VC-P1`). `&&` binds more tightly than `||`,
+both bind less tightly than the bitwise operators, and each operator has
+an alternative spelling as a word.
 :::
 
 :::{principle} LOG-P2
@@ -64,17 +70,23 @@ The result of `&&`, `||`, and `!` has type `bool` and is a prvalue.
 :tests: expressions/logical/contextual-conversion.cpp
 
 Each operand is converted to `bool` by {term}`contextual conversion`.
-Arithmetic values, pointers, and classes with an `explicit operator bool`
-are valid operands.
+These are valid operands:
+
+- arithmetic values,
+- pointers,
+- classes with an `explicit operator bool`.
 :::
 
 :::{rule} LOG-3
 :kind: reject
 :tests: expressions/logical/operand-not-convertible.cpp expressions/logical/operand-scoped-enum.cpp expressions/logical/operand-void.cpp
 
-Each operand must be convertible to `bool` by contextual conversion. A
-class without a suitable conversion, a scoped enumeration, and `void` are
-not valid operands.
+Each operand must be convertible to `bool` by contextual conversion.
+These are not valid operands:
+
+- a class without a suitable conversion,
+- a scoped enumeration,
+- `void`.
 :::
 
 :::{rule} LOG-6
@@ -136,9 +148,9 @@ needed:
 :kind: required
 :tests: expressions/logical/values.cpp
 
-`a && b` is `true` if both operands are `true`. `a || b` is `true`
-if one or both operands are `true`. `!a` is `true` if `a` is
-`false`.
+- `a && b` is `true` if both operands are `true`.
+- `a || b` is `true` if one or both operands are `true`.
+- `!a` is `true` if `a` is `false`.
 :::
 
 :::{rule} LOG-4

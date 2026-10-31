@@ -13,11 +13,15 @@ Access control is about names, not objects. Each member name carries an
 access, set by the class key or by the last label before it. A use of
 the name is checked where the use occurs, after lookup and overload
 resolution have chosen the declaration, so an accessible overload that
-loses never rescues a call. Only names are checked: a deduced type, the
-final overrider of a virtual call, and the declarator of a member defined
-outside its class carry no name to check. A default argument is checked
-where the function is declared, because that is where its names are
-written.
+loses never rescues a call. Only names are checked. These carry no name
+to check:
+
+- a deduced type,
+- the final overrider of a virtual call,
+- the declarator of a member defined outside its class.
+
+A default argument is checked where the function is declared, because
+that is where its names are written.
 :::
 
 :::{principle} ACC-P2
@@ -34,11 +38,16 @@ protected parts of another.
 
 Friendship is granted by the class and belongs to the one it names. It
 does not pass on to the friends of a friend or to the classes derived
-from a friend. A class can befriend a function, one member function of
-another class, or a whole class, and needs access to a member function
-before it can name it. A friend function first declared in the class
-lives in the enclosing namespace but is found only through its
-arguments, so it stays with the class it serves.
+from a friend. A class can befriend:
+
+- a function,
+- one member function of another class,
+- a whole class.
+
+The class needs access to a member function before it can name it. A
+friend function first declared in the class lives in the enclosing
+namespace but is found only through its arguments, so it stays with the
+class it serves.
 :::
 
 :::{principle} ACC-P4
@@ -88,8 +97,14 @@ label. A class can have any number of labels, in any order.
 :tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
 
 Only the members and friends of a class can use the name of a private
-member. This applies to data members, member functions, static members,
-and member types. A member function can use the private members of any
+member. This applies to:
+
+- data members,
+- member functions,
+- static members,
+- member types.
+
+A member function can use the private members of any
 object of its class.
 :::
 
@@ -206,9 +221,14 @@ ACC-8 gives the access of the other members.
 :tests: classes/access/private-base-conversion.cpp
 
 A conversion from a derived class to one of its bases needs access to
-that base. This applies to pointers, references, and objects. In code
-that cannot access a private or protected base, the conversion is not
-valid.
+that base. This applies to:
+
+- pointers,
+- references,
+- objects.
+
+In code that cannot access a private or protected base, the conversion
+is not valid.
 :::
 
 :::{rule} ACC-9

@@ -10,10 +10,14 @@ return type from its `return` statements.
 
 A deduced return type is found as if each `return` statement initialized
 a variable declared with the placeholder, and all statements must
-agree. The rules for variables then carry over: `auto` drops references
-and qualifiers, `auto&` keeps them, and `decltype(auto)` takes the exact
-type. That last form can deduce a reference to a local variable, which
-is already gone when the caller uses it.
+agree. The rules for variables then carry over:
+
+- `auto` drops references and qualifiers,
+- `auto&` keeps them,
+- `decltype(auto)` takes the exact type.
+
+That last form can deduce a reference to a local variable, which is
+already gone when the caller uses it.
 :::
 
 :::{principle} RET-P2
@@ -52,10 +56,12 @@ All `return` statements that RET-1 counts must give the same type. A
 :kind: required
 :tests: declarations/functions/return-deduction/auto-strips.cpp declarations/functions/return-deduction/decltype-auto.cpp declarations/functions/return-deduction/trailing-auto.cpp
 
-The rules for variables apply to the return type. `auto` removes
-references and top-level qualifiers (AUTO-1). `auto&` keeps them
-(AUTO-3). `decltype(auto)` uses `decltype` of the returned expression
-(AUTO-10).
+The rules for variables apply to the return type:
+
+- `auto` removes references and top-level qualifiers (AUTO-1),
+- `auto&` keeps them (AUTO-3),
+- `decltype(auto)` uses `decltype` of the returned expression
+  (AUTO-10).
 :::
 
 :::{rule} RET-3

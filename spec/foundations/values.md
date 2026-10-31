@@ -9,12 +9,15 @@ result, and when a temporary object exists.
 :::{principle} VC-P1
 :rules: VC-1 VC-2 VC-3 VC-12 VC-13 VC-14
 
-Every expression denotes an object, a function, or a value. An *lvalue*
-names something with an identity: a program can take its address, assign
-to it, and bind a reference to it. A *prvalue* is a value with no
-identity yet, a result to be stored, used, or dropped. An *xvalue* is an
-object that has an identity but whose contents the program has given up,
-so a move can take them.
+Every expression denotes an object, a function, or a value. The
+categories are these:
+
+- An *lvalue* names something with an identity. A program can take its
+  address, assign to it, and bind a reference to it.
+- A *prvalue* is a value with no identity yet, a result to be stored,
+  used, or dropped.
+- An *xvalue* is an object that has an identity but whose contents the
+  program has given up, so a move can take them.
 
 The form of an expression sets its category, and its type does not. The
 name of a variable is an lvalue even when the variable has rvalue
@@ -30,8 +33,13 @@ A prvalue is not an object until something needs an object. If a prvalue
 initializes an object of its own type, that object is the result, and no
 copy and no move takes place. There is no object to copy from. The
 language makes a temporary object from a prvalue only where an object
-is unavoidable: a reference binds to it, a member or element is
-accessed, an array becomes a pointer, or a class value is discarded.
+is unavoidable:
+
+- a reference binds to it,
+- a member or element is accessed,
+- an array becomes a pointer,
+- a class value is discarded.
+
 Constant evaluation follows the same model.
 :::
 
@@ -41,11 +49,17 @@ Constant evaluation follows the same model.
 A temporary object lives to the end of the full expression that made it,
 and temporaries of one full expression end in the reverse of their
 order of creation. The lifetime of every temporary therefore follows
-from where full expressions begin and end. The initializer of a
-declarator, a condition, a `return` expression, and the initialization
-of each array element are separate full expressions. A function call,
-with its default arguments, belongs to the full expression that contains
-the call. A reference can keep a temporary alive longer (REF-4).
+from where full expressions begin and end. These are separate full
+expressions:
+
+- the initializer of a declarator,
+- a condition,
+- a `return` expression,
+- the initialization of each array element.
+
+A function call, with its default arguments, belongs to the full
+expression that contains the call. A reference can keep a temporary
+alive longer (REF-4).
 :::
 
 :::{principle} VC-P4
@@ -257,6 +271,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 All seven compilers agree on 40 of 41 tests. The results are in
 `tests/RESULTS.md`.
+
 - VC-3: EDG gives an lvalue for a subscript of an array xvalue. Clang
   and GCC give an xvalue ({question}`Q-0099`).
 - VC-7: the test accepts either result.

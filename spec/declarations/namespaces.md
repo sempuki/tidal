@@ -5,20 +5,27 @@ scope. A *using declaration* declares one member of a namespace in the
 current scope. A *using directive* makes all members of a namespace
 visible to unqualified lookup in the current scope.
 
-Name lookup in general, argument-dependent lookup, and using declarations
-in classes are other topics *(lookup referenced)*.
+These are other topics *(lookup referenced)*:
+
+- name lookup in general,
+- argument-dependent lookup,
+- using declarations in classes.
 
 ## Principles
 
 :::{principle} NS-P1
 :rules: NS-1 NS-10 NS-2 NS-11 NS-6 NS-15 NS-5 NS-14
 
-A namespace is a scope with a name that never closes. A program can
-reopen it, nest it by a path, define a member outside it with a
-qualified name, and give it a second name. From outside, a member is
-reached through its namespace ({principle}`NAM-P2`), and the namespace
-itself takes a name in the scope that contains it, so no other entity
-there can have that name.
+A namespace is a scope with a name that never closes. A program can:
+
+- reopen it,
+- nest it by a path,
+- define a member outside it with a qualified name,
+- give it a second name.
+
+From outside, a member is reached through its namespace
+({principle}`NAM-P2`), and the namespace itself takes a name in the
+scope that contains it, so no other entity there can have that name.
 :::
 
 :::{principle} NS-P2

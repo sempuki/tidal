@@ -1,9 +1,15 @@
 # Declarators and cv-qualifiers
 
 A declaration gives a base type and one or more {term}`declarators
-<declarator>`. Each declarator gives a name and adds pointers, references,
-arrays, and function parameters to the base type. A {term}`cv-qualifier`
-can apply at each level.
+<declarator>`. Each declarator gives a name and adds these to the base
+type:
+
+- pointers,
+- references,
+- arrays,
+- function parameters.
+
+A {term}`cv-qualifier` can apply at each level.
 
 ## Principles
 
@@ -11,23 +17,34 @@ can apply at each level.
 :rules: DCL-1 DCL-13 CV-1 CV-2
 
 A declarator builds a type around one name, from the inside out, and it
-reads as an expression does. Suffixes bind before prefixes, and
-parentheses regroup. A qualifier attaches to the type on its left, or to
-the type on its right when nothing is on its left. A declaration that
-can be read as a function declaration is one, because the grammar
-prefers that reading. Saying the same qualifier twice is a mistake,
-unless an alias repeats it.
+reads as an expression does.
+
+- Suffixes bind before prefixes, and parentheses regroup.
+- A qualifier attaches to the type on its left, or to the type on its
+  right when nothing is on its left.
+- A declaration that can be read as a function declaration is one,
+  because the grammar prefers that reading.
+- Saying the same qualifier twice is a mistake, unless an alias repeats
+  it.
 :::
 
 :::{principle} DCL-P2
 :rules: DCL-2 DCL-17 DCL-3 DCL-18 DCL-4 DCL-11 DCL-12 DCL-23
 
-A pointer holds the address of anything that has one: an object, a
-function, `void`, or another pointer, and a pointer to member names a
-member without an object. A reference is another name for an existing
-object or function, so it is bound when it is created, it refers to
-something, and a reference to a reference collapses into one, because
-there is nothing to refer to in between.
+A pointer holds the address of anything that has one:
+
+- an object,
+- a function,
+- `void`,
+- another pointer.
+
+A pointer to member names a member without an object. A reference is
+another name for an existing object or function, so:
+
+- it is bound when it is created,
+- it refers to something,
+- a reference to a reference collapses into one, because there is
+  nothing to refer to in between.
 :::
 
 :::{principle} DCL-P5
@@ -45,11 +62,16 @@ implementation.
 :::{principle} DCL-P3
 :rules: DCL-8 DCL-9 DCL-22 DCL-14 DCL-15 DCL-16
 
-A function type is its parameter types, its return type, and its
-qualifiers. Parameters are passed as values, so an array or a function
-parameter is a pointer, and a top-level qualifier on a parameter is the
-function body's business and not part of the type. `noexcept` is part
-of the type, so all declarations agree on it. A function type with a
+A function type is made of:
+
+- its parameter types,
+- its return type,
+- its qualifiers.
+
+Parameters are passed as values, so an array or a function parameter is
+a pointer, and a top-level qualifier on a parameter is the function
+body's business and not part of the type. `noexcept` is part of the
+type, so all declarations agree on it. A function type with a
 cv-qualifier or a ref-qualifier describes a member function, so it can
 be named and used for member functions and pointers to members, and for
 nothing else.
@@ -59,14 +81,18 @@ nothing else.
 :rules: CV-3 CV-4 CV-5 CV-6 CV-7 CV-10 CV-8 CV-11 CV-9
 
 `const` is a promise that an object does not change after
-initialization. The promise is kept at both ends. A `const` scalar must
-get its value when it is defined, no assignment goes through a `const`
-path, and a conversion can add `const` to what a pointer reaches but
-never remove it. Changing an object that was defined `const` breaks the
-promise, so the behavior is undefined. A `const` integer with a constant
-initializer is a constant that the program can use at translation time.
-An alias carries a qualifier to the elements of an array and to nothing
-in a function type. `volatile` on a parameter or a return type is
+initialization. The promise is kept at both ends:
+
+- a `const` scalar must get its value when it is defined,
+- no assignment goes through a `const` path,
+- a conversion can add `const` to what a pointer reaches but never
+  remove it.
+
+Changing an object that was defined `const` breaks the promise, so the
+behavior is undefined. A `const` integer with a constant initializer is
+a constant that the program can use at translation time. An alias
+carries a qualifier to the elements of an array and to nothing in a
+function type. `volatile` on a parameter or a return type is
 deprecated.
 :::
 
@@ -102,8 +128,14 @@ effect.
 :kind: required
 :tests: declarations/declarators/pointer-to-pointer-and-function.cpp declarations/declarators/pointer-to-void-ok.cpp
 
-A pointer can point to an object type, `void`, a function type, or a
-pointer. DCL-17 lists what is not valid.
+A pointer can point to:
+
+- an object type,
+- `void`,
+- a function type,
+- a pointer.
+
+DCL-17 lists what is not valid.
 :::
 
 :::{rule} DCL-17
@@ -117,10 +149,14 @@ A pointer to a reference must not be declared.
 :kind: required
 :tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-parameter-no-initializer.cpp
 
-An `extern` declaration of a reference variable needs no initializer. A
-reference parameter, a reference return type, and a reference data
-member in a class need no initializer in their declaration. DCL-18 lists
-what is not valid.
+These declarations need no initializer:
+
+- an `extern` declaration of a reference variable,
+- the declaration of a reference parameter,
+- the declaration of a reference return type,
+- the declaration of a reference data member in a class.
+
+DCL-18 lists what is not valid.
 :::
 
 :::{rule} DCL-18
@@ -150,9 +186,14 @@ alias has no effect.
 :kind: required
 :tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/static-member-unknown-bound.cpp
 
-Integer types, unscoped enumerations, and class types with a `constexpr`
-conversion function to an integer type are valid types for an array
-bound. The bound can be omitted in these cases:
+These types are valid types for an array bound:
+
+- integer types,
+- unscoped enumerations,
+- class types with a `constexpr` conversion function to an integer
+  type.
+
+The bound can be omitted in these cases:
 
 - an initializer gives the number of elements,
 - the declaration does not define the array, for example an `extern`
@@ -167,10 +208,13 @@ what is not valid.
 :kind: reject
 :tests: declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/unknown-bound-empty-braces.cpp
 
-An array bound must be a constant expression that converts to the type of
-`sizeof` without loss of value. A scoped enumeration is not valid. The
-bound must be greater than zero. The bound must not be omitted in cases
-other than those that DCL-5 lists.
+An array bound must obey these rules:
+
+- The bound must be a constant expression that converts to the type of
+  `sizeof` without loss of value. A scoped enumeration is not valid.
+- The bound must be greater than zero.
+- The bound must not be omitted in cases other than those that DCL-5
+  lists.
 
 The initializer must not have more elements than the bound. An array
 without a bound must not have an empty braced initializer, because it
@@ -274,8 +318,13 @@ initializer. Class types have a separate rule, {rule}`CTOR-4`.
 :kind: reject
 :tests: declarations/declarators/assign-to-const.cpp declarations/declarators/assign-through-pointer-to-const.cpp declarations/declarators/increment-const.cpp
 
-A program must not assign to, increment, or decrement an lvalue of `const`
-type. This applies to a `const` variable and to an access through a
+A program must not do these to an lvalue of `const` type:
+
+- assign to it,
+- increment it,
+- decrement it.
+
+This applies to a `const` variable and to an access through a
 pointer or reference to `const`.
 :::
 
@@ -318,9 +367,11 @@ lists what is not valid.
 :kind: reject
 :tests: declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp declarations/declarators/const-volatile-not-constant.cpp
 
-A `const` variable with an initializer that is not constant cannot occur
-in a constant expression. A `const` floating-point variable cannot. A
-`volatile` variable cannot, even with a constant initializer.
+These variables cannot occur in a constant expression:
+
+- a `const` variable with an initializer that is not constant,
+- a `const` floating-point variable,
+- a `volatile` variable, even with a constant initializer.
 :::
 
 :::{rule} DCL-12
@@ -371,9 +422,12 @@ to member.
 :kind: reject
 :tests: declarations/declarators/qualified-function-type-pointer.cpp declarations/declarators/qualified-function-type-parameter.cpp
 
-A function type with a cv-qualifier or a ref-qualifier must not be the
-target of a pointer or a reference, the type of a parameter, or the type
-of a variable ({question}`Q-0106`).
+A function type with a cv-qualifier or a ref-qualifier must not be any
+of these ({question}`Q-0106`):
+
+- the target of a pointer or a reference,
+- the type of a parameter,
+- the type of a variable.
 :::
 
 ## Runtime Behavior

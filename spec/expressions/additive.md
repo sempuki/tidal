@@ -9,12 +9,17 @@ into the same array.
 :::{principle} ADD-P1
 :rules: ADD-1 ADD-2 ADD-3 ADD-4
 
-`+` and `-` have two jobs. On numbers they add and subtract, with the
-operands brought to one common type by the usual arithmetic conversions
-(CONV-3), so the result has that type. On a pointer and an integer they
-move the pointer, and the result has the pointer's type. Subtracting two
-pointers gives a distance. Any other combination of operands is
-rejected. The result is a prvalue in every case ({principle}`VC-P1`).
+`+` and `-` have two jobs. They take these operands:
+
+- On numbers they add and subtract, with the operands brought to one
+  common type by the usual arithmetic conversions (CONV-3), so the
+  result has that type.
+- On a pointer and an integer they move the pointer, and the result has
+  the pointer's type.
+- Subtracting two pointers gives a distance.
+
+Any other combination of operands is rejected. The result is a prvalue
+in every case ({principle}`VC-P1`).
 :::
 
 :::{principle} ADD-P2
@@ -98,10 +103,15 @@ The operands must have one of these forms:
 - for `-`, a pointer and then an integer,
 - for `-`, two pointers to the same type, ignoring cv-qualifiers.
 
-Here an integer includes `bool`, the character types, and an unscoped
-enumeration. A scoped enumeration and the type of `nullptr` are not
-valid. A pointer operand must point to a complete object type. A pointer
-to `void` or to a function is not valid.
+Here an integer includes these:
+
+- `bool`,
+- the character types,
+- an unscoped enumeration.
+
+A scoped enumeration and the type of `nullptr` are not valid. A pointer
+operand must point to a complete object type. A pointer to `void` or to
+a function is not valid.
 :::
 
 :::{rule} ADD-4

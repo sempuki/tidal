@@ -2,10 +2,15 @@
 
 A try block marks the statements whose exceptions its handlers can
 catch. A handler names the type it accepts, and the first handler whose
-type matches the exception object runs. This page covers the scope of a
-try block, how a handler is selected, handlers by value and by
-reference, the catch-all handler, rethrow from a handler, nested try
-blocks, and function try blocks.
+type matches the exception object runs. This page covers:
+
+- the scope of a try block,
+- how a handler is selected,
+- handlers by value and by reference,
+- the catch-all handler,
+- rethrow from a handler,
+- nested try blocks,
+- function try blocks.
 
 Depends on: throw expressions, standard conversions, derived classes,
 constructors and destructors.
@@ -31,16 +36,22 @@ gets the same chance.
 :rules: TRY-2 TRY-5
 
 A handler accepts an exception by its type, with only the conversions
-that keep the exception object what it is: adding cv-qualifiers, going
-from a derived class to an accessible unambiguous base, adjusting a
-pointer's qualification or pointee base, and the decay of an array or
-function to a pointer. Arithmetic conversions and user-defined
-conversions change the value, so they take no part. A handler by value
-receives a copy, which slices a derived exception to the base. A
-handler by reference sees the exception object itself and can change
-it before passing it on. The handler's parameter is a declaration of a
-narrow kind: a type and at most a name, with no storage class, no
-default, no `auto`, and a type that an object can have.
+that keep the exception object what it is:
+
+- adding cv-qualifiers,
+- going from a derived class to an accessible unambiguous base,
+- adjusting a pointer's qualification or pointee base,
+- the decay of an array or function to a pointer.
+
+Arithmetic conversions and user-defined conversions change the value, so
+they take no part. A handler by value receives a copy, which slices a
+derived exception to the base. A handler by reference sees the exception
+object itself and can change it before passing it on. The handler's
+parameter is a declaration of a narrow kind. It has:
+
+- a type and at most a name,
+- no storage class, no default, and no `auto`,
+- a type that an object can have.
 :::
 
 :::{principle} TRY-P3
@@ -77,13 +88,16 @@ A function try block makes the whole body of a function a try block,
 including the member initializers of a constructor, and its handlers
 see the parameters. For an ordinary function it is a plain try block
 around the body. For a constructor the handler runs on an object that
-failed to come into being: the parts built so far are already destroyed
-when the handler starts, so the handler cannot use them, cannot return
-as if construction succeeded, and when control reaches its end the
-exception continues outward. A destructor's handler works the same way.
-Flowing off the end of a handler in a function that returns a value is
-as wrong as flowing off the end of the function, and an implementation
-should warn.
+failed to come into being. The parts built so far are already destroyed
+when the handler starts, so:
+
+- the handler cannot use them,
+- it cannot return as if construction succeeded,
+- when control reaches its end, the exception continues outward.
+
+A destructor's handler works the same way. Flowing off the end of a
+handler in a function that returns a value is as wrong as flowing off
+the end of the function, and an implementation should warn.
 :::
 
 ## Syntax
@@ -148,8 +162,12 @@ the outermost block of the handler must not declare it again.
 :kind: reject
 :tests: exceptions/handlers/case-into-handler.cpp exceptions/handlers/goto-into-handler.cpp exceptions/handlers/goto-into-try.cpp
 
-A `goto`, `case` label, or `default` label must not transfer control
-into a try block or into a handler from outside it.
+These must not transfer control into a try block or into a handler
+from outside it:
+
+- a `goto`,
+- a `case` label,
+- a `default` label.
 :::
 
 :::{rule} TRY-17
@@ -196,19 +214,25 @@ object, also through a reference that is not `const`.
 :kind: required
 :tests: exceptions/handlers/handler-param-hides-outer.cpp exceptions/handlers/handlers-share-param-name.cpp exceptions/handlers/nested-block-redeclares-param-ok.cpp
 
-The try block and each handler are scopes. The handler parameter hides
-a name of the enclosing scope, a block inside the handler can hide the
-parameter, and two handlers of one try block can give their parameters
-one name.
+The try block and each handler are scopes.
+
+- The handler parameter hides a name of the enclosing scope.
+- A block inside the handler can hide the parameter.
+- Two handlers of one try block can give their parameters one name.
 :::
 
 :::{rule} TRY-15
 :kind: required
 :tests: exceptions/handlers/break-out-of-handler.cpp exceptions/handlers/goto-out-of-handler.cpp exceptions/handlers/return-from-handler.cpp
 
-A handler can end early with `return`, `break`, or `goto`. Its local
-objects then end, last made first, and the exception it was handling is
-over.
+A handler can end early with one of these:
+
+- `return`,
+- `break`,
+- `goto`.
+
+Its local objects then end, last made first, and the exception it was
+handling is over.
 :::
 
 :::{rule} TRY-8

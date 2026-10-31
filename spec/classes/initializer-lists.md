@@ -2,9 +2,12 @@
 
 A braced list can initialize an object of a class that has constructors.
 The list selects a constructor. A constructor whose first parameter is
-`std::initializer_list<E>` has priority. This page covers how a braced
-list selects a constructor, initializer-list constructors, the array
-behind a `std::initializer_list`, and narrowing.
+`std::initializer_list<E>` has priority. This page covers:
+
+- how a braced list selects a constructor,
+- initializer-list constructors,
+- the array behind a `std::initializer_list`,
+- narrowing.
 
 List initialization of aggregates and scalars is with initialization.
 
@@ -37,9 +40,11 @@ another constructor.
 :rules: ILC-5 ILC-6 ILC-9 ILC-10
 
 A `std::initializer_list` is a view of a temporary array of `const`
-elements that the braces create. The array lives as long as a temporary
-would, the elements cannot be changed or moved, and a function
-parameter of this type takes a braced list directly.
+elements that the braces create.
+
+- The array lives as long as a temporary would.
+- The elements cannot be changed or moved.
+- A function parameter of this type takes a braced list directly.
 :::
 
 ## Syntax

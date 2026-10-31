@@ -2,9 +2,12 @@
 
 The alignment of a type is the number of bytes that its address is a
 multiple of. `alignas` makes the alignment of a variable, a data member,
-or a class stricter. This page covers where `alignas` can occur, the
-values it accepts, how it affects size and layout, and extended
-alignment.
+or a class stricter. This page covers:
+
+- where `alignas` can occur,
+- the values it accepts,
+- how it affects size and layout,
+- extended alignment.
 
 `alignof` is with the unary operators.
 
@@ -57,10 +60,15 @@ or after the class key of a class definition, as in
 :kind: required
 :tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp
 
-`alignas` applies to a variable, a non-static data member, or a class
-declaration, including a forward declaration. `alignas(T)` means
-`alignas(alignof(T))`, and `alignas(0)` has no effect. If a declaration
-has several `alignas`, the strictest applies ({question}`Q-0071`).
+`alignas` applies to these declarations:
+
+- a variable declaration,
+- a declaration of a non-static data member,
+- a class declaration, including a forward declaration.
+
+`alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has no
+effect. If a declaration has several `alignas`, the strictest applies
+({question}`Q-0071`).
 
 The alignment of a class is the strictest of its own `alignas` and of its
 members. The size of a class is a multiple of its alignment, so an array
@@ -83,8 +91,12 @@ must not apply it to an enumeration ({question}`Q-0073`).
 The operand of `alignas` must be a constant expression whose value is
 zero or a positive power of two. The result must not be weaker than the
 natural alignment of the entity ({question}`Q-0069`). `alignas` must not
-apply to a function, a parameter, a bit-field, or a type alias
-({question}`Q-0072`).
+apply to any of these ({question}`Q-0072`):
+
+- a function,
+- a parameter,
+- a bit-field,
+- a type alias.
 :::
 
 :::{rule} ALN-3
@@ -103,9 +115,12 @@ the earlier declarations have none.
 :tests: declarations/alignment/extended-new.cpp declarations/alignment/extended-supported.cpp
 
 An object has the alignment of its declaration or type. This applies to
-static, automatic, and dynamic storage, including objects and arrays
-that `new` creates with an alignment larger than the largest fundamental
-alignment.
+objects in:
+
+- static storage,
+- automatic storage,
+- dynamic storage, including objects and arrays that `new` creates with
+  an alignment larger than the largest fundamental alignment.
 :::
 
 ## Implementation Requirements

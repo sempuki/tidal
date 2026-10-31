@@ -22,13 +22,17 @@ object does before its first write ({principle}`OBJ-P4`).
 :::{principle} NEW-P2
 :rules: NEW-8 NEW-4 NEW-5 NEW-15
 
-A `delete` must match its `new`. The single form matches a single
-object, the array form matches an array, each object is deleted once,
-and only a pointer that `new` gave can be deleted, because the
-implementation keeps its records by that pointer. A null pointer has no
-object, so deleting it does nothing. The operand needs a pointer to an
-object type, or a class object that converts to one, so that the
-implementation knows which destructor to run.
+A `delete` must match its `new` in these ways:
+
+- The single form matches a single object.
+- The array form matches an array.
+- Each object is deleted once.
+- Only a pointer that `new` gave can be deleted, because the
+  implementation keeps its records by that pointer.
+
+A null pointer has no object, so deleting it does nothing. The operand
+needs a pointer to an object type, or a class object that converts to
+one, so that the implementation knows which destructor to run.
 :::
 
 :::{principle} NEW-P3
@@ -122,8 +126,13 @@ deleted before the evaluation ends.
 :tests: expressions/new-delete/abstract-type.cpp expressions/new-delete/function-type.cpp expressions/new-delete/incomplete-type.cpp expressions/new-delete/new-void.cpp expressions/new-delete/reference-type.cpp
 
 The type in a `new` expression must be a complete object type. It must
-not be `void`, an incomplete type, an abstract class ({rule}`VIRT-8`), a
-reference, or a function type.
+not be one of these:
+
+- `void`,
+- an incomplete type,
+- an abstract class ({rule}`VIRT-8`),
+- a reference,
+- a function type.
 :::
 
 :::{rule} NEW-8

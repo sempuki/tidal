@@ -1,27 +1,33 @@
 # Translation, execution, and behavior classes
 
 A program is a set of translation units that an implementation
-translates and links into one executable. This page states what an
-implementation must do with a program that breaks a rule, where
-execution begins, how constant evaluation relates to execution, and what
-each class of rule in this specification requires. The later pages use
-these classes without explaining them again.
+translates and links into one executable. This page states these things:
+
+- what an implementation must do with a program that breaks a rule,
+- where execution begins,
+- how constant evaluation relates to execution,
+- what each class of rule in this specification requires.
+
+The later pages use these classes without explaining them again.
 
 Depends on: storage duration and linkage, constant expressions, function
 definitions.
 
 Readers who know the vocabulary of the ISO standard will find that this
 specification says the same things in different words. The difference
-is deliberate, for three reasons. The writing follows Simplified
-Technical English, which is meant for readers who are not specialists
-in the text, and *shall* and *may* are the two words that such readers
-misread most often. The strength of each rule is carried by its class,
-printed in the rule's header and checked against the implementations by
-tests, so the verb in the sentence does not have to carry it. And
-*ill-formed* and its relatives describe a program from the standard's
-side, while this specification describes what an implementation does
-with the program, which is what its tests observe. The table below maps
-one vocabulary to the other. It is informative.
+is deliberate, for three reasons:
+
+- The writing follows Simplified Technical English, which is meant for
+  readers who are not specialists in the text, and *shall* and *may*
+  are the two words that such readers misread most often.
+- The strength of each rule is carried by its class, printed in the
+  rule's header and checked against the implementations by tests, so
+  the verb in the sentence does not have to carry it.
+- *Ill-formed* and its relatives describe a program from the standard's
+  side, while this specification describes what an implementation does
+  with the program, which is what its tests observe.
+
+The table below maps one vocabulary to the other. It is informative.
 
 | ISO term | Tidal word or class |
 |---|---|
@@ -73,10 +79,13 @@ it as an error.
 
 Each translation unit is translated on its own, with only the
 declarations it contains, and the units are then linked into one
-program. So a name that one unit uses and another defines needs a
-declaration in the first unit, a name with internal linkage is a
-different entity in each unit, and a name that is used but defined
-nowhere is found out only when the program is linked.
+program. So these hold:
+
+- A name that one unit uses and another defines needs a declaration in
+  the first unit.
+- A name with internal linkage is a different entity in each unit.
+- A name that is used but defined nowhere is found out only when the
+  program is linked.
 :::
 
 :::{principle} TR-P3
@@ -84,9 +93,11 @@ nowhere is found out only when the program is linked.
 
 Execution begins at `main`. The program's exit status is the value that
 `main` returns, and reaching the end of `main` returns zero. `main` is
-the entry point and nothing else: a program cannot call it, take its
-address, or give it a form other than the two that the runtime knows how
-to call.
+the entry point and nothing else. A program cannot do these things:
+
+- call it,
+- take its address,
+- give it a form other than the two that the runtime knows how to call.
 :::
 
 :::{principle} TR-P5
@@ -95,9 +106,13 @@ to call.
 This specification describes an *abstract machine*: what each
 construct does, in what order, with what effect on objects. An
 implementation does not have to build that machine. It has to produce
-the same {term}`observable behavior`, which is the reads and writes of
-`volatile` objects in their order, the data the program writes out, and
-the exit status. Everything else is invisible, so an implementation can
+the same {term}`observable behavior`, which is these:
+
+- the reads and writes of `volatile` objects in their order,
+- the data the program writes out,
+- the exit status.
+
+Everything else is invisible, so an implementation can
 reorder, merge, or drop work that the observable behavior does not
 depend on. That freedom is where optimization lives, and it is why the
 rules about evaluation order ({principle}`SEQ-P2`) and copies
@@ -136,9 +151,12 @@ when the broken code is in a function that the program never calls.
 :kind: reject
 :tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp
 
-`main` must return `int` and must not be a template. Its parameter
-list must be one that the implementation accepts (FN-6). A program must
-not call `main` or take its address.
+These rules apply to `main`:
+
+- It must return `int`.
+- It must not be a template.
+- Its parameter list must be one that the implementation accepts (FN-6).
+- A program must not call `main` or take its address.
 :::
 
 :::{rule} TR-10

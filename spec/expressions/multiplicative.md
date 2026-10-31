@@ -12,37 +12,49 @@ function call ({rule}`OPR-7`).
 The multiplicative operators compute on numbers, so their operands are
 the types that hold numbers: the arithmetic types and the unscoped
 enumerations, which convert to integers. Nothing else is a number here.
-A pointer, a scoped enumeration, `nullptr`, and a class are rejected,
-unless a class supplies its own operator. Before the operation, the two
-operands become one common type through the usual arithmetic
-conversions (CONV-3), and the result is a prvalue of that type
-({principle}`VC-P1`). Which type is common can depend on the sizes of
-the integer types, which each implementation chooses. `%` works on
-whole numbers only, because a remainder of a floating-point division
-has no single meaning.
+These are rejected:
+
+- a pointer,
+- a scoped enumeration,
+- `nullptr`,
+- a class, unless it supplies its own operator.
+
+Before the operation, the two operands become one common type through
+the usual arithmetic conversions (CONV-3), and the result is a prvalue
+of that type ({principle}`VC-P1`). Which type is common can depend on
+the sizes of the integer types, which each implementation chooses. `%`
+works on whole numbers only, because a remainder of a floating-point
+division has no single meaning.
 :::
 
 :::{principle} MUL-P2
 :rules: MUL-6 MUL-7 MUL-8 MUL-18
 :exceptions: MUL-17
 
-The result is the mathematical one, fitted to the type. For
-floating-point operands that means rounding. For integer division it
-means dropping the fraction, toward zero, and the remainder is then
-whatever makes quotient and remainder add back up to the dividend. An
-unsigned type is a modular type, so an unsigned result wraps around
-instead of overflowing. An implementation can keep extra precision in
-floating-point intermediates, and the matrix targets do not.
+The result is the mathematical one, fitted to the type.
+
+- For floating-point operands that means rounding.
+- For integer division it means dropping the fraction, toward zero, and
+  the remainder is then whatever makes quotient and remainder add back
+  up to the dividend.
+- An unsigned type is a modular type, so an unsigned result wraps
+  around instead of overflowing.
+
+An implementation can keep extra precision in floating-point
+intermediates, and the matrix targets do not.
 :::
 
 :::{principle} MUL-P3
 :rules: MUL-9 MUL-10 MUL-11 MUL-12
 
 A signed integer type is not modular, so a result it cannot hold has no
-value, and the behavior is undefined. The same holds for an operation
-with no mathematical result, such as division by zero, and for a
-floating-point result beyond the range of its type. Constant evaluation
-rejects each of these ({principle}`TR-P4`).
+value. The behavior is undefined in these cases:
+
+- a signed integer result that its type cannot hold,
+- an operation with no mathematical result, such as division by zero,
+- a floating-point result beyond the range of its type.
+
+Constant evaluation rejects each of these ({principle}`TR-P4`).
 :::
 
 :::{principle} MUL-P4
@@ -84,17 +96,28 @@ operators.
 :tests: expressions/multiplicative/operands-arithmetic.cpp expressions/multiplicative/operands-enum-float.cpp
 
 The built-in `*` and `/` accept two operands of arithmetic type or
-unscoped enumeration type, in any combination. Arithmetic types are the
-integer, character, `bool`, and floating-point types.
+unscoped enumeration type, in any combination. Arithmetic types are
+these:
+
+- the integer types,
+- the character types,
+- `bool`,
+- the floating-point types.
 :::
 
 :::{rule} MUL-3
 :kind: reject
 :tests: expressions/multiplicative/operands-pointer.cpp expressions/multiplicative/operands-scoped-enum.cpp expressions/multiplicative/operands-class.cpp expressions/multiplicative/nullptr-operand.cpp expressions/multiplicative/member-pointer-operand.cpp
 
-An operand of `*`, `/`, or `%` must not have pointer type, scoped
-enumeration type, class type, pointer-to-member type, or the type of
-`nullptr`. The class type rule does not apply if overload resolution
+An operand of `*`, `/`, or `%` must not have one of these types:
+
+- a pointer type,
+- a scoped enumeration type,
+- a class type,
+- a pointer-to-member type,
+- the type of `nullptr`.
+
+The class type rule does not apply if overload resolution
 ({rule}`OPR-6`) finds a user-declared operator or a usable conversion.
 :::
 
@@ -102,8 +125,14 @@ enumeration type, class type, pointer-to-member type, or the type of
 :kind: reject
 :tests: expressions/multiplicative/remainder-floating.cpp expressions/multiplicative/remainder-integral.cpp
 
-The operands of `%` must have integer, character, `bool`, or unscoped
-enumeration type. An operand of `%` must not have floating-point type.
+The operands of `%` must have one of these types:
+
+- an integer type,
+- a character type,
+- `bool`,
+- an unscoped enumeration type.
+
+An operand of `%` must not have floating-point type.
 :::
 
 :::{rule} MUL-5
@@ -286,11 +315,15 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
   overflow. EDG differs on the cases below.
 - **MUL-11.** At run time on x86-64, Clang and GCC give IEEE 754 infinity or
   NaN. Tidal does not require that result ({question}`Q-0004`).
-- **MUL-12.** `1e308 * 10.0` in a `constexpr` initializer: Clang 22.1.8 and
-  18.1.3 accept it and give positive infinity. GCC 16.2.1 and 14.2.0
-  reject it ("not a constant expression"). EDG 7.0 rejects it
-  ("floating-point error"). The provisional answer is that the behavior is
-  undefined, and that Clang's acceptance is an extension ({question}`Q-0001`).
+- **MUL-12.** These are the results for `1e308 * 10.0` in a `constexpr`
+  initializer:
+
+  - Clang 22.1.8 and 18.1.3 accept it and give positive infinity.
+  - GCC 16.2.1 and 14.2.0 reject it ("not a constant expression").
+  - EDG 7.0 rejects it ("floating-point error").
+
+  The provisional answer is that the behavior is undefined, and that
+  Clang's acceptance is an extension ({question}`Q-0001`).
 - **MUL-11, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` during
   constant evaluation. EDG 7.0 accepts both. EDG rejects floating overflow.
   The provisional answer keeps MUL-11, and EDG's behavior is a possible

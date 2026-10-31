@@ -1,8 +1,11 @@
 # Function definitions
 
-A function definition gives the body of a function. This page covers
-parameters, the end of a function body, the predefined variable
-`__func__`, and the function `main`.
+A function definition gives the body of a function. This page covers:
+
+- parameters,
+- the end of a function body,
+- the predefined variable `__func__`,
+- the function `main`.
 
 ## Principles
 

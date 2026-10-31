@@ -6,12 +6,15 @@ same name in other scopes or {term}`translation units <translation unit>`
 refers to the same entity.
 
 This page covers variables and functions at namespace scope and block
-scope. Class members ({doc}`/classes/members`), dynamic storage
-({doc}`/expressions/new-delete`), and `extern "C"`
-({doc}`/declarations/linkage-specifications`) are on other pages. Threads
-and modules are out of scope. Rules with the prefix `STO` are about
-storage duration and the storage class specifiers. Rules with the prefix
-`LNK` are about linkage.
+scope. These are on other pages:
+
+- class members ({doc}`/classes/members`),
+- dynamic storage ({doc}`/expressions/new-delete`),
+- `extern "C"` ({doc}`/declarations/linkage-specifications`).
+
+Threads and modules are out of scope. Rules with the prefix `STO` are
+about storage duration and the storage class specifiers. Rules with the
+prefix `LNK` are about linkage.
 
 ## Principles
 
@@ -19,14 +22,19 @@ storage duration and the storage class specifiers. Rules with the prefix
 :rules: STO-1 STO-2 STO-3 STO-4 STO-12 STO-8 STO-9 STO-10
 
 The place of a declaration and its storage class decide the storage
-duration of the variable ({principle}`OBJ-P2`). A block gives automatic
-storage, with a new object each time control passes the declaration. A
-namespace, or `static` in a block, gives one object for the program. A
-block `static` is initialized the first time control reaches it, so a
-second arrival during that initialization has no defined meaning.
-`thread_local` gives one object per thread. Static storage starts at
-zero before any initializer runs, and the program ends static objects in
-the reverse of the order in which their initialization completed.
+duration of the variable ({principle}`OBJ-P2`).
+
+- A block gives automatic storage, with a new object each time control
+  passes the declaration.
+- A namespace, or `static` in a block, gives one object for the
+  program. A block `static` is initialized the first time control
+  reaches it, so a second arrival during that initialization has no
+  defined meaning.
+- `thread_local` gives one object per thread.
+
+Static storage starts at zero before any initializer runs, and the
+program ends static objects in the reverse of the order in which their
+initialization completed.
 :::
 
 :::{principle} STO-P2
@@ -34,11 +42,17 @@ the reverse of the order in which their initialization completed.
 
 A storage class is one word in one place, and only on things that have
 storage. So two storage classes do not combine, except `thread_local`
-with the one that says where the object lives, and a function, a
-parameter, a type alias, or a class definition takes none. `extern` says
-that the object lives outside the current declaration, so in a block it
-cannot carry an initializer, and an anonymous union at namespace scope,
-which has no name to share, must be `static`.
+with the one that says where the object lives, and none of these takes
+a storage class:
+
+- a function,
+- a parameter,
+- a type alias,
+- a class definition.
+
+`extern` says that the object lives outside the current declaration, so
+in a block it cannot carry an initializer, and an anonymous union at
+namespace scope, which has no name to share, must be `static`.
 :::
 
 :::{principle} STO-P3
@@ -46,12 +60,17 @@ which has no name to share, must be `static`.
 
 Linkage says whether declarations in different scopes or translation
 units name one entity. A name at namespace scope is shared across the
-program unless something keeps it private: `static`, an unnamed
-namespace, or `const` on a variable, which marks it as a local constant
-rather than a shared object. A block-scope variable is shared with
-nothing, unless `extern` says that it is the namespace-scope entity of
-that name. The first declaration settles the linkage, and later
-declarations inherit it, which is why `static` cannot come second.
+program unless something keeps it private:
+
+- `static`,
+- an unnamed namespace,
+- `const` on a variable, which marks it as a local constant rather than
+  a shared object.
+
+A block-scope variable is shared with nothing, unless `extern` says that
+it is the namespace-scope entity of that name. The first declaration
+settles the linkage, and later declarations inherit it, which is why
+`static` cannot come second.
 :::
 
 :::{principle} STO-P4

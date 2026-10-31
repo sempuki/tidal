@@ -2,9 +2,13 @@
 
 A pointer to member refers to a non-static member of a class, without an
 object. The operators `.*` and `->*` apply it to an object. This page
-covers pointer-to-member declarators, the expressions that form them,
-the two operators, conversions between pointers to members, and
-comparisons.
+covers:
+
+- pointer-to-member declarators,
+- the expressions that form them,
+- the two operators,
+- conversions between pointers to members,
+- comparisons.
 
 Depends on: primary expressions, unary operators, derived classes,
 virtual functions.
@@ -41,14 +45,18 @@ exists only to be called.
 :rules: MPTR-4 MPTR-11
 
 Conversions between pointers to members run the opposite way to
-conversions between pointers to objects. A pointer to a member of a base
-works with every derived object, so base to derived is implicit. Derived
-to base is not, because a base object may lack the member, so it needs
-`static_cast`. Through a virtual base the offset of the member is not
-known from the type, so no conversion exists. A pointer to member is not
-an address, so it never converts to an ordinary pointer, and data members
-and member functions stay apart. The qualifier rules follow those of
-ordinary pointers.
+conversions between pointers to objects.
+
+- A pointer to a member of a base works with every derived object, so
+  base to derived is implicit.
+- Derived to base is not, because a base object may lack the member, so
+  it needs `static_cast`.
+- Through a virtual base the offset of the member is not known from the
+  type, so no conversion exists.
+- A pointer to member is not an address, so it never converts to an
+  ordinary pointer, and data members and member functions stay apart.
+
+The qualifier rules follow those of ordinary pointers.
 :::
 
 :::{principle} MPTR-P4
@@ -103,13 +111,17 @@ must not be a reference or `void`.
 
 `&C::m` gives a pointer to member if `m` is a non-static member of `C`.
 Its type is `T C::*` for a data member of type `T`, or a pointer to
-member function with the parameters and qualifiers of `m`. For a static
-member, `&C::m` gives an ordinary pointer. With parentheses, `&(C::m)`
-gives an ordinary pointer to the member of `*this`. If `m` is
-overloaded, the target type selects the function. If `m` is declared in
-a base `B` of `C`, the type names `B`, as in `T B::*`. For a member
-function with an explicit object parameter, `&C::f` gives an ordinary
-pointer to function.
+member function with the parameters and qualifiers of `m`. These cases
+have their own rules:
+
+- For a static member, `&C::m` gives an ordinary pointer.
+- With parentheses, `&(C::m)` gives an ordinary pointer to the member
+  of `*this`.
+- If `m` is overloaded, the target type selects the function.
+- If `m` is declared in a base `B` of `C`, the type names `B`, as in
+  `T B::*`.
+- For a member function with an explicit object parameter, `&C::f`
+  gives an ordinary pointer to function.
 :::
 
 :::{rule} MPTR-9
@@ -163,16 +175,21 @@ A function qualified `const&` can be called on an rvalue.
 :kind: required
 :tests: expressions/member-pointers/base-to-derived-implicit.cpp expressions/member-pointers/derived-to-base-static-cast.cpp expressions/member-pointers/null-converts.cpp expressions/member-pointers/reinterpret-between.cpp expressions/member-pointers/to-bool.cpp expressions/member-pointers/qualification-conversion.cpp expressions/member-pointers/reinterpret-function-round-trip.cpp expressions/member-pointers/zero-literal-null.cpp
 
-A pointer to member of a base `B` converts implicitly to a pointer to
-member of a derived class `D`. `static_cast` converts in the other
-direction. A null pointer to member converts to a null pointer to member,
-and every pointer to member converts to `bool`. `reinterpret_cast` can
-convert between two pointer-to-data-member types, or between two
-pointer-to-member-function types. Converting back gives the original
-value. A conversion can add cv-qualifiers to the member type, at each
-level, where the same conversion of ordinary pointers is valid. The
-literal `0` converts to a null pointer to member, and a pointer to member
-with static storage and no initializer is null.
+These conversions are valid:
+
+- A pointer to member of a base `B` converts implicitly to a pointer to
+  member of a derived class `D`. `static_cast` converts in the other
+  direction.
+- A null pointer to member converts to a null pointer to member.
+- Every pointer to member converts to `bool`.
+- `reinterpret_cast` can convert between two pointer-to-data-member
+  types, or between two pointer-to-member-function types. Converting
+  back gives the original value.
+- A conversion can add cv-qualifiers to the member type, at each level,
+  where the same conversion of ordinary pointers is valid.
+- The literal `0` converts to a null pointer to member.
+
+A pointer to member with static storage and no initializer is null.
 :::
 
 :::{rule} MPTR-11

@@ -21,16 +21,18 @@ parentheses.
 :rules: COND-3 COND-4 COND-5 COND-11 COND-13
 
 Two operands have to give one result, with one type and one value
-category, and that is decided before either is evaluated. If both are
-lvalues of one type, the result is an lvalue, with the union of their
-cv-qualifiers. Otherwise the result is a prvalue, and each operand is
-converted to the result type: arithmetic operands by the usual
-arithmetic conversions (CONV-3), class operands by their own
-conversions, with overload resolution choosing when the types differ.
-An operand that throws takes no part, because it gives no value. A
-`void` operand can pair only with another `void`. If two class types
-each convert to the other, there is no single answer, and the
-expression is rejected.
+category, and that is decided before either is evaluated.
+
+- If both are lvalues of one type, the result is an lvalue, with the
+  union of their cv-qualifiers.
+- Otherwise the result is a prvalue, and each operand is converted to
+  the result type. Arithmetic operands convert by the usual arithmetic
+  conversions (CONV-3). Class operands convert by their own conversions,
+  with overload resolution choosing when the types differ.
+- An operand that throws takes no part, because it gives no value.
+- A `void` operand can pair only with another `void`.
+- If two class types each convert to the other, there is no single
+  answer, and the expression is rejected.
 :::
 
 :::{principle} COND-P3
@@ -174,10 +176,14 @@ The second operand can be a comma expression without parentheses.
 :kind: required
 :tests: expressions/conditional/two-classes-convert-to-int.cpp
 
-If the operands have different types, at least one is a class, and
-neither converts to the other, overload resolution
-*(overload resolution referenced)* over
-the built-in operator candidates picks a conversion for each operand.
+Overload resolution *(overload resolution referenced)* over the built-in
+operator candidates picks a conversion for each operand if all of these
+hold:
+
+- the operands have different types,
+- at least one is a class,
+- neither converts to the other.
+
 Two unrelated classes that both convert to `int` give an `int` prvalue.
 :::
 

@@ -2,11 +2,19 @@
 
 When an exception leaves a block, the objects of that block end in the
 reverse of the order in which they began, as they would on any other
-exit. This page covers that unwinding, the parts of an object that
-exist when a constructor throws, the storage that a `new` expression
-obtained, and the cases in which the program ends instead of unwinding:
-an exception that leaves a `noexcept` function, a destructor during
-unwinding, or `main`, and an exception with no handler.
+exit. This page covers:
+
+- that unwinding,
+- the parts of an object that exist when a constructor throws,
+- the storage that a `new` expression obtained,
+- the cases in which the program ends instead of unwinding.
+
+These cases are:
+
+- an exception that leaves a `noexcept` function,
+- an exception that leaves a destructor during unwinding,
+- an exception that leaves `main`,
+- an exception with no handler.
 
 Depends on: objects and lifetime, constructors and destructors,
 exception specifications, new and delete.
@@ -79,13 +87,16 @@ that enclose the try block are not affected.
 :kind: required
 :tests: exceptions/unwinding/constructor-throws-parts-destroyed.cpp exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp exceptions/unwinding/base-built-before-member-throws.cpp exceptions/unwinding/array-element-throws-built-destroyed.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp exceptions/unwinding/delegating-target-throws-no-destructor.cpp
 
-If a constructor throws, from its body or from a member initializer,
-the bases and members that it completed are destroyed in reverse order,
-and the destructor of the object itself does not run. If an element of
-an array throws during construction, the elements built before it are
-destroyed in reverse order. If the target of a delegating constructor
-completed, the object is complete, and its destructor runs when the
-delegating constructor throws.
+These rules apply:
+
+- If a constructor throws, from its body or from a member initializer,
+  the bases and members that it completed are destroyed in reverse
+  order, and the destructor of the object itself does not run.
+- If an element of an array throws during construction, the elements
+  built before it are destroyed in reverse order.
+- If the target of a delegating constructor completed, the object is
+  complete, and its destructor runs when the delegating constructor
+  throws.
 :::
 
 :::{rule} UNW-3
@@ -94,10 +105,14 @@ delegating constructor throws.
 
 If the initialization in a `new` expression throws, the storage is
 released by the deallocation function that matches the allocation
-function that obtained it: the class-specific one if the allocation was
-class-specific, the array form for an array, and a placement
-deallocation function with the same extra parameters for a placement
-form. If no matching deallocation function exists, the storage is not
+function that obtained it. The matching function is:
+
+- the class-specific one if the allocation was class-specific,
+- the array form for an array,
+- a placement deallocation function with the same extra parameters for
+  a placement form.
+
+If no matching deallocation function exists, the storage is not
 released. For the global allocation function, the implementation calls
 the sized or the unsized global deallocation function.
 :::

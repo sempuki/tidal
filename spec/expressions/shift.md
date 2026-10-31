@@ -71,9 +71,15 @@ includes `bool` and the character types.
 :kind: reject
 :tests: expressions/shift/operand-floating.cpp expressions/shift/count-floating.cpp expressions/shift/operand-scoped-enum.cpp expressions/shift/operand-pointer.cpp expressions/shift/class-operand.cpp expressions/shift/nullptr-operand.cpp expressions/shift/member-pointer-operand.cpp
 
-An operand must not have floating-point type, pointer type, scoped
-enumeration type, pointer-to-member type, or the type of `nullptr`. A
-class operand is valid only through a usable conversion or an operator
+An operand must not have one of these types:
+
+- a floating-point type,
+- a pointer type,
+- a scoped enumeration type,
+- a pointer-to-member type,
+- the type of `nullptr`.
+
+A class operand is valid only through a usable conversion or an operator
 function ({rule}`OPR-6`).
 :::
 

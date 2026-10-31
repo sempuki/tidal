@@ -1,8 +1,12 @@
 # Postfix expressions
 
 A postfix expression applies an operator after its operand. The postfix
-expressions are subscripts, function calls, member access, and postfix
-`++` and `--`.
+expressions are these:
+
+- subscripts,
+- function calls,
+- member access,
+- postfix `++` and `--`.
 
 ## Principles
 
@@ -207,9 +211,14 @@ A call through a null function pointer is undefined.
 :kind: conditionally-supported
 :tests: expressions/postfix/ellipsis-nontrivial-class.cpp
 
-Passing an object of a class with a non-trivial copy constructor, move
-constructor, or destructor to an ellipsis parameter is conditionally
-supported. GCC and EDG accept it. Clang rejects it.
+Passing an object to an ellipsis parameter is conditionally supported if
+its class has one of these that is non-trivial:
+
+- a copy constructor,
+- a move constructor,
+- a destructor.
+
+GCC and EDG accept it. Clang rejects it.
 :::
 
 ## Examples

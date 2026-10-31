@@ -3,9 +3,11 @@
 A type alias gives another name to a type. A program declares one with
 `typedef` or with an alias declaration. An *elaborated type specifier*
 names a class or enumeration with its key, such as `struct S`. It can
-also declare a class before its definition. This page covers type
-aliases, elaborated type specifiers, and forward declarations of classes
-and enumerations.
+also declare a class before its definition. This page covers:
+
+- type aliases,
+- elaborated type specifiers,
+- forward declarations of classes and enumerations.
 
 Depends on: declarators, enumerations, class definitions and members.
 
@@ -17,10 +19,15 @@ Depends on: declarators, enumerations, class definitions and members.
 An alias is a second name for a type that already exists. It makes no
 new type, so it makes no new overload, and a qualifier applied to it
 applies to what it names. It is an ordinary name in an ordinary scope
-({principle}`NAM-P1`), so it hides outer names, is declared once per
-scope, and can be declared again only to say the same thing. The one
-thing an alias can give a type is a name for linkage, when the type is
-an unnamed class with nothing in it that needs a name of its own.
+({principle}`NAM-P1`), so it:
+
+- hides outer names,
+- is declared once per scope,
+- can be declared again only to say the same thing.
+
+The one thing an alias can give a type is a name for linkage, when the
+type is an unnamed class with nothing in it that needs a name of its
+own.
 :::
 
 :::{principle} TYN-P2
@@ -134,8 +141,11 @@ name for linkage. TYN-9 states what such a class must be.
 :tests: declarations/type-names/typedef-unnamed-class-member-function.cpp
 
 A class that uses a `typedef` name for linkage (TYN-3) must be C-like. It
-has no member functions, bases, or default member initializers
-({question}`Q-0067`).
+has none of these ({question}`Q-0067`):
+
+- member functions,
+- bases,
+- default member initializers.
 :::
 
 :::{rule} TYN-4
@@ -175,13 +185,16 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 :tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp
 
 After a forward declaration, a program can declare pointers and
-references to the class, and functions that take or return it. A class
-is complete after its definition. A forward declaration after the
-definition is valid. A nested class can be declared in its class and
-defined outside it. An opaque enumeration declaration has a fixed
-underlying type, which is `int` for a scoped enumeration without one. A
-deleted function can have parameters and a return type of incomplete
-class type.
+references to the class, and functions that take or return it. These
+rules also apply:
+
+- A class is complete after its definition.
+- A forward declaration after the definition is valid.
+- A nested class can be declared in its class and defined outside it.
+- An opaque enumeration declaration has a fixed underlying type, which
+  is `int` for a scoped enumeration without one.
+- A deleted function can have parameters and a return type of
+  incomplete class type.
 :::
 
 :::{rule} TYN-7

@@ -1,7 +1,12 @@
 # Unary operators
 
-A unary operator takes one operand. This page covers `+`, `-`, `*`,
-`&`, prefix `++` and `--`, `sizeof`, `alignof`, and `noexcept`.
+A unary operator takes one operand. This page covers these operators:
+
+- `+` and `-`,
+- `*` and `&`,
+- prefix `++` and `--`,
+- `sizeof`, `alignof`, and `noexcept`.
+
 The operators `!` and `~` are on the logical and bitwise pages.
 
 ## Principles
@@ -25,8 +30,12 @@ because only an object with an identity has an address
 cv-qualifiers. `*` takes a pointer and gives back the object as an
 lvalue, so the two undo each other. A pointer to `void` points at no
 particular object and cannot be dereferenced. A pointer that points at
-nothing, such as a null pointer, a past-the-end pointer, or a pointer to
-a dead object, gives no object, and using the result is undefined.
+nothing gives no object, and using the result is undefined. Such
+pointers include:
+
+- a null pointer,
+- a past-the-end pointer,
+- a pointer to a dead object.
 :::
 
 :::{principle} UN-P3
@@ -47,13 +56,18 @@ as it is for `+` and `-`.
 
 `sizeof` and `alignof` ask a question about a type and answer it at
 translation time. Their operands are never evaluated, so side effects in
-them do not happen. The question needs a complete object type: a
-function type, `void`, and an incomplete class have no size or
-alignment. A reference answers for the type it refers to, and an array
-for all its elements. The sizes of most types are an implementation's
-choice, with the character types fixed at one. An implementation should
-warn when `sizeof` is applied to a parameter declared as an array,
-since that parameter is a pointer.
+them do not happen. The question needs a complete object type. These
+have no size or alignment:
+
+- a function type,
+- `void`,
+- an incomplete class.
+
+A reference answers for the type it refers to, and an array for all its
+elements. The sizes of most types are an implementation's choice, with
+the character types fixed at one. An implementation should warn when
+`sizeof` is applied to a parameter declared as an array, since that
+parameter is a pointer.
 :::
 
 :::{principle} UN-P5
@@ -146,10 +160,12 @@ For prefix `++` and `--`, these conditions apply:
 :kind: reject
 :tests: expressions/unary/increment-bool.cpp expressions/unary/decrement-bool.cpp expressions/unary/increment-enum.cpp expressions/unary/increment-const.cpp expressions/unary/increment-rvalue.cpp expressions/unary/increment-incomplete-pointer.cpp expressions/unary/increment-function-pointer.cpp
 
-The operand of prefix `++` or `--` must not have type `bool` or an
-enumeration type. It must not be `const` or an rvalue. A pointer operand
-must point to a complete object type, so a pointer to a function or to
-an incomplete class is not valid.
+The operand of prefix `++` or `--` must obey these rules:
+
+- It must not have type `bool` or an enumeration type.
+- It must not be `const` or an rvalue.
+- A pointer operand must point to a complete object type, so a pointer
+  to a function or to an incomplete class is not valid.
 :::
 
 :::{rule} UN-12
@@ -171,18 +187,24 @@ expression. These rules apply:
 :kind: reject
 :tests: expressions/unary/sizeof-function.cpp expressions/unary/sizeof-incomplete.cpp expressions/unary/sizeof-void.cpp expressions/decltype/incomplete-return-sizeof.cpp
 
-The operand of `sizeof` must not have a function type, an incomplete
-type, or the type `void`.
+The operand of `sizeof` must not have one of these types:
+
+- a function type,
+- an incomplete type,
+- the type `void`.
 :::
 
 :::{rule} UN-16
 :kind: required
 :tests: expressions/unary/alignof-basic.cpp expressions/unary/alignof-unknown-bound.cpp
 
-`alignof` gives the alignment of a type, as a power of two. `char` has
-alignment 1. An array has the alignment of its element type. A reference
-type gives the alignment of the referenced type. An array of unknown
-bound has the alignment of its element type.
+`alignof` gives the alignment of a type, as a power of two. These rules
+apply:
+
+- `char` has alignment 1.
+- An array has the alignment of its element type.
+- A reference type gives the alignment of the referenced type.
+- An array of unknown bound has the alignment of its element type.
 :::
 
 :::{rule} UN-17
@@ -190,7 +212,11 @@ bound has the alignment of its element type.
 :tests: expressions/unary/alignof-expression.cpp expressions/unary/alignof-function.cpp expressions/unary/alignof-incomplete.cpp expressions/unary/alignof-void.cpp
 
 The operand of `alignof` must be a complete object type or a reference.
-It must not be a function type, `void`, or an incomplete class.
+It must not be one of these:
+
+- a function type,
+- `void`,
+- an incomplete class.
 :::
 
 :::{rule} UN-18
@@ -251,9 +277,11 @@ fit in that type, the behavior is undefined.
 :tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp expressions/unary/indirection-null-sanitizer.cpp foundations/objects/read-after-block-ends-sanitizer.cpp
 
 If the operand of `*` does not point to an object or a function, and the
-program uses the result, the behavior is undefined. This includes a null
-pointer, a pointer past the end of an array, and a pointer to an object
-whose lifetime has ended.
+program uses the result, the behavior is undefined. This includes:
+
+- a null pointer,
+- a pointer past the end of an array,
+- a pointer to an object whose lifetime has ended.
 :::
 
 :::{rule} UN-21

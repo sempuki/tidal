@@ -4,9 +4,18 @@ An attribute gives more information about a declaration, a statement, or a
 type. Most standard attributes do not change what a valid program does.
 They let an implementation warn or optimize (decision 0015).
 
-This page covers the standard attributes `assume`, `carries_dependency`,
-`deprecated`, `fallthrough`, `likely`, `maybe_unused`, `no_unique_address`,
-`nodiscard`, `noreturn`, and `unlikely`.
+This page covers these standard attributes:
+
+- `assume`,
+- `carries_dependency`,
+- `deprecated`,
+- `fallthrough`,
+- `likely`,
+- `maybe_unused`,
+- `no_unique_address`,
+- `nodiscard`,
+- `noreturn`,
+- `unlikely`.
 
 ## Principles
 
@@ -24,12 +33,14 @@ set of arguments and a fixed set of places where it can go.
 :::{principle} ATTR-P2
 :rules: ATTR-8 ATTR-11 ATTR-12 ATTR-15 ATTR-16 ATTR-9
 
-A standard attribute does not change what a valid program does. A
-likelihood hint changes nothing. A dependency hint changes nothing in
-a single thread. An assumption is not evaluated, so its side effects
-never occur. The one attribute that can change a program's layout is
-`no_unique_address`, and even it keeps two members of one type at
-different addresses.
+A standard attribute does not change what a valid program does.
+
+- A likelihood hint changes nothing.
+- A dependency hint changes nothing in a single thread.
+- An assumption is not evaluated, so its side effects never occur.
+- The one attribute that can change a program's layout is
+  `no_unique_address`, and even it keeps two members of one type at
+  different addresses.
 :::
 
 :::{principle} ATTR-P3
@@ -231,9 +242,14 @@ and the program discards.
 :tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp
 
 An implementation should warn about a local variable that the program
-never uses. `[[maybe_unused]]` can apply to a variable, parameter,
-function, or type. An implementation should not warn that such an
-entity is unused.
+never uses. `[[maybe_unused]]` can apply to:
+
+- a variable,
+- a parameter,
+- a function,
+- a type.
+
+An implementation should not warn that such an entity is unused.
 :::
 
 :::{rule} ATTR-7
@@ -295,11 +311,15 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of 46 tes
 - Divergence ATTR-D1 is about `[[noreturn]] int x;`. GCC accepts it with a
   warning. Clang and EDG reject it. The provisional answer is that it is
   rejected ({question}`Q-0021`).
-- ATTR-2, `carries_dependency`: GCC accepts the attribute added on a
-  redeclaration, because it ignores the attribute. Clang and EDG reject
-  it ({question}`Q-0108`). GCC also ignores `no_unique_address` on a
-  bit-field ({question}`Q-0021`). Clang 18 ignores `assume`, so it
-  accepts a comma in it ({question}`Q-0020`).
+- ATTR-2 has these divergences:
+
+  - `carries_dependency`: GCC accepts the attribute added on a
+    redeclaration, because it ignores the attribute. Clang and EDG
+    reject it ({question}`Q-0108`).
+  - GCC also ignores `no_unique_address` on a bit-field
+    ({question}`Q-0021`).
+  - Clang 18 ignores `assume`, so it accepts a comma in it
+    ({question}`Q-0020`).
 
 Inputs: clang-sema-declattr, clang-sema-stmtattr, edg-attribute,
 clang-diag-sema (see `inputs/MANIFEST.md`).

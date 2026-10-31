@@ -19,11 +19,17 @@ a constant expression.
 :::{principle} COMMA-P2
 :rules: COMMA-4 COMMA-6 COMMA-8
 
-A comma also separates items in lists: arguments, initializers,
-declarators, enumerators, subscript arguments, and others. In such a
-place the separator wins, and a comma operator needs parentheses to be
-one. The same holds where the syntax asks for a single constant
-expression.
+A comma also separates the items in lists such as these:
+
+- arguments,
+- initializers,
+- declarators,
+- enumerators,
+- subscript arguments.
+
+There are others. In such a place the separator wins, and a comma
+operator needs parentheses to be one. The same holds where the syntax
+asks for a single constant expression.
 :::
 
 :::{principle} COMMA-P3

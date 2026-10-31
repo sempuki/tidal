@@ -1,8 +1,11 @@
 # The range-based for statement
 
 A range-based `for` statement executes its body once for each element of
-a range. A range is an array, a braced list, or an object of class type
-with `begin` and `end`.
+a range. A range is one of these:
+
+- an array,
+- a braced list,
+- an object of class type with `begin` and `end`.
 
 ## Principles
 
@@ -10,13 +13,18 @@ with `begin` and `end`.
 :rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4 RFOR-7
 
 A range-based `for` is an ordinary loop that the language writes for
-you. It evaluates the range one time and keeps it, so a temporary in
-the range expression lives as long as the loop. It finds `begin` and
-`end` one time: as members, if the class has both names as members of
-any kind, and otherwise as free functions found through the argument's
-namespace ({principle}`NAM-P3`). It then advances with `++`, stops when
-the iterator compares unequal to `end`, and initializes the loop
-variable from each element. The loop variable is not yet declared when
+you.
+
+1. It evaluates the range one time and keeps it, so a temporary in the
+   range expression lives as long as the loop.
+2. It finds `begin` and `end` one time. It finds them as members, if
+   the class has both names as members of any kind, and otherwise as
+   free functions found through the argument's namespace
+   ({principle}`NAM-P3`).
+3. It then advances with `++`, stops when the iterator compares unequal
+   to `end`, and initializes the loop variable from each element.
+
+The loop variable is not yet declared when
 the range expression is evaluated, so a name there means the outer
 entity.
 :::
@@ -82,8 +90,11 @@ These conditions apply to the loop of RFOR-2:
 :kind: reject
 :tests: statements/range-for/storage-class.cpp statements/range-for/static-thread-local-declaration.cpp statements/range-for/extern-loop-variable.cpp
 
-The loop variable must not be `static`, `thread_local`, or `extern`
-({question}`Q-0026`).
+The loop variable must not be any of these ({question}`Q-0026`):
+
+- `static`,
+- `thread_local`,
+- `extern`.
 :::
 
 :::{rule} RFOR-6

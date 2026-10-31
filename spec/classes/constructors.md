@@ -1,10 +1,13 @@
 # Constructors and destructors
 
 A constructor initializes an object of a class. A destructor ends the
-life of an object of a class. This page covers how to declare them, the
-default constructor and destructor that a class gets implicitly, member
-initializer lists, delegating and `explicit` constructors, and the order
-of construction and destruction.
+life of an object of a class. This page covers:
+
+- how to declare them,
+- the default constructor and destructor that a class gets implicitly,
+- member initializer lists,
+- delegating and `explicit` constructors,
+- the order of construction and destruction.
 
 Copy and move constructors are in a separate page. Inherited constructors
 are with derived classes. Calls to virtual functions during construction
@@ -203,9 +206,13 @@ A member initializer with braces must not need a narrowing conversion.
 :kind: reject
 :tests: classes/constructors/mem-init-duplicate.cpp classes/constructors/mem-init-in-declaration-only.cpp classes/constructors/mem-init-indirect-base.cpp classes/constructors/mem-init-not-member.cpp classes/constructors/mem-init-pack-of-reference.cpp classes/constructors/mem-init-static-member.cpp
 
-Each `mem_init` must name a non-static data member, a direct base, or a
-virtual base ({rule}`DER-6`) of the class. A name can be a type alias of a
-base. A `mem_init` must not:
+Each `mem_init` must name one of these:
+
+- a non-static data member of the class,
+- a direct base of the class,
+- a virtual base ({rule}`DER-6`) of the class.
+
+A name can be a type alias of a base. A `mem_init` must not:
 
 - name the same member or base two times,
 - occur in a constructor declaration that is not a definition,
@@ -264,8 +271,13 @@ An implicit conversion uses at most one converting constructor.
 :kind: reject
 :tests: classes/constructors/dtor-const.cpp classes/constructors/dtor-explicit-object.cpp classes/constructors/dtor-out-of-line.cpp classes/constructors/dtor-params.cpp classes/constructors/dtor-ref-qualified.cpp classes/constructors/dtor-return-type.cpp classes/constructors/dtor-specifiers.cpp classes/constructors/dtor-static.cpp classes/constructors/dtor-two.cpp classes/constructors/dtor-variadic.cpp classes/constructors/dtor-void-param.cpp classes/constructors/dtor-wrong-name.cpp
 
-A destructor has the name of its class after `~`, no parameters, and no
-return type. A parameter list of `(void)` is valid. A destructor must
+A destructor has:
+
+- the name of its class after `~`,
+- no parameters,
+- no return type.
+
+A parameter list of `(void)` is valid. A destructor must
 not:
 
 - be `static`,

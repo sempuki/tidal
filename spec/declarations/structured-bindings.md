@@ -1,8 +1,11 @@
 # Structured bindings
 
 A structured binding declaration declares several names at one time. Each
-name refers to one element of an object. An element is an array element,
-a data member of a class, or an element from the tuple protocol.
+name refers to one element of an object. An element is one of these:
+
+- an array element,
+- a data member of a class,
+- an element from the tuple protocol.
 
 ## Principles
 
@@ -22,21 +25,30 @@ do ({principle}`OBJ-P3`).
 :rules: SB-2 SB-3 SB-13 SB-4 SB-5 SB-14 SB-9 SB-10 SB-16
 
 The type of the hidden variable decides what its elements are, in a
-fixed order of tests: an array gives its elements, a type with a tuple
-size gives the results of `get`, and any other class gives its data
-members in declaration order. The number of names must equal the number
-of elements. Each name has the declared type of its element, with the
-qualifiers of the hidden variable added, so a binding to a `mutable`
-member or a bit-field behaves as that member does.
+fixed order of tests:
+
+1. An array gives its elements.
+2. A type with a tuple size gives the results of `get`.
+3. Any other class gives its data members in declaration order.
+
+The number of names must equal the number of elements. Each name has
+the declared type of its element, with the qualifiers of the hidden
+variable added, so a binding to a `mutable` member or a bit-field
+behaves as that member does.
 :::
 
 :::{principle} SB-P3
 :rules: SB-7 SB-15 SB-8 SB-11
 
-The declaration is deliberately narrow. It uses `auto`, takes a few
-specifiers, and has one declarator with one list of names. Each name is
-a new declaration in the enclosing scope, so the names must be distinct
-and must not repeat a name of that scope ({principle}`NAM-P1`).
+The declaration is deliberately narrow:
+
+- it uses `auto`,
+- it takes a few specifiers,
+- it has one declarator with one list of names.
+
+Each name is a new declaration in the enclosing scope, so the names must
+be distinct and must not repeat a name of that scope
+({principle}`NAM-P1`).
 :::
 
 ## Syntax

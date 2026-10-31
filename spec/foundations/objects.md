@@ -2,9 +2,14 @@
 
 An object is a region of storage with a type. Every object has a storage
 duration that says when its storage exists, and a lifetime that says
-when the object itself exists in that storage. Subobjects, temporaries,
-and the order in which objects end all follow from this model. This
-page states it once; the pages on initialization, temporaries,
+when the object itself exists in that storage. These follow from this
+model:
+
+- subobjects,
+- temporaries,
+- the order in which objects end.
+
+This page states it once; the pages on initialization, temporaries,
 constructors, and unions cite it.
 
 Depends on: storage duration and linkage, value categories and
@@ -34,14 +39,18 @@ body sees complete parts, and a destructor body sees them too.
 
 The storage duration of an object decides who ends it and when, and one
 law covers every case: objects end in the reverse of the order in which
-they began. A block ends its automatic objects when control leaves it,
-by any route. A program ends its static objects after `main` returns, in
-the reverse of their construction order, which is the order of their
-definitions for objects at namespace scope and the order of first use
-for objects local to a function. An array ends its elements from the
-last to the first. A temporary ends with the full expression that made
-it. A dynamic object is the one case with no fixed end: it exists until
-`delete` ends it, however many scopes have come and gone.
+they began.
+
+- A block ends its automatic objects when control leaves it, by any
+  route.
+- A program ends its static objects after `main` returns, in the
+  reverse of their construction order. That order is the order of their
+  definitions for objects at namespace scope and the order of first use
+  for objects local to a function.
+- An array ends its elements from the last to the first.
+- A temporary ends with the full expression that made it.
+- A dynamic object is the one case with no fixed end. It exists until
+  `delete` ends it, however many scopes have come and gone.
 :::
 
 :::{principle} OBJ-P3
@@ -58,11 +67,15 @@ reference would be dead at birth.
 :rules: OBJ-2 OBJ-10
 
 Outside its lifetime an object has no value, and a program must not read
-or write it. This covers a scalar before its first write, a member that
-no initializer gave a value, a variable whose block has ended, a
-dynamic object after `delete`, and an object whose storage another
-object has taken. Constant evaluation tracks every lifetime, so it
-rejects each of these.
+or write it. This covers these objects:
+
+- a scalar before its first write,
+- a member that no initializer gave a value,
+- a variable whose block has ended,
+- a dynamic object after `delete`,
+- an object whose storage another object has taken.
+
+Constant evaluation tracks every lifetime, so it rejects each of these.
 :::
 
 ## Runtime Behavior
