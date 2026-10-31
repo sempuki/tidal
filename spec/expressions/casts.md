@@ -14,7 +14,7 @@ and `T{e}`. `dynamic_cast` applies to classes *(referenced)*.
                 : `type` `braced_init`
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} CAST-1
 :kind: required

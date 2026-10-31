@@ -18,7 +18,7 @@ integer type that holds the values.
    enumerator: `name` ["=" `constant`]
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} ENUM-1
 :kind: required

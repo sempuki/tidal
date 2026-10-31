@@ -15,7 +15,7 @@ expressions are subscripts, function calls, member access, and postfix
                : `postfix_expr` ("++" | "--")
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} PFX-1
 :kind: required

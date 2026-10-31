@@ -12,7 +12,7 @@ parameters, the end of a function body, the predefined variable
    function_body: `compound_statement` | "=" "delete" ";" | "=" "default" ";"
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} FN-1
 :kind: required

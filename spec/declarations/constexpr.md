@@ -12,7 +12,7 @@ These specifiers control when evaluation occurs.
 Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 `CINIT` for `constinit`.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} CX-1
 :kind: reject

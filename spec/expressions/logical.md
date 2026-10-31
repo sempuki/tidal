@@ -15,7 +15,7 @@ operands *(overload resolution referenced)*.
    logical_not: "!" `unary_expr`
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} LOG-1
 :kind: required

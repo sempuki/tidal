@@ -26,7 +26,7 @@ template parameters are on other pages *(referenced)*.
 the other specifiers *(referenced)*. `type_constraint` names a concept
 *(referenced)*.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} AUTO-1
 :kind: required

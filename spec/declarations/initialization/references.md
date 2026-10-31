@@ -13,7 +13,7 @@ accepts, when a temporary object is created, and how long it lives.
            : | "{" `expression` "}"
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} REF-1
 :kind: required

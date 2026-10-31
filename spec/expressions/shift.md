@@ -10,7 +10,7 @@ or to the right.
    shift_expr: `add_expr` { ("<<" | ">>") `add_expr` }
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} SHF-1
 :kind: required

@@ -5,7 +5,7 @@ an initialization, or a call needs that type. This page covers the
 conversions between arithmetic types, to `bool`, and between pointer
 types.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} CONV-1
 :kind: required

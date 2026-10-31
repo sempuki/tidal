@@ -26,7 +26,7 @@ condition selects. There are three forms:
 The *then branch* is the first `branch` or `block`. The *else branch* is
 the `branch` or `block` after `else`.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} IF-2
 :kind: required

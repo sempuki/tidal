@@ -16,7 +16,7 @@ can capture variables from the enclosing scope.
    specifiers: ["mutable" | "static"] ["constexpr" | "consteval"] ["noexcept"]
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} LAM-1
 :kind: required

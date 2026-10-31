@@ -19,7 +19,7 @@ access as the members of the class.
 An *access label* is an `access_label` in a class body. A *friend
 declaration* is a `friend_decl` in a class body.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} ACC-1
 :kind: required

@@ -23,7 +23,7 @@ referenced)*:
    designator: "." `name`
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} LIST-1
 :kind: required

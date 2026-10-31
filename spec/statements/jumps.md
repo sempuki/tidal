@@ -14,7 +14,7 @@ control. A label names a statement that `goto` can transfer control to.
    labeled_stmt: `identifier` ":" `statement`
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} JMP-7
 :kind: reject

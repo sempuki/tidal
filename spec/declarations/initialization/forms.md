@@ -21,7 +21,7 @@ parentheses is *direct-initialization*. A braced initializer is
 *value-initialization*. Objects with static or thread storage are
 *zero-initialized* first (STO-3).
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} INIT-3
 :kind: required

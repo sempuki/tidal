@@ -20,7 +20,7 @@ in classes are other topics *(referenced)*.
    using_directive: "using" "namespace" `qualified_name` ";"
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} NS-1
 :kind: required

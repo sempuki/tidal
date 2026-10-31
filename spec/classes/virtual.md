@@ -27,7 +27,7 @@ member function. `override` and `final` are identifiers with a special
 meaning only in that position. A *polymorphic class* declares or inherits
 a virtual function.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} VIRT-2
 :kind: reject

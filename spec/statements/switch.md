@@ -12,7 +12,7 @@ body. The value of its condition selects the label.
    default_label: "default" ":"
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} SW-2
 :kind: reject

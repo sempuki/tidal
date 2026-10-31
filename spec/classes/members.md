@@ -13,7 +13,7 @@ and type aliases.
    member_function_suffix: [`cv`] ["&" | "&&"]
 ```
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} CLS-1
 :kind: reject

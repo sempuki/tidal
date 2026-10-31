@@ -23,7 +23,7 @@ The *active member* of a union is the member that holds a value. A
 anonymous union in a class. An *anonymous union* has no name and declares
 no variable.
 
-## Legality Rules
+## Static Semantics
 
 :::{rule} UNI-1
 :kind: required
