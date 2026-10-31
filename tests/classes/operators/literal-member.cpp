@@ -1,3 +1,3 @@
-// tidal-rules: OPR-8
+// tidal-rules: OPR-10
 // tidal-expect: reject
 struct S { int operator""_m(unsigned long long); };

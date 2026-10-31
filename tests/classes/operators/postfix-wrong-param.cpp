@@ -1,3 +1,3 @@
-// tidal-rules: OPR-4
+// tidal-rules: OPR-2
 // tidal-expect: reject
 struct C { C operator++(long); };

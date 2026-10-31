@@ -11,3 +11,190 @@ Defaulted comparison operators have their own page.
 Depends on: class definitions and members, conversion functions, copy and
 move, sequencing and evaluation order, overload resolution
 *(referenced)*.
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: opr
+   operator_function_id: "operator" `overloadable_operator`
+   overloadable_operator: "new" | "delete" | "new" "[" "]" | "delete" "[" "]"
+                        : "co_await" | "(" ")" | "[" "]" | "->" | "->*"
+                        : "~" | "!" | "+" | "-" | "*" | "/" | "%" | "^" | "&"
+                        : "|" | "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "^="
+                        : "&=" | "|=" | "==" | "!=" | "<" | ">" | "<=" | ">="
+                        : "<=>" | "&&" | "||" | "<<" | ">>" | "<<=" | ">>="
+                        : "++" | "--" | ","
+   literal_operator_id: "operator" '""' `identifier`
+```
+
+An *operator function* has an `operator_function_id` as its name. A
+*literal operator* has a `literal_operator_id` as its name. This page
+does not cover the operator functions for `new`, `delete`, and `co_await`
+*(referenced)*.
+
+## Constraints
+
+:::{rule} OPR-1
+:kind: required
+:tests: classes/operators/address-of-overload.cpp classes/operators/comma-overload.cpp classes/operators/enum-operator.cpp classes/operators/explicit-call-syntax.cpp classes/operators/member-binary.cpp classes/operators/member-unary.cpp classes/operators/nonmember-binary.cpp classes/operators/nonmember-unary.cpp classes/operators/operator-template-ok.cpp classes/operators/reference-param-nonmember.cpp
+
+An operator function can be a member function or a non-member function.
+For a member, the object is the left operand, or the only operand of a
+unary operator. A program can call an operator function by its name, for
+example `a.operator+(b)` or `operator*(a, b)`. An enumeration can have
+non-member operator functions. An operator function can be a template.
+:::
+
+:::{rule} OPR-2
+:kind: reject
+:tests: classes/operators/arrow-nonmember.cpp classes/operators/assign-nonmember.cpp classes/operators/call-default-argument-ok.cpp classes/operators/call-nonmember.cpp classes/operators/default-argument.cpp classes/operators/new-operator-token.cpp classes/operators/nonmember-no-class-param.cpp classes/operators/nonmember-pointer-param.cpp classes/operators/not-overloadable-conditional.cpp classes/operators/not-overloadable-dot-star.cpp classes/operators/not-overloadable-dot.cpp classes/operators/not-overloadable-scope.cpp classes/operators/postfix-wrong-param.cpp classes/operators/static-call-not-other.cpp classes/operators/static-member-operator.cpp classes/operators/subscript-nonmember.cpp classes/operators/unary-or-binary-ok.cpp classes/operators/variadic-operator.cpp classes/operators/wrong-arity-member.cpp classes/operators/wrong-arity-nonmember.cpp
+
+An operator function must obey these limits:
+
+- A non-member must have a parameter of class or enumeration type, or a
+  reference to one.
+- `.`, `.*`, `::`, and `?:` cannot be overloaded. A program cannot make
+  a new operator token.
+- A unary operator has one operand and a binary operator has two,
+  including the object of a member. `+`, `-`, `*`, and `&` can be either.
+- Only `operator()` and `operator[]` can have default arguments or be
+  `static`. No operator function can be variadic.
+- `=`, `()`, `[]`, and `->` must be member functions.
+- The parameter of a postfix `++` or `--` must be `int`.
+:::
+
+:::{rule} OPR-11
+:kind: required
+:tests: classes/operators/associativity-kept.cpp classes/operators/precedence-kept.cpp
+
+An overloaded operator keeps the precedence and associativity of the
+built-in operator.
+:::
+
+:::{rule} OPR-3
+:kind: required
+:tests: classes/operators/call-operator-overloads.cpp classes/operators/call-operator.cpp classes/operators/static-call-operator.cpp classes/operators/static-subscript.cpp classes/operators/subscript-default-arg.cpp classes/operators/subscript-multi.cpp classes/operators/subscript-operator.cpp classes/operators/subscript-zero-params.cpp
+
+`operator()` and `operator[]` can be `static` member functions. Both can
+be overloaded and can have default arguments. `operator[]` can have any
+number of parameters, including none, and the call `a[x, y]` passes each
+expression as an argument.
+:::
+
+:::{rule} OPR-4
+:kind: required
+:tests: classes/operators/postfix-arg-zero.cpp classes/operators/postfix-nonmember.cpp classes/operators/postfix-not-declared.cpp classes/operators/prefix-postfix.cpp
+
+`operator++()` with no extra parameter is the prefix form. `operator++(int)`
+is the postfix form, and the same applies to `--`. A postfix use passes
+`0` as the argument. An expression uses only the form that the class
+declares.
+:::
+
+:::{rule} OPR-5
+:kind: required
+:tests: classes/operators/arrow-chain.cpp classes/operators/arrow-circular.cpp classes/operators/arrow-declaration-ok.cpp classes/operators/arrow-returns-int.cpp
+
+For `x->m`, if `x` has class type, `x.operator->()` is called. If the
+result has class type, `->` applies to it again, until the result is a
+pointer. A declaration of `operator->` can have any return type. A use is
+not valid if the chain does not end in a pointer.
+:::
+
+:::{rule} OPR-6
+:kind: required
+:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/compound-not-synthesized.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/member-hides-not-nonmember.cpp classes/operators/no-candidate.cpp
+
+An expression with an operand of class or enumeration type selects its
+function from these candidates:
+
+- member operator functions of the class of the left operand,
+- non-member operator functions found by ordinary and argument-dependent
+  lookup *(referenced)*,
+- built-in operators, after conversion of the operands.
+
+Implicit conversions apply to every operand of a non-member and to no
+left operand of a member. An ambiguity or no viable candidate makes the
+expression not valid. `a @= b` uses only `operator@=`. It is never
+rewritten as `a = a @ b`.
+:::
+
+:::{rule} OPR-8
+:kind: required
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-integer.cpp classes/operators/literal-not-found.cpp classes/operators/literal-raw.cpp classes/operators/literal-string.cpp classes/operators/literal-raw-float.cpp
+
+A literal with a suffix calls a literal operator with that suffix. The
+form of the literal selects the parameter list:
+
+- an integer literal: `unsigned long long`, or `const char*` for the raw
+  digits,
+- a floating literal: `long double`, or `const char*`,
+- a character literal: the character type,
+- a string literal: a pointer to the character type and the length.
+
+A literal for which no matching literal operator exists is not valid. A
+literal operator can be `constexpr`.
+:::
+
+:::{rule} OPR-10
+:kind: reject
+:tests: classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-member.cpp classes/operators/literal-three-params.cpp
+
+A literal operator must be a non-member at namespace scope with C++
+linkage. It must have one of the parameter lists that OPR-8 gives, and no
+default argument ({question}`Q-0060`).
+:::
+
+## Dynamic Semantics
+
+:::{rule} OPR-7
+:kind: required
+:tests: classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/subscript-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/compound-assign-order-kept.cpp
+
+An expression that selects an operator function calls it with the
+operands as arguments. Both operands of an overloaded `&&` or `||` are
+evaluated. For `<<`, `>>`, `=`, compound assignment, `[]`, and `,`, the operands are
+evaluated in the order of the built-in operator.
+:::
+
+## Recommended Practice
+
+:::{rule} OPR-9
+:kind: recommended
+:tests: classes/operators/literal-no-underscore-warns.cpp
+
+An implementation should warn about a literal operator whose suffix does
+not start with `_`. Such suffixes are reserved.
+:::
+
+## Examples
+
+```cpp
+struct Vec { double x, y; };
+Vec operator+(Vec a, Vec b) { return {a.x + b.x, a.y + b.y}; }
+Vec operator*(double k, Vec v) { return {k * v.x, k * v.y}; }
+
+Vec p{1, 2}, q{3, 4};
+Vec r = p + 2 * q;               // * before +, as for built-in operators
+p += q;                          // rejected: no operator+=
+
+struct Matrix {
+  double operator[](int row, int col) const;
+};
+
+struct Meters { double v; };
+constexpr Meters operator""_m(long double v) { return {double(v)}; }
+Meters len = 2.5_m;
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 81 of
+82 tests.
+
+- OPR-10: GCC accepts a default argument on a literal operator. Clang and
+  EDG reject it ({question}`Q-0060`).
+- OPR-9: Clang and GCC warn without extra flags.
+
+Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
+edg-overload, edg-class-decl.

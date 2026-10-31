@@ -1,4 +1,4 @@
-// tidal-rules: OPR-8
+// tidal-rules: OPR-10
 // tidal-expect: reject
 // tidal-expect-gcc: accept
 // tidal-note: Q-0060. GCC accepts a default argument on a literal operator. Clang and EDG reject it.

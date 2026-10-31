@@ -1,4 +1,4 @@
-// tidal-rules: OPR-7
+// tidal-rules: OPR-11
 // tidal-expect: run
 struct N { int v; };
 N operator+(N a, N b) { return {a.v + b.v}; }
