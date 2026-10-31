@@ -217,3 +217,17 @@ Shared nonterminals have these names and defining pages:
 | `class_def`, `member_decl`, `class_name` | `classes/members.md` |
 | `attribute_spec` | `declarations/attributes.md` |
 
+## 9. Guides
+
+A guide under `spec/guides/` is informative and has no rules. It walks
+through one task in these parts:
+
+- the task, in one or two sentences,
+- the steps, each with a short example and the rule IDs it relies on,
+- the mistakes that the rules forbid or make undefined, each with the
+  rule that says so.
+
+Each example compiles on the matrix compilers. A guide adds no fact that
+a rule does not state. Where a guide needs one, the gap is a finding for
+the rule's page.
+

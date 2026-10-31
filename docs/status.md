@@ -157,16 +157,25 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-`docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
-current phase is phase 2, foundations that later pages need:
+`docs/roadmap.md` orders the work (decisions 0033 and 0039). Phases 1
+and 2 are done. Next:
 
-1. The task-level guides of phase 2: a class that owns a resource, error
-   handling, integer arithmetic without undefined behavior, enumerations
-   in switches, and reading the spec.
-2. Act on the remaining findings of exercises X1 to X4
-   (`reports/clean-room/X1/` to `X4/`). The most cited gaps, the orders
-   that no rule gave, default initialization, skipped declarations, and
-   the list of implicit calls, are done.
+1. Repairs that the guides and front-end round 3 found:
+   - rules with gaps: postfix `++` and `--` at run time and on overflow,
+     prefix `++` on an unsigned value, `static_cast` to an enumeration
+     with a fixed type, a recommended warning for a `switch` that misses
+     an enumerator, the global allocation functions (front end G14),
+     a reference that binds directly to a prvalue (VC-4), a `const`
+     lvalue reference that binds to an lvalue (REF-1);
+   - text: the unused `ref_init` production, glossary entries for
+     temporary object, converting constructor, copy-initialization, and
+     operator function, the copy-move Examples comment on
+     self-assignment, CTOR-18's pending question;
+   - docs: the `Inputs:` line of Evidence, and the "Divergences" heading
+     that `docs/pipeline.md` still names;
+   - front-end findings G15 to G23 (`reports/clean-room/rust-frontend/report-3.md`).
+2. Phase 3, item H: name lookup completed. The inputs are fetched.
+3. The remaining findings of exercises X1 to X4.
 
 Waiting on the maintainer:
 

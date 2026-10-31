@@ -31,6 +31,7 @@ expressions/index
 declarations/index
 classes/index
 exceptions/index
+guides/index
 glossary
 rules
 :::
