@@ -126,6 +126,8 @@ compilers affect the Status column.
 | `classes/constructors/base-init-calls-member-early-constant.cpp` | CTOR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/body-after-members.cpp` | CTOR-6 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/constructors/const-member-all-default-inits.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-anonymous-union-init.cpp` | CTOR-24 | run | run | run | accept | skip | run | reject | run | run | pass |
+| `classes/constructors/const-object-anonymous-union-no-init.cpp` | CTOR-24 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
 | `classes/constructors/const-object-base-initialized.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/const-object-base-leaves-member.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/const-object-defaulted-in-class.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -133,6 +135,9 @@ compilers affect the Status column.
 | `classes/constructors/const-object-member-init.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/const-object-modified-in-ctor.cpp` | CTOR-11 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/constructors/const-object-no-init.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-only-anonymous-unions.cpp` | CTOR-24 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `classes/constructors/const-object-union-member-init.cpp` | CTOR-24 | run | run | reject | accept | skip | reject | reject | reject | run | pass |
+| `classes/constructors/const-object-union-no-init.cpp` | CTOR-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/const-object-user-ctor.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/converting-ctor-multi-arg-list.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/constructors/converting-ctor.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -166,8 +171,12 @@ compilers affect the Status column.
 | `classes/constructors/deleted-default-only-if-used.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/deleted-default-reference-init.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/deleted-default-reference.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-decltype-call.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/constructors/deleted-dtor-delete.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-new-from-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-new.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-dtor-return-prvalue.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
@@ -319,6 +328,7 @@ compilers affect the Status column.
 | `classes/conversion-functions/virtual-conversion.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/assign-result-lvalue.cpp` | CPY-6 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/cast-move-only-accepted.cpp` | CPY-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/cast-on-return-no-warning.cpp` | CPY-13 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
 | `classes/copy-move/const-member-assign.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/copy-move/const-member-move-assign.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/copy-move/const-rvalue-picks-copy.cpp` | CPY-9 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -365,6 +375,7 @@ compilers affect the Status column.
 | `classes/copy-move/implicit-move-assign.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/implicit-move.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/lvalue-move-only-rejected.cpp` | CPY-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/member-dtor-keeps-assignment.cpp` | CPY-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/copy-move/memberwise-array.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/memberwise-assign-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/memberwise-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -382,6 +393,7 @@ compilers affect the Status column.
 | `classes/copy-move/no-implicit-move-user-copy.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/no-implicit-move-user-dtor.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/copy-move/parameter-return-moved.cpp` | CPY-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/pessimizing-move-nontemplate.cpp` | CPY-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `classes/copy-move/pessimizing-move-warns.cpp` | CPY-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `classes/copy-move/prvalue-argument-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/copy-move/prvalue-no-copy-count.cpp` | CPY-10 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -768,6 +780,7 @@ compilers affect the Status column.
 | `classes/unions/union-array-member.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/unions/union-copy-preserves-active.cpp` | UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `classes/unions/union-default-member-init-enables-ctor.cpp` | UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-deleted-move-uses-copy.cpp` | UNI-3 CPY-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/unions/union-member-functions.cpp` | UNI-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `classes/unions/union-nontrivial-copy-deleted.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `classes/unions/union-nontrivial-dtor-only.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -935,9 +948,14 @@ compilers affect the Status column.
 | `declarations/attributes/deprecated-use-warns.cpp` | ATTR-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/double-bracket-lambda-subscript.cpp` | ATTR-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/double-bracket-parenthesized-ok.cpp` | ATTR-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-after-jump.cpp` | ATTR-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-after-noreturn.cpp` | ATTR-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-consecutive-labels.cpp` | ATTR-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/fallthrough-end-of-else-branch.cpp` | ATTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/fallthrough-end-of-if-branch.cpp` | ATTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/fallthrough-end-of-loop.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-if-else-both-break.cpp` | ATTR-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-if-without-else-warns.cpp` | ATTR-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-misplaced.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-not-before-case.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-on-declaration.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -971,6 +989,10 @@ compilers affect the Status column.
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-class-object-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/unused-plain-class-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-set-not-read-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-structured-binding-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/using-prefix-ok.cpp` | ATTR-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/using-prefix-qualified.cpp` | ATTR-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -1162,6 +1184,7 @@ compilers affect the Status column.
 | `declarations/declarators/void-parameter-with-others.cpp` | DCL-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/declarators/volatile-return-deprecated.cpp` | CV-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-fixed-converts-to-underlying.cpp` | ENUM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-in-range.cpp` | ENUM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-out-of-range-sanitizer.cpp` | ENUM-6 CAST-14 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
@@ -1442,6 +1465,7 @@ compilers affect the Status column.
 | `declarations/initialization/references/bit-field-nonconst-ref.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/const-ref-binds-lvalue-directly.cpp` | REF-13 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-xvalue-direct.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -2597,6 +2621,8 @@ compilers affect the Status column.
 | `expressions/new-delete/double-delete.cpp` | NEW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/forms.cpp` | NEW-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/new-delete/function-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/global-functions-by-name.cpp` | NEW-19 | run | run | run | accept | skip | run | reject | run | run | pass |
+| `expressions/new-delete/global-functions-with-own-forms.cpp` | NEW-19 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/new-delete/incomplete-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/later-dimension-runtime.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/leak-in-constant-evaluation.cpp` | NEW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -2606,6 +2632,7 @@ compilers affect the Status column.
 | `expressions/new-delete/new-void.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/parenthesized-type.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/new-delete/placement-arguments.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/placement-form-undeclared.cpp` | NEW-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/reference-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/uninitialized-read.cpp` | NEW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/new-delete/uninitialized-write-then-read.cpp` | NEW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -2637,12 +2664,18 @@ compilers affect the Status column.
 | `expressions/postfix/mutable-and-reference-member-of-const.cpp` | PFX-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/postfix/no-such-member.cpp` | PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/postfix/postfix-decrement-bool.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-decrement-overflow-constant.cpp` | PFX-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-increment-overflow-constant.cpp` | PFX-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-increment-overflow-sanitizer.cpp` | PFX-18 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/postfix/postfix-increment.cpp` | PFX-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/postfix-narrow-signed-wraps.cpp` | PFX-12 UN-20 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
 | `expressions/postfix/postfix-not-lvalue.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/postfix/postfix-on-bool.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/postfix/postfix-on-const.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/postfix/postfix-on-void-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-pointer-past-end-constant.cpp` | PFX-18 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
 | `expressions/postfix/postfix-result-prvalue.cpp` | PFX-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/postfix-unsigned-wraps.cpp` | PFX-12 UN-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/postfix/static-member-object-evaluated.cpp` | PFX-10 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/postfix/subscript-categories.cpp` | PFX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/postfix/subscript-enum-index.cpp` | PFX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -2856,6 +2889,8 @@ compilers affect the Status column.
 | `expressions/unary/plus-pointer.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/unary/prefix-increment-lvalue.cpp` | UN-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/unary/prefix-increment.cpp` | UN-20 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/prefix-narrow-signed-wraps.cpp` | UN-20 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/prefix-unsigned-wraps.cpp` | UN-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/unary/sizeof-array-parameter-warns.cpp` | UN-19 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `expressions/unary/sizeof-array-reference-silent.cpp` | UN-19 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
 | `expressions/unary/sizeof-at-least-one.cpp` | UN-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -2890,6 +2925,7 @@ compilers affect the Status column.
 | `expressions/value-categories/materialize-member-access.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/value-categories/materialize-member-call.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/value-categories/materialize-pointer-to-member.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-reference-binding.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/value-categories/member-access-lvalue.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/value-categories/member-function-access-not-address.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/value-categories/member-reference-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -3013,15 +3049,124 @@ compilers affect the Status column.
 | `foundations/language-support/strong-ordering-missing-member.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/language-support/strong-ordering-missing.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/language-support/tuple-protocol-minimal.cpp` | LSUP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-alias-namespace.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-array.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-base-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-base.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-braced-list.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-class-in-inline-namespace.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-enum-in-class-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-enum-in-class-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-enum.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/adl-friend-declared-later.cpp` | NAM-29 ACC-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-friend-in-namespace.cpp` | NAM-29 ACC-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-friend-not-through-conversion.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-friend-of-other-class.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-function-name.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-function-pointer-fundamental.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-function-pointer-parameter.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-function-pointer-return.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-ignores-base-access.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-ignores-non-function.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-incomplete-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-indirect-base.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-inline-namespace-function.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-lambda-class-member.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-lambda-function.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-lambda-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-lambda-parameter-type.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-local-class-member-function.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-local-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-local-enum.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-member-function-pointer-parameter.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-member-pointer-class.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-member-pointer-type.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-nested-class-friend.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-nested-class-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-not-block-declaration.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-derived.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `foundations/names/adl-plus-ordinary.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/adl-not-later-declaration.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-static-member.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-not-through-directive.cpp` | NAM-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-null-pointer.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-parenthesized-name.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-plus-ordinary.cpp` | NAM-5 NAM-31 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/adl-pointer.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-qualified-name.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-reference.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-second-argument.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-suppressed-by-block-function.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-suppressed-by-member.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-suppressed-by-object.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-suppressed-by-type.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-suppressed-by-variable.cpp` | NAM-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-template-argument.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-template-namespace.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-template-template-argument.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-template-value-argument.cpp` | NAM-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-union.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-using-declaration-in-namespace.cpp` | NAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-with-block-using.cpp` | NAM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-with-global-function.cpp` | NAM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/class-member-type-needs-order.cpp` | NAM-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/class-members-any-order.cpp` | NAM-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/class-qualified-ambiguous.cpp` | NAM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/class-qualified-derived-hides.cpp` | NAM-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/class-qualified-enumerator.cpp` | NAM-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/class-qualified-in-namespace.cpp` | NAM-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/class-qualified-inherited.cpp` | NAM-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/class-qualified-missing.cpp` | NAM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/class-qualified-nested.cpp` | NAM-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/class-qualified-not-enclosing-class.cpp` | NAM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/class-qualified-not-outer-scope.cpp` | NAM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/class-qualified-scoped-enumerator.cpp` | NAM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/definition-body-sees-namespace.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/definition-initializer-sees-namespace.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/definition-parameter-sees-class.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/definition-return-type-before-name.cpp` | NAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/definition-return-type-namespace.cpp` | NAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/definition-trailing-return-sees-class.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-block-ends.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/directive-enclosing-level-ambiguous.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/directive-function-and-variable.cpp` | NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/directive-inline-members.cpp` | NAM-23 NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-inner-namespace-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-local-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-namespace-only.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/directive-namespace-reopened.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-overloads-merge.cpp` | NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-same-entity.cpp` | NAM-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/directive-type-and-variable.cpp` | NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/enum-qualified-in-namespace.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/enum-qualified-missing.cpp` | NAM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/enum-qualified-scoped.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/enum-qualified-unscoped.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/function-not-later-global.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `foundations/names/hiding-ignores-kind.cpp` | NAM-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-base-clause.cpp` | NAM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-base-hides-namespace.cpp` | NAM-35 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-base-name-not-outside.cpp` | NAM-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-base-name-qualified.cpp` | NAM-35 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-base-name.cpp` | NAM-35 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-constructor-alias.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-constructor-call.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-constructor-declaration.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-constructor-pointer.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-constructor-sizeof.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-constructor-template-argument.cpp` | NAM-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-elaborated.cpp` | NAM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-member-hides-base-name.cpp` | NAM-35 DER-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-own-name.cpp` | NAM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-private-base.cpp` | NAM-36 ACC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-repeated-qualifier.cpp` | NAM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-two-bases-ambiguous.cpp` | NAM-36 DER-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/injected-two-paths-virtual.cpp` | NAM-35 DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/injected-two-paths.cpp` | NAM-35 DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
 | `foundations/names/label-and-variable-same-name.cpp` | NAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `foundations/names/label-duplicate.cpp` | NAM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3030,7 +3175,34 @@ compilers affect the Status column.
 | `foundations/names/namespace-qualified-use.cpp` | NAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/namespace-reopened.cpp` | NAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
 | `foundations/names/parameter-hides-global.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/qualified-before-declaration.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-block-extern-not-member.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-direct-member-wins.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-directive-ambiguous.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-directive-cycle-missing.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-directive-cycle.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-directive-stops.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-directive-transitive.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-directive-type-and-variable.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-follows-directive.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-global-directive.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-global-not-named-namespace.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-hidden-friend.cpp` | NAM-14 ACC-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-inline-nested.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-not-enclosing-namespace.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualified-not-nested-namespace.cpp` | NAM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/qualified-reaches-hidden-global.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/qualified-same-entity-two-paths.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-same-entity-using-declarations.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualified-using-declaration.cpp` | NAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualifier-decltype.cpp` | NAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualifier-enum-alias.cpp` | NAM-15 NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualifier-fundamental-alias.cpp` | NAM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualifier-ignores-variable-class.cpp` | NAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualifier-ignores-variable.cpp` | NAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/qualifier-incomplete-class.cpp` | NAM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualifier-opaque-enum.cpp` | NAM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/qualifier-variable-only.cpp` | NAM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/redeclare-different-kind.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/names/redeclare-function-ok.cpp` | NAM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3335,6 +3507,8 @@ compilers affect the Status column.
 | `statements/switch/condition-two-conversions.cpp` | SW-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `statements/switch/condition-types.cpp` | SW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `statements/switch/dispatch.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/enum-all-cases-or-default-silent.cpp` | SW-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `statements/switch/enum-missing-case-warns.cpp` | SW-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
 | `statements/switch/fallthrough.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `statements/switch/init-name-redeclared.cpp` | SW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `statements/switch/init-statement.cpp` | SW-4 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -3348,7 +3522,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3332/3332 tests pass on baseline compilers.
+3506/3506 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -3696,6 +3870,11 @@ check that the rejection has the intended cause.
 - `classes/constructors/base-init-calls-member-early-constant.cpp` (clang-18): error: constexpr variable 'd' must be initialized by a constant expression / note: read of object outside its lifetime is not allowed in a constant expression
 - `classes/constructors/base-init-calls-member-early-constant.cpp` (gcc-16): error: accessing uninitialized member 'D::m'
 - `classes/constructors/base-init-calls-member-early-constant.cpp` (clang-22): error: constexpr variable 'd' must be initialized by a constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/constructors/const-object-anonymous-union-init.cpp` (clang-18): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-anonymous-union-no-init.cpp` (clang-host): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-anonymous-union-no-init.cpp` (edg-7.0): error: const variable "cell" requires an initializer -- class "Cell" has no user-provided default constructor
+- `classes/constructors/const-object-anonymous-union-no-init.cpp` (clang-18): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-anonymous-union-no-init.cpp` (clang-22): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
 - `classes/constructors/const-object-base-leaves-member.cpp` (clang-host): error: default initialization of an object of const type 'const D' without a user-provided default constructor
 - `classes/constructors/const-object-base-leaves-member.cpp` (gcc-host): error: uninitialized ‘const d’ [-fpermissive] / note: ‘const struct D’ has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize ‘int B::v’
 - `classes/constructors/const-object-base-leaves-member.cpp` (edg-7.0): error: const variable "d" requires an initializer -- class "D" has no user-provided default constructor
@@ -3717,6 +3896,20 @@ check that the rejection has the intended cause.
 - `classes/constructors/const-object-no-init.cpp` (clang-18): error: default initialization of an object of const type 'const S' without a user-provided default constructor
 - `classes/constructors/const-object-no-init.cpp` (gcc-16): error: uninitialized 'const s' [-fpermissive] / note: 'const struct S' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int S::v'
 - `classes/constructors/const-object-no-init.cpp` (clang-22): error: default initialization of an object of const type 'const S' without a user-provided default constructor
+- `classes/constructors/const-object-only-anonymous-unions.cpp` (clang-host): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-only-anonymous-unions.cpp` (clang-18): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-only-anonymous-unions.cpp` (clang-22): error: default initialization of an object of const type 'const Cell' without a user-provided default constructor
+- `classes/constructors/const-object-union-member-init.cpp` (gcc-host): error: uninitialized ‘const value’ [-fpermissive] / note: ‘const union Value’ has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize ‘float Value::part’
+- `classes/constructors/const-object-union-member-init.cpp` (gcc-14): error: uninitialized 'const value' [-fpermissive] / note: 'const union Value' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'float Value::part'
+- `classes/constructors/const-object-union-member-init.cpp` (clang-18): error: default initialization of an object of const type 'const Value' without a user-provided default constructor
+- `classes/constructors/const-object-union-member-init.cpp` (gcc-16): error: uninitialized 'const value' [-fpermissive] / note: 'const union Value' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'float Value::part'
+- `classes/constructors/const-object-union-no-init.cpp` (clang-host): error: default initialization of an object of const type 'const Value' without a user-provided default constructor
+- `classes/constructors/const-object-union-no-init.cpp` (gcc-host): error: uninitialized ‘const value’ [-fpermissive] / note: ‘const union Value’ has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize ‘int Value::whole’
+- `classes/constructors/const-object-union-no-init.cpp` (edg-7.0): error: const variable "value" requires an initializer -- class "Value" has no user-provided default constructor
+- `classes/constructors/const-object-union-no-init.cpp` (gcc-14): error: uninitialized 'const value' [-fpermissive] / note: 'const union Value' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Value::whole'
+- `classes/constructors/const-object-union-no-init.cpp` (clang-18): error: default initialization of an object of const type 'const Value' without a user-provided default constructor
+- `classes/constructors/const-object-union-no-init.cpp` (gcc-16): error: uninitialized 'const value' [-fpermissive] / note: 'const union Value' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Value::whole'
+- `classes/constructors/const-object-union-no-init.cpp` (clang-22): error: default initialization of an object of const type 'const Value' without a user-provided default constructor
 - `classes/constructors/ctor-address.cpp` (clang-host): error: qualified reference to 'S' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
 - `classes/constructors/ctor-address.cpp` (gcc-host): error: taking address of constructor ‘constexpr S::S(S&&)’
 - `classes/constructors/ctor-address.cpp` (edg-7.0): error: a constructor or destructor may not have its address taken
@@ -3857,6 +4050,13 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-default-reference.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized
 - `classes/constructors/deleted-default-reference.cpp` (gcc-16): error: use of deleted function 'S::S()' / note: 'S::S()' is implicitly deleted because the default definition would be ill-formed: / error: uninitialized reference member in 'struct S' / note: 'int& S::r' should be initialized / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `classes/constructors/deleted-default-reference.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'S' / note: default constructor of 'S' is implicitly deleted because field 'r' of reference type 'int &' would not be initialized
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (gcc-host): error: use of deleted function ‘S::~S()’ / error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function / error: "S::~S() noexcept" (declared at line 6), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (gcc-14): error: use of deleted function 'S::~S()' / error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (gcc-16): error: use of deleted function 'S::~S()' / error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-copy-init-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-delete.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-delete.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
 - `classes/constructors/deleted-dtor-delete.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
@@ -3864,6 +4064,20 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-dtor-delete.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-delete.cpp` (gcc-16): error: use of deleted function 'S::~S()'
 - `classes/constructors/deleted-dtor-delete.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function / error: "S::~S() noexcept" (declared at line 6), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (gcc-14): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (gcc-16): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-new-from-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function / error: "S::~S() noexcept" (declared at line 6), required for copy that was eliminated, cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (gcc-14): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-18): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (gcc-16): error: use of deleted function 'S::~S()'
+- `classes/constructors/deleted-dtor-return-prvalue.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-temporary.cpp` (clang-host): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-temporary.cpp` (gcc-host): error: use of deleted function ‘S::~S()’
 - `classes/constructors/deleted-dtor-temporary.cpp` (edg-7.0): error: function "S::~S() noexcept" (declared at line 6) cannot be referenced -- it is a deleted function
@@ -4616,6 +4830,12 @@ check that the rejection has the intended cause.
 - `classes/copy-move/named-return-needs-move.cpp` (clang-18): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
 - `classes/copy-move/named-return-needs-move.cpp` (gcc-16): error: use of deleted function 'S::S(S&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `classes/copy-move/named-return-needs-move.cpp` (clang-22): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (clang-host): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (gcc-host): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove ‘std::move’ call
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (gcc-14): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove 'std::move' call
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (clang-18): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (gcc-16): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove 'std::move' call
+- `classes/copy-move/pessimizing-move-nontemplate.cpp` (clang-22): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
 - `classes/copy-move/pessimizing-move-warns.cpp` (clang-host): error: moving a local object in a return statement prevents copy elision [-Werror,-Wpessimizing-move] / note: remove std::move call here
 - `classes/copy-move/pessimizing-move-warns.cpp` (gcc-host): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove ‘std::move’ call
 - `classes/copy-move/pessimizing-move-warns.cpp` (gcc-14): error: moving a local object in a return statement prevents copy elision [-Werror=pessimizing-move] / note: remove 'std::move' call
@@ -6417,6 +6637,12 @@ check that the rejection has the intended cause.
 - `declarations/attributes/fallthrough-end-of-loop.cpp` (clang-18): error: fallthrough annotation does not directly precede switch label
 - `declarations/attributes/fallthrough-end-of-loop.cpp` (gcc-16): error: attribute 'fallthrough' not preceding a case label or default label
 - `declarations/attributes/fallthrough-end-of-loop.cpp` (clang-22): error: fallthrough annotation does not directly precede switch label
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (clang-host): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning / note: insert 'break;' to avoid fall-through
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (gcc-host): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (gcc-14): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (clang-18): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning / note: insert 'break;' to avoid fall-through
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (gcc-16): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
+- `declarations/attributes/fallthrough-if-without-else-warns.cpp` (clang-22): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning / note: insert 'break;' to avoid fall-through
 - `declarations/attributes/fallthrough-misplaced.cpp` (clang-host): error: fallthrough annotation is outside switch statement
 - `declarations/attributes/fallthrough-misplaced.cpp` (gcc-host): error: invalid use of attribute ‘fallthrough’
 - `declarations/attributes/fallthrough-misplaced.cpp` (edg-7.0): error: the "fallthrough" attribute may only appear in an enclosing switch statement
@@ -6530,6 +6756,24 @@ check that the rejection has the intended cause.
 - `declarations/attributes/unlikely-with-argument.cpp` (clang-18): error: attribute 'unlikely' cannot have an argument list
 - `declarations/attributes/unlikely-with-argument.cpp` (gcc-16): error: 'unlikely' attribute does not take any arguments
 - `declarations/attributes/unlikely-with-argument.cpp` (clang-22): error: attribute 'unlikely' cannot have an argument list
+- `declarations/attributes/unused-plain-class-warns.cpp` (clang-host): error: unused variable 'point' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-plain-class-warns.cpp` (gcc-host): error: unused variable ‘point’ [-Werror=unused-variable]
+- `declarations/attributes/unused-plain-class-warns.cpp` (gcc-14): error: unused variable 'point' [-Werror=unused-variable]
+- `declarations/attributes/unused-plain-class-warns.cpp` (clang-18): error: unused variable 'point' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-plain-class-warns.cpp` (gcc-16): error: unused variable 'point' [-Werror=unused-variable]
+- `declarations/attributes/unused-plain-class-warns.cpp` (clang-22): error: unused variable 'point' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (clang-host): error: variable 'count' set but not used [-Werror,-Wunused-but-set-variable]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (gcc-host): error: variable ‘count’ set but not used [-Werror=unused-but-set-variable=]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (gcc-14): error: variable 'count' set but not used [-Werror=unused-but-set-variable]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (clang-18): error: variable 'count' set but not used [-Werror,-Wunused-but-set-variable]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (gcc-16): error: variable 'count' set but not used [-Werror=unused-but-set-variable=]
+- `declarations/attributes/unused-set-not-read-warns.cpp` (clang-22): error: variable 'count' set but not used [-Werror,-Wunused-but-set-variable]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (clang-host): error: unused variable '[x, y]' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (gcc-host): error: structured binding declaration set but not used [-Werror=unused-but-set-variable=]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (gcc-14): error: structured binding declaration set but not used [-Werror=unused-but-set-variable]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (clang-18): error: unused variable '[x, y]' [-Werror,-Wunused-variable]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (gcc-16): error: structured binding declaration set but not used [-Werror=unused-but-set-variable=]
+- `declarations/attributes/unused-structured-binding-warns.cpp` (clang-22): error: unused variable '[x, y]' [-Werror,-Wunused-variable]
 - `declarations/attributes/unused-warns.cpp` (clang-host): error: unused variable 'local' [-Werror,-Wunused-variable]
 - `declarations/attributes/unused-warns.cpp` (gcc-host): error: unused variable ‘local’ [-Werror=unused-variable]
 - `declarations/attributes/unused-warns.cpp` (gcc-14): error: unused variable 'local' [-Werror=unused-variable]
@@ -11424,6 +11668,7 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/function-type.cpp` (clang-18): error: cannot allocate function type 'F' (aka 'int (int)') with new
 - `expressions/new-delete/function-type.cpp` (gcc-16): error: new cannot be applied to a function type
 - `expressions/new-delete/function-type.cpp` (clang-22): error: cannot allocate function type 'F' (aka 'int (int)') with new
+- `expressions/new-delete/global-functions-by-name.cpp` (clang-18): error: no matching function for call to 'operator delete' / error: no matching function for call to 'operator delete[]'
 - `expressions/new-delete/incomplete-type.cpp` (clang-host): error: allocation of incomplete type 'Incomplete' / note: forward declaration of 'Incomplete'
 - `expressions/new-delete/incomplete-type.cpp` (gcc-host): error: invalid use of incomplete type ‘struct Incomplete’ / note: forward declaration of ‘struct Incomplete’
 - `expressions/new-delete/incomplete-type.cpp` (edg-7.0): error: incomplete type "Incomplete" is not allowed
@@ -11466,6 +11711,13 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/new-void.cpp` (clang-18): error: allocation of incomplete type 'void'
 - `expressions/new-delete/new-void.cpp` (gcc-16): error: invalid use of 'void'
 - `expressions/new-delete/new-void.cpp` (clang-22): error: allocation of incomplete type 'void'
+- `expressions/new-delete/placement-form-undeclared.cpp` (clang-host): error: no matching 'operator new' function for non-allocating placement new expression; include <new>
+- `expressions/new-delete/placement-form-undeclared.cpp` (gcc-host): error: no matching function for call to ‘operator new(sizetype, int*)’
+- `expressions/new-delete/placement-form-undeclared.cpp` (edg-7.0): error: no instance of overloaded "operator new" matches the argument list
+- `expressions/new-delete/placement-form-undeclared.cpp` (gcc-14): error: no matching function for call to 'operator new(sizetype, int*)'
+- `expressions/new-delete/placement-form-undeclared.cpp` (clang-18): error: no matching 'operator new' function for non-allocating placement new expression; include <new>
+- `expressions/new-delete/placement-form-undeclared.cpp` (gcc-16): error: no matching function for call to 'operator new(sizetype, int*)'
+- `expressions/new-delete/placement-form-undeclared.cpp` (clang-22): error: no matching 'operator new' function for non-allocating placement new expression; include <new>
 - `expressions/new-delete/reference-type.cpp` (clang-host): error: cannot allocate reference type 'int &' with new
 - `expressions/new-delete/reference-type.cpp` (gcc-host): error: new cannot be applied to a reference type
 - `expressions/new-delete/reference-type.cpp` (edg-7.0): error: type must be an object type
@@ -11602,6 +11854,21 @@ check that the rejection has the intended cause.
 - `expressions/postfix/postfix-decrement-bool.cpp` (clang-18): error: cannot decrement expression of type bool
 - `expressions/postfix/postfix-decrement-bool.cpp` (gcc-16): error: use of an operand of type 'bool' in 'operator--' is forbidden
 - `expressions/postfix/postfix-decrement-bool.cpp` (clang-22): error: cannot decrement expression of type bool
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: value -2147483649 is outside the range of representable values of type 'int' / error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-decrement-overflow-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value -2147483649 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: value 2147483648 is outside the range of representable values of type 'int' / error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `expressions/postfix/postfix-increment-overflow-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `expressions/postfix/postfix-narrow-signed-wraps.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "short"
 - `expressions/postfix/postfix-not-lvalue.cpp` (clang-host): error: expression is not assignable
 - `expressions/postfix/postfix-not-lvalue.cpp` (gcc-host): error: lvalue required as increment operand
 - `expressions/postfix/postfix-not-lvalue.cpp` (edg-7.0): error: expression must be a modifiable lvalue
@@ -11630,6 +11897,10 @@ check that the rejection has the intended cause.
 - `expressions/postfix/postfix-on-void-pointer.cpp` (clang-18): error: arithmetic on a pointer to void
 - `expressions/postfix/postfix-on-void-pointer.cpp` (gcc-16): error: ISO C++ forbids incrementing a pointer of type 'void*' [-Wpointer-arith]
 - `expressions/postfix/postfix-on-void-pointer.cpp` (clang-22): error: arithmetic on a pointer to void
+- `expressions/postfix/postfix-pointer-past-end-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: cannot refer to element 3 of array of 2 elements in a constant expression
+- `expressions/postfix/postfix-pointer-past-end-constant.cpp` (edg-7.0): error: expression must have a constant value / note: cannot access position 3 in array of 2 elements
+- `expressions/postfix/postfix-pointer-past-end-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: cannot refer to element 3 of array of 2 elements in a constant expression / error: static assertion expression is not an integral constant expression / note: cannot refer to element 3 of array of 2 elements in a constant expression
+- `expressions/postfix/postfix-pointer-past-end-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: cannot refer to element 3 of array of 2 elements in a constant expression
 - `expressions/postfix/subscript-floating-index.cpp` (clang-host): error: array subscript is not an integer
 - `expressions/postfix/subscript-floating-index.cpp` (gcc-host): error: invalid types ‘int [2][double]’ for array subscript
 - `expressions/postfix/subscript-floating-index.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
@@ -12286,6 +12557,7 @@ check that the rejection has the intended cause.
 - `expressions/unary/plus-minus-scoped-enum.cpp` (clang-18): error: invalid argument type 'E' to unary expression
 - `expressions/unary/plus-minus-scoped-enum.cpp` (gcc-16): error: no match for 'operator-' (operand type is 'E')
 - `expressions/unary/plus-minus-scoped-enum.cpp` (clang-22): error: invalid argument type 'E' to unary expression
+- `expressions/unary/prefix-narrow-signed-wraps.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "signed char"
 - `expressions/unary/sizeof-array-parameter-warns.cpp` (clang-host): error: sizeof on array function parameter will return size of 'int *' instead of 'int[10]' [-Werror,-Wsizeof-array-argument]
 - `expressions/unary/sizeof-array-parameter-warns.cpp` (gcc-host): error: ‘sizeof’ on array function parameter ‘a’ will return size of ‘int*’ [-Werror=sizeof-array-argument]
 - `expressions/unary/sizeof-array-parameter-warns.cpp` (gcc-14): error: 'sizeof' on array function parameter 'a' will return size of 'int*' [-Werror=sizeof-array-argument]
@@ -13042,6 +13314,76 @@ check that the rejection has the intended cause.
 - `foundations/language-support/strong-ordering-missing.cpp` (clang-18): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
 - `foundations/language-support/strong-ordering-missing.cpp` (gcc-16): error: 'strong_ordering' is not a member of 'std' / note: 'std::strong_ordering' is defined in header '<compare>'; this is probably fixable by adding '#include <compare>' / note: forming type of 'operator<=>'
 - `foundations/language-support/strong-ordering-missing.cpp` (clang-22): error: cannot use builtin operator '<=>' because type 'std::strong_ordering' was not found; include <compare>
+- `foundations/names/adl-alias-namespace.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-alias-namespace.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘m::probe’?
+- `foundations/names/adl-alias-namespace.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-alias-namespace.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'm::probe'?
+- `foundations/names/adl-alias-namespace.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-alias-namespace.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'm::probe'?
+- `foundations/names/adl-alias-namespace.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-braced-list.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-braced-list.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘n::probe’?
+- `foundations/names/adl-braced-list.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-braced-list.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-braced-list.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-braced-list.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-braced-list.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-friend-not-through-conversion.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-friend-not-through-conversion.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-friend-not-through-conversion.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-friend-not-through-conversion.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-friend-not-through-conversion.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-friend-not-through-conversion.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-friend-not-through-conversion.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-friend-of-other-class.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-friend-of-other-class.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-friend-of-other-class.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-friend-of-other-class.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-friend-of-other-class.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-friend-of-other-class.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-friend-of-other-class.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-function-pointer-fundamental.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-function-pointer-fundamental.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘m::probe’?
+- `foundations/names/adl-function-pointer-fundamental.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-function-pointer-fundamental.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'm::probe'?
+- `foundations/names/adl-function-pointer-fundamental.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-function-pointer-fundamental.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'm::probe'?
+- `foundations/names/adl-function-pointer-fundamental.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'm::probe'?
+- `foundations/names/adl-ignores-base-access.cpp` (clang-host): error: cannot cast 'B' to its private base class 'const A' / note: declared private here
+- `foundations/names/adl-ignores-base-access.cpp` (gcc-host): error: ‘lib::A’ is an inaccessible base of ‘B’
+- `foundations/names/adl-ignores-base-access.cpp` (edg-7.0): error: conversion to inaccessible base class "lib::A" is not allowed
+- `foundations/names/adl-ignores-base-access.cpp` (gcc-14): error: 'lib::A' is an inaccessible base of 'B'
+- `foundations/names/adl-ignores-base-access.cpp` (clang-18): error: cannot cast 'B' to its private base class 'const A' / note: declared private here
+- `foundations/names/adl-ignores-base-access.cpp` (gcc-16): error: 'lib::A' is an inaccessible base of 'B'
+- `foundations/names/adl-ignores-base-access.cpp` (clang-22): error: cannot cast 'B' to its private base class 'const A' / note: declared private here
+- `foundations/names/adl-lambda-parameter-type.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-lambda-parameter-type.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘n::probe’?
+- `foundations/names/adl-lambda-parameter-type.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-lambda-parameter-type.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-lambda-parameter-type.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-lambda-parameter-type.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-lambda-parameter-type.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-local-class-member-function.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-local-class-member-function.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-local-class-member-function.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-local-class-member-function.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-local-class-member-function.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-local-class-member-function.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-local-class-member-function.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-block-declaration.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-block-declaration.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-not-block-declaration.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-not-block-declaration.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-block-declaration.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-block-declaration.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-block-declaration.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-derived.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'd::probe'?
+- `foundations/names/adl-not-derived.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘d::probe’?
+- `foundations/names/adl-not-derived.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-not-derived.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'd::probe'?
+- `foundations/names/adl-not-derived.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'd::probe'?
+- `foundations/names/adl-not-derived.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'd::probe'?
+- `foundations/names/adl-not-derived.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'd::probe'?
 - `foundations/names/adl-not-for-fundamental.cpp` (clang-host): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
 - `foundations/names/adl-not-for-fundamental.cpp` (gcc-host): error: ‘twice’ was not declared in this scope; did you mean ‘n::twice’?
 - `foundations/names/adl-not-for-fundamental.cpp` (edg-7.0): error: identifier "twice" is undefined
@@ -13049,6 +13391,90 @@ check that the rejection has the intended cause.
 - `foundations/names/adl-not-for-fundamental.cpp` (clang-18): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
 - `foundations/names/adl-not-for-fundamental.cpp` (gcc-16): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
 - `foundations/names/adl-not-for-fundamental.cpp` (clang-22): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/adl-not-later-declaration.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-later-declaration.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-not-later-declaration.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-not-later-declaration.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-later-declaration.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-later-declaration.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-later-declaration.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-static-member.cpp` (clang-host): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-static-member.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `foundations/names/adl-not-static-member.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-not-static-member.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-static-member.cpp` (clang-18): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-static-member.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `foundations/names/adl-not-static-member.cpp` (clang-22): error: use of undeclared identifier 'probe'
+- `foundations/names/adl-not-through-directive.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'lib::probe'?
+- `foundations/names/adl-not-through-directive.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘lib::probe’?
+- `foundations/names/adl-not-through-directive.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-not-through-directive.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'lib::probe'?
+- `foundations/names/adl-not-through-directive.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'lib::probe'?
+- `foundations/names/adl-not-through-directive.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'lib::probe'?
+- `foundations/names/adl-not-through-directive.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'lib::probe'?
+- `foundations/names/adl-null-pointer.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-null-pointer.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘n::probe’?
+- `foundations/names/adl-null-pointer.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-null-pointer.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-null-pointer.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-null-pointer.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-null-pointer.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-parenthesized-name.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-parenthesized-name.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘n::probe’?
+- `foundations/names/adl-parenthesized-name.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-parenthesized-name.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-parenthesized-name.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-parenthesized-name.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-parenthesized-name.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-qualified-name.cpp` (clang-host): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-qualified-name.cpp` (gcc-host): error: cannot convert ‘n::S’ to ‘int’ / note: initializing argument 1 of ‘int m::probe(int)’
+- `foundations/names/adl-qualified-name.cpp` (edg-7.0): error: no suitable conversion function from "n::S" to "int" exists
+- `foundations/names/adl-qualified-name.cpp` (gcc-14): error: cannot convert 'n::S' to 'int' / note:   initializing argument 1 of 'int m::probe(int)'
+- `foundations/names/adl-qualified-name.cpp` (clang-18): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-qualified-name.cpp` (gcc-16): error: cannot convert 'n::S' to 'int' / note: initializing argument 1 of 'int m::probe(int)'
+- `foundations/names/adl-qualified-name.cpp` (clang-22): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-block-function.cpp` (clang-host): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-block-function.cpp` (gcc-host): error: cannot convert ‘n::S’ to ‘int’ / note: initializing argument 1 of ‘int probe(int)’
+- `foundations/names/adl-suppressed-by-block-function.cpp` (edg-7.0): error: no suitable conversion function from "n::S" to "int" exists
+- `foundations/names/adl-suppressed-by-block-function.cpp` (gcc-14): error: cannot convert 'n::S' to 'int' / note:   initializing argument 1 of 'int probe(int)'
+- `foundations/names/adl-suppressed-by-block-function.cpp` (clang-18): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-block-function.cpp` (gcc-16): error: cannot convert 'n::S' to 'int' / note: initializing argument 1 of 'int probe(int)'
+- `foundations/names/adl-suppressed-by-block-function.cpp` (clang-22): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-member.cpp` (clang-host): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-member.cpp` (gcc-host): error: cannot convert ‘n::S’ to ‘int’ / note: initializing argument 1 of ‘int user::probe(int)’
+- `foundations/names/adl-suppressed-by-member.cpp` (edg-7.0): error: no suitable conversion function from "n::S" to "int" exists
+- `foundations/names/adl-suppressed-by-member.cpp` (gcc-14): error: cannot convert 'n::S' to 'int' / note:   initializing argument 1 of 'int user::probe(int)'
+- `foundations/names/adl-suppressed-by-member.cpp` (clang-18): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-member.cpp` (gcc-16): error: cannot convert 'n::S' to 'int' / note: initializing argument 1 of 'int user::probe(int)'
+- `foundations/names/adl-suppressed-by-member.cpp` (clang-22): error: no viable conversion from 'n::S' to 'int' / note: passing argument to parameter here
+- `foundations/names/adl-suppressed-by-object.cpp` (clang-host): error: no matching function for call to object of type 'caller' / note: candidate function not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-object.cpp` (gcc-host): error: no match for call to ‘(caller) (n::S)’
+- `foundations/names/adl-suppressed-by-object.cpp` (edg-7.0): error: function "caller::operator()" cannot be called with the given argument list / note: function "caller::operator()" does not match because argument #1 does not match parameter
+- `foundations/names/adl-suppressed-by-object.cpp` (gcc-14): error: no match for call to '(caller) (n::S)' / note: candidate: 'int caller::operator()(int) const' / note:   no known conversion for argument 1 from 'n::S' to 'int'
+- `foundations/names/adl-suppressed-by-object.cpp` (clang-18): error: no matching function for call to object of type 'caller' / note: candidate function not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-object.cpp` (gcc-16): error: no match for call to '(caller) (n::S)'
+- `foundations/names/adl-suppressed-by-object.cpp` (clang-22): error: no matching function for call to object of type 'caller' / note: candidate function not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-type.cpp` (clang-host): error: no matching conversion for functional-style cast from 'n::S' to 'probe' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'n::S' to 'const probe' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'n::S' to 'probe' for 1st argument / note: candidate constructor not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-type.cpp` (gcc-host): error: no matching function for call to ‘probe::probe(n::S)’
+- `foundations/names/adl-suppressed-by-type.cpp` (edg-7.0): error: no instance of constructor "probe::probe" matches the argument list / note: function "probe::probe(const probe &) noexcept" does not match because argument #1 does not match parameter / note: function "probe::probe(probe &&) noexcept" does not match because argument #1 does not match parameter / note: function "probe::probe(int)" does not match because argument #1 does not match parameter
+- `foundations/names/adl-suppressed-by-type.cpp` (gcc-14): error: no matching function for call to 'probe::probe(n::S)' / note: candidate: 'probe::probe(int)' / note:   no known conversion for argument 1 from 'n::S' to 'int' / note: candidate: 'constexpr probe::probe(const probe&)' / note:   no known conversion for argument 1 from 'n::S' to 'const probe&' / note: candidate: 'constexpr probe::probe(probe&&)' / note:   no known conversion for argument 1 from 'n::S' to 'probe&&'
+- `foundations/names/adl-suppressed-by-type.cpp` (clang-18): error: no matching conversion for functional-style cast from 'n::S' to 'probe' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'n::S' to 'const probe' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'n::S' to 'probe' for 1st argument / note: candidate constructor not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-type.cpp` (gcc-16): error: no matching function for call to 'probe::probe(n::S)'
+- `foundations/names/adl-suppressed-by-type.cpp` (clang-22): error: no matching conversion for functional-style cast from 'n::S' to 'probe' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'n::S' to 'const probe' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'n::S' to 'probe' for 1st argument / note: candidate constructor not viable: no known conversion from 'n::S' to 'int' for 1st argument
+- `foundations/names/adl-suppressed-by-variable.cpp` (clang-host): error: no viable conversion from 'n::S' to 'int'
+- `foundations/names/adl-suppressed-by-variable.cpp` (gcc-host): error: cannot convert ‘n::S’ to ‘int’ in argument passing
+- `foundations/names/adl-suppressed-by-variable.cpp` (edg-7.0): error: no suitable conversion function from "n::S" to "int" exists
+- `foundations/names/adl-suppressed-by-variable.cpp` (gcc-14): error: cannot convert 'n::S' to 'int' in argument passing
+- `foundations/names/adl-suppressed-by-variable.cpp` (clang-18): error: no viable conversion from 'n::S' to 'int'
+- `foundations/names/adl-suppressed-by-variable.cpp` (gcc-16): error: cannot convert 'n::S' to 'int' in argument passing
+- `foundations/names/adl-suppressed-by-variable.cpp` (clang-22): error: no viable conversion from 'n::S' to 'int'
+- `foundations/names/adl-template-value-argument.cpp` (clang-host): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-template-value-argument.cpp` (gcc-host): error: ‘probe’ was not declared in this scope; did you mean ‘n::probe’?
+- `foundations/names/adl-template-value-argument.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `foundations/names/adl-template-value-argument.cpp` (gcc-14): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-template-value-argument.cpp` (clang-18): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
+- `foundations/names/adl-template-value-argument.cpp` (gcc-16): error: 'probe' was not declared in this scope; did you mean 'n::probe'?
+- `foundations/names/adl-template-value-argument.cpp` (clang-22): error: use of undeclared identifier 'probe'; did you mean 'n::probe'?
 - `foundations/names/class-member-type-needs-order.cpp` (clang-host): error: unknown type name 'T'
 - `foundations/names/class-member-type-needs-order.cpp` (gcc-host): error: ‘T’ does not name a type
 - `foundations/names/class-member-type-needs-order.cpp` (edg-7.0): error: identifier "T" is undefined
@@ -13056,6 +13482,41 @@ check that the rejection has the intended cause.
 - `foundations/names/class-member-type-needs-order.cpp` (clang-18): error: unknown type name 'T'
 - `foundations/names/class-member-type-needs-order.cpp` (gcc-16): error: 'T' does not name a type
 - `foundations/names/class-member-type-needs-order.cpp` (clang-22): error: unknown type name 'T'
+- `foundations/names/class-qualified-ambiguous.cpp` (clang-host): error: member 'value' found in multiple base classes of different types / note: member found by ambiguous name lookup / note: member found by ambiguous name lookup
+- `foundations/names/class-qualified-ambiguous.cpp` (gcc-host): error: reference to ‘value’ is ambiguous
+- `foundations/names/class-qualified-ambiguous.cpp` (edg-7.0): error: "join::value" is ambiguous
+- `foundations/names/class-qualified-ambiguous.cpp` (gcc-14): error: reference to 'value' is ambiguous / note: candidates are: 'constexpr const int right::value' / note:                 'constexpr const int left::value'
+- `foundations/names/class-qualified-ambiguous.cpp` (clang-18): error: member 'value' found in multiple base classes of different types / note: member found by ambiguous name lookup / note: member found by ambiguous name lookup
+- `foundations/names/class-qualified-ambiguous.cpp` (gcc-16): error: reference to 'value' is ambiguous
+- `foundations/names/class-qualified-ambiguous.cpp` (clang-22): error: member 'value' found in multiple base classes of different types / note: member found by ambiguous name lookup / note: member found by ambiguous name lookup
+- `foundations/names/class-qualified-missing.cpp` (clang-host): error: no member named 'value' in 'box'
+- `foundations/names/class-qualified-missing.cpp` (gcc-host): error: ‘value’ is not a member of ‘box’
+- `foundations/names/class-qualified-missing.cpp` (edg-7.0): error: class "box" has no member "value"
+- `foundations/names/class-qualified-missing.cpp` (gcc-14): error: 'value' is not a member of 'box'
+- `foundations/names/class-qualified-missing.cpp` (clang-18): error: no member named 'value' in 'box'
+- `foundations/names/class-qualified-missing.cpp` (gcc-16): error: 'value' is not a member of 'box'
+- `foundations/names/class-qualified-missing.cpp` (clang-22): error: no member named 'value' in 'box'
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (clang-host): error: no member named 'value' in 'outer::inner'; did you mean 'outer::value'?
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (gcc-host): error: ‘value’ is not a member of ‘outer::inner’
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (edg-7.0): error: class "outer::inner" has no member "value"
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (gcc-14): error: 'value' is not a member of 'outer::inner'
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (clang-18): error: no member named 'value' in 'outer::inner'; did you mean 'outer::value'?
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (gcc-16): error: 'value' is not a member of 'outer::inner'
+- `foundations/names/class-qualified-not-enclosing-class.cpp` (clang-22): error: no member named 'value' in 'outer::inner'; did you mean 'outer::value'?
+- `foundations/names/class-qualified-not-outer-scope.cpp` (clang-host): error: no member named 'value' in 'box'; did you mean simply 'value'?
+- `foundations/names/class-qualified-not-outer-scope.cpp` (gcc-host): error: ‘value’ is not a member of ‘box’
+- `foundations/names/class-qualified-not-outer-scope.cpp` (edg-7.0): error: class "box" has no member "value"
+- `foundations/names/class-qualified-not-outer-scope.cpp` (gcc-14): error: 'value' is not a member of 'box'
+- `foundations/names/class-qualified-not-outer-scope.cpp` (clang-18): error: no member named 'value' in 'box'; did you mean simply 'value'?
+- `foundations/names/class-qualified-not-outer-scope.cpp` (gcc-16): error: 'value' is not a member of 'box'
+- `foundations/names/class-qualified-not-outer-scope.cpp` (clang-22): error: no member named 'value' in 'box'; did you mean simply 'value'?
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (clang-host): error: no member named 'green' in 'light'
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (gcc-host): error: ‘green’ is not a member of ‘light’
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (edg-7.0): error: class "light" has no member "green"
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (gcc-14): error: 'green' is not a member of 'light'
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (clang-18): error: no member named 'green' in 'light'
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (gcc-16): error: 'green' is not a member of 'light'
+- `foundations/names/class-qualified-scoped-enumerator.cpp` (clang-22): error: no member named 'green' in 'light'
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-host): error: use of undeclared identifier 'n'; did you mean 'S::n'?
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (gcc-host): error: ‘n’ was not declared in this scope
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (edg-7.0): error: identifier "n" is undefined
@@ -13063,6 +13524,62 @@ check that the rejection has the intended cause.
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-18): error: use of undeclared identifier 'n'; did you mean 'S::n'?
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (gcc-16): error: 'n' was not declared in this scope
 - `foundations/names/class-scope-outside-needs-qualification.cpp` (clang-22): error: use of undeclared identifier 'n'; did you mean 'S::n'?
+- `foundations/names/definition-return-type-before-name.cpp` (clang-host): error: unknown type name 'type'; did you mean 'C::type'?
+- `foundations/names/definition-return-type-before-name.cpp` (gcc-host): error: ‘type’ does not name a type; did you mean ‘typedef’?
+- `foundations/names/definition-return-type-before-name.cpp` (edg-7.0): error: identifier "type" is undefined / error: declaration is incompatible with "C::type C::get()" (declared at line 6)
+- `foundations/names/definition-return-type-before-name.cpp` (gcc-14): error: 'type' does not name a type; did you mean 'typedef'?
+- `foundations/names/definition-return-type-before-name.cpp` (clang-18): error: unknown type name 'type'; did you mean 'C::type'?
+- `foundations/names/definition-return-type-before-name.cpp` (gcc-16): error: 'type' does not name a type; did you mean 'typedef'?
+- `foundations/names/definition-return-type-before-name.cpp` (clang-22): error: unknown type name 'type'; did you mean 'C::type'?
+- `foundations/names/definition-return-type-namespace.cpp` (clang-host): error: unknown type name 'item'; did you mean 'n::item'?
+- `foundations/names/definition-return-type-namespace.cpp` (gcc-host): error: ‘item’ does not name a type
+- `foundations/names/definition-return-type-namespace.cpp` (edg-7.0): error: identifier "item" is undefined / error: declaration is incompatible with "n::item n::make()" (declared at line 6)
+- `foundations/names/definition-return-type-namespace.cpp` (gcc-14): error: 'item' does not name a type
+- `foundations/names/definition-return-type-namespace.cpp` (clang-18): error: unknown type name 'item'; did you mean 'n::item'?
+- `foundations/names/definition-return-type-namespace.cpp` (gcc-16): error: 'item' does not name a type
+- `foundations/names/definition-return-type-namespace.cpp` (clang-22): error: unknown type name 'item'; did you mean 'n::item'?
+- `foundations/names/directive-block-ends.cpp` (clang-host): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-block-ends.cpp` (gcc-host): error: ‘value’ was not declared in this scope; did you mean ‘m::value’?
+- `foundations/names/directive-block-ends.cpp` (edg-7.0): error: identifier "value" is undefined
+- `foundations/names/directive-block-ends.cpp` (gcc-14): error: 'value' was not declared in this scope; did you mean 'm::value'?
+- `foundations/names/directive-block-ends.cpp` (clang-18): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-block-ends.cpp` (gcc-16): error: 'value' was not declared in this scope; did you mean 'm::value'?
+- `foundations/names/directive-block-ends.cpp` (clang-22): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (clang-host): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::lib::value'
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (gcc-host): error: reference to ‘value’ is ambiguous
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (edg-7.0): error: "outer::user::value" is ambiguous
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (gcc-14): error: reference to 'value' is ambiguous / note: candidates are: 'int outer::value' / note:                 'int outer::lib::value'
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (clang-18): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::lib::value'
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (gcc-16): error: reference to 'value' is ambiguous
+- `foundations/names/directive-enclosing-level-ambiguous.cpp` (clang-22): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'outer::value' / note: candidate found by name lookup is 'outer::lib::value'
+- `foundations/names/directive-function-and-variable.cpp` (clang-host): error: reference to 'pick' is ambiguous / note: candidate found by name lookup is 'a::pick' / note: candidate found by name lookup is 'b::pick'
+- `foundations/names/directive-function-and-variable.cpp` (gcc-host): error: reference to ‘pick’ is ambiguous
+- `foundations/names/directive-function-and-variable.cpp` (edg-7.0): error: "pick" is ambiguous
+- `foundations/names/directive-function-and-variable.cpp` (gcc-14): error: reference to 'pick' is ambiguous / note: candidates are: 'int b::pick' / note:                 'int a::pick(int)'
+- `foundations/names/directive-function-and-variable.cpp` (clang-18): error: reference to 'pick' is ambiguous / note: candidate found by name lookup is 'a::pick' / note: candidate found by name lookup is 'b::pick'
+- `foundations/names/directive-function-and-variable.cpp` (gcc-16): error: reference to 'pick' is ambiguous
+- `foundations/names/directive-function-and-variable.cpp` (clang-22): error: reference to 'pick' is ambiguous / note: candidate found by name lookup is 'a::pick' / note: candidate found by name lookup is 'b::pick'
+- `foundations/names/directive-namespace-only.cpp` (clang-host): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-namespace-only.cpp` (gcc-host): error: ‘value’ was not declared in this scope; did you mean ‘m::value’?
+- `foundations/names/directive-namespace-only.cpp` (edg-7.0): error: identifier "value" is undefined
+- `foundations/names/directive-namespace-only.cpp` (gcc-14): error: 'value' was not declared in this scope; did you mean 'm::value'?
+- `foundations/names/directive-namespace-only.cpp` (clang-18): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-namespace-only.cpp` (gcc-16): error: 'value' was not declared in this scope; did you mean 'm::value'?
+- `foundations/names/directive-namespace-only.cpp` (clang-22): error: use of undeclared identifier 'value'; did you mean 'm::value'?
+- `foundations/names/directive-type-and-variable.cpp` (clang-host): error: reference to 'item' is ambiguous / note: candidate found by name lookup is 'a::item' / note: candidate found by name lookup is 'b::item'
+- `foundations/names/directive-type-and-variable.cpp` (gcc-host): error: reference to ‘item’ is ambiguous
+- `foundations/names/directive-type-and-variable.cpp` (edg-7.0): error: "item" is ambiguous
+- `foundations/names/directive-type-and-variable.cpp` (gcc-14): error: reference to 'item' is ambiguous / note: candidates are: 'int b::item' / note:                 'struct a::item'
+- `foundations/names/directive-type-and-variable.cpp` (clang-18): error: reference to 'item' is ambiguous / note: candidate found by name lookup is 'a::item' / note: candidate found by name lookup is 'b::item'
+- `foundations/names/directive-type-and-variable.cpp` (gcc-16): error: reference to 'item' is ambiguous
+- `foundations/names/directive-type-and-variable.cpp` (clang-22): error: reference to 'item' is ambiguous / note: candidate found by name lookup is 'a::item' / note: candidate found by name lookup is 'b::item'
+- `foundations/names/enum-qualified-missing.cpp` (clang-host): error: no member named 'idle' in 'mode'
+- `foundations/names/enum-qualified-missing.cpp` (gcc-host): error: ‘idle’ is not a member of ‘mode’
+- `foundations/names/enum-qualified-missing.cpp` (edg-7.0): error: enum "mode" has no member "idle"
+- `foundations/names/enum-qualified-missing.cpp` (gcc-14): error: 'idle' is not a member of 'mode'
+- `foundations/names/enum-qualified-missing.cpp` (clang-18): error: no member named 'idle' in 'mode'
+- `foundations/names/enum-qualified-missing.cpp` (gcc-16): error: 'idle' is not a member of 'mode'
+- `foundations/names/enum-qualified-missing.cpp` (clang-22): error: no member named 'idle' in 'mode'
 - `foundations/names/function-not-later-global.cpp` (clang-host): error: use of undeclared identifier 'later'
 - `foundations/names/function-not-later-global.cpp` (gcc-host): error: ‘later’ was not declared in this scope
 - `foundations/names/function-not-later-global.cpp` (edg-7.0): error: identifier "later" is undefined
@@ -13077,6 +13594,69 @@ check that the rejection has the intended cause.
 - `foundations/names/hiding-ignores-kind.cpp` (clang-18): error: called object type 'int' is not a function or function pointer
 - `foundations/names/hiding-ignores-kind.cpp` (gcc-16): error: 'f' cannot be used as a function
 - `foundations/names/hiding-ignores-kind.cpp` (clang-22): error: called object type 'int' is not a function or function pointer
+- `foundations/names/injected-base-name-not-outside.cpp` (clang-host): error: unknown type name 'base'
+- `foundations/names/injected-base-name-not-outside.cpp` (gcc-host): error: ‘base’ does not name a type
+- `foundations/names/injected-base-name-not-outside.cpp` (edg-7.0): error: identifier "base" is undefined
+- `foundations/names/injected-base-name-not-outside.cpp` (gcc-14): error: 'base' does not name a type
+- `foundations/names/injected-base-name-not-outside.cpp` (clang-18): error: unknown type name 'base'
+- `foundations/names/injected-base-name-not-outside.cpp` (gcc-16): error: 'base' does not name a type
+- `foundations/names/injected-base-name-not-outside.cpp` (clang-22): error: unknown type name 'base'
+- `foundations/names/injected-constructor-alias.cpp` (clang-host): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-alias.cpp` (gcc-host): error: ‘C::C’ names the constructor, not the type
+- `foundations/names/injected-constructor-alias.cpp` (edg-7.0): error: overloaded function "C::C" is not a type name
+- `foundations/names/injected-constructor-alias.cpp` (gcc-14): error: 'C::C' names the constructor, not the type
+- `foundations/names/injected-constructor-alias.cpp` (clang-18): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-alias.cpp` (gcc-16): error: 'C::C' names the constructor, not the type
+- `foundations/names/injected-constructor-alias.cpp` (clang-22): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-call.cpp` (clang-host): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-call.cpp` (gcc-host): error: cannot call constructor ‘point::point’ directly [-fpermissive] / note: for a function-style cast, remove the redundant ‘::point’
+- `foundations/names/injected-constructor-call.cpp` (edg-7.0): error: a fully qualified constructor call is not allowed
+- `foundations/names/injected-constructor-call.cpp` (gcc-14): error: cannot call constructor 'point::point' directly [-fpermissive] / note: for a function-style cast, remove the redundant '::point'
+- `foundations/names/injected-constructor-call.cpp` (clang-18): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-call.cpp` (gcc-16): error: cannot call constructor 'point::point' directly [-fpermissive] / note: for a function-style cast, remove the redundant '::point'
+- `foundations/names/injected-constructor-call.cpp` (clang-22): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-declaration.cpp` (clang-host): error: qualified reference to 'box' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-declaration.cpp` (gcc-host): error: ‘box::box’ names the constructor, not the type
+- `foundations/names/injected-constructor-declaration.cpp` (edg-7.0): error: overloaded function "box::box" is not a type name
+- `foundations/names/injected-constructor-declaration.cpp` (gcc-14): error: 'box::box' names the constructor, not the type
+- `foundations/names/injected-constructor-declaration.cpp` (clang-18): error: qualified reference to 'box' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-declaration.cpp` (gcc-16): error: 'box::box' names the constructor, not the type
+- `foundations/names/injected-constructor-declaration.cpp` (clang-22): error: qualified reference to 'box' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-pointer.cpp` (clang-host): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-pointer.cpp` (gcc-host): error: ‘C::C’ names the constructor, not the type
+- `foundations/names/injected-constructor-pointer.cpp` (edg-7.0): error: overloaded function "C::C" is not a type name
+- `foundations/names/injected-constructor-pointer.cpp` (gcc-14): error: 'C::C' names the constructor, not the type
+- `foundations/names/injected-constructor-pointer.cpp` (clang-18): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-pointer.cpp` (gcc-16): error: 'C::C' names the constructor, not the type
+- `foundations/names/injected-constructor-pointer.cpp` (clang-22): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-sizeof.cpp` (clang-host): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-sizeof.cpp` (gcc-host): error: ISO C++ forbids applying ‘sizeof’ to an expression of function type [-fpermissive] / error: static assertion failed
+- `foundations/names/injected-constructor-sizeof.cpp` (edg-7.0): error: cannot determine which instance of overloaded function "point::point" is intended
+- `foundations/names/injected-constructor-sizeof.cpp` (gcc-14): error: ISO C++ forbids applying 'sizeof' to an expression of function type [-fpermissive] / error: static assertion failed / note: the comparison reduces to '(1 == 4)'
+- `foundations/names/injected-constructor-sizeof.cpp` (clang-18): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-sizeof.cpp` (gcc-16): error: ISO C++ forbids applying 'sizeof' to an expression of function type [-fpermissive] / error: static assertion failed
+- `foundations/names/injected-constructor-sizeof.cpp` (clang-22): error: qualified reference to 'point' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-template-argument.cpp` (clang-host): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-template-argument.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<class T> struct box’ / note:   expected a type, got ‘C::__ct ’
+- `foundations/names/injected-constructor-template-argument.cpp` (edg-7.0): error: overloaded function "C::C" is not a type name
+- `foundations/names/injected-constructor-template-argument.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct box' / note:   expected a type, got 'C::__ct '
+- `foundations/names/injected-constructor-template-argument.cpp` (clang-18): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-constructor-template-argument.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct box' / note:   expected a type, got 'C::__ct '
+- `foundations/names/injected-constructor-template-argument.cpp` (clang-22): error: qualified reference to 'C' is a constructor name rather than a type in this context
+- `foundations/names/injected-private-base.cpp` (clang-host): error: 'A' is a private member of 'A' / note: constrained by private inheritance here
+- `foundations/names/injected-private-base.cpp` (gcc-host): error: ‘struct A A::A’ is private within this context / note: declared private here
+- `foundations/names/injected-private-base.cpp` (edg-7.0): error: type "A::A" (declared at line 6) is inaccessible
+- `foundations/names/injected-private-base.cpp` (gcc-14): error: 'struct A A::A' is private within this context / note: declared private here
+- `foundations/names/injected-private-base.cpp` (clang-18): error: 'A' is a private member of 'A' / note: constrained by private inheritance here
+- `foundations/names/injected-private-base.cpp` (gcc-16): error: 'struct A A::A' is private within this context / note: declared private here
+- `foundations/names/injected-private-base.cpp` (clang-22): error: 'A' is a private member of 'A' / note: constrained by private inheritance here
+- `foundations/names/injected-two-bases-ambiguous.cpp` (clang-host): error: member 'base' found in multiple base classes of different types / note: member type 'a::base' found by ambiguous name lookup / note: member type 'b::base' found by ambiguous name lookup / error: use of undeclared identifier 'p'
+- `foundations/names/injected-two-bases-ambiguous.cpp` (gcc-host): error: reference to ‘base’ is ambiguous / error: ‘p’ was not declared in this scope
+- `foundations/names/injected-two-bases-ambiguous.cpp` (edg-7.0): error: "join::base" is ambiguous
+- `foundations/names/injected-two-bases-ambiguous.cpp` (gcc-14): error: reference to 'base' is ambiguous / note: candidates are: 'struct b::base b::base::base' / note:                 'struct a::base a::base::base' / error: 'p' was not declared in this scope
+- `foundations/names/injected-two-bases-ambiguous.cpp` (clang-18): error: member 'base' found in multiple base classes of different types / note: member type 'a::base' found by ambiguous name lookup / note: member type 'b::base' found by ambiguous name lookup / error: use of undeclared identifier 'p'
+- `foundations/names/injected-two-bases-ambiguous.cpp` (gcc-16): error: reference to 'base' is ambiguous / error: 'p' was not declared in this scope
+- `foundations/names/injected-two-bases-ambiguous.cpp` (clang-22): error: member 'base' found in multiple base classes of different types / note: member type 'a::base' found by ambiguous name lookup / note: member type 'b::base' found by ambiguous name lookup / error: use of undeclared identifier 'p'
 - `foundations/names/label-duplicate.cpp` (clang-host): error: redefinition of label 'a' / note: previous definition is here
 - `foundations/names/label-duplicate.cpp` (gcc-host): error: duplicate label ‘a’
 - `foundations/names/label-duplicate.cpp` (edg-7.0): error: label "a" has already been defined (previous definition at line 6)
@@ -13091,6 +13671,97 @@ check that the rejection has the intended cause.
 - `foundations/names/namespace-qualified-use.cpp` (clang-18): error: use of undeclared identifier 'a'; did you mean 'n::a'?
 - `foundations/names/namespace-qualified-use.cpp` (gcc-16): error: 'a' was not declared in this scope; did you mean 'n::a'?
 - `foundations/names/namespace-qualified-use.cpp` (clang-22): error: use of undeclared identifier 'a'; did you mean 'n::a'?
+- `foundations/names/qualified-before-declaration.cpp` (clang-host): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-before-declaration.cpp` (gcc-host): error: ‘value’ is not a member of ‘n’
+- `foundations/names/qualified-before-declaration.cpp` (edg-7.0): error: namespace "n" has no member "value"
+- `foundations/names/qualified-before-declaration.cpp` (gcc-14): error: 'value' is not a member of 'n'
+- `foundations/names/qualified-before-declaration.cpp` (clang-18): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-before-declaration.cpp` (gcc-16): error: 'value' is not a member of 'n'
+- `foundations/names/qualified-before-declaration.cpp` (clang-22): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-block-extern-not-member.cpp` (clang-host): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-block-extern-not-member.cpp` (gcc-host): error: ‘value’ is not a member of ‘n’
+- `foundations/names/qualified-block-extern-not-member.cpp` (edg-7.0): error: namespace "n" has no member "value"
+- `foundations/names/qualified-block-extern-not-member.cpp` (gcc-14): error: 'value' is not a member of 'n'
+- `foundations/names/qualified-block-extern-not-member.cpp` (clang-18): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-block-extern-not-member.cpp` (gcc-16): error: 'value' is not a member of 'n'
+- `foundations/names/qualified-block-extern-not-member.cpp` (clang-22): error: no member named 'value' in namespace 'n'
+- `foundations/names/qualified-directive-ambiguous.cpp` (clang-host): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'b::value' / note: candidate found by name lookup is 'a::value'
+- `foundations/names/qualified-directive-ambiguous.cpp` (gcc-host): error: reference to ‘value’ is ambiguous
+- `foundations/names/qualified-directive-ambiguous.cpp` (edg-7.0): error: "both::value" is ambiguous
+- `foundations/names/qualified-directive-ambiguous.cpp` (gcc-14): error: reference to 'value' is ambiguous / note: candidates are: 'int a::value' / note:                 'int b::value'
+- `foundations/names/qualified-directive-ambiguous.cpp` (clang-18): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'b::value' / note: candidate found by name lookup is 'a::value'
+- `foundations/names/qualified-directive-ambiguous.cpp` (gcc-16): error: reference to 'value' is ambiguous
+- `foundations/names/qualified-directive-ambiguous.cpp` (clang-22): error: reference to 'value' is ambiguous / note: candidate found by name lookup is 'b::value' / note: candidate found by name lookup is 'a::value'
+- `foundations/names/qualified-directive-cycle-missing.cpp` (clang-host): error: no member named 'value' in namespace 'b'
+- `foundations/names/qualified-directive-cycle-missing.cpp` (gcc-host): error: ‘value’ is not a member of ‘b’
+- `foundations/names/qualified-directive-cycle-missing.cpp` (edg-7.0): error: namespace "b" has no member "value"
+- `foundations/names/qualified-directive-cycle-missing.cpp` (gcc-14): error: 'value' is not a member of 'b'
+- `foundations/names/qualified-directive-cycle-missing.cpp` (clang-18): error: no member named 'value' in namespace 'b'
+- `foundations/names/qualified-directive-cycle-missing.cpp` (gcc-16): error: 'value' is not a member of 'b'
+- `foundations/names/qualified-directive-cycle-missing.cpp` (clang-22): error: no member named 'value' in namespace 'b'
+- `foundations/names/qualified-directive-type-and-variable.cpp` (clang-host): error: a type named 'item' is hidden by a declaration in a different namespace / note: type declaration hidden / note: declaration hides type
+- `foundations/names/qualified-directive-type-and-variable.cpp` (gcc-host): error: reference to ‘item’ is ambiguous
+- `foundations/names/qualified-directive-type-and-variable.cpp` (edg-7.0): error: "top::item" is ambiguous
+- `foundations/names/qualified-directive-type-and-variable.cpp` (gcc-14): error: reference to 'item' is ambiguous / note: candidates are: 'struct a::item' / note:                 'int b::item'
+- `foundations/names/qualified-directive-type-and-variable.cpp` (clang-18): error: a type named 'item' is hidden by a declaration in a different namespace / note: type declaration hidden / note: declaration hides type
+- `foundations/names/qualified-directive-type-and-variable.cpp` (gcc-16): error: reference to 'item' is ambiguous
+- `foundations/names/qualified-directive-type-and-variable.cpp` (clang-22): error: a type named 'item' is hidden by a declaration in a different namespace / note: type declaration hidden / note: declaration hides type
+- `foundations/names/qualified-global-not-named-namespace.cpp` (clang-host): error: no member named 'value' in the global namespace; did you mean simply 'value'?
+- `foundations/names/qualified-global-not-named-namespace.cpp` (gcc-host): error: ‘::value’ has not been declared; did you mean ‘n::value’?
+- `foundations/names/qualified-global-not-named-namespace.cpp` (edg-7.0): error: the global scope has no "value"
+- `foundations/names/qualified-global-not-named-namespace.cpp` (gcc-14): error: '::value' has not been declared; did you mean 'n::value'?
+- `foundations/names/qualified-global-not-named-namespace.cpp` (clang-18): error: no member named 'value' in the global namespace; did you mean simply 'value'?
+- `foundations/names/qualified-global-not-named-namespace.cpp` (gcc-16): error: '::value' has not been declared; did you mean 'n::value'?
+- `foundations/names/qualified-global-not-named-namespace.cpp` (clang-22): error: no member named 'value' in the global namespace; did you mean simply 'value'?
+- `foundations/names/qualified-hidden-friend.cpp` (clang-host): error: no member named 'probe' in namespace 'n'
+- `foundations/names/qualified-hidden-friend.cpp` (gcc-host): error: ‘probe’ is not a member of ‘n’
+- `foundations/names/qualified-hidden-friend.cpp` (edg-7.0): error: namespace "n" has no member "probe"
+- `foundations/names/qualified-hidden-friend.cpp` (gcc-14): error: 'probe' is not a member of 'n'
+- `foundations/names/qualified-hidden-friend.cpp` (clang-18): error: no member named 'probe' in namespace 'n'
+- `foundations/names/qualified-hidden-friend.cpp` (gcc-16): error: 'probe' is not a member of 'n'
+- `foundations/names/qualified-hidden-friend.cpp` (clang-22): error: no member named 'probe' in namespace 'n'
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (clang-host): error: no member named 'value' in namespace 'n'; did you mean simply 'value'?
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (gcc-host): error: ‘value’ is not a member of ‘n’; did you mean ‘value’?
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (edg-7.0): error: namespace "n" has no member "value"
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (gcc-14): error: 'value' is not a member of 'n'; did you mean 'value'?
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (clang-18): error: no member named 'value' in namespace 'n'; did you mean simply 'value'?
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (gcc-16): error: 'value' is not a member of 'n'; did you mean 'value'?
+- `foundations/names/qualified-not-enclosing-namespace.cpp` (clang-22): error: no member named 'value' in namespace 'n'; did you mean simply 'value'?
+- `foundations/names/qualified-not-nested-namespace.cpp` (clang-host): error: no member named 'value' in namespace 'n'; did you mean 'n::m::value'?
+- `foundations/names/qualified-not-nested-namespace.cpp` (gcc-host): error: ‘value’ is not a member of ‘n’; did you mean ‘n::m::value’?
+- `foundations/names/qualified-not-nested-namespace.cpp` (edg-7.0): error: namespace "n" has no member "value"
+- `foundations/names/qualified-not-nested-namespace.cpp` (gcc-14): error: 'value' is not a member of 'n'; did you mean 'n::m::value'?
+- `foundations/names/qualified-not-nested-namespace.cpp` (clang-18): error: no member named 'value' in namespace 'n'; did you mean 'n::m::value'?
+- `foundations/names/qualified-not-nested-namespace.cpp` (gcc-16): error: 'value' is not a member of 'n'; did you mean 'n::m::value'?
+- `foundations/names/qualified-not-nested-namespace.cpp` (clang-22): error: no member named 'value' in namespace 'n'; did you mean 'n::m::value'?
+- `foundations/names/qualifier-fundamental-alias.cpp` (clang-host): error: 'number' (aka 'int') is not a class, namespace, or enumeration
+- `foundations/names/qualifier-fundamental-alias.cpp` (gcc-host): error: ‘number’ is not a class, namespace, or enumeration
+- `foundations/names/qualifier-fundamental-alias.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `foundations/names/qualifier-fundamental-alias.cpp` (gcc-14): error: 'number' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-fundamental-alias.cpp` (clang-18): error: 'number' (aka 'int') is not a class, namespace, or enumeration
+- `foundations/names/qualifier-fundamental-alias.cpp` (gcc-16): error: 'number' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-fundamental-alias.cpp` (clang-22): error: 'number' (aka 'int') is not a class, namespace, or enumeration
+- `foundations/names/qualifier-incomplete-class.cpp` (clang-host): error: incomplete type 'later' named in nested name specifier / note: forward declaration of 'later'
+- `foundations/names/qualifier-incomplete-class.cpp` (gcc-host): error: incomplete type ‘later’ used in nested name specifier
+- `foundations/names/qualifier-incomplete-class.cpp` (edg-7.0): error: incomplete type "later" is not allowed
+- `foundations/names/qualifier-incomplete-class.cpp` (gcc-14): error: incomplete type 'later' used in nested name specifier
+- `foundations/names/qualifier-incomplete-class.cpp` (clang-18): error: incomplete type 'later' named in nested name specifier / note: forward declaration of 'later'
+- `foundations/names/qualifier-incomplete-class.cpp` (gcc-16): error: incomplete type 'later' used in nested name specifier
+- `foundations/names/qualifier-incomplete-class.cpp` (clang-22): error: incomplete type 'later' named in nested name specifier / note: forward declaration of 'later'
+- `foundations/names/qualifier-opaque-enum.cpp` (clang-host): error: incomplete type 'mode' named in nested name specifier
+- `foundations/names/qualifier-opaque-enum.cpp` (gcc-host): error: ‘on’ is not a member of ‘mode’
+- `foundations/names/qualifier-opaque-enum.cpp` (edg-7.0): error: enum "mode" has no member "on"
+- `foundations/names/qualifier-opaque-enum.cpp` (gcc-14): error: 'on' is not a member of 'mode'
+- `foundations/names/qualifier-opaque-enum.cpp` (clang-18): error: incomplete type 'mode' named in nested name specifier
+- `foundations/names/qualifier-opaque-enum.cpp` (gcc-16): error: 'on' is not a member of 'mode'
+- `foundations/names/qualifier-opaque-enum.cpp` (clang-22): error: incomplete type 'mode' named in nested name specifier
+- `foundations/names/qualifier-variable-only.cpp` (clang-host): error: 'box' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-variable-only.cpp` (gcc-host): error: ‘box’ is not a class, namespace, or enumeration
+- `foundations/names/qualifier-variable-only.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `foundations/names/qualifier-variable-only.cpp` (gcc-14): error: 'box' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-variable-only.cpp` (clang-18): error: 'box' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-variable-only.cpp` (gcc-16): error: 'box' is not a class, namespace, or enumeration
+- `foundations/names/qualifier-variable-only.cpp` (clang-22): error: 'box' is not a class, namespace, or enumeration
 - `foundations/names/redeclare-different-kind.cpp` (clang-host): error: redefinition of 'a' as different kind of symbol / note: previous definition is here
 - `foundations/names/redeclare-different-kind.cpp` (gcc-host): error: ‘void a()’ redeclared as different kind of entity / note: previous declaration ‘int a’
 - `foundations/names/redeclare-different-kind.cpp` (edg-7.0): error: declaration is incompatible with "int a" (declared at line 6)
@@ -13996,6 +14667,12 @@ check that the rejection has the intended cause.
 - `statements/switch/condition-two-conversions.cpp` (clang-18): error: multiple conversions from switch condition type 'S' to an integral or enumeration type / note: conversion to integral type 'int' / note: conversion to integral type 'long'
 - `statements/switch/condition-two-conversions.cpp` (gcc-16): error: ambiguous default type conversion from 'S' / note:   candidate conversions include 'S::operator long int() const' and 'S::operator int() const'
 - `statements/switch/condition-two-conversions.cpp` (clang-22): error: multiple conversions from switch condition type 'S' to an integral or enumeration type / note: conversion to integral type 'int' / note: conversion to integral type 'long'
+- `statements/switch/enum-missing-case-warns.cpp` (clang-host): error: enumeration value 'green' not handled in switch [-Werror,-Wswitch]
+- `statements/switch/enum-missing-case-warns.cpp` (gcc-host): error: enumeration value ‘green’ not handled in switch [-Werror=switch]
+- `statements/switch/enum-missing-case-warns.cpp` (gcc-14): error: enumeration value 'green' not handled in switch [-Werror=switch]
+- `statements/switch/enum-missing-case-warns.cpp` (clang-18): error: enumeration value 'green' not handled in switch [-Werror,-Wswitch]
+- `statements/switch/enum-missing-case-warns.cpp` (gcc-16): error: enumeration value 'green' not handled in switch [-Werror=switch]
+- `statements/switch/enum-missing-case-warns.cpp` (clang-22): error: enumeration value 'green' not handled in switch [-Werror,-Wswitch]
 - `statements/switch/init-name-redeclared.cpp` (clang-host): error: redefinition of 'a' / note: previous definition is here
 - `statements/switch/init-name-redeclared.cpp` (gcc-host): error: redeclaration of ‘int a’
 - `statements/switch/init-name-redeclared.cpp` (edg-7.0): error: "a", declared in condition, may not be redeclared in this scope
