@@ -24,6 +24,7 @@ See [docs/charter.md](docs/charter.md).
 | `CONTRIBUTING.md` | Roles, how to claim work, the pipeline in short, and what a change needs before merge |
 | `AGENTS.md` | Rules for all agents: source readers give writers summaries only |
 | `docs/charter.md` | Goals, scope, and non-goals |
+| `docs/setup.md` | What a machine needs to run every check |
 | `docs/clean-room.md` | Who may read what, and how contamination is checked |
 | `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
 | `docs/spec-format.md` | Rule classes and test directives |

@@ -110,3 +110,63 @@ catalog counts as done.
 | Front end | running | `reports/spec-only/rust-frontend/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | running | |
 | All others | planned | |
+
+## 8. Prompts
+
+Each exercise runs as one agent with a prompt built from these parts.
+Fill in the angle brackets.
+
+### Shared rules (every prompt)
+
+> Your only documentation is the Tidal specification under
+> ~/Development/tidal/spec/ (start with spec/index.md, spec/glossary.md,
+> and spec/foundations/translation.md). Read only files under spec/,
+> docs/, and <the exercise's own directories>. Do not read tests/,
+> build/exercise-keys/, questions/, reports/, or inputs/, and do not use
+> git log or git show. Do not use the web. Do not consult or recall the
+> ISO C++ standard, its drafts, cppreference, WG21 papers, or compiler
+> source. Never quote or paraphrase ISO wording or cite ISO section
+> names. When you use knowledge the spec did not give you, log it as an
+> "outside knowledge" finding. Write only in <output directory>, and run
+> no git command that changes anything. If a file write is refused,
+> return its content in your final message. Write plainly: short
+> sentences, no em-dashes, no "not X but Y".
+
+### Write and Port
+
+> You are an experienced <persona> programmer who has never written C++.
+> Write these programs from the spec alone, one .cpp file each, without
+> #include: <tasks from the suite>. Before writing, note the rule and
+> principle IDs that tell you how to write each construct. Build each
+> with `g++` and `clang++` using `-std=c++23 -pedantic-errors -Wall
+> -Wextra`, run it, and check that it exits 0. Build once more with
+> `-fsanitize=undefined,address` and run it. When a compiler rejects or
+> warns, or the program misbehaves, record what the spec said that led
+> you there, then fix the program. Report: a summary with the three
+> biggest problems; findings, each with pages and rule IDs, kind
+> (missing, unclear, wrong, hard to find, needs example, outside
+> knowledge), what happened, and a suggestion in your own words; an
+> attempt log; and what worked well.
+
+For Port, replace the task list with three short programs in the
+persona's language and ask for C++ programs with the same behavior.
+
+### Predict
+
+> You are a programmer new to C++. Do these batches in order:
+> build/exercises/R-<page>, ... For each, read its README.md and the
+> spec pages you need, and predict each program's outcome without
+> compiling anything. When general C++ knowledge disagrees with the
+> spec, answer from the spec and say what it is missing. Write each
+> batch's answers to its answers.json. In your final message, list spec
+> findings with batch and program ID, rule IDs, what you needed, and a
+> suggestion.
+
+### Front end
+
+The front end prompt gives milestones (lexer and conformance harness,
+parser from the Syntax segments, `reject` checks, constant evaluation
+for `static_assert`) and asks for findings of kind missing, ambiguous,
+contradictory, grammar gap, untestable, outside the spec, or needs
+example. The reader may also read `tests/` and `questions/`, and writes
+only in `frontend/` and its report directory.

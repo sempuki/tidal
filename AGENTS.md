@@ -54,3 +54,48 @@ A writer can compile and run programs on any implementation, read
 compiler diagnostics, read the sanitized sources, and read every file in
 this repository. `docs/clean-room.md` gives the full input rules, and
 `docs/style-guide.md` gives the rules for writing specification text.
+
+## Working practices
+
+These practices apply to every agent that changes the repository.
+
+- **Keep going.** Work through `docs/status.md` next steps in order.
+  When a step ends, start the next one.
+- **Do not wait for decisions.** When the compilers disagree or a
+  classification is unclear, adopt the writer's answer as provisional,
+  record it as a question in `questions/`, and continue. Ask the
+  maintainer only before an action that is new in kind and reaches
+  outside the repository, such as contacting another project.
+- **Commit and push each step.** One commit per pipeline step or
+  decision, pushed when it is made. The history is the record of the
+  process. Do not squash or rewrite it.
+- **Documents state the present.** Status pages, decisions, and Evidence
+  segments say where the project is and what comes next. The story of
+  how a change came about goes in its commit message. Name roles
+  (maintainer, writer, source reader, contributor), not people.
+- **Describe the process plainly.** Documents and commit messages record
+  inputs, tools, roles, and steps as facts. They do not evaluate them.
+- **One integrator.** When several agents work at once, each writes only
+  in its own files and does not commit. One integrator numbers questions
+  and decisions and makes the commits (decision 0018). A subagent that
+  cannot write its report returns it as text, and the integrator saves
+  it.
+- **Check reports before use.** A review summary or a spec-only report
+  passes `tools/similarity.py` before a writer acts on it (decisions
+  0019, 0029).
+
+### Shell habits
+
+Each of these habits prevents a commit that claims more than it did.
+
+- Chain a check and its commit with `&&`. A `;` anywhere between them
+  lets a failed step through.
+- Do not pipe a check into `tail` or `grep` before `&&` unless
+  `set -o pipefail` is on, because a pipe hides the check's exit code.
+- Write commit messages to a file and use `git commit -F FILE`. Two
+  heredocs on one command line feed their bodies to the wrong commands.
+- Never run two `tools/run_tests.py` processes at once. They share
+  binaries under `build/`, and one fails with "Text file busy".
+- When a commit describes an edit made by a script, check
+  `git show --stat` before pushing. If a commit message turns out to be
+  wrong, make a follow-up commit that says what the first one missed.
