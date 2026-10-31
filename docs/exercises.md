@@ -76,7 +76,22 @@ Port suites (P1 to P8) follow one per persona after the Write suites.
 Each gives three short programs in the persona's language that use its
 typical idioms, and asks for a C++ program with the same behavior.
 
-## 4. Predict and Diagnose batches
+## 4. Propose exercises
+
+Each exercise takes one proposal from the designer's portfolio
+(`reports/clean-room/roadmap/designer.md`). The reader writes its
+design and impact sections, cites the rules it changes, and lists each
+change in a table: rule ID, kind of change, old class, new class, and
+the tests affected. Together the four reach 47 of the 68 pages.
+
+| ID | Proposal | Changes existing behavior |
+|---|---|---|
+| X1 | P3, left-to-right evaluation everywhere | yes |
+| X2 | P13, checked `noexcept` | yes |
+| X3 | P5, automatic objects start at zero | yes |
+| X4 | P7, temporaries live through reference-returning chains | yes |
+
+## 5. Predict and Diagnose batches
 
 `R-<page>` and `D-<page>` name a batch for one spec page, for example
 `R-additive`. A batch takes the page's tests, removes every `tidal-`
@@ -94,7 +109,7 @@ Predict batch in a shuffled order and keeps its key in
 `build/exercise-keys/`. `tools/exercises.py score build/exercises/R-<name>
 ANSWERS` scores the reader's answers and lists the wrong ones.
 
-## 5. Order
+## 6. Order
 
 1. Predict batches for the Foundations pages, then the expressions
    pages. They are cheap and scored without reading.
@@ -104,14 +119,14 @@ ANSWERS` scores the reader's answers and lists the wrong ones.
 4. Diagnose batches, after the tool that builds them exists.
 5. Port suites.
 
-## 6. Coverage
+## 7. Coverage
 
 Each report lists the rule IDs it cites. The coverage table counts,
 for each page, the exercises that reached it and the findings against
 it. A page with no Write suite and no finding gets one before the
 catalog counts as done.
 
-## 7. Status
+## 8. Status
 
 | Exercise | State | Report |
 |---|---|---|
@@ -120,7 +135,7 @@ catalog counts as done.
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | All others | planned | |
 
-## 8. Prompts
+## 9. Prompts
 
 Each exercise runs as one agent with a prompt built from these parts.
 Fill in the angle brackets.

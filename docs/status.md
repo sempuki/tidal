@@ -104,7 +104,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and sixteen questions are open for opinions, each with a
+One hundred and seventeen questions are open for opinions, each with a
 provisional answer the spec follows. Nine of them have the status
 "compiler defect": their answer is that one compiler or an older version
 is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
@@ -153,15 +153,18 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. Add the designer's view to the roadmap. It ranks cross-page
-   inventories on the Foundations pages first, and disagrees with
-   deferring items G and S.
-2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+1. Item Y: cross-page inventories on the Foundations pages. Rule IDs for
+   the usual arithmetic conversions and integer promotion, the contexts
+   of implicit conversion, and the full expression (decision 0039).
+2. Item S1: definitions of the trivial special member functions.
+3. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
    which builds EDG itself as a 32-bit program.
-3. Item F: a grammar notation, then one grammar in which every
+4. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-4. Item K: the language-support types, then the task-level guides.
+5. Item G1: keywords, reserved names, and the literal suffix grammar.
+6. Item K: the language-support types, then the task-level guides.
+7. Propose exercises X1 to X4, after item Y.
 
 Waiting on the maintainer:
 

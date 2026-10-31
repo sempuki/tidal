@@ -1,9 +1,9 @@
 # Roadmap
 
-This page orders the work ahead. Four clean-room roadmaps are its
+This page orders the work ahead. Five clean-room roadmaps are its
 evidence, each from one view: a programmer, an implementer, an editor,
-and a clean-room writer (`reports/clean-room/roadmap/`). Decision 0033
-adopts it. Item letters refer to the writer's table, which gives
+a clean-room writer, and a language designer
+(`reports/clean-room/roadmap/`). Decisions 0033 and 0039 adopt it. Item letters refer to the writer's table, which gives
 evidence, probe counts, similarity risk, and size for each item.
 
 The order follows dependencies that Tidal's own pages show and the
@@ -43,6 +43,9 @@ specification's organization.
 |---|---|---|
 | E | A page of fundamental types, ranks, and per-target values (LP64 and `-m32`), written as tables; the EDG 32-bit matrix entry | all four views |
 | F | A grammar notation decision, then one consolidated grammar with every nonterminal defined | front end F1 to F8, writer 4 |
+| Y | Cross-page inventories on the Foundations pages: rule IDs for the usual arithmetic conversions and integer promotion, the contexts of implicit conversion, and the full expression | designer topic 1, D4, D17, D31 |
+| S1 | Definitions of trivial special member functions, which JMP-6, SW-5, and UNI-5 use | designer topic 7 |
+| G1 | A narrow lexical slice, written as tables: keywords, reserved names, and the literal suffix grammar | designer topic 5, D2, D3, D20 |
 | K | Language-support types, as the shapes the language requires, with a header policy for clean-room exercises | programmer 3, implementer 6 |
 | Guides | Task-level guides: a class that owns a resource, error handling, integer arithmetic without undefined behavior, enumerations in switches, reading the spec | programmer section 2, W0 |
 
@@ -81,15 +84,19 @@ These run beside the phases when a phase waits for review.
   specifications.
 - Clean-room exercises (`docs/exercises.md`): W8 and W1 next; Predict
   batches for the expressions pages once the format can catch errors;
-  Diagnose batches after item C.
+  Diagnose batches after item C; Propose exercises X1 to X4 after item
+  Y.
+- A change notation for Propose reports: a table of rule ID, kind of
+  change, old class, new class, and the tests affected.
 
 ## Deferred
 
-- G, lexical structure: high similarity risk for little value; an
-  alternative-token and digraph note goes on the operator pages.
-- S and T, the full trivially-copyable and standard-layout lists and
-  `typeid`: they wait for a decision on how to observe library-dependent
-  properties.
+- G beyond G1, lexical structure: high similarity risk for little
+  value; an alternative-token and digraph note goes on the operator
+  pages.
+- S beyond S1, and T, the full trivially-copyable and standard-layout
+  lists and `typeid`: they wait for a decision on how to observe
+  library-dependent properties.
 - MSVC: the existing overrides come first.
 
 ## Method controls for phases 3 and 4
