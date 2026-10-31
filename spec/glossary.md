@@ -93,11 +93,21 @@ full expression
   expression of an expression statement or a condition. The temporaries
   of a full expression end with the full expression ({rule}`VC-9`).
 
+header
+  A file that holds declarations for several translation units to
+  share. Each unit that names the file in `#include "file"` gets the
+  file's text ({rule}`INC-1`).
+
 immediate function context
   A part of a program where a call to a `consteval` function need not be
   a constant expression by itself. Examples are the body of a
   `consteval` function and the branch of `if consteval` that executes
   during {term}`constant evaluation`.
+
+include guard
+  The `#ifndef`, `#define`, and `#endif` lines around the text of a
+  {term}`header`. The lines make every inclusion after the first in a
+  translation unit add no text ({rule}`INC-4`).
 
 injected class name
   The name that a class declares for itself inside its own scope. Inside
@@ -194,6 +204,12 @@ unsequenced
   operators are unsequenced. A function call in one operand does not
   overlap with work in the other operand. The call and the other work
   can still occur in either order.
+
+use
+  A point where the running program needs a variable or a function
+  itself: its storage, its address, or its code. A used entity needs a
+  definition. Reading the value of a constant and naming an entity in an
+  unevaluated operand are not uses ({rule}`ODR-3`).
 
 usual arithmetic conversions
   The conversions that give the two operands of a binary arithmetic

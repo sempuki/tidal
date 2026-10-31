@@ -152,7 +152,6 @@ REFERENCED_TOPICS = {
     "extended floating-point types",
     "library",
     "memory model",
-    "one-definition rule",
     "overload resolution",
     "templates",
     "threads",

@@ -49,6 +49,9 @@ In scope:
   classes.
 - Exceptions: `throw` expressions and the exception object, try blocks
   and handlers, unwinding and termination (decision 0025).
+- Programs of several translation units: the use of a variable or
+  function, the one-definition rule, and `#include "file"` with include
+  guards (roadmap phase 3, items I and J).
 
 Referenced but not specified:
 
@@ -56,11 +59,13 @@ The in-scope topics depend on overload resolution and templates. Tidal
 sections refer to those concepts by name and list them in a "Depends
 on" block. Those concepts are not specified yet. The roadmap brings
 them into scope in phases 3 and 4 (decision 0033, Q-0113). Name lookup
-is in scope from phase 3, item H.
+is in scope from phase 3, item H. Use and the one-definition rule are in
+scope from phase 3, items I and J.
 
 Out of scope:
 
-- The preprocessor, lexical structure, modules.
+- The preprocessor other than `#include "file"` and include guards,
+  lexical structure, modules.
 - Templates and overload resolution as topics of their own, until
   phases 3 and 4 of the roadmap bring them in.
 - The standard library, except the language-support types that the core

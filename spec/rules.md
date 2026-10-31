@@ -48,6 +48,7 @@ Every rule ID starts with the prefix of its page.
 | `FN` | `declarations/functions/definitions.md` |
 | `IF` | `statements/if.md` |
 | `ILC` | `classes/initializer-lists.md` |
+| `INC` | `foundations/odr.md` |
 | `INIT` | `declarations/initialization/forms.md` |
 | `INL` | `declarations/inline.md` |
 | `JMP` | `statements/jumps.md` |
@@ -65,6 +66,7 @@ Every rule ID starts with the prefix of its page.
 | `NEW` | `expressions/new-delete.md` |
 | `NS` | `declarations/namespaces.md` |
 | `OBJ` | `foundations/objects.md` |
+| `ODR` | `foundations/odr.md` |
 | `OPR` | `classes/operators.md` |
 | `PFX` | `expressions/postfix.md` |
 | `PRIM` | `expressions/primary.md` |

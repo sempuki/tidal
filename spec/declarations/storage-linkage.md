@@ -317,6 +317,7 @@ is undefined.
 An entity with external linkage that is not `inline` must have one
 definition in the program. All definitions of an `inline` entity must be
 the same. An implementation need not diagnose a break of this rule.
+{rule}`ODR-8` and {rule}`ODR-10` state the general rules.
 :::
 
 :::{rule} LNK-7
@@ -326,7 +327,7 @@ the same. An implementation need not diagnose a break of this rule.
 A variable or function that the program uses must have a definition. A
 declaration that the program does not use needs no definition. An
 implementation need not diagnose a break of this rule
-({question}`Q-0011`).
+({question}`Q-0011`). {rule}`ODR-3` says what counts as a use.
 :::
 
 ## Examples

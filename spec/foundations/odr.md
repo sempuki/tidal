@@ -1,0 +1,360 @@
+# Use and the one-definition rule
+
+A program *uses* a variable or a function when the program needs the
+entity itself at run time, and not only its type or its constant value.
+A used entity needs a definition. This page states the following:
+
+- which expressions and constructs use a variable or a function,
+- how many definitions each kind of entity can have, in one
+  translation unit and in the whole program,
+- how `#include "file"` puts a header's text into a translation unit,
+  and how a header is kept from appearing twice.
+
+The pages on linkage, `inline`, lambdas, local classes, and virtual
+functions state parts of these rules for their own constructs.
+
+Depends on: storage duration and linkage, the `inline` specifier,
+unevaluated operands, lambdas, local classes, virtual functions,
+constructors and destructors, new and delete.
+
+## Principles
+
+:::{principle} ODR-P1
+:rules: ODR-3 ODR-2 ODR-4 ODR-5 ODR-6
+
+A {term}`use` of a variable or a function is a point where the running
+program needs the entity: its storage, its address, or its code. A used
+entity needs a definition. An expression that names an entity is a use,
+except where the program needs only the type or the value:
+
+| Where the name occurs | Use? |
+|---|---|
+| An evaluated expression that calls the function, takes an address, or binds a reference | yes |
+| An evaluated expression that reads the value of a constant variable | no |
+| An operand of `sizeof`, `decltype`, or `noexcept` | no |
+| A branch of `if constexpr` that the condition does not select | no |
+| A default argument that a call does not use | no |
+
+Some uses have no name in the source. Creating, copying, and destroying
+an object use the constructors and destructors that the work runs. A
+`new` or `delete` expression uses its allocation and deallocation
+functions. A class with virtual functions uses each virtual function
+that is not pure, because a call through a base can reach any of them.
+
+A lambda and a local class see the automatic variables of the enclosing
+function only by their values. So a use of such a variable there needs
+a capture, or is not valid at all.
+:::
+
+:::{principle} ODR-P2
+:rules: ODR-1 ODR-7 ODR-8 ODR-9 ODR-10 ODR-11
+
+A definition creates the entity. A declaration only names it. The
+number of definitions that the language allows depends on the kind of
+entity and on the scope that is counted:
+
+| Entity | Definitions in one translation unit | Definitions in the program | Who finds a fault |
+|---|---|---|---|
+| Variable or function with external linkage, not `inline` | at most one | exactly one, if the program uses the entity | the linker, if anything |
+| Variable or function with internal linkage | at most one; exactly one, if the unit uses the entity | one in each unit that uses it | the compiler, usually as a warning |
+| `inline` variable or function | at most one; exactly one, if the unit uses the entity | one in each unit that uses it, all the same | usually nothing |
+| Class or enumeration | at most one | one in each unit that needs it, all the same | usually nothing |
+
+A unit is translated alone ({principle}`TR-P2`). So a second definition
+inside one unit is visible to the compiler and is rejected. A missing or
+extra definition across units is found only when the program is linked,
+if at all. Definitions in several units that differ are not found at
+all. The program then runs with a mix of the definitions.
+:::
+
+:::{principle} ODR-P3
+:rules: INC-1 INC-2 INC-3 INC-4 INC-5
+
+A {term}`header` holds declarations that several units share. The
+directive `#include "file"` replaces itself with the text of the file,
+so each unit gets its own copy of the same definitions:
+
+```text
+square.h                       unit a.cpp                 unit b.cpp
+  struct Square {...};   --->    #include "square.h"       #include "square.h"
+  int perimeter(Square);         (Square defined here)     (Square defined here)
+                                 calls perimeter           defines perimeter
+```
+
+The class has one definition in each unit, with the same tokens, which
+ODR-10 requires. The function has one definition in the program, which
+ODR-8 requires. A header that holds a definition of a function that is
+not `inline` breaks ODR-8 as soon as two units include it.
+
+A unit that includes a header twice, often through two other headers,
+would define the header's classes twice. An {term}`include guard`, or
+`#pragma once` on the matrix compilers, makes the second inclusion
+empty.
+:::
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: tidal
+   include_directive: "#" "include" '"' `header_name` '"'
+   header_name: any characters other than a double quote or a line break
+   include_guard: "#" "ifndef" `identifier`
+                : "#" "define" `identifier`
+                : any text
+                : "#" "endif"
+```
+
+Each directive is on a line of its own. The two identifiers of an
+`include_guard` are the same name, which no other header uses.
+
+## Constraints
+
+:::{rule} ODR-1
+:kind: reject
+:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp
+
+A translation unit must not define a variable, a function, a class, or
+an enumeration more than once. The rule also applies to `inline`
+entities and to static data members. {rule}`FN-14` states the rule for
+functions, and {rule}`TYN-7` for classes.
+:::
+
+:::{rule} ODR-2
+:kind: reject
+:tests: foundations/odr/mutable-member-read-in-lambda.cpp foundations/odr/local-class-binds-constant.cpp foundations/odr/class-constant-copy-in-lambda.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp
+
+A lambda that does not capture an automatic variable of the enclosing
+function must not use the variable (ODR-3). A member function of a local
+class must not use such a variable either. {rule}`LAM-9`,
+{rule}`LAM-17`, and {rule}`CLS-28` state these cases for their
+constructs.
+:::
+
+:::{rule} INC-3
+:kind: reject
+:tests: foundations/odr/include-missing-file.cpp
+
+If no file matches the name in an `include_directive`, the
+implementation rejects the program.
+:::
+
+## Runtime Behavior
+
+:::{rule} ODR-3
+:kind: required
+:tests: foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
+
+An evaluated expression that names a variable or a function uses it,
+with these exceptions:
+
+- The expression only reads the value of a constant variable. For a
+  variable of class type, the read can be of a member that is not
+  `mutable`, or a copy of the whole object ({question}`Q-0129`).
+- The name is a reference variable that a constant expression
+  initializes.
+- The name is in an unevaluated operand ({rule}`UNEV-1`) or in a
+  discarded statement.
+
+A constant variable is a `constexpr` variable, or a `const` variable of
+integral or enumeration type that a constant expression initializes.
+:::
+
+:::{rule} ODR-4
+:kind: required
+:tests: foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/prvalue-initializer-no-copy.cpp
+
+These constructs use special member functions:
+
+- Initializing an object uses the constructor that the initialization
+  selects.
+- An object that the program destroys uses its destructor.
+- A constructor uses the constructors of its bases and members. A
+  destructor uses their destructors, also when a base's destructor is
+  pure.
+- A copy uses the copy or move constructor. A prvalue that initializes
+  an object of its own type makes no copy, and uses neither.
+:::
+
+:::{rule} ODR-5
+:kind: required
+:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp
+
+A `new` expression uses its allocation function and its constructor. If
+the constructor can throw, the `new` expression also uses the matching
+deallocation function. A `delete` expression uses the destructor and the
+deallocation function. A virtual destructor uses the deallocation
+function of its class.
+:::
+
+:::{rule} ODR-6
+:kind: required
+:tests: foundations/odr/default-argument-not-used.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp
+
+A default argument is evaluated only by a call that uses the default.
+The entities that the default argument names are used only then. A
+virtual function that is not pure is used when the program creates an
+object of its class. No call needs to name the function
+({rule}`VIRT-20`).
+:::
+
+:::{rule} ODR-7
+:kind: required
+:tests: foundations/odr/header-class-shared.cpp foundations/odr/header-enumeration-shared.cpp
+
+Several translation units can define the same class, enumeration,
+`inline` function, or `inline` variable. If the definitions match
+(ODR-10), they define one entity. Each unit can pass objects of the
+class or enumeration to the others. An `inline` variable has one
+address in the program.
+:::
+
+:::{rule} INC-1
+:kind: required
+:tests: foundations/odr/include-replaces-line.cpp foundations/odr/include-searches-own-directory.cpp foundations/odr/header-included-twice.cpp foundations/odr/header-function-in-two-units.cpp
+
+An `include_directive` is replaced by the whole text of the named file.
+The text can contain further `include_directive` lines, which are
+replaced in the same way. The translation unit is the text after every
+replacement.
+:::
+
+:::{rule} INC-4
+:kind: required
+:tests: foundations/odr/guarded-header-twice.cpp foundations/odr/header-class-shared.cpp foundations/odr/header-enumeration-shared.cpp
+
+If a file has the form of an `include_guard`, its first inclusion in a
+translation unit defines the guard name. Every later inclusion of the
+file in that unit adds no text ({question}`Q-0127`).
+:::
+
+## Implementation Requirements
+
+:::{rule} ODR-8
+:kind: no-diagnostic
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
+
+This rule applies to a variable or function with external linkage that
+is not `inline`. If the program uses such an entity, the program must
+define it exactly once. An
+entity that the program does not use needs no definition. An
+implementation need not diagnose a break of this rule.
+{rule}`LNK-6`, {rule}`LNK-7`, {rule}`INL-4`, and {rule}`VIRT-20` state
+parts of the rule.
+:::
+
+:::{rule} ODR-9
+:kind: no-diagnostic
+:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/internal-function-used-in-unused-inline.cpp foundations/odr/internal-declarations-not-used.cpp
+
+A variable or function with internal linkage that a translation unit
+uses must be defined in that unit. An implementation need not diagnose a
+break of this rule ({question}`Q-0128`). {rule}`INL-6` states the same
+rule for `inline` entities.
+:::
+
+:::{rule} ODR-10
+:kind: no-diagnostic
+:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp
+
+If several translation units define the same class, enumeration,
+`inline` function, or `inline` variable, the definitions must match.
+Matching definitions have the same tokens, and each name in them refers
+to the same entity. An implementation need not diagnose a mismatch.
+:::
+
+:::{rule} INC-2
+:kind: impl-defined
+:tests: foundations/odr/include-searches-own-directory.cpp
+
+The implementation decides which file an `include_directive` names. The
+matrix compilers search the directory of the file that holds the
+directive first. Then they search the directories that the command line
+gives.
+:::
+
+:::{rule} INC-5
+:kind: impl-defined
+:tests: foundations/odr/pragma-once-header-twice.cpp
+
+The effect of `#pragma once` is implementation-defined. On the matrix
+compilers, a file that starts with `#pragma once` adds its text only at
+its first inclusion in a translation unit ({question}`Q-0127`).
+:::
+
+## Recommended Practice
+
+:::{rule} ODR-11
+:kind: recommended
+:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp
+
+An implementation should warn about a function with internal linkage
+that the unit uses and does not define.
+:::
+
+## Examples
+
+```cpp
+struct Limits { static const int top = 5; };   // declared, not defined
+
+int cells[Limits::top];        // reads the value: no use
+const int* where = &Limits::top;   // a use: Limits::top needs a definition
+
+int helper();                  // never defined
+decltype(helper()) count = 0;  // unevaluated: no use, so this is valid
+
+void run() {
+  const int size = 4;
+  auto read = [] { return size; };        // reads the value: no capture needed
+  auto point = [] { return &size; };      // a use: rejected
+}
+```
+
+```cpp
+// guard.h
+#ifndef PROJECT_GUARD_H
+#define PROJECT_GUARD_H
+struct Guarded { int v; };
+#endif
+
+// main.cpp
+#include "guard.h"
+#include "guard.h"     // adds nothing: the guard name is defined
+```
+
+## Evidence
+
+All eight compilers agree on 40 of 44 tests. EDG checks each unit and
+does not link, so its results for the link and run tests say only that
+the units are valid.
+
+- ODR-2: Clang rejects a lambda that copies a whole local constant of
+  class type. GCC and EDG accept the lambda ({question}`Q-0129`).
+- ODR-2: EDG accepts a lambda that reads a `mutable` member of a local
+  constant, and a local class that binds a reference to a local
+  constant. Clang and GCC reject both ({question}`Q-0130`).
+- ODR-8: Each translation unit compiles without a diagnostic, and only
+  the linker reports a missing or extra definition. At `-O2`, the
+  report compilers `gcc-16-o2` and `clang-22-o2` link four of the
+  programs that fail to link at the default level. The optimizer
+  removes every reference to the missing definition, so ODR-8 needs no
+  diagnostic (decision 0043). The four tests are `constant-address-is-use.cpp`,
+  `function-address-is-use.cpp`,
+  `virtual-destructor-uses-deallocation-function.cpp`, and
+  `virtual-function-not-called-is-used.cpp`.
+- ODR-9: Clang 22 and GCC warn about a function with internal linkage
+  that is used and not defined, and `-pedantic-errors` makes the
+  warning an error. EDG reports an error. GCC gives no diagnostic when
+  the only use is in an `inline` function that nothing calls, and Clang
+  18 only warns ({question}`Q-0128`). The rule needs no diagnostic, and
+  ODR-11 asks for the warning.
+- ODR-10: Different definitions in two units link and run. The tests
+  accept the result of either definition.
+- INC-2: The search order is each implementation's choice. Clang, GCC,
+  and EDG take a header in the directory of the including header
+  before a header of the same name in the directory of the test.
+- INC-4, INC-5: Clang, GCC, and EDG skip the second inclusion for both
+  an include guard and `#pragma once`, also under strict flags
+  ({question}`Q-0127`).
+- The tests keep their headers as `*.h` files next to them.
+
+Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

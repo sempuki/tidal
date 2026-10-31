@@ -232,12 +232,32 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     return run_binary(c, out)
 
 
+INCLUDE = re.compile(r'^\s*#\s*include\s*"([^"]+)"', flags=re.M)
+
+
+def included(sources: list[Path]) -> list[str]:
+    """The text of every file that the sources #include "...", transitively, in a fixed order."""
+    seen: dict[Path, str] = {}
+    todo = list(sources)
+    while todo:
+        src = todo.pop()
+        for name in INCLUDE.findall(src.read_text()):
+            f = (src.parent / name).resolve()
+            if f.is_file() and f not in seen:
+                seen[f] = f.read_text()
+                todo.append(f)
+    return [seen[f] for f in sorted(seen)]
+
+
 def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> tuple[str, str]:
+    headers = included([test.path, *test.sources])
     key = hashlib.sha256(json.dumps([
         [s.read_text() for s in [test.path, *test.sources]],
         c.id, identity, c.check, c.build, sorted(c.unsupported_flags), test.expect(c), OUTCOME_VERSION,
         # Only compilers that use these fields add them, so other cache keys stay as they were.
         *([sorted(c.required_flags), sorted(c.drop_flags)] if c.required_flags or c.drop_flags else []),
+        # Only tests that include files add their text.
+        *([headers] if headers else []),
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():

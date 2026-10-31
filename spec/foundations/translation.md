@@ -46,7 +46,7 @@ informative.
 | may | can |
 | should | should, in `Recommended Practice` only |
 | diagnostic | diagnostic; "rejects" when it stops translation |
-| potentially evaluated, odr-use | evaluated operand, use *(one-definition rule referenced)* |
+| potentially evaluated, odr-use | evaluated operand, use ({rule}`ODR-3`) |
 
 ## Principles
 

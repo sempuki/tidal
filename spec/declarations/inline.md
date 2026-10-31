@@ -165,7 +165,8 @@ missing definition before linking.
 If a function or variable with external linkage is `inline` in one
 translation unit, it must be `inline` in each translation unit that
 declares it. LNK-6 requires the definitions to match. An implementation
-need not diagnose a violation of either rule.
+need not diagnose a violation of either rule. {rule}`ODR-10` states the
+general rule for matching definitions.
 :::
 
 ## Examples

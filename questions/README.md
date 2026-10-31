@@ -137,6 +137,10 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0124](Q-0124-increment-narrow-signed-out-of-range.md) | Is `++` or `--` on a signed operand narrower than `int` defined when the new value does not fit the operand's type? | provisional | the step is defined and the value converts back; EDG differs |
 | [Q-0125](Q-0125-clang18-sized-deallocation.md) | Does Clang 18 omitting the sized deallocation functions change NEW-19? | compiler defect | no; Clang 22 declares them |
 | [Q-0126](Q-0126-const-object-union-member-value.md) | When does a union or an anonymous union give its members a value for a `const` object without an initializer? | provisional | a union gives a value when one variant member has a default member initializer; a class of only anonymous unions is valid; the compilers split |
+| [Q-0127](Q-0127-include-guard-or-pragma-once.md) | Which mechanism does Tidal specify for including a header only once? | provisional | both; the include guard is required and `#pragma once` is implementation-defined |
+| [Q-0128](Q-0128-internal-linkage-missing-definition.md) | Must an implementation diagnose a used function with internal linkage that has no definition? | provisional | no; the rule needs no diagnostic and a warning is recommended; GCC is silent when the only use is in an uncalled inline function |
+| [Q-0129](Q-0129-copy-of-class-constant.md) | Is a copy of a whole class-type constant a use of the constant? | provisional | no; Clang differs |
+| [Q-0130](Q-0130-edg-enclosing-constant-use.md) | Does EDG's acceptance of some uses of an enclosing function's constant change ODR-2? | provisional | no; EDG differs |
 
 ## Status values
 
