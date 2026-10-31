@@ -76,9 +76,10 @@ current state only. The history of how it got here is in `git log`.
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
-the structure and writing rules in `docs/style-guide.md`. All pages are
-converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-31-all-pages-2.txt`. The table above comes from
+the structure and writing rules in `docs/style-guide.md`. Every page
+opens with its principles (decision 0024), and the Foundations chapter
+holds the models that the other pages cite. The latest similarity report, covering every page, is
+`reports/similarity/2026-10-31-all-pages-3.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
@@ -127,11 +128,9 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-0. Continue the Foundations chapter in the principles-first format
-   (decision 0024). The objects, translation, and names pages are
-   drafted. Next: move values, conversions, evaluation order, and
-   constant evaluation here from Expressions, and add a Principles
-   segment to every other page.
+0. Build the generated rule index and the short annotations on rules
+   planned in decision 0024, and ask the reviewer who prompted the change
+   to read the Foundations chapter and two topic pages.
 1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
@@ -141,8 +140,8 @@ forward-progress rule belongs with threads, which are out of scope.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
 7. Plan the exception handling chapter (decision 0023).
-8. Build the generated rule index and the rule annotations planned in
-   decision 0024.
+8. Follow up on the rule overlaps the principles rollout found:
+   FN-10 and VC-10, STO-7 and LNK-9, SEQ-6 and OPR-7.
 
 ## Size estimate
 
