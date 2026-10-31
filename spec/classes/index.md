@@ -10,6 +10,7 @@ access
 constructors
 copy-move
 derived
+virtual
 :::
 
 :::{toctree}
@@ -21,4 +22,5 @@ access
 constructors
 copy-move
 derived
+virtual
 :::
