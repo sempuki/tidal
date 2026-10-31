@@ -84,7 +84,9 @@
         "-m32",
         "-Wall",
         "-Werror",
-        "-O2"
+        "-O2",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined"
       ]
     },
     {
@@ -128,7 +130,7 @@
       "image": {
         "dockerfile": "apt.Dockerfile",
         "args": {
-          "PACKAGES": "clang-18 g++-multilib"
+          "PACKAGES": "clang-18 libclang-rt-18-dev g++-multilib"
         }
       },
       "check": [

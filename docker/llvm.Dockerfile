@@ -12,5 +12,5 @@ RUN apt-get update \
       > /etc/apt/sources.list.d/llvm.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      clang-${LLVM_VERSION} g++-multilib \
+      clang-${LLVM_VERSION} libclang-rt-${LLVM_VERSION}-dev g++-multilib \
  && rm -rf /var/lib/apt/lists/*
