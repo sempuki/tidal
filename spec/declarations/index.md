@@ -6,6 +6,7 @@ A declaration introduces a name and gives its properties. These pages give the r
 auto
 type-names
 storage-linkage
+inline
 declarators
 initialization/index
 structured-bindings
@@ -24,6 +25,7 @@ static-assert
 auto
 type-names
 storage-linkage
+inline
 declarators
 initialization/index
 structured-bindings
