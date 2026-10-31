@@ -39,21 +39,23 @@ removed. Qualifiers below the top level stay.
 
 :::{rule} AUTO-2
 :kind: required
-:tests: declarations/auto/decays-arrays-and-functions.cpp
+:tests: declarations/auto/decays-arrays-and-functions.cpp declarations/auto/string-literal-prefixes.cpp
 
 An initializer of array type gives a pointer to its first element. A
-function gives a pointer to the function. A string literal gives
-`const char*`.
+function gives a pointer to the function. A string literal gives a
+pointer to `const` of its character type, for example `const char*` or
+`const char8_t*`.
 :::
 
 :::{rule} AUTO-3
 :kind: required
-:tests: declarations/auto/lvalue-reference.cpp declarations/auto/lvalue-reference-to-rvalue.cpp declarations/auto/const-lvalue-reference-to-rvalue.cpp
+:tests: declarations/auto/lvalue-reference.cpp declarations/auto/lvalue-reference-to-rvalue.cpp declarations/auto/const-lvalue-reference-to-rvalue.cpp declarations/auto/ref-const-xvalue.cpp
 
 `auto&` gives an lvalue reference to the type of the initializer. The
 type keeps its `const` and `volatile`, and arrays and functions do not
-decay. The initializer must be an lvalue, unless the declaration adds
-`const`.
+decay. The initializer must be an lvalue, unless the deduced type is `const`.
+The `const` can come from the declaration or from the initializer, so an
+xvalue of `const` type is valid.
 :::
 
 :::{rule} AUTO-4
@@ -150,10 +152,11 @@ Braces without `=` that contain one expression are permitted
 
 :::{rule} AUTO-12
 :kind: required
-:tests: declarations/auto/in-conditions.cpp
+:tests: declarations/auto/in-conditions.cpp declarations/auto/switch-condition-init.cpp declarations/auto/while-condition.cpp
 
-These rules also apply to variables in `if` conditions, in `if`
-initializer statements, and in `for` initializer statements.
+These rules also apply to variables in the conditions of `if`, `while`,
+and `switch`, and in the initializer statements of `if`, `switch`, and
+`for`.
 :::
 
 :::{rule} AUTO-13
@@ -166,11 +169,20 @@ The deduced type must satisfy the concept.
 
 :::{rule} AUTO-14
 :kind: required
-:tests: declarations/auto/inline-static-member.cpp declarations/auto/static-member-no-initializer.cpp
+:tests: declarations/auto/inline-static-member.cpp declarations/auto/static-member-no-initializer.cpp declarations/auto/static-const-member.cpp
 
-A static data member can have a {term}`placeholder type` if it is `inline` or
-`constexpr` and has an initializer in the class. The type comes from the
+A static data member can have a {term}`placeholder type` if it has an initializer
+in the class and is `inline`, `constexpr`, or `const`. The type comes from the
 initializer.
+:::
+
+:::{rule} AUTO-15
+:kind: reject
+:tests: declarations/auto/decltype-auto-array.cpp
+
+`decltype(auto)` with the name of an array as its initializer gives the
+array type itself. An array cannot be initialized from another array, so
+the declaration is not valid.
 :::
 
 ## Examples
@@ -223,7 +235,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All seven compilers in
-the matrix agree on all 40 tests. The results are in `tests/RESULTS.md`.
+the matrix agree on all 49 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small `std::initializer_list`,
 because tests include no headers. Without it, each compiler rejects the

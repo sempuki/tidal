@@ -68,7 +68,7 @@ alias has no effect.
 
 :::{rule} DCL-5
 :kind: required
-:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/static-member-unknown-bound.cpp
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/static-member-unknown-bound.cpp declarations/declarators/unknown-bound-empty-braces.cpp
 
 An array bound must be a constant expression that converts to the type of
 `sizeof` without loss of value. Integer types, unscoped enumerations, and
@@ -80,7 +80,9 @@ zero. The bound can be omitted in these cases:
 - the declaration does not define the array, for example an `extern`
   declaration.
 
-The initializer must not have more elements than the bound.
+The initializer must not have more elements than the bound. An array
+without a bound must not have an empty braced initializer, because it
+would have zero elements.
 
 A static data member declared in a class can have an array type without a
 bound. Its definition outside the class gives the bound.
@@ -185,12 +187,13 @@ implicit conversion removes a cv-qualifier.
 
 :::{rule} CV-8
 :kind: required
-:tests: declarations/declarators/const-integral-constant.cpp declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp
+:tests: declarations/declarators/const-integral-constant.cpp declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp declarations/declarators/const-volatile-not-constant.cpp
 
 A `const` variable of integer or enumeration type with a constant
 initializer can occur in a constant expression. A `const` variable with
 an initializer that is not constant cannot. A `const` floating-point
-variable cannot.
+variable cannot. A `volatile` variable cannot, even with a constant
+initializer.
 :::
 
 :::{rule} DCL-12
@@ -217,6 +220,25 @@ of a parameter list, such as a type name followed by `()`.
 
 The `noexcept` specification is part of the type of a function. All
 declarations of a function must agree on it.
+:::
+
+:::{rule} DCL-15
+:kind: required
+:tests: declarations/declarators/qualified-function-type-member.cpp
+
+A function type with a cv-qualifier or a ref-qualifier after its
+parameter list can be named through a type alias. Such a type can
+declare a non-static member function and can be the target of a pointer
+to member.
+:::
+
+:::{rule} DCL-16
+:kind: reject
+:tests: declarations/declarators/qualified-function-type-pointer.cpp declarations/declarators/qualified-function-type-parameter.cpp
+
+A function type with a cv-qualifier or a ref-qualifier must not be the
+target of a pointer or a reference, the type of a parameter, or the type
+of a variable ({question}`Q-0106`).
 :::
 
 ## Dynamic Semantics
@@ -308,7 +330,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All seven compilers agree on 60 of 61 tests. The results are in
+All seven compilers agree on 78 of 80 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-5.** Clang and GCC accept variable-length arrays and arrays of size
@@ -322,6 +344,8 @@ All seven compilers agree on 60 of 61 tests. The results are in
   type", "modifying a const object", "attempt to modify const storage").
   A change to an object that is not `const`, through the same cast, is
   accepted and executes.
+- **DCL-16.** EDG 7.0 accepts a reference parameter to a function type
+  with a ref-qualifier. Clang and GCC reject it ({question}`Q-0106`).
 
 Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

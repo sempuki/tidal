@@ -16,11 +16,13 @@ Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp
 
 A `constexpr` variable is `const`. It must have an initializer, and the
 initializer must be a constant expression. Its type must be a literal type
-*(referenced)*.
+*(referenced)*. A `constexpr` reference at namespace scope can bind to a
+temporary, because that temporary has static storage. In a block
+without `static`, it cannot.
 :::
 
 :::{rule} CX-2
@@ -73,15 +75,25 @@ declarations of a function must agree on `constexpr`.
 
 :::{rule} CEV-1
 :kind: reject
-:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp
+:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp
 
 Each call to a `consteval` function must be a constant expression. This
 does not apply to a call in an {term}`immediate function context`, such
 as the body of another `consteval` function.
 
-A `constexpr` function template whose specialization calls a `consteval`
-function with arguments that are not constant becomes an immediate
-function itself *(templates referenced)*.
+Some functions take on `consteval` from their bodies. If such a function
+calls a `consteval` function and the arguments are not constant, the
+calling function is treated as `consteval` too, and its own calls are
+then checked the same way. These functions are:
+
+- a `constexpr` function produced from a template *(templates
+  referenced)*,
+- a lambda without `consteval` on it,
+- a special member function that the class defaults.
+
+The result of a `consteval` call must be usable in a constant
+expression. A pointer to storage that the call allocated and did not
+release is not.
 :::
 
 :::{rule} CEV-2
@@ -103,10 +115,11 @@ on `consteval`.
 
 :::{rule} CINIT-1
 :kind: reject
-:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp
+:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp
 
 A `constinit` variable must have a constant initializer. `constinit` does
-not make the variable `const`, so the program can change it.
+not make the variable `const`, so the program can change it. It does not require a `constexpr`
+destructor.
 :::
 
 :::{rule} CINIT-2
@@ -146,8 +159,7 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of
-41 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 47 of 52 tests.
 
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both

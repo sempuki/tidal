@@ -34,7 +34,7 @@ translation unit. All declarations must have the same return type.
 
 :::{rule} FN-4
 :kind: reject
-:tests: declarations/functions/definitions/main-wrong-return-type.cpp declarations/functions/definitions/main-inline.cpp declarations/functions/definitions/main-constexpr.cpp declarations/functions/definitions/main-consteval.cpp declarations/functions/definitions/main-template.cpp declarations/functions/definitions/main-global-variable.cpp declarations/functions/definitions/main-call.cpp declarations/functions/definitions/main-address.cpp declarations/functions/definitions/main-in-namespace.cpp declarations/functions/definitions/main-auto.cpp
+:tests: declarations/functions/definitions/main-wrong-return-type.cpp declarations/functions/definitions/main-inline.cpp declarations/functions/definitions/main-constexpr.cpp declarations/functions/definitions/main-consteval.cpp declarations/functions/definitions/main-template.cpp declarations/functions/definitions/main-global-variable.cpp declarations/functions/definitions/main-call.cpp declarations/functions/definitions/main-address.cpp declarations/functions/definitions/main-in-namespace.cpp declarations/functions/definitions/main-auto.cpp declarations/functions/definitions/c-linkage-main-in-namespace.cpp
 
 The function `main` in the global namespace:
 
@@ -43,15 +43,16 @@ The function `main` in the global namespace:
 - must not be called or have its address taken by the program.
 
 A global variable must not have the name `main`. A function `main` in
-another namespace is an ordinary function.
+another namespace is an ordinary function, and it must not have C
+language linkage ({question}`Q-0076`).
 :::
 
 :::{rule} FN-5
 :kind: reject
 :tests: declarations/functions/definitions/func-predefined.cpp declarations/functions/definitions/func-outside-function.cpp
 
-In a function body, `__func__` is a static array of `const char`. It
-holds the name of the function. `__func__` must not occur outside a
+In a function body, `__func__` is a static array of `const char`. FN-11
+gives its contents. `__func__` must not occur outside a
 function body ({question}`Q-0022`).
 :::
 
@@ -61,6 +62,17 @@ function body ({question}`Q-0022`).
 
 A function definition must be at namespace scope or in a class. It must
 not be inside a function body.
+:::
+
+:::{rule} FN-12
+:kind: reject
+:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp
+
+In a function definition, each parameter type and the return type must
+be complete, except `void` and except in a deleted definition. A
+declaration that is not a definition can use incomplete types. A
+definition must use a function declarator. A `typedef` name of a
+function type cannot define a function.
 :::
 
 ## Dynamic Semantics
@@ -89,11 +101,13 @@ that returns `void` returns normally at the end.
 
 :::{rule} FN-6
 :kind: impl-defined
-:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp
+:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp
 
 An implementation accepts `main` with the parameter lists `()` and
 `(int, char**)`. It is implementation-defined if it accepts other
-parameter lists ({question}`Q-0024`).
+parameter lists ({question}`Q-0024`). If `argc` is greater than zero,
+`argv[0]` points to the name used to start the program or to an empty
+string.
 :::
 
 :::{rule} FN-10
@@ -104,6 +118,14 @@ Each implementation chooses the time at which a parameter object ends:
 either as the called function returns, or later, when the caller finishes
 the statement or expression that holds the call. The choice is
 implementation-defined.
+:::
+
+:::{rule} FN-11
+:kind: impl-defined
+:tests: declarations/functions/definitions/func-name-impl.cpp
+
+The string in `__func__` is implementation-defined. On the
+implementations in the matrix it is the plain name of the function.
 :::
 
 ## Recommended Practice
@@ -138,7 +160,7 @@ void name() {
 
 ## Evidence
 
-All seven compilers agree on most tests. The results are in
+All seven compilers agree on 33 of 38 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
@@ -153,6 +175,8 @@ All seven compilers agree on most tests. The results are in
 - FN-7: Clang and GCC warn with `-Wreturn-type`.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
+- FN-4: GCC 14 and Clang 18 accept `main` with C language linkage in a
+  namespace. GCC 16, Clang 22, and EDG reject it ({question}`Q-0076`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt, clang-diag-
 sema, edg-func-def.

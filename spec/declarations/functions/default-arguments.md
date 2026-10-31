@@ -23,12 +23,14 @@ scope. A `...` can follow parameters with default arguments.
 
 :::{rule} DEFARG-2
 :kind: required
-:tests: declarations/functions/default-arguments/added-later.cpp declarations/functions/default-arguments/redefined.cpp declarations/functions/default-arguments/redefined-different.cpp declarations/functions/default-arguments/block-scope-declaration.cpp
+:tests: declarations/functions/default-arguments/added-later.cpp declarations/functions/default-arguments/redefined.cpp declarations/functions/default-arguments/redefined-different.cpp declarations/functions/default-arguments/block-scope-declaration.cpp declarations/functions/default-arguments/using-sees-later-default.cpp
 
 A later declaration in the same scope can add default arguments. It must
 not give a default argument again for the same parameter. This applies
 also when the value is the same. A declaration in a block has its own
-default arguments.
+default arguments. A default argument that a later declaration in a
+namespace adds is also usable through an earlier using declaration of
+the function ({question}`Q-0111`).
 :::
 
 :::{rule} DEFARG-4
@@ -43,11 +45,12 @@ operand that is not evaluated, such as the operand of `sizeof`
 
 :::{rule} DEFARG-5
 :kind: reject
-:tests: declarations/functions/default-arguments/function-pointer-no-default.cpp declarations/functions/default-arguments/pointer-declaration-default.cpp
+:tests: declarations/functions/default-arguments/function-pointer-no-default.cpp declarations/functions/default-arguments/pointer-declaration-default.cpp declarations/functions/default-arguments/default-checked-unused.cpp
 
 Only the declaration of a function can have default arguments. A pointer
 to a function has none. A call through the pointer must give each
-argument.
+argument. A default argument must be valid for its parameter type at
+the declaration, also if no call uses it.
 :::
 
 :::{rule} DEFARG-6
@@ -69,6 +72,17 @@ current values of the variables that it names. Its names refer to the
 entities that are visible at the function declaration, not at the call.
 :::
 
+## Implementation Requirements
+
+:::{rule} DEFARG-7
+:kind: no-diagnostic
+:tests: declarations/functions/default-arguments/inline-defaults-differ.cpp
+
+If an `inline` function is declared in several translation units, each
+parameter must have the same default argument in all of them after all
+declarations. An implementation need not diagnose a difference.
+:::
+
 ## Examples
 
 ```cpp
@@ -87,8 +101,13 @@ int k(int v = next());      // next() is called at each k()
 
 ## Evidence
 
-All seven compilers agree on all 14 tests. The results are in
+All seven compilers agree on 19 of 21 tests. The results are in
 `tests/RESULTS.md`.
+- DEFARG-2: Clang rejects a call that needs a default argument added by
+  a later namespace declaration, through an earlier using declaration.
+  GCC and EDG accept it ({question}`Q-0111`).
+- DEFARG-7: two units with different defaults compile and link without a
+  diagnostic. The test accepts either value.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-func-
 def.

@@ -41,7 +41,7 @@ A program must not use `register` as a storage class.
 
 :::{rule} STO-6
 :kind: reject
-:tests: declarations/storage-linkage/two-storage-classes.cpp declarations/storage-linkage/storage-class-on-typedef.cpp declarations/storage-linkage/static-parameter.cpp declarations/storage-linkage/extern-parameter.cpp declarations/storage-linkage/thread-local-function.cpp declarations/storage-linkage/mutable-namespace.cpp declarations/storage-linkage/static-block-function.cpp declarations/storage-linkage/static-main.cpp declarations/storage-linkage/storage-class-on-class.cpp
+:tests: declarations/storage-linkage/two-storage-classes.cpp declarations/storage-linkage/storage-class-on-typedef.cpp declarations/storage-linkage/static-parameter.cpp declarations/storage-linkage/extern-parameter.cpp declarations/storage-linkage/thread-local-function.cpp declarations/storage-linkage/mutable-namespace.cpp declarations/storage-linkage/static-block-function.cpp declarations/storage-linkage/static-main.cpp declarations/storage-linkage/storage-class-on-class.cpp declarations/storage-linkage/mutable-block.cpp declarations/storage-linkage/mutable-const-member.cpp declarations/storage-linkage/mutable-function.cpp declarations/storage-linkage/mutable-member-ok.cpp declarations/storage-linkage/mutable-reference-member.cpp declarations/storage-linkage/mutable-static-member.cpp
 
 A declaration must not:
 
@@ -50,7 +50,9 @@ A declaration must not:
 - combine a storage class with `typedef`,
 - give a storage class to a function parameter,
 - declare a function `thread_local`,
-- declare a variable at namespace scope `mutable`,
+- declare anything `mutable` except a non-static data member. A
+  variable at namespace or block scope, a function, a static data
+  member, a `const` member, and a reference member cannot be `mutable`,
 - declare a function `static` in a block,
 - declare `main` `static`,
 - give a storage class to a declaration that only defines a class.
@@ -125,16 +127,18 @@ external linkage.
 
 :::{rule} LNK-9
 :kind: required
-:tests: declarations/storage-linkage/block-function-declaration.cpp declarations/storage-linkage/block-variables-no-linkage.cpp declarations/storage-linkage/block-extern-internal.cpp
+:tests: declarations/storage-linkage/block-function-declaration.cpp declarations/storage-linkage/block-variables-no-linkage.cpp declarations/storage-linkage/block-extern-internal.cpp declarations/storage-linkage/extern-in-block-hidden.cpp
 
 A block-scope variable without `extern` has no linkage. A block-scope
 function declaration, or a block-scope `extern` variable, refers to an
 entity at namespace scope. Another translation unit can define that
 entity.
 
-A block-scope `extern` declaration takes the linkage of an earlier
-namespace-scope declaration of the name that is visible, including
-internal linkage.
+A block-scope `extern` declaration redeclares the namespace-scope entity
+of that name if one was declared earlier, and takes its linkage,
+including internal linkage. A variable of the same name in an outer
+block that hides the namespace-scope entity does not change this
+({question}`Q-0105`).
 :::
 
 :::{rule} STO-11
@@ -252,7 +256,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All seven compilers agree on all 40 tests. The results are in
+All seven compilers agree on 52 of 54 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 
@@ -271,6 +275,10 @@ EDG checks each unit and does not link.
 - **STO-6.** Clang reports a storage class on a declaration that only
   defines a class as a pedantic warning. `-pedantic-errors` makes it an
   error. GCC and EDG reject it in each mode.
+- **LNK-9.** EDG 7.0 rejects a block-scope `extern` declaration that
+  redeclares an internal-linkage variable hidden by a local variable.
+  Clang and GCC accept it and read the namespace-scope variable
+  ({question}`Q-0105`).
 
 Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

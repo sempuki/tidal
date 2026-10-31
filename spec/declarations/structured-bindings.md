@@ -114,16 +114,37 @@ referenced)*. A program can assign to it. A program must not take its
 address.
 :::
 
+:::{rule} SB-11
+:kind: reject
+:tests: declarations/structured-bindings/inline-specifier.cpp declarations/structured-bindings/extern-specifier.cpp declarations/structured-bindings/constinit-specifier.cpp declarations/structured-bindings/static-thread-local-ok.cpp
+
+The only specifiers that can occur with `auto` in a structured binding
+declaration are `static`, `thread_local`, `const`, and `volatile`.
+`inline`, `extern`, and `constinit` are not valid ({question}`Q-0107` for
+`constinit`).
+:::
+
+:::{rule} SB-12
+:kind: required
+:tests: declarations/structured-bindings/names-are-lvalues.cpp
+
+Each name of a structured binding is an lvalue. This holds also when
+the hidden variable is an rvalue reference or the initializer is a
+prvalue.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} SB-1
 :kind: required
-:tests: declarations/structured-bindings/array-copy.cpp declarations/structured-bindings/array-reference.cpp
+:tests: declarations/structured-bindings/array-copy.cpp declarations/structured-bindings/array-reference.cpp declarations/structured-bindings/array-hidden-copy.cpp
 
 A structured binding declaration creates one hidden variable. The
 variable has the written `auto`, cv-qualifiers, and reference, and the
 initializer initializes it. Each name refers to one element of the hidden
-variable.
+variable. For an array initializer without a reference, the hidden
+variable is an array with the same element type and bound, and each
+element is copied. The array does not decay to a pointer.
 :::
 
 :::{rule} SB-6
@@ -155,7 +176,7 @@ auto [c, d]{a};           // valid: braced initializer
 
 ## Evidence
 
-All seven compilers agree on 34 of 36 tests. The results are in
+All seven compilers agree on 45 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-7.** Clang and GCC accept `constexpr` structured bindings and two
@@ -168,6 +189,8 @@ All seven compilers agree on 34 of 36 tests. The results are in
 - **SB-7, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
   Clang and GCC reject it. The provisional answer is that it is rejected.
   See {question}`Q-0016`.
+- **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured
+  binding. Clang and GCC 16 reject it ({question}`Q-0107`).
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

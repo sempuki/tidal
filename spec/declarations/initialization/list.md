@@ -27,10 +27,11 @@ referenced)*:
 
 :::{rule} LIST-1
 :kind: required
-:tests: declarations/initialization/list/scalar-braces.cpp declarations/initialization/list/scalar-braces-two-values.cpp
+:tests: declarations/initialization/list/scalar-braces.cpp declarations/initialization/list/scalar-braces-two-values.cpp declarations/initialization/list/scalar-nested-braces.cpp
 
 A scalar can be initialized from braces that hold one expression, or from
-empty braces (INIT-2). The braces must not hold more than one expression.
+empty braces (INIT-2). The braces must not hold more than one expression, and that expression
+must not itself be a braced list.
 :::
 
 :::{rule} LIST-2
@@ -68,11 +69,14 @@ member initializer must have a value in the list.
 
 :::{rule} LIST-4
 :kind: required
-:tests: declarations/initialization/list/brace-elision.cpp
+:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp declarations/initialization/list/empty-base-no-elision.cpp
 
 The inner braces for a member that is an array or an aggregate can be
 omitted. The values then fill the elements of that member in order. The
-next values go to the next member.
+next values go to the next member. The inner braces are not omitted for
+a value that can initialize the member directly, such as an object of
+the member's type. A member that is an empty aggregate, such as an empty
+base, must have its own braces if later values follow.
 :::
 
 :::{rule} LIST-5
@@ -96,13 +100,14 @@ designator, the first member of the union is initialized.
 
 :::{rule} LIST-6
 :kind: required
-:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp
+:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp declarations/initialization/list/char-array-rest-zero.cpp
 
 A character array can be initialized from a string literal, with or
 without braces. These conditions apply:
 
 - If the bound is omitted, it counts the terminating null character.
-- The literal, with its null character, must fit in the array.
+- The literal, with its null character, must fit in the array. The
+  elements after it become zero.
 - The character type of the literal must match the element type.
 - A UTF-8 literal (`u8"..."`) can also initialize a `char` or
   `unsigned char` array.
@@ -129,12 +134,14 @@ is evaluated completely before the next value starts.
 
 :::{rule} LIST-8
 :kind: required
-:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp
+:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp declarations/initialization/list/omitted-member-explicit-default.cpp
 
 A member without a value in the list is initialized from its default
 member initializer. If it has none, it is initialized from an empty
 braced list. A scalar member becomes zero. A member of class type gets
-its default constructor *(classes referenced)*.
+its default constructor *(classes referenced)*. An `explicit` default
+constructor cannot be used for this, so such a member must have a value
+in the list.
 :::
 
 :::{rule} LIST-10
@@ -178,7 +185,7 @@ char8_t k[] = "x";        // rejected: wrong character type
 
 ## Evidence
 
-All seven compilers agree on all 38 tests. The results are in
+All seven compilers agree on 52 of 54 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-5.** Clang accepts array designators, chained designators, and a

@@ -35,7 +35,7 @@ that it does not recognize.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -44,14 +44,18 @@ correct entity:
 - `noreturn` has no argument and applies only to functions
   ({question}`Q-0021`).
 - `fallthrough` is a statement on its own in a `switch`. It is
-  immediately before a `case` or `default` label.
+  immediately before a `case` or `default` label. A `fallthrough` at
+  the end of a loop body inside the `switch` is not.
 
 These uses are also not valid:
 
 - `likely` and `unlikely` on the same statement or label ({question}`Q-0046`),
 - `noreturn` on a declaration of a function that was first declared
   without it,
-- `nodiscard` on a variable ({question}`Q-0021`).
+- `nodiscard` on a variable, and `no_unique_address` on a bit-field
+  ({question}`Q-0021`),
+- `carries_dependency` on a declaration of a function that was first
+  declared without it ({question}`Q-0108`).
 :::
 
 :::{rule} ATTR-8
@@ -81,13 +85,24 @@ The body of a `noreturn` function can contain a `return` statement.
 
 :::{rule} ATTR-13
 :kind: reject
-:tests: declarations/attributes/assume-on-declaration.cpp declarations/attributes/assume-not-bool.cpp
+:tests: declarations/attributes/assume-on-declaration.cpp declarations/attributes/assume-not-bool.cpp declarations/attributes/assume-comma.cpp
 
 An assumption must be a statement on its own. It must not apply to a
 declaration.
 
 The expression of an assumption must be convertible to `bool` by
-{term}`contextual conversion`, although it is not evaluated.
+{term}`contextual conversion`, although it is not evaluated. It must not have a comma operator at its
+top level.
+:::
+
+:::{rule} ATTR-17
+:kind: reject
+:tests: declarations/attributes/double-bracket-lambda-subscript.cpp declarations/attributes/double-bracket-parenthesized-ok.cpp declarations/attributes/using-prefix-ok.cpp declarations/attributes/using-prefix-qualified.cpp
+
+Two adjacent `[` tokens start an attribute specifier. A subscript whose
+index starts with a lambda needs parentheses around the index. A `using`
+prefix in an attribute specifier applies to every attribute in it, so an
+attribute in that specifier must not have its own namespace.
 :::
 
 ## Dynamic Semantics
@@ -141,18 +156,20 @@ own. This choice is implementation-defined.
 
 :::{rule} ATTR-4
 :kind: recommended
-:tests: declarations/attributes/deprecated-use-warns.cpp declarations/attributes/deprecated-declaration-only.cpp declarations/attributes/deprecated-enumerator-warns.cpp
+:tests: declarations/attributes/deprecated-use-warns.cpp declarations/attributes/deprecated-declaration-only.cpp declarations/attributes/deprecated-enumerator-warns.cpp declarations/attributes/deprecated-added-later.cpp
 
 `[[deprecated]]` marks an entity that programs should not use. An
 implementation should warn at each use of the entity, and show the reason
 if there is one. It should not warn at a declaration or definition.
 
-This also applies to an enumerator declared `deprecated`.
+This also applies to an enumerator declared `deprecated`. A later
+declaration can add `deprecated` to an entity declared without it. Uses
+after that declaration should warn.
 :::
 
 :::{rule} ATTR-5
 :kind: recommended
-:tests: declarations/attributes/nodiscard-ignored-warns.cpp declarations/attributes/nodiscard-void-cast.cpp declarations/attributes/nodiscard-type.cpp declarations/attributes/nodiscard-constructor-warns.cpp
+:tests: declarations/attributes/nodiscard-ignored-warns.cpp declarations/attributes/nodiscard-void-cast.cpp declarations/attributes/nodiscard-type.cpp declarations/attributes/nodiscard-constructor-warns.cpp declarations/attributes/nodiscard-reference-return.cpp
 
 An implementation should warn if a program discards the result of these
 calls:
@@ -160,7 +177,8 @@ calls:
 - a call to a function with `[[nodiscard]]`,
 - a call that returns a type with `[[nodiscard]]`.
 
-It should not warn if the program casts the result to `void`.
+It should not warn if the program casts the result to `void`, or if the
+call returns a reference to such a type.
 
 This also applies to a temporary that a `nodiscard` constructor creates
 and the program discards.
@@ -218,8 +236,7 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 26 of
-29 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of 46 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return. Clang
   and GCC give this warning ("function declared 'noreturn' should not
@@ -234,6 +251,11 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 26 of
 - Divergence ATTR-D1 is about `[[noreturn]] int x;`. GCC accepts it with a
   warning. Clang and EDG reject it. The provisional answer is that it is
   rejected ({question}`Q-0021`).
+- ATTR-2, `carries_dependency`: GCC accepts the attribute added on a
+  redeclaration, because it ignores the attribute. Clang and EDG reject
+  it ({question}`Q-0108`). GCC also ignores `no_unique_address` on a
+  bit-field ({question}`Q-0021`). Clang 18 ignores `assume`, so it
+  accepts a comma in it ({question}`Q-0020`).
 
 Inputs: clang-sema-declattr, clang-sema-stmtattr, edg-attribute,
 clang-diag-sema (see `inputs/MANIFEST.md`).

@@ -73,10 +73,11 @@ namespace, an unqualified use is ambiguous.
 
 :::{rule} NS-5
 :kind: required
-:tests: declarations/namespaces/alias.cpp declarations/namespaces/alias-conflict.cpp
+:tests: declarations/namespaces/alias.cpp declarations/namespaces/alias-conflict.cpp declarations/namespaces/alias-not-reopen.cpp
 
 `namespace L = A::B;` makes `L` a second name for `A::B`. In the same
-scope, `L` must not be an alias for a different namespace.
+scope, `L` must not be an alias for a different namespace. A namespace
+definition must not use `L` to reopen `A::B`.
 :::
 
 :::{rule} NS-6
@@ -90,13 +91,14 @@ in a namespace that encloses `N`.
 
 :::{rule} NS-7
 :kind: required
-:tests: declarations/namespaces/using-declaration.cpp declarations/namespaces/using-declaration-overloads.cpp declarations/namespaces/using-declaration-snapshot.cpp declarations/namespaces/using-declaration-repeat-namespace.cpp declarations/namespaces/using-declaration-repeat-block.cpp declarations/namespaces/using-declaration-unqualified.cpp declarations/namespaces/using-declaration-namespace.cpp declarations/namespaces/using-declaration-conflict.cpp declarations/namespaces/using-declaration-then-conflict.cpp
+:tests: declarations/namespaces/using-declaration.cpp declarations/namespaces/using-declaration-overloads.cpp declarations/namespaces/using-declaration-snapshot.cpp declarations/namespaces/using-declaration-repeat-namespace.cpp declarations/namespaces/using-declaration-repeat-block.cpp declarations/namespaces/using-declaration-unqualified.cpp declarations/namespaces/using-declaration-namespace.cpp declarations/namespaces/using-declaration-conflict.cpp declarations/namespaces/using-declaration-then-conflict.cpp declarations/namespaces/using-list.cpp
 
 `using N::name;` declares `name` in the current scope for the member of
 `N`. For a function, it includes the overloads that `N` declares before
 the using declaration. A using declaration:
 
-- must have a qualified name,
+- must have a qualified name, and can list several names separated by
+  commas,
 - must not name a namespace,
 - must not conflict with another declaration of `name` in the same scope,
 - can occur again in the same scope, also in a block
@@ -105,12 +107,13 @@ the using declaration. A using declaration:
 
 :::{rule} NS-8
 :kind: required
-:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-block-scope.cpp declarations/namespaces/using-directive-not-namespace.cpp declarations/namespaces/using-directive-global-ambiguity.cpp
+:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-block-scope.cpp declarations/namespaces/using-directive-not-namespace.cpp declarations/namespaces/using-directive-global-ambiguity.cpp declarations/namespaces/directive-sees-later-members.cpp
 
 `using namespace N;` makes the members of `N` visible to unqualified
 lookup until the current scope ends. The rules for this are:
 
 - The directive must name a namespace.
+- Members that `N` declares after the directive are visible too.
 - The members of namespaces that using directives in `N` name also become
   visible.
 - A name that the current scope declares hides these members.
@@ -120,6 +123,14 @@ lookup until the current scope ends. The rules for this are:
 Unqualified lookup finds the members at the level of the innermost
 namespace that contains both the directive and the named namespace. So a
 global variable with the same name gives an ambiguous use.
+:::
+
+:::{rule} NS-9
+:kind: reject
+:tests: declarations/namespaces/directive-in-class.cpp declarations/namespaces/using-class-member-at-namespace.cpp
+
+A using directive must not occur in a class. A using declaration at
+namespace scope must not name a class member.
 :::
 
 ## Examples
@@ -148,8 +159,7 @@ int y = x;               // rejected: x is ambiguous
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 31 of
-32 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 40 of 41 tests.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept it. GCC 14 and EDG 7.0 reject it. The

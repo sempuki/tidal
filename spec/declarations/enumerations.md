@@ -22,10 +22,12 @@ integer type that holds the values.
 
 :::{rule} ENUM-1
 :kind: required
-:tests: declarations/enumerations/enumerator-values.cpp declarations/enumerations/enumerator-refers-earlier.cpp declarations/enumerations/duplicate-values.cpp declarations/enumerations/enumerator-not-constant.cpp declarations/enumerations/duplicate-enumerator.cpp declarations/enumerations/implicit-value-overflow-scoped.cpp
+:tests: declarations/enumerations/enumerator-values.cpp declarations/enumerations/enumerator-refers-earlier.cpp declarations/enumerations/duplicate-values.cpp declarations/enumerations/enumerator-not-constant.cpp declarations/enumerations/duplicate-enumerator.cpp declarations/enumerations/implicit-value-overflow-scoped.cpp declarations/enumerations/implicit-after-explicit.cpp
 
 An enumerator without a value gets the value of the previous enumerator
-plus one. The first enumerator without a value gets 0. A value must be a
+plus one. If the first enumerator of the list has no value, it gets 0.
+A later enumerator without a value gets the previous value plus one,
+also when it is the first one without a value. A value must be a
 constant expression, and it can use earlier enumerators. These conditions
 apply:
 
@@ -99,10 +101,10 @@ and a braced integer is not valid.
 
 :::{rule} ENUM-9
 :kind: required
-:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-opaque.cpp
+:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-opaque.cpp declarations/enumerations/using-enum-alias.cpp
 
 `using enum E;` declares the enumerators of `E` in the current scope. `E`
-must be an enumeration. No enumerator name of `E` can be declared already
+must be an enumeration. It can be a type alias of one. No enumerator name of `E` can be declared already
 in that scope.
 
 The enumeration must be complete at the `using enum` declaration. An
@@ -118,6 +120,23 @@ Each enumeration is a distinct type. It is different from its underlying
 type and from all other enumerations. An enumerator has the type of its
 enumeration. Unary `+` on an unscoped value gives its promoted integer
 type.
+:::
+
+:::{rule} ENUM-11
+:kind: reject
+:tests: declarations/enumerations/scoped-not-condition.cpp declarations/enumerations/scoped-not-logical.cpp declarations/enumerations/scoped-explicit-bool-ok.cpp
+
+A value of a scoped enumeration does not convert to `bool` by
+{term}`contextual conversion`. It must not be a condition or an operand
+of `!`, `&&`, or `||`. An explicit cast to `bool` is valid.
+:::
+
+:::{rule} ENUM-12
+:kind: required
+:tests: declarations/enumerations/enumerator-scope-after-value.cpp
+
+The name of an enumerator is declared after its value expression. In
+that expression, the name refers to an outer entity with that name.
 :::
 
 ## Undefined Behavior
@@ -179,7 +198,7 @@ Color k = Red;                 // Red without Color::
 
 ## Evidence
 
-All seven compilers agree on 39 of 41 tests. The results are in
+All seven compilers agree on 49 of 52 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }` an

@@ -7,13 +7,14 @@ return type from its `return` statements.
 
 :::{rule} RET-1
 :kind: required
-:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp
+:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp
 
 Each `return` statement gives a type, as for a variable that the
 returned expression initializes. All `return` statements must give the
 same type. A function with no `return` statement, or with only
 `return;`, returns `void`. A `return` statement must not return a
-braced list.
+braced list. A `return` statement in a {term}`discarded statement` does
+not take part, also outside a template.
 :::
 
 :::{rule} RET-2
@@ -28,11 +29,15 @@ references and top-level qualifiers (AUTO-1). `auto&` keeps them
 
 :::{rule} RET-3
 :kind: reject
-:tests: declarations/functions/return-deduction/use-before-definition.cpp declarations/functions/return-deduction/use-after-definition.cpp declarations/functions/return-deduction/recursion-after-return.cpp declarations/functions/return-deduction/recursion-before-return.cpp
+:tests: declarations/functions/return-deduction/use-before-definition.cpp declarations/functions/return-deduction/use-after-definition.cpp declarations/functions/return-deduction/recursion-after-return.cpp declarations/functions/return-deduction/recursion-before-return.cpp declarations/functions/return-deduction/auto-ref-no-return.cpp declarations/functions/return-deduction/auto-ref-return-local.cpp
 
 A program must not use the function before its return type is known. A
 call before the definition is not valid. A recursive call is valid after
-a `return` statement that gives the type.
+a `return` statement that gives the type. A function with a reference or
+pointer placeholder return type must have a `return` statement with an
+expression. A deduced lvalue reference cannot be initialized from the
+name of a local variable, because a `return` treats that name as an
+xvalue (CPY-11).
 :::
 
 :::{rule} RET-4
@@ -56,10 +61,12 @@ functions referenced)*.
 
 :::{rule} RET-6
 :kind: undefined
-:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp
 
 If a function with `decltype(auto)` returns a parenthesized local
-variable, its return type is an lvalue reference to that variable. A use
+variable, its return type is an rvalue reference to that variable, because a
+`return` treats the name of a local variable as an xvalue (CPY-11). For
+a global variable, the result is an lvalue reference. A use
 of the result is undefined, because the variable no longer exists.
 :::
 
@@ -83,7 +90,7 @@ constexpr auto fact(int n) {
 
 ## Evidence
 
-All seven compilers agree on all 13 tests. The results are in
+All seven compilers agree on all 20 tests. The results are in
 `tests/RESULTS.md`.
 
 Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, edg-func-def.

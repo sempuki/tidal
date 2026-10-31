@@ -33,7 +33,7 @@ It never declares a variable.
 
 :::{rule} INIT-4
 :kind: required
-:tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp
+:tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/nullptr-bool-copy.cpp declarations/initialization/forms/nullptr-bool-direct.cpp
 
 An initializer after `=` or in parentheses is converted to the type of the
 variable by implicit conversion *(referenced)*. A conversion that loses
@@ -44,15 +44,18 @@ information is permitted. These conditions apply:
 - For a scalar, the expression in parentheses must not be a braced list.
 - The type of the variable must be complete.
 - An `explicit` constructor *(referenced)* must not be used with `=`.
+- `nullptr` converts to `bool` only in direct initialization, with
+  parentheses or braces, and gives `false`.
 :::
 
 :::{rule} INIT-5
 :kind: required
-:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/array-from-array.cpp
+:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/array-from-array.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
 
 An array is initialized from a list of values in braces or in parentheses.
-In parentheses, a conversion that loses information is permitted. An
-array must not be initialized from another array.
+In parentheses, a conversion that loses information is permitted. In parentheses, an
+array without a bound gets the number of values as its bound. An array
+must not be initialized from another array.
 :::
 
 ## Dynamic Semantics
@@ -65,6 +68,14 @@ Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is `0`
 for an integer, `0.0` for a floating-point type, `false` for `bool`, and
 a null pointer for a pointer. An array element without a value in the
 list also gets zero.
+:::
+
+:::{rule} INIT-6
+:kind: required
+:tests: declarations/initialization/forms/declarators-in-order.cpp
+
+A declaration with several declarators initializes them in order, from
+left to right.
 :::
 
 ## Undefined Behavior
@@ -102,7 +113,7 @@ int f[2] = d;        // rejected
 
 ## Evidence
 
-All seven compilers agree on 14 of 15 tests. The results are in
+All seven compilers agree on 21 of 22 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar during
