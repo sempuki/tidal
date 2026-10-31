@@ -8,6 +8,7 @@ type-names
 storage-linkage
 inline
 declarators
+alignment
 initialization/index
 structured-bindings
 enumerations
@@ -27,6 +28,7 @@ type-names
 storage-linkage
 inline
 declarators
+alignment
 initialization/index
 structured-bindings
 enumerations
