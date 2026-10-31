@@ -1,0 +1,9 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   report.md:Spec-only test: a Java programmer writes longest=0   overlap=0.00
+ok   report.md:1. Summary             longest=0   overlap=0.00
+ok   report.md:2. Findings            longest=0   overlap=0.00
+ok   report.md:3. Attempt log         longest=0   overlap=0.00
+ok   report.md:4. What worked well    longest=0   overlap=0.01
+
+0 flagged
