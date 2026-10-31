@@ -55,7 +55,8 @@ implementation can see such a pair, it should say so.
 
 In a function call, the expression that gives the function is evaluated
 before the arguments. For a member function call, this includes the object
-expression.
+expression. In operator syntax the object is an operand, and SEQ-8 gives
+its order.
 :::
 
 :::{rule} SEQ-3
@@ -115,9 +116,10 @@ same volatile object are undefined too.
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp
+:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp
 
-The arguments of a function call are evaluated in an unspecified order.
+The arguments of a function call, including its default arguments, are
+evaluated in an unspecified order.
 Each argument is evaluated completely before the evaluation of another
 argument starts. The body of a called function also does not overlap with
 other evaluations in the caller.
@@ -125,16 +127,20 @@ other evaluations in the caller.
 
 :::{rule} SEQ-8
 :kind: unspecified
-:tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp
+:tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp expressions/sequencing/member-operator-order.cpp expressions/sequencing/reversed-comparison-order.cpp
 
-The operands of a built-in operator are {term}`unsequenced`, so their
-order is unspecified, unless one of these rules fixes it:
+The operands of an operator are evaluated in an unspecified order,
+unless one of the rules below fixes it. This holds for a built-in
+operator, whose operands are {term}`unsequenced`, and for an overloaded
+operator, including a member operator and a reversed comparison
+({rule}`DCMP-6`). These rules fix an order:
 
 - SEQ-3: subscripts, assignments, member pointers, and braced lists,
 - {rule}`SHF-8`: shifts,
 - {rule}`LOG-5`: `&&` and `||`,
 - {rule}`COMMA-1`: the comma operator,
-- {rule}`COND-2`: the conditional operator.
+- {rule}`COND-2`: the conditional operator,
+- SEQ-6: the overloaded operators that keep a built-in order.
 
 A function called in one operand still does not overlap with the other
 operand (SEQ-1).
@@ -166,11 +172,15 @@ pair(i++, i++);       // fine: the order is unspecified
 
 ## Evidence
 
-All seven compilers agree on all 21 tests. The results are in
+All seven compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang 22 evaluates function arguments from left to right and GCC
-  16 from right to left, at `-O0` and `-O2`.
+  16 from right to left, at `-O0` and `-O2`. Clang evaluates an explicit
+  argument before a default argument, and GCC the default first.
+- SEQ-8: for a member `operator-`, Clang 22 evaluates the left operand
+  first and GCC 16 the right. For a reversed `==` candidate, Clang
+  evaluates the right operand first and GCC the left.
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
   "operation may be undefined". The test makes these warnings errors.
   No compiler warns about two bit-fields of one memory location or two

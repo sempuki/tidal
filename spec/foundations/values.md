@@ -62,7 +62,7 @@ alive longer (REF-4).
 :::
 
 :::{principle} VC-P4
-:rules: VC-7 VC-10
+:rules: VC-7 VC-10 VC-15
 
 The implementation keeps some freedom when a program passes or returns
 by value. It can make an extra copy of a trivially copyable argument or
@@ -250,6 +250,13 @@ end of the caller's full expression. On the x86-64 Linux targets in the
 matrix, the caller destroys it at the end of its full expression.
 :::
 
+:::{rule} VC-15
+:kind: unspecified
+:tests: expressions/sequencing/parameter-destruction-order.cpp
+
+The parameter objects of one call are destroyed in an unspecified order.
+:::
+
 ## Examples
 
 ```cpp
@@ -270,9 +277,11 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All seven compilers agree on 40 of 41 tests. The results are in
+All seven compilers agree on 41 of 42 tests. The results are in
 `tests/RESULTS.md`.
 
+- VC-15: Clang 22 destroys the second parameter of a call first, and GCC
+  16 the first.
 - VC-3: EDG gives an lvalue for a subscript of an array xvalue. Clang
   and GCC give an xvalue ({question}`Q-0099`).
 - VC-7: the test accepts either result.

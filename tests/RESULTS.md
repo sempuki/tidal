@@ -2742,6 +2742,7 @@ compilers affect the Status column.
 | `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/default-argument-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/full-expression-for-clauses.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
@@ -2749,11 +2750,17 @@ compilers affect the Status column.
 | `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/init-capture-order.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/member-operator-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/multiplicative-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/new-placement-and-bound-order.cpp` | NEW-12 NEW-18 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-assignment-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/parameter-destruction-order.cpp` | VC-15 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/parenthesized-aggregate-order.cpp` | LIST-7 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/sequencing/reversed-comparison-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 SEQ-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3214,7 +3221,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3199/3199 tests pass on baseline compilers.
+3206/3206 tests pass on baseline compilers.
 
 ## Rejections
 

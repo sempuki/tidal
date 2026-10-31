@@ -2728,6 +2728,7 @@ pass	expressions/sequencing/callee-before-arguments.cpp
 pass	expressions/sequencing/calls-not-interleaved.cpp
 pass	expressions/sequencing/comparison-operand-order.cpp
 pass	expressions/sequencing/compound-assignment-order.cpp
+pass	expressions/sequencing/default-argument-order.cpp
 pass	expressions/sequencing/default-argument-temporary.cpp
 pass	expressions/sequencing/full-expression-for-clauses.cpp
 pass	expressions/sequencing/full-expression-side-effects.cpp
@@ -2735,11 +2736,17 @@ pass	expressions/sequencing/full-expression-statement.cpp
 pass	expressions/sequencing/full-expression-subexpression-not.cpp
 pass	expressions/sequencing/function-arguments-not-interleaved.cpp
 pass	expressions/sequencing/function-arguments-order.cpp
+pass	expressions/sequencing/init-capture-order.cpp
+pass	expressions/sequencing/member-operator-order.cpp
 pass	expressions/sequencing/member-pointer-object-first.cpp
 pass	expressions/sequencing/multiplicative-operand-order.cpp
+FALSE-REJECT	expressions/sequencing/new-placement-and-bound-order.cpp
 pass	expressions/sequencing/object-before-member-call-arguments.cpp
 pass	expressions/sequencing/overloaded-assignment-order.cpp
 pass	expressions/sequencing/overloaded-shift-order.cpp
+pass	expressions/sequencing/parameter-destruction-order.cpp
+pass	expressions/sequencing/parenthesized-aggregate-order.cpp
+pass	expressions/sequencing/reversed-comparison-order.cpp
 pass	expressions/sequencing/subscript-order.cpp
 pass	expressions/sequencing/unsequenced-constant-evaluation.cpp
 MISSED-REJECT	expressions/sequencing/unsequenced-increments.cpp

@@ -214,9 +214,10 @@ value in the list (LIST-8). Such a member must have a value in the list.
 
 :::{rule} LIST-7
 :kind: required
-:tests: declarations/initialization/list/braced-order.cpp
+:tests: declarations/initialization/list/braced-order.cpp expressions/sequencing/parenthesized-aggregate-order.cpp
 
-The values in a braced list are evaluated from left to right. Each value
+The values in a braced list, and in a parenthesized list that
+initializes an aggregate, are evaluated from left to right. Each value
 is evaluated completely before the next value starts.
 :::
 
@@ -272,7 +273,7 @@ char8_t k[] = "x";        // rejected: wrong character type
 
 ## Evidence
 
-All seven compilers agree on 52 of 54 tests. The results are in
+All seven compilers agree on 53 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-14.** Clang accepts array designators, chained designators, and a

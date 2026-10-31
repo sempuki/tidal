@@ -7,7 +7,7 @@ object and frees its storage.
 ## Principles
 
 :::{principle} NEW-P1
-:rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3 NEW-16 NEW-17
+:rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3 NEW-16 NEW-17 NEW-18
 
 `new` creates an object whose life does not depend on any scope
 ({principle}`OBJ-P2`). It first obtains storage and then initializes
@@ -213,9 +213,10 @@ destroys the elements of an array from the last element to the first.
 
 :::{rule} NEW-12
 :kind: required
-:tests: expressions/new-delete/allocation-before-initializer.cpp
+:tests: expressions/new-delete/allocation-before-initializer.cpp expressions/sequencing/new-placement-and-bound-order.cpp
 
-The allocation function is called before the arguments of the
+The allocation function is called after the placement arguments and
+the array bound are evaluated, and before the arguments of the
 initializer are evaluated.
 :::
 
@@ -244,6 +245,14 @@ The behavior is undefined if the program:
 :::
 
 ## Implementation Requirements
+
+:::{rule} NEW-18
+:kind: unspecified
+:tests: expressions/sequencing/new-placement-and-bound-order.cpp
+
+The placement arguments and the array bound of a `new` expression are
+evaluated in an unspecified order.
+:::
 
 :::{rule} NEW-14
 :kind: unspecified
@@ -274,9 +283,12 @@ delete n;                       // does nothing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 43 of
-46 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 44 of
+47 tests.
 
+- NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
+  placement arguments. No compiler in the matrix varies the order, so
+  NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.
 - NEW-3, NEW-5, NEW-6: all compilers reject these cases during constant
   evaluation and name the cause.
 - NEW-2: Clang and EDG convert a floating size such as `1.5` to `1`. Clang
