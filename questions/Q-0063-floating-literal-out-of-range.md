@@ -20,3 +20,9 @@ Option 1. Two of the three implementations accept it in their strictest
 mode.
 
 ## Opinions
+
+- The second gap review (`reports/review/2026-10-31-gap-review-expr-decl.md`,
+  a summary by a source reader) holds that such a literal is not valid,
+  which is option 2. Clang and GCC still accept it in their strictest
+  mode, so the provisional answer stays option 1 until more opinions
+  arrive.

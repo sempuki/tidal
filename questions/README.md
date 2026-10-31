@@ -99,6 +99,10 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0086](Q-0086-call-returning-abstract.md) | Is a call to a function that returns an abstract class valid? | provisional | option 1 |
 | [Q-0087](Q-0087-explicit-object-matches-virtual.md) | Can an explicit object member function have the name and parameters of a base virtual function? | provisional | option 1 |
 | [Q-0088](Q-0088-union-user-assignment-active.md) | Does assignment through a user-provided operator activate an inactive union member during constant evaluation? | provisional | option 1 |
+| [Q-0089](Q-0089-decltype-in-destructor-call.md) | Can decltype name the class in an explicit destructor call? | provisional | option 1 |
+| [Q-0090](Q-0090-unknown-reference-constant.md) | Can constant evaluation use a reference whose referent is unknown, if it does not read through it? | provisional | option 1 |
+| [Q-0091](Q-0091-delete-array-through-base-constant.md) | Is delete[] of a derived array through a base pointer rejected during constant evaluation? | provisional | option 1 |
+| [Q-0092](Q-0092-lambda-capture-trailing-return.md) | Do names in a lambda's trailing return type find its captures? | provisional | option 1 |
 
 ## Status values
 
