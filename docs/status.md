@@ -9,7 +9,7 @@ current state only. The history of how it got here is in `git log`.
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 30 | Q-0112 | 0 flagged |
 | [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 0 | 4 |  | 0 flagged |
-| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 31 | 4 | 2 | 31 |  | 0 flagged |
+| [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 33 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 52 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 29 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
@@ -45,7 +45,7 @@ current state only. The history of how it got here is in `git log`.
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 82 | 8 | 2 | 26 | Q-0012, Q-0106 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 3 | Q-0080 | 0 flagged |
-| [Forms of initialization](../spec/declarations/initialization/forms.md) | 8 | 5 required, 2 reject, 1 undefined | 22 | 4 | 1 | 23 | Q-0013, Q-0039 | 0 flagged |
+| [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 30 | 4 | 1 | 23 | Q-0013, Q-0039 | 0 flagged |
 | [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 55 | 4 | 2 | 16 | Q-0042, Q-0043 | 0 flagged |
 | [Reference binding](../spec/declarations/initialization/references.md) | 11 | 6 required, 4 reject, 1 undefined | 31 | 2 | 3 | 38 | Q-0040, Q-0109, Q-0110 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | 2 | 0 | 15 | Q-0014 | 0 flagged |
@@ -75,7 +75,7 @@ current state only. The history of how it got here is in `git log`.
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 34 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 26 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 41 |  | 0 flagged |
-| [Glossary](../spec/glossary.md) | 20 terms | | | | | | | 0 flagged |
+| [Glossary](../spec/glossary.md) | 21 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds it on every change and publishes it to
@@ -89,7 +89,7 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3206/3206 tests pass on each. Tests may
+All compilers are baseline. 3214/3214 tests pass on each. Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
@@ -122,7 +122,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2595 of 3206 tests. It rejects one
+- The clean-room front end passes 2601 of 3214 tests. It rejects one
   valid test, `new-placement-and-bound-order.cpp`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -165,9 +165,8 @@ current phase is phase 2, foundations that later pages need:
 4. Item K: the language-support types, then the task-level guides.
 5. Act on the findings of exercises X1 to X4
    (`reports/clean-room/X1/` to `X4/`). The most cited gaps: a list of
-   implicit calls (X2-1), what default initialization does to a class
-   (X3-1), the state of an object whose declaration a jump skips
-   (X3-2). The orders that no rule gave (X1-2 to X1-8) are done.
+   implicit calls (X2-1) and the state of an object whose declaration a
+   jump skips (X3-2). The orders that no rule gave (X1-2 to X1-8) are done.
 
 Waiting on the maintainer:
 

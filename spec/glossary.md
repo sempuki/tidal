@@ -43,6 +43,10 @@ declarator
   declarator adds pointers, references, arrays, and function parameters
   to the base type.
 
+default initialization
+  What happens to an object that nothing initializes: a scalar keeps no
+  value, and a class object runs its default constructor ({rule}`INIT-9`).
+
 discarded statement
   The branch of an `if constexpr` statement that the condition does not
   select. These facts apply to a discarded statement:

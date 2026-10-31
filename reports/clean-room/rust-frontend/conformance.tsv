@@ -1342,6 +1342,14 @@ pass	declarations/initialization/forms/copy-init-converts.cpp
 pass	declarations/initialization/forms/copy-init-explicit-rejected.cpp
 pass	declarations/initialization/forms/copy-init-no-conversion.cpp
 pass	declarations/initialization/forms/declarators-in-order.cpp
+pass	declarations/initialization/forms/default-init-array-of-class.cpp
+unsupported	declarations/initialization/forms/default-init-base.cpp
+pass	declarations/initialization/forms/default-init-member-initializer.cpp
+pass	declarations/initialization/forms/default-init-member-no-value.cpp
+pass	declarations/initialization/forms/default-init-member-not-named-no-value.cpp
+pass	declarations/initialization/forms/default-init-member-not-named.cpp
+unsupported	declarations/initialization/forms/default-init-new-class.cpp
+pass	declarations/initialization/forms/default-init-scalar-no-value.cpp
 pass	declarations/initialization/forms/direct-init-multiple.cpp
 pass	declarations/initialization/forms/empty-parens-declares-function.cpp
 pass	declarations/initialization/forms/incomplete-type.cpp

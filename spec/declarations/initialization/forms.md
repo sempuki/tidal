@@ -22,10 +22,12 @@ initializer to the object's type ({principle}`VC-P2`).
 :::
 
 :::{principle} INIT-P2
-:rules: INIT-1
+:rules: INIT-1 INIT-9
 
-An automatic object with no initializer has no value until the program
-assigns one ({principle}`OBJ-P4`).
+Default initialization gives a value only where some code supplies one:
+a constructor, or a default member initializer. Everything else is left
+as it is. An automatic object with no initializer therefore has no value
+until the program assigns one ({principle}`OBJ-P4`).
 :::
 
 :::{principle} INIT-P3
@@ -53,7 +55,7 @@ These terms name the forms of initialization:
 | An initializer after `=` | *copy-initialization* |
 | An initializer in parentheses | *direct-initialization* |
 | A braced initializer | *list-initialization* |
-| A variable without an initializer | *default-initialized* |
+| A variable without an initializer | *default-initialized* (INIT-9) |
 | Empty parentheses or braces | *value-initialization* |
 
 Objects with static or thread storage are *zero-initialized* first
@@ -138,11 +140,32 @@ A declaration with several declarators initializes them in order, from
 left to right.
 :::
 
+:::{rule} INIT-9
+:kind: required
+:tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp
+
+*Default initialization* happens to a variable with no initializer, to
+an object that `new` creates with no initializer, and to a member or base
+that a constructor does not initialize. It does this to each kind of
+object:
+
+| Object | Default initialization |
+|---|---|
+| A scalar | Nothing. The object has no value (INIT-1). |
+| A class | Its default constructor runs. |
+| An array | Each element is default-initialized. |
+| A member that a constructor's member initializer list does not name | Its default member initializer, if it has one. If not, it is default-initialized. |
+| A base that a constructor's member initializer list does not name | It is default-initialized. |
+
+An object with static or thread storage is zero-initialized first
+(STO-3).
+:::
+
 ## Undefined Behavior
 
 :::{rule} INIT-1
 :kind: undefined
-:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp declarations/initialization/forms/self-initialization.cpp
+:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp declarations/initialization/forms/self-initialization.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp
 
 A variable with {term}`automatic storage` and no initializer has no
 value until the program assigns one. A read of the variable before that
@@ -177,7 +200,7 @@ int f[2] = d;        // rejected
 
 ## Evidence
 
-All seven compilers agree on 21 of 22 tests. The results are in
+All seven compilers agree on 29 of 30 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar during

@@ -1356,6 +1356,14 @@ compilers affect the Status column.
 | `declarations/initialization/forms/copy-init-explicit-rejected.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/copy-init-no-conversion.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/declarators-in-order.cpp` | INIT-6 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/initialization/forms/default-init-array-of-class.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-base.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-member-initializer.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-member-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/default-init-member-not-named.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-new-class.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-scalar-no-value.cpp` | INIT-9 INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/direct-init-multiple.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/empty-parens-declares-function.cpp` | INIT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/incomplete-type.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3221,7 +3229,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3206/3206 tests pass on baseline compilers.
+3214/3214 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -7716,6 +7724,27 @@ check that the rejection has the intended cause.
 - `declarations/initialization/forms/copy-init-no-conversion.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
 - `declarations/initialization/forms/copy-init-no-conversion.cpp` (gcc-16): error: invalid conversion from 'int' to 'int*' [-fpermissive]
 - `declarations/initialization/forms/copy-init-no-conversion.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized member ‘Settings::height’
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing uninitialized member 'Settings::height'
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized member 'Settings::height'
+- `declarations/initialization/forms/default-init-member-no-value.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized member ‘Outer::y’
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing uninitialized member 'Outer::y'
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized member 'Outer::y'
+- `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘v’ is not usable in a constant expression / note: ‘int v’ is not const
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'v' is not usable in a constant expression / note: 'int v' is not const
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'v' is not usable in a constant expression / note: 'int v' is not const
+- `declarations/initialization/forms/default-init-scalar-no-value.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `declarations/initialization/forms/direct-init-multiple.cpp` (clang-host): error: excess elements in scalar initializer
 - `declarations/initialization/forms/direct-init-multiple.cpp` (gcc-host): error: expression list treated as compound expression in initializer [-fpermissive]
 - `declarations/initialization/forms/direct-init-multiple.cpp` (edg-7.0): error: too many initializer values
