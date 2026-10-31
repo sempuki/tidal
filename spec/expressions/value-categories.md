@@ -4,6 +4,60 @@ Each expression has a type and a {term}`value category`. The category is
 lvalue, xvalue, or prvalue. It controls what a program can do with the
 result, and when a temporary object exists.
 
+## Principles
+
+:::{principle} VC-P1
+:rules: VC-1 VC-2 VC-3
+
+Every expression denotes an object, a function, or a value. An *lvalue*
+names something with an identity: a program can take its address, assign
+to it, and bind a reference to it. A *prvalue* is a value with no
+identity yet, a result to be stored, used, or dropped. An *xvalue* is an
+object that has an identity but whose contents the program has given up,
+so a move can take them.
+
+The form of an expression sets its category, and its type does not. The
+name of a variable is an lvalue even when the variable has rvalue
+reference type, because a name is a name. A function call has the
+category of what the function returns: a reference gives an lvalue or an
+xvalue, and anything else gives a prvalue.
+:::
+
+:::{principle} VC-P2
+:rules: VC-4 VC-5 VC-8
+
+A prvalue is not an object until something needs an object. If a prvalue
+initializes an object of its own type, that object is the result, and no
+copy and no move takes place. There is no object to copy from. The
+language makes a temporary object from a prvalue only where an object
+is unavoidable: a reference binds to it, a member or element is
+accessed, an array becomes a pointer, or a class value is discarded.
+Constant evaluation follows the same model.
+:::
+
+:::{principle} VC-P3
+:rules: VC-6 VC-9
+
+A temporary object lives to the end of the full expression that made it,
+and temporaries of one full expression end in the reverse of their
+order of creation. The lifetime of every temporary therefore follows
+from where full expressions begin and end. The initializer of a
+declarator, a condition, a `return` expression, and the initialization
+of each array element are separate full expressions. A function call,
+with its default arguments, belongs to the full expression that contains
+the call. A reference can keep a temporary alive longer (REF-4).
+:::
+
+:::{principle} VC-P4
+:rules: VC-7 VC-10
+
+Passing and returning by value is where the implementation keeps some
+freedom. It can make an extra copy of a trivially copyable argument or
+return value, and it chooses when a parameter object ends. A program
+must not depend on the address of such an object or on the point where
+it is destroyed.
+:::
+
 ## Constraints
 
 :::{rule} VC-1

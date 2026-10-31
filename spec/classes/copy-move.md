@@ -26,6 +26,86 @@ The four functions are the *copy and move functions* of a class. A
 *user-declared* function is one that the class declares, including with
 `= default` or `= delete`.
 
+## Principles
+
+:::{principle} CPY-P1
+:rules: CPY-1 CPY-2 CPY-3 CPY-15 CPY-16 CPY-8
+
+A class object is copied or moved part by part: the bases in the order
+of the base list, then the members in the order of their declarations,
+and an array member element by element. The functions that do this are
+the copy and move constructors and the copy and move assignment
+operators. The language recognizes them by their signatures. A copy
+function takes a reference to the class, a move function takes an rvalue
+reference, and the assignment operators are members of the class. A
+constructor that takes the class by value cannot exist, because it
+would need itself to copy its argument.
+:::
+
+:::{principle} CPY-P2
+:rules: CPY-4 CPY-5 CPY-6
+
+The implementation writes these four functions for a class unless the
+class writes them, because part-by-part copying is right for most
+classes. Their parameter types follow from what the parts permit: the
+implicit copy constructor takes a `const` reference if every part can be
+copied from a `const` object.
+
+A class that declares one of these functions says that part-by-part
+copying is wrong for it. So one declaration removes the others. A
+user-declared move function removes the implicit copy functions. A
+user-declared copy function or destructor removes the implicit move
+functions, and rvalues of that class fall back to copying. The implicit
+assignment operator of a derived class hides those of its bases for the
+same reason: a derived class decides for its own parts.
+:::
+
+:::{principle} CPY-P3
+:rules: CPY-7 CPY-14 CPY-17
+
+When a part cannot be copied or moved part by part, the implicit function
+is not an error. It is deleted, so the problem appears only at a use. A
+reference member, a `const` member, or a part whose own function is
+deleted or hidden each makes the containing function deleted. The same
+holds for a function that the class defaults in its definition, also
+when its signature differs from the implicit one. A deleted move
+function that the implementation produced steps aside, so an rvalue
+copies instead. A move function that the class deletes by name does not
+step aside. A function defaulted after the class definition must be one
+that works, because by then the class has promised it.
+:::
+
+:::{principle} CPY-P4
+:rules: CPY-9 CPY-10 CPY-11
+
+Whether a copy or a move happens follows from the value category of the
+source. An lvalue copies. An rvalue moves if it can and copies if it
+cannot. A `const` rvalue copies, because a move would change it. A
+prvalue needs neither: it initializes its target directly, so a class
+with no usable copy or move function can still be returned and passed
+as a prvalue. A `return` of a local variable or a parameter treats the
+name as an rvalue, because the object is about to end.
+:::
+
+:::{principle} CPY-P5
+:rules: CPY-12 CPY-18 CPY-13
+
+The implementation keeps some freedom. It can make a named local
+variable the return object instead of moving it, except for a parameter
+and except in constant evaluation. It can assign a shared virtual base
+more than once. It should warn when a program relies on the implicit
+copy of a class that manages its own copying, and when a cast in a
+`return` statement defeats the freedom to elide.
+:::
+
+:::{principle} CPY-P6
+:rules: CPY-19
+
+A class whose copying is part-by-part all the way down, with nothing
+virtual and nothing user-provided, is *trivially copyable*. Copying its
+bytes copies its value.
+:::
+
 ## Constraints
 
 :::{rule} CPY-1

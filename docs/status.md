@@ -124,6 +124,11 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
+0. Judge the principles-first format (decision 0024) on its two pilot
+   pages, value categories and copy and move. Then write the Foundations
+   chapter and add a `Principles` segment to every page. The third gap
+   review triage waits on branch `wip/third-triage` until the format
+   settles.
 1. Write a contributor guide: roles, how to claim a section, and the steps
    a section passes before it counts as drafted.
 2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
