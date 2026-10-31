@@ -14,8 +14,8 @@ definition is missing.
 ## Evidence
 
 `tests/RESULTS.md`, rows `missing-definition.cpp` (link-fail on every
-compiler that links) and `unused-missing-definition.cpp` (runs: an unused
-declaration needs no definition).
+compiler that links) and `unused-missing-definition.cpp` (runs, because
+an unused declaration needs no definition).
 
 ## Options
 

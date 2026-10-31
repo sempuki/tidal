@@ -53,9 +53,9 @@ out a part that has no content.
 | `Examples` | Code, with short comments. | No |
 | `Evidence` | Compiler results and divergences that support the rules. | No |
 
-The `Constraints` segment states a general requirement: an
-implementation rejects a program that does not obey a rule in it. A rule
-need not repeat it.
+An implementation rejects a program that does not obey a rule in the
+`Constraints` segment. A rule in that segment need not repeat this
+requirement.
 
 ## 3. Principles
 

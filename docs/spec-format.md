@@ -56,15 +56,15 @@ header of `//` directives at the top of the file controls the runner:
 | `tidal-note` | text | Free text, such as the question ID (`Q-0001`) behind an override. |
 
 A `tidal-error` pattern names the reason for the rejection in words that
-the compiler's message uses, without its quote characters: the host GCC
+the compiler's message uses, without its quote characters. The host GCC
 quotes with `‘’` and the container GCCs with `''`. Write one pattern per
 family, because the three families word their messages differently.
 `tools/run_tests.py --errors-out FILE` writes every rejecting compiler's
 messages to a JSON file, which helps when writing patterns.
 
-Every compile uses the compiler's strict C++23 mode (`-std=c++23 -pedantic-errors`
-for GCC and Clang, `--c++23 --strict` for EDG). Run tests should check their
-own results and return nonzero on failure. Prefer `static_assert` where the
+Every compile uses the compiler's strict C++23 mode (`-std=c++23
+-pedantic-errors` for GCC and Clang, `--c++23 --strict` for EDG). Run
+tests should check their own results and return nonzero on failure. Prefer `static_assert` where the
 behavior can be observed at compile time.
 
 Test code is written fresh. Don't adapt examples from any source.

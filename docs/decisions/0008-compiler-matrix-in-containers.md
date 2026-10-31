@@ -14,8 +14,8 @@ Apache-2.0 with LLVM exception, first public release 2026-09-30). It is an
 independent implementation that shares no code with Clang or GCC. MSVC is
 not available on Linux and is left out for now.
 
-Bazel is not used. The workload is thousands of
-independent single-file compiles with no dependency graph. Bazel's main
+Bazel is not used. The workload is thousands of independent
+single-file compiles with no dependency graph. Bazel's main
 benefits are caching and remote execution, and configuring Bazel C++
 toolchains for many compilers costs more than it saves at this size.
 

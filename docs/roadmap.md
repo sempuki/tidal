@@ -3,8 +3,8 @@
 This page orders the work ahead. Five clean-room roadmaps are its
 evidence, each from one view: a programmer, an implementer, an editor,
 a clean-room writer, and a language designer
-(`reports/clean-room/roadmap/`). Decisions 0033 and 0039 adopt it. Item letters refer to the writer's table, which gives
-evidence, probe counts, similarity risk, and size for each item.
+(`reports/clean-room/roadmap/`). Decisions 0033 and 0039 adopt it.
+Item letters refer to the writer's table, which gives evidence, probe counts, similarity risk, and size for each item.
 
 The order follows dependencies that Tidal's own pages show and the
 findings of the clean-room exercises. It does not follow any other

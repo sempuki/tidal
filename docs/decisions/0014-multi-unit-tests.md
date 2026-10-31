@@ -27,7 +27,7 @@ not required to catch all of them.
 
 ## Consequences
 
-- Linkage rules get direct tests: two units that define the same name show
-  whether the names refer to one entity or two.
-- `no-diagnostic` rules can show their evidence: units that each compile,
-  where linking may or may not catch the error.
+- Linkage rules get direct tests. Two units that define the same name
+  show whether the names refer to one entity or two.
+- `no-diagnostic` rules can show their evidence with units that each
+  compile, where linking may or may not catch the error.

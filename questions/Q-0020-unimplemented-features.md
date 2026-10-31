@@ -7,8 +7,8 @@
 
 Clang 18 doesn't implement `[[assume]]`. It treats it as an unknown
 attribute and ignores it, so tests that expect a rejection get an
-acceptance. This isn't a disagreement about what the language says. The
-compiler predates the feature.
+acceptance. The compiler predates the feature, so the difference says
+nothing about the language.
 
 ## Options
 

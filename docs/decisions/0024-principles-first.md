@@ -9,14 +9,12 @@ Each page presents its topic as a grammar block and a list of tested
 rules. Each rule states one behavior that the compilers show. The rules
 are accurate and well evidenced, and they give the reader no model. A
 reader who knows the language recognizes the behaviors. A reader who
-does not get nothing to predict the next behavior from. A reviewer
-described it as deriving calculus by looking at a bridge.
+does not get nothing to predict the next behavior from.
 
 The pipeline produces this shape. A probe observes one behavior, and
 the draft step turns each observation into one rule. The compilers can
 show what happens. They cannot state the principle that the behaviors
-follow from, because the principle is what the compilers were built
-from.
+follow from, because the compilers were built from that principle.
 
 ## Decision
 
@@ -59,5 +57,5 @@ the foundations chapter, and the later steps.
   behavior statements do, so the similarity check matters more for them.
   The writer builds each principle from the rules on the page, not from
   memory of any text.
-- The pipeline gets a step between classify and draft: find the model
-  that the probes' results follow from, and write it first.
+- The pipeline gets a step between classify and draft. The step finds
+  the model that the probes' results follow from and writes it first.

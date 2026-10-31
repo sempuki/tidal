@@ -39,8 +39,8 @@ whose habits are most likely to mislead it.
 | Ada | representation clauses, range checks, packages | low-level layout, interop, linkage |
 | Swift | definite initialization, optionals, value types | initialization, objects, lifetime |
 
-Predict and Diagnose batches use a neutral persona: a programmer new to
-C++.
+Predict and Diagnose batches use a neutral persona, a programmer new
+to C++.
 
 Propose uses a language designer (decision 0037). The designer knows
 what a proposal must settle and takes all of its C++ knowledge from
@@ -97,12 +97,11 @@ the tests affected. Together the four reach 47 of the 68 pages.
 `R-additive`. A batch takes the page's tests, removes every `tidal-`
 comment, and asks for one answer per program. Scoring compares the
 answer with the test's expectations. A wrong answer that cites a rule
-is a finding against that rule. Two outcomes let a reader be right
-about the hard cases: `undefined` (the program compiles and its run has
-undefined behavior) and `depends` (the compilers differ, as the spec
-records). A Diagnose batch uses only tests that
-carry a `tidal-error` pattern, and shows the reader the matching
-compiler message.
+is a finding against that rule. The outcomes `undefined` (the program
+compiles and its run has undefined behavior) and `depends` (the
+compilers differ, as the spec records) let a reader be right about the
+hard cases. A Diagnose batch uses only tests that carry a `tidal-error`
+pattern, and shows the reader the matching compiler message.
 
 `tools/exercises.py predict PAGE build/exercises/R-<name>` builds a
 Predict batch in a shuffled order and keeps its key in

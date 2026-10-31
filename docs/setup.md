@@ -14,8 +14,8 @@ the same packages under their own names.
   versions in `tests/RESULTS.md`.
 - `compiler-rt`, `libubsan`, and `libasan` are the sanitizer runtimes
   that the sanitizer tests link against (decision 0028).
-- `podman` runs the container compilers. Docker also works: set
-  `TIDAL_CONTAINER_ENGINE=docker`.
+- `podman` runs the container compilers. Docker also works when
+  `TIDAL_CONTAINER_ENGINE=docker` is set.
 
 ## Rust
 

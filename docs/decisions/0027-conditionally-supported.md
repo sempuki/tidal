@@ -5,7 +5,7 @@ Status: Accepted. Amends 0005 and 0016.
 
 ## Context
 
-Three rules described a construct that one implementation rejects and
+Four rules described a construct that one implementation rejects and
 another accepts and documents: the extended floating-point suffixes, an
 out-of-range floating literal, a multi-unit character in a plain
 character literal, and a non-trivial class passed to an ellipsis

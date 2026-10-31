@@ -13,8 +13,8 @@ Ada vocabulary.
 
 ## Decision
 
-The segment is `Runtime Behavior`. It holds the same rules: `required`
-facts about what happens during execution. All pages, the style guide,
+The segment is `Runtime Behavior`. It holds the same rules, the
+`required` facts about what happens during execution. All pages, the style guide,
 and `tools/check_spec.py` use the new name.
 
 ## Consequences

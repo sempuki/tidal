@@ -6,7 +6,7 @@ Status: Accepted
 ## Context
 
 Decision 0003 gives the similarity check to a checker who has read the ISO
-text. The check itself is mechanical: `tools/similarity.py` reads a
+text. The check itself is mechanical. `tools/similarity.py` reads a
 reference corpus and prints only Tidal text and scores. No person needs to
 read the corpus for the check to work.
 

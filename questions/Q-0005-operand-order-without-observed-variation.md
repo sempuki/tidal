@@ -18,7 +18,8 @@ either order).
 
 ## Options
 
-1. `unspecified`, on the evidence of the overloaded form. Programs must not rely on order.
+1. `unspecified`, on the evidence of the overloaded form. Programs must
+   not rely on order.
 2. `required` left to right, matching all observed behavior.
 
 ## Provisional answer

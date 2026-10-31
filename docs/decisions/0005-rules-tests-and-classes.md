@@ -27,6 +27,6 @@ Format details are in `docs/spec-format.md`. The process is in
   A future reviewer can audit coverage by reading tests alone.
 - `undefined`, `unspecified`, and `no-diagnostic` rules can only be supported
   indirectly (constant evaluation, sanitizers, variation). Their tests show
-  evidence, not proof.
+  evidence and do not prove the rule.
 - The structure (rule IDs, classes) is Tidal's own and does not follow ISO
   numbering or stable names.

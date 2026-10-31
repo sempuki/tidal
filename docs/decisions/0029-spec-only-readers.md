@@ -38,7 +38,7 @@ spec" findings, and those findings help decide what to specify next.
 
 Reports go under `reports/spec-only/`. They pass the similarity check
 before a writer uses them, as review summaries do (decision 0019). A
-writer treats each finding as a question for the pipeline: a probe
+writer treats each finding as a question for the pipeline, and a probe
 decides any claimed behavior.
 
 ## Consequences

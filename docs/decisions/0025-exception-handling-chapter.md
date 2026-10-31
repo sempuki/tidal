@@ -40,5 +40,5 @@ says so.
 - The references that other pages mark *(referenced)* for exceptions
   resolve to these pages once they are drafted.
 - `noexcept` as part of a function type stays on the exception
-  specifications page. What happens when an exception leaves such a
-  function is on the unwinding page.
+  specifications page. The unwinding page covers an exception that
+  leaves such a function.

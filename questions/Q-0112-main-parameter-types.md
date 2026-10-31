@@ -17,8 +17,7 @@ A program defines `main` with a first parameter of type `long` instead of
 
 Option 2, as FN-6 states it: an implementation accepts `()` and
 `(int, char**)`, and decides about other parameter lists. Clang and GCC
-reject a first parameter of type `long`, and EDG accepts it. TR-3 used
-to require option 1, which contradicted FN-6; the clean-room front end
-found the contradiction (`reports/clean-room/rust-frontend/`, F16).
+reject a first parameter of type `long`, and EDG accepts it. TR-3
+agrees with FN-6 (`reports/clean-room/rust-frontend/`, F16).
 
 ## Opinions

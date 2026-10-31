@@ -82,13 +82,15 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. Every page
 opens with its principles (decision 0024), and the Foundations chapter
-holds the models that the other pages cite. The latest similarity report, covering every page, is
+holds the models that the other pages cite. The latest similarity
+report, covering every page, is
 `reports/similarity/2026-10-31-types.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 3199/3199 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3199/3199 tests pass on each. Tests may
+span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -106,8 +108,8 @@ Full results are in `tests/RESULTS.md`.
 
 One hundred and eighteen questions are open for opinions, each with a
 provisional answer the spec follows. Nine of them have the status
-"compiler defect": their answer is that one compiler or an older version
-is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
+"compiler defect". Their answer is that one compiler or an older
+version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
 Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -145,7 +147,8 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Topics in scope with no page yet
 
-None. Each topic from the gap reviews (`reports/review/`) has a page. Exception handling is a later chapter (decision 0023). The
+None. Each topic from the gap reviews (`reports/review/`) has a page.
+Exception handling is a later chapter (decision 0023). The
 forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
@@ -160,7 +163,7 @@ current phase is phase 2, foundations that later pages need:
    nonterminal an error.
 3. Item G1: keywords, reserved names, and the literal suffix grammar.
 4. Item K: the language-support types, then the task-level guides.
-5. Act on the findings of Propose exercises X1 to X4
+5. Act on the findings of exercises X1 to X4
    (`reports/clean-room/X1/` to `X4/`). The most cited gaps: a list of
    implicit calls (X2-1), what default initialization does to a class
    (X3-1), the state of an object whose declaration a jump skips
@@ -188,5 +191,6 @@ typical of a simple operator family.
   that size each.
 
 That totals about 66 section-units. Drafting one unit takes one working
-session for the clean-room writer. Review and adjudication are not included and are
-expected to dominate once reviewers are involved.
+session for the clean-room writer. The estimate excludes review and
+adjudication, which are expected to dominate once reviewers are
+involved.

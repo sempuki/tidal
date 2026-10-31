@@ -5,7 +5,7 @@ Status: Accepted.
 
 ## Context
 
-420 tests that expect a rejection cite only `required` rules: 175 rules
+420 tests that expect a rejection cite only `required` rules. 175 rules
 state a prohibition ("must not", "is not valid") inside a rule whose
 class says nothing about diagnosing it. The clean-room front end could
 not tell from a rule's class what to reject (F15), and the editor's

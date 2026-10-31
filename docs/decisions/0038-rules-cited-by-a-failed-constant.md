@@ -20,8 +20,8 @@ matches some tests and not others. The clean-room front end found this
 ## Decision
 
 - A test of a failed constant cites the cause rule.
-- It can also cite the context rule. It must, when the context rule is
-  what the test is about.
+- It can also cite the context rule. It must cite it when the test is
+  about the context rule.
 - A checker that names the cause rule, or both rules, matches the test.
 
 ## Consequences

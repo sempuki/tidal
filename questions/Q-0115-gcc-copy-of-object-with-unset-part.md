@@ -10,7 +10,7 @@ set it. A `constexpr` function makes an object of the class, copies it,
 and returns a member that has a value. Clang and EDG reject the
 evaluation and say that the copy reads the member with no value. GCC 14
 and 16 accept it. The same holds for an array member with elements that
-have no value, which is the case a clean-room programmer found (W0 F2).
+have no value (W0 F2).
 
 Every compiler rejects a read of the unset member itself (OBJ-2) and a
 constant whose value has an unset part (CE-21).
