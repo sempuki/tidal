@@ -172,4 +172,6 @@ parser from the Syntax segments, `reject` checks, constant evaluation
 for `static_assert`) and asks for findings of kind missing, ambiguous,
 contradictory, grammar gap, untestable, outside the spec, or needs
 example. The reader may also read `tests/` and `questions/`, and writes
-only in `frontend/` and its report directory.
+only in `frontend/` and its report directory. It can use any Rust crate
+that does not encode knowledge of C++, and it covers the pages that are
+new or changed (decision 0035).

@@ -1,8 +1,9 @@
 # tidal-fe
 
-A hobby C++ front end written in Rust from the Tidal specification. It
-checks programs and does not generate code. It uses only the Rust standard
-library.
+A C++ front end written in Rust from the Tidal specification, to exercise
+the specification. It
+checks programs and does not generate code. It can use any crate that does
+not encode knowledge of C++ (decision 0035).
 
 ## Build
 

@@ -1,7 +1,7 @@
 # 0029. Spec-only readers and a spec-only front end
 
 Date: 2026-10-31
-Status: Accepted. Extends 0019.
+Status: Accepted. Extends 0019. Amended by 0035.
 
 ## Context
 
