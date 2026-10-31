@@ -114,3 +114,16 @@ Update `docs/status.md`: the section's rule and test counts, open
 divergences, open similarity flags, and next steps. If the pipeline itself
 needs to change, change this document and record the reason in a decision
 record.
+
+## Checks on finished pages
+
+These run across pages, outside the per-section steps.
+
+- **Gap review.** A source reader compares Tidal with the reference
+  material and reports gaps in prose (decision 0019). Each gap becomes a
+  probe.
+- **Spec-only exercises.** Readers who use only Tidal's files write
+  programs, predict test outcomes, or build the front end in
+  `frontend/`, and report where the text was not enough (decisions 0029
+  and 0030, `docs/exercises.md`). Each finding becomes a probe or an
+  edit, and the similarity check runs on the report first.
