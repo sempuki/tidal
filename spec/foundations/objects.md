@@ -142,8 +142,9 @@ the lifetime of the reference (REF-4).
 :kind: required
 :tests: foundations/objects/temporary-ends-with-full-expression.cpp
 
-A temporary object is destroyed at the end of the full expression that
-created it, after the call that used it returns (VC-6).
+A temporary lives while its full expression is evaluated and no longer.
+A function that takes the temporary by reference returns first, and the
+temporary ends after that (VC-6).
 :::
 
 ## Undefined Behavior

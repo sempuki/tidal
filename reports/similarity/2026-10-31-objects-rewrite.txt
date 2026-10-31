@@ -1,0 +1,22 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   objects.md:Objects, storage, and lifetime longest=0   overlap=0.03
+ok   OBJ-P1                           longest=0   overlap=0.01
+ok   OBJ-P2                           longest=0   overlap=0.01
+ok   OBJ-P3                           longest=0   overlap=0.02
+ok   OBJ-P4                           longest=0   overlap=0.00
+ok   OBJ-1                            longest=0   overlap=0.00
+ok   OBJ-3                            longest=0   overlap=0.06
+ok   OBJ-4                            longest=0   overlap=0.04
+ok   OBJ-5                            longest=0   overlap=0.00
+ok   OBJ-6                            longest=0   overlap=0.06
+ok   OBJ-7                            longest=0   overlap=0.03
+ok   OBJ-8                            longest=0   overlap=0.07
+ok   OBJ-9                            longest=0   overlap=0.00
+ok   OBJ-2                            longest=0   overlap=0.06
+ok   OBJ-10                           longest=0   overlap=0.03
+ok   OBJ-11                           longest=0   overlap=0.00
+ok   objects.md:Examples              longest=0   overlap=0.00
+ok   objects.md:Evidence              longest=0   overlap=0.00
+
+0 flagged
