@@ -89,6 +89,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0076](Q-0076-c-linkage-variable-main.md) | Can main, or a variable named main, have C language linkage? | provisional | option 1 |
 | [Q-0077](Q-0077-throw-empty-specification.md) | Is throw() a valid exception specification? | provisional | option 1 |
 | [Q-0078](Q-0078-noexcept-operand-narrowing.md) | Can the operand of noexcept narrow when it is converted to bool? | provisional | option 1 |
+| [Q-0079](Q-0079-noexcept-operand-cycle.md) | Must an implementation diagnose a noexcept operand that depends on itself? | provisional | option 1 |
 
 ## Status values
 
