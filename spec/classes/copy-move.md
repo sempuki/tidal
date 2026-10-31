@@ -69,7 +69,9 @@ cv-qualifiers. A *move assignment operator* has one parameter of type
 :kind: reject
 :tests: classes/copy-move/copy-assign-nonmember.cpp classes/copy-move/copy-assign-static.cpp
 
-`operator=` must be a non-static member function.
+A class declares its assignment operators inside its own definition. An
+assignment operator declared at namespace scope or as `static` is not
+valid.
 :::
 
 :::{rule} CPY-4
