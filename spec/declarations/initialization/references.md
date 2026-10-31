@@ -13,8 +13,9 @@ function. This page covers:
 :rules: REF-1 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
 
 A reference is a name for an existing object or function
-({principle}`OBJ-P3`), and the binding gives it that object. What a
-reference accepts follows from what it may do with its referent.
+({principle}`OBJ-P3`), and the binding gives it that object. The
+expressions that a reference accepts follow from what it may do with its
+referent.
 
 | Reference | What it may do | Binds to |
 |---|---|---|

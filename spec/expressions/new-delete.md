@@ -50,9 +50,9 @@ one, so that the implementation knows which destructor to run.
 The storage comes from an allocation function, and a program can
 supply its own: for one class, through its member `operator new` and
 `operator delete`, or with extra placement arguments. `::new` reaches
-past a class's own functions to the global ones. How often the global
-functions are called is the implementation's choice, because a program
-only ever sees the objects, so two `new` expressions may share one
+past a class's own functions to the global ones. The implementation
+chooses how often the global functions are called, because a program
+only ever sees the objects. So two `new` expressions may share one
 allocation.
 :::
 

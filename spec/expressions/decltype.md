@@ -16,10 +16,9 @@ Depends on: primary expressions, value categories, unary operators.
 :::{principle} DTY-P1
 :rules: DTY-1 DTY-2 DTY-4
 
-`decltype` answers one of two questions, and the parentheses choose
-which. For a plain name it reports the declared type of the entity. For
-any other expression, including a name in parentheses, it reports the
-type of the expression marked with its value category
+For a plain name, `decltype` reports the declared type of the entity.
+For any other expression, including a name in parentheses, it reports
+the type of the expression marked with its value category
 ({principle}`VC-P1`).
 
 | Operand | Result |
@@ -31,7 +30,7 @@ type of the expression marked with its value category
 
 A plain name gives the declared type because that is what the
 programmer meant by the name. An overloaded function name has no
-single type, so it fits neither question.
+single type, so it fits neither case.
 :::
 
 :::{principle} DTY-P2
@@ -39,16 +38,15 @@ single type, so it fits neither question.
 :exceptions: DTY-5
 
 The result of `decltype` is a type, so it can stand wherever a type name
-can stand, including inside a qualified name. The one place it cannot
-stand is the qualified name of a declaration, where the name must be
-written out.
+can stand, including inside a qualified name. It cannot stand in the
+qualified name of a declaration, where the name must be written out.
 :::
 
 :::{principle} UNEV-P1
 :rules: UNEV-1 UNEV-4 UNEV-5
 
-Some operands exist only to be asked about. The operands of `decltype`,
-`sizeof`, and `noexcept` are never evaluated. So they:
+The operands of `decltype`, `sizeof`, and `noexcept` exist only to be
+asked about, and they are never evaluated. So they:
 
 - cause no side effect,
 - need no definition for what they name,
@@ -68,8 +66,8 @@ implementation should say so.
 :::{principle} UNEV-P2
 :rules: UNEV-2 UNEV-3 UNEV-6
 
-A discarded value is the opposite case. The expression is evaluated in
-full and its result is dropped, so its effects are the point.
+A discarded value is evaluated in full, unlike an unevaluated operand.
+Its result is dropped, and only its effects matter.
 
 - A class prvalue becomes a temporary and is destroyed at once.
 - A glvalue is not copied.

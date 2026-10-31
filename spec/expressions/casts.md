@@ -36,31 +36,30 @@ The older cast notations are defined by the named casts.
 | `auto(e)` | A plain prvalue copy |
 | `T()` | A value-initialized prvalue |
 
-The one power the old notation keeps for itself is a conversion to or
-from a base that is not accessible.
+Only the old notation can convert to or from a base that is not
+accessible.
 :::
 
 :::{principle} CAST-P3
 :rules: CAST-6 CAST-8 CAST-12 CAST-16
 
 `reinterpret_cast` promises only that a round trip gives back the
-original value. What the bits mean in between is the implementation's,
-so the integer that a pointer becomes, and whether a function pointer
-can become an object pointer at all, are implementation-defined, and
-constant evaluation refuses the cast because it has no bits to show.
+original value. The implementation decides what the bits mean in
+between. So the integer that a pointer becomes, and whether a function
+pointer can become an object pointer at all, are implementation-defined.
+Constant evaluation refuses the cast because it has no bits to show.
 :::
 
 :::{principle} CAST-P4
 :rules: CAST-5 CAST-14
 
 A cast changes the type through which an object is seen, and never the
-object. So these uses are all undefined:
+object. So in these uses the cast is valid, and the use of its result
+is undefined:
 
 - writing through a `const_cast` to an object that is `const`,
 - treating an object as a derived class that it is not,
 - giving an enumeration a value it cannot hold.
-
-The cast was valid; the use of its result was not.
 :::
 
 ## Syntax

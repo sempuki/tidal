@@ -26,13 +26,13 @@ Depends on: value categories, standard conversions.
 :rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10 PRIM-24
 
 A literal is a value written in the source. Its spelling alone decides
-its type and its value, and no context changes them. The base and the
-suffix of an integer literal are the whole story: the literal gets the
-first type in a fixed list that can hold it, so a literal never loses
-part of its value in silence, and a literal that no type in its list can
-hold is rejected for the same reason. A spelling that fits none of the
-forms is rejected, because a literal has no other meaning to fall back
-on. `true`, `false`, and `nullptr` are literals of their own types.
+its type and its value, and no context changes them. For an integer
+literal, the base and the suffix fix a list of types, and the literal
+gets the first type in that list that can hold it. So a literal never
+loses part of its value in silence, and a literal that no type in its
+list can hold is rejected for the same reason. A spelling that fits none
+of the forms is rejected, because a literal has no other meaning to fall
+back on. `true`, `false`, and `nullptr` are literals of their own types.
 :::
 
 :::{principle} PRIM-P5
@@ -41,31 +41,32 @@ on. `true`, `false`, and `nullptr` are literals of their own types.
 A floating literal is `double` unless a suffix says otherwise, and a
 hexadecimal one needs an exponent, because without it the spelling could
 be an integer. A character literal's prefix sets its type, and the
-literal must hold one character of that type: one with no character, or
-one that does not fit a single code unit, is rejected.
+literal must hold one character of that type. A literal with no
+character, or with one that does not fit a single code unit, is
+rejected.
 :::
 
 :::{principle} PRIM-P2
 :rules: PRIM-7 PRIM-19 PRIM-8 PRIM-9
 
-A string literal is unlike the other literals. It denotes an array
-object that lives for the whole program, so it is an lvalue, with an
-address and a size that counts the terminating null. Its characters are
+Unlike the other literals, a string literal denotes an array object
+that lives for the whole program. So it is an lvalue, with an address
+and a size that counts the terminating null. Its characters are
 constant, and writing to them is undefined. Adjacent literals join into
-one array because they spell one value. Whether two equal spellings
-share one object is left to the implementation, because a program has
-no reason to ask.
+one array because they spell one value. The implementation decides
+whether two equal spellings share one object, because a program has no
+reason to ask.
 :::
 
 :::{principle} PRIM-P3
 :rules: PRIM-11 PRIM-20 PRIM-12 PRIM-14 PRIM-25
 
-A name is not a value. It denotes the entity that lookup finds
-({principle}`NAM-P2`), and its value category follows from what that
-entity is ({principle}`VC-P1`): a variable or function is an lvalue, an
-enumerator a prvalue. Inside a member function, a bare member name means
-the member of the current object, and `this` is a prvalue pointer to
-that object with the qualifiers of the function. Where there is no
+A name denotes the entity that lookup finds ({principle}`NAM-P2`), and
+its value category follows from what that entity is
+({principle}`VC-P1`). A variable or function is an lvalue, and an
+enumerator is a prvalue. Inside a member function, a bare member name
+means the member of the current object, and `this` is a prvalue pointer
+to that object with the qualifiers of the function. Where there is no
 current object, there is no `this`. Parentheses group and change nothing
 else.
 :::

@@ -8,9 +8,9 @@ leave it. It is part of the function type. This page covers:
 - overriding,
 - the functions that are `noexcept` without the keyword.
 
-What happens when an exception does leave a `noexcept` function belongs
-with exception handling ({rule}`THR-9`). DCL-14 and CONV-10 give the rules
-for redeclarations and pointer conversions.
+The rules for exception handling give the behavior when an exception
+does leave a `noexcept` function ({rule}`THR-9`). DCL-14 and CONV-10
+give the rules for redeclarations and pointer conversions.
 
 Depends on: declarators, standard conversions, virtual functions,
 constructors and destructors, constant expressions.
@@ -20,8 +20,8 @@ constructors and destructors, constant expressions.
 :::{principle} EXS-P1
 :rules: EXS-1 EXS-7 EXS-2 EXS-8
 
-A `noexcept` specifier is part of the function's type, and the type is
-what travels through:
+A `noexcept` specifier is part of the function's type, so it travels
+with the type through:
 
 - type aliases,
 - pointers,
@@ -61,9 +61,9 @@ implementation writes gets its specifier from the functions it calls.
 :::{principle} EXS-P4
 :rules: EXS-5 EXS-6
 
-Two points are left open. An implementation can accept the old `throw()`
-form as `noexcept`. And an operand that refers to the function it
-qualifies is a cycle that an implementation need not detect.
+An implementation can accept the old `throw()` form as `noexcept`. An
+operand that refers to the function it qualifies is a cycle that an
+implementation need not detect.
 :::
 
 ## Syntax

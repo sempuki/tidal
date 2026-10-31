@@ -9,11 +9,10 @@ or to the right.
 :rules: SHF-1 SHF-2 SHF-3 SHF-4
 
 A shift moves the bits of an integer, so both operands are integers or
-unscoped enumerations, and nothing else. The right operand is a count,
-not a value to combine with the left one. So the two operands do not
-become one common type: each is promoted on its own, and the result has
-the promoted type of the left operand alone, as a prvalue
-({principle}`VC-P1`).
+unscoped enumerations, and nothing else. The right operand is only a
+count. So the two operands do not become one common type. Each is
+promoted on its own, and the result has the promoted type of the left
+operand alone, as a prvalue ({principle}`VC-P1`).
 :::
 
 :::{principle} SHF-P2

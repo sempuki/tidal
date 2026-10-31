@@ -10,8 +10,8 @@ function call ({rule}`OPR-7`).
 :rules: MUL-1 MUL-2 MUL-3 MUL-4 MUL-5 MUL-15 MUL-19
 
 The multiplicative operators compute on numbers, so their operands are
-the types that hold numbers: the arithmetic types and the unscoped
-enumerations, which convert to integers. Nothing else is a number here.
+the arithmetic types and the unscoped enumerations, which convert to
+integers. Nothing else is a number here.
 These are rejected:
 
 - a pointer,
@@ -21,8 +21,8 @@ These are rejected:
 
 Before the operation, the two operands become one common type through
 the {term}`usual arithmetic conversions`, and the result is a prvalue
-of that type ({principle}`VC-P1`). Which type is common can depend on
-the sizes of the integer types, which each implementation chooses. `%`
+of that type ({principle}`VC-P1`). The common type can depend on the
+sizes of the integer types, which each implementation chooses. `%`
 works on whole numbers only, because a remainder of a floating-point
 division has no single meaning.
 :::

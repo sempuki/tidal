@@ -31,7 +31,8 @@ scope that contains it, so no other entity there can have that name.
 :::{principle} NS-P2
 :rules: NS-3 NS-12 NS-4 NS-13
 
-Two kinds of namespace lend their members to the enclosing namespace.
+An `inline` namespace and an unnamed namespace lend their members to
+the enclosing namespace.
 
 | Namespace | Lends its members | Result |
 |---|---|---|
@@ -46,8 +47,9 @@ the other.
 :::{principle} NS-P3
 :rules: NS-7 NS-16 NS-8 NS-17 NS-9
 
-There are two ways to use a namespace's names without qualification,
-and they differ in strength.
+A using declaration and a using directive both let a program use a
+namespace's names without qualification. The using declaration is the
+stronger of the two.
 
 | | Using declaration | Using directive |
 |---|---|---|

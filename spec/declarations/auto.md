@@ -31,7 +31,8 @@ of the value that the initializer produces.
 :::{principle} AUTO-P2
 :rules: AUTO-3 AUTO-18 AUTO-4 AUTO-5 AUTO-19 AUTO-13 AUTO-16
 
-What the declaration writes around `auto` applies to the deduced type.
+Anything that the declaration writes around `auto` applies to the
+deduced type.
 
 | Written around `auto` | Effect |
 |---|---|

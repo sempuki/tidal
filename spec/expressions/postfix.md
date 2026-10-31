@@ -31,9 +31,9 @@ an `explicit` constructor does not take part. The call's result has the
 category of what the function returns: a reference gives an lvalue or
 an xvalue, and a value gives a prvalue. Calling through a pointer calls
 the function it points at, with or without `*`. A null function pointer
-points at no function, so the call is undefined. Whether a class with
-its own copy or destruction can go through an ellipsis is each
-implementation's choice.
+points at no function, so the call is undefined. Each implementation
+chooses whether a class with its own copy or destruction can go through
+an ellipsis.
 :::
 
 :::{principle} PFX-P3
@@ -44,16 +44,16 @@ access through a pointer. The object expression is always evaluated,
 even for a static member. The member keeps the object's category and
 cv-qualifiers, so a member of a prvalue is an xvalue and a member of a
 `const` object is `const` unless it is `mutable` or a reference. A
-member function reached this way is only good for one thing, a call,
-and a call needs complete types for what it passes and returns.
+member function reached this way can only be called, and a call needs
+complete types for what it passes and returns.
 :::
 
 :::{principle} PFX-P4
 :rules: PFX-12 PFX-13
 
 Postfix `++` and `--` change the object like the prefix forms (UN-P3),
-with one difference: the result is the old value, as a prvalue, so the
-operand's limits are the same and the result cannot be changed.
+except that the result is the old value, as a prvalue. So the operand's
+limits are the same and the result cannot be changed.
 :::
 
 ## Syntax

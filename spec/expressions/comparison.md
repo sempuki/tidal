@@ -58,15 +58,14 @@ Pointers have an order only inside one thing:
 | Elements of one array | Index order, with the position past the end last |
 | Members of one object | Declaration order |
 
-Outside one thing there is no order, so a
-relational comparison of pointers to unrelated objects gives an
-unspecified result, and the two directions need not even agree. Equality
-is different. Two pointers are equal when they hold one address, which
-happens for different objects too, for example an object and its first
-member. A pointer past the end of one object can hold the address of
-the next object in memory, and whether that compares equal is
-unspecified. Two pointers to members are equal when they select the same
-member of the same subobject.
+Outside one thing there is no order, so a relational comparison of
+pointers to unrelated objects gives an unspecified result, and the two
+directions need not even agree. Two pointers are equal when they hold
+one address, which happens for different objects too, for example an
+object and its first member. A pointer past the end of one object can
+hold the address of the next object in memory, and whether that compares
+equal is unspecified. Two pointers to members are equal when they select
+the same member of the same subobject.
 :::
 
 :::{principle} CMP-P4

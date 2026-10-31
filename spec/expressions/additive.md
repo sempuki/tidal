@@ -9,7 +9,7 @@ into the same array.
 :::{principle} ADD-P1
 :rules: ADD-1 ADD-2 ADD-3 ADD-4
 
-`+` and `-` have three jobs, one for each of these operand forms:
+The operand forms select what `+` and `-` do:
 
 | Operands | Job | Result |
 |---|---|---|

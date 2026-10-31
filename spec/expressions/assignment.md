@@ -29,8 +29,8 @@ so the class decides what its left operand can be.
 :::{principle} ASN-P2
 :rules: ASN-5 ASN-9 ASN-11 ASN-13
 
-A compound assignment `E1 op= E2` means `E1 = E1 op E2`, with one
-difference: `E1` is evaluated once. The read, the operation, and the
+A compound assignment `E1 op= E2` means `E1 = E1 op E2`, except that
+`E1` is evaluated once. The read, the operation, and the
 write are one evaluation. A function call `f()` that is unordered with
 it runs before the read or after the write:
 

@@ -20,8 +20,8 @@ function, and it is the function's only definition.
 :rules: DEL-4
 
 `= default` asks the implementation for its own version of a function.
-Only the functions the implementation knows how to write can be
-defaulted: the special members and the comparison operators.
+Only the special members and the comparison operators can be
+defaulted, because the implementation knows how to write them.
 :::
 
 ## Constraints

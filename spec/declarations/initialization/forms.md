@@ -31,8 +31,8 @@ assigns one ({principle}`OBJ-P4`).
 :::{principle} INIT-P3
 :rules: INIT-3 INIT-6
 
-Two facts about form. Empty parentheses after a name declare a function,
-because the grammar reads them as a parameter list. Declarators in one
+Empty parentheses after a name declare a function, because the grammar
+reads them as a parameter list. Declarators in one
 declaration are initialized from left to right.
 :::
 

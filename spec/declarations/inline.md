@@ -22,7 +22,7 @@ definitions and members.
 
 `inline` means that each translation unit that uses an entity defines
 it, and that all the definitions are one entity ({principle}`STO-P4`).
-Everything else follows.
+These rules follow from that.
 
 - A unit that uses the entity must define it, because no other unit's
   definition is promised. A unit that does not use it need not.
@@ -45,7 +45,7 @@ inline function once.
 :::{principle} INL-P3
 :rules: INL-3 INL-4 INL-8
 
-What is defined inside a class body is meant to be seen in every unit
+A definition inside a class body is meant to be seen in every unit
 that sees the class, so it is inline without the keyword:
 
 - member and friend functions defined there,

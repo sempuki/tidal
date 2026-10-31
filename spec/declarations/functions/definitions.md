@@ -34,7 +34,7 @@ function returns or when the caller's full expression ends.
 
 A function that promises a value must return one. If control reaches
 the end of its body, there is no value, and the behavior is undefined.
-`main` is the one exception: reaching its end returns zero.
+As an exception, reaching the end of `main` returns zero.
 :::
 
 :::{principle} FN-P4

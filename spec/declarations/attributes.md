@@ -25,9 +25,9 @@ This page covers these standard attributes:
 An attribute attaches information to a declaration, a statement, or a
 type, in a form that an implementation can skip. The double brackets
 make an attribute specifier, several attributes can share one, and an
-attribute that the implementation does not know is ignored. The
-standard attributes are not skippable in this sense: each has a fixed
-set of arguments and a fixed set of places where it can go.
+attribute that the implementation does not know is ignored. Each
+standard attribute has a fixed set of arguments and a fixed set of
+places where it can go, so it is not skippable in this sense.
 :::
 
 :::{principle} ATTR-P2
@@ -38,15 +38,14 @@ A standard attribute does not change what a valid program does.
 - A likelihood hint changes nothing.
 - A dependency hint changes nothing in a single thread.
 - An assumption is not evaluated, so its side effects never occur.
-- The one attribute that can change a program's layout is
-  `no_unique_address`, and even it keeps two members of one type at
-  different addresses.
+- Only `no_unique_address` can change a program's layout, and even it
+  keeps two members of one type at different addresses.
 :::
 
 :::{principle} ATTR-P3
 :rules: ATTR-3 ATTR-10
 
-Two attributes are promises that the program makes to the
+`noreturn` and `assume` are promises that the program makes to the
 implementation. `noreturn` promises that a call never returns, and
 `assume` promises that an expression is true. The implementation can
 rely on a promise, so a broken promise has no defined behavior.

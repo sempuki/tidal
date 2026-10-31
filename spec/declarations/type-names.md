@@ -25,7 +25,7 @@ applies to what it names. It is an ordinary name in an ordinary scope
 - is declared once per scope,
 - can be declared again only to say the same thing.
 
-The one thing an alias can give a type is a name for linkage, when the
+An alias can give a type only a name for linkage, and only when the
 type is an unnamed class with nothing in it that needs a name of its
 own.
 :::

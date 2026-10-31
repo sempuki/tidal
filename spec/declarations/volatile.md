@@ -35,8 +35,8 @@ remove it, so a volatile object is reached only through volatile
 references, pointers, and member functions. The implicit copy functions
 take a `const` reference, which does not bind to a volatile object, so
 a class that wants to be copied while volatile declares functions that
-say so. A constructor and a destructor are never volatile: the object is
-volatile only once it exists.
+say so. A constructor and a destructor are never volatile, because the
+object is volatile only once it exists.
 :::
 
 :::{principle} VOL-P3

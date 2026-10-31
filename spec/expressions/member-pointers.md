@@ -19,8 +19,8 @@ virtual functions.
 :rules: MPTR-1 MPTR-8 MPTR-2 MPTR-9
 
 A pointer to member names a member without naming an object. Its type
-therefore records two things, the class and the type of the member, and
-the class can be incomplete because nothing is accessed through the type
+therefore records the class and the type of the member, and the class
+can be incomplete because nothing is accessed through the type
 alone. Only a non-static member can be named this way. A static member
 is an ordinary object or function, so `&` on it gives an ordinary
 pointer, and so does a member function with an explicit object

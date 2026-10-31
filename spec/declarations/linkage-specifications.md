@@ -17,8 +17,8 @@ definitions.
 :rules: LSP-1 LSP-2 LSP-3
 
 A linkage specification labels declarations with the language whose
-calling and naming conventions they use. It is a label and not a scope,
-so its braces hide nothing, and a declaration inside it means what it
+calling and naming conventions they use. It does not make a scope, so
+its braces hide nothing, and a declaration inside it means what it
 would mean outside. It labels functions and variables at namespace
 scope, and nothing else. The form without braces behaves as `extern`
 does.
@@ -37,9 +37,9 @@ the linker would see one symbol.
 :::{principle} LSP-P3
 :rules: LSP-5 LSP-6
 
-Two choices stay with the implementation: the set of languages beyond
-C and C++ that it can link with, and whether a function's type records
-the language it is linked as. A program that must work everywhere treats
+The implementation chooses the set of languages beyond C and C++ that
+it can link with. It also chooses whether a function's type records the
+language it is linked as. A program that must work everywhere treats
 a pointer to a C function as a type of its own.
 :::
 

@@ -29,8 +29,8 @@ happens.
 :::{principle} LAM-P2
 :rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-18 LAM-24
 
-Captures are how the closure reaches the automatic variables of the
-enclosing function.
+The closure reaches the automatic variables of the enclosing function
+through its captures.
 
 | Capture | What the closure holds |
 |---|---|
@@ -160,8 +160,8 @@ other mode.
 A capture list must obey these rules:
 
 - Each name occurs at most once.
-- An explicit capture must not use the same mode as the default. `this`
-  is an exception: `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
+- An explicit capture must not use the same mode as the default. As
+  exceptions, `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
 - Only a variable with {term}`automatic storage` can be captured.
 - A lambda outside a function must not have a capture default, except in
   a default member initializer.
