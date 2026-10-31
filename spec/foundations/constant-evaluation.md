@@ -4,6 +4,65 @@ A constant expression is an expression that the implementation evaluates
 during translation. {term}`Constant evaluation <constant evaluation>`
 permits most operations. This page lists the operations that it rejects.
 
+## Principles
+
+:::{principle} CE-P1
+:rules: CE-1 CE-17 CE-18
+
+Constant evaluation is the same program run at translation time
+({principle}`TR-P4`). Within one evaluation it can do what a run can do:
+arithmetic, loops, calls, virtual calls, changes to the objects it has
+made, and allocation. A function is not rejected for containing a
+construct that constant evaluation cannot handle. It is rejected only
+when an evaluation reaches that construct, so a function can serve both
+modes. A reference whose object the evaluation does not know is a
+problem only when the evaluation reads through it.
+:::
+
+:::{principle} CE-P2
+:rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16
+
+An evaluation is closed. It can use only what translation already
+knows: functions declared `constexpr` or `consteval` and defined before
+the evaluation, variables whose values are fixed at translation time,
+and objects that the evaluation itself created. It can change only its
+own objects, because anything else exists at run time. Its result must
+outlive it, so it cannot be a pointer to an automatic or temporary
+object, and storage that the evaluation allocated must be freed before
+the evaluation ends.
+:::
+
+:::{principle} CE-P3
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15
+
+An evaluation must give one answer that every implementation can agree
+on. So it rejects every operation whose result depends on the machine
+or on an order the language does not fix: reinterpreting a pointer,
+reading a volatile object, reading a union member that is not active,
+comparing the addresses of string literals, ordering pointers to
+unrelated objects, and any operation that is undefined. An exception
+has no handler at translation time, so a `throw` that the evaluation
+reaches ends it.
+:::
+
+:::{principle} CE-P4
+:rules: CE-11
+
+Where the language needs a constant to build the program, it needs the
+exact value: an array bound, an enumerator, a case label, the operands
+of `explicit` and `noexcept`. A conversion that could lose information
+is not a constant there. The condition of `if constexpr` is the one
+place that only needs a yes or no.
+:::
+
+:::{principle} CE-P5
+:rules: CE-10
+
+An evaluation runs on the translator, so it has limits that a run does
+not. The depth of recursion and the number of steps that an
+implementation permits are its own to set and document.
+:::
+
 ## Constraints
 
 :::{rule} CE-1

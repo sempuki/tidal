@@ -5,6 +5,53 @@ an initialization, or a call needs that type. This page covers the
 conversions between arithmetic types, to `bool`, and between pointer
 types.
 
+## Principles
+
+:::{principle} CONV-P1
+:rules: CONV-1 CONV-13
+
+An operand takes the shape that the operation needs before the operation
+sees it. An integer narrower than `int` becomes an `int`, and for a
+bit-field the width decides, because the width is what the value can
+hold. An array used as a value becomes a pointer to its first element,
+and a function name becomes a pointer to the function, because the
+operations on values have no use for an array or a function itself. A
+`float` keeps its type, because arithmetic on `float` is an operation of
+its own.
+:::
+
+:::{principle} CONV-P2
+:rules: CONV-2 CONV-3 CONV-4 CONV-6 CONV-5 CONV-7 CONV-11
+:exceptions: CONV-12
+
+A conversion between arithmetic types keeps the value when the target
+type can hold it. When it cannot, each family has its own answer. An
+integer target keeps the low bits of the value, so the result is the
+value modulo the target's range, for signed and unsigned targets alike.
+A floating-point target that cannot hold the value exactly takes one of
+the two nearest values, and a value beyond its range becomes the largest
+finite value or infinity, by the implementation's choice. An integer
+target of a floating-point value takes the value with its fraction
+dropped, and if that value does not fit, there is no answer, so the
+behavior is undefined. A conversion to `bool` asks one question, zero
+or not zero, and a null pointer counts as zero.
+:::
+
+:::{principle} CONV-P3
+:rules: CONV-8 CONV-9 CONV-10 CONV-14 CONV-15 CONV-16 CONV-17
+
+A pointer converts implicitly only in the direction that loses no
+safety: toward `void`, toward a base class, toward more cv-qualifiers at
+every level, toward a function type without `noexcept`, toward a pointer
+to member of a derived class, and from an array of known bound to one of
+unknown bound. Each reverse direction would claim something the pointer
+cannot promise, so none of them is implicit. A null pointer comes only
+from `nullptr` or a literal zero, because any other value with the value
+zero is a number, and a number is not a pointer. Through a base that is
+virtual, ambiguous, or not accessible, there is no single path, so no
+implicit conversion.
+:::
+
 ## Constraints
 
 :::{rule} CONV-1

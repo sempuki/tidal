@@ -3,6 +3,48 @@
 The `break`, `continue`, `return`, and `goto` statements transfer
 control. A label names a statement that `goto` can transfer control to.
 
+## Principles
+
+:::{principle} JMP-P1
+:rules: JMP-1 JMP-2 JMP-5 JMP-7 JMP-8
+
+A jump statement names a place and goes there, and the place must exist
+in the same function. `break` goes past the innermost loop or `switch`,
+`continue` to the end of the innermost loop body, and `goto` to a label.
+A label belongs to the whole function and to no other name space
+({principle}`NAM-P4`), so a `goto` can name a label that comes later,
+and a label can share a name with a variable. A lambda body is a
+different function, so a jump cannot cross its boundary in either
+direction.
+:::
+
+:::{principle} JMP-P2
+:rules: JMP-4 JMP-6 JMP-9
+
+Control that leaves a scope ends the scope's objects, and control that
+enters a scope must not skip the creation of an object it will find
+there ({principle}`OBJ-P2`). So a jump out of a block destroys the
+block's variables, in reverse order, and `return` does the same after
+it has taken its value. A jump backward past a declaration destroys the
+variable, and the declaration makes it again. A jump forward past an
+initialization is rejected, because the variable would exist without a
+value. A type that needs no construction and no destruction has nothing
+to skip, so a jump can pass its declaration when it has no initializer.
+:::
+
+:::{principle} JMP-P3
+:rules: JMP-3 JMP-10 JMP-11 JMP-12
+
+`return` hands a value to the caller, and the value must be what the
+function promised: a value in a function that returns one, nothing in a
+`void` function, and nothing in a constructor or destructor. A local
+variable or a parameter that is returned by name is about to end, so
+the name is treated as an rvalue and the value is moved out
+({principle}`CPY-P4`). The implementation may go further and make a
+local variable the result object itself, but never a parameter, whose
+storage belongs to the caller.
+:::
+
 ## Syntax
 
 ```{eval-rst}

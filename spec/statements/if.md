@@ -9,6 +9,64 @@ condition selects. There are three forms:
 - The *`if consteval` form* tests if the statement executes during
   {term}`constant evaluation`.
 
+## Principles
+
+:::{principle} IF-P1
+:rules: IF-1 IF-2 IF-3 IF-4 IF-5 IF-6
+
+An `if` statement asks one question and takes one of two paths. The
+question is a condition converted to `bool` by {term}`contextual
+conversion`, evaluated one time. The condition can also declare one
+variable, whose value is the answer, so that the branches can use what
+the question computed. That variable is a plain variable of the
+statement, so it has an initializer and no storage class. An `else`
+belongs to the nearest `if` that has none, because that is the reading
+with no ambiguity.
+:::
+
+:::{principle} IF-P2
+:rules: IF-7 IF-21 IF-8 IF-9 IF-10 IF-11 IF-12
+
+The statement introduces scopes and objects that follow the general
+rules ({principle}`NAM-P1`, {principle}`OBJ-P2`). The initializer and
+the condition declare names into a scope that encloses both branches, so
+the else branch sees the condition variable too. Each branch is a scope
+of its own, with or without braces. A branch that redeclares a name of
+the enclosing scope at its top level would make that name mean two
+things in one place, so it is rejected, while a block inside the branch
+can hide it. Temporaries of the condition end before a branch runs, and
+the statement's variables end with the statement. The initializer can
+be any declaration that a block can hold, which excludes the kinds that
+declare no variable. A jump into a branch skips the condition, as a
+jump skips any statement.
+:::
+
+:::{principle} IF-P3
+:rules: IF-13 IF-14 IF-15 IF-16 IF-17
+
+`if constexpr` moves the decision to translation. The condition is a
+constant, so the implementation knows which branch is dead and discards
+it. A discarded branch is still parsed and, outside a template, still
+checked, because it is still part of the program. In a template it is
+not instantiated, so it can hold code that is wrong for the template
+arguments. Its `return` statements do not deduce the return type, and
+nothing it names needs a definition, because it never runs. A jump
+cannot enter a branch that was never selected.
+:::
+
+:::{principle} IF-P4
+:rules: IF-18 IF-19 IF-20
+
+`if consteval` asks which mode the program is running in
+({principle}`TR-P4`). The first branch runs in constant evaluation and
+the second at run time, and `if !consteval` swaps them. The branch that
+runs in constant evaluation is a place where a `consteval` call needs no
+constant arguments, because the whole branch is already a constant
+evaluation. The form has no condition, because the mode is the
+condition, and its branches are blocks, so that the form is never
+mistaken for the ordinary one.
+:::
+
 ## Syntax
 
 ```{eval-rst}

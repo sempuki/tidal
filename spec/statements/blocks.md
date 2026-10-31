@@ -4,6 +4,39 @@ An expression statement evaluates an expression for its effects. A null
 statement does nothing. A compound statement, or *block*, groups
 statements and opens a scope.
 
+## Principles
+
+:::{principle} STMT-P1
+:rules: STMT-2 STMT-3 STMT-5
+
+A block is a sequence and a scope. Its statements execute in the order
+written, and a declaration is one of them, so a name becomes visible at
+its declaration and stays visible to the closing brace
+({principle}`NAM-P1`). A name declared twice in one block has no single
+meaning, so the second declaration is rejected, while a nested block
+can hide the outer name ({principle}`NAM-P2`). A label marks a position,
+and the end of a block is a position, so a label can stand there.
+:::
+
+:::{principle} STMT-P2
+:rules: STMT-1 STMT-7 STMT-4
+
+An expression statement exists for what its expression does, and its
+value is thrown away. A read of a volatile object is something the
+expression does, so a statement that only names such an object reads it.
+A statement that neither changes anything nor reads anything observable
+is almost always a mistake, so an implementation should say so.
+:::
+
+:::{principle} STMT-P3
+:rules: STMT-6
+
+Some text can be read as a declaration or as an expression. The language
+reads it as a declaration, and it decides by the whole statement, so a
+statement that starts like a declaration and cannot finish as one is an
+expression statement.
+:::
+
 ## Syntax
 
 ```{eval-rst}

@@ -5,6 +5,35 @@ others. Some operators fix the order of their operands. These are `&&`,
 `||`, the comma operator, `?:`, the shift operators, assignment, and
 subscripts. For other operands the order is not fixed.
 
+## Principles
+
+:::{principle} SEQ-P1
+:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6
+
+The language fixes the order of evaluation only where meaning needs it.
+A full expression finishes, with all its side effects, before the next
+one starts, so a program is a sequence of steps at that level. Within a
+full expression, the function is known before its arguments are
+evaluated, the right side of an assignment is complete before the left
+side is touched, an array is known before its index, the object before
+the member pointer applied to it, and the elements of a braced list come
+in the order written. An overloaded operator keeps the order of the
+built-in operator it replaces, because the program reads the same
+either way.
+:::
+
+:::{principle} SEQ-P2
+:rules: SEQ-1 SEQ-4
+
+Everywhere else, the order is the implementation's choice, and the
+choice can differ from one call to the next. The one promise is that
+each argument of a call is evaluated as a whole, and the called function
+runs as a whole, so two evaluations do not interleave. A program whose
+result depends on an order that the language did not fix has no meaning,
+so two {term}`unsequenced` accesses to one memory location, where at
+least one writes, are undefined.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} SEQ-2

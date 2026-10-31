@@ -4,6 +4,32 @@ A range-based `for` statement executes its body once for each element of
 a range. A range is an array, a braced list, or an object of class type
 with `begin` and `end`.
 
+## Principles
+
+:::{principle} RFOR-P1
+:rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4
+
+A range-based `for` is an ordinary loop that the language writes for
+you. It evaluates the range one time and keeps it, so a temporary in
+the range expression lives as long as the loop. It finds `begin` and
+`end` one time: as members, if the class has both names as members of
+any kind, and otherwise as free functions found through the argument's
+namespace ({principle}`NAM-P3`). It then advances with `++`, stops when
+the iterator compares unequal to `end`, and initializes the loop
+variable from each element. The loop variable is not yet declared when
+the range expression is evaluated, so a name there means the outer
+entity.
+:::
+
+:::{principle} RFOR-P2
+:rules: RFOR-5 RFOR-6
+
+The loop variable is a fresh automatic variable of the body's scope in
+each iteration ({principle}`LOOP-P2`). A storage class would contradict
+that, and a redeclaration at the top level of the body would give the
+name two meanings, so both are rejected.
+:::
+
 ## Syntax
 
 ```{eval-rst}

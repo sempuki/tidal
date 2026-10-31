@@ -3,6 +3,35 @@
 The `while`, `do`, and `for` statements execute a statement again and
 again while a condition is true.
 
+## Principles
+
+:::{principle} LOOP-P1
+:rules: LOOP-1 LOOP-2 LOOP-3 LOOP-5 LOOP-6
+
+A loop repeats a body while a condition, converted to `bool` by
+{term}`contextual conversion`, holds. The three forms differ only in
+when the condition is tested and what runs around the body. `while`
+tests first. `do` tests after, so the body runs at least once, and its
+condition cannot be a declaration, because a declaration there would
+have no place to live. `for` adds a step that runs once before the loop
+and a step that runs after each body, and leaves any part out, with an
+absent condition meaning `true`.
+:::
+
+:::{principle} LOOP-P2
+:rules: LOOP-4 LOOP-7
+
+The scopes and lifetimes of a loop follow the general rules
+({principle}`NAM-P1`, {principle}`OBJ-P2`). The body is a scope, and
+each iteration enters it afresh, so a variable the condition declares
+is created and destroyed in each iteration. The initializer of a `for`
+runs once, so its variable lives for the whole statement. Names from
+the initializer and condition are visible to the end of the statement
+and must not be redeclared at the top level of the body, as in an `if`
+({principle}`IF-P2`). The body of a `do` ends before its condition, so
+the condition cannot use the body's names.
+:::
+
 ## Syntax
 
 ```{eval-rst}

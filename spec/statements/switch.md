@@ -3,6 +3,33 @@
 A `switch` statement transfers control to one of several labels in its
 body. The value of its condition selects the label.
 
+## Principles
+
+:::{principle} SW-P1
+:rules: SW-1 SW-2 SW-3
+
+A `switch` is a computed jump. Its condition is an integer or an
+enumeration, or a class that converts to exactly one of these,
+evaluated one time. Control jumps to the `case` label with that value,
+or to `default`, or past the statement, and then runs on through the
+later labels until a `break` stops it. A case value is a constant of the
+condition's promoted type, because the jump table is built at
+translation time. Two equal case values or two `default` labels would
+give the jump two targets, so they are rejected. A label belongs to the
+innermost `switch` around it, and a lambda or local class body is a
+different function, so a label in it belongs to nothing outside.
+:::
+
+:::{principle} SW-P2
+:rules: SW-4 SW-5
+
+The statement has the scopes of an `if` ({principle}`IF-P2`), with an
+initializer and a condition that can declare a variable. Because its
+body is entered by a jump, the general rule for jumps applies
+({principle}`JMP-P2`): a label must not sit past the initialization of
+a variable that is in scope at the label.
+:::
+
 ## Syntax
 
 ```{eval-rst}
