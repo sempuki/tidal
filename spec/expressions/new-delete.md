@@ -45,9 +45,12 @@ run.
 :::
 
 :::{principle} NEW-P3
-:rules: NEW-10 NEW-13 NEW-14
+:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20
 
-The storage comes from an allocation function. A program can supply its
+The storage comes from an allocation function. The global allocation
+and deallocation functions exist in every program without a
+declaration, so a program can also call them by name. A form with
+placement arguments exists only where a declaration gives it. A program can supply its
 own allocation functions for one class, through the member
 `operator new` and `operator delete` of the class, or with extra
 placement arguments. `::new` reaches past a class's own functions to the
@@ -184,6 +187,32 @@ A class can declare its own `operator new` and `operator delete`. A
 `::delete` use the global functions.
 :::
 
+:::{rule} NEW-19
+:kind: required
+:tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp
+
+Every translation unit has these global functions without a
+declaration in the program:
+
+- `operator new` and `operator new[]`, with one parameter of the type
+  of `sizeof 0`,
+- `operator delete` and `operator delete[]`, with a `void*` parameter,
+- `operator delete` and `operator delete[]`, with a `void*` parameter
+  and a parameter of the type of `sizeof 0`.
+
+A program can call these functions by name, also when it declares its
+own forms of `operator new` or `operator delete`.
+:::
+
+:::{rule} NEW-20
+:kind: reject
+:tests: expressions/new-delete/placement-form-undeclared.cpp
+
+A `new` expression with placement arguments must find a declared
+allocation function that accepts them. The functions of NEW-19 accept
+no placement arguments.
+:::
+
 :::{rule} NEW-15
 :kind: required
 :tests: expressions/new-delete/delete-class-converting-to-pointer.cpp
@@ -280,12 +309,17 @@ delete[] e;
 delete[] a;                     // undefined: a is not from new[]
 int* n = nullptr;
 delete n;                       // does nothing
+
+void* raw = ::operator new(16); // storage only, no object
+::operator delete(raw);
+int x;
+new (&x) int(3);                // rejected without a declared placement form
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 47
-of 50 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 50
+of 53 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -297,6 +331,10 @@ of 50 tests.
 - NEW-5: GCC accepts `delete[]` of a derived array through a base
   pointer during constant evaluation. Clang and EDG reject it
   ({question}`Q-0091`).
+- NEW-19, NEW-20: Clang, GCC, and EDG accept calls by name to the
+  global functions with no declaration in the program, also next to a
+  global placement form and a class's own functions. All three reject
+  `new (&x) int` when no placement form is declared.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that the
   deletion is undefined. Clang (pedantic) and EDG reject it
   ({question}`Q-0035`).

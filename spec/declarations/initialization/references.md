@@ -10,7 +10,7 @@ function. This page covers:
 ## Principles
 
 :::{principle} REF-P1
-:rules: REF-1 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
+:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives the reference that object.
@@ -43,15 +43,6 @@ reference. A reference used after its object has ended, or bound through
 a null pointer, has no defined meaning.
 :::
 
-## Syntax
-
-```{eval-rst}
-.. productionlist:: tidal
-   ref_init: "=" `assignment_expr`
-           : | "(" `assignment_expr` ")"
-           : | "{" `assignment_expr` "}"
-```
-
 ## Constraints
 
 :::{rule} REF-1
@@ -67,6 +58,16 @@ reference and the lvalue are then the same object. The lvalue can have:
 
 A reference to an array of unknown bound binds to an array of known
 bound. REF-8 lists what is not valid.
+:::
+
+:::{rule} REF-13
+:kind: required
+:tests: declarations/initialization/references/const-ref-binds-lvalue-directly.cpp
+
+A `const` lvalue reference binds directly to an lvalue that is not a
+bit-field, if the lvalue has one of the types that REF-1 lists. The
+reference and the lvalue are then the same object, and no temporary
+object exists.
 :::
 
 :::{rule} REF-8
@@ -198,6 +199,7 @@ const int c = 1;
 int& s = c;                  // rejected: loses const
 
 const int& t = l;            // t refers to a temporary int
+const long& same = l;        // same refers to l
 l = 2;                       // t is still 1
 
 int x = 0;
@@ -215,7 +217,7 @@ const int& w = pass(1);      // the temporary ends here; w dangles
 
 ## Evidence
 
-All eight compilers agree on 30 of 33 tests. The results are in
+All eight compilers agree on 31 of 34 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during

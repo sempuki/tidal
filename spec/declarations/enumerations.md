@@ -35,7 +35,7 @@ freely their values convert.
 :::
 
 :::{principle} ENUM-P3
-:rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-7 ENUM-18 ENUM-8 ENUM-19
+:rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-21 ENUM-7 ENUM-18 ENUM-8 ENUM-19
 
 The underlying type holds the values.
 
@@ -46,7 +46,9 @@ The underlying type holds the values.
 
 When the type is known from the first declaration, the enumeration can
 be declared before its enumerators, and an integer in braces can
-initialize a variable of the enumeration type.
+initialize a variable of the enumeration type. A cast to such an
+enumeration converts the value to the underlying type, so every integer
+gives a value of the enumeration.
 :::
 
 ## Syntax
@@ -253,6 +255,18 @@ The name of an enumerator is declared after its value expression. In
 that expression, the name refers to an outer entity with that name.
 :::
 
+## Runtime Behavior
+
+:::{rule} ENUM-21
+:kind: required
+:tests: declarations/enumerations/cast-fixed-converts-to-underlying.cpp
+
+If an integer converts to an enumeration with a fixed underlying type,
+the integer first converts to the underlying type ({rule}`CONV-2`,
+{rule}`CONV-3`). The enumeration value is the result of that
+conversion. The integer can be outside the range of the underlying type.
+:::
+
 ## Undefined Behavior
 
 :::{rule} ENUM-6
@@ -313,6 +327,7 @@ enum class W { R = 1LL << 40 };       // rejected: int is too small
 enum G { M = 1, N = 4 };       // values fit in 3 bits: 0 to 7
 G g7 = static_cast<G>(7);      // valid
 G g8 = static_cast<G>(8);      // undefined
+U u = static_cast<U>(300);     // 44: 300 converts to unsigned char
 
 enum class H : int;            // declared before the definition
 H h{5};                        // valid: fixed underlying type
@@ -323,7 +338,7 @@ Color k = Red;                 // Red without Color::
 
 ## Evidence
 
-All eight compilers agree on 55 of 58 tests. The results are in
+All eight compilers agree on 56 of 59 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
@@ -337,6 +352,9 @@ All eight compilers agree on 55 of 58 tests. The results are in
   evaluation ("outside the valid range of values [0, 7]"). GCC and EDG
   accept the cast. The provisional answer is that the behavior is
   undefined. See {question}`Q-0017`.
+- **ENUM-21.** Clang, GCC, and EDG agree that `static_cast` of 300 to an
+  enumeration with underlying type `unsigned char` gives 44 during
+  constant evaluation. Clang and GCC give the same value at run time.
 
 Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

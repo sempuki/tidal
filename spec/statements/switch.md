@@ -6,7 +6,7 @@ body. The value of its condition selects the label.
 ## Principles
 
 :::{principle} SW-P1
-:rules: SW-1 SW-2 SW-3
+:rules: SW-1 SW-2 SW-3 SW-7
 
 A `switch` is a computed jump. Its condition is an integer or an
 enumeration, or a class that converts to exactly one of these types,
@@ -25,6 +25,10 @@ give the jump two targets, so such labels are rejected. A label belongs
 to the innermost `switch` around it, and a lambda or local class body is
 a different function, so a label in such a body belongs to nothing
 outside.
+
+A `switch` over an enumeration usually means to handle each enumerator.
+So an implementation should warn when an enumerator has no `case` label
+and the `switch` has no `default`.
 :::
 
 :::{principle} SW-P2
@@ -128,6 +132,20 @@ be inside a nested statement of the body, such as a loop. Each label
 belongs to the innermost `switch` that contains it.
 :::
 
+## Recommended Practice
+
+:::{rule} SW-7
+:kind: recommended
+:tests: statements/switch/enum-missing-case-warns.cpp statements/switch/enum-all-cases-or-default-silent.cpp
+
+An implementation should warn about a `switch` if all of these
+conditions are true:
+
+- The condition has an enumeration type.
+- The `switch` has no `default` label.
+- An enumerator of the type has no `case` label with its value.
+:::
+
 ## Examples
 
 ```cpp
@@ -154,6 +172,11 @@ void g(int v) {
       break;
   }
 }
+
+enum Light { red, amber, green };
+void h(Light l) {
+  switch (l) { case red: break; }     // should warn: no case for amber or green
+}
 ```
 
 ## Evidence
@@ -161,6 +184,10 @@ void g(int v) {
 All seven compilers agree on all tests in this page, except where a
 question is noted. The results are in `tests/RESULTS.md`.
 
+- SW-7: Clang and GCC warn under `-Wall` (`-Wswitch`) and name each
+  enumerator without a label. EDG gives no warning, even with remarks
+  on. The warning is recommended practice, so the rule is in the
+  recommended class.
 - SW-5: GCC accepts a `case` label that skips a variable whose destructor
   is not trivial. Clang and EDG reject the label ({question}`Q-0097`).
 

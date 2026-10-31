@@ -195,11 +195,12 @@ of their creation.
 
 :::{rule} VC-8
 :kind: required
-:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp expressions/value-categories/array-prvalue-argument.cpp
+:tests: expressions/value-categories/materialize-reference-binding.cpp expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp expressions/value-categories/array-prvalue-argument.cpp
 
 A prvalue becomes a temporary object in these cases, in addition to
-VC-4 and VC-5:
+VC-5:
 
+- a reference binds to the prvalue ({rule}`REF-2`, {rule}`REF-3`),
 - a member function call or member access on a class prvalue,
 - a subscript of an array prvalue,
 - the conversion of an array prvalue to a pointer,
@@ -280,7 +281,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 51 of 52 tests. The results are in
+All eight compilers agree on 52 of 53 tests. The results are in
 `tests/RESULTS.md`.
 
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC

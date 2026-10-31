@@ -62,8 +62,11 @@ of "one more".
 | A pointer to a complete type | Yes. One more means the next element (ADD-P3). |
 | An enumeration | No |
 
-Where the step overflows the type or leaves the array, the result is
-undefined, as it is for `+` and `-`.
+The step works as `+ 1` and `- 1` do. So an unsigned value wraps
+around, and a value of a type narrower than `int` is promoted, stepped,
+and converted back to its type. Where the step overflows a signed type
+of `int` or wider, or leaves the array, the result is undefined, as it
+is for `+` and `-`.
 :::
 
 :::{principle} UN-P4
@@ -274,10 +277,17 @@ effects do not occur.
 
 :::{rule} UN-20
 :kind: required
-:tests: expressions/unary/prefix-increment.cpp
+:tests: expressions/unary/prefix-increment.cpp expressions/unary/prefix-unsigned-wraps.cpp expressions/unary/prefix-narrow-signed-wraps.cpp expressions/postfix/postfix-unsigned-wraps.cpp expressions/postfix/postfix-narrow-signed-wraps.cpp
 
 Prefix `++` adds 1 to its operand, and prefix `--` subtracts 1. For a
 pointer, the result points to the next or previous element of the array.
+For an integer operand, these rules apply:
+
+- For an unsigned type, the result wraps around. `++` on the largest
+  value gives 0, and `--` on 0 gives the largest value.
+- For a type that {term}`integer promotion` changes, the step uses the
+  promoted type. The result then converts to the operand's type
+  ({rule}`CONV-2`, {question}`Q-0124`).
 :::
 
 ## Undefined Behavior
@@ -309,7 +319,8 @@ include:
 
 The behavior of prefix `++` and `--` is undefined in these cases:
 
-- The result for a signed integer is outside the range of its type.
+- The operand has a signed type that integer promotion does not change,
+  and the result is outside the range of that type.
 - A pointer moves outside its array, other than to one past the last
   element ({question}`Q-0031`).
 :::
@@ -347,6 +358,8 @@ int arr[3];
 int i = 0;
 sizeof(i++);            // i stays 0
 ++i = 5;                // fine: ++i is an lvalue
+unsigned u = 0;
+--u;                    // the largest unsigned value
 bool b = false;
 ++b;                    // rejected
 
@@ -357,9 +370,13 @@ alignof(char);          // 1
 
 ## Evidence
 
-All eight compilers agree on 59 of 60 tests. The results are in
+All eight compilers agree on 61 of 64 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
+- UN-20: Clang and GCC accept `++` and `--` on a `short` or
+  `signed char` whose new value does not fit, and convert the value
+  back to the type. EDG rejects the step during constant evaluation
+  ({question}`Q-0124`).
 - UN-21: GCC accepts a pointer moved two past the end of an array during
   constant evaluation. Clang and EDG reject it ({question}`Q-0031`).
 

@@ -49,11 +49,13 @@ complete types for what it passes and returns.
 :::
 
 :::{principle} PFX-P4
-:rules: PFX-12 PFX-13
+:rules: PFX-12 PFX-13 PFX-18
 
 Postfix `++` and `--` change the object like the prefix forms (UN-P3),
 except that the result is the old value, as a prvalue. So the operand's
-limits are the same and the result cannot be changed.
+limits are the same and the result cannot be changed. An unsigned value
+wraps around, and an overflow of a signed type is undefined, as for the
+prefix forms.
 :::
 
 ## Syntax
@@ -203,11 +205,11 @@ A call through a pointer to a function calls that function. `p(a)` and
 
 :::{rule} PFX-12
 :kind: required
-:tests: expressions/postfix/postfix-increment.cpp
+:tests: expressions/postfix/postfix-increment.cpp expressions/postfix/postfix-unsigned-wraps.cpp expressions/postfix/postfix-narrow-signed-wraps.cpp
 
 Postfix `++` adds one to its operand, and postfix `--` subtracts one.
 The result is the value before the change. On a pointer, the change is
-one element.
+one element, and on an integer, the change follows {rule}`UN-20`.
 :::
 
 ## Undefined Behavior
@@ -226,6 +228,18 @@ past the end is also undefined.
 :tests: expressions/postfix/call-null-pointer.cpp
 
 A call through a null function pointer is undefined.
+:::
+
+:::{rule} PFX-18
+:kind: undefined
+:tests: expressions/postfix/postfix-increment-overflow-constant.cpp expressions/postfix/postfix-decrement-overflow-constant.cpp expressions/postfix/postfix-increment-overflow-sanitizer.cpp expressions/postfix/postfix-pointer-past-end-constant.cpp
+
+The behavior of postfix `++` and `--` is undefined in these cases:
+
+- The operand has a signed type that {term}`integer promotion` does not
+  change, and the result is outside the range of that type.
+- A pointer moves outside its array, other than to one past the last
+  element ({question}`Q-0031`).
 :::
 
 ## Implementation Requirements
@@ -263,17 +277,28 @@ ptr->v;           // same as (*ptr).v
 
 int i = 5;
 int old = i++;    // old is 5, i is 6
+unsigned u = 0;
+u--;              // the largest unsigned value
+int top = 2147483647;
+top++;            // undefined
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 45
-of 47 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
+of 53 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these cases during constant
   evaluation.
+- PFX-12: EDG rejects `++` on a `short` that holds its largest value
+  during constant evaluation. Clang and GCC give the converted value
+  ({question}`Q-0124`).
+- PFX-18: all compilers reject a signed overflow during constant
+  evaluation, and UBSan reports one at run time. GCC accepts a pointer
+  moved past the end of an array during constant evaluation. Clang and
+  EDG reject it ({question}`Q-0031`).
 - PFX-13: Clang rejects `++` on `bool` as a pedantic diagnostic.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is

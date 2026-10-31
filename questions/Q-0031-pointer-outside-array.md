@@ -1,7 +1,7 @@
 # Q-0031: Is forming a pointer outside an array undefined, even without a read through it?
 
 **Status:** provisional
-**Affects:** ADD-10, `tests/expressions/additive/pointer-beyond-array.cpp`, `tests/expressions/additive/pointer-before-array.cpp`
+**Affects:** ADD-10, PFX-18, `tests/expressions/additive/pointer-beyond-array.cpp`, `tests/expressions/additive/pointer-before-array.cpp`, `tests/expressions/postfix/postfix-pointer-past-end-constant.cpp`
 
 ## Context
 
