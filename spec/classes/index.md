@@ -8,6 +8,7 @@ derivation, and the operators that classes can define.
 members
 access
 constructors
+initializer-lists
 copy-move
 derived
 virtual
@@ -24,6 +25,7 @@ comparisons
 members
 access
 constructors
+initializer-lists
 copy-move
 derived
 virtual
