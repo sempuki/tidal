@@ -40,6 +40,8 @@ OUTCOMES = {
     "compiles": "compiles; the program is not run (it may have no main)",
     "runs": "compiles, runs, and exits with status 0",
     "run-fail": "compiles, but the run ends with a nonzero status",
+    "undefined": "compiles, but running it has undefined behavior, so no outcome is promised",
+    "depends": "the compilers differ, as the spec records; say which in `why`",
 }
 # A test expectation and the answers that match it.
 MATCHES = {
@@ -53,6 +55,22 @@ MATCHES = {
 RULE = re.compile(r"^:::\{rule\} (\S+)$")
 TESTS_LINE = re.compile(r"^:tests: (.*)$")
 MAIN = re.compile(r"\bint\s+main\s*\(")
+
+
+def rule_classes() -> dict[str, str]:
+    """The class of every rule in the spec."""
+    classes, rule = {}, None
+    for f in SPEC.rglob("*.md"):
+        for line in f.read_text().splitlines():
+            if m := RULE.match(line):
+                rule = m.group(1)
+            elif rule and line.startswith(":kind: "):
+                classes[rule] = line.removeprefix(":kind: ").strip()
+                rule = None
+    return classes
+
+
+RULE_CLASS = rule_classes()
 
 
 def page_tests(page: str) -> list[str]:
@@ -101,8 +119,9 @@ def predict(page: str, out: Path) -> int:
             files.append(f"{pid}-{j}.cpp")
             (out / files[-1]).write_text(strip(extra.read_text()))
         has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
+        undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
         key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
-                    "main": has_main}
+                    "main": has_main, "undefined": undefined}
         build = " ".join(files)
         if test.flags:
             build += f", with {' '.join(test.flags)}"
@@ -130,7 +149,7 @@ def predict(page: str, out: Path) -> int:
         "`rules` lists the Tidal rule IDs that decide the outcome. When the",
         "spec does not settle a program, say so in `why` and give your best",
         "guess. Where the spec records that compilers differ on a program,",
-        "the outcome of any of them counts.",
+        "answer `depends`, or the outcome of any one of them.",
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)
@@ -152,6 +171,13 @@ def score(out: Path, answers_path: Path) -> int:
         # such a program, compiling and failing to link both count.
         if not k.get("main", True) and got in {"compiles", "link-fail"}:
             ok = ok or bool({"accept", "link-fail"} & set(k["expect"]))
+        # "depends" is right when the baseline compilers are expected to
+        # differ. "undefined" is right when a cited rule is undefined and no
+        # compiler rejects the program, so the behavior shows only at run time.
+        if got == "depends":
+            ok = len(k["expect"]) > 1
+        if got == "undefined":
+            ok = k.get("undefined", False) and "reject" not in k["expect"]
         right += ok
         if not ok:
             rows.append(f"| {pid} | {k['test']} | {', '.join(k['expect'])} | {got} | "

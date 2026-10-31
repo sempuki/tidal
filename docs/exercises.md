@@ -76,7 +76,10 @@ typical idioms, and asks for a C++ program with the same behavior.
 `R-additive`. A batch takes the page's tests, removes every `tidal-`
 comment, and asks for one answer per program. Scoring compares the
 answer with the test's expectations. A wrong answer that cites a rule
-is a finding against that rule. A Diagnose batch uses only tests that
+is a finding against that rule. Two outcomes let a reader be right
+about the hard cases: `undefined` (the program compiles and its run has
+undefined behavior) and `depends` (the compilers differ, as the spec
+records). A Diagnose batch uses only tests that
 carry a `tidal-error` pattern, and shows the reader the matching
 compiler message.
 
