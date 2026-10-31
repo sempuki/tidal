@@ -28,7 +28,7 @@ defaulted `<=>` must declare them, usually through the standard library
 
 :::{rule} DCMP-3
 :kind: reject
-:tests: classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp
+:tests: classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp classes/comparisons/eq-rvalue-ref-qualified.cpp declarations/volatile/defaulted-comparison-volatile.cpp
 
 A defaulted comparison of class `C` must be one of these:
 
@@ -39,7 +39,8 @@ It must not be a template, a non-member that is not a friend, or a
 friend first declared outside `C` ({question}`Q-0061`). A defaulted `==`
 or secondary operator (`!=`, `<`, `>`, `<=`, `>=`) must return `bool`.
 The return type of a defaulted `<=>` must be written as `auto` if it is
-deduced. A ref-qualifier is valid.
+deduced. A ref-qualifier `&` is valid. A ref-qualifier `&&` and `volatile`
+are not.
 :::
 
 :::{rule} DCMP-1
@@ -156,8 +157,8 @@ bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 53 of
-55 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 54 of
+56 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
