@@ -1,0 +1,17 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   translation.md:Translation, execution, and behavior cla longest=0   overlap=0.01
+ok   TR-P1                            longest=0   overlap=0.00
+ok   TR-P2                            longest=0   overlap=0.03
+ok   TR-P3                            longest=0   overlap=0.00
+ok   TR-P4                            longest=0   overlap=0.00
+ok   TR-1                             longest=0   overlap=0.00
+ok   TR-3                             longest=0   overlap=0.00
+ok   TR-2                             longest=0   overlap=0.05
+ok   TR-4                             longest=0   overlap=0.00
+ok   TR-5                             longest=0   overlap=0.00
+ok   TR-6                             longest=0   overlap=0.00
+ok   translation.md:Examples          longest=0   overlap=0.00
+ok   translation.md:Evidence          longest=0   overlap=0.02
+
+0 flagged
