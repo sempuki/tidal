@@ -1,4 +1,4 @@
-// tidal-rules: DER-6
+// tidal-rules: DER-11
 // tidal-expect: reject
 struct A {};
 struct B : virtual A {};

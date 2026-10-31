@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-9
 // tidal-expect: reject
 struct A { A(int) {} };
 struct B : A { using A::A; };

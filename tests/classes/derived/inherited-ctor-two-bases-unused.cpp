@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-15
 // tidal-expect: accept
 struct A { A() {} A(int) {} };
 struct B { B() {} B(int) {} };

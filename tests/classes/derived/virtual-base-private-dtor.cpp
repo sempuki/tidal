@@ -1,4 +1,4 @@
-// tidal-rules: DER-7
+// tidal-rules: DER-14
 // tidal-expect: reject
 class A { ~A() {} friend struct B; };
 struct B : virtual A {};

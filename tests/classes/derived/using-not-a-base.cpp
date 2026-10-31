@@ -1,4 +1,4 @@
-// tidal-rules: DER-3
+// tidal-rules: DER-9
 // tidal-expect: reject
 struct X { int f(); };
 struct B {};
