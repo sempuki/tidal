@@ -125,9 +125,17 @@ other evaluations in the caller.
 :kind: unspecified
 :tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp
 
-The operands of a built-in operator that SEQ-3 does not list are
-{term}`unsequenced`, so their order is unspecified. A function called in
-one operand still does not overlap with the other operand (SEQ-1).
+The operands of a built-in operator are {term}`unsequenced`, so their
+order is unspecified, unless one of these rules fixes it:
+
+- SEQ-3: subscripts, assignments, member pointers, and braced lists,
+- {rule}`SHF-8`: shifts,
+- {rule}`LOG-5`: `&&` and `||`,
+- {rule}`COMMA-1`: the comma operator,
+- {rule}`COND-2`: the conditional operator.
+
+A function called in one operand still does not overlap with the other
+operand (SEQ-1).
 :::
 
 ## Recommended Practice
