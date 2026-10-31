@@ -12,6 +12,7 @@ copy-move
 derived
 virtual
 unions
+conversion-functions
 :::
 
 :::{toctree}
@@ -25,4 +26,5 @@ copy-move
 derived
 virtual
 unions
+conversion-functions
 :::
