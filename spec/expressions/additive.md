@@ -4,6 +4,58 @@ The operators `+` and `-` add and subtract arithmetic values. They also
 move a pointer within an array, and give the distance between two pointers
 into the same array.
 
+## Principles
+
+:::{principle} ADD-P1
+:rules: ADD-1 ADD-2 ADD-3 ADD-4
+
+`+` and `-` have two jobs. On numbers they add and subtract, with the
+operands brought to one common type by the usual arithmetic conversions
+(CONV-3), so the result has that type. On a pointer and an integer they
+move the pointer, and the result has the pointer's type. Subtracting two
+pointers gives a distance. Any other combination of operands is
+rejected. The result is a prvalue in every case ({principle}`VC-P1`).
+:::
+
+:::{principle} ADD-P2
+:rules: ADD-5 ADD-9 ADD-17
+
+For numbers the result is the mathematical one, fitted to the type. An
+unsigned type is modular, so its result wraps. A signed integer type and
+a floating-point type are not, so a result outside their range has no
+value, and the behavior is undefined. Constant evaluation rejects it
+({principle}`TR-P4`).
+:::
+
+:::{principle} ADD-P3
+:rules: ADD-6 ADD-7 ADD-8 ADD-10 ADD-11 ADD-12 ADD-14
+
+A pointer into an array is a position in that array, counted in
+elements of the array's own type. Adding moves the position, and
+subtracting two positions in one array gives the count between them, in
+a signed type that the implementation chooses. A single object is an
+array of one, and every array has one extra valid position just past
+its last element, so a loop can run to the end. Outside those positions
+there is nothing to point at, and the behavior is undefined. Two
+pointers into different arrays have no distance. A null pointer is no
+position at all, so only moving it by zero means anything. The element
+type must be the array's element type, because the arithmetic counts in
+that type's size.
+:::
+
+:::{principle} ADD-P4
+:rules: ADD-13
+
+The two operands are not ordered with respect to each other (SEQ-1).
+:::
+
+:::{principle} ADD-P5
+:rules: ADD-16
+
+Mixing an enumeration with a floating-point value, or two different
+enumerations, is deprecated, and an implementation should say so.
+:::
+
 ## Syntax
 
 ```{eval-rst}

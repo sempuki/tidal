@@ -4,6 +4,83 @@ The relational operators `<`, `>`, `<=`, and `>=` and the equality
 operators `==` and `!=` compare two values and give a `bool`. The
 three-way comparison operator `<=>` gives an ordering value.
 
+## Principles
+
+:::{principle} CMP-P1
+:rules: CMP-1 CMP-2 CMP-3
+
+A comparison compares two values and gives a `bool` prvalue
+({principle}`VC-P1`). Arithmetic operands are first brought to one
+common type by the usual arithmetic conversions (CONV-3), and the
+comparison sees the converted values, so a negative `int` compared with
+an `unsigned` has become a large unsigned value. The relational
+operators bind more tightly than the equality operators, and `<=>` more
+tightly than both, and each group associates to the left, which is why
+`a < b < c` compares a `bool` with `c`.
+:::
+
+:::{principle} CMP-P2
+:rules: CMP-6 CMP-9 CMP-10 CMP-11 CMP-19
+
+Two operands can be compared when they are the same kind of thing, or
+one converts to the other's kind. Two pointers compare when one
+converts to the other's type, which includes adding cv-qualifiers,
+converting to `void*`, and converting from a derived class to its base.
+A pointer compares with `nullptr` and with a literal `0` for equality
+only, because a null pointer has no order. Two values of one scoped
+enumeration compare, and values of two different scoped enumerations do
+not, because a scoped enumeration is its own kind. An array operand
+becomes a pointer to its first element, so comparing two arrays
+compares their addresses.
+:::
+
+:::{principle} CMP-P3
+:rules: CMP-7 CMP-15 CMP-22
+:exceptions: CMP-8 CMP-20
+
+Pointers have an order only inside one thing: elements of one array in
+index order, with the position past the end last, and members of one
+object in declaration order. Outside one thing there is no order, so a
+relational comparison of pointers to unrelated objects gives an
+unspecified result, and the two directions need not even agree. Equality
+is different. Two pointers are equal when they hold one address, which
+happens for different objects too, for example an object and its first
+member. A pointer past the end of one object can hold the address of
+the next object in memory, and whether that compares equal is
+unspecified. Two pointers to members are equal when they select the same
+member of the same subobject.
+:::
+
+:::{principle} CMP-P4
+:rules: CMP-5
+
+A NaN is not equal to anything, not even itself, and is neither less nor
+greater than anything. So every comparison with a NaN is `false`, except
+`!=`, which is `true`.
+:::
+
+:::{principle} CMP-P5
+:rules: CMP-12 CMP-13 CMP-17 CMP-18
+
+`<=>` compares once and gives an ordering value: `strong_ordering`
+where equal values are the same, as for integers and object pointers,
+and `partial_ordering` where some values are unordered or equal values
+can differ, as for floating-point types, with NaN as the unordered
+case. Because `<=>` stands in for all six comparisons, its operands must
+be comparable without loss. A narrowing conversion, a `bool` against
+another type, a pointer against `0`, and two different enumerations are
+rejected. Function pointers and pointers to members have no order, so
+`<=>` does not apply to them.
+:::
+
+:::{principle} CMP-P6
+:rules: CMP-4 CMP-14 CMP-16 CMP-21
+
+An implementation should warn where a comparison is valid and almost
+surely wrong: a signed operand converted to unsigned, a chained
+comparison, two array operands, and the deprecated mixes of enumerations.
+:::
+
 ## Syntax
 
 ```{eval-rst}

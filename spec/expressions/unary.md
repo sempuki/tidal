@@ -4,6 +4,60 @@ A unary operator takes one operand. This page covers `+`, `-`, `*`,
 `&`, prefix `++` and `--`, `sizeof`, `alignof`, and `noexcept`.
 The operators `!` and `~` are on the logical and bitwise pages.
 
+## Principles
+
+:::{principle} UN-P1
+:rules: UN-1 UN-2 UN-3 UN-4
+
+Unary `+` and `-` are arithmetic, so their operand is promoted and the
+result has the promoted type. Negating an unsigned value wraps, because
+the type is modular. Negating the most negative value of a signed type
+has no result in that type, so it is undefined. A pointer can be the
+operand of `+`, which only converts it, and not of `-`.
+:::
+
+:::{principle} UN-P2
+:rules: UN-5 UN-6 UN-7 UN-8 UN-9
+
+`&` and `*` go between an object and its address. `&` takes an lvalue,
+because only an object with an identity has an address
+({principle}`VC-P1`), and gives a pointer with the object's
+cv-qualifiers. `*` takes a pointer and gives back the object as an
+lvalue, so the two undo each other. A pointer to `void` points at no
+particular object and cannot be dereferenced. A pointer that points at
+nothing, such as a null pointer, a past-the-end pointer, or a pointer to
+a dead object, gives no object, and using the result is undefined.
+:::
+
+:::{principle} UN-P3
+:rules: UN-10 UN-11 UN-20 UN-21
+
+Prefix `++` and `--` change their operand in place by one and hand the
+same object back as an lvalue. So the operand has to be something a
+program can change, and its type has to have a notion of "one more".
+Numbers have it, apart from `bool`, which has only two values. A pointer
+has it when the pointed-to type is complete, since one more then means
+the next element (ADD-P3). An enumeration does not have it. Where the
+step overflows the type or leaves the array, the result is undefined,
+as it is for `+` and `-`.
+:::
+
+:::{principle} UN-P4
+:rules: UN-12 UN-13 UN-14 UN-15 UN-16 UN-17 UN-18 UN-19
+
+`sizeof`, `alignof`, and `noexcept` ask a question about a type or an
+expression and answer it at translation time. Their operands are never
+evaluated, so side effects in them do not happen. The questions need a
+complete object type to answer: a function type, `void`, and an
+incomplete class have no size or alignment. A reference answers for the
+type it refers to, and an array for all its elements. The sizes of most
+types are an implementation's choice, with the character types fixed at
+one. `noexcept(e)` is `true` when nothing in `e` can throw, counting
+the implicit calls `e` makes. An implementation should warn when
+`sizeof` is applied to a parameter declared as an array, since that
+parameter is a pointer.
+:::
+
 ## Syntax
 
 ```{eval-rst}

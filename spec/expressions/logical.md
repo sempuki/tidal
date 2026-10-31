@@ -6,6 +6,41 @@ operand does not decide the result. These rules apply to the built-in
 operators. An overloaded operator is a function call and evaluates both
 operands *(overload resolution referenced)*.
 
+## Principles
+
+:::{principle} LOG-P1
+:rules: LOG-1 LOG-2 LOG-3 LOG-6 LOG-10 LOG-12 LOG-13
+
+The logical operators work on truth values. Each operand is converted to
+`bool` by contextual conversion, the same conversion a condition uses,
+so any arithmetic value, pointer, pointer to member, `nullptr`, or
+class with an `explicit operator bool` is a valid operand, and anything
+that does not convert that way is rejected. The result is a `bool`
+prvalue ({principle}`VC-P1`). `&&` binds more tightly than `||`, both
+bind less tightly than the bitwise operators, and each operator has an
+alternative spelling as a word.
+:::
+
+:::{principle} LOG-P2
+:rules: LOG-4 LOG-5 LOG-7
+:exceptions: LOG-11
+
+The built-in `&&` and `||` evaluate the left operand first, completely,
+and evaluate the right operand only when the left one has not already
+decided the result. So the right operand can depend on the left one
+having been true or false, and during constant evaluation an operation
+that is never reached is never checked. An overloaded `&&` or `||` is
+an ordinary function call, so it evaluates both operands, left first.
+:::
+
+:::{principle} LOG-P3
+:rules: LOG-8 LOG-9
+
+An implementation should warn where precedence suggests a mistake: `&&`
+inside `||` without parentheses, and `!` applied to only the left side
+of a comparison.
+:::
+
 ## Syntax
 
 ```{eval-rst}

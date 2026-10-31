@@ -4,6 +4,62 @@ The operators `*` (multiply), `/` (divide), and `%` (remainder) apply to
 operands of built-in types. An overloaded form of these operators is a
 function call *(overload resolution referenced)*.
 
+## Principles
+
+:::{principle} MUL-P1
+:rules: MUL-1 MUL-2 MUL-3 MUL-4 MUL-5 MUL-15
+
+The multiplicative operators compute on numbers, so their operands are
+the types that hold numbers: the arithmetic types and the unscoped
+enumerations, which convert to integers. Nothing else is a number here.
+A pointer, a scoped enumeration, `nullptr`, and a class are rejected,
+unless a class supplies its own operator. Before the operation, the two
+operands become one common type through the usual arithmetic
+conversions (CONV-3), and the result is a prvalue of that type
+({principle}`VC-P1`). Which type is common can depend on the sizes of
+the integer types, which each implementation chooses. `%` works on
+whole numbers only, because a remainder of a floating-point division
+has no single meaning.
+:::
+
+:::{principle} MUL-P2
+:rules: MUL-6 MUL-7 MUL-8 MUL-18
+:exceptions: MUL-17
+
+The result is the mathematical one, fitted to the type. For
+floating-point operands that means rounding. For integer division it
+means dropping the fraction, toward zero, and the remainder is then
+whatever makes quotient and remainder add back up to the dividend. An
+unsigned type is a modular type, so an unsigned result wraps around
+instead of overflowing. An implementation can keep extra precision in
+floating-point intermediates, and the matrix targets do not.
+:::
+
+:::{principle} MUL-P3
+:rules: MUL-9 MUL-10 MUL-11 MUL-12
+
+A signed integer type is not modular, so a result it cannot hold has no
+value, and the behavior is undefined. The same holds for an operation
+with no mathematical result, such as division by zero, and for a
+floating-point result beyond the range of its type. Constant evaluation
+rejects each of these ({principle}`TR-P4`).
+:::
+
+:::{principle} MUL-P4
+:rules: MUL-13 MUL-14
+
+The two operands are not ordered with respect to each other (SEQ-1).
+So a program must not write a scalar in one operand and touch it in the
+other, unless a function call separates the two accesses.
+:::
+
+:::{principle} MUL-P5
+:rules: MUL-16
+
+Mixing an enumeration with a floating-point value, or two different
+enumerations, is deprecated, and an implementation should say so.
+:::
+
 ## Syntax
 
 ```{eval-rst}

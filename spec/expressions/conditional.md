@@ -3,6 +3,38 @@
 The operator `?:` evaluates a condition. Then it evaluates and gives one of
 two other operands, as the condition selects.
 
+## Principles
+
+:::{principle} COND-P1
+:rules: COND-1 COND-2 COND-6 COND-7 COND-10
+
+`?:` is a selection. The condition is converted to `bool` by contextual
+conversion and evaluated first, with all its side effects. Then exactly
+one of the two other operands is evaluated, and the other is not touched
+at all. So during constant evaluation only the selected operand has to
+be constant. The operator groups to the right, and its middle operand
+is a full expression that can hold a comma or an assignment without
+parentheses.
+:::
+
+:::{principle} COND-P2
+:rules: COND-3 COND-4 COND-5 COND-8 COND-9 COND-11 COND-12
+
+Two operands have to give one result, with one type and one value
+category, and that is decided before either is evaluated. If both are
+lvalues of one type, the result is an lvalue, with the union of their
+cv-qualifiers. Otherwise the result is a prvalue, and each operand is
+converted to the result type: arithmetic operands by the usual
+arithmetic conversions (CONV-3), class operands by their own
+conversions, with overload resolution choosing when the types differ.
+An operand that throws takes no part, because it gives no value. A
+`void` operand can pair only with another `void`. If two class types
+each convert to the other, there is no single answer, and the
+expression is rejected. A prvalue result of class type initializes its
+target directly ({principle}`VC-P2`), so no copy happens when both
+operands are prvalues, and a copy is needed only when one is an lvalue.
+:::
+
 ## Syntax
 
 ```{eval-rst}

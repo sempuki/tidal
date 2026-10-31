@@ -3,6 +3,45 @@
 The operators `<<` and `>>` shift the bits of an integer value to the left
 or to the right.
 
+## Principles
+
+:::{principle} SHF-P1
+:rules: SHF-1 SHF-2 SHF-3 SHF-4
+
+A shift moves the bits of an integer, so both operands are integers or
+unscoped enumerations, and nothing else. The right operand is a count,
+not a value to combine with the left one. So the two operands do not
+become one common type: each is promoted on its own, and the result has
+the promoted type of the left operand alone, as a prvalue
+({principle}`VC-P1`).
+:::
+
+:::{principle} SHF-P2
+:rules: SHF-5 SHF-6
+
+A left shift by `n` multiplies by two to the `n`, modulo the width of
+the result type, so it is defined for every value, including negative
+ones and ones whose sign changes. A right shift by `n` divides by two to
+the `n`, rounding toward negative infinity, so a negative value stays
+negative.
+:::
+
+:::{principle} SHF-P3
+:rules: SHF-7 SHF-9
+
+A shift count means something only from zero up to one less than the
+width of the promoted left operand. Any other count is undefined, and an
+implementation should warn when it can see the count.
+:::
+
+:::{principle} SHF-P4
+:rules: SHF-8
+
+The left operand is evaluated before the right one. This is an
+exception to the usual freedom (SEQ-1), and it holds for the
+overloaded operators too (OPR-7).
+:::
+
 ## Syntax
 
 ```{eval-rst}

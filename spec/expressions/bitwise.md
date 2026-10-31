@@ -5,6 +5,37 @@ The operator `~` inverts the bits of one integer value. These rules apply
 to the built-in operators. An overloaded operator is a function call
 *(overload resolution referenced)*.
 
+## Principles
+
+:::{principle} BIT-P1
+:rules: BIT-1 BIT-2 BIT-3 BIT-4
+
+The bitwise operators work on the bits of integers, so their operands
+are integers and unscoped enumerations and nothing else. Two operands
+become one common type by the usual arithmetic conversions (CONV-3),
+and the operand of `~` is promoted. The result has that type and is a
+prvalue ({principle}`VC-P1`). `&` binds more tightly than `^`, which
+binds more tightly than `|`, and all three bind less tightly than the
+equality operators, which is why `a & b == c` compares before it masks.
+:::
+
+:::{principle} BIT-P2
+:rules: BIT-5
+
+Each result bit depends only on the operand bits in the same position,
+on the two's complement representation of the converted values. So the
+operators are defined for every value, negative ones included, and no
+result can overflow.
+:::
+
+:::{principle} BIT-P3
+:rules: BIT-6 BIT-7 BIT-8
+
+An implementation should warn where the precedence or the operand types
+suggest a mistake: a comparison as an operand of a bitwise operator
+without parentheses, `~` on a `bool`, and two different enumerations.
+:::
+
 ## Syntax
 
 ```{eval-rst}

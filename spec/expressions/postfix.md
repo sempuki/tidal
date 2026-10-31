@@ -4,6 +4,54 @@ A postfix expression applies an operator after its operand. The postfix
 expressions are subscripts, function calls, member access, and postfix
 `++` and `--`.
 
+## Principles
+
+:::{principle} PFX-P1
+:rules: PFX-1 PFX-2 PFX-3 PFX-4
+
+A subscript is pointer arithmetic followed by a dereference: `a[i]` is
+`*(a + i)`, so the operands can come in either order, one must be an
+array or a pointer to an object, and the other an integer. The result
+keeps the array's category, an lvalue for an array lvalue and an xvalue
+for an array rvalue ({principle}`VC-P1`). A subscript outside the array
+dereferences a pointer to nothing, which is undefined (ADD-P3).
+:::
+
+:::{principle} PFX-P2
+:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15
+
+A call passes one argument to each parameter, so the counts must match,
+with default arguments filling in and an ellipsis taking any extra.
+Each parameter is a new object that its argument copy-initializes, so
+an `explicit` constructor does not take part. The call's result has the
+category of what the function returns: a reference gives an lvalue or
+an xvalue, and a value gives a prvalue. Calling through a pointer calls
+the function it points at, with or without `*`. A null function pointer
+points at no function, so the call is undefined. Whether a class with
+its own copy or destruction can go through an ellipsis is each
+implementation's choice.
+:::
+
+:::{principle} PFX-P3
+:rules: PFX-10 PFX-11 PFX-14
+
+Member access names a member of a class object, and `->` is member
+access through a pointer. The object expression is always evaluated,
+even for a static member. The member keeps the object's category and
+cv-qualifiers, so a member of a prvalue is an xvalue and a member of a
+`const` object is `const` unless it is `mutable` or a reference. A
+member function reached this way is only good for one thing, a call,
+and a call needs complete types for what it passes and returns.
+:::
+
+:::{principle} PFX-P4
+:rules: PFX-12 PFX-13
+
+Postfix `++` and `--` change the object like the prefix forms (UN-P3),
+with one difference: the result is the old value, as a prvalue, so the
+operand's limits are the same and the result cannot be changed.
+:::
+
 ## Syntax
 
 ```{eval-rst}

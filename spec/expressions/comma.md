@@ -3,6 +3,37 @@
 The comma operator evaluates its left operand and discards the value. Then
 it evaluates its right operand, which gives the result.
 
+## Principles
+
+:::{principle} COMMA-P1
+:rules: COMMA-1 COMMA-2 COMMA-3 COMMA-7
+
+The comma operator runs two expressions in order and keeps the second.
+The left operand is evaluated first, with all its side effects, and its
+value is dropped, so it can even be `void`. The right operand gives the
+result, with its own type and value category. The overloaded operator
+keeps the same order. The operator groups to the left and is allowed in
+a constant expression.
+:::
+
+:::{principle} COMMA-P2
+:rules: COMMA-4 COMMA-6 COMMA-8
+
+A comma also separates items in lists: arguments, initializers,
+declarators, enumerators, subscript arguments, and others. In such a
+place the separator wins, and a comma operator needs parentheses to be
+one. The same holds where the syntax asks for a single constant
+expression.
+:::
+
+:::{principle} COMMA-P3
+:rules: COMMA-5
+
+A left operand with no effect is almost surely a mistake, and an
+implementation should warn about it. A cast to `void` says it is
+intended.
+:::
+
 ## Syntax
 
 ```{eval-rst}
