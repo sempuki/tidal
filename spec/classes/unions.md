@@ -8,3 +8,253 @@ declarations, values, and their limits.
 
 Depends on: class definitions and members, constructors and destructors,
 copy and move, list initialization and aggregates, standard conversions.
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: unions
+   union_def: "union" [`name`] "{" {`member`} "}" ";"
+   anonymous_union: ["static"] "union" "{" {`member_declaration`} "}" ";"
+   bitfield_member: `type_specifiers` [`identifier`] ":" `constant_expression` [`brace_or_equal_init`]
+```
+
+The *active member* of a union is the member that holds a value. A
+*variant member* is a non-static data member of a union, or of an
+anonymous union in a class. An *anonymous union* has no name and declares
+no variable.
+
+## Legality Rules
+
+:::{rule} UNI-1
+:kind: required
+:tests: classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-private-members.cpp classes/unions/union-static-member.cpp
+
+All non-static data members of a union start at the address of the
+union. The size and alignment of a union are at least those of its
+largest member. A union can have member functions, constructors, a
+destructor, static data members, and array members. Its members are
+public unless an access label says otherwise.
+:::
+
+:::{rule} UNI-2
+:kind: reject
+:tests: classes/unions/union-reference-member.cpp
+
+A union must not have a member of reference type. Rules DER-1 and VIRT-2
+give the limits on bases and virtual functions.
+:::
+
+:::{rule} UNI-3
+:kind: required
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
+
+If a variant member has a non-trivial default constructor, copy or move
+function, or destructor, the matching special member of the union is
+deleted. The union must then declare that function itself. A default
+member initializer on a variant member gives the union a usable default
+constructor.
+:::
+
+:::{rule} UNI-4
+:kind: required
+:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp
+
+A union is initialized as one of its members:
+
+- A braced list without designators initializes the first member.
+- A designator such as `{.f = 2.0f}` selects a member.
+- A member with a default member initializer is used if there is no
+  other initializer.
+- Value initialization `{}` initializes the first member to zero, if no
+  member has a default member initializer.
+
+That member is then active.
+:::
+
+:::{rule} UNI-8
+:kind: reject
+:tests: classes/unions/mem-init-two-members.cpp classes/unions/narrowing-first-member.cpp classes/unions/two-default-member-inits.cpp classes/unions/two-designators.cpp classes/unions/two-initializers.cpp
+
+Initialization of a union must name at most one member. A program must
+not give:
+
+- two initializers or two designators in a braced list,
+- default member initializers to two variant members,
+- `mem_init` entries for two variant members.
+
+A braced initializer for the first member must not narrow.
+:::
+
+:::{rule} UNI-7
+:kind: required
+:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp
+
+The members of an anonymous union are members of the enclosing scope. In
+a class, they are variant members of the class. A braced list
+initializes an anonymous union member with its own braces. An anonymous
+union can be local, a class member, or `static` at namespace scope.
+:::
+
+:::{rule} UNI-9
+:kind: reject
+:tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp
+
+An anonymous union at namespace scope must be `static`. This includes an
+unnamed namespace ({question}`Q-0057`). An anonymous union must contain
+only public non-static data members. It must not declare:
+
+- a member function,
+- a static data member,
+- a nested type,
+- a name that the enclosing scope already declares.
+:::
+
+:::{rule} BF-1
+:kind: required
+:tests: classes/unions/bitfield-basic.cpp classes/unions/bitfield-bool.cpp classes/unions/bitfield-char-types.cpp classes/unions/bitfield-constant-width.cpp classes/unions/bitfield-enum.cpp classes/unions/bitfield-in-union.cpp classes/unions/bitfield-zero-unnamed.cpp
+
+A bit-field has an integral or enumeration type and a width. The width is
+a constant expression. A bit-field can be unnamed. An unnamed bit-field
+of width 0 makes the next bit-field start at a new allocation unit. A
+union can have bit-fields.
+:::
+
+:::{rule} BF-2
+:kind: reject
+:tests: classes/unions/bitfield-float.cpp classes/unions/bitfield-negative-width.cpp classes/unions/bitfield-nonconstant-width.cpp classes/unions/bitfield-pointer.cpp classes/unions/bitfield-static.cpp classes/unions/bitfield-typedef.cpp classes/unions/bitfield-unnamed-cv.cpp classes/unions/bitfield-zero-named.cpp
+
+A bit-field must not:
+
+- have a type that is not integral or an enumeration,
+- be `static` or a `typedef`,
+- have a negative width or a width that is not a constant,
+- have width 0 and a name.
+
+An unnamed bit-field must not have a cv-qualifier ({question}`Q-0058`).
+:::
+
+:::{rule} BF-3
+:kind: required
+:tests: classes/unions/bitfield-bool-wide.cpp classes/unions/bitfield-very-wide.cpp classes/unions/bitfield-wider-than-type.cpp
+
+A width can be larger than the number of bits in the type, including for
+`bool`. The extra bits are padding. The value range stays that of the
+type.
+:::
+
+:::{rule} BF-4
+:kind: reject
+:tests: classes/unions/bitfield-address.cpp classes/unions/bitfield-alignof-type-ok.cpp classes/unions/bitfield-const-ref-temp.cpp classes/unions/bitfield-nonconst-ref.cpp classes/unions/bitfield-sizeof.cpp
+
+A program must not take the address of a bit-field, apply `sizeof` to
+it, or bind a non-const reference to it. A `const` reference binds to a
+temporary that holds a copy of the value.
+:::
+
+:::{rule} BF-6
+:kind: required
+:tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp
+
+A bit-field promotes to `int` if `int` can hold all values of its width.
+If not, the promotion uses its declared type as other integers do. The
+type of the bit-field for `auto` deduction is the declared type.
+:::
+
+:::{rule} BF-7
+:kind: required
+:tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp classes/unions/bitfield-narrowing-init.cpp
+
+A named bit-field can have a default member initializer, with `=` or
+braces. Aggregate initialization skips unnamed bit-fields. The test for
+narrowing uses the declared type, not the width.
+:::
+
+## Dynamic Semantics
+
+:::{rule} UNI-5
+:kind: required
+:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp
+
+An assignment to a member whose type has a trivial default constructor
+makes that member active. A copy of a union copies its active member.
+Constant evaluation follows these rules.
+:::
+
+:::{rule} BF-5
+:kind: required
+:tests: classes/unions/bitfield-constant-wraps.cpp classes/unions/bitfield-plain-int-signed.cpp classes/unions/bitfield-signed-wraps.cpp classes/unions/bitfield-unsigned-wraps.cpp
+
+A value stored in a bit-field of width `n` is reduced modulo 2^n. A
+bit-field of a signed type, including plain `int`, holds negative values.
+Constant evaluation gives the same result.
+:::
+
+## Undefined Behavior
+
+:::{rule} UNI-6
+:kind: undefined
+:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp
+
+If a program reads a union member that is not active, the behavior is
+undefined. A compound assignment to a member that is not active reads
+it.
+:::
+
+## Implementation Requirements
+
+:::{rule} BF-9
+:kind: impl-defined
+:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-zero-width-splits.cpp
+
+The allocation of bit-fields in an object is implementation-defined. On
+the x86-64 Linux targets in the matrix, adjacent bit-fields of the same
+type share one unit of that type while they fit.
+:::
+
+## Recommended Practice
+
+:::{rule} BF-8
+:kind: recommended
+:tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp
+
+An implementation should warn if a bit-field width is larger than its
+type, or if a constant assignment changes value because of the width.
+:::
+
+## Examples
+
+```cpp
+struct Token {
+  enum class Kind : unsigned char { number, text } kind;
+  union {                        // anonymous: members of Token
+    long number;
+    const char* text;
+  };
+};
+Token t{Token::Kind::number, {42}};
+
+union Bits { unsigned u; float f; };
+Bits b{.f = 1.0f};               // f is active
+unsigned x = b.u;                // undefined: u is not active
+
+struct Pixel {
+  unsigned red : 5;
+  unsigned green : 6;
+  unsigned blue : 5;             // one 32-bit unit on x86-64
+};
+Pixel p{31, 70, 0};              // 70 is reduced modulo 64
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 78 of
+80 tests.
+
+- UNI-9: Clang accepts an anonymous union without `static` in an unnamed
+  namespace. GCC and EDG reject it ({question}`Q-0057`).
+- BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and EDG
+  reject it ({question}`Q-0058`).
+- BF-8: Clang and GCC warn under `-Wall` for both cases.
+
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
+clang-diag-sema, edg-class-decl.
