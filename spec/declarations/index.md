@@ -13,6 +13,7 @@ initialization/index
 structured-bindings
 enumerations
 namespaces
+linkage-specifications
 attributes
 functions/index
 constexpr
@@ -33,6 +34,7 @@ initialization/index
 structured-bindings
 enumerations
 namespaces
+linkage-specifications
 attributes
 functions/index
 constexpr
