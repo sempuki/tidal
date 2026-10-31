@@ -141,8 +141,9 @@ Constant evaluation must not compare pointers to unrelated objects with
 :kind: reject
 :tests: expressions/constant-expressions/call-before-definition.cpp
 
-Constant evaluation must not call a `constexpr` function that is not yet
-defined at the point of the evaluation.
+If a `constexpr` function has only a declaration at the point where
+constant evaluation calls it, the call is not a constant expression. A
+definition later in the translation unit does not help.
 :::
 
 :::{rule} CE-17

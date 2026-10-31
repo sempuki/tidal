@@ -167,10 +167,10 @@ The behavior is undefined if the program:
 :kind: unspecified
 :tests: expressions/new-delete/allocation-may-be-omitted.cpp
 
-An implementation can omit a call to a replaceable global allocation
-function, or combine several calls into one. A replacement function that
-counts its calls can count fewer calls than the program has `new`
-expressions.
+The number of calls to the global allocation functions can be smaller
+than the number of `new` expressions. An implementation can skip an
+allocation or serve two allocations with one call. A program that
+replaces these functions and counts calls must accept a lower count.
 :::
 
 ## Examples
