@@ -1,0 +1,22 @@
+# Q-0063: Is a floating literal outside the range of its type valid?
+
+**Status:** provisional
+**Affects:** PRIM-15, `tests/expressions/primary/float-overflow.cpp`
+
+## Context
+
+The literal `1e999f` is larger than the largest `float`. Clang and GCC
+accept it with a warning, also under `-pedantic-errors`, and give
+infinity. EDG 7.0 rejects it.
+
+## Options
+
+1. The value is implementation-defined. An implementation can reject it.
+2. The program is not valid, and implementations must reject it.
+
+## Provisional answer
+
+Option 1. Two of the three implementations accept it in their strictest
+mode.
+
+## Opinions

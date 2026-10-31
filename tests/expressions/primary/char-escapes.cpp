@@ -1,0 +1,12 @@
+// tidal-rules: PRIM-5
+// tidal-expect: accept
+static_assert('\n' == 10);
+static_assert('\0' == 0);
+static_assert('\x41' == 'A');
+static_assert('\101' == 'A');
+static_assert('\\' == 92);
+static_assert('\'' == 39);
+static_assert(U'\u00e9' == 0xe9);
+static_assert(U'\U0001F600' == 0x1F600);
+static_assert(u'\x{41}' == 65);
+static_assert('\o{101}' == 65);

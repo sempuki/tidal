@@ -1,0 +1,9 @@
+// tidal-rules: PRIM-3
+// tidal-expect: accept
+static_assert(0b1010 == 10);
+static_assert(0B11 == 3);
+static_assert(017 == 15);
+static_assert(0x1F == 31);
+static_assert(1'000'000 == 1000000);
+static_assert(0b1111'0000 == 240);
+static_assert(0 == 0x0);
