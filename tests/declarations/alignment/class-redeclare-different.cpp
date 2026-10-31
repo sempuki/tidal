@@ -1,0 +1,6 @@
+// tidal-rules: ALN-3
+// tidal-expect: reject
+// tidal-expect-gcc: accept
+// tidal-note: Q-0070. GCC accepts a class definition with an alignas different from an earlier declaration. Clang and EDG reject it.
+struct alignas(8) S;
+struct alignas(16) S { int v; };

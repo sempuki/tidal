@@ -7,6 +7,10 @@
 
 A variable is declared with one `alignas` and defined with a different one, or declared with `alignas` and defined without it. Clang and EDG reject both. GCC accepts both.
 
+GCC also accepts two declarations of one class with different `alignas`
+(`tests/declarations/alignment/`, gap review 2026-10-31). Clang and EDG
+reject them.
+
 ## Options
 
 1. If a declaration has `alignas`, the definition must have the same alignment.
