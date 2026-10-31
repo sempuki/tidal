@@ -129,6 +129,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0116](Q-0116-designer-persona-as-source-reader.md) | Should a designer persona that knows WG21 papers also run, as a source reader? | provisional | no, the clean-room designer only for now |
 | [Q-0117](Q-0117-constant-union-with-no-active-member.md) | Is a union with no active member a valid constant? | provisional | yes; GCC rejects it |
 | [Q-0118](Q-0118-instantiation-before-deduction.md) | Should instantiation (N2) come before deduction (O) in phase 4? | provisional | no, O first |
+| [Q-0119](Q-0119-diagram-format.md) | Should diagrams use a renderer such as Mermaid, or plain text? | provisional | plain text |
 
 ## Status values
 

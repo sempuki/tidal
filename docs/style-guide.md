@@ -17,6 +17,7 @@ Maintenance Group. The rules below are the ones that apply most often.
 | Use the present tense. | `The variable is destroyed.` | `The variable will be destroyed.` |
 | Use a word with one meaning only. | `rejects` | `rejects`, `refuses`, `does not accept` for the same thing |
 | Use a list for three or more items or conditions. | A bullet list | A long sentence with commas |
+| Use a table to compare cases on more than one property. | A table with one row per case | Parallel sentences that repeat their structure |
 | Put the condition first. | `If the value is zero, the behavior is undefined.` | `The behavior is undefined if, after conversion, the value is zero.` |
 | Do not use cleft sentences. | `The cache makes this fast.` | `It is the cache that makes this fast.` |
 | Do not define a thing by what it is not. | `This is a design decision.` | `This is not a bug but a design decision.` |
@@ -70,6 +71,11 @@ A principle is a `principle` directive:
   construct is for and what model the rules follow from. It can say why.
   Where it names three or more items, cases, or steps, it uses a list,
   as everywhere else (section 1).
+- Prefer a table or a diagram to prose wherever it says the same thing
+  in less text. A principle that compares cases, kinds, or operators
+  gives the comparison as a table. One that describes an order, a flow,
+  a hierarchy, or an object layout draws it as a plain-text diagram in a
+  `text` code block. The prose that remains says why.
 - `:rules:` lists the rules on the same page that are its evidence. Every
   rule on a page with principles must appear in one `:rules:` or
   `:exceptions:` list.
