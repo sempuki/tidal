@@ -151,8 +151,8 @@ The behavior is undefined in these cases:
 :kind: unspecified
 :tests: expressions/member-pointers/compare-virtual-function-unspecified.cpp
 
-If either operand of `==` is a pointer to a virtual member function, the
-result is unspecified.
+A comparison that involves a pointer to a virtual member function gives
+an unspecified result. A program must not rely on it.
 :::
 
 ## Examples
