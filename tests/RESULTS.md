@@ -1539,6 +1539,49 @@ compilers affect the Status column.
 | `expressions/conversions/to-signed-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/to-unsigned-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/void-pointer-to-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/abstract-prvalue-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/as-type-specifier.cpp` | DTY-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/base-specifier.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/bitfield-declared.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/captured-in-lambda.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/conditional.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/constexpr-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `expressions/decltype/decltype-auto-function.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/deleted-function-in-unevaluated.cpp` | UNEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/discarded-call-runs.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/discarded-constant.cpp` | UNEV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/discarded-prvalue-materialized.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/discarded-reference-no-copy.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/discarded-warns.cpp` | UNEV-3 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/enumerator-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/function-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/incomplete-return-prvalue.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/incomplete-return-sizeof.cpp` | UNEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/lambda-in-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/member-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/member-without-object.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/name-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/nested-class-member-evaluated.cpp` | UNEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/nested-class-member-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/nested-name.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/no-definition-needed.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/no-side-effects.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/odr-use-not-counted.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/decltype/overloaded-name.cpp` | DTY-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/parameter-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/paren-lvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/private-access-still-checked.cpp` | UNEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/decltype/prvalue-const-class.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/prvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/decltype/string-literal.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/structured-binding-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/template-instantiation-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/trailing-return.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/ub-not-evaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/void-cast-no-warning.cpp` | UNEV-2 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/xvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/capture-abstract.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capture-by-copy-at-creation.cpp` | LAM-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/lambdas/capture-by-reference.cpp` | LAM-4 | run | run | run | accept | run | run | run | run | pass |
@@ -1593,6 +1636,59 @@ compilers affect the Status column.
 | `expressions/logical/short-circuit-and.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/logical/short-circuit-or.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/logical/values.cpp` | LOG-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/address-of-bound-member.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/ambiguous-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/arrow-star.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/base-to-derived-implicit.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/call-const-on-nonconst.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/call-drops-const.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/call-needs-parens.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/call-result-only.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-equal.cpp` | MPTR-5 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/compare-relational.cpp` | MPTR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-virtual-function-unspecified.cpp` | MPTR-7 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/constexpr-use.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-alias.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/declare-cv.cpp` | MPTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-data.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/declare-function.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/declare-incomplete.cpp` | MPTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-non-class.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-pointer-to-reference.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-reference-member.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-void-member.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/derived-object.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/derived-to-base-implicit.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/derived-to-base-static-cast.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` | MPTR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-bitfield.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-constructor.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-function-without-amp.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-needs-qualified.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-overloaded-target.cpp` | MPTR-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/form-parenthesized-not-member-pointer.cpp` | MPTR-2 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/form-private-access.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-static-ordinary-pointer.cpp` | MPTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/form-type.cpp` | MPTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/incomplete-object.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/null-converts.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/null-use-constant.cpp` | MPTR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/precedence.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/ref-qualified-lvalue-only.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/reinterpret-between.cpp` | MPTR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/reinterpret-data-to-function.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/result-const.cpp` | MPTR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/result-lvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/result-xvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/rhs-not-member-pointer.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/static-cast-from-int-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/to-bool.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/member-pointers/unrelated-object.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/virtual-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/virtual-call.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/enum-float-warns.cpp` | MUL-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -1681,6 +1777,85 @@ compilers affect the Status column.
 | `expressions/postfix/subscript-prvalue-array.cpp` | PFX-3 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
 | `expressions/postfix/subscript-scoped-enum-index.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/subscript-two-integers.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/bool-nullptr.cpp` | PRIM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-delimited-empty.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-empty.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-escape-out-of-range.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-escapes.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-hex-no-digits.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-multichar-warns.cpp` | PRIM-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-multichar.cpp` | PRIM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-octal-too-large.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-plain-signedness.cpp` | PRIM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-types.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-u8-not-single-byte.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-ucn-basic.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-ucn-control.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-ucn-surrogate.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unicode-multichar.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unknown-escape.cpp` | PRIM-18 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char16-not-bmp.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-exponent-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-exponent-sign-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-forms.cpp` | PRIM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/float-hex-needs-exponent.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-integer-suffix.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-overflow-warns.cpp` | PRIM-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
+| `expressions/primary/float-types.cpp` | PRIM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-bad-digit-binary.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/int-bad-digit-octal.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/int-bad-suffix.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/int-decimal-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-forms.cpp` | PRIM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-hex-fits-unsigned-ll.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-hex-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-negative-is-unary.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-separator-leading.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/int-separator-trailing.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/int-size-suffix.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-suffix-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-too-large-signed-decimal.cpp` | PRIM-2 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/primary/int-too-large.cpp` | PRIM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/name-enumerator-prvalue.cpp` | PRIM-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/name-function-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/name-member-in-static.cpp` | PRIM-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/name-member-outside-object.cpp` | PRIM-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/name-member-unevaluated.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/name-parameter-in-scope.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/name-qualified-class-static.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/name-qualified-global.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/name-undeclared.cpp` | PRIM-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/name-variable-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/nullptr-member-pointer.cpp` | PRIM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/nullptr-to-bool-copy.cpp` | PRIM-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/nullptr-to-int.cpp` | PRIM-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/paren-function-call.cpp` | PRIM-14 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/paren-lvalue.cpp` | PRIM-14 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/paren-same-type.cpp` | PRIM-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-compare-constant.cpp` | PRIM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-concat-mixed.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-concat-u8-u.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-concat.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-escape-in-string.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-index-constant.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-lvalue.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-modify-constant.cpp` | PRIM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-bad-delimiter.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-backslash.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-too-long.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-long-delimiter.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-raw.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/string-same-object-either.cpp` | PRIM-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/string-to-nonconst-pointer.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/string-type.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/this-const-member-modify.cpp` | PRIM-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/this-default-member-init.cpp` | PRIM-11 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/this-implicit-member.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/primary/this-namespace.cpp` | PRIM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/this-prvalue.cpp` | PRIM-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/this-static.cpp` | PRIM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/this-type.cpp` | PRIM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/braced-list-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
@@ -1940,7 +2115,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1925/1925 tests pass on baseline compilers.
+2100/2100 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -7042,6 +7217,54 @@ check that the rejection has the intended cause.
 - `expressions/conversions/void-pointer-to-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
 - `expressions/conversions/void-pointer-to-pointer.cpp` (gcc-16): error: invalid conversion from 'void*' to 'int*' [-fpermissive]
 - `expressions/conversions/void-pointer-to-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
+- `expressions/decltype/declarative-nested-name.cpp` (clang-host): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
+- `expressions/decltype/declarative-nested-name.cpp` (edg-7.0): error: a decltype-qualified name is nonstandard in this declaration context
+- `expressions/decltype/declarative-nested-name.cpp` (clang-18): error: 'decltype' cannot be used to name a declaration
+- `expressions/decltype/declarative-nested-name.cpp` (clang-22): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (clang-host): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (gcc-host): error: use of deleted function ‘int f()’ / error: use of deleted function ‘int f()’
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (edg-7.0): error: function "f()" (declared at line 3) cannot be referenced -- it is a deleted function
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (gcc-14): error: use of deleted function 'int f()' / error: use of deleted function 'int f()'
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (clang-18): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (gcc-16): error: use of deleted function 'int f()' / error: use of deleted function 'int f()'
+- `expressions/decltype/deleted-function-in-unevaluated.cpp` (clang-22): error: call to deleted function 'f' / note: candidate function has been explicitly deleted
+- `expressions/decltype/discarded-warns.cpp` (clang-host): error: equality comparison result unused [-Werror,-Wunused-comparison] / note: use '=' to turn this equality comparison into an assignment
+- `expressions/decltype/discarded-warns.cpp` (gcc-host): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-warns.cpp` (gcc-14): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-warns.cpp` (clang-18): error: equality comparison result unused [-Werror,-Wunused-comparison] / note: use '=' to turn this equality comparison into an assignment
+- `expressions/decltype/discarded-warns.cpp` (gcc-16): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-warns.cpp` (clang-22): error: equality comparison result unused [-Werror,-Wunused-comparison] / note: use '=' to turn this equality comparison into an assignment
+- `expressions/decltype/incomplete-return-sizeof.cpp` (clang-host): error: calling 'make' with incomplete return type 'Inc' / note: forward declaration of 'Inc'
+- `expressions/decltype/incomplete-return-sizeof.cpp` (gcc-host): error: invalid use of incomplete type ‘struct Inc’ / note: forward declaration of ‘struct Inc’
+- `expressions/decltype/incomplete-return-sizeof.cpp` (edg-7.0): error: function "make" returns incomplete type "Inc"
+- `expressions/decltype/incomplete-return-sizeof.cpp` (gcc-14): error: invalid use of incomplete type 'struct Inc' / note: forward declaration of 'struct Inc'
+- `expressions/decltype/incomplete-return-sizeof.cpp` (clang-18): error: calling 'make' with incomplete return type 'Inc' / note: forward declaration of 'Inc'
+- `expressions/decltype/incomplete-return-sizeof.cpp` (gcc-16): error: invalid use of incomplete type 'struct Inc' / note: forward declaration of 'struct Inc'
+- `expressions/decltype/incomplete-return-sizeof.cpp` (clang-22): error: calling 'make' with incomplete return type 'Inc' / note: forward declaration of 'Inc'
+- `expressions/decltype/nested-class-member-evaluated.cpp` (clang-host): error: use of non-static data member 'm' of 'O' from nested type 'I'
+- `expressions/decltype/nested-class-member-evaluated.cpp` (gcc-host): error: invalid use of non-static data member ‘O::m’
+- `expressions/decltype/nested-class-member-evaluated.cpp` (edg-7.0): error: a nonstatic member reference must be relative to a specific object
+- `expressions/decltype/nested-class-member-evaluated.cpp` (gcc-14): error: invalid use of non-static data member 'O::m'
+- `expressions/decltype/nested-class-member-evaluated.cpp` (clang-18): error: use of non-static data member 'm' of 'O' from nested type 'I'
+- `expressions/decltype/nested-class-member-evaluated.cpp` (gcc-16): error: invalid use of non-static data member 'O::m'
+- `expressions/decltype/nested-class-member-evaluated.cpp` (clang-22): error: use of non-static data member 'm' of 'O' from nested type 'I'
+- `expressions/decltype/overloaded-name.cpp` (clang-host): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call
+- `expressions/decltype/overloaded-name.cpp` (gcc-host): error: ‘decltype’ cannot resolve address of overloaded function
+- `expressions/decltype/overloaded-name.cpp` (edg-7.0): error: cannot determine which instance of overloaded function "f" is intended
+- `expressions/decltype/overloaded-name.cpp` (gcc-14): error: 'decltype' cannot resolve address of overloaded function
+- `expressions/decltype/overloaded-name.cpp` (clang-18): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call
+- `expressions/decltype/overloaded-name.cpp` (gcc-16): error: 'decltype' cannot resolve address of overloaded function
+- `expressions/decltype/overloaded-name.cpp` (clang-22): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call
+- `expressions/decltype/private-access-still-checked.cpp` (clang-host): error: 'm' is a private member of 'P' / note: implicitly declared private here
+- `expressions/decltype/private-access-still-checked.cpp` (gcc-host): error: ‘int P::m’ is private within this context / note: declared private here
+- `expressions/decltype/private-access-still-checked.cpp` (edg-7.0): error: member "P::m" (declared at line 3) is inaccessible
+- `expressions/decltype/private-access-still-checked.cpp` (gcc-14): error: 'int P::m' is private within this context / note: declared private here
+- `expressions/decltype/private-access-still-checked.cpp` (clang-18): error: 'm' is a private member of 'P' / note: implicitly declared private here
+- `expressions/decltype/private-access-still-checked.cpp` (gcc-16): error: 'int P::m' is private within this context / note: declared private here
+- `expressions/decltype/private-access-still-checked.cpp` (clang-22): error: 'm' is a private member of 'P' / note: implicitly declared private here
+- `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-host): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
+- `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-18): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
+- `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-22): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
 - `expressions/lambdas/capture-abstract.cpp` (clang-host): error: by-copy capture of value of abstract type 'Shape' / note: unimplemented pure virtual method 'area' in 'Shape'
 - `expressions/lambdas/capture-abstract.cpp` (gcc-host): error: cannot declare field ‘f(Shape&)::<lambda()>::<s capture>’ to be of abstract type ‘Shape’ / note: because the following virtual functions are pure within ‘Shape’:
 - `expressions/lambdas/capture-abstract.cpp` (edg-7.0): error: object of abstract class type "Shape" is not allowed:
@@ -7179,6 +7402,195 @@ check that the rejection has the intended cause.
 - `expressions/logical/parentheses-warns.cpp` (clang-18): error: '&&' within '\|\|' [-Werror,-Wlogical-op-parentheses] / note: place parentheses around the '&&' expression to silence this warning
 - `expressions/logical/parentheses-warns.cpp` (gcc-16): error: suggest parentheses around '&&' within '\|\|' [-Werror=parentheses]
 - `expressions/logical/parentheses-warns.cpp` (clang-22): error: '&&' within '\|\|' [-Werror,-Wlogical-op-parentheses] / note: place parentheses around the '&&' expression to silence this warning
+- `expressions/member-pointers/address-of-bound-member.cpp` (clang-host): error: cannot create a non-constant pointer to member function
+- `expressions/member-pointers/address-of-bound-member.cpp` (gcc-host): error: ISO C++ forbids taking the address of a bound member function to form a pointer to member function.  Say ‘&S::f’ [-fpermissive]
+- `expressions/member-pointers/address-of-bound-member.cpp` (edg-7.0): error: a pointer to a bound function may only be used to call the function
+- `expressions/member-pointers/address-of-bound-member.cpp` (gcc-14): error: ISO C++ forbids taking the address of a bound member function to form a pointer to member function.  Say '&S::f' [-fpermissive]
+- `expressions/member-pointers/address-of-bound-member.cpp` (clang-18): error: cannot create a non-constant pointer to member function
+- `expressions/member-pointers/address-of-bound-member.cpp` (gcc-16): error: ISO C++ forbids taking the address of a bound member function to form a pointer to member function.  Say '&S::f' [-fpermissive]
+- `expressions/member-pointers/address-of-bound-member.cpp` (clang-22): error: cannot create a non-constant pointer to member function
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (clang-host): error: ambiguous conversion from pointer to member of base class 'A' to pointer to member of derived class 'D':
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (gcc-host): error: ‘A’ is an ambiguous base of ‘D’ / note:    in pointer to member function conversion
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (edg-7.0): error: derived class "D" contains more than one instance of class "A"
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (gcc-14): error: 'A' is an ambiguous base of 'D' / note:    in pointer to member function conversion
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (clang-18): error: ambiguous conversion from pointer to member of base class 'A' to pointer to member of derived class 'D':
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (gcc-16): error: 'A' is an ambiguous base of 'D' / note:    in pointer to member function conversion
+- `expressions/member-pointers/ambiguous-base-conversion.cpp` (clang-22): error: ambiguous conversion from pointer to member of base class 'A' to pointer to member of derived class 'D':
+- `expressions/member-pointers/call-drops-const.cpp` (clang-host): error: call to pointer to member function of type 'int ()' drops 'const' qualifier
+- `expressions/member-pointers/call-drops-const.cpp` (gcc-host): error: invalid conversion from ‘const S*’ to ‘S*’ [-fpermissive]
+- `expressions/member-pointers/call-drops-const.cpp` (edg-7.0): error: the object has type qualifiers that are not compatible with the member function
+- `expressions/member-pointers/call-drops-const.cpp` (gcc-14): error: invalid conversion from 'const S*' to 'S*' [-fpermissive]
+- `expressions/member-pointers/call-drops-const.cpp` (clang-18): error: call to pointer to member function of type 'int ()' drops 'const' qualifier
+- `expressions/member-pointers/call-drops-const.cpp` (gcc-16): error: invalid conversion from 'const S*' to 'S*' [-fpermissive]
+- `expressions/member-pointers/call-drops-const.cpp` (clang-22): error: call to pointer to member function of type 'int ()' drops 'const' qualifier
+- `expressions/member-pointers/call-needs-parens.cpp` (clang-host): error: called object type 'int (S::*)(int) const' is not a function or function pointer
+- `expressions/member-pointers/call-needs-parens.cpp` (gcc-host): error: must use ‘.*’ or ‘->*’ to call pointer-to-member function in ‘pf (...)’, e.g. ‘(... ->* pf) (...)’
+- `expressions/member-pointers/call-needs-parens.cpp` (edg-7.0): error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+- `expressions/member-pointers/call-needs-parens.cpp` (gcc-14): error: must use '.*' or '->*' to call pointer-to-member function in 'pf (...)', e.g. '(... ->* pf) (...)'
+- `expressions/member-pointers/call-needs-parens.cpp` (clang-18): error: called object type 'int (S::*)(int) const' is not a function or function pointer
+- `expressions/member-pointers/call-needs-parens.cpp` (gcc-16): error: must use '.*' or '->*' to call pointer-to-member function in 'pf (...)', e.g. '(... ->* pf) (...)'
+- `expressions/member-pointers/call-needs-parens.cpp` (clang-22): error: called object type 'int (S::*)(int) const' is not a function or function pointer
+- `expressions/member-pointers/call-result-only.cpp` (clang-host): error: reference to non-static member function must be called
+- `expressions/member-pointers/call-result-only.cpp` (gcc-host): error: unable to deduce ‘auto’ from ‘s.*pf’ / note:   member function type ‘int (S::)(int) const’ is not a valid template argument
+- `expressions/member-pointers/call-result-only.cpp` (edg-7.0): error: a pointer to a bound function may only be used to call the function
+- `expressions/member-pointers/call-result-only.cpp` (gcc-14): error: unable to deduce 'auto' from 's.*pf' / note:   member function type 'int (S::)(int) const' is not a valid template argument
+- `expressions/member-pointers/call-result-only.cpp` (clang-18): error: reference to non-static member function must be called
+- `expressions/member-pointers/call-result-only.cpp` (gcc-16): error: unable to deduce 'auto' from 's.*pf' / note:   member function type 'int (S::)(int) const' is not a valid template argument
+- `expressions/member-pointers/call-result-only.cpp` (clang-22): error: reference to non-static member function must be called
+- `expressions/member-pointers/compare-relational.cpp` (clang-host): error: invalid operands to binary expression ('int S::*' and 'int S::*')
+- `expressions/member-pointers/compare-relational.cpp` (gcc-host): error: invalid operands of types ‘int S::*’ and ‘int S::*’ to binary ‘operator<’
+- `expressions/member-pointers/compare-relational.cpp` (edg-7.0): error: expression must have arithmetic, unscoped enum, or pointer type but has type "int S::*"
+- `expressions/member-pointers/compare-relational.cpp` (gcc-14): error: invalid operands of types 'int S::*' and 'int S::*' to binary 'operator<'
+- `expressions/member-pointers/compare-relational.cpp` (clang-18): error: invalid operands to binary expression ('int S::*' and 'int S::*')
+- `expressions/member-pointers/compare-relational.cpp` (gcc-16): error: invalid operands of types 'int S::*' and 'int S::*' to binary 'operator<'
+- `expressions/member-pointers/compare-relational.cpp` (clang-22): error: invalid operands to binary expression ('int S::*' and 'int S::*')
+- `expressions/member-pointers/declare-non-class.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier / error: 'pm' does not point into a class
+- `expressions/member-pointers/declare-non-class.cpp` (gcc-host): error: expected id-expression before ‘*’ token
+- `expressions/member-pointers/declare-non-class.cpp` (edg-7.0): error: invalid combination of type specifiers / error: expected an identifier
+- `expressions/member-pointers/declare-non-class.cpp` (gcc-14): error: expected id-expression before '*' token
+- `expressions/member-pointers/declare-non-class.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier / error: 'pm' does not point into a class
+- `expressions/member-pointers/declare-non-class.cpp` (gcc-16): error: expected id-expression before '*' token
+- `expressions/member-pointers/declare-non-class.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier / error: 'pm' does not point into a class
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (clang-host): error: 'pm' declared as a member pointer to a reference of type 'int &'
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (gcc-host): error: cannot declare pointer to ‘int&’
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (edg-7.0): error: pointer to member of reference type is not allowed
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (gcc-14): error: cannot declare pointer to 'int&'
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (clang-18): error: 'pm' declared as a member pointer to a reference of type 'int &'
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (gcc-16): error: cannot declare pointer to 'int&'
+- `expressions/member-pointers/declare-pointer-to-reference.cpp` (clang-22): error: 'pm' declared as a member pointer to a reference of type 'int &'
+- `expressions/member-pointers/declare-reference-member.cpp` (clang-host): error: cannot form a pointer-to-member to member 'r' of reference type 'int &'
+- `expressions/member-pointers/declare-reference-member.cpp` (gcc-host): error: cannot create pointer to reference member ‘S::r’
+- `expressions/member-pointers/declare-reference-member.cpp` (edg-7.0): error: pointer to member of type "int &" is not allowed
+- `expressions/member-pointers/declare-reference-member.cpp` (gcc-14): error: cannot create pointer to reference member 'S::r'
+- `expressions/member-pointers/declare-reference-member.cpp` (clang-18): error: cannot form a pointer-to-member to member 'r' of reference type 'int &'
+- `expressions/member-pointers/declare-reference-member.cpp` (gcc-16): error: cannot create pointer to reference member 'S::r'
+- `expressions/member-pointers/declare-reference-member.cpp` (clang-22): error: cannot form a pointer-to-member to member 'r' of reference type 'int &'
+- `expressions/member-pointers/declare-void-member.cpp` (clang-host): error: 'pm' declared as a member pointer to void
+- `expressions/member-pointers/declare-void-member.cpp` (gcc-host): error: cannot declare pointer to ‘void’ member
+- `expressions/member-pointers/declare-void-member.cpp` (edg-7.0): error: pointer to member of type void is not allowed
+- `expressions/member-pointers/declare-void-member.cpp` (gcc-14): error: cannot declare pointer to 'void' member
+- `expressions/member-pointers/declare-void-member.cpp` (clang-18): error: 'pm' declared as a member pointer to void
+- `expressions/member-pointers/declare-void-member.cpp` (gcc-16): error: cannot declare pointer to 'void' member
+- `expressions/member-pointers/declare-void-member.cpp` (clang-22): error: 'pm' declared as a member pointer to void
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (clang-host): error: cannot initialize a variable of type 'int B::*' with an rvalue of type 'int D::*': different classes ('B' vs 'D')
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (gcc-host): error: cannot convert ‘int D::*’ to ‘int B::*’ in initialization
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (edg-7.0): error: a value of type "int D::*" cannot be used to initialize an entity of type "int B::*"
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (gcc-14): error: cannot convert 'int D::*' to 'int B::*' in initialization
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (clang-18): error: cannot initialize a variable of type 'int B::*' with an rvalue of type 'int D::*': different classes ('B' vs 'D')
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (gcc-16): error: cannot convert 'int D::*' to 'int B::*' in initialization
+- `expressions/member-pointers/derived-to-base-implicit.cpp` (clang-22): error: cannot initialize a variable of type 'int B::*' with an rvalue of type 'int D::*': different classes ('B' vs 'D')
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: subexpression not valid in a constant expression
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘*(((int*)(& b)) + ((sizetype)pm))’ is not a constant expression
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to member "D::y" in object of complete type "B"
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: '*(((int*)(& b)) + ((sizetype)pm))' is not a constant expression
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: subexpression not valid in a constant expression
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: '*(((int*)(& b)) + ((sizetype)pm))' is not a constant expression
+- `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: subexpression not valid in a constant expression
+- `expressions/member-pointers/form-bitfield.cpp` (clang-host): error: address of bit-field requested
+- `expressions/member-pointers/form-bitfield.cpp` (gcc-host): error: invalid pointer to bit-field ‘B::x’
+- `expressions/member-pointers/form-bitfield.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `expressions/member-pointers/form-bitfield.cpp` (gcc-14): error: invalid pointer to bit-field 'B::x'
+- `expressions/member-pointers/form-bitfield.cpp` (clang-18): error: address of bit-field requested
+- `expressions/member-pointers/form-bitfield.cpp` (gcc-16): error: invalid pointer to bit-field 'B::x'
+- `expressions/member-pointers/form-bitfield.cpp` (clang-22): error: address of bit-field requested
+- `expressions/member-pointers/form-constructor.cpp` (clang-host): error: qualified reference to 'C' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `expressions/member-pointers/form-constructor.cpp` (gcc-host): error: taking address of constructor ‘constexpr C::C(C&&)’
+- `expressions/member-pointers/form-constructor.cpp` (edg-7.0): error: a constructor or destructor may not have its address taken
+- `expressions/member-pointers/form-constructor.cpp` (gcc-14): error: taking address of constructor 'constexpr C::C(C&&)'
+- `expressions/member-pointers/form-constructor.cpp` (clang-18): error: qualified reference to 'C' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `expressions/member-pointers/form-constructor.cpp` (gcc-16): error: taking address of constructor 'constexpr C::C(C&&)'
+- `expressions/member-pointers/form-constructor.cpp` (clang-22): error: qualified reference to 'C' is a constructor name rather than a type in this context / error: expected '(' for function-style cast or type construction
+- `expressions/member-pointers/form-function-without-amp.cpp` (clang-host): error: call to non-static member function without an object argument
+- `expressions/member-pointers/form-function-without-amp.cpp` (gcc-host): error: invalid use of non-static member function ‘int S::f(int) const’
+- `expressions/member-pointers/form-function-without-amp.cpp` (edg-7.0): error: nonstandard form for taking the address of a member function
+- `expressions/member-pointers/form-function-without-amp.cpp` (gcc-14): error: invalid use of non-static member function 'int S::f(int) const'
+- `expressions/member-pointers/form-function-without-amp.cpp` (clang-18): error: call to non-static member function without an object argument
+- `expressions/member-pointers/form-function-without-amp.cpp` (gcc-16): error: invalid use of non-static member function 'int S::f(int) const'
+- `expressions/member-pointers/form-function-without-amp.cpp` (clang-22): error: call to non-static member function without an object argument
+- `expressions/member-pointers/form-needs-qualified.cpp` (clang-host): error: cannot initialize return object of type 'int T::*' with an rvalue of type 'int *'
+- `expressions/member-pointers/form-needs-qualified.cpp` (gcc-host): error: cannot convert ‘int*’ to ‘int T::*’ in return
+- `expressions/member-pointers/form-needs-qualified.cpp` (edg-7.0): error: return value type does not match the function type
+- `expressions/member-pointers/form-needs-qualified.cpp` (gcc-14): error: cannot convert 'int*' to 'int T::*' in return
+- `expressions/member-pointers/form-needs-qualified.cpp` (clang-18): error: cannot initialize return object of type 'int T::*' with an rvalue of type 'int *'
+- `expressions/member-pointers/form-needs-qualified.cpp` (gcc-16): error: cannot convert 'int*' to 'int T::*' in return
+- `expressions/member-pointers/form-needs-qualified.cpp` (clang-22): error: cannot initialize return object of type 'int T::*' with an rvalue of type 'int *'
+- `expressions/member-pointers/form-private-access.cpp` (clang-host): error: 'x' is a private member of 'P' / note: implicitly declared private here
+- `expressions/member-pointers/form-private-access.cpp` (gcc-host): error: ‘int P::x’ is private within this context / note: declared private here
+- `expressions/member-pointers/form-private-access.cpp` (edg-7.0): error: member "P::x" (declared at line 3) is inaccessible
+- `expressions/member-pointers/form-private-access.cpp` (gcc-14): error: 'int P::x' is private within this context / note: declared private here
+- `expressions/member-pointers/form-private-access.cpp` (clang-18): error: 'x' is a private member of 'P' / note: implicitly declared private here
+- `expressions/member-pointers/form-private-access.cpp` (gcc-16): error: 'int P::x' is private within this context / note: declared private here
+- `expressions/member-pointers/form-private-access.cpp` (clang-22): error: 'x' is a private member of 'P' / note: implicitly declared private here
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int S::*'
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (gcc-host): error: cannot convert ‘int S::*’ to ‘int*’ in initialization
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (edg-7.0): error: a value of type "int S::*" cannot be used to initialize an entity of type "int *"
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (gcc-14): error: cannot convert 'int S::*' to 'int*' in initialization
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int S::*'
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (gcc-16): error: cannot convert 'int S::*' to 'int*' in initialization
+- `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int S::*'
+- `expressions/member-pointers/null-use-constant.cpp` (clang-host): error: constexpr variable 'v' must be initialized by a constant expression
+- `expressions/member-pointers/null-use-constant.cpp` (gcc-host): error: ‘*(((const int*)(& cs)) + -1)’ is not a constant expression
+- `expressions/member-pointers/null-use-constant.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to dereference a null pointer-to-member (data member)
+- `expressions/member-pointers/null-use-constant.cpp` (gcc-14): error: '*(((const int*)(& cs)) + -1)' is not a constant expression
+- `expressions/member-pointers/null-use-constant.cpp` (clang-18): error: constexpr variable 'v' must be initialized by a constant expression
+- `expressions/member-pointers/null-use-constant.cpp` (gcc-16): error: '*(((const int*)(& cs)) + -1)' is not a constant expression
+- `expressions/member-pointers/null-use-constant.cpp` (clang-22): error: constexpr variable 'v' must be initialized by a constant expression
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (clang-host): error: pointer-to-member function type 'int (R::*)() &' can only be called on an lvalue
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (gcc-host): error: pointer-to-member-function type ‘int (R::*)() &’ requires an lvalue
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (edg-7.0): error: a pointer-to-member function with type "int (R::*)() &" can only be used with an lvalue object
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (gcc-14): error: pointer-to-member-function type 'int (R::*)() &' requires an lvalue
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (clang-18): error: pointer-to-member function type 'int (R::*)() &' can only be called on an lvalue
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (gcc-16): error: pointer-to-member-function type 'int (R::*)() &' requires an lvalue
+- `expressions/member-pointers/ref-qualified-lvalue-only.cpp` (clang-22): error: pointer-to-member function type 'int (R::*)() &' can only be called on an lvalue
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (clang-host): error: reinterpret_cast from 'int S::*' to 'int (S::*)()' is not allowed
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (gcc-host): error: invalid cast from type ‘int S::*’ to type ‘int (S::*)()’
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (edg-7.0): error: invalid type conversion
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (gcc-14): error: invalid cast from type 'int S::*' to type 'int (S::*)()'
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (clang-18): error: reinterpret_cast from 'int S::*' to 'int (S::*)()' is not allowed
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (gcc-16): error: invalid cast from type 'int S::*' to type 'int (S::*)()'
+- `expressions/member-pointers/reinterpret-data-to-function.cpp` (clang-22): error: reinterpret_cast from 'int S::*' to 'int (S::*)()' is not allowed
+- `expressions/member-pointers/result-const.cpp` (clang-host): error: read-only variable is not assignable
+- `expressions/member-pointers/result-const.cpp` (gcc-host): error: assignment of read-only location ‘*(((const int*)s) + ((sizetype)pm))’
+- `expressions/member-pointers/result-const.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/member-pointers/result-const.cpp` (gcc-14): error: assignment of read-only location '*(((const int*)s) + ((sizetype)pm))'
+- `expressions/member-pointers/result-const.cpp` (clang-18): error: read-only variable is not assignable
+- `expressions/member-pointers/result-const.cpp` (gcc-16): error: assignment of read-only location '*(((const int*)s) + ((sizetype)pm))'
+- `expressions/member-pointers/result-const.cpp` (clang-22): error: read-only variable is not assignable
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (clang-host): error: right hand operand to .* has non-pointer-to-member type 'int'
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (gcc-host): error: ‘5’ cannot be used as a member pointer, since it is of type ‘int’
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (edg-7.0): error: expression must have pointer-to-member type
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (gcc-14): error: '5' cannot be used as a member pointer, since it is of type 'int'
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (clang-18): error: right hand operand to .* has non-pointer-to-member type 'int'
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (gcc-16): error: '5' cannot be used as a member pointer, since it is of type 'int'
+- `expressions/member-pointers/rhs-not-member-pointer.cpp` (clang-22): error: right hand operand to .* has non-pointer-to-member type 'int'
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (clang-host): error: pointer-to-member function type 'int (R::*)() &&' can only be called on an rvalue
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (gcc-host): error: pointer-to-member-function type ‘int (R::*)() &&’ requires an rvalue
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (edg-7.0): error: a pointer-to-member function with type "int (R::*)() &&" can only be used with an rvalue object
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (gcc-14): error: pointer-to-member-function type 'int (R::*)() &&' requires an rvalue
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (clang-18): error: pointer-to-member function type 'int (R::*)() &&' can only be called on an rvalue
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (gcc-16): error: pointer-to-member-function type 'int (R::*)() &&' requires an rvalue
+- `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` (clang-22): error: pointer-to-member function type 'int (R::*)() &&' can only be called on an rvalue
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (clang-host): error: cannot cast from type 'int *' to member pointer type 'int S::*'
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (gcc-host): error: invalid ‘static_cast’ from type ‘int*’ to type ‘int S::*’
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (edg-7.0): error: invalid type conversion
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (gcc-14): error: invalid 'static_cast' from type 'int*' to type 'int S::*'
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (clang-18): error: cannot cast from type 'int *' to member pointer type 'int S::*'
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (gcc-16): error: invalid 'static_cast' from type 'int*' to type 'int S::*'
+- `expressions/member-pointers/static-cast-from-int-pointer.cpp` (clang-22): error: cannot cast from type 'int *' to member pointer type 'int S::*'
+- `expressions/member-pointers/unrelated-object.cpp` (clang-host): error: left hand operand to .* must be a class compatible with the right hand operand, but is 'U'
+- `expressions/member-pointers/unrelated-object.cpp` (gcc-host): error: pointer to member type ‘int S::*’ incompatible with object type ‘U’ because ‘U’ is not derived from ‘S’
+- `expressions/member-pointers/unrelated-object.cpp` (edg-7.0): error: pointer-to-member selection class types are incompatible ("U" and "S")
+- `expressions/member-pointers/unrelated-object.cpp` (gcc-14): error: pointer to member type 'int' incompatible with object type 'U'
+- `expressions/member-pointers/unrelated-object.cpp` (clang-18): error: left hand operand to .* must be a class compatible with the right hand operand, but is 'U'
+- `expressions/member-pointers/unrelated-object.cpp` (gcc-16): error: pointer to member type 'int S::*' incompatible with object type 'U' because 'U' is not derived from 'S'
+- `expressions/member-pointers/unrelated-object.cpp` (clang-22): error: left hand operand to .* must be a class compatible with the right hand operand, but is 'U'
+- `expressions/member-pointers/virtual-base-conversion.cpp` (clang-host): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
+- `expressions/member-pointers/virtual-base-conversion.cpp` (gcc-host): error: pointer to member conversion via virtual base ‘B’
+- `expressions/member-pointers/virtual-base-conversion.cpp` (edg-7.0): error: cannot convert pointer to member of base class "B" to pointer to member of derived class "D" -- base class is virtual
+- `expressions/member-pointers/virtual-base-conversion.cpp` (gcc-14): error: pointer to member conversion via virtual base 'B'
+- `expressions/member-pointers/virtual-base-conversion.cpp` (clang-18): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
+- `expressions/member-pointers/virtual-base-conversion.cpp` (gcc-16): error: pointer to member conversion via virtual base 'B'
+- `expressions/member-pointers/virtual-base-conversion.cpp` (clang-22): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
 - `expressions/multiplicative/divide-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/multiplicative/divide-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `expressions/multiplicative/divide-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
@@ -7535,6 +7947,290 @@ check that the rejection has the intended cause.
 - `expressions/postfix/subscript-two-integers.cpp` (clang-18): error: subscripted value is not an array, pointer, or vector
 - `expressions/postfix/subscript-two-integers.cpp` (gcc-16): error: invalid types 'int[int]' for array subscript
 - `expressions/postfix/subscript-two-integers.cpp` (clang-22): error: subscripted value is not an array, pointer, or vector
+- `expressions/primary/char-delimited-empty.cpp` (clang-host): error: delimited escape sequence cannot be empty
+- `expressions/primary/char-delimited-empty.cpp` (gcc-host): error: empty delimited escape sequence
+- `expressions/primary/char-delimited-empty.cpp` (edg-7.0): error: a delimited escape sequence must have at least one character
+- `expressions/primary/char-delimited-empty.cpp` (gcc-14): error: empty delimited escape sequence
+- `expressions/primary/char-delimited-empty.cpp` (clang-18): error: delimited escape sequence cannot be empty
+- `expressions/primary/char-delimited-empty.cpp` (gcc-16): error: empty delimited escape sequence
+- `expressions/primary/char-delimited-empty.cpp` (clang-22): error: delimited escape sequence cannot be empty
+- `expressions/primary/char-empty.cpp` (clang-host): error: empty character constant [-Werror,-Winvalid-pp-token] / error: expected expression
+- `expressions/primary/char-empty.cpp` (gcc-host): error: empty character constant
+- `expressions/primary/char-empty.cpp` (edg-7.0): error: quoted string should contain at least one character
+- `expressions/primary/char-empty.cpp` (gcc-14): error: empty character constant
+- `expressions/primary/char-empty.cpp` (clang-18): error: empty character constant [-Werror,-Winvalid-pp-token] / error: expected expression
+- `expressions/primary/char-empty.cpp` (gcc-16): error: empty character constant
+- `expressions/primary/char-empty.cpp` (clang-22): error: empty character constant [-Werror,-Winvalid-pp-token] / error: expected expression
+- `expressions/primary/char-escape-out-of-range.cpp` (clang-host): error: hex escape sequence out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (gcc-host): error: hex escape sequence out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (edg-7.0): error: character value is out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (gcc-14): error: hex escape sequence out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (clang-18): error: hex escape sequence out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (gcc-16): error: hex escape sequence out of range
+- `expressions/primary/char-escape-out-of-range.cpp` (clang-22): error: hex escape sequence out of range
+- `expressions/primary/char-hex-no-digits.cpp` (clang-host): error: \x used with no following hex digits
+- `expressions/primary/char-hex-no-digits.cpp` (gcc-host): error: ‘\x’ used with no following hex digits
+- `expressions/primary/char-hex-no-digits.cpp` (edg-7.0): error: invalid hexadecimal number
+- `expressions/primary/char-hex-no-digits.cpp` (gcc-14): error: \x used with no following hex digits
+- `expressions/primary/char-hex-no-digits.cpp` (clang-18): error: \x used with no following hex digits
+- `expressions/primary/char-hex-no-digits.cpp` (gcc-16): error: '\x' used with no following hex digits
+- `expressions/primary/char-hex-no-digits.cpp` (clang-22): error: \x used with no following hex digits
+- `expressions/primary/char-multichar-warns.cpp` (clang-host): error: multi-character character constant [-Werror,-Wmultichar]
+- `expressions/primary/char-multichar-warns.cpp` (gcc-host): error: multi-character character constant [-Werror=multichar]
+- `expressions/primary/char-multichar-warns.cpp` (gcc-14): error: multi-character character constant [-Werror=multichar]
+- `expressions/primary/char-multichar-warns.cpp` (clang-18): error: multi-character character constant [-Werror,-Wmultichar]
+- `expressions/primary/char-multichar-warns.cpp` (gcc-16): error: multi-character character constant [-Werror=multichar]
+- `expressions/primary/char-multichar-warns.cpp` (clang-22): error: multi-character character constant [-Werror,-Wmultichar]
+- `expressions/primary/char-octal-too-large.cpp` (clang-host): error: octal escape sequence out of range
+- `expressions/primary/char-octal-too-large.cpp` (gcc-host): error: octal escape sequence out of range
+- `expressions/primary/char-octal-too-large.cpp` (edg-7.0): error: character value is out of range
+- `expressions/primary/char-octal-too-large.cpp` (gcc-14): error: octal escape sequence out of range
+- `expressions/primary/char-octal-too-large.cpp` (clang-18): error: octal escape sequence out of range
+- `expressions/primary/char-octal-too-large.cpp` (gcc-16): error: octal escape sequence out of range
+- `expressions/primary/char-octal-too-large.cpp` (clang-22): error: octal escape sequence out of range
+- `expressions/primary/char-u8-not-single-byte.cpp` (clang-host): error: character too large for enclosing character literal type
+- `expressions/primary/char-u8-not-single-byte.cpp` (gcc-host): error: character not encodable in a single code unit
+- `expressions/primary/char-u8-not-single-byte.cpp` (edg-7.0): error: a UTF-8 character literal value cannot occupy more than one code unit
+- `expressions/primary/char-u8-not-single-byte.cpp` (gcc-14): error: character not encodable in a single code unit
+- `expressions/primary/char-u8-not-single-byte.cpp` (clang-18): error: character too large for enclosing character literal type
+- `expressions/primary/char-u8-not-single-byte.cpp` (gcc-16): error: character not encodable in a single code unit
+- `expressions/primary/char-u8-not-single-byte.cpp` (clang-22): error: character too large for enclosing character literal type
+- `expressions/primary/char-ucn-surrogate.cpp` (clang-host): error: invalid universal character
+- `expressions/primary/char-ucn-surrogate.cpp` (gcc-host): error: \uD800 is not a valid universal character
+- `expressions/primary/char-ucn-surrogate.cpp` (edg-7.0): error: a universal character name cannot designate a surrogate code point
+- `expressions/primary/char-ucn-surrogate.cpp` (gcc-14): error: \uD800 is not a valid universal character
+- `expressions/primary/char-ucn-surrogate.cpp` (clang-18): error: invalid universal character
+- `expressions/primary/char-ucn-surrogate.cpp` (gcc-16): error: \uD800 is not a valid universal character
+- `expressions/primary/char-ucn-surrogate.cpp` (clang-22): error: invalid universal character
+- `expressions/primary/char-unicode-multichar.cpp` (clang-host): error: Unicode character literals may not contain multiple characters
+- `expressions/primary/char-unicode-multichar.cpp` (gcc-host): error: multi-character literal cannot have an encoding prefix
+- `expressions/primary/char-unicode-multichar.cpp` (edg-7.0): error: too many characters in character constant
+- `expressions/primary/char-unicode-multichar.cpp` (gcc-14): error: multi-character literal cannot have an encoding prefix
+- `expressions/primary/char-unicode-multichar.cpp` (clang-18): error: Unicode character literals may not contain multiple characters
+- `expressions/primary/char-unicode-multichar.cpp` (gcc-16): error: multi-character literal cannot have an encoding prefix
+- `expressions/primary/char-unicode-multichar.cpp` (clang-22): error: Unicode character literals may not contain multiple characters
+- `expressions/primary/char-unknown-escape.cpp` (clang-host): error: unknown escape sequence '\q' [-Werror,-Wunknown-escape-sequence]
+- `expressions/primary/char-unknown-escape.cpp` (gcc-host): error: unknown escape sequence: ‘\q’
+- `expressions/primary/char-unknown-escape.cpp` (gcc-14): error: unknown escape sequence: '\q'
+- `expressions/primary/char-unknown-escape.cpp` (clang-18): error: unknown escape sequence '\q' [-Werror,-Wunknown-escape-sequence]
+- `expressions/primary/char-unknown-escape.cpp` (gcc-16): error: unknown escape sequence: '\q'
+- `expressions/primary/char-unknown-escape.cpp` (clang-22): error: unknown escape sequence '\q' [-Werror,-Wunknown-escape-sequence]
+- `expressions/primary/char16-not-bmp.cpp` (clang-host): error: character too large for enclosing character literal type
+- `expressions/primary/char16-not-bmp.cpp` (gcc-host): error: character not encodable in a single code unit
+- `expressions/primary/char16-not-bmp.cpp` (edg-7.0): error: invalid character for char16_t literal
+- `expressions/primary/char16-not-bmp.cpp` (gcc-14): error: character not encodable in a single code unit
+- `expressions/primary/char16-not-bmp.cpp` (clang-18): error: character too large for enclosing character literal type
+- `expressions/primary/char16-not-bmp.cpp` (gcc-16): error: character not encodable in a single code unit
+- `expressions/primary/char16-not-bmp.cpp` (clang-22): error: character too large for enclosing character literal type
+- `expressions/primary/float-exponent-no-digits.cpp` (clang-host): error: exponent has no digits
+- `expressions/primary/float-exponent-no-digits.cpp` (gcc-host): error: exponent has no digits
+- `expressions/primary/float-exponent-no-digits.cpp` (edg-7.0): error: user-defined literal operator not found
+- `expressions/primary/float-exponent-no-digits.cpp` (gcc-14): error: exponent has no digits
+- `expressions/primary/float-exponent-no-digits.cpp` (clang-18): error: exponent has no digits
+- `expressions/primary/float-exponent-no-digits.cpp` (gcc-16): error: exponent has no digits
+- `expressions/primary/float-exponent-no-digits.cpp` (clang-22): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (clang-host): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (gcc-host): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (edg-7.0): error: extra text after expected end of number
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (gcc-14): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (clang-18): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (gcc-16): error: exponent has no digits
+- `expressions/primary/float-exponent-sign-no-digits.cpp` (clang-22): error: exponent has no digits
+- `expressions/primary/float-hex-needs-exponent.cpp` (clang-host): error: hexadecimal floating literal requires an exponent
+- `expressions/primary/float-hex-needs-exponent.cpp` (gcc-host): error: hexadecimal floating constants require an exponent
+- `expressions/primary/float-hex-needs-exponent.cpp` (edg-7.0): error: invalid floating constant
+- `expressions/primary/float-hex-needs-exponent.cpp` (gcc-14): error: hexadecimal floating constants require an exponent
+- `expressions/primary/float-hex-needs-exponent.cpp` (clang-18): error: hexadecimal floating literal requires an exponent
+- `expressions/primary/float-hex-needs-exponent.cpp` (gcc-16): error: hexadecimal floating constants require an exponent
+- `expressions/primary/float-hex-needs-exponent.cpp` (clang-22): error: hexadecimal floating literal requires an exponent
+- `expressions/primary/float-integer-suffix.cpp` (clang-host): error: invalid suffix 'u' on floating constant
+- `expressions/primary/float-integer-suffix.cpp` (gcc-host): error: unable to find numeric literal operator ‘operator""u’ / note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+- `expressions/primary/float-integer-suffix.cpp` (edg-7.0): error: user-defined literal operator not found
+- `expressions/primary/float-integer-suffix.cpp` (gcc-14): error: unable to find numeric literal operator 'operator""u' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/float-integer-suffix.cpp` (clang-18): error: invalid suffix 'u' on floating constant
+- `expressions/primary/float-integer-suffix.cpp` (gcc-16): error: unable to find numeric literal operator 'operator""u' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/float-integer-suffix.cpp` (clang-22): error: invalid suffix 'u' on floating constant
+- `expressions/primary/float-overflow-warns.cpp` (clang-host): error: magnitude of floating-point constant too large for type 'float'; maximum is 3.40282347E+38 [-Werror,-Wliteral-range]
+- `expressions/primary/float-overflow-warns.cpp` (gcc-host): error: floating constant exceeds range of ‘float’ [-Werror=overflow]
+- `expressions/primary/float-overflow-warns.cpp` (gcc-14): error: floating constant exceeds range of 'float' [-Werror=overflow]
+- `expressions/primary/float-overflow-warns.cpp` (clang-18): error: magnitude of floating-point constant too large for type 'float'; maximum is 3.40282347E+38 [-Werror,-Wliteral-range]
+- `expressions/primary/float-overflow-warns.cpp` (gcc-16): error: floating constant exceeds range of 'float' [-Werror=overflow]
+- `expressions/primary/float-overflow-warns.cpp` (clang-22): error: magnitude of floating-point constant too large for type 'float'; maximum is 3.40282347E+38 [-Werror,-Wliteral-range]
+- `expressions/primary/float-overflow.cpp` (edg-7.0): error: floating constant is out of range
+- `expressions/primary/int-bad-digit-binary.cpp` (clang-host): error: invalid digit '2' in binary constant
+- `expressions/primary/int-bad-digit-binary.cpp` (gcc-host): error: invalid digit ‘2’ in binary constant
+- `expressions/primary/int-bad-digit-binary.cpp` (edg-7.0): error: invalid binary number
+- `expressions/primary/int-bad-digit-binary.cpp` (gcc-14): error: invalid digit "2" in binary constant
+- `expressions/primary/int-bad-digit-binary.cpp` (clang-18): error: invalid digit '2' in binary constant
+- `expressions/primary/int-bad-digit-binary.cpp` (gcc-16): error: invalid digit '2' in binary constant
+- `expressions/primary/int-bad-digit-binary.cpp` (clang-22): error: invalid digit '2' in binary constant
+- `expressions/primary/int-bad-digit-octal.cpp` (clang-host): error: invalid digit '9' in octal constant
+- `expressions/primary/int-bad-digit-octal.cpp` (gcc-host): error: invalid digit ‘9’ in octal constant
+- `expressions/primary/int-bad-digit-octal.cpp` (edg-7.0): error: invalid octal digit
+- `expressions/primary/int-bad-digit-octal.cpp` (gcc-14): error: invalid digit "9" in octal constant
+- `expressions/primary/int-bad-digit-octal.cpp` (clang-18): error: invalid digit '9' in octal constant
+- `expressions/primary/int-bad-digit-octal.cpp` (gcc-16): error: invalid digit '9' in octal constant
+- `expressions/primary/int-bad-digit-octal.cpp` (clang-22): error: invalid digit '9' in octal constant
+- `expressions/primary/int-bad-suffix.cpp` (clang-host): error: invalid suffix 'lul' on integer constant
+- `expressions/primary/int-bad-suffix.cpp` (gcc-host): error: unable to find numeric literal operator ‘operator""lul’ / note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+- `expressions/primary/int-bad-suffix.cpp` (edg-7.0): error: user-defined literal operator not found
+- `expressions/primary/int-bad-suffix.cpp` (gcc-14): error: unable to find numeric literal operator 'operator""lul' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/int-bad-suffix.cpp` (clang-18): error: invalid suffix 'lul' on integer constant
+- `expressions/primary/int-bad-suffix.cpp` (gcc-16): error: unable to find numeric literal operator 'operator""lul' / note: use '-fext-numeric-literals' to enable more built-in suffixes
+- `expressions/primary/int-bad-suffix.cpp` (clang-22): error: invalid suffix 'lul' on integer constant
+- `expressions/primary/int-separator-leading.cpp` (clang-host): error: invalid suffix 'x'1F' on integer constant
+- `expressions/primary/int-separator-leading.cpp` (gcc-host): error: digit separator after base indicator
+- `expressions/primary/int-separator-leading.cpp` (edg-7.0): error: digit separator cannot appear here
+- `expressions/primary/int-separator-leading.cpp` (gcc-14): error: digit separator after base indicator
+- `expressions/primary/int-separator-leading.cpp` (clang-18): error: invalid suffix 'x'1F' on integer constant
+- `expressions/primary/int-separator-leading.cpp` (gcc-16): error: digit separator after base indicator
+- `expressions/primary/int-separator-leading.cpp` (clang-22): error: invalid suffix 'x'1F' on integer constant
+- `expressions/primary/int-separator-trailing.cpp` (clang-host): error: missing terminating ' character [-Werror,-Winvalid-pp-token] / error: expected ';' after top level declarator
+- `expressions/primary/int-separator-trailing.cpp` (gcc-host): error: missing terminating ' character / error: missing terminating ' character
+- `expressions/primary/int-separator-trailing.cpp` (edg-7.0): error: digit separator cannot appear here
+- `expressions/primary/int-separator-trailing.cpp` (gcc-14): error: missing terminating ' character / error: missing terminating ' character
+- `expressions/primary/int-separator-trailing.cpp` (clang-18): error: missing terminating ' character [-Werror,-Winvalid-pp-token] / error: expected ';' after top level declarator
+- `expressions/primary/int-separator-trailing.cpp` (gcc-16): error: missing terminating ' character / error: missing terminating ' character
+- `expressions/primary/int-separator-trailing.cpp` (clang-22): error: missing terminating ' character [-Werror,-Winvalid-pp-token] / error: expected ';' after top level declarator
+- `expressions/primary/int-too-large-signed-decimal.cpp` (clang-host): error: integer literal is too large to be represented in a signed integer type, interpreting as unsigned [-Werror,-Wimplicitly-unsigned-literal]
+- `expressions/primary/int-too-large-signed-decimal.cpp` (gcc-host): error: integer constant is so large that it is unsigned
+- `expressions/primary/int-too-large-signed-decimal.cpp` (gcc-14): error: integer constant is so large that it is unsigned
+- `expressions/primary/int-too-large-signed-decimal.cpp` (clang-18): error: integer literal is too large to be represented in a signed integer type, interpreting as unsigned [-Werror,-Wimplicitly-unsigned-literal]
+- `expressions/primary/int-too-large-signed-decimal.cpp` (gcc-16): error: integer constant is so large that it is unsigned
+- `expressions/primary/int-too-large-signed-decimal.cpp` (clang-22): error: integer literal is too large to be represented in a signed integer type, interpreting as unsigned [-Werror,-Wimplicitly-unsigned-literal]
+- `expressions/primary/int-too-large.cpp` (clang-host): error: integer literal is too large to be represented in any integer type
+- `expressions/primary/int-too-large.cpp` (gcc-host): error: integer constant is too large for its type
+- `expressions/primary/int-too-large.cpp` (edg-7.0): error: integer constant is too large
+- `expressions/primary/int-too-large.cpp` (gcc-14): error: integer constant is too large for its type
+- `expressions/primary/int-too-large.cpp` (clang-18): error: integer literal is too large to be represented in any integer type
+- `expressions/primary/int-too-large.cpp` (gcc-16): error: integer constant is too large for its type
+- `expressions/primary/int-too-large.cpp` (clang-22): error: integer literal is too large to be represented in any integer type
+- `expressions/primary/name-enumerator-prvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'E'
+- `expressions/primary/name-enumerator-prvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
+- `expressions/primary/name-enumerator-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/primary/name-enumerator-prvalue.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `expressions/primary/name-enumerator-prvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'E'
+- `expressions/primary/name-enumerator-prvalue.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/primary/name-enumerator-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'E'
+- `expressions/primary/name-member-in-static.cpp` (clang-host): error: invalid use of member 'v' in static member function
+- `expressions/primary/name-member-in-static.cpp` (gcc-host): error: invalid use of member ‘S::v’ in static member function
+- `expressions/primary/name-member-in-static.cpp` (edg-7.0): error: a nonstatic member reference must be relative to a specific object
+- `expressions/primary/name-member-in-static.cpp` (gcc-14): error: invalid use of member 'S::v' in static member function
+- `expressions/primary/name-member-in-static.cpp` (clang-18): error: invalid use of member 'v' in static member function
+- `expressions/primary/name-member-in-static.cpp` (gcc-16): error: invalid use of member 'S::v' in static member function
+- `expressions/primary/name-member-in-static.cpp` (clang-22): error: invalid use of member 'v' in static member function
+- `expressions/primary/name-member-outside-object.cpp` (clang-host): error: invalid use of non-static data member 'v'
+- `expressions/primary/name-member-outside-object.cpp` (gcc-host): error: invalid use of non-static data member ‘S::v’
+- `expressions/primary/name-member-outside-object.cpp` (edg-7.0): error: a nonstatic member reference must be relative to a specific object
+- `expressions/primary/name-member-outside-object.cpp` (gcc-14): error: invalid use of non-static data member 'S::v'
+- `expressions/primary/name-member-outside-object.cpp` (clang-18): error: invalid use of non-static data member 'v'
+- `expressions/primary/name-member-outside-object.cpp` (gcc-16): error: invalid use of non-static data member 'S::v'
+- `expressions/primary/name-member-outside-object.cpp` (clang-22): error: invalid use of non-static data member 'v'
+- `expressions/primary/name-undeclared.cpp` (clang-host): error: use of undeclared identifier 'undeclared_name'
+- `expressions/primary/name-undeclared.cpp` (gcc-host): error: ‘undeclared_name’ was not declared in this scope
+- `expressions/primary/name-undeclared.cpp` (edg-7.0): error: identifier "undeclared_name" is undefined
+- `expressions/primary/name-undeclared.cpp` (gcc-14): error: 'undeclared_name' was not declared in this scope
+- `expressions/primary/name-undeclared.cpp` (clang-18): error: use of undeclared identifier 'undeclared_name'
+- `expressions/primary/name-undeclared.cpp` (gcc-16): error: 'undeclared_name' was not declared in this scope
+- `expressions/primary/name-undeclared.cpp` (clang-22): error: use of undeclared identifier 'undeclared_name'
+- `expressions/primary/nullptr-to-bool-copy.cpp` (clang-host): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/nullptr-to-bool-copy.cpp` (gcc-host): error: converting to ‘bool’ from ‘std::nullptr_t’ requires direct-initialization [-fpermissive]
+- `expressions/primary/nullptr-to-bool-copy.cpp` (edg-7.0): error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "bool"
+- `expressions/primary/nullptr-to-bool-copy.cpp` (gcc-14): error: converting to 'bool' from 'std::nullptr_t' requires direct-initialization [-fpermissive]
+- `expressions/primary/nullptr-to-bool-copy.cpp` (clang-18): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/nullptr-to-bool-copy.cpp` (gcc-16): error: converting to 'bool' from 'std::nullptr_t' requires direct-initialization [-fpermissive]
+- `expressions/primary/nullptr-to-bool-copy.cpp` (clang-22): error: cannot initialize a variable of type 'bool' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/nullptr-to-int.cpp` (clang-host): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/nullptr-to-int.cpp` (gcc-host): error: cannot convert ‘std::nullptr_t’ to ‘int’ in initialization
+- `expressions/primary/nullptr-to-int.cpp` (edg-7.0): error: a value of type "std::nullptr_t" cannot be used to initialize an entity of type "int"
+- `expressions/primary/nullptr-to-int.cpp` (gcc-14): error: cannot convert 'std::nullptr_t' to 'int' in initialization
+- `expressions/primary/nullptr-to-int.cpp` (clang-18): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/nullptr-to-int.cpp` (gcc-16): error: cannot convert 'std::nullptr_t' to 'int' in initialization
+- `expressions/primary/nullptr-to-int.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an rvalue of type 'std::nullptr_t'
+- `expressions/primary/string-compare-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
+- `expressions/primary/string-compare-constant.cpp` (gcc-host): error: static assertion failed
+- `expressions/primary/string-compare-constant.cpp` (edg-7.0): error: static assertion failed
+- `expressions/primary/string-compare-constant.cpp` (gcc-14): error: static assertion failed
+- `expressions/primary/string-compare-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: comparison of addresses of literals has unspecified value
+- `expressions/primary/string-compare-constant.cpp` (gcc-16): error: static assertion failed
+- `expressions/primary/string-compare-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
+- `expressions/primary/string-concat-mixed.cpp` (clang-host): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-concat-mixed.cpp` (gcc-host): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-mixed.cpp` (edg-7.0): error: string literals with different character kinds cannot be concatenated
+- `expressions/primary/string-concat-mixed.cpp` (gcc-14): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-mixed.cpp` (clang-18): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-concat-mixed.cpp` (gcc-16): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-mixed.cpp` (clang-22): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-concat-u8-u.cpp` (clang-host): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-concat-u8-u.cpp` (gcc-host): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-u8-u.cpp` (edg-7.0): error: string literals with different character kinds cannot be concatenated
+- `expressions/primary/string-concat-u8-u.cpp` (gcc-14): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-u8-u.cpp` (clang-18): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-concat-u8-u.cpp` (gcc-16): error: concatenation of string literals with conflicting encoding prefixes
+- `expressions/primary/string-concat-u8-u.cpp` (clang-22): error: unsupported non-standard concatenation of string literals
+- `expressions/primary/string-modify-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assignment to object '"abc"[0]' whose value is not known
+- `expressions/primary/string-modify-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: modification of ‘"abc"’ from outside current evaluation is not a constant expression
+- `expressions/primary/string-modify-constant.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to modify const storage
+- `expressions/primary/string-modify-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: modification of '"abc"' from outside current evaluation is not a constant expression
+- `expressions/primary/string-modify-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: assignment to object '"abc"[0]' whose value is not known
+- `expressions/primary/string-modify-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: modification of '"abc"' from outside current evaluation is not a constant expression
+- `expressions/primary/string-modify-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: assignment to object '"abc"[0]' whose value is not known
+- `expressions/primary/string-raw-bad-delimiter.cpp` (clang-host): error: invalid character ' ' in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-bad-delimiter.cpp` (gcc-host): error: invalid character ' ' in raw string delimiter / error: stray ‘R’ in program
+- `expressions/primary/string-raw-bad-delimiter.cpp` (edg-7.0): error: invalid character in raw string delimiter
+- `expressions/primary/string-raw-bad-delimiter.cpp` (gcc-14): error: invalid character ' ' in raw string delimiter / error: stray 'R' in program
+- `expressions/primary/string-raw-bad-delimiter.cpp` (clang-18): error: invalid character ' ' character in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-bad-delimiter.cpp` (gcc-16): error: invalid character ' ' in raw string delimiter / error: stray 'R' in program
+- `expressions/primary/string-raw-bad-delimiter.cpp` (clang-22): error: invalid character ' ' in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (clang-host): error: invalid character '\' in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (gcc-host): error: invalid character '\' in raw string delimiter / error: stray ‘R’ in program
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (edg-7.0): error: invalid character in raw string delimiter
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (gcc-14): error: invalid character '\' in raw string delimiter / error: stray 'R' in program
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (clang-18): error: invalid character '\' character in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (gcc-16): error: invalid character '\' in raw string delimiter / error: stray 'R' in program
+- `expressions/primary/string-raw-delimiter-backslash.cpp` (clang-22): error: invalid character '\' in raw string delimiter; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (clang-host): error: raw string delimiter longer than 16 characters; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (gcc-host): error: raw string delimiter longer than 16 characters / error: stray ‘R’ in program
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (edg-7.0): error: parenthesis terminating raw string delimiter not found within 16 characters -- raw string indicator ignored
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (gcc-14): error: raw string delimiter longer than 16 characters / error: stray 'R' in program
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (clang-18): error: raw string delimiter longer than 16 characters; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (gcc-16): error: raw string delimiter longer than 16 characters / error: stray 'R' in program
+- `expressions/primary/string-raw-delimiter-too-long.cpp` (clang-22): error: raw string delimiter longer than 16 characters; use PREFIX( )PREFIX to delimit raw string / error: expected expression
+- `expressions/primary/string-to-nonconst-pointer.cpp` (clang-host): error: ISO C++11 does not allow conversion from string literal to 'char *' [-Werror,-Wwritable-strings]
+- `expressions/primary/string-to-nonconst-pointer.cpp` (gcc-host): error: ISO C++ forbids converting a string constant to ‘char*’ [-Wwrite-strings]
+- `expressions/primary/string-to-nonconst-pointer.cpp` (edg-7.0): error: a value of type "const char *" cannot be used to initialize an entity of type "char *"
+- `expressions/primary/string-to-nonconst-pointer.cpp` (gcc-14): error: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+- `expressions/primary/string-to-nonconst-pointer.cpp` (clang-18): error: ISO C++11 does not allow conversion from string literal to 'char *' [-Werror,-Wwritable-strings]
+- `expressions/primary/string-to-nonconst-pointer.cpp` (gcc-16): error: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+- `expressions/primary/string-to-nonconst-pointer.cpp` (clang-22): error: ISO C++11 does not allow conversion from string literal to 'char *' [-Werror,-Wwritable-strings]
+- `expressions/primary/this-const-member-modify.cpp` (clang-host): error: cannot assign to non-static data member within const member function 'f' / note: member function 'S::f' is declared const here
+- `expressions/primary/this-const-member-modify.cpp` (gcc-host): error: assignment of member ‘S::v’ in read-only object
+- `expressions/primary/this-const-member-modify.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/primary/this-const-member-modify.cpp` (gcc-14): error: assignment of member 'S::v' in read-only object
+- `expressions/primary/this-const-member-modify.cpp` (clang-18): error: cannot assign to non-static data member within const member function 'f' / note: member function 'S::f' is declared const here
+- `expressions/primary/this-const-member-modify.cpp` (gcc-16): error: assignment of member 'S::v' in read-only object
+- `expressions/primary/this-const-member-modify.cpp` (clang-22): error: cannot assign to non-static data member within const member function 'f' / note: member function 'S::f' is declared const here
+- `expressions/primary/this-namespace.cpp` (clang-host): error: invalid use of 'this' outside of a non-static member function
+- `expressions/primary/this-namespace.cpp` (gcc-host): error: invalid use of ‘this’ at top level
+- `expressions/primary/this-namespace.cpp` (edg-7.0): error: "this" may only be used inside a nonstatic member function
+- `expressions/primary/this-namespace.cpp` (gcc-14): error: invalid use of 'this' at top level
+- `expressions/primary/this-namespace.cpp` (clang-18): error: invalid use of 'this' outside of a non-static member function
+- `expressions/primary/this-namespace.cpp` (gcc-16): error: invalid use of 'this' at top level
+- `expressions/primary/this-namespace.cpp` (clang-22): error: invalid use of 'this' outside of a non-static member function
+- `expressions/primary/this-prvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'S *'
+- `expressions/primary/this-prvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
+- `expressions/primary/this-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/primary/this-prvalue.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `expressions/primary/this-prvalue.cpp` (clang-18): error: cannot take the address of an rvalue of type 'S *'
+- `expressions/primary/this-prvalue.cpp` (gcc-16): error: lvalue required as unary '&' operand
+- `expressions/primary/this-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'S *'
+- `expressions/primary/this-static.cpp` (clang-host): error: invalid use of 'this' outside of a non-static member function
+- `expressions/primary/this-static.cpp` (gcc-host): error: ‘this’ is unavailable for static member functions
+- `expressions/primary/this-static.cpp` (edg-7.0): error: "this" may only be used inside a nonstatic member function
+- `expressions/primary/this-static.cpp` (gcc-14): error: 'this' is unavailable for static member functions
+- `expressions/primary/this-static.cpp` (clang-18): error: invalid use of 'this' outside of a non-static member function
+- `expressions/primary/this-static.cpp` (gcc-16): error: 'this' is unavailable for static member functions
+- `expressions/primary/this-static.cpp` (clang-22): error: invalid use of 'this' outside of a non-static member function
 - `expressions/sequencing/unsequenced-increments.cpp` (clang-host): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
 - `expressions/sequencing/unsequenced-increments.cpp` (gcc-host): error: operation on ‘i’ may be undefined [-Werror=sequence-point] / error: operation on ‘i’ may be undefined [-Werror=sequence-point]
 - `expressions/sequencing/unsequenced-increments.cpp` (gcc-14): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]

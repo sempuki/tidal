@@ -16,6 +16,8 @@ current state only. The history of how it got here is in `git log`.
 | [Value categories and temporaries](../spec/expressions/value-categories.md) | 7 | 6 required, 1 unspecified | 19 |  | 0 flagged |
 | [Standard conversions](../spec/expressions/conversions.md) | 16 | 9 required, 4 reject, 1 undefined, 2 impl-defined | 34 | Q-0028 | 0 flagged |
 | [Sequencing and evaluation order](../spec/expressions/sequencing.md) | 6 | 4 required, 1 undefined, 1 unspecified | 16 |  | 0 flagged |
+| [Primary expressions](../spec/expressions/primary.md) | 20 | 9 required, 6 reject, 1 undefined, 1 unspecified, 2 impl-defined, 1 recommended | 79 | Q-0063, Q-0064 | 0 flagged |
+| [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 9 | 5 required, 2 reject, 2 recommended | 43 | Q-0065 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 16 | 6 required, 2 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 29 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
 | [Additive operators](../spec/expressions/additive.md) | 15 | 7 required, 1 reject, 4 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 33 | Q-0005, Q-0031, Q-0049 | 0 flagged |
 | [Shift operators](../spec/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 20 |  | 0 flagged |
@@ -26,6 +28,7 @@ current state only. The history of how it got here is in `git log`.
 | [Assignment operators](../spec/expressions/assignment.md) | 8 | 7 required, 1 reject | 24 | Q-0032 | 0 flagged |
 | [The comma operator](../spec/expressions/comma.md) | 7 | 5 required, 1 reject, 1 recommended | 13 |  | 0 flagged |
 | [Unary operators](../spec/expressions/unary.md) | 20 | 10 required, 6 reject, 2 undefined, 1 impl-defined, 1 recommended | 39 |  | 0 flagged |
+| [Pointers to members](../spec/expressions/member-pointers.md) | 11 | 5 required, 4 reject, 1 undefined, 1 unspecified | 53 |  | 0 flagged |
 | [Postfix expressions](../spec/expressions/postfix.md) | 13 | 7 required, 4 reject, 2 undefined | 28 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 12 | 4 required, 6 reject, 1 undefined, 1 impl-defined | 25 |  | 0 flagged |
 | [Constant expressions](../spec/expressions/constant-expressions.md) | 13 | 2 required, 10 reject, 1 impl-defined | 32 | Q-0020, Q-0033 | 0 flagged |
@@ -64,12 +67,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-comparisons.txt`. The table above comes from
+`reports/similarity/2026-10-30-decltype.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1925/1925 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 2100/2100 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -85,7 +88,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Sixty-one questions are open for opinions, each with a provisional answer the
+Sixty-four questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -111,14 +114,12 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 From the gap review (`reports/review/2026-10-30-gap-review.md`). Each
 needs a page through the full pipeline.
 
-- Expressions: primary expressions (names, `this`, literals, parentheses),
-  the pointer-to-member operators, discarded-value expressions and
-  unevaluated operands, `decltype`, temporaries in general, and `throw`
-  expressions (or a recorded decision to exclude exceptions).
+- Expressions: temporaries in general. Exception handling, including
+  `throw`, is a later chapter (decision 0023).
 - Declarations: `typedef` and alias declarations, `static_assert`, the
   `inline` specifier, `alignas` and alignment, linkage specifications,
   elaborated type specifiers and forward class declarations, `noexcept`
-  in function types, pointer-to-member declarators, and `volatile`.
+  in function types, and `volatile`.
 - Classes: initializer-list constructors and their place in overload
   resolution.
 - Statements: the forward-progress rule belongs with threads, which are
@@ -136,7 +137,7 @@ needs a page through the full pipeline.
 6. Read EDG's sanitized source for the `if` section.
 7. Write pages for the topics in scope with no page yet: expressions
    first, then declarations, then the remaining class topic. Next:
-   primary expressions.
+   temporaries.
 
 ## Size estimate
 

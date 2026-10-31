@@ -54,6 +54,8 @@ Out of scope:
 - Templates and overload resolution as topics of their own.
 - The standard library.
 - Coroutines (`co_await`, `co_yield`, `co_return`).
+- Exception handling (`throw`, try blocks, handlers). It is a later
+  chapter of its own (decision 0023).
 - The memory model and threads.
 
 ## Non-goals
