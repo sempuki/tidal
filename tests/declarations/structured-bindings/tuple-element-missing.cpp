@@ -1,5 +1,8 @@
 // tidal-rules: SB-5
 // tidal-expect: reject
+// tidal-error-clang: undefined template .std::tuple_element<0, P>
+// tidal-error-gcc: incomplete type .struct std::tuple_element<0, P>
+// tidal-error-edg: cannot instantiate .std::tuple_element
 namespace std {
 template <class T> struct tuple_size;
 template <decltype(sizeof 0) I, class T> struct tuple_element;

@@ -1,5 +1,8 @@
 // tidal-rules: CX-3
 // tidal-expect: reject
+// tidal-error-clang: not an integral constant expression
+// tidal-error-gcc: calls. defined .static. in .constexpr. context
+// tidal-error-edg: must have a constant value
 constexpr int f() {
   static int calls = 0;
   return ++calls;
