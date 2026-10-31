@@ -113,8 +113,8 @@ do not change what the program does.
 :tests: declarations/attributes/carries-dependency.cpp
 
 `[[carries_dependency]]` can apply to a function or a parameter. It is
-about the memory model *(referenced)*. It does not change what a program
-with one thread does.
+about the memory model *(memory model referenced)*. It does not change
+what a program with one thread does.
 :::
 
 :::{rule} ATTR-12

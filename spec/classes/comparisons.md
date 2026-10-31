@@ -46,7 +46,7 @@ should warn when the rewrites make a comparison ambiguous.
 The *comparison category types* are `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`. A program that uses a
 defaulted `<=>` must declare them, usually through the standard library
-*(referenced)*.
+*(library referenced)*.
 
 ## Constraints
 

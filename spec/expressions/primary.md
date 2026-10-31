@@ -7,7 +7,7 @@ of names, and qualified names.
 
 Lambda expressions, fold expressions, and requires expressions are
 primary expressions too. Lambdas have their own page. Fold and requires
-expressions belong with templates *(referenced)*.
+expressions belong with templates *(templates referenced)*.
 
 Depends on: value categories, standard conversions.
 
@@ -345,7 +345,8 @@ x86-64 Linux targets in the matrix, it is the nearer value.
 :tests: expressions/primary/float-extended-suffix.cpp
 
 The suffixes `f16`, `f32`, `f64`, `f128`, and `bf16`, in either case,
-give the extended floating-point types *(referenced)*. Their support is
+give the extended floating-point types
+*(fundamental types referenced)*. Their support is
 conditional. GCC and EDG accept them. Clang rejects them.
 :::
 

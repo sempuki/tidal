@@ -100,8 +100,9 @@ Write each rule in a `rule` directive:
   a rule.
 - Do not explain a rule in prose. Put an example in `Examples`.
 - Link a rule on another page with `` {rule}`ID` ``. Mark a topic that
-  Tidal does not specify yet with *(referenced)*. A marker must not name
-  a topic that has a page.
+  Tidal does not specify yet with *(TOPIC referenced)*, for example
+  *(templates referenced)*. TOPIC is one of `REFERENCED_TOPICS` in
+  `tools/check_spec.py`, which lists the topics with no page.
 
 ## 5. Word list
 

@@ -117,7 +117,7 @@ if the type is one of these:
 
 - a scalar type,
 - a class type whose default constructor and destructor are both
-  trivial *(classes referenced)*,
+  trivial *(class properties referenced)*,
 - an array of these types.
 
 A jump can also skip a `static` local variable ({question}`Q-0041`). A

@@ -1,8 +1,8 @@
 # Glossary
 
 This glossary defines the terms that Tidal pages use. Each page links a
-term to its entry here. An entry marked *(referenced)* is about a topic
-that Tidal does not specify yet.
+term to its entry here. A marker such as *(library referenced)* names a
+topic that Tidal does not specify yet.
 
 :::{glossary}
 automatic storage
@@ -112,8 +112,8 @@ usual arithmetic conversions
   1. If one operand has a floating-point type, the other operand is
      converted to the floating-point type with the larger range. The order
      is `float`, `double`, `long double`. Extended floating-point types
-     have their own ranks *(referenced)*. If neither type's rank is greater
-     than the other's, the operation is not valid.
+     have their own ranks *(fundamental types referenced)*. If neither
+     type's rank is greater than the other's, the operation is not valid.
   2. If not, both operands go through {term}`integer promotion`. If the
      types are then the same, that type is the common type.
   3. If both types are signed, or both are unsigned, the narrower operand
@@ -125,8 +125,9 @@ usual arithmetic conversions
   6. If not, both operands are converted to the unsigned type that has the
      width of the signed type.
 
-  Width means the conversion rank *(referenced)*. For the standard integer
-  types the order is `char`, `short`, `int`, `long`, `long long`.
+  Width means the conversion rank *(fundamental types referenced)*. For
+  the standard integer types the order is `char`, `short`, `int`, `long`,
+  `long long`.
 
 value category
   The kind of an expression. There are three kinds:

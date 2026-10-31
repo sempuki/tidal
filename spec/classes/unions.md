@@ -254,7 +254,8 @@ UNI-10 describes.
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
-*(referenced)*. A copy of a union copies its active member. Constant
+*(class properties referenced)*. A copy of a union copies its active
+member. Constant
 evaluation follows these rules.
 :::
 

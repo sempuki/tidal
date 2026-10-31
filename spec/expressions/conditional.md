@@ -175,7 +175,8 @@ The second operand can be a comma expression without parentheses.
 :tests: expressions/conditional/two-classes-convert-to-int.cpp
 
 If the operands have different types, at least one is a class, and
-neither converts to the other, overload resolution *(referenced)* over
+neither converts to the other, overload resolution
+*(overload resolution referenced)* over
 the built-in operator candidates picks a conversion for each operand.
 Two unrelated classes that both convert to `int` give an `int` prvalue.
 :::

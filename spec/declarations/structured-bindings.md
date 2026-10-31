@@ -46,7 +46,6 @@ and must not repeat a name of that scope ({principle}`NAM-P1`).
    sb_decl: ["static" | "thread_local"] {`cv`} "auto" ["&" | "&&"]
           :    "[" `name` {"," `name`} "]" `sb_init` ";"
    sb_init: "=" `expression` | "(" `expression` ")" | "{" `expression` "}"
-   cv: "const" | "volatile"
 ```
 
 ## Constraints

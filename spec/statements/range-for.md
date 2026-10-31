@@ -55,7 +55,8 @@ For a range of class type, `begin` and `end` are found as follows:
   member counts, so a data member of a callable type works
   ({question}`Q-0098`).
 - If only one of the names is a member, or neither, both are free
-  functions that argument-dependent lookup finds *(referenced)*.
+  functions that argument-dependent lookup finds
+  *(lookup referenced)*.
 
 `begin` and `end` can return different types. The loop advances the
 iterator with prefix `++`. It compares the iterator with `end` by `!=`,

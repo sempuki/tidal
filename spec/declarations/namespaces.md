@@ -6,7 +6,7 @@ current scope. A *using directive* makes all members of a namespace
 visible to unqualified lookup in the current scope.
 
 Name lookup in general, argument-dependent lookup, and using declarations
-in classes are other topics *(referenced)*.
+in classes are other topics *(lookup referenced)*.
 
 ## Principles
 

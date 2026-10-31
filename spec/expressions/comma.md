@@ -69,7 +69,7 @@ In these lists, a comma separates the items:
 - declarators in one declaration,
 - base and member initializers,
 - enumerators,
-- template arguments *(referenced)*.
+- template arguments *(templates referenced)*.
 
 A comma operator in such a list must be in parentheses.
 :::

@@ -37,7 +37,7 @@ one vocabulary to the other. It is informative.
 | may | can |
 | should | should, in `Recommended Practice` only |
 | diagnostic | diagnostic; "rejects" when it stops translation |
-| potentially evaluated, odr-use | evaluated operand, use *(referenced)* |
+| potentially evaluated, odr-use | evaluated operand, use *(one-definition rule referenced)* |
 
 ## Principles
 

@@ -7,7 +7,7 @@ implicit and explicit conversions use them, and how they combine with
 converting constructors and standard conversions.
 
 Depends on: constructors and destructors, standard conversions, overload
-resolution *(referenced)*.
+resolution *(overload resolution referenced)*.
 
 ## Principles
 

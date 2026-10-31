@@ -64,7 +64,8 @@ It never declares a variable.
 :tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/nullptr-bool-direct.cpp
 
 An initializer after `=` or in parentheses is converted to the type of the
-variable by implicit conversion *(referenced)*. A conversion that loses
+variable by implicit conversion *(conversion sequences
+referenced)*. A conversion that loses
 information is permitted. `nullptr` converts to `bool` in direct
 initialization, with parentheses or braces, and gives `false`. INIT-7
 lists what is not valid.

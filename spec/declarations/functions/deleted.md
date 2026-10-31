@@ -32,7 +32,8 @@ defaulted: the special members and the comparison operators.
 
 A program must not refer to a deleted function. This applies also in an
 operand that is not evaluated, such as `decltype` or `sizeof`. A
-deleted function takes part in overload resolution *(referenced)*. If
+deleted function takes part in overload resolution
+*(overload resolution referenced)*. If
 overload resolution selects it, the program is not valid.
 :::
 

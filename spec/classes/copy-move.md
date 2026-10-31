@@ -8,7 +8,8 @@ class gets them implicitly, when they are deleted, what the implicit ones
 do, and when a copy or move does not occur.
 
 Depends on: constructors and destructors, reference binding, overload
-resolution *(referenced)*, deleted and defaulted functions.
+resolution *(overload resolution referenced)*, deleted and defaulted
+functions.
 
 ## Principles
 
@@ -349,7 +350,7 @@ function can be used in constant evaluation.
 :tests: classes/copy-move/trivially-copyable-bytes.cpp
 
 A *trivially copyable* class meets these conditions, and others that
-this page does not list yet *(referenced)*:
+this page does not list yet *(class properties referenced)*:
 
 - Its copy and move functions and its destructor are implicit or
   defaulted, and at least one copy or move function is not deleted.

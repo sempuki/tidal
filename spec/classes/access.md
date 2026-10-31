@@ -98,11 +98,11 @@ object of its class.
 :tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp
 
 The implementation checks access after overload resolution
-*(referenced)* selects a function. If the selected function is not
-accessible, the call is not valid. An accessible overload that is a worse
-match does not make the call valid. Access does not change name lookup,
-so a private member of a derived class hides a public member of a base
-with the same name.
+*(overload resolution referenced)* selects a function. If the selected
+function is not accessible, the call is not valid. An accessible
+overload that is a worse match does not make the call valid. Access does
+not change name lookup, so a private member of a derived class hides a
+public member of a base with the same name.
 :::
 
 :::{rule} ACC-11
@@ -163,8 +163,8 @@ does not get access.
 :tests: classes/access/hidden-friend.cpp
 
 A friend function that is first declared in a class is a member of the
-enclosing namespace. Only argument-dependent lookup *(referenced)* finds
-it, unless the namespace also declares it.
+enclosing namespace. Only argument-dependent lookup
+*(lookup referenced)* finds it, unless the namespace also declares it.
 :::
 
 :::{rule} ACC-17

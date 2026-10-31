@@ -10,7 +10,7 @@ Defaulted comparison operators have their own page.
 
 Depends on: class definitions and members, conversion functions, copy and
 move, sequencing and evaluation order, overload resolution
-*(referenced)*.
+*(overload resolution referenced)*.
 
 ## Principles
 
@@ -66,7 +66,7 @@ implementation should warn about them.
 An *operator function* has an `operator_function_id` as its name. A
 *literal operator* has a `literal_operator_id` as its name. This page
 does not cover the operator functions for `new` and `delete`
-({rule}`NEW-13`), or for `co_await` *(referenced)*.
+({rule}`NEW-13`), or for `co_await` *(coroutines referenced)*.
 
 ## Constraints
 
@@ -160,7 +160,7 @@ function from these candidates:
 
 - member operator functions of the class of the left operand,
 - non-member operator functions found by ordinary and argument-dependent
-  lookup *(referenced)*,
+  lookup *(lookup referenced)*,
 - built-in operators, after conversion of the operands.
 
 Implicit conversions apply to every operand of a non-member and to no

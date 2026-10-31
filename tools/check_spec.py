@@ -12,7 +12,12 @@ Fails when:
 - a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/,
 - a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
   tidal-error is on a test that no compiler is expected to reject, fail to
-  link, or fail to run.
+  link, or fail to run,
+- a *(TOPIC referenced)* marker names no topic, or a topic that is not in
+  REFERENCED_TOPICS,
+- a grammar nonterminal is defined in more than one production. A
+  nonterminal that is used and not defined is a warning until the grammar
+  is consolidated (roadmap item F).
 """
 
 import re
@@ -136,6 +141,68 @@ def parse_spec():
     return rules, errors
 
 
+# Topics that pages mention but no page specifies. A marker
+# *(TOPIC referenced)* must name one of them. When a topic gets a page,
+# remove it here, and the check lists every marker to replace with a link.
+REFERENCED_TOPICS = {
+    "class properties",      # the full trivial and standard-layout lists
+    "concepts",
+    "conversion sequences",  # implicit conversion sequences
+    "coroutines",
+    "fundamental types",     # ranks, extended floating-point types
+    "library",
+    "lookup",                # qualified and argument-dependent lookup
+    "memory model",
+    "one-definition rule",
+    "overload resolution",
+    "templates",
+    "threads",
+}
+MARKER = re.compile(r"\*\(([^()*]*?)\breferenced\)\*")
+
+
+def check_markers(errors: list[str]) -> None:
+    for f in sorted(SPEC.rglob("*.md")):
+        text = f.read_text()
+        for m in MARKER.finditer(text):
+            topic = " ".join(m.group(1).split())
+            line = text.count("\n", 0, m.start()) + 1
+            where = f"{f.relative_to(ROOT)}:{line}"
+            if not topic:
+                errors.append(f"{where}: a *(referenced)* marker must name its topic")
+            elif topic not in REFERENCED_TOPICS:
+                errors.append(f"{where}: marker names {topic!r}, which is not a referenced topic")
+
+
+PRODUCTION = re.compile(r"^\s+([A-Za-z_][\w-]*)\s*:(.*)$")
+NONTERMINAL = re.compile(r"`([A-Za-z_][\w-]*)`")
+
+
+def check_grammar(errors: list[str], warnings: list[str]) -> None:
+    defined, used = {}, set()
+    for f in sorted(SPEC.rglob("*.md")):
+        inside = False
+        for n, line in enumerate(f.read_text().splitlines(), 1):
+            if line.startswith(".. productionlist::"):
+                inside = True
+                continue
+            if inside and (not line.startswith(" ") or not line.strip()):
+                inside = False
+            if not inside:
+                continue
+            body = line
+            if (m := PRODUCTION.match(line)) and not line.lstrip().startswith(":"):
+                defined.setdefault(m.group(1), []).append(f"{f.relative_to(ROOT)}:{n}")
+                body = m.group(2)
+            used.update(NONTERMINAL.findall(body))
+    for name, places in sorted(defined.items()):
+        if len(places) > 1:
+            errors.append(f"{places[1]}: nonterminal {name} is also defined at {places[0]}")
+    missing = sorted(used - defined.keys())
+    if missing:
+        warnings.append(f"{len(missing)} grammar nonterminals are used and not defined: {', '.join(missing)}")
+
+
 def main() -> int:
     rules, errors = parse_spec()
     listed = {}
@@ -189,6 +256,9 @@ def main() -> int:
         for ref in set(re.findall(r"\bQ-\d{4}\b", f.read_text())):
             if ref not in questions:
                 errors.append(f"{f.relative_to(ROOT)}: refers to missing question {ref}")
+
+    check_markers(errors)
+    check_grammar(errors, warnings)
 
     for w in warnings:
         print("warning: " + w)

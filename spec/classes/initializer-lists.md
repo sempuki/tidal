@@ -9,7 +9,8 @@ behind a `std::initializer_list`, and narrowing.
 List initialization of aggregates and scalars is with initialization.
 
 Depends on: list initialization and aggregates, constructors and
-destructors, overload resolution *(referenced)*.
+destructors, overload resolution
+*(overload resolution referenced)*.
 
 ## Principles
 
@@ -46,7 +47,7 @@ parameter of this type takes a braced list directly.
 An *initializer-list constructor* is a constructor whose first parameter
 is `std::initializer_list<E>`, or a reference to it, and whose other
 parameters have default arguments. `std::initializer_list` comes from the
-standard library *(referenced)*.
+standard library *(library referenced)*.
 
 ## Constraints
 

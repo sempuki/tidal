@@ -6,7 +6,7 @@ comes from its initializer.
 
 This page covers variables, including variables in conditions and
 initializer statements. Placeholders in return types, parameters, and
-template parameters are on other pages *(referenced)*.
+template parameters are on other pages *(templates referenced)*.
 
 ## Principles
 
@@ -82,7 +82,7 @@ in a static data member that carries its initializer in the class.
 
 `decl_specifier` includes `const`, `volatile`, `static`, `constexpr`, and
 the other declaration specifiers. `type_constraint` names a concept
-*(referenced)*.
+*(concepts referenced)*.
 
 ## Constraints
 
@@ -259,7 +259,8 @@ and `switch`, and in the initializer statements of `if`, `switch`, and
 :kind: required
 :tests: declarations/auto/constrained-satisfied.cpp
 
-A concept name can come before `auto` or `decltype(auto)` *(referenced)*.
+A concept name can come before `auto` or `decltype(auto)`
+*(concepts referenced)*.
 AUTO-16 states its constraint.
 :::
 

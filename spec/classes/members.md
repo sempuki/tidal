@@ -304,7 +304,7 @@ enumeration type in its class must be a constant expression.
 :tests: classes/members/standard-layout-reinterpret.cpp classes/members/first-member-same-address.cpp
 
 A *standard-layout* class meets these conditions, and others that this
-page does not list yet *(referenced)*:
+page does not list yet *(class properties referenced)*:
 
 - It has no virtual function and no virtual base.
 - Its data members that are not static all have one access.
