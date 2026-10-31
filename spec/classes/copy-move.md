@@ -210,12 +210,16 @@ function can be used in constant evaluation.
 :kind: required
 :tests: classes/copy-move/trivially-copyable-bytes.cpp
 
-A class is *trivially copyable* if each of its copy and move functions is
-implicit or defaulted, at least one of them is not deleted, its
-destructor is implicit or defaulted, and it has no virtual functions or
-virtual bases, with the same true for its bases and members. If a
-program copies the bytes of such an object into another object of the
-same type, the second object gets the same value.
+A *trivially copyable* class meets these conditions, and others that
+this page does not list yet *(referenced)*:
+
+- Its copy and move functions and its destructor are implicit or
+  defaulted, and at least one copy or move function is not deleted.
+- It has no virtual function and no virtual base.
+- Each base and each member is also trivially copyable.
+
+If a program copies the bytes of such an object into another object of
+the same type, the second object gets the same value.
 :::
 
 ## Implementation Requirements

@@ -124,13 +124,13 @@ A class must not declare:
 :kind: required
 :tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp classes/members/local-class-friend-definition.cpp classes/members/local-class-constexpr-double.cpp
 
-A class can be defined in a function. Such a local class must not have a
-static data member, a member template, or the definition of a friend
-function. Its member functions must be defined in the class. They must
-not use an automatic variable of the function in an evaluated operand.
-They can use its static variables. They can also read a variable that is
-usable in constant expressions, such as a `constexpr` variable of any
-literal type, if the read does not need its address.
+A function can define a class inside its body. Three things are not
+valid in that local class: a static data member, a member template, and a
+friend function defined in it. Each member function is defined inside the
+class. In an evaluated operand, it can name the static variables of the
+function but not its automatic variables. One exception applies: it can
+read the value of a `constexpr` variable of any literal type, or another
+constant variable, when it does not take the address.
 :::
 
 :::{rule} CLS-13
@@ -189,11 +189,16 @@ enumeration type in its class must be a constant expression.
 :kind: required
 :tests: classes/members/standard-layout-reinterpret.cpp classes/members/first-member-same-address.cpp
 
-A *standard-layout class* has no virtual functions and no virtual bases,
-gives all its non-static data members the same access, and has
-standard-layout bases and members. An object of such a class and its
-first non-static data member have the same address. A `reinterpret_cast`
-between pointers to them gives a pointer that the program can use.
+A *standard-layout* class meets these conditions, and others that this
+page does not list yet *(referenced)*:
+
+- It has no virtual function and no virtual base.
+- Its data members that are not static all have one access.
+- Each base and each member is also standard-layout.
+
+The address of such an object equals the address of its first data
+member. A `reinterpret_cast` from one of these pointers to the other gives
+a usable pointer.
 :::
 
 ## Dynamic Semantics
