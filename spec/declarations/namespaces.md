@@ -5,11 +5,12 @@ scope. A *using declaration* declares one member of a namespace in the
 current scope. A *using directive* makes all members of a namespace
 visible to unqualified lookup in the current scope.
 
-These topics are on other pages *(lookup referenced)*:
+These topics are on other pages:
 
-- name lookup in general,
-- argument-dependent lookup,
-- using declarations in classes.
+- name lookup in general, and qualified lookup through using directives
+  ({principle}`NAM-P2`, {principle}`NAM-P5`, {principle}`NAM-P6`),
+- argument-dependent lookup ({rule}`NAM-5`, {rule}`NAM-27`),
+- using declarations in classes ({rule}`DER-3`).
 
 ## Principles
 

@@ -5,6 +5,22 @@ term to its entry here. A marker such as *(library referenced)* names a
 topic that Tidal does not specify yet.
 
 :::{glossary}
+argument-dependent lookup
+  Lookup of the name in an unqualified function call in the namespaces
+  and classes that the argument types add. {rule}`NAM-31` says when the
+  lookup happens, and {rule}`NAM-29` says what the lookup finds. See
+  {term}`associated namespace`.
+
+associated class
+  A class that an argument type adds to argument-dependent lookup, for
+  example the argument's own class and its bases. The friends of an
+  associated class are found ({rule}`NAM-27`, {rule}`NAM-29`).
+
+associated namespace
+  A namespace that an argument type adds to argument-dependent lookup,
+  for example the namespace that declares the argument's class
+  ({rule}`NAM-27`).
+
 automatic storage
   Storage that exists while the block of an object runs, until the end
   of the block. A jump past the declaration does not remove the object
@@ -82,6 +98,11 @@ immediate function context
   a constant expression by itself. Examples are the body of a
   `consteval` function and the branch of `if consteval` that executes
   during {term}`constant evaluation`.
+
+injected class name
+  The name that a class declares for itself inside its own scope. Inside
+  `C`, the name `C` finds the class first ({rule}`NAM-33`). A derived
+  class inherits the injected class name of each base ({rule}`NAM-35`).
 
 integer promotion
   The conversion of an integer operand that is narrower than `int`.

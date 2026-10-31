@@ -151,7 +151,6 @@ REFERENCED_TOPICS = {
     "coroutines",
     "extended floating-point types",
     "library",
-    "lookup",                # qualified and argument-dependent lookup
     "memory model",
     "one-definition rule",
     "overload resolution",

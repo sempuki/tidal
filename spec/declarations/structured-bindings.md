@@ -127,7 +127,7 @@ reference type.
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable. The `value` member of
 `std::tuple_size<E>` gives the number of elements. Element `i` comes
-from a call to `get<i>()` *(lookup referenced)*, and the type of element
+from a call to `get<i>()` ({rule}`NAM-5`), and the type of element
 `i` is `std::tuple_element<i, E>::type` ({rule}`LSUP-3`).
 
 The calls to `get` occur in the order of the elements. If

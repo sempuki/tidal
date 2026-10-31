@@ -178,7 +178,7 @@ access.
 
 :::{rule} ACC-7
 :kind: required
-:tests: classes/access/hidden-friend.cpp
+:tests: classes/access/hidden-friend.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp foundations/names/qualified-hidden-friend.cpp
 
 A friend function that is first declared in a class is a member of the
 enclosing namespace. Only argument-dependent lookup
@@ -272,7 +272,7 @@ the members of the nested class.
 
 :::{rule} ACC-14
 :kind: reject
-:tests: classes/access/injected-name-private-base.cpp classes/access/injected-name-qualified.cpp
+:tests: classes/access/injected-name-private-base.cpp classes/access/injected-name-qualified.cpp foundations/names/injected-private-base.cpp
 
 The name of a class is also a member of the class. In a class derived
 from a class with a private base, the unqualified name of that base
@@ -326,8 +326,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 47
-of 48 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 51
+of 52 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base

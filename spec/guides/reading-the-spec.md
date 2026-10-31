@@ -271,7 +271,7 @@ result Tidal adopts for now.
 
 Some topics have no page in Tidal yet. A rule that depends on such a
 topic marks the dependency with the topic name in italics and
-parentheses. {rule}`OPR-6` has the marker *(lookup referenced)*, and the
+parentheses. {rule}`CPY-13` has the marker *(library referenced)*, and the
 `Depends on:` line of {doc}`/classes/operators` has *(overload
 resolution referenced)*. `REFERENCED_TOPICS` in `tools/check_spec.py`
 lists the allowed topics. The glossary introduction describes the

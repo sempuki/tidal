@@ -135,7 +135,7 @@ initializer list gives the bases first.
 
 :::{rule} DER-3
 :kind: required
-:tests: classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp
+:tests: classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp foundations/names/injected-member-hides-base-name.cpp
 
 A name declared in a derived class hides every member with that name in
 its bases. The hidden members include:
@@ -168,7 +168,7 @@ using-declaration that inherits constructors must name a direct base.
 
 :::{rule} DER-4
 :kind: reject
-:tests: classes/derived/ambiguous-member-unused.cpp classes/derived/ambiguous-member.cpp classes/derived/ambiguous-overloads-different-bases.cpp classes/derived/ambiguous-qualified-ok.cpp classes/derived/ambiguous-repeated-base-member.cpp classes/derived/ambiguous-resolved-by-using.cpp classes/derived/dominance-derived-hides.cpp classes/derived/dominance-nonvirtual-ambiguous.cpp classes/derived/repeated-base-static-ok.cpp
+:tests: classes/derived/ambiguous-member-unused.cpp classes/derived/ambiguous-member.cpp classes/derived/ambiguous-overloads-different-bases.cpp classes/derived/ambiguous-qualified-ok.cpp classes/derived/ambiguous-repeated-base-member.cpp classes/derived/ambiguous-resolved-by-using.cpp classes/derived/dominance-derived-hides.cpp classes/derived/dominance-nonvirtual-ambiguous.cpp classes/derived/repeated-base-static-ok.cpp foundations/names/injected-two-bases-ambiguous.cpp foundations/names/injected-two-paths-virtual.cpp foundations/names/injected-two-paths.cpp
 
 If a name lookup in a derived class finds the name in more than one base
 subobject, the use of the name is ambiguous. This rule also applies to
@@ -374,8 +374,8 @@ struct Drive : Disk, Tape {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 73 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 76
+of 77 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

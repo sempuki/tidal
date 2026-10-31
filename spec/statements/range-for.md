@@ -64,7 +64,7 @@ For a range of class type, `begin` and `end` are found as follows:
   ({question}`Q-0098`).
 - If only one of the names is a member, or neither, both are free
   functions that argument-dependent lookup finds
-  *(lookup referenced)*.
+  ({rule}`NAM-5`, {rule}`NAM-27`).
 
 `begin` and `end` can return different types. The loop advances the
 iterator with prefix `++`. The loop compares the iterator with `end` by

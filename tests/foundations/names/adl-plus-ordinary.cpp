@@ -1,4 +1,4 @@
-// tidal-rules: NAM-5
+// tidal-rules: NAM-5 NAM-31
 // tidal-expect: run
 namespace geo { struct P { int v; }; int size(P p) { return p.v; } }
 int size(int v) { return v; }
