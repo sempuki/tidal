@@ -46,6 +46,7 @@ Every rule ID starts with the prefix of its page.
 | `ENUM` | `declarations/enumerations.md` |
 | `EXS` | `declarations/exception-specifications.md` |
 | `FN` | `declarations/functions/definitions.md` |
+| `ICS` | `foundations/conversion-sequences.md` |
 | `IF` | `statements/if.md` |
 | `ILC` | `classes/initializer-lists.md` |
 | `INC` | `foundations/odr.md` |

@@ -5,6 +5,12 @@ term to its entry here. A marker such as *(library referenced)* names a
 topic that Tidal does not specify yet.
 
 :::{glossary}
+ambiguous conversion sequence
+  The sequence of an argument that two or more user-defined conversions
+  can convert equally well. The sequence counts as user-defined, and a
+  call that chooses its function is not valid ({rule}`ICS-7`,
+  {rule}`ICS-8`).
+
 argument-dependent lookup
   Lookup of the name in an unqualified function call in the namespaces
   and classes that the argument types add. {rule}`NAM-31` says when the
@@ -88,6 +94,10 @@ discarded statement
     definition.
   - In a template, a discarded statement is not instantiated.
 
+ellipsis conversion sequence
+  The sequence of an argument that matches the `...` of a function. It is
+  worse than every other sequence ({rule}`ICS-6`, {rule}`ICS-21`).
+
 full expression
   An expression that is not part of a larger expression, such as the
   expression of an expression statement or a condition. The temporaries
@@ -103,6 +113,17 @@ immediate function context
   a constant expression by itself. Examples are the body of a
   `consteval` function and the branch of `if consteval` that executes
   during {term}`constant evaluation`.
+
+implicit conversion sequence
+  The description of how one argument becomes one parameter of a
+  function. The sequence is standard, user-defined, or ellipsis, and
+  overload resolution compares the sequences of two functions
+  ({rule}`ICS-21`).
+
+implicit object parameter
+  The parameter of a non-static member function that receives the
+  object of a call. Its type is a reference to the class
+  ({rule}`ICS-13`).
 
 include guard
   The `#ifndef`, `#define`, and `#endif` lines around the text of a
@@ -172,6 +193,15 @@ placeholder type
   comes from an initializer or from `return` statements. A concept name
   can come before the placeholder to constrain the type.
 
+sequence rank
+  The rank of a {term}`standard conversion sequence`: exact match,
+  promotion, or conversion. The worst conversion in the sequence gives
+  the rank ({rule}`ICS-2`).
+
+standard conversion sequence
+  An {term}`implicit conversion sequence` of at most three standard
+  conversions, in a fixed order ({rule}`ICS-1`).
+
 storage duration
   The time for which the storage of an object exists.
 
@@ -210,6 +240,10 @@ use
   itself: its storage, its address, or its code. A used entity needs a
   definition. Reading the value of a constant and naming an entity in an
   unevaluated operand are not uses ({rule}`ODR-3`).
+
+user-defined conversion sequence
+  An {term}`implicit conversion sequence` that calls one constructor or
+  conversion function between two standard sequences ({rule}`ICS-3`).
 
 usual arithmetic conversions
   The conversions that give the two operands of a binary arithmetic

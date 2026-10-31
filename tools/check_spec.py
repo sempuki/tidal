@@ -147,7 +147,6 @@ def parse_spec():
 REFERENCED_TOPICS = {
     "class properties",      # the full trivial and standard-layout lists
     "concepts",
-    "conversion sequences",  # implicit conversion sequences
     "coroutines",
     "extended floating-point types",
     "library",

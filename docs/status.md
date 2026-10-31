@@ -14,7 +14,8 @@ current state only. The history of how the project got here is in
 | [Keywords and reserved names](../spec/foundations/keywords.md) | 4 | 2 required, 1 reject, 1 no-diagnostic | 96 | 2 | 0 | 2 |  | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 34 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 53 | 7 | 1 | 41 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 31 | Q-0028, Q-0100 | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 62 | 6 | 2 | 31 | Q-0028, Q-0100 | 0 flagged |
+| [Implicit conversion sequences](../spec/foundations/conversion-sequences.md) | 37 | 36 required, 1 reject | 75 | 15 | 7 | 0 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 36 | 18 required, 18 reject | 178 | 5 | 0 | 44 |  | 0 flagged |
 | [Use and the one-definition rule](../spec/foundations/odr.md) | 16 | 7 required, 3 reject, 2 impl-defined, 3 no-diagnostic, 1 recommended | 44 | 3 | 8 | 0 | Q-0127, Q-0128, Q-0129, Q-0130 | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 9 | 5 required, 1 undefined, 2 unspecified, 1 recommended | 25 | 2 | 0 | 65 |  | 0 flagged |
@@ -50,8 +51,8 @@ current state only. The history of how the project got here is in
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 3 | Q-0080 | 0 flagged |
 | [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 31 | 3 | 1 | 24 | Q-0013, Q-0039 | 0 flagged |
-| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 55 | 4 | 2 | 16 | Q-0042, Q-0043 | 0 flagged |
-| [Reference binding](../spec/declarations/initialization/references.md) | 12 | 7 required, 4 reject, 1 undefined | 34 | 3 | 3 | 38 | Q-0040, Q-0109, Q-0110 | 0 flagged |
+| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 57 | 4 | 2 | 16 | Q-0042, Q-0043 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 12 | 7 required, 4 reject, 1 undefined | 35 | 3 | 3 | 38 | Q-0040, Q-0109, Q-0110 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | 2 | 0 | 15 | Q-0014 | 0 flagged |
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 16 | 9 required, 7 reject | 49 | 6 | 4 | 11 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 21 | 10 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 59 | 5 | 3 | 19 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
@@ -68,18 +69,18 @@ current state only. The history of how the project got here is in
 | [Class definitions and members](../spec/classes/members.md) | 27 | 14 required, 11 reject, 1 impl-defined, 1 no-diagnostic | 84 | 12 | 1 | 21 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 19 | 8 required, 11 reject | 59 | 6 | 2 | 9 | Q-0052, Q-0131 | 0 flagged |
 | [Constructors and destructors](../spec/classes/constructors.md) | 34 | 13 required, 16 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 157 | 7 | 10 | 74 | Q-0041, Q-0053, Q-0054, Q-0082, Q-0083, Q-0084, Q-0126 | 0 flagged |
-| [List initialization of classes](../spec/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 30 | 1 | 1 | 8 | Q-0081 | 0 flagged |
+| [List initialization of classes](../spec/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 31 | 1 | 2 | 8 | Q-0081, Q-0132 | 0 flagged |
 | [Copy and move](../spec/classes/copy-move.md) | 27 | 14 required, 10 reject, 2 unspecified, 1 recommended | 102 | 3 | 2 | 45 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 22 | 9 required, 12 reject, 1 undefined | 77 | 4 | 1 | 12 | Q-0085 | 0 flagged |
 | [Virtual functions and abstract classes](../spec/classes/virtual.md) | 20 | 7 required, 9 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 107 | 3 | 4 | 5 | Q-0056, Q-0086, Q-0087 | 0 flagged |
 | [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 101 | 5 | 3 | 23 | Q-0057, Q-0058, Q-0088 | 0 flagged |
-| [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 60 | 1 | 1 | 7 | Q-0059 | 0 flagged |
+| [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 62 | 1 | 1 | 7 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 89 | 3 | 1 | 31 | Q-0060 | 0 flagged |
 | [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 63 | 2 | 2 | 17 | Q-0061, Q-0062 | 0 flagged |
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 34 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 26 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 41 |  | 0 flagged |
-| [Glossary](../spec/glossary.md) | 32 terms | | | | | | | 0 flagged |
+| [Glossary](../spec/glossary.md) | 39 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds the site on every change and publishes it to
@@ -93,7 +94,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 3584/3584 tests pass on each. Two
+Eight compilers are baseline, and 3659/3659 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -114,8 +115,8 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and thirty questions are open for opinions, each with a
-provisional answer the spec follows. Ten of them have the status
+One hundred and thirty-six questions are open for opinions, each with
+a provisional answer the spec follows. Ten of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
 Q-0026, Q-0044, Q-0115, Q-0125). Q-0009 (license) is settled. See `questions/README.md`.
@@ -125,13 +126,13 @@ Q-0026, Q-0044, Q-0115, Q-0125). Q-0009 (license) is settled. See `questions/REA
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
 - 26 *(referenced)* markers remain. Each names a topic with no page:
-  overload resolution, templates and concepts, the library, class
-  properties, conversion sequences, coroutines, extended floating-point
-  types, the memory model, or the one-definition rule.
+  overload resolution (9), templates and concepts (8), the library (3),
+  class properties (2), extended floating-point types (2), coroutines
+  (1), or the memory model (1).
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 3005 of 3584 tests. The front end
+- The clean-room front end passes 3028 of 3659 tests. The front end
   has no preprocessor, so it rejects the valid tests that use
   `#include`.
   `tools/frontend_check.py` fails when a test that it passed no longer
@@ -166,10 +167,12 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decisions 0033 and 0039). Phases 1
 and 2 are done. Next:
 
-1. Phase 3, item L: implicit conversion sequences, with the method
-   controls of decision 0044 and the probe grid tool.
-2. Phase 3, item M: overload resolution.
-3. The remaining findings of exercises X1 to X4.
+1. Gap review of item L by a source reader (decision 0044).
+2. Phase 3, item M: overload resolution, with its own inventory and
+   probe grids.
+3. Front end, round 5: name lookup is done; the new pages are use and
+   the one-definition rule, and implicit conversion sequences.
+4. The remaining findings of exercises X1 to X4.
 
 Waiting on the maintainer:
 

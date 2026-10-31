@@ -1,0 +1,40 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nenum Plain { plain };\nenum Fixed : short { fixed };\nenum class Scoped { scoped };\nstruct Bits { long long v : 3; };\nBits bits{};\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "bool → first": "bool v = true;\nstatic_assert(same<decltype(f(v)), One>);",
+  "bool → second": "bool v = true;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "char → first": "char v = 'a';\nstatic_assert(same<decltype(f(v)), One>);",
+  "char → second": "char v = 'a';\nstatic_assert(same<decltype(f(v)), Two>);",
+  "short → first": "short v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "short → second": "short v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "int → first": "int v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "int → second": "int v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "unsigned → first": "unsigned v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "unsigned → second": "unsigned v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "long → first": "long v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "long → second": "long v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "float → first": "float v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "float → second": "float v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "double → first": "double v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "double → second": "double v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "long double → first": "long double v = 1;\nstatic_assert(same<decltype(f(v)), One>);",
+  "long double → second": "long double v = 1;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "enum → first": "static_assert(same<decltype(f(plain)), One>);",
+  "enum → second": "static_assert(same<decltype(f(plain)), Two>);",
+  "enum : short → first": "static_assert(same<decltype(f(fixed)), One>);",
+  "enum : short → second": "static_assert(same<decltype(f(fixed)), Two>);",
+  "enum class → first": "static_assert(same<decltype(f(Scoped::scoped)), One>);",
+  "enum class → second": "static_assert(same<decltype(f(Scoped::scoped)), Two>);",
+  "long long : 3 bit-field → first": "static_assert(same<decltype(f(bits.v)), One>);",
+  "long long : 3 bit-field → second": "static_assert(same<decltype(f(bits.v)), Two>);"
+ },
+ "pairs": {
+  "bool": "bool",
+  "short": "short",
+  "int": "int",
+  "long": "long",
+  "float": "float",
+  "double": "double"
+ }
+}

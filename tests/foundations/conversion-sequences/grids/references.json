@@ -1,0 +1,27 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nint i = 0;\nconst int ci = 0;\nshort s = 0;\nstruct Bits { int v : 3; };\nBits bits{};\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "int lvalue → first": "static_assert(same<decltype(f(i)), One>);",
+  "int lvalue → second": "static_assert(same<decltype(f(i)), Two>);",
+  "const int lvalue → first": "static_assert(same<decltype(f(ci)), One>);",
+  "const int lvalue → second": "static_assert(same<decltype(f(ci)), Two>);",
+  "int xvalue → first": "static_assert(same<decltype(f(static_cast<int&&>(i))), One>);",
+  "int xvalue → second": "static_assert(same<decltype(f(static_cast<int&&>(i))), Two>);",
+  "int prvalue → first": "static_assert(same<decltype(f(1)), One>);",
+  "int prvalue → second": "static_assert(same<decltype(f(1)), Two>);",
+  "short lvalue → first": "static_assert(same<decltype(f(s)), One>);",
+  "short lvalue → second": "static_assert(same<decltype(f(s)), Two>);",
+  "int : 3 bit-field → first": "static_assert(same<decltype(f(bits.v)), One>);",
+  "int : 3 bit-field → second": "static_assert(same<decltype(f(bits.v)), Two>);"
+ },
+ "pairs": {
+  "int": "int",
+  "int lref": "int&",
+  "const int lref": "const int&",
+  "const volatile int lref": "const volatile int&",
+  "int rref": "int&&",
+  "const int rref": "const int&&",
+  "const long lref": "const long&"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nvoid run();\nvoid stop() noexcept;\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "run → first": "static_assert(same<decltype(f(run)), One>);",
+  "run → second": "static_assert(same<decltype(f(run)), Two>);",
+  "stop (noexcept) → first": "static_assert(same<decltype(f(stop)), One>);",
+  "stop (noexcept) → second": "static_assert(same<decltype(f(stop)), Two>);"
+ },
+ "pairs": {
+  "pointer": "void (*)()",
+  "noexcept pointer": "void (*)() noexcept",
+  "lref": "void (&)()",
+  "rref": "void (&&)()",
+  "bool": "bool"
+ }
+}

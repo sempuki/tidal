@@ -286,7 +286,8 @@ expression `c` is `true`. Only a constructor or conversion function
 A constructor that is not `explicit` is a *converting constructor*. An
 implicit conversion can use a converting constructor to make an object
 from the constructor's arguments, including from a braced list. Standard
-conversions can come before the converting constructor.
+conversions can come before the converting constructor. {rule}`ICS-3`
+gives the parts of such a conversion.
 :::
 
 :::{rule} CTOR-22
@@ -294,6 +295,7 @@ conversions can come before the converting constructor.
 :tests: classes/constructors/one-user-conversion.cpp
 
 An implicit conversion uses at most one converting constructor.
+{rule}`ICS-9` gives the same limit for a conversion sequence.
 :::
 
 :::{rule} CTOR-25

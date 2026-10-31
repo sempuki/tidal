@@ -72,7 +72,7 @@ object exists.
 
 :::{rule} REF-8
 :kind: reject
-:tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp
+:tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp foundations/conversion-sequences/chosen-bit-field.cpp
 
 The lvalue that a non-`const` lvalue reference binds to must have one of
 the types that REF-1 lists. A non-`const` lvalue reference must not bind
@@ -217,7 +217,7 @@ const int& w = pass(1);      // the temporary ends here; w dangles
 
 ## Evidence
 
-All eight compilers agree on 31 of 34 tests. The results are in
+All eight compilers agree on 32 of 35 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during

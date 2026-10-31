@@ -1,0 +1,27 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nnamespace std {\ntemplate <class E> class initializer_list {\n  const E* first_;\n  decltype(sizeof 0) size_;\n  constexpr initializer_list(const E* f, decltype(sizeof 0) n) : first_(f), size_(n) {}\npublic:\n  constexpr initializer_list() : first_(nullptr), size_(0) {}\n};\n}\nstruct Point { int x, y; };\nstruct Pair { Pair(int, int); };\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "empty {} → first": "static_assert(same<decltype(f({})), One>);",
+  "empty {} → second": "static_assert(same<decltype(f({})), Two>);",
+  "one {1} → first": "static_assert(same<decltype(f({1})), One>);",
+  "one {1} → second": "static_assert(same<decltype(f({1})), Two>);",
+  "two {1, 2} → first": "static_assert(same<decltype(f({1, 2})), One>);",
+  "two {1, 2} → second": "static_assert(same<decltype(f({1, 2})), Two>);",
+  "three {1, 2, 3} → first": "static_assert(same<decltype(f({1, 2, 3})), One>);",
+  "three {1, 2, 3} → second": "static_assert(same<decltype(f({1, 2, 3})), Two>);",
+  "nested {{1}} → first": "static_assert(same<decltype(f({{1}})), One>);",
+  "nested {{1}} → second": "static_assert(same<decltype(f({{1}})), Two>);",
+  "designated {.x = 1} → first": "static_assert(same<decltype(f({.x = 1})), One>);",
+  "designated {.x = 1} → second": "static_assert(same<decltype(f({.x = 1})), Two>);"
+ },
+ "pairs": {
+  "int": "int",
+  "initializer_list<int>": "std::initializer_list<int>",
+  "initializer_list<long>": "std::initializer_list<long>",
+  "int[2] rref": "int (&&)[2]",
+  "int[] rref": "int (&&)[]",
+  "Point": "Point",
+  "Pair": "Pair"
+ }
+}

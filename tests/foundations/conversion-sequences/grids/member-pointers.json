@@ -1,0 +1,20 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nstruct Base { int x; };\nstruct Middle : Base { int y; };\nstruct Derived : Middle {};\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "&Base::x → first": "static_assert(same<decltype(f(&Base::x)), One>);",
+  "&Base::x → second": "static_assert(same<decltype(f(&Base::x)), Two>);",
+  "&Middle::y → first": "static_assert(same<decltype(f(&Middle::y)), One>);",
+  "&Middle::y → second": "static_assert(same<decltype(f(&Middle::y)), Two>);",
+  "0 → first": "static_assert(same<decltype(f(0)), One>);",
+  "0 → second": "static_assert(same<decltype(f(0)), Two>);",
+  "nullptr → first": "static_assert(same<decltype(f(nullptr)), One>);",
+  "nullptr → second": "static_assert(same<decltype(f(nullptr)), Two>);"
+ },
+ "pairs": {
+  "int Base::*": "int Base::*",
+  "int Middle::*": "int Middle::*",
+  "int Derived::*": "int Derived::*",
+  "bool": "bool"
+ }
+}

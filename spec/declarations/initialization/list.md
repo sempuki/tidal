@@ -84,7 +84,7 @@ expression must not itself be a braced list.
 
 :::{rule} LIST-2
 :kind: reject
-:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp
+:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp foundations/conversion-sequences/chosen-narrowing.cpp
 
 In braces, a value must not go through a *narrowing* conversion. These
 conversions are narrowing:
@@ -154,7 +154,7 @@ LIST-14 lists what is not valid.
 
 :::{rule} LIST-14
 :kind: reject
-:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp
+:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp foundations/conversion-sequences/chosen-designator-order.cpp
 
 The designators in a braced list must obey these conditions:
 
@@ -237,7 +237,8 @@ zero. A member of class type gets its default constructor
 :tests: declarations/initialization/list/single-same-class-copies.cpp
 
 If a braced list for an aggregate has one element of the same class
-type, the aggregate is copied from that element.
+type, the aggregate is copied from that element. {rule}`ICS-18` gives
+the conversion sequence of such a list.
 :::
 
 ## Examples
@@ -273,7 +274,7 @@ char8_t k[] = "x";        // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 53 of 55 tests. The results are in
+All eight compilers agree on 55 of 57 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-14.** Clang accepts array designators, chained designators, and

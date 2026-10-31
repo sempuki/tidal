@@ -1,0 +1,26 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nstruct Base {};\nstruct Middle : Base {};\nstruct Derived : Middle {};\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "Derived* → first": "Derived* v = nullptr;\nstatic_assert(same<decltype(f(v)), One>);",
+  "Derived* → second": "Derived* v = nullptr;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "const Derived* → first": "const Derived* v = nullptr;\nstatic_assert(same<decltype(f(v)), One>);",
+  "const Derived* → second": "const Derived* v = nullptr;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "Middle* → first": "Middle* v = nullptr;\nstatic_assert(same<decltype(f(v)), One>);",
+  "Middle* → second": "Middle* v = nullptr;\nstatic_assert(same<decltype(f(v)), Two>);",
+  "Derived[2] → first": "Derived v[2];\nstatic_assert(same<decltype(f(v)), One>);",
+  "Derived[2] → second": "Derived v[2];\nstatic_assert(same<decltype(f(v)), Two>);",
+  "0 → first": "static_assert(same<decltype(f(0)), One>);",
+  "0 → second": "static_assert(same<decltype(f(0)), Two>);",
+  "nullptr → first": "static_assert(same<decltype(f(nullptr)), One>);",
+  "nullptr → second": "static_assert(same<decltype(f(nullptr)), Two>);"
+ },
+ "pairs": {
+  "void*": "void*",
+  "const void*": "const void*",
+  "Base*": "Base*",
+  "Middle*": "Middle*",
+  "const Middle*": "const Middle*",
+  "bool": "bool"
+ }
+}

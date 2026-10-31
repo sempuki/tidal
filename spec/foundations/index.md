@@ -14,6 +14,7 @@ keywords
 objects
 values
 conversions
+conversion-sequences
 names
 odr
 evaluation-order
@@ -31,6 +32,7 @@ keywords
 objects
 values
 conversions
+conversion-sequences
 names
 odr
 evaluation-order

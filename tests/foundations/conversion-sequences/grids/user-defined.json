@@ -1,0 +1,22 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nstruct Box { Box(int); };\nstruct Wide { Wide(long); };\nstruct ToInt { operator int() const; };\nstruct ToShort { operator short() const; };\nstruct ToBoth { operator int() const; operator long() const; };\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "int → first": "static_assert(same<decltype(f(1)), One>);",
+  "int → second": "static_assert(same<decltype(f(1)), Two>);",
+  "ToInt → first": "static_assert(same<decltype(f(ToInt{})), One>);",
+  "ToInt → second": "static_assert(same<decltype(f(ToInt{})), Two>);",
+  "ToShort → first": "static_assert(same<decltype(f(ToShort{})), One>);",
+  "ToShort → second": "static_assert(same<decltype(f(ToShort{})), Two>);",
+  "ToBoth → first": "static_assert(same<decltype(f(ToBoth{})), One>);",
+  "ToBoth → second": "static_assert(same<decltype(f(ToBoth{})), Two>);"
+ },
+ "pairs": {
+  "int": "int",
+  "long": "long",
+  "double": "double",
+  "Box": "Box",
+  "Wide": "Wide",
+  "ellipsis": "..."
+ }
+}

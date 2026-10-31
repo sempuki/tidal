@@ -22,7 +22,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `(not fetched)` |
 | clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `(not fetched)` |
 | clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
-| edg-overload | edg | `src/overload.c` | sanitized | `(not fetched)` |
+| edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
 | edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
 | clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `(not fetched)` |
 | clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `(not fetched)` |

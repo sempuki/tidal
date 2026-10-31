@@ -142,6 +142,12 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0129](Q-0129-copy-of-class-constant.md) | Is a copy of a whole class-type constant a use of the constant? | provisional | no; Clang differs |
 | [Q-0130](Q-0130-edg-enclosing-constant-use.md) | Does EDG's acceptance of some uses of an enclosing function's constant change ODR-2? | provisional | no; EDG differs |
 | [Q-0131](Q-0131-hidden-friend-qualified-redeclaration.md) | Can a declaration with a qualified name outside the namespace redeclare a friend function that only a class has declared? | provisional | no; GCC and EDG reject, Clang accepts |
+| [Q-0132](Q-0132-explicit-constructor-in-list-sequence.md) | Does a braced list have a conversion sequence to a class parameter when the chosen constructor is `explicit`? | provisional | yes; GCC agrees, Clang and EDG form no sequence |
+| [Q-0133](Q-0133-initializer-list-sequence-before-kind.md) | Does a list sequence to `std::initializer_list` beat a standard sequence when its own sequence is user-defined? | provisional | yes; GCC and EDG agree, Clang compares kind first |
+| [Q-0134](Q-0134-bit-field-promotion-rank.md) | Does a bit-field narrower than `int` but declared with a wider type have a promotion to `int` in a conversion sequence? | provisional | yes; Clang agrees, GCC and EDG differ |
+| [Q-0135](Q-0135-scalar-against-array-reference.md) | Does a braced list prefer a scalar parameter to a reference to an array when both sequences are the identity? | provisional | no, they tie; GCC differs |
+| [Q-0136](Q-0136-list-to-array-reference-edge-cases.md) | Do empty braces or a designated list have a sequence to a reference to an array? | provisional | no; Clang agrees, GCC and EDG differ |
+| [Q-0137](Q-0137-array-argument-pointer-tie-breakers.md) | Do the pointer tie-breakers apply after an array-to-pointer step? | provisional | yes; Clang and EDG agree, GCC differs |
 
 ## Status values
 

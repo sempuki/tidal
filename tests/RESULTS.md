@@ -2971,6 +2971,81 @@ compilers affect the Status column.
 | `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/ambiguous-loses-to-standard.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/ambiguous-ties-user-defined.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-fewer-elements.cpp` | ICS-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-known-bound.cpp` | ICS-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` | ICS-33 ICS-36 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/conversion-sequences/assignment-left-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/base-pointer-over-void.cpp` | ICS-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/conversion-sequences/chosen-ambiguous-base.cpp` | ICS-8 CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` | ICS-8 ICS-7 CVF-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-ambiguous.cpp` | ICS-8 ICS-7 CVF-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-bit-field.cpp` | ICS-8 REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-designator-order.cpp` | ICS-8 LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-explicit-copy-list.cpp` | ICS-8 ILC-8 | reject | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/conversion-sequences/chosen-narrowing.cpp` | ICS-8 LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/chosen-private-base.cpp` | ICS-8 CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/conversion-sequences/conversion-choice-nearest-source.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/conversion-choice-second-part.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/conversion-choice-void.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/double-brace-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/ellipsis-sequence.cpp` | ICS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/fixed-enumeration.cpp` | ICS-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/floating-equal-rank.cpp` | ICS-35 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/function-lvalue-reference.cpp` | ICS-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/implicit-object-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/initializer-list-over-kind.cpp` | ICS-22 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/initializer-list-over-rank.cpp` | ICS-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/initializer-list-target.cpp` | ICS-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/kind-order.cpp` | ICS-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-aggregate.cpp` | ICS-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-array-against-scalar.cpp` | ICS-17 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/conversion-sequences/list-array.cpp` | ICS-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-class-constructor.cpp` | ICS-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-class-list-constructor.cpp` | ICS-19 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-class-same-class.cpp` | ICS-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-class-tie.cpp` | ICS-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-designated.cpp` | ICS-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-initializer-list.cpp` | ICS-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-reference.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-scalar.cpp` | ICS-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/nearest-base.cpp` | ICS-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/object-conversion-function-class.cpp` | ICS-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/object-explicit-user-defined.cpp` | ICS-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/object-ref-qualifier.cpp` | ICS-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/object-rvalue-non-const.cpp` | ICS-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/object-using-declaration.cpp` | ICS-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/pointer-to-bool.cpp` | ICS-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/qualification-fewer.cpp` | ICS-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rank-before-reference.cpp` | ICS-27 ICS-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rank-class-value.cpp` | ICS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rank-comparison.cpp` | ICS-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rank-worst-step.cpp` | ICS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-conversion-result.cpp` | ICS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-direct-derived.cpp` | ICS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-function-rvalue.cpp` | ICS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-less-cv.cpp` | ICS-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-no-sequence.cpp` | ICS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-temporary.cpp` | ICS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rvalue-reference-before-cv.cpp` | ICS-28 ICS-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rvalue-reference-binding.cpp` | ICS-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/rvalue-reference-object-exception.cpp` | ICS-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/standard-three-steps.cpp` | ICS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/standard-top-level-cv.cpp` | ICS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/static-object-slot.cpp` | ICS-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/subsequence-function-pointer.cpp` | ICS-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/subsequence-qualification.cpp` | ICS-26 ICS-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/template-conversion-exact.cpp` | ICS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/two-user-defined-none.cpp` | ICS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-candidates.cpp` | ICS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-different-functions.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-first-part.cpp` | ICS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-same-aggregate.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-same-function.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-second-part.cpp` | ICS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/user-defined-step-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/keywords/alternative-tokens.cpp` | KW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/keywords/contextual-final-class.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/keywords/contextual-names.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3602,7 +3677,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 
-3584/3584 tests pass on baseline compilers.
+3659/3659 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -15489,6 +15564,95 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22-o2): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-host): error: call of overloaded ‘take(Derived [2])’ is ambiguous / error: call of overloaded ‘take(Derived [2])’ is ambiguous / error: template argument 1 is invalid / error: call of overloaded ‘near(Derived [2])’ is ambiguous / error: call of overloaded ‘near(Derived [2])’ is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-14): error: call of overloaded 'take(Derived [2])' is ambiguous / note: candidate: 'One take(void*)' / note: candidate: 'Two take(Base*)' / error: call of overloaded 'take(Derived [2])' is ambiguous / note: candidate: 'One take(void*)' / note: candidate: 'Two take(Base*)' / error: template argument 1 is invalid / error: call of overloaded 'near(Derived [2])' is ambiguous / note: candidate: 'One near(Base*)' / note: candidate: 'Two near(Middle*)' / error: call of overloaded 'near(Derived [2])' is ambiguous / note: candidate: 'One near(Base*)' / note: candidate: 'Two near(Middle*)' / error: template argument 1 is invalid
+- `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-16): error: call of overloaded 'take(Derived [2])' is ambiguous / error: call of overloaded 'take(Derived [2])' is ambiguous / error: template argument 1 is invalid / error: call of overloaded 'near(Derived [2])' is ambiguous / error: call of overloaded 'near(Derived [2])' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-16-o2): error: call of overloaded 'take(Derived [2])' is ambiguous / error: call of overloaded 'take(Derived [2])' is ambiguous / error: template argument 1 is invalid / error: call of overloaded 'near(Derived [2])' is ambiguous / error: call of overloaded 'near(Derived [2])' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/bit-field-promotion.cpp` (gcc-host): error: call of overloaded ‘take(signed char:3&)’ is ambiguous / error: call of overloaded ‘take(signed char:3&)’ is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/bit-field-promotion.cpp` (edg-7.0): error: more than one instance of overloaded function "take" matches the argument list:
+- `foundations/conversion-sequences/bit-field-promotion.cpp` (gcc-14): error: call of overloaded 'take(signed char:3&)' is ambiguous / note: candidate: 'One take(int)' / note: candidate: 'Two take(long int)' / error: call of overloaded 'take(signed char:3&)' is ambiguous / note: candidate: 'One take(int)' / note: candidate: 'Two take(long int)' / error: template argument 1 is invalid
+- `foundations/conversion-sequences/bit-field-promotion.cpp` (gcc-16): error: call of overloaded 'take(signed char:3&)' is ambiguous / error: call of overloaded 'take(signed char:3&)' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/bit-field-promotion.cpp` (gcc-16-o2): error: call of overloaded 'take(signed char:3&)' is ambiguous / error: call of overloaded 'take(signed char:3&)' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (clang-host): error: ambiguous conversion from derived class 'Joined' to base class 'Base':
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (gcc-host): error: ‘Base’ is an ambiguous base of ‘Joined’
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (edg-7.0): error: base class "Base" is ambiguous
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (gcc-14): error: 'Base' is an ambiguous base of 'Joined'
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (clang-18): error: ambiguous conversion from derived class 'Joined' to base class 'Base':
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (gcc-16): error: 'Base' is an ambiguous base of 'Joined'
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (gcc-16-o2): error: 'Base' is an ambiguous base of 'Joined'
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (clang-22): error: ambiguous conversion from derived class 'Joined' to base class 'Base':
+- `foundations/conversion-sequences/chosen-ambiguous-base.cpp` (clang-22-o2): error: ambiguous conversion from derived class 'Joined' to base class 'Base':
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (clang-host): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (gcc-host): error: conversion from ‘Source’ to ‘double’ is ambiguous / note: initializing argument 1 of ‘One take(double, int)’
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (edg-7.0): error: more than one conversion function from "Source" to "double" applies:
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (gcc-14): error: conversion from 'Source' to 'double' is ambiguous / note: candidate: 'Source::operator int()' / note: candidate: 'Source::operator long int()' / note:   initializing argument 1 of 'One take(double, int)'
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (clang-18): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (gcc-16): error: conversion from 'Source' to 'double' is ambiguous / note: initializing argument 1 of 'One take(double, int)'
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (gcc-16-o2): error: conversion from 'Source' to 'double' is ambiguous / note: initializing argument 1 of 'One take(double, int)'
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (clang-22): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous-tie.cpp` (clang-22-o2): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (clang-host): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (gcc-host): error: conversion from ‘Source’ to ‘double’ is ambiguous / note: initializing argument 1 of ‘One take(double)’
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (edg-7.0): error: more than one conversion function from "Source" to "double" applies:
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (gcc-14): error: conversion from 'Source' to 'double' is ambiguous / note: candidate: 'Source::operator int()' / note: candidate: 'Source::operator long int()' / note:   initializing argument 1 of 'One take(double)'
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (clang-18): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (gcc-16): error: conversion from 'Source' to 'double' is ambiguous / note: initializing argument 1 of 'One take(double)'
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (gcc-16-o2): error: conversion from 'Source' to 'double' is ambiguous / note: initializing argument 1 of 'One take(double)'
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (clang-22): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-ambiguous.cpp` (clang-22-o2): error: conversion from 'Source' to 'double' is ambiguous / note: candidate function / note: candidate function / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (clang-host): error: non-const reference cannot bind to bit-field 'mode' / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (gcc-host): error: cannot bind bit-field ‘flags.Flags::mode’ to ‘int&’
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (gcc-14): error: cannot bind bit-field 'flags.Flags::mode' to 'int&'
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (clang-18): error: non-const reference cannot bind to bit-field 'mode' / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (gcc-16): error: cannot bind bit-field 'flags.Flags::mode' to 'int&'
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (gcc-16-o2): error: cannot bind bit-field 'flags.Flags::mode' to 'int&'
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (clang-22): error: non-const reference cannot bind to bit-field 'mode' / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-bit-field.cpp` (clang-22-o2): error: non-const reference cannot bind to bit-field 'mode' / note: passing argument to parameter here
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (clang-host): error: ISO C++ requires field designators to be specified in declaration order; field 'x' will be initialized after field 'y' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'x' is here
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (gcc-host): error: designator order for field ‘Swapped::y’ does not match declaration order in ‘Swapped’
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (edg-7.0): error: out-of-order initializers are nonstandard in C++
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (gcc-14): error: designator order for field 'Swapped::y' does not match declaration order in 'Swapped'
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (clang-18): error: ISO C++ requires field designators to be specified in declaration order; field 'x' will be initialized after field 'y' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'x' is here
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (gcc-16): error: designator order for field 'Swapped::y' does not match declaration order in 'Swapped'
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (gcc-16-o2): error: designator order for field 'Swapped::y' does not match declaration order in 'Swapped'
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (clang-22): error: ISO C++ requires field designators to be specified in declaration order; field 'x' will be initialized after field 'y' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'x' is here
+- `foundations/conversion-sequences/chosen-designator-order.cpp` (clang-22-o2): error: ISO C++ requires field designators to be specified in declaration order; field 'x' will be initialized after field 'y' [-Werror,-Wreorder-init-list] / note: previous initialization for field 'x' is here
+- `foundations/conversion-sequences/chosen-explicit-copy-list.cpp` (gcc-host): error: converting to ‘Strict’ from initializer list would use explicit constructor ‘Strict::Strict(int, int)’
+- `foundations/conversion-sequences/chosen-explicit-copy-list.cpp` (gcc-14): error: converting to 'Strict' from initializer list would use explicit constructor 'Strict::Strict(int, int)'
+- `foundations/conversion-sequences/chosen-explicit-copy-list.cpp` (gcc-16): error: converting to 'Strict' from initializer list would use explicit constructor 'Strict::Strict(int, int)'
+- `foundations/conversion-sequences/chosen-explicit-copy-list.cpp` (gcc-16-o2): error: converting to 'Strict' from initializer list would use explicit constructor 'Strict::Strict(int, int)'
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (gcc-14): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (gcc-16-o2): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `foundations/conversion-sequences/chosen-narrowing.cpp` (clang-22-o2): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `foundations/conversion-sequences/chosen-private-base.cpp` (clang-host): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
+- `foundations/conversion-sequences/chosen-private-base.cpp` (gcc-host): error: ‘Base’ is an inaccessible base of ‘Derived’
+- `foundations/conversion-sequences/chosen-private-base.cpp` (edg-7.0): error: conversion to inaccessible base class "Base" is not allowed
+- `foundations/conversion-sequences/chosen-private-base.cpp` (gcc-14): error: 'Base' is an inaccessible base of 'Derived'
+- `foundations/conversion-sequences/chosen-private-base.cpp` (clang-18): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
+- `foundations/conversion-sequences/chosen-private-base.cpp` (gcc-16): error: 'Base' is an inaccessible base of 'Derived'
+- `foundations/conversion-sequences/chosen-private-base.cpp` (gcc-16-o2): error: 'Base' is an inaccessible base of 'Derived'
+- `foundations/conversion-sequences/chosen-private-base.cpp` (clang-22): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
+- `foundations/conversion-sequences/chosen-private-base.cpp` (clang-22-o2): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
+- `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-host): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
+- `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-18): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
+- `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-22): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
+- `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-22-o2): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-host): error: static assertion failed due to requirement 'same<Two, One>'
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-18): error: static assertion failed due to requirement 'same<Two, One>'
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-22): error: static assertion failed due to requirement 'same<Two, One>'
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-22-o2): error: static assertion failed due to requirement 'same<Two, One>'
+- `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-host): error: call of overloaded ‘take(<brace-enclosed initializer list>, int)’ is ambiguous / error: call of overloaded ‘take(<brace-enclosed initializer list>, int)’ is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-14): error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / note: candidate: 'One take(int, long int)' / note: candidate: 'Two take(int (&&)[2], int)' / error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / note: candidate: 'One take(int, long int)' / note: candidate: 'Two take(int (&&)[2], int)' / error: template argument 1 is invalid
+- `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-16): error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-16-o2): error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/list-class-list-constructor.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
 - `foundations/keywords/keyword-alignas.cpp` (clang-host): error: expected '(' / error: expected unqualified-id
 - `foundations/keywords/keyword-alignas.cpp` (gcc-host): error: expected ‘(’ before ‘=’ token / error: expected unqualified-id before ‘=’ token
 - `foundations/keywords/keyword-alignas.cpp` (edg-7.0): error: expected a "(" / error: declaration does not declare anything

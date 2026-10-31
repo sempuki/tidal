@@ -120,7 +120,8 @@ An implicit conversion can call a conversion function that is not
 
 A call `s(args)` can use a
 conversion to a pointer or reference to function. A standard conversion
-can follow the conversion function.
+can follow the conversion function. {rule}`ICS-4` lists the conversion
+functions that a conversion can use.
 :::
 
 :::{rule} CVF-10
@@ -128,7 +129,8 @@ can follow the conversion function.
 :tests: classes/conversion-functions/two-converting-ctors.cpp classes/conversion-functions/two-user-conversions.cpp
 
 An implicit conversion uses at most one conversion function or
-converting constructor.
+converting constructor. {rule}`ICS-9` gives the same limit for a
+conversion sequence.
 :::
 
 :::{rule} CVF-3
@@ -165,17 +167,20 @@ function. Other conversions must not use the function.
 
 Overload resolution chooses between conversion functions as it does for
 other functions. The object is the implied argument, so cv-qualifiers
-and ref-qualifiers select between overloads. A conversion function to
+and ref-qualifiers select between overloads ({rule}`ICS-13`,
+{rule}`ICS-37`). A conversion function to
 its own class, a base of that class, or `void` is never used by a
 conversion. A call by name still calls such a function.
 :::
 
 :::{rule} CVF-12
 :kind: reject
-:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp
+:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp
 
 An ambiguous conversion is not valid. If a converting constructor and a
 conversion function are equally good, the conversion is ambiguous.
+{rule}`ICS-7` gives the sequence of such an argument, and {rule}`ICS-8`
+says when a call with that sequence is not valid.
 :::
 
 :::{rule} CVF-5
@@ -236,8 +241,8 @@ store(Celsius{});        // rejected: two user-defined conversions
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 59
-of 60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 62 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

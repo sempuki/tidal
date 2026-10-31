@@ -65,9 +65,10 @@ def slug(text: str) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "-", text).strip("-").lower() or "x"
 
 
-def probe(c: matrix.Compiler, name: str, r: str, col: str, program: str,
+def probe(c: matrix.Compiler, name: str, index: int, r: str, col: str, program: str,
           flags: list[str]) -> tuple[str, str]:
-    rel = Path("probes") / name / f"{slug(r)}--{slug(col)}"
+    # The index keeps labels that differ only in punctuation (int& and int&&) apart.
+    rel = Path("probes") / name / f"{index:04d}-{slug(r)}--{slug(col)}"
     host = BUILD / c.id / rel
     host.parent.mkdir(parents=True, exist_ok=True)
     src = host.with_suffix(".cpp")
@@ -113,8 +114,8 @@ def main() -> int:
         for c in compilers:
             c.start()
         with concurrent.futures.ThreadPoolExecutor(max_workers=matrix.SHELLS * max(1, len(compilers))) as pool:
-            jobs = {pool.submit(probe, c, name, r, col, program, flags): (r, col, c.id)
-                    for r, col, program in todo for c in compilers}
+            jobs = {pool.submit(probe, c, name, i, r, col, program, flags): (r, col, c.id)
+                    for i, (r, col, program) in enumerate(todo) for c in compilers}
             for job in concurrent.futures.as_completed(jobs):
                 r, col, cid = jobs[job]
                 results[(r, col)][cid] = job.result()

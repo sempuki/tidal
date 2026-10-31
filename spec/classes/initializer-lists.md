@@ -110,15 +110,17 @@ phase ({question}`Q-0081`). Nested braces initialize the elements.
 
 In copy list initialization, `explicit` constructors are candidates too.
 Copy initialization with `=` and one value is different, because
-`explicit` constructors are not candidates there.
+`explicit` constructors are not candidates there. {rule}`ICS-19` gives
+the conversion sequence that this choice forms for a parameter.
 :::
 
 :::{rule} ILC-8
 :kind: reject
-:tests: classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/explicit-best-match-braced.cpp
+:tests: classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/explicit-best-match-braced.cpp foundations/conversion-sequences/chosen-explicit-copy-list.cpp
 
 In copy list initialization, if the best match is `explicit`, the
-program is not valid. A worse match is not used.
+program is not valid. A worse match is not used. {rule}`ICS-8` gives
+the same fault for a function parameter ({question}`Q-0132`).
 :::
 
 :::{rule} ILC-4
@@ -137,7 +139,7 @@ narrow. Parentheses do not check narrowing.
 :tests: classes/initializer-lists/deduce-list-element-type.cpp classes/initializer-lists/function-param-list.cpp classes/initializer-lists/return-braced-list.cpp
 
 A function parameter of type `std::initializer_list<E>` accepts a braced
-list, also an empty one. A function template can deduce `E` if all
+list, also an empty one ({rule}`ICS-16`). A function template can deduce `E` if all
 elements have the same type. A `return` statement with a braced list
 initializes a class return type through its constructors.
 :::
@@ -190,7 +192,7 @@ Point q{1.5, 2};       // rejected: narrowing
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 29
-of 30 tests. The tests declare a minimal `std::initializer_list`.
+of 31 tests. The tests declare a minimal `std::initializer_list`.
 
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that

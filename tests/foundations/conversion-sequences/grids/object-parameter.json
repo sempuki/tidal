@@ -1,0 +1,22 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\n",
+ "template": "{prelude}\n{col}\n{row}",
+ "rows": {
+  "Item lvalue → member": "Item v;\nstatic_assert(same<decltype(~v), One>);",
+  "Item lvalue → non-member": "Item v;\nstatic_assert(same<decltype(~v), Two>);",
+  "const Item lvalue → member": "const Item v{};\nstatic_assert(same<decltype(~v), One>);",
+  "const Item lvalue → non-member": "const Item v{};\nstatic_assert(same<decltype(~v), Two>);",
+  "Item prvalue → member": "static_assert(same<decltype(~Item{}), One>);",
+  "Item prvalue → non-member": "static_assert(same<decltype(~Item{}), Two>);"
+ },
+ "cols": {
+  "no qualifier / Item lref": "struct Item { One operator~(); };\nTwo operator~(Item&);",
+  "no qualifier / Item rref": "struct Item { One operator~(); };\nTwo operator~(Item&&);",
+  "const / const Item lref": "struct Item { One operator~() const; };\nTwo operator~(const Item&);",
+  "const / const Item rref": "struct Item { One operator~() const; };\nTwo operator~(const Item&&);",
+  "const lref / const Item rref": "struct Item { One operator~() const &; };\nTwo operator~(const Item&&);",
+  "lref / Item rref": "struct Item { One operator~() &; };\nTwo operator~(Item&&);",
+  "rref / Item lref": "struct Item { One operator~() &&; };\nTwo operator~(Item&);",
+  "rref / const Item lref": "struct Item { One operator~() &&; };\nTwo operator~(const Item&);"
+ }
+}
