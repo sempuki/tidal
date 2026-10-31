@@ -20,14 +20,17 @@ with `begin` and `end`.
 
 :::{rule} RFOR-2
 :kind: required
-:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/postfix-only-iterator.cpp
+:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/data-member-begin-counts.cpp statements/range-for/callable-data-members.cpp
 
 For a range of class type, `begin` and `end` are found as follows:
 
-- If the class declares a member function `begin` or `end`, both must be
-  member functions. A data member with one of these names does not count.
-- If not, both are free functions that argument-dependent lookup finds
-  *(referenced)*. Other free functions are not used.
+- If the class has a member named `begin` and a member named `end`, of
+  any kind, the loop calls `range.begin()` and `range.end()`. A data
+  member counts, so a data member of a callable type works and a data
+  member of type `int` makes the loop not valid ({question}`Q-0098`).
+- If only one of the names is a member, or neither, both are free
+  functions that argument-dependent lookup finds *(referenced)*. Other
+  free functions are not used.
 
 `begin` and `end` can return different types. The loop advances the
 iterator with prefix `++`. It compares the iterator with `end` by `!=`,
@@ -64,9 +67,12 @@ element initializes the loop variable. A braced list gives a
 
 :::{rule} RFOR-3
 :kind: required
-:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp
+:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp
 
 The range expression is evaluated one time, before the first iteration.
+The loop variable is not yet in scope there, so a name in the range
+expression refers to the outer entity, also when the loop variable has
+the same name.
 `begin` and `end` are also called one time, so a change to the range in
 the body does not move the end. An initializer statement can come before
 the loop variable. The loop variable can be a structured binding.
@@ -107,9 +113,10 @@ The results are in `tests/RESULTS.md`.
 - RFOR-4: GCC 14 and Clang 18 destroy temporaries in the range expression
   before the body executes. Newer versions keep them until the loop ends,
   from the change in C++23 ({question}`Q-0020`).
-- RFOR-2: a data member named `begin` does not stop the use of free
-  `begin` and `end` on any compiler. This overrules the gap review, which
-  expected a rejection.
+- RFOR-2: a data member named `begin` with no member `end` does not stop
+  the use of free `begin` and `end` on any compiler. With members of both
+  names, Clang and GCC use the member form for data members too. EDG
+  uses it only for member functions ({question}`Q-0098`).
 - RFOR-5: GCC 14 accepts a storage class on the loop variable. GCC 16,
   Clang, and EDG reject it ({question}`Q-0026`).
 

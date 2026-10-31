@@ -9,12 +9,14 @@ types.
 
 :::{rule} CONV-1
 :kind: required
-:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp
+:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp
 
 These operands go through {term}`integer promotion` in arithmetic:
 
 - `bool`, the character types, `short`, and `unsigned short`,
-- a bit-field narrower than `int` *(referenced)*,
+- a bit-field, by its width and not by its declared type (BF-6). A
+  bit-field of width 3 declared `long long` promotes to `int`; one of
+  width 40 keeps `long long`,
 - an unscoped enumeration. With a fixed underlying type, the value
   converts to that type first.
 
@@ -23,17 +25,20 @@ A `float` operand does not change to `double` in arithmetic.
 
 :::{rule} CONV-8
 :kind: reject
-:tests: expressions/conversions/null-pointer-constants.cpp expressions/conversions/nonzero-to-pointer.cpp expressions/conversions/integer-variable-to-pointer.cpp expressions/conversions/false-not-null-pointer.cpp
+:tests: expressions/conversions/null-pointer-constants.cpp expressions/conversions/nonzero-to-pointer.cpp expressions/conversions/integer-variable-to-pointer.cpp expressions/conversions/false-not-null-pointer.cpp expressions/conversions/null-member-pointer-from-zero.cpp expressions/conversions/parenthesized-zero-null.cpp expressions/conversions/char-zero-not-null.cpp
 
 `nullptr` and an integer literal with the value zero convert to a null
-pointer of any pointer type. Other values must not convert to a pointer
+pointer of any pointer type and to a null pointer to member of any
+member type. A zero literal in parentheses counts. A character literal
+with the value zero is not an integer literal, so it does not count
+({question}`Q-0100`). Other values must not convert to a pointer
 type implicitly. This includes an integer variable with the value zero and
 the literal `false`.
 :::
 
 :::{rule} CONV-9
 :kind: reject
-:tests: expressions/conversions/pointer-to-void-pointer.cpp expressions/conversions/void-pointer-to-pointer.cpp expressions/conversions/const-pointer-to-void-pointer.cpp expressions/conversions/function-pointer-to-void-pointer.cpp
+:tests: expressions/conversions/pointer-to-void-pointer.cpp expressions/conversions/void-pointer-to-pointer.cpp expressions/conversions/const-pointer-to-void-pointer.cpp expressions/conversions/function-pointer-to-void-pointer.cpp expressions/conversions/deep-const-every-level.cpp expressions/conversions/deep-const-not-at-every-level.cpp
 
 A pointer to an object type converts implicitly to a pointer to `void`
 with the same or more {term}`cv-qualifiers <cv-qualifier>`. These
@@ -41,15 +46,18 @@ conversions must not occur implicitly:
 
 - a pointer to `void` to another pointer type,
 - a conversion that removes a cv-qualifier,
-- a pointer to a function to a pointer to `void`.
+- a pointer to a function to a pointer to `void`,
+- across several levels of pointers, a conversion that adds `const` at
+  one level without adding it at every level above that level.
 :::
 
 :::{rule} CONV-10
 :kind: reject
-:tests: expressions/conversions/noexcept-function-pointer.cpp expressions/conversions/potentially-throwing-to-noexcept.cpp
+:tests: expressions/conversions/noexcept-function-pointer.cpp expressions/conversions/potentially-throwing-to-noexcept.cpp expressions/conversions/member-function-noexcept-drop.cpp expressions/conversions/member-function-noexcept-add.cpp
 
 A pointer to a `noexcept` function converts to a pointer to a function
-without `noexcept`. The opposite conversion must not occur implicitly.
+without `noexcept`. The opposite conversion must not occur implicitly. The same applies to
+pointers to member functions.
 :::
 
 :::{rule} CONV-12
@@ -70,11 +78,12 @@ A function name can be used as a pointer that calls that function.
 
 :::{rule} CONV-14
 :kind: required
-:tests: expressions/conversions/ambiguous-base.cpp expressions/conversions/derived-to-base.cpp
+:tests: expressions/conversions/ambiguous-base.cpp expressions/conversions/derived-to-base.cpp expressions/conversions/null-derived-to-second-base.cpp
 
 A pointer or reference to a derived class converts implicitly to a pointer
 or reference to a base class *(classes referenced)*. The base must be
-unambiguous and accessible *(referenced)*.
+unambiguous and accessible *(referenced)*. A null pointer converts to a
+null pointer, also when the base subobject is at a nonzero offset.
 :::
 
 :::{rule} CONV-15
@@ -84,6 +93,14 @@ unambiguous and accessible *(referenced)*.
 A pointer to a member of a base class converts implicitly to a pointer to
 the same member of a derived class. The opposite direction is not
 implicit.
+:::
+
+:::{rule} CONV-17
+:kind: reject
+:tests: expressions/conversions/member-pointer-virtual-base.cpp expressions/conversions/member-pointer-ambiguous-base.cpp
+
+The conversion of CONV-15 must not go through a virtual base or an
+ambiguous base, and the base must be accessible (MPTR-11).
 :::
 
 :::{rule} CONV-16
@@ -134,11 +151,13 @@ exactly, the result is that value.
 
 :::{rule} CONV-5
 :kind: undefined
-:tests: expressions/conversions/floating-to-integral-out-of-range.cpp expressions/conversions/floating-to-unsigned-negative.cpp
+:tests: expressions/conversions/floating-to-integral-out-of-range.cpp expressions/conversions/floating-to-unsigned-negative.cpp expressions/conversions/negative-fraction-to-unsigned.cpp expressions/conversions/negative-one-to-unsigned-constant.cpp
 
 If a floating-point value, without its fractional part, is outside the
-range of the target integer type, the conversion is undefined. This
-includes a negative value that converts to an unsigned type.
+range of the target integer type, the conversion is undefined. The
+test is on the value after the fractional part is dropped, so a value
+between -1 and 0 converts to zero, and -1 to an unsigned type is
+undefined.
 :::
 
 ## Implementation Requirements
@@ -181,6 +200,8 @@ bool c(nullptr);           // false
 The results are in `tests/RESULTS.md`.
 
 - CONV-5: all compilers reject the conversion during constant evaluation.
+- CONV-8: EDG accepts a character literal with the value zero as a null
+  pointer constant. Clang and GCC reject it ({question}`Q-0100`).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
   to the even value at a tie.
 - CONV-11: Clang and GCC give infinity. EDG rejects the conversion during

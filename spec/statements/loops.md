@@ -17,7 +17,7 @@ again while a condition is true.
 
 :::{rule} LOOP-4
 :kind: required
-:tests: statements/loops/for-init-scope.cpp statements/loops/for-init-redeclare-body.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/while-condition-redeclared.cpp
+:tests: statements/loops/for-init-scope.cpp statements/loops/for-init-redeclare-body.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/while-condition-redeclared.cpp statements/loops/for-init-alias.cpp
 
 The body of each loop has its own scope, also without braces. In a `for`
 or `while` statement:
@@ -26,6 +26,20 @@ or `while` statement:
 - a name that the initializer or condition declares is visible to the end
   of the statement only,
 - that name must not be declared again in the outermost block of the body.
+
+The initializer of a `for` statement has the forms of an `if` initializer
+(IF-7), including an alias declaration. The body of a `do` statement is
+its own scope, and the condition comes after that scope ends.
+:::
+
+:::{rule} LOOP-7
+:kind: reject
+:tests: statements/loops/for-init-redeclared-in-condition.cpp statements/loops/for-init-static-assert.cpp statements/loops/do-body-name-not-in-condition.cpp
+
+In a `for` statement, the condition must not declare a name that the
+initializer declares, and the initializer must not be a declaration that
+IF-21 excludes. The condition of a `do` statement must not use a name
+that the body block declares.
 :::
 
 :::{rule} LOOP-5
@@ -64,13 +78,14 @@ executes at least one time.
 
 :::{rule} LOOP-3
 :kind: required
-:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp
+:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp
 
 `for` executes its initializer one time. Each iteration evaluates the
 condition, executes the body, and then evaluates the iteration
 expression. A variable that the condition declares is destroyed after the
 iteration expression. Each part can be absent, and an absent condition is
-`true`.
+`true`. A variable that the initializer declares is created one time and
+destroyed one time, when the statement ends, also after a `break`.
 :::
 
 ## Examples

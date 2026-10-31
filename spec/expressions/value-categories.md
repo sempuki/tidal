@@ -24,7 +24,7 @@ xvalue, and anything else gives a prvalue.
 :::
 
 :::{principle} VC-P2
-:rules: VC-4 VC-5 VC-8
+:rules: VC-4 VC-5 VC-8 VC-11
 
 A prvalue is not an object until something needs an object. If a prvalue
 initializes an object of its own type, that object is the result, and no
@@ -62,7 +62,7 @@ it is destroyed.
 
 :::{rule} VC-1
 :kind: required
-:tests: expressions/value-categories/lvalues.cpp expressions/value-categories/rvalue-reference-name-is-lvalue.cpp expressions/value-categories/rvalue-reference-name-binding.cpp expressions/value-categories/more-categories.cpp
+:tests: expressions/value-categories/lvalues.cpp expressions/value-categories/rvalue-reference-name-is-lvalue.cpp expressions/value-categories/rvalue-reference-name-binding.cpp expressions/value-categories/more-categories.cpp expressions/value-categories/member-access-lvalue.cpp
 
 These expressions are lvalues:
 
@@ -73,12 +73,13 @@ These expressions are lvalues:
 - a call to a function that returns an lvalue reference, and a cast to an
   lvalue reference type,
 - a subscript of an array lvalue,
+- a data member of an lvalue, with `.` or `->`,
 - a comma expression whose right operand is an lvalue (COMMA-2).
 :::
 
 :::{rule} VC-2
 :kind: required
-:tests: expressions/value-categories/prvalues.cpp expressions/value-categories/address-of-prvalue.cpp expressions/value-categories/assign-to-prvalue.cpp expressions/value-categories/cv-prvalue-dropped.cpp
+:tests: expressions/value-categories/prvalues.cpp expressions/value-categories/address-of-prvalue.cpp expressions/value-categories/assign-to-prvalue.cpp expressions/value-categories/cv-prvalue-dropped.cpp expressions/value-categories/member-function-access-not-address.cpp expressions/value-categories/assign-to-class-prvalue.cpp expressions/value-categories/assign-to-scalar-prvalue.cpp
 
 These expressions are prvalues:
 
@@ -86,15 +87,19 @@ These expressions are prvalues:
 - `this` and an enumerator,
 - a call to a function that returns a type that is not a reference, and a
   cast to a type that is not a reference,
-- `x++`, `x--`, `&x`, and the result of an arithmetic operator.
+- `x++`, `x--`, `&x`, and the result of an arithmetic operator,
+- a member access that names a non-static member function. It can only
+  be called.
 
 A prvalue of a type that is not a class type has no cv-qualifiers. A
-program must not take the address of a prvalue or assign to it.
+program must not take the address of a prvalue. A prvalue of a type that
+is not a class cannot be assigned to. A class prvalue can be, because
+the assignment is a call of a member function.
 :::
 
 :::{rule} VC-3
 :kind: required
-:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp
+:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp expressions/value-categories/xvalue-array-subscript.cpp expressions/value-categories/xvalue-member-pointer.cpp
 
 These expressions are xvalues:
 
@@ -102,11 +107,22 @@ These expressions are xvalues:
 - a call to a function that returns an rvalue reference to an object
   type,
 - a non-static data member of an xvalue or of a class prvalue, if the
-  member is not a reference.
+  member is not a reference,
+- a subscript of an array xvalue or array prvalue ({question}`Q-0099`),
+- `.*` applied to an xvalue, for a data member.
 
 A cast to an rvalue reference to a function type gives an lvalue. A
 reference member and a static data member give lvalues. A program must
 not take the address of an xvalue.
+:::
+
+:::{rule} VC-11
+:kind: reject
+:tests: expressions/value-categories/discarded-call-deleted-destructor.cpp expressions/value-categories/decltype-call-deleted-destructor.cpp
+
+A discarded class prvalue makes a temporary object, so its destructor
+must be usable. In the operand of `decltype`, a call makes no temporary,
+and the destructor is not needed (UNEV-1).
 :::
 
 ## Dynamic Semantics
@@ -117,8 +133,8 @@ not take the address of an xvalue.
 
 A prvalue that initializes an object of the same type initializes that
 object directly. No temporary object exists, and no copy or move
-constructor is called. A temporary object comes into existence only when
-a reference binds to the prvalue or when a member of it is accessed.
+constructor is called. A temporary object comes into existence in the cases
+that VC-5 and VC-8 list, and not before.
 :::
 
 :::{rule} VC-5
@@ -135,7 +151,8 @@ statement ends.
 :tests: expressions/value-categories/temporaries-reverse-order.cpp
 
 The life of a temporary object ends when its full expression ends. A
-reference can make the life longer (REF-4). The temporaries of one full
+reference (REF-4) or a range-based `for` (RFOR-4) can make the life
+longer. The temporaries of one full
 expression go away in the reverse order of their creation.
 :::
 
@@ -215,8 +232,10 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All seven compilers agree on all 33 tests. The results are in
+All seven compilers agree on 40 of 41 tests. The results are in
 `tests/RESULTS.md`.
+- VC-3: EDG gives an lvalue for a subscript of an array xvalue. Clang
+  and GCC give an xvalue ({question}`Q-0099`).
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the
   parameter at the end of the full expression.

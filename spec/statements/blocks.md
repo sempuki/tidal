@@ -34,17 +34,20 @@ initialized.
 
 :::{rule} STMT-5
 :kind: required
-:tests: statements/blocks/label-at-end-of-block.cpp
+:tests: statements/blocks/label-at-end-of-block.cpp statements/blocks/case-label-ends-block.cpp statements/blocks/default-label-ends-block.cpp
 
-A label can be the last item of a block.
+A label can be the last item of a block. This includes a `case` or
+`default` label in the body of a `switch` ({question}`Q-0096`).
 :::
 
 :::{rule} STMT-6
 :kind: required
-:tests: statements/blocks/ambiguous-declaration.cpp
+:tests: statements/blocks/ambiguous-declaration.cpp statements/blocks/disambiguation-rest-not-declaration.cpp
 
 If a statement can be read as an expression statement or as a
-declaration, it is a declaration.
+declaration, it is a declaration. The whole statement decides. If the
+start of a statement has the form of a declaration and the rest cannot
+belong to one, the statement is an expression statement.
 :::
 
 ## Dynamic Semantics
@@ -62,6 +65,15 @@ A null statement does nothing.
 :tests: statements/blocks/statements-in-order.cpp
 
 The statements of a block execute in the order in which they occur.
+:::
+
+:::{rule} STMT-7
+:kind: required
+:tests: statements/blocks/volatile-name-statement.cpp
+
+An expression statement that only names a volatile object reads the
+object (UNEV-2). The read is an observable effect, so the implementation
+performs it.
 :::
 
 ## Recommended Practice
@@ -98,11 +110,16 @@ end:
 
 ## Evidence
 
-All seven compilers agree on all tests in this page. The results are in
+All seven compilers agree on all tests in this page, except where a
+question is noted. The results are in
 `tests/RESULTS.md`.
 
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement
   has no effect" under `-Wunused-value`. EDG skips these tests.
+- STMT-5: GCC rejects a `case` or `default` label as the last item of a
+  block. Clang and EDG accept it ({question}`Q-0096`).
+- STMT-7: the test shows that the statement is valid. It cannot observe
+  the read.
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

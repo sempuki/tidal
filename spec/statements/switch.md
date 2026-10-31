@@ -29,7 +29,7 @@ The condition must have one of these types:
 
 :::{rule} SW-3
 :kind: reject
-:tests: statements/switch/case-not-constant.cpp statements/switch/case-narrowing.cpp statements/switch/case-duplicate.cpp statements/switch/case-duplicate-after-conversion.cpp statements/switch/two-defaults.cpp statements/switch/case-outside-switch.cpp statements/switch/case-out-of-char-range.cpp statements/switch/scoped-enum-int-case.cpp
+:tests: statements/switch/case-not-constant.cpp statements/switch/case-narrowing.cpp statements/switch/case-duplicate.cpp statements/switch/case-duplicate-after-conversion.cpp statements/switch/two-defaults.cpp statements/switch/case-outside-switch.cpp statements/switch/case-out-of-char-range.cpp statements/switch/scoped-enum-int-case.cpp statements/switch/case-in-lambda-body.cpp statements/switch/case-in-local-class.cpp
 
 Each case value must be a constant expression that converts to the
 promoted type of the condition without narrowing. For a scoped
@@ -40,24 +40,31 @@ matches. In one `switch`:
 - two case values must not be equal after conversion,
 - there must be at most one `default` label.
 
-A `case` or `default` label must be inside a `switch`.
+A `case` or `default` label must be inside a `switch`. The body of a
+lambda or of a member function of a local class is a separate function,
+so a label in it belongs to no enclosing `switch`.
 :::
 
 :::{rule} SW-4
 :kind: required
-:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp
+:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp statements/switch/condition-name-redeclared.cpp statements/switch/init-name-redeclared.cpp
 
 A `switch` can have an initializer statement, as in IF-7. Its condition
-can be a declaration, as in IF-5.
+can be a declaration, as in IF-5. The scope rules of IF-9 and IF-10
+apply: a name that the initializer or the condition declares is visible
+to the end of the statement and must not be declared again in the
+outermost block of the body.
 :::
 
 :::{rule} SW-5
 :kind: reject
-:tests: statements/switch/jump-past-initialization.cpp statements/switch/jump-past-block.cpp statements/switch/jump-past-uninitialized.cpp
+:tests: statements/switch/jump-past-initialization.cpp statements/switch/jump-past-block.cpp statements/switch/jump-past-uninitialized.cpp statements/switch/case-skips-trivial-struct.cpp statements/switch/case-skips-nontrivial-destructor.cpp
 
 A transfer to a `case` or `default` label must not skip the
 initialization of a variable that is in scope at the label. A transfer can
-skip a whole block, or a scalar variable that has no initializer.
+skip a whole block, or a declaration without an initializer whose type
+JMP-6 permits: a scalar, a class whose default constructor and destructor
+are both trivial, or an array of these ({question}`Q-0097`).
 :::
 
 ## Dynamic Semantics
@@ -108,8 +115,11 @@ void g(int v) {
 
 ## Evidence
 
-All seven compilers agree on all tests in this page. The results are in
-`tests/RESULTS.md`.
+All seven compilers agree on all tests in this page, except where a
+question is noted. The results are in `tests/RESULTS.md`.
+
+- SW-5: GCC accepts a `case` label that skips a variable whose destructor
+  is not trivial. Clang and EDG reject it ({question}`Q-0097`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

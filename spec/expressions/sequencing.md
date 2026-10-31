@@ -51,11 +51,13 @@ comma operator, and the pointer-to-member operators.
 
 :::{rule} SEQ-4
 :kind: undefined
-:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp
+:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp expressions/sequencing/adjacent-bitfields-unsequenced.cpp expressions/sequencing/volatile-reads-unsequenced.cpp
 
-If two {term}`unsequenced` evaluations both modify the same scalar
-object, or one modifies it and the other reads its value, the behavior is
-undefined.
+If two {term}`unsequenced` evaluations both modify the same memory
+location, or one modifies it and the other reads its value, the behavior
+is undefined. Adjacent bit-fields can share one memory location. A read
+of a volatile object is a side effect, so two unsequenced reads of the
+same volatile object are undefined too.
 :::
 
 ## Implementation Requirements
@@ -85,12 +87,14 @@ pair(i++, i++);       // fine: the order is unspecified
 
 ## Evidence
 
-All seven compilers agree on all 9 tests. The results are in
+All seven compilers agree on all 18 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang 22 evaluates function arguments from left to right and GCC
   16 from right to left, at `-O0` and `-O2`.
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
   "operation may be undefined". The test makes these warnings errors.
+  No compiler warns about two bit-fields of one memory location or two
+  reads of a volatile object; those tests only show the programs compile.
 
 Inputs: clang-sema-expr, clang-diag-sema.

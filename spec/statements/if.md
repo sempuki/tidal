@@ -18,7 +18,7 @@ condition selects. There are three forms:
           : "if" ["!"] "consteval" `block` ["else" `block`]
    if_init: `expression_stmt` | `simple_declaration` | `alias_declaration` | ";"
    if_cond: `expression` | `cond_decl`
-   cond_decl: `decl_specifiers` `declarator` ("=" `expression` | `braced_init`)
+   cond_decl: `decl_specifiers` `declarator` ("=" `expression` | "=" `braced_init` | `braced_init`)
    branch: `statement`
    block: `compound_statement`
 ```
@@ -77,9 +77,17 @@ initializer. The initializer can be:
 - an expression statement,
 - an empty statement,
 - an alias declaration,
-- a declaration that a block can contain. This includes several
-  variables, a `static` variable, a class definition, and a function
+- a simple declaration. This includes several variables, a `static`
+  variable, a class or enumeration definition, and a function
   declaration.
+:::
+
+:::{rule} IF-21
+:kind: reject
+:tests: statements/if/init-static-assert.cpp statements/if/init-using-declaration.cpp statements/if/init-using-directive.cpp
+
+The initializer must not be a declaration of another kind, such as a
+`static_assert`, a using-declaration, or a using-directive.
 :::
 
 :::{rule} IF-8
@@ -196,11 +204,12 @@ there is one.
 
 :::{rule} IF-5
 :kind: required
-:tests: statements/if/condition-declaration.cpp statements/if/condition-declaration-constexpr.cpp statements/if/condition-declaration-function-pointer.cpp
+:tests: statements/if/condition-declaration.cpp statements/if/condition-declaration-constexpr.cpp statements/if/condition-declaration-function-pointer.cpp statements/if/condition-declaration-equals-braces.cpp
 
 A condition declaration declares and initializes one variable. The value
 of the variable, after contextual conversion to `bool`, selects the
-branch. The declaration can use `auto` and `constexpr`.
+branch. The declaration can use `auto` and `constexpr`. Its initializer can be
+`= e`, `= {e}`, or `{e}`.
 :::
 
 :::{rule} IF-11
@@ -264,4 +273,4 @@ static_assert(where() == 1);   // at run time, where() returns 2
 ## Evidence
 
 All rules in this page are `required` or `reject`. All seven compilers in
-the matrix agree on all 56 tests. The results are in `tests/RESULTS.md`.
+the matrix agree on all 65 tests. The results are in `tests/RESULTS.md`.
