@@ -1,0 +1,20 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   editor.md:Roadmap: where editing effort should go  longest=0   overlap=0.00
+ok   editor.md:1. The ten weakest pages longest=0   overlap=0.00
+ok   editor.md:2. Ranked work items   longest=0   overlap=0.00
+ok   editor.md:3. Process changes     longest=0   overlap=0.00
+ok   editor.md:4. Out of scope for now longest=0   overlap=0.00
+ok   implementer.md:Roadmap: what to specify next, from an i longest=0   overlap=0.00
+ok   implementer.md:1. Ranked topics  longest=0   overlap=0.01
+ok   implementer.md:2. Dependency sketch longest=0   overlap=0.00
+ok   implementer.md:3. In-scope text still too thin for an i longest=0   overlap=0.00
+ok   implementer.md:4. Out of scope for now longest=0   overlap=0.01
+ok   programmer.md:Roadmap: what to specify next, from a wo longest=0   overlap=0.00
+ok   programmer.md:What blocks programs today longest=0   overlap=0.00
+ok   programmer.md:1. Ranked topics   longest=0   overlap=0.00
+ok   programmer.md:2. Task-level guides that help more than longest=0   overlap=0.00
+ok   programmer.md:3. Out of scope for now longest=0   overlap=0.00
+ok   programmer.md:Suggested order    longest=0   overlap=0.00
+
+0 flagged
