@@ -52,14 +52,17 @@ In scope:
 
 Referenced but not specified:
 
-The in-scope topics depend on name lookup, overload resolution, and
-templates. Tidal sections refer to those concepts by name and list them
-in a "Depends on" block. Those concepts are not specified here.
+The in-scope topics depend on overload resolution and templates. Tidal
+sections refer to those concepts by name and list them in a "Depends
+on" block. Those concepts are not specified yet. The roadmap brings
+them into scope in phases 3 and 4 (decision 0033, Q-0113). Name lookup
+is in scope from phase 3, item H.
 
 Out of scope:
 
 - The preprocessor, lexical structure, modules.
-- Templates and overload resolution as topics of their own.
+- Templates and overload resolution as topics of their own, until
+  phases 3 and 4 of the roadmap bring them in.
 - The standard library, except the language-support types that the core
   rules name (decision 0041).
 - Coroutines (`co_await`, `co_yield`, `co_return`).
