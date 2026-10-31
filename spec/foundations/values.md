@@ -91,10 +91,12 @@ These expressions are prvalues:
 - a member access that names a non-static member function. It can only
   be called.
 
-A prvalue of a type that is not a class type has no cv-qualifiers. A
-program must not take the address of a prvalue. A prvalue of a type that
-is not a class cannot be assigned to. A class prvalue can be, because
-the assignment is a call of a member function.
+A prvalue of a type that is not a class type has no cv-qualifiers. So a
+function can declare a return type such as `const int`, and a call to
+it still gives a plain `int`. A program must not take the address of a
+prvalue. A prvalue of a type that is not a class cannot be assigned to.
+A class prvalue can be, because the assignment is a call of a member
+function. ASN-6 covers a braced list as the right operand.
 :::
 
 :::{rule} VC-3
@@ -151,14 +153,14 @@ statement ends.
 :tests: expressions/value-categories/temporaries-reverse-order.cpp
 
 The life of a temporary object ends when its full expression ends. A
-reference (REF-4) or a range-based `for` (RFOR-4) can make the life
-longer. The temporaries of one full
+reference bound to the temporary or to a member of it (REF-4), or a
+range-based `for` (RFOR-4), can make the life longer. The temporaries of one full
 expression go away in the reverse order of their creation.
 :::
 
 :::{rule} VC-8
 :kind: required
-:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp
+:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp expressions/value-categories/array-prvalue-argument.cpp
 
 A prvalue becomes a temporary object in these cases, in addition to
 VC-4 and VC-5:

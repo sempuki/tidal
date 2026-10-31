@@ -1,0 +1,130 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Q-0004: Should floating division by zero longest=0   overlap=0.00
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Context longest=0   overlap=0.00
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Evidence longest=0   overlap=0.00
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Options longest=0   overlap=0.00
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Provisional answer longest=0   overlap=0.00
+ok   questions_Q-0004-floating-division-by-zero-at-run-time.md:Opinions longest=0   overlap=0.00
+ok   spec_expressions_unary.md:Unary operators longest=0   overlap=0.00
+ok   UN-P1                            longest=0   overlap=0.02
+ok   UN-P2                            longest=0   overlap=0.01
+ok   UN-P3                            longest=0   overlap=0.00
+ok   UN-P4                            longest=0   overlap=0.01
+ok   UN-P5                            longest=0   overlap=0.00
+ok   spec_expressions_unary.md:Syntax longest=0   overlap=0.00
+ok   UN-1                             longest=0   overlap=0.11
+ok   UN-2                             longest=0   overlap=0.00
+ok   UN-5                             longest=0   overlap=0.00
+ok   UN-6                             longest=0   overlap=0.07
+ok   UN-8                             longest=0   overlap=0.22
+ok   UN-9                             longest=0   overlap=0.14
+ok   UN-10                            longest=0   overlap=0.08
+ok   UN-11                            longest=0   overlap=0.05
+ok   UN-12                            longest=0   overlap=0.09
+ok   UN-14                            longest=0   overlap=0.00
+ok   UN-16                            longest=0   overlap=0.10
+ok   UN-17                            longest=0   overlap=0.14
+ok   UN-18                            longest=0   overlap=0.03
+ok   UN-3                             longest=0   overlap=0.21
+ok   UN-13                            longest=0   overlap=0.00
+ok   UN-20                            longest=0   overlap=0.00
+ok   UN-4                             longest=0   overlap=0.06
+ok   UN-7                             longest=0   overlap=0.21
+ok   UN-21                            longest=0   overlap=0.06
+ok   UN-15                            longest=0   overlap=0.00
+ok   UN-19                            longest=0   overlap=0.00
+ok   spec_expressions_unary.md:Examples longest=0   overlap=0.00
+ok   spec_expressions_unary.md:Evidence longest=0   overlap=0.02
+ok   spec_foundations_constant-evaluation.md:Constant expressions longest=0   overlap=0.05
+ok   CE-P1                            longest=0   overlap=0.00
+ok   CE-P2                            longest=0   overlap=0.00
+ok   CE-P3                            longest=0   overlap=0.00
+ok   CE-P4                            longest=0   overlap=0.00
+ok   CE-P5                            longest=0   overlap=0.00
+ok   CE-1                             longest=0   overlap=0.02
+ok   CE-2                             longest=0   overlap=0.00
+ok   CE-3                             longest=0   overlap=0.10
+ok   CE-4                             longest=0   overlap=0.22
+ok   CE-5                             longest=0   overlap=0.00
+ok   CE-6                             longest=0   overlap=0.00
+ok   CE-7                             longest=0   overlap=0.02
+ok   CE-8                             longest=0   overlap=0.00
+ok   CE-9                             longest=0   overlap=0.08
+ok   CE-11                            longest=0   overlap=0.03
+ok   CE-12                            longest=0   overlap=0.00
+ok   CE-13                            longest=0   overlap=0.00
+ok   CE-14                            longest=0   overlap=0.13
+ok   CE-15                            longest=0   overlap=0.00
+ok   CE-16                            longest=0   overlap=0.03
+ok   CE-17                            longest=0   overlap=0.09
+ok   CE-18                            longest=0   overlap=0.03
+ok   CE-10                            longest=0   overlap=0.00
+ok   spec_foundations_constant-evaluation.md:Examples longest=0   overlap=0.00
+ok   spec_foundations_constant-evaluation.md:Evidence longest=0   overlap=0.00
+ok   spec_foundations_conversions.md:Standard conversions longest=0   overlap=0.00
+ok   CONV-P1                          longest=0   overlap=0.05
+ok   CONV-P2                          longest=0   overlap=0.02
+ok   CONV-P4                          longest=0   overlap=0.03
+ok   CONV-P3                          longest=0   overlap=0.03
+ok   CONV-1                           longest=0   overlap=0.07
+ok   CONV-8                           longest=0   overlap=0.00
+ok   CONV-9                           longest=0   overlap=0.07
+ok   CONV-10                          longest=0   overlap=0.08
+ok   CONV-12                          longest=0   overlap=0.00
+ok   CONV-13                          longest=0   overlap=0.09
+ok   CONV-14                          longest=0   overlap=0.07
+ok   CONV-15                          longest=0   overlap=0.10
+ok   CONV-17                          longest=0   overlap=0.14
+ok   CONV-18                          longest=0   overlap=0.00
+ok   CONV-16                          longest=0   overlap=0.10
+ok   CONV-2                           longest=0   overlap=0.16
+ok   CONV-3                           longest=0   overlap=0.00
+ok   CONV-4                           longest=0   overlap=0.00
+ok   CONV-6                           longest=0   overlap=0.07
+ok   CONV-5                           longest=0   overlap=0.02
+ok   CONV-7                           longest=0   overlap=0.14
+ok   CONV-11                          longest=0   overlap=0.00
+ok   spec_foundations_conversions.md:Examples longest=0   overlap=0.00
+ok   spec_foundations_conversions.md:Evidence longest=0   overlap=0.00
+ok   spec_foundations_objects.md:Objects, storage, and lifetime longest=0   overlap=0.03
+ok   OBJ-P1                           longest=0   overlap=0.01
+ok   OBJ-P2                           longest=0   overlap=0.01
+ok   OBJ-P3                           longest=0   overlap=0.02
+ok   OBJ-P4                           longest=0   overlap=0.00
+ok   OBJ-1                            longest=0   overlap=0.03
+ok   OBJ-3                            longest=0   overlap=0.06
+ok   OBJ-4                            longest=0   overlap=0.04
+ok   OBJ-5                            longest=0   overlap=0.00
+ok   OBJ-6                            longest=0   overlap=0.06
+ok   OBJ-7                            longest=0   overlap=0.03
+ok   OBJ-8                            longest=0   overlap=0.09
+ok   OBJ-9                            longest=0   overlap=0.00
+ok   OBJ-2                            longest=0   overlap=0.06
+ok   OBJ-10                           longest=0   overlap=0.03
+ok   OBJ-11                           longest=0   overlap=0.00
+ok   spec_foundations_objects.md:Examples longest=0   overlap=0.00
+ok   spec_foundations_objects.md:Evidence longest=0   overlap=0.00
+ok   spec_foundations_values.md:Value categories and temporaries longest=0   overlap=0.03
+ok   VC-P1                            longest=0   overlap=0.02
+ok   VC-P2                            longest=0   overlap=0.00
+ok   VC-P3                            longest=0   overlap=0.06
+ok   VC-P4                            longest=0   overlap=0.02
+ok   VC-1                             longest=0   overlap=0.09
+ok   VC-2                             longest=0   overlap=0.08
+ok   VC-3                             longest=0   overlap=0.10
+ok   VC-11                            longest=0   overlap=0.00
+ok   VC-4                             longest=0   overlap=0.07
+ok   VC-5                             longest=0   overlap=0.00
+ok   VC-6                             longest=0   overlap=0.04
+ok   VC-8                             longest=0   overlap=0.04
+ok   VC-9                             longest=0   overlap=0.05
+ok   VC-7                             longest=0   overlap=0.09
+ok   VC-10                            longest=0   overlap=0.00
+ok   spec_foundations_values.md:Examples longest=0   overlap=0.00
+ok   spec_foundations_values.md:Evidence longest=0   overlap=0.04
+ok   spec_glossary.md:Glossary        longest=0   overlap=0.02
+ok   spec_rules.md:Rule index         longest=0   overlap=0.00
+ok   spec_rules.md:Rule ID prefixes   longest=0   overlap=0.00
+
+0 flagged

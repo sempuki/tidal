@@ -9,11 +9,11 @@ current state only. The history of how it got here is in `git log`.
 |---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 9 | 4 required, 2 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | Q-0112 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 29 |  | 0 flagged |
-| [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 51 | Q-0028, Q-0100 | 0 flagged |
+| [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 42 | Q-0099 | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 8 | 6 required, 2 reject | 27 |  | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 7 | 4 required, 1 undefined, 1 unspecified, 1 recommended | 18 |  | 0 flagged |
-| [Constant expressions](../spec/foundations/constant-evaluation.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 18 | 4 required, 13 reject, 1 impl-defined | 47 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 7 | 6 required, 1 recommended | 15 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 21 | 14 required, 7 reject | 65 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 5 | 2 required, 3 reject | 32 | Q-0097 | 0 flagged |
@@ -31,7 +31,7 @@ current state only. The history of how it got here is in `git log`.
 | [The conditional operator](../spec/expressions/conditional.md) | 12 | 8 required, 4 reject | 37 | Q-0102 | 0 flagged |
 | [Assignment operators](../spec/expressions/assignment.md) | 10 | 7 required, 2 reject, 1 unspecified | 29 | Q-0032 | 0 flagged |
 | [The comma operator](../spec/expressions/comma.md) | 8 | 5 required, 2 reject, 1 recommended | 17 |  | 0 flagged |
-| [Unary operators](../spec/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 58 | Q-0031 | 0 flagged |
+| [Unary operators](../spec/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 59 | Q-0031 | 0 flagged |
 | [Pointers to members](../spec/expressions/member-pointers.md) | 11 | 5 required, 4 reject, 1 undefined, 1 unspecified | 66 |  | 0 flagged |
 | [Postfix expressions](../spec/expressions/postfix.md) | 15 | 7 required, 5 reject, 2 undefined, 1 conditionally-supported | 41 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 18 | 8 required, 6 reject, 2 undefined, 2 impl-defined | 47 | Q-0017 | 0 flagged |
@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3055/3055 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3059/3059 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |

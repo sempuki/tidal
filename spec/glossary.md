@@ -55,8 +55,7 @@ integer promotion
   `char8_t`, `char16_t`, and `char32_t` promote to the narrowest standard
   integer type that can hold all their values. The candidates are tried by
   rank from `int` upward, the signed type of each rank before the unsigned
-  type. Unscoped enumerations and
-  bit-fields also promote *(referenced)*.
+  type. Unscoped enumerations and bit-fields also promote (CONV-1).
 
 linkage
   The property that controls if two declarations of a name refer to the

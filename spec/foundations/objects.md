@@ -136,8 +136,9 @@ size 1 for this reason.
 :tests: foundations/objects/reference-does-not-extend-named.cpp foundations/objects/reference-to-temporary-extends.cpp
 
 A reference to a named object does not extend the lifetime of that
-object. A reference that binds to a temporary extends the temporary to
-the lifetime of the reference (REF-4).
+object. A reference that binds to a temporary, or to a member of a
+temporary, extends the temporary to the lifetime of the reference
+(REF-4).
 :::
 
 :::{rule} OBJ-9

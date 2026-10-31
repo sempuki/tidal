@@ -63,7 +63,7 @@ there is no single path, so no implicit conversion.
 
 :::{rule} CONV-1
 :kind: required
-:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp
+:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp expressions/conversions/enum-promotion-no-fixed-type.cpp
 
 These operands go through {term}`integer promotion` in arithmetic:
 
@@ -72,7 +72,10 @@ These operands go through {term}`integer promotion` in arithmetic:
   bit-field of width 3 declared `long long` promotes to `int`; one of
   width 40 keeps `long long`,
 - an unscoped enumeration. With a fixed underlying type, the value
-  converts to that type first.
+  converts to that type first and then promotes as that type does.
+  Without one, the candidates are tried by rank from `int` upward, the
+  signed type of each rank before the unsigned one, and the first that
+  can hold all the values of the enumeration (ENUM-6) is the result.
 
 A `float` operand does not change to `double` in arithmetic.
 :::

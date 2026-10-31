@@ -2174,6 +2174,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/relational-unrelated-pointers.cpp` | CE-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-points-to-local.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-points-to-static.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/result-refers-to-static-temporary.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-refers-to-temporary.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/static-local-reached.cpp` | CE-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2197,6 +2198,7 @@ compilers affect the Status column.
 | `expressions/conversions/deep-const-every-level.cpp` | CONV-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/deep-const-not-at-every-level.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/derived-to-base.cpp` | CONV-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/enum-promotion-no-fixed-type.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/enum-promotion.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/false-not-null-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2734,6 +2736,7 @@ compilers affect the Status column.
 | `expressions/unary/noexcept-not-evaluated.cpp` | UN-13 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/unary/noexcept-operator.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/noexcept-temporary-ctor-false.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/unary/plus-function-operand.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/plus-minus-scoped-enum.cpp` | UN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/plus-minus-types.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/plus-pointer.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2754,6 +2757,7 @@ compilers affect the Status column.
 | `expressions/value-categories/aggregate-element-temporaries.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/argument-lives-to-end.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/array-element-default-argument.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/value-categories/array-prvalue-argument.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/value-categories/assign-to-class-prvalue.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/assign-to-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/assign-to-scalar-prvalue.cpp` | VC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3070,7 +3074,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3055/3055 tests pass on baseline compilers.
+3059/3059 tests pass on baseline compilers.
 
 ## Rejections
 

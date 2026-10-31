@@ -149,7 +149,9 @@ throw-expression on a path that the evaluation does not take is valid.
 :tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
-behavior. MUL-9, ADD-10, REF-5, INIT-1, and CV-5 give such operations.
+behavior. MUL-9, ADD-10, REF-5, INIT-1, CV-5, and OBJ-2 give such
+operations. OBJ-2 includes a read through a pointer to a local variable
+whose block has ended.
 :::
 
 :::{rule} CE-11
@@ -159,8 +161,9 @@ behavior. MUL-9, ADD-10, REF-5, INIT-1, and CV-5 give such operations.
 An array bound, an enumerator value, and a case label need a constant
 expression of integer or enumeration type. Where a constant converts to
 another type for such a use, the conversion must not narrow. This also
-applies to the condition of `explicit(...)` and to the operand of a
-`noexcept` specifier (EXS-1). The condition of `if constexpr` is an
+applies to the condition of `explicit(...)`, to the operand of a
+`noexcept` specifier (EXS-1), and to a non-type template argument
+*(templates referenced)*. The condition of `if constexpr` is an
 exception (IF-16).
 :::
 
@@ -181,11 +184,14 @@ for equality. It is unspecified if two equal literals share storage.
 
 :::{rule} CE-14
 :kind: reject
-:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp
+:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp expressions/constant-expressions/result-refers-to-static-temporary.cpp
 
 A pointer or reference that is the value of a constant expression must
 not refer to an object with automatic storage duration or to a temporary
-object. It can refer to an object with static storage duration.
+object. It can refer to an object with static storage duration. A
+temporary bound to a reference at namespace scope lives until the
+program ends (REF-4) and counts as static, so such a reference can be
+a constant.
 :::
 
 :::{rule} CE-15
@@ -232,7 +238,9 @@ does not use the object.
 
 An implementation sets limits on the depth of recursion and on the number
 of steps in one constant evaluation. It rejects an evaluation that exceeds
-a limit. The limits are implementation-defined.
+a limit. The limits are implementation-defined. Every matrix compiler
+accepts a recursion depth of 400, and rejects a depth of 100000 and a
+loop of 100000000 steps.
 :::
 
 ## Examples
@@ -259,6 +267,15 @@ constexpr int h(int v) {
 }
 static_assert(h(1) == 1);             // fine: the throw is not evaluated
 static_assert(h(-1) == 0);            // rejected
+
+constexpr int k(int v) {
+  constexpr int w = v;                // rejected: a new evaluation starts
+  return w;                           // here, and v is not known in it
+}
+constexpr const int& t = 4;           // fine: the temporary is static
+void use() {
+  constexpr const int& u = 4;         // rejected: the temporary is local
+}
 ```
 
 ## Evidence

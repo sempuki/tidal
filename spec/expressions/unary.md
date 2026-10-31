@@ -79,12 +79,13 @@ implicit calls that `e` makes, and answers with a `bool` constant. Like
 
 :::{rule} UN-1
 :kind: required
-:tests: expressions/unary/plus-minus-types.cpp expressions/unary/plus-pointer.cpp expressions/unary/minus-bool.cpp
+:tests: expressions/unary/plus-minus-types.cpp expressions/unary/plus-pointer.cpp expressions/unary/minus-bool.cpp expressions/unary/plus-function-operand.cpp
 
 The operand of unary `+` or `-` can have an arithmetic or unscoped
 enumeration type. The operand goes through {term}`integer promotion`, and
-the result has the promoted type. Unary `+` also accepts a pointer, and an
-array operand becomes a pointer.
+the result has the promoted type. Unary `+` also accepts a pointer. An
+array operand becomes a pointer to its first element, and a function
+operand becomes a pointer to the function.
 :::
 
 :::{rule} UN-2

@@ -28,3 +28,9 @@ Option 1 until a test shows the IEEE behavior is reliable under
 optimization on the matrix compilers. Option 2 is a likely future change.
 
 ## Opinions
+
+- Spec-only Predict reader, 2026-10-31 (`reports/spec-only/R-foundations/`,
+  finding C1): CONV-3 says a NaN converts to `true`, but under option 1 a
+  program has no way to make a NaN without undefined behavior, because
+  the language offers no NaN literal and the library is out of scope.
+  Option 2 would give CONV-3 a valid example.

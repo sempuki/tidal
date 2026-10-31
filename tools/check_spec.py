@@ -169,6 +169,15 @@ def main() -> int:
             elif rid not in listed.get(test.name, set()):
                 errors.append(f"{test.name}: names {rid}, but {rid} doesn't list it")
 
+    # The prefix table on rules.md is for readers of the Markdown sources,
+    # where the rule index directive does not render.
+    pages = {(rid.rsplit("-", 1)[0], str(f.relative_to(SPEC))) for rid, (f, _, _) in rules.items()}
+    table = set(re.findall(r"^\| `([A-Z]+)` \| `([^`]+)` \|$", (SPEC / "rules.md").read_text(), re.M))
+    for prefix, page in sorted(pages - table):
+        errors.append(f"rules.md: the prefix table lacks {prefix} ({page})")
+    for prefix, page in sorted(table - pages):
+        errors.append(f"rules.md: the prefix table lists {prefix} ({page}), which has no rules")
+
     questions = {q.name[:6] for q in (ROOT / "questions").glob("Q-[0-9][0-9][0-9][0-9]-*.md")}
     for f in [*SPEC.rglob("*.md"), *TESTS.rglob("*.cpp"), *(ROOT / "docs").rglob("*.md")]:
         for ref in set(re.findall(r"\bQ-\d{4}\b", f.read_text())):

@@ -129,7 +129,8 @@ def predict(page: str, out: Path) -> int:
         "",
         "`rules` lists the Tidal rule IDs that decide the outcome. When the",
         "spec does not settle a program, say so in `why` and give your best",
-        "guess.",
+        "guess. Where the spec records that compilers differ on a program,",
+        "the outcome of any of them counts.",
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)
