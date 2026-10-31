@@ -1,4 +1,4 @@
-// tidal-rules: ASN-5
+// tidal-rules: ASN-13
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression .*double
 // tidal-error-gcc: invalid operands of types .double. and .int. to binary .operator%

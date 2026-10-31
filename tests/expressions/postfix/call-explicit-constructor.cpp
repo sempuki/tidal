@@ -1,4 +1,4 @@
-// tidal-rules: PFX-6
+// tidal-rules: PFX-16
 // tidal-expect: reject
 // tidal-error-clang: no matching function for call to .f.
 // tidal-error-gcc: could not convert .1. from .int. to .S.

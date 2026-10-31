@@ -1,4 +1,4 @@
-// tidal-rules: LIST-6
+// tidal-rules: LIST-15
 // tidal-expect: reject
 // tidal-error-clang: char array with UTF-8 string literal is not permitted
 // tidal-error-gcc: cannot initialize array of .signed char. from a string literal

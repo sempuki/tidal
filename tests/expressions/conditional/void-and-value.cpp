@@ -1,4 +1,4 @@
-// tidal-rules: COND-4
+// tidal-rules: COND-13
 // tidal-expect: reject
 // tidal-error-clang: operand to \? is void
 // tidal-error-gcc: operand to the conditional operator is of type .void.

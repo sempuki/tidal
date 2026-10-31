@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: must use .enum. not .enum class
 // tidal-error-gcc: scoped enum must not use the .class. keyword

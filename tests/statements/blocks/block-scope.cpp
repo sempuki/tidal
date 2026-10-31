@@ -1,4 +1,4 @@
-// tidal-rules: STMT-2
+// tidal-rules: STMT-2 NAM-8
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .inner
 // tidal-error-gcc: inner. was not declared in this scope

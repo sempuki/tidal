@@ -7,7 +7,7 @@ statements and opens a scope.
 ## Principles
 
 :::{principle} STMT-P1
-:rules: STMT-2 STMT-3 STMT-5
+:rules: STMT-2 STMT-3 STMT-5 STMT-8
 
 A block is a sequence and a scope. Its statements execute in the order
 written, and a declaration is one of them, so a name becomes visible at
@@ -52,17 +52,23 @@ expression statement.
 
 :::{rule} STMT-2
 :kind: required
-:tests: statements/blocks/block-scope.cpp statements/blocks/block-hides-outer.cpp statements/blocks/declaration-anywhere.cpp statements/blocks/redeclare-same-block.cpp
+:tests: statements/blocks/block-scope.cpp statements/blocks/block-hides-outer.cpp statements/blocks/declaration-anywhere.cpp
 
 A block opens a scope. In a block:
 
 - a declaration can occur between statements,
 - a declared name is visible from its declaration to the end of the block,
-- a name must not be declared twice,
 - a nested block can declare a name again, which hides the outer name.
 
 STO-1 and STO-2 give when the variables of a block are created and
 initialized.
+:::
+
+:::{rule} STMT-8
+:kind: reject
+:tests: statements/blocks/redeclare-same-block.cpp
+
+In a block, a name must not be declared twice (STMT-2).
 :::
 
 :::{rule} STMT-5

@@ -1,4 +1,4 @@
-// tidal-rules: CLS-5
+// tidal-rules: CLS-25
 // tidal-expect: reject
 // tidal-error-clang: within const member function
 // tidal-error-gcc: in read-only object

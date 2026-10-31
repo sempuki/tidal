@@ -1,4 +1,4 @@
-// tidal-rules: CX-3
+// tidal-rules: CX-6
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: calls. defined .static. in .constexpr. context

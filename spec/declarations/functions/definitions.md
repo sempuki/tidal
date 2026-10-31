@@ -7,7 +7,7 @@ parameters, the end of a function body, the predefined variable
 ## Principles
 
 :::{principle} FN-P1
-:rules: FN-2 FN-9 FN-12
+:rules: FN-2 FN-14 FN-9 FN-12
 
 A function can be declared many times and defined once in a
 translation unit ({principle}`TR-P2`). A definition is the whole
@@ -17,7 +17,7 @@ stands at namespace scope or in a class, never inside another function.
 :::
 
 :::{principle} FN-P2
-:rules: FN-1 FN-10
+:rules: FN-1 FN-13 FN-10
 
 A parameter is a local variable of the outermost block of the body,
 declared by the caller's argument. So the body cannot declare its name
@@ -62,20 +62,35 @@ function's name, in a form the implementation chooses.
 
 :::{rule} FN-1
 :kind: required
-:tests: declarations/functions/definitions/unnamed-parameters.cpp declarations/functions/definitions/parameter-scope-redeclare.cpp declarations/functions/definitions/parameter-nested-block.cpp declarations/functions/definitions/parameter-duplicate.cpp
+:tests: declarations/functions/definitions/unnamed-parameters.cpp declarations/functions/definitions/parameter-nested-block.cpp
 
 A parameter can have no name. The scope of a parameter is the outermost
-block of the function body. The program must not declare a parameter name
-again in that block, or twice in one parameter list. A nested block can
-declare the name again.
+block of the function body. A nested block can declare the name again.
+FN-13 lists what is not valid.
+:::
+
+:::{rule} FN-13
+:kind: reject
+:tests: declarations/functions/definitions/parameter-scope-redeclare.cpp declarations/functions/definitions/parameter-duplicate.cpp
+
+The program must not declare a parameter name again in the outermost
+block of the function body (FN-1), or twice in one parameter list.
 :::
 
 :::{rule} FN-2
 :kind: required
-:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/redeclaration-ok.cpp declarations/functions/definitions/return-type-mismatch.cpp
+:tests: declarations/functions/definitions/redeclaration-ok.cpp
 
-A function can have several declarations but only one definition in a
-translation unit. All declarations must have the same return type.
+A function can have several declarations in a translation unit. FN-14
+lists what is not valid.
+:::
+
+:::{rule} FN-14
+:kind: reject
+:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/return-type-mismatch.cpp
+
+A function can have only one definition in a translation unit (FN-2).
+All declarations of a function must have the same return type.
 :::
 
 :::{rule} FN-4

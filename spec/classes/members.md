@@ -7,7 +7,7 @@ and type aliases.
 ## Principles
 
 :::{principle} CLS-P1
-:rules: CLS-1 CLS-2 CLS-8 CLS-9 CLS-12 CLS-16
+:rules: CLS-1 CLS-2 CLS-8 CLS-9 CLS-12 CLS-16 CLS-22 CLS-28
 
 A class definition is a scope and a type under construction. Inside its
 body the class is incomplete, so a data member needs a type that is
@@ -25,7 +25,7 @@ own nothing that would need a definition elsewhere.
 :::
 
 :::{principle} CLS-P2
-:rules: CLS-3 CLS-4 CLS-7 CLS-20 CLS-21
+:rules: CLS-3 CLS-4 CLS-7 CLS-20 CLS-21 CLS-23 CLS-24 CLS-27
 
 A member belongs to each object of the class or to the class as a whole.
 A static data member is one object for the whole program, so it needs
@@ -38,7 +38,7 @@ the member still needs a definition if the program uses it as an object.
 :::
 
 :::{principle} CLS-P3
-:rules: CLS-5 CLS-6 CLS-13 CLS-14 CLS-15 CLS-17
+:rules: CLS-5 CLS-6 CLS-13 CLS-14 CLS-15 CLS-17 CLS-25 CLS-26
 
 A non-static member function acts on an object. Its `this` has the type
 of that object with the function's own cv-qualifiers, and its
@@ -82,16 +82,24 @@ own type. A pointer to its own type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/sizeof-in-class-incomplete.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp
 
 The class is complete inside member function bodies, default arguments,
 default member initializers, and the operands of `noexcept` specifiers. These can use members that are declared
 later. At other places inside the definition, the class is not complete.
 :::
 
+:::{rule} CLS-22
+:kind: reject
+:tests: classes/members/sizeof-in-class-incomplete.cpp
+
+At the places inside its definition where CLS-2 says a class is not
+complete, a use that needs a complete class type is not valid.
+:::
+
 :::{rule} CLS-3
 :kind: required
-:tests: classes/members/static-data-member.cpp classes/members/static-member-not-defined.cpp classes/members/inline-static-member.cpp classes/members/static-const-integral.cpp classes/members/static-non-const-in-class-init.cpp classes/members/static-const-enum.cpp
+:tests: classes/members/static-data-member.cpp classes/members/static-member-not-defined.cpp classes/members/inline-static-member.cpp classes/members/static-const-integral.cpp classes/members/static-const-enum.cpp
 
 A static data member is one object for the program. These rules apply:
 
@@ -100,47 +108,84 @@ A static data member is one object for the program. These rules apply:
 - An `inline` or `constexpr` static data member is defined in the class.
 - A `const` static data member of integer or enumeration type can have an
   initializer in the class.
-- Other static data members must not have an initializer in the class.
+:::
+
+:::{rule} CLS-23
+:kind: reject
+:tests: classes/members/static-non-const-in-class-init.cpp
+
+CLS-3 lists the static data members that can have an initializer in the
+class. Other static data members must not have an initializer in the
+class.
 :::
 
 :::{rule} CLS-4
 :kind: required
-:tests: classes/members/member-function-inline.cpp classes/members/define-outside-class.cpp classes/members/define-undeclared-member.cpp classes/members/bound-member-function.cpp
+:tests: classes/members/member-function-inline.cpp classes/members/define-outside-class.cpp
 
 A member function that is defined in its class is `inline`. A member
-function can be defined outside the class with a qualified name. The class
-must declare it first. A program must call a member function through an
-object, or take its address with `&S::f`.
+function can be defined outside the class with a qualified name.
+:::
+
+:::{rule} CLS-24
+:kind: reject
+:tests: classes/members/define-undeclared-member.cpp classes/members/bound-member-function.cpp
+
+The class must declare a member function before a definition outside the
+class. A program must call a member function through an object, or take
+its address with `&S::f`.
 :::
 
 :::{rule} CLS-5
 :kind: required
-:tests: classes/members/this-type.cpp classes/members/const-member-modifies.cpp classes/members/non-const-on-const-object.cpp classes/members/mutable-member.cpp classes/members/volatile-object-nonvolatile-call.cpp
+:tests: classes/members/this-type.cpp classes/members/mutable-member.cpp
 
 In a member function of `S`, `this` has type `S*` with the member
-function's {term}`cv-qualifiers <cv-qualifier>`. A `const` member function
-must not change a data member, unless the member is `mutable`. A program
-must not call a member function that is not `const` on a `const` object,
-or one that is not `volatile` on a `volatile` object.
+function's {term}`cv-qualifiers <cv-qualifier>`. A `const` member
+function can change a `mutable` data member.
+:::
+
+:::{rule} CLS-25
+:kind: reject
+:tests: classes/members/const-member-modifies.cpp classes/members/non-const-on-const-object.cpp classes/members/volatile-object-nonvolatile-call.cpp
+
+A `const` member function must not change a data member, unless the
+member is `mutable`. A program must not call a member function that is
+not `const` on a `const` object, or one that is not `volatile` on a
+`volatile` object.
 :::
 
 :::{rule} CLS-6
 :kind: required
-:tests: classes/members/ref-qualified.cpp classes/members/ref-qualified-mixed.cpp
+:tests: classes/members/ref-qualified.cpp
 
 A member function can have the ref-qualifier `&` or `&&`. A call on an
-lvalue selects `&`, and a call on an rvalue selects `&&`. Overloads with
-the same parameters must all have ref-qualifiers, or none
+lvalue selects `&`, and a call on an rvalue selects `&&`.
+:::
+
+:::{rule} CLS-26
+:kind: reject
+:tests: classes/members/ref-qualified-mixed.cpp
+
+The overloads of a member function that CLS-6 describes must all have
+ref-qualifiers, or none, if they have the same parameters
 ({question}`Q-0027`).
 :::
 
 :::{rule} CLS-7
 :kind: required
-:tests: classes/members/static-member-function.cpp classes/members/static-uses-this.cpp classes/members/static-member-function-const.cpp classes/members/static-ref-qualified.cpp classes/members/static-virtual.cpp
+:tests: classes/members/static-member-function.cpp
 
-A static member function has no `this`. A program can call it through the
-class name or through an object. It must not have a cv-qualifier or a
-ref-qualifier, and it must not be virtual.
+A static member function has no `this`. A program can call it through
+the class name or through an object.
+:::
+
+:::{rule} CLS-27
+:kind: reject
+:tests: classes/members/static-uses-this.cpp classes/members/static-member-function-const.cpp classes/members/static-ref-qualified.cpp classes/members/static-virtual.cpp
+
+A static member function must not use `this`. It must not have a
+cv-qualifier or a ref-qualifier, and it must not be virtual.
 :::
 
 :::{rule} CLS-8
@@ -178,15 +223,28 @@ A class must not declare:
 
 :::{rule} CLS-12
 :kind: required
-:tests: classes/members/local-class.cpp classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp classes/members/local-class-friend-definition.cpp classes/members/local-class-constexpr-double.cpp
+:tests: classes/members/local-class.cpp classes/members/local-class-uses-static-local.cpp classes/members/local-class-const-local.cpp classes/members/local-class-constexpr-double.cpp
 
-A function can define a class inside its body. Three things are not
-valid in that local class: a static data member, a member template, and a
-friend function defined in it. Each member function is defined inside the
-class. In an evaluated operand, it can name the static variables of the
-function but not its automatic variables. One exception applies: it can
-read the value of a `constexpr` variable of any literal type, or another
-constant variable, when it does not take the address.
+A function can define a class inside its body. In an evaluated operand,
+a member function of that local class can name the static variables of
+the function. It can also read the value of a `constexpr` variable of
+any literal type, or another constant variable, when it does not take
+the address.
+:::
+
+:::{rule} CLS-28
+:kind: reject
+:tests: classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp classes/members/local-class-friend-definition.cpp
+
+Three things are not valid in a local class (CLS-12):
+
+- a static data member,
+- a member template,
+- a friend function defined in it.
+
+Each member function of a local class is defined inside the class. In an
+evaluated operand, it must not name the automatic variables of the
+function, except as CLS-12 allows.
 :::
 
 :::{rule} CLS-13
@@ -319,7 +377,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 83 of 84 tes
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports it.
-- CLS-6: GCC 16 accepts mixed ref-qualified overloads and reports
+- CLS-26: GCC 16 accepts mixed ref-qualified overloads and reports
   ambiguity only at a call ({question}`Q-0027`).
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject it only under `-pedantic-errors`.

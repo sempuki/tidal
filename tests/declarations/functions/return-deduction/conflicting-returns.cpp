@@ -1,4 +1,4 @@
-// tidal-rules: RET-1
+// tidal-rules: RET-7
 // tidal-expect: reject
 // tidal-error-clang: deduced as .double. here but deduced as .int. in earlier return statement
 // tidal-error-gcc: inconsistent deduction for auto return type

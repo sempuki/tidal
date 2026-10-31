@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: incomplete type .struct Hidden
 // tidal-error-gcc: incomplete type .struct n::Hidden|cannot convert .Hidden\*. to .n::Hidden\*

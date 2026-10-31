@@ -1,4 +1,4 @@
-// tidal-rules: DCL-3
+// tidal-rules: DCL-18
 // tidal-expect: reject
 // tidal-error-clang: declared as a reference to a reference
 // tidal-error-gcc: cannot declare reference to .int&

@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: tag type that does not match previous declaration
 // tidal-error-gcc: referred to as .struct

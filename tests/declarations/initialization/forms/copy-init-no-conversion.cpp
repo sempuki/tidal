@@ -1,4 +1,4 @@
-// tidal-rules: INIT-4
+// tidal-rules: INIT-7
 // tidal-expect: reject
 // tidal-error-clang: cannot initialize a variable of type .int \*. with an rvalue of type .int
 // tidal-error-gcc: invalid conversion from .int. to .int\*

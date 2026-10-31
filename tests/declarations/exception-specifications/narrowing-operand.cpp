@@ -1,4 +1,4 @@
-// tidal-rules: EXS-1
+// tidal-rules: EXS-7
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: cannot be narrowed to type .bool

@@ -1,4 +1,4 @@
-// tidal-rules: CVF-2
+// tidal-rules: CVF-10
 // tidal-expect: reject
 // tidal-error-clang: no matching function for call to .take
 // tidal-error-gcc: could not convert .A\(\). from .A. to .B

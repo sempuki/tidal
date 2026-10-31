@@ -6,7 +6,7 @@ control. A label names a statement that `goto` can transfer control to.
 ## Principles
 
 :::{principle} JMP-P1
-:rules: JMP-1 JMP-2 JMP-5 JMP-7 JMP-8
+:rules: JMP-1 JMP-2 JMP-5 JMP-7 JMP-8 JMP-14
 
 A jump statement names a place and goes there, and the place must exist
 in the same function. `break` goes past the innermost loop or `switch`,
@@ -33,7 +33,7 @@ to skip, so a jump can pass its declaration when it has no initializer.
 :::
 
 :::{principle} JMP-P3
-:rules: JMP-3 JMP-10 JMP-11 JMP-12
+:rules: JMP-3 JMP-10 JMP-11 JMP-12 JMP-13 JMP-15
 
 `return` hands a value to the caller, and the value must be what the
 function promised: a value in a function that returns one, nothing in a
@@ -69,25 +69,41 @@ be inside the lambda too.
 
 :::{rule} JMP-3
 :kind: required
-:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp statements/jumps/return-void-expression.cpp statements/jumps/destructor-return-value.cpp statements/jumps/void-function-return-void-expression.cpp
+:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-void-expression.cpp statements/jumps/void-function-return-void-expression.cpp
 
-In a function that returns a value, `return` must have an expression. The
-value is converted to the return type, and a braced list initializes the
-result. In a `void` function, `return` has no expression or an expression of
-type `void`.
+In a function that returns a value, the value of `return` is converted
+to the return type, and a braced list initializes the result. In a
+`void` function, `return` has no expression or an expression of type
+`void`.
+:::
+
+:::{rule} JMP-13
+:kind: reject
+:tests: statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp statements/jumps/destructor-return-value.cpp
+
+In a function that returns a value, `return` must have an expression.
+In a `void` function, `return` must not have an expression of a type
+other than `void` (JMP-3).
 :::
 
 :::{rule} JMP-5
 :kind: required
-:tests: statements/jumps/label-function-scope.cpp statements/jumps/label-separate-names.cpp statements/jumps/duplicate-label.cpp statements/jumps/goto-undefined-label.cpp statements/jumps/goto-other-function.cpp statements/jumps/goto-out-of-lambda.cpp
+:tests: statements/jumps/label-function-scope.cpp statements/jumps/label-separate-names.cpp
 
 A label is visible in all of its function. A `goto` can name a label
-before it or after it. These conditions apply:
+before it or after it. A label name does not conflict with the names of
+variables or types.
+:::
+
+:::{rule} JMP-14
+:kind: reject
+:tests: statements/jumps/duplicate-label.cpp statements/jumps/goto-undefined-label.cpp statements/jumps/goto-other-function.cpp statements/jumps/goto-out-of-lambda.cpp
+
+These conditions apply to labels (JMP-5):
 
 - Each label name must occur only once in a function.
 - A `goto` must name a label of its own function. A lambda body is a
   separate function.
-- A label name does not conflict with the names of variables or types.
 :::
 
 :::{rule} JMP-6
@@ -111,17 +127,25 @@ without an initializer ({question}`Q-0097`).
 
 :::{rule} JMP-10
 :kind: required
-:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-parameter-as-lvalue-ref.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp statements/jumps/return-static-local-move-only.cpp
+:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp
 
 If the expression of a `return` statement is the name of a local
 variable or a parameter of the function, the name is an xvalue (see
-{term}`value category`). A move-only object can be returned this way. Such
-a name does not bind to an lvalue reference return type. These rules
-apply:
+{term}`value category`). A move-only object can be returned this way.
+These rules apply:
 
 - A variable or parameter of rvalue reference type counts.
 - Parentheses around the name do not change this.
 - A `static` local variable does not count.
+:::
+
+:::{rule} JMP-15
+:kind: reject
+:tests: statements/jumps/return-parameter-as-lvalue-ref.cpp statements/jumps/return-static-local-move-only.cpp
+
+A name that JMP-10 makes an xvalue does not bind to an lvalue reference
+return type. A `static` local variable of a move-only type cannot be
+returned, because JMP-10 does not count it.
 :::
 
 :::{rule} JMP-12

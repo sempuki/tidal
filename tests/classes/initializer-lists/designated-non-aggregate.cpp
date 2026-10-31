@@ -1,4 +1,4 @@
-// tidal-rules: ILC-1
+// tidal-rules: ILC-7
 // tidal-expect: reject
 // tidal-error-clang: non-aggregate type .* designated initializer
 // tidal-error-gcc: designated initializers cannot be used with a non-aggregate

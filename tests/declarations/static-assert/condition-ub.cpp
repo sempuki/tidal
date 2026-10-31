@@ -1,4 +1,4 @@
-// tidal-rules: SA-3
+// tidal-rules: SA-7
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: division by zero

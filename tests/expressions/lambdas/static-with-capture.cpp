@@ -1,4 +1,4 @@
-// tidal-rules: LAM-13
+// tidal-rules: LAM-27
 // tidal-expect: reject
 // tidal-error-clang: static lambda cannot have any captures
 // tidal-error-gcc: .static. lambda specifier with lambda capture

@@ -1,4 +1,4 @@
-// tidal-rules: BF-7
+// tidal-rules: BF-11
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed
 // tidal-error-gcc: narrowing conversion

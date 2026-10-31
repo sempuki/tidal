@@ -1,4 +1,4 @@
-// tidal-rules: SA-4
+// tidal-rules: SA-8
 // tidal-expect: reject
 // tidal-error-clang: string literal
 // tidal-error-gcc: non-string message

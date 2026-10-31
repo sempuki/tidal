@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-5
+// tidal-rules: AUTO-19
 // tidal-expect: reject
 // tidal-error-clang: incompatible initializer of type .int
 // tidal-error-gcc: unable to deduce .auto\*

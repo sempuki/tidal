@@ -1,4 +1,4 @@
-// tidal-rules: ILC-6
+// tidal-rules: ILC-10
 // tidal-expect: reject
 // tidal-error-clang: cannot deduce return type from initializer list
 // tidal-error-gcc: returning initializer list

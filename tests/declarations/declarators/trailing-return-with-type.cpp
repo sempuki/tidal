@@ -1,4 +1,4 @@
-// tidal-rules: DCL-7
+// tidal-rules: DCL-21
 // tidal-expect: reject
 // tidal-error-clang: trailing return type must specify return type .auto
 // tidal-error-gcc: trailing return type not declared with .auto

@@ -1,4 +1,4 @@
-// tidal-rules: CVF-3
+// tidal-rules: CVF-11
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion
 // tidal-error-gcc: cannot convert

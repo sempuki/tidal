@@ -1,4 +1,4 @@
-// tidal-rules: CLS-12
+// tidal-rules: CLS-28
 // tidal-expect: reject
 // tidal-error-clang: templates cannot be declared inside of a local class
 // tidal-error-gcc: member template in local class

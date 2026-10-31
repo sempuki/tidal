@@ -15,7 +15,7 @@ and destructors, copy and move.
 ## Principles
 
 :::{principle} DER-P1
-:rules: DER-1 DER-2 DER-18
+:rules: DER-1 DER-2 DER-18 DER-22
 
 A derived object contains one subobject for each base in its base list,
 and the base's members become its members ({principle}`OBJ-P1`). A base
@@ -25,7 +25,7 @@ which is valid, and a member reached through both is ambiguous.
 :::
 
 :::{principle} DER-P2
-:rules: DER-3 DER-4 DER-9
+:rules: DER-3 DER-4 DER-9 DER-19
 
 Lookup in a derived class searches the class and then its bases, as
 scopes nested outward ({principle}`NAM-P2`). A name in the derived class
@@ -56,7 +56,7 @@ time, so such a class has no `constexpr` constructor or destructor.
 :::
 
 :::{principle} DER-P5
-:rules: DER-8 DER-14 DER-15
+:rules: DER-8 DER-14 DER-15 DER-20 DER-21
 
 Constructing a derived object constructs its bases, so the derived class
 needs access to their constructors and destructors. A derived class can
@@ -110,7 +110,7 @@ initializer list gives the bases first.
 
 :::{rule} DER-3
 :kind: required
-:tests: classes/derived/data-member-hides-function.cpp classes/derived/derived-hides-base-overloads.cpp classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp
+:tests: classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp
 
 A name declared in a derived class hides every member with that name in
 its bases. This includes all overloads of a function, and data members
@@ -118,6 +118,14 @@ and types. A qualified name such as `d.B::f()` finds the base member. A
 using-declaration of a base member makes its overloads visible in the
 derived class. A derived member with the same parameters hides the one
 that the using-declaration brings.
+:::
+
+:::{rule} DER-19
+:kind: reject
+:tests: classes/derived/data-member-hides-function.cpp classes/derived/derived-hides-base-overloads.cpp
+
+A program must not use an unqualified name to reach a base member that
+DER-3 hides.
 :::
 
 :::{rule} DER-9
@@ -205,17 +213,25 @@ constructors need not initialize its virtual bases.
 
 :::{rule} DER-14
 :kind: required
-:tests: classes/derived/base-private-ctor.cpp classes/derived/base-private-dtor.cpp classes/derived/base-protected-ctor.cpp classes/derived/base-protected-dtor-direct.cpp classes/derived/base-protected-dtor.cpp classes/derived/virtual-base-private-dtor.cpp
+:tests: classes/derived/base-protected-ctor.cpp classes/derived/base-protected-dtor.cpp
+
+A protected constructor or destructor of a base gives a derived class
+access to it.
+:::
+
+:::{rule} DER-21
+:kind: reject
+:tests: classes/derived/base-private-ctor.cpp classes/derived/base-private-dtor.cpp classes/derived/virtual-base-private-dtor.cpp
 
 A derived class needs access to the constructor and destructor of each
-base that it uses. This includes virtual bases that are not direct bases.
-A protected constructor or destructor gives this access. A private one
-does not, so the special member of the derived class is deleted.
+base that it uses. This includes virtual bases that are not direct
+bases. A private constructor or destructor does not give this access, so
+the special member of the derived class is deleted.
 :::
 
 :::{rule} DER-8
 :kind: required
-:tests: classes/derived/inherited-ctor-access.cpp classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-explicit.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor-no-default.cpp classes/derived/inherited-ctor-not-copy.cpp classes/derived/inherited-ctor.cpp
+:tests: classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor.cpp
 
 `using B::B;` in a class `D` *inherits* the constructors of the direct
 base `B`. A call with matching arguments initializes the `B` subobject
@@ -226,6 +242,18 @@ default-initialized. These rules apply:
 - An inherited constructor keeps its access, its `explicit`, and its
   default arguments.
 - A constructor of `D` with the same parameters hides the inherited one.
+:::
+
+:::{rule} DER-20
+:kind: reject
+:tests: classes/derived/inherited-ctor-access.cpp classes/derived/inherited-ctor-explicit.cpp classes/derived/inherited-ctor-no-default.cpp classes/derived/inherited-ctor-not-copy.cpp
+
+DER-8 sets limits on inherited constructors. Through `D`, a program must
+not use:
+
+- a constructor of `B` that DER-8 does not inherit,
+- an inherited constructor that is not accessible,
+- an inherited `explicit` constructor in copy-initialization.
 :::
 
 :::{rule} DER-15
@@ -247,11 +275,18 @@ accessible, and unambiguous base of `D`.
 
 :::{rule} DER-18
 :kind: required
-:tests: classes/derived/direct-and-indirect-base-use.cpp classes/derived/direct-and-indirect-base.cpp
+:tests: classes/derived/direct-and-indirect-base.cpp
 
 A class can be both a direct base and an indirect base of the same
-derived class. The declaration is valid. A use of a member of that base
-through the derived class is ambiguous.
+derived class. The declaration is valid.
+:::
+
+:::{rule} DER-22
+:kind: reject
+:tests: classes/derived/direct-and-indirect-base-use.cpp
+
+If a class is both a direct and an indirect base (DER-18), a use of its
+member through the derived class is ambiguous.
 :::
 
 ## Runtime Behavior

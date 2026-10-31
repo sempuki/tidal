@@ -1,4 +1,4 @@
-// tidal-rules: JMP-10
+// tidal-rules: JMP-15
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted copy constructor of .M
 // tidal-error-gcc: use of deleted function .*M::M\(const M&\)

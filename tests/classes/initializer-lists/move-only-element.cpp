@@ -1,4 +1,4 @@
-// tidal-rules: ILC-5
+// tidal-rules: ILC-9
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted copy constructor
 // tidal-error-gcc: use of deleted function .*M::M\(const M&\)

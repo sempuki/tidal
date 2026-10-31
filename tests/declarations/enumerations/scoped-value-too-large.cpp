@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-4
+// tidal-rules: ENUM-17
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed to type .int
 // tidal-error-gcc: outside the range of underlying type

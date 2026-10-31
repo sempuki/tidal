@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-20
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted default constructor
 // tidal-error-gcc: use of deleted function .*D::D\(\)

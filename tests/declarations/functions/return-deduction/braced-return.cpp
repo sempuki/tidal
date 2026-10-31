@@ -1,4 +1,4 @@
-// tidal-rules: RET-1
+// tidal-rules: RET-7
 // tidal-expect: reject
 // tidal-error-clang: cannot deduce return type from initializer list
 // tidal-error-gcc: returning initializer list

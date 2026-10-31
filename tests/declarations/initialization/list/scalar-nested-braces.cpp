@@ -1,4 +1,4 @@
-// tidal-rules: LIST-1
+// tidal-rules: LIST-11
 // tidal-expect: reject
 // tidal-error-clang: too many braces around scalar initializer
 // tidal-error-gcc: too many braces around scalar initializer

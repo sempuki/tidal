@@ -1,4 +1,4 @@
-// tidal-rules: SB-5
+// tidal-rules: SB-2
 // tidal-expect: reject
 // tidal-error-clang: 2 elements, but 3 names were provided
 // tidal-error-gcc: 3 names provided for structured binding

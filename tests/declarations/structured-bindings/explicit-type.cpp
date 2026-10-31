@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: with type .int.; declared type must be .auto
 // tidal-error-gcc: structured binding declaration cannot have type .int

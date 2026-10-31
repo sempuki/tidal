@@ -1,4 +1,4 @@
-// tidal-rules: STO-4
+// tidal-rules: STO-12
 // tidal-expect: reject
 // tidal-error-clang: non-thread-local declaration of .u. follows thread-local declaration
 // tidal-error-gcc: non-thread-local declaration of .int u. follows thread-local declaration

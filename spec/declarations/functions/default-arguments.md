@@ -16,7 +16,7 @@ function, because those exist only inside a call.
 :::
 
 :::{principle} DEFARG-P2
-:rules: DEFARG-1 DEFARG-2 DEFARG-5 DEFARG-6 DEFARG-7
+:rules: DEFARG-1 DEFARG-8 DEFARG-2 DEFARG-9 DEFARG-5 DEFARG-6 DEFARG-7
 
 Default arguments belong to the declarations of a function, and the
 declarations in one scope add them up. Each later declaration can add
@@ -38,23 +38,39 @@ function must end up with the same defaults everywhere.
 
 :::{rule} DEFARG-1
 :kind: required
-:tests: declarations/functions/default-arguments/basic.cpp declarations/functions/default-arguments/not-trailing.cpp declarations/functions/default-arguments/variadic-after-default.cpp
+:tests: declarations/functions/default-arguments/basic.cpp declarations/functions/default-arguments/variadic-after-default.cpp
+
+The last parameters of a function can have default arguments. A `...`
+can follow parameters with default arguments. DEFARG-8 states which
+parameters must have one.
+:::
+
+:::{rule} DEFARG-8
+:kind: reject
+:tests: declarations/functions/default-arguments/not-trailing.cpp
 
 After a parameter with a default argument, each later parameter must also
 have one, in this declaration or in an earlier declaration in the same
-scope. A `...` can follow parameters with default arguments.
+scope.
 :::
 
 :::{rule} DEFARG-2
 :kind: required
-:tests: declarations/functions/default-arguments/added-later.cpp declarations/functions/default-arguments/redefined.cpp declarations/functions/default-arguments/redefined-different.cpp declarations/functions/default-arguments/block-scope-declaration.cpp declarations/functions/default-arguments/using-sees-later-default.cpp
+:tests: declarations/functions/default-arguments/added-later.cpp declarations/functions/default-arguments/block-scope-declaration.cpp declarations/functions/default-arguments/using-sees-later-default.cpp
 
-A later declaration in the same scope can add default arguments. It must
-not give a default argument again for the same parameter. This applies
-also when the value is the same. A declaration in a block has its own
-default arguments. A default argument that a later declaration in a
-namespace adds is also usable through an earlier using declaration of
-the function ({question}`Q-0111`).
+A later declaration in the same scope can add default arguments. A
+declaration in a block has its own default arguments. A default argument
+that a later declaration in a namespace adds is also usable through an
+earlier using declaration of the function ({question}`Q-0111`).
+DEFARG-9 lists what is not valid.
+:::
+
+:::{rule} DEFARG-9
+:kind: reject
+:tests: declarations/functions/default-arguments/redefined.cpp declarations/functions/default-arguments/redefined-different.cpp
+
+A later declaration (DEFARG-2) must not give a default argument again for
+the same parameter. This applies also when the value is the same.
 :::
 
 :::{rule} DEFARG-4

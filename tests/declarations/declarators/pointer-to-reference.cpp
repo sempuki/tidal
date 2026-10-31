@@ -1,4 +1,4 @@
-// tidal-rules: DCL-2
+// tidal-rules: DCL-17
 // tidal-expect: reject
 // tidal-error-clang: declared as a pointer to a reference
 // tidal-error-gcc: cannot declare pointer to .int&

@@ -15,7 +15,7 @@ Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 ## Principles
 
 :::{principle} CX-P1
-:rules: CX-3 CX-4 CX-5
+:rules: CX-3 CX-6 CX-4 CX-5
 
 `constexpr` on a function is a permission, not a demand. It lets
 constant evaluation call the function ({principle}`TR-P4`), and the same
@@ -90,23 +90,29 @@ pointer or reference must not refer to an automatic variable.
 
 :::{rule} CX-3
 :kind: required
-:tests: declarations/constexpr/function-compile-and-run.cpp declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-never-constant.cpp declarations/constexpr/function-loops-and-locals.cpp declarations/constexpr/function-static-local-unevaluated.cpp declarations/constexpr/function-static-local-evaluated.cpp declarations/constexpr/function-static-constexpr-local.cpp declarations/constexpr/function-goto-unevaluated.cpp declarations/constexpr/function-non-literal-param.cpp declarations/constexpr/function-non-literal-local-unevaluated.cpp declarations/constexpr/non-literal-return.cpp
+:tests: declarations/constexpr/function-compile-and-run.cpp declarations/constexpr/function-never-constant.cpp declarations/constexpr/function-loops-and-locals.cpp declarations/constexpr/function-static-local-unevaluated.cpp declarations/constexpr/function-static-constexpr-local.cpp declarations/constexpr/function-goto-unevaluated.cpp declarations/constexpr/function-non-literal-param.cpp declarations/constexpr/function-non-literal-local-unevaluated.cpp declarations/constexpr/non-literal-return.cpp
 
 A program can call a `constexpr` function during {term}`constant
-evaluation` and at run time. During constant evaluation, the call must
-not evaluate an operation that constant evaluation does not permit. Such
-operations include:
+evaluation` and at run time. The body can contain the operations that
+CX-6 lists on paths that the call does not evaluate. A function that
+never gives a constant expression is valid.
+
+The return type and the parameter types of a `constexpr` function need
+not be literal types.
+:::
+
+:::{rule} CX-6
+:kind: reject
+:tests: declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-static-local-evaluated.cpp
+
+During {term}`constant evaluation`, a call to a `constexpr` function
+(CX-3) must not evaluate an operation that constant evaluation does not
+permit. Such operations include:
 
 - a call to a function that is not `constexpr`,
 - the definition of a `static` or `thread_local` variable that is not
   `constexpr`,
 - a `goto`.
-
-The body can contain these operations on paths that the call does not
-evaluate. A function that never gives a constant expression is valid.
-
-The return type and the parameter types of a `constexpr` function need
-not be literal types.
 :::
 
 :::{rule} CX-4

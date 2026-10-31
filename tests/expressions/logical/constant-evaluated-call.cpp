@@ -1,4 +1,4 @@
-// tidal-rules: LOG-7
+// tidal-rules: LOG-14
 // tidal-expect: reject
 // tidal-error-gcc: call to non-.constexpr. function
 // tidal-error-clang: non-constexpr function .* cannot be used in a constant expression

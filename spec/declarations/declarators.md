@@ -20,7 +20,7 @@ unless an alias repeats it.
 :::
 
 :::{principle} DCL-P2
-:rules: DCL-2 DCL-3 DCL-4 DCL-11 DCL-12
+:rules: DCL-2 DCL-17 DCL-3 DCL-18 DCL-4 DCL-11 DCL-12 DCL-23
 
 A pointer holds the address of anything that has one: an object, a
 function, `void`, or another pointer, and a pointer to member names a
@@ -31,7 +31,7 @@ there is nothing to refer to in between.
 :::
 
 :::{principle} DCL-P5
-:rules: DCL-5 DCL-6 DCL-7 DCL-10
+:rules: DCL-5 DCL-19 DCL-6 DCL-20 DCL-7 DCL-21 DCL-10
 
 An array holds a known, positive number of complete elements, so its
 bound is a constant, or comes from the initializer or from a definition
@@ -43,7 +43,7 @@ implementation.
 :::
 
 :::{principle} DCL-P3
-:rules: DCL-8 DCL-9 DCL-14 DCL-15 DCL-16
+:rules: DCL-8 DCL-9 DCL-22 DCL-14 DCL-15 DCL-16
 
 A function type is its parameter types, its return type, and its
 qualifiers. Parameters are passed as values, so an array or a function
@@ -56,7 +56,7 @@ nothing else.
 :::
 
 :::{principle} DCL-P4
-:rules: CV-3 CV-4 CV-5 CV-6 CV-7 CV-8 CV-9
+:rules: CV-3 CV-4 CV-5 CV-6 CV-7 CV-10 CV-8 CV-11 CV-9
 
 `const` is a promise that an object does not change after
 initialization. The promise is kept at both ends. A `const` scalar must
@@ -100,19 +100,34 @@ effect.
 
 :::{rule} DCL-2
 :kind: required
-:tests: declarations/declarators/pointer-to-pointer-and-function.cpp declarations/declarators/pointer-to-void-ok.cpp declarations/declarators/pointer-to-reference.cpp
+:tests: declarations/declarators/pointer-to-pointer-and-function.cpp declarations/declarators/pointer-to-void-ok.cpp
 
 A pointer can point to an object type, `void`, a function type, or a
-pointer. A pointer to a reference must not be declared.
+pointer. DCL-17 lists what is not valid.
+:::
+
+:::{rule} DCL-17
+:kind: reject
+:tests: declarations/declarators/pointer-to-reference.cpp
+
+A pointer to a reference must not be declared.
 :::
 
 :::{rule} DCL-3
 :kind: required
-:tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp declarations/declarators/reference-parameter-no-initializer.cpp
+:tests: declarations/declarators/extern-reference-no-initializer.cpp declarations/declarators/reference-parameter-no-initializer.cpp
+
+An `extern` declaration of a reference variable needs no initializer. A
+reference parameter, a reference return type, and a reference data
+member in a class need no initializer in their declaration. DCL-18 lists
+what is not valid.
+:::
+
+:::{rule} DCL-18
+:kind: reject
+:tests: declarations/declarators/reference-requires-initializer.cpp declarations/declarators/reference-to-reference.cpp declarations/declarators/array-of-references.cpp declarations/declarators/reference-to-void.cpp declarations/declarators/cv-qualified-reference.cpp
 
 A reference variable must have an initializer, except in an `extern`
-declaration. A reference parameter, a reference return type, and a
-reference data member in a class need no initializer in their
 declaration. A program must not declare:
 
 - a reference to a reference,
@@ -133,44 +148,69 @@ alias has no effect.
 
 :::{rule} DCL-5
 :kind: required
-:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/static-member-unknown-bound.cpp declarations/declarators/unknown-bound-empty-braces.cpp
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/static-member-unknown-bound.cpp
 
-An array bound must be a constant expression that converts to the type of
-`sizeof` without loss of value. Integer types, unscoped enumerations, and
-class types with a `constexpr` conversion function to an integer type are
-valid. A scoped enumeration is not valid. The bound must be greater than
-zero. The bound can be omitted in these cases:
+Integer types, unscoped enumerations, and class types with a `constexpr`
+conversion function to an integer type are valid types for an array
+bound. The bound can be omitted in these cases:
 
 - an initializer gives the number of elements,
 - the declaration does not define the array, for example an `extern`
   declaration.
 
+A static data member declared in a class can have an array type without a
+bound. Its definition outside the class gives the bound. DCL-19 lists
+what is not valid.
+:::
+
+:::{rule} DCL-19
+:kind: reject
+:tests: declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/unknown-bound-empty-braces.cpp
+
+An array bound must be a constant expression that converts to the type of
+`sizeof` without loss of value. A scoped enumeration is not valid. The
+bound must be greater than zero. The bound must not be omitted in cases
+other than those that DCL-5 lists.
+
 The initializer must not have more elements than the bound. An array
 without a bound must not have an empty braced initializer, because it
 would have zero elements.
-
-A static data member declared in a class can have an array type without a
-bound. Its definition outside the class gives the bound.
 :::
 
 :::{rule} DCL-6
 :kind: required
-:tests: declarations/declarators/multidim-outer-omitted.cpp declarations/declarators/multidim-inner-bound.cpp declarations/declarators/array-of-functions.cpp declarations/declarators/array-of-void.cpp
+:tests: declarations/declarators/multidim-outer-omitted.cpp
 
-An array of arrays can omit only its first bound. An array element must
-have a complete object type. An array of functions or of `void` must not
-be declared.
+An array of arrays can omit its first bound. DCL-20 lists what is not
+valid.
+:::
+
+:::{rule} DCL-20
+:kind: reject
+:tests: declarations/declarators/multidim-inner-bound.cpp declarations/declarators/array-of-functions.cpp declarations/declarators/array-of-void.cpp
+
+An array of arrays must not omit a bound other than its first. An array
+element must have a complete object type. An array of functions or of
+`void` must not be declared.
 :::
 
 :::{rule} DCL-7
 :kind: required
-:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/const-void-return.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp declarations/declarators/ref-qualified-free-function.cpp
+:tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/const-void-return.cpp
 
 A function can return a pointer or a reference to an array or a function.
+A trailing return type follows `auto` at the start, and gives the return
+type. The return type can be `const void`. DCL-21 lists what is not
+valid.
+:::
+
+:::{rule} DCL-21
+:kind: reject
+:tests: declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp declarations/declarators/ref-qualified-free-function.cpp
+
 A function must not return an array or a function. A trailing return type
-requires `auto` at the start, and gives the return type. The return type
-can be `const void`. A function that is not a class member must not have
-a cv-qualifier after its parameter list.
+requires `auto` at the start. A function that is not a class member must
+not have a cv-qualifier after its parameter list.
 
 A function that is not a member, and a static member function, must not
 have a ref-qualifier.
@@ -188,11 +228,19 @@ of a parameter is not part of the function type.
 
 :::{rule} DCL-9
 :kind: required
-:tests: declarations/declarators/void-parameter-list.cpp declarations/declarators/void-parameter-named.cpp declarations/declarators/void-parameter-with-others.cpp declarations/declarators/variadic.cpp declarations/declarators/ellipsis-first.cpp
+:tests: declarations/declarators/void-parameter-list.cpp declarations/declarators/variadic.cpp
 
-The parameter list `(void)` declares no parameters, as `()` does. `void`
-must not occur in a parameter list in other forms. `...` must be the last
-item in the list, and the comma before it is optional.
+The parameter list `(void)` declares no parameters, as `()` does. `...`
+can be the last item in the list, and the comma before it is optional.
+DCL-22 lists what is not valid.
+:::
+
+:::{rule} DCL-22
+:kind: reject
+:tests: declarations/declarators/void-parameter-named.cpp declarations/declarators/void-parameter-with-others.cpp declarations/declarators/ellipsis-first.cpp
+
+`void` must not occur in a parameter list in forms other than the one
+that DCL-9 gives. `...` must be the last item in the list.
 :::
 
 :::{rule} CV-1
@@ -242,37 +290,59 @@ no effect.
 
 :::{rule} CV-7
 :kind: required
-:tests: declarations/declarators/qualification-conversion-ok.cpp declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp
+:tests: declarations/declarators/qualification-conversion-ok.cpp
 
 A pointer converts implicitly to a pointer with more cv-qualifiers on the
-pointed-to type. Across several levels of pointers, `const` added at one
-level needs `const` at each higher level except the outermost. No
-implicit conversion removes a cv-qualifier.
+pointed-to type. CV-10 lists what is not valid.
+:::
+
+:::{rule} CV-10
+:kind: reject
+:tests: declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp
+
+Across several levels of pointers, `const` added at one level needs
+`const` at each higher level except the outermost. No implicit conversion
+removes a cv-qualifier.
 :::
 
 :::{rule} CV-8
 :kind: required
-:tests: declarations/declarators/const-integral-constant.cpp declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp declarations/declarators/const-volatile-not-constant.cpp
+:tests: declarations/declarators/const-integral-constant.cpp
 
 A `const` variable of integer or enumeration type with a constant
-initializer can occur in a constant expression. A `const` variable with
-an initializer that is not constant cannot. A `const` floating-point
-variable cannot. A `volatile` variable cannot, even with a constant
-initializer.
+initializer can occur in a constant expression. CV-11 lists what is not
+valid.
+:::
+
+:::{rule} CV-11
+:kind: reject
+:tests: declarations/declarators/const-integral-runtime.cpp declarations/declarators/const-floating-not-constant.cpp declarations/declarators/const-volatile-not-constant.cpp
+
+A `const` variable with an initializer that is not constant cannot occur
+in a constant expression. A `const` floating-point variable cannot. A
+`volatile` variable cannot, even with a constant initializer.
 :::
 
 :::{rule} DCL-12
 :kind: required
-:tests: declarations/declarators/pointer-to-member.cpp declarations/declarators/pointer-to-reference-member.cpp declarations/declarators/pointer-to-void-member.cpp
+:tests: declarations/declarators/pointer-to-member.cpp
 
 A declarator of the form `C::* name` declares a pointer to a member of
-class `C` *(classes referenced)*. The member type must not be a reference
-type or `void`.
+class `C` *(classes referenced)*. DCL-23 lists what is not valid.
+:::
+
+:::{rule} DCL-23
+:kind: reject
+:tests: declarations/declarators/pointer-to-reference-member.cpp declarations/declarators/pointer-to-void-member.cpp
+
+A pointer to member can name only a member that an object can hold. So
+a program must not declare one whose member would be a reference or
+would have type `void`.
 :::
 
 :::{rule} DCL-13
 :kind: required
-:tests: declarations/declarators/function-declaration-ambiguity.cpp
+:tests: declarations/declarators/function-declaration-ambiguity.cpp declarations/declarators/function-declaration-ambiguity-type.cpp
 
 A declaration that can be read as a function declaration is a function
 declaration. This includes a parenthesized initializer that has the form
@@ -398,7 +468,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 All seven compilers agree on 78 of 80 tests. The results are in
 `tests/RESULTS.md`.
 
-- **DCL-5.** Clang and GCC accept variable-length arrays and arrays of size
+- **DCL-19.** Clang and GCC accept variable-length arrays and arrays of size
   zero as extensions. They reject them only under `-pedantic-errors`. EDG
   rejects both in all modes.
 - **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16 and

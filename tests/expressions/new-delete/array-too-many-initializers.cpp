@@ -1,4 +1,4 @@
-// tidal-rules: NEW-2
+// tidal-rules: NEW-17
 // tidal-expect: reject
 // tidal-error-clang: excess elements in array initializer
 // tidal-error-gcc: too many initializers

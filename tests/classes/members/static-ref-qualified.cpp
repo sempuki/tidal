@@ -1,4 +1,4 @@
-// tidal-rules: CLS-7
+// tidal-rules: CLS-27
 // tidal-expect: reject
 // tidal-error-clang: static member function cannot have .&. qualifier
 // tidal-error-gcc: static member function .* cannot have ref-qualifier

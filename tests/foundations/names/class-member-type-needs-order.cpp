@@ -1,4 +1,4 @@
-// tidal-rules: NAM-6
+// tidal-rules: NAM-10
 // tidal-expect: reject
 // tidal-error-clang: unknown type name .T
 // tidal-error-gcc: T. does not name a type

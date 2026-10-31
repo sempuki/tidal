@@ -1,4 +1,4 @@
-// tidal-rules: NS-6
+// tidal-rules: NS-15
 // tidal-expect: reject
 // tidal-error-clang: does not enclose namespace
 // tidal-error-gcc: not in a namespace surrounding

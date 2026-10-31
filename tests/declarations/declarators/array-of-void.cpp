@@ -1,4 +1,4 @@
-// tidal-rules: DCL-6
+// tidal-rules: DCL-20
 // tidal-expect: reject
 // tidal-error-clang: array has incomplete element type .void
 // tidal-error-gcc: as array of void

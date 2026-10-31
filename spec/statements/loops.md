@@ -19,7 +19,7 @@ absent condition meaning `true`.
 :::
 
 :::{principle} LOOP-P2
-:rules: LOOP-4 LOOP-7
+:rules: LOOP-4 LOOP-7 LOOP-8
 
 The scopes and lifetimes of a loop follow the general rules
 ({principle}`NAM-P1`, {principle}`OBJ-P2`). The body is a scope, and
@@ -46,19 +46,27 @@ the condition cannot use the body's names.
 
 :::{rule} LOOP-4
 :kind: required
-:tests: statements/loops/for-init-scope.cpp statements/loops/for-init-redeclare-body.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/while-condition-redeclared.cpp statements/loops/for-init-alias.cpp
+:tests: statements/loops/for-init-scope.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/for-init-alias.cpp
 
 The body of each loop has its own scope, also without braces. In a `for`
 or `while` statement:
 
 - the condition can be a declaration,
 - a name that the initializer or condition declares is visible to the end
-  of the statement only,
-- that name must not be declared again in the outermost block of the body.
+  of the statement only.
 
 The initializer of a `for` statement has the forms of an `if` initializer
 (IF-7), including an alias declaration. The body of a `do` statement is
 its own scope, and the condition comes after that scope ends.
+:::
+
+:::{rule} LOOP-8
+:kind: reject
+:tests: statements/loops/for-init-redeclare-body.cpp statements/loops/while-condition-redeclared.cpp
+
+In a `for` or `while` statement, a name that the initializer or
+condition declares must not be declared again in the outermost block of
+the body (LOOP-4).
 :::
 
 :::{rule} LOOP-7

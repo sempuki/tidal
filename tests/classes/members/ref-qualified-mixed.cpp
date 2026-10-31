@@ -1,4 +1,4 @@
-// tidal-rules: CLS-6
+// tidal-rules: CLS-26
 // tidal-expect: reject
 // tidal-expect-gcc-16: accept
 // tidal-expect-gcc-host: accept

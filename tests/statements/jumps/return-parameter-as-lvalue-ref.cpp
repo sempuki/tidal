@@ -1,4 +1,4 @@
-// tidal-rules: JMP-10
+// tidal-rules: JMP-15
 // tidal-expect: reject
 // tidal-error-clang: non-const lvalue reference to type .int. cannot bind to a temporary
 // tidal-error-gcc: cannot bind non-const lvalue reference of type .int&. to an rvalue

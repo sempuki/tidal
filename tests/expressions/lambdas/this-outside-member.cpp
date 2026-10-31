@@ -1,4 +1,4 @@
-// tidal-rules: LAM-8
+// tidal-rules: LAM-24
 // tidal-expect: reject
 // tidal-error-clang: .this. cannot be captured in this context
 // tidal-error-gcc: invalid use of .this. in non-member function

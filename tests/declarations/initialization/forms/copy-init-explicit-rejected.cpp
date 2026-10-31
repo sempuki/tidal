@@ -1,4 +1,4 @@
-// tidal-rules: INIT-4
+// tidal-rules: INIT-7
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion from .int. to .S
 // tidal-error-gcc: conversion from .int. to non-scalar type .S. requested

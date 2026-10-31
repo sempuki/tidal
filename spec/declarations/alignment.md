@@ -14,7 +14,7 @@ Depends on: declarators, class definitions and members, unary operators,
 ## Principles
 
 :::{principle} ALN-P1
-:rules: ALN-1 ALN-2 ALN-4
+:rules: ALN-1 ALN-7 ALN-2 ALN-4
 
 Every type has an alignment, and every object of the type sits at an
 address that is a multiple of it, in every kind of storage. `alignas`
@@ -55,18 +55,25 @@ or after the class key of a class definition, as in
 
 :::{rule} ALN-1
 :kind: required
-:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/enum.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp
+:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp
 
 `alignas` applies to a variable, a non-static data member, or a class
-declaration, including a forward declaration. `alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has
-no effect. If a declaration has several `alignas`, the strictest applies
-({question}`Q-0071`). It does not apply to an enumeration
-({question}`Q-0073`).
+declaration, including a forward declaration. `alignas(T)` means
+`alignas(alignof(T))`, and `alignas(0)` has no effect. If a declaration
+has several `alignas`, the strictest applies ({question}`Q-0071`).
 
 The alignment of a class is the strictest of its own `alignas` and of its
 members. The size of a class is a multiple of its alignment, so an array
 of it keeps each element aligned. `alignas` on a variable does not change
 the type of the variable.
+:::
+
+:::{rule} ALN-7
+:kind: reject
+:tests: declarations/alignment/enum.cpp
+
+`alignas` applies only to the declarations that ALN-1 lists. A program
+must not apply it to an enumeration ({question}`Q-0073`).
 :::
 
 :::{rule} ALN-2

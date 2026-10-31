@@ -1,4 +1,4 @@
-// tidal-rules: DCMP-6
+// tidal-rules: DCMP-12
 // tidal-expect: reject
 // tidal-error-clang: rewritten .!=. comparison to be .bool
 // tidal-error-gcc: is not .bool

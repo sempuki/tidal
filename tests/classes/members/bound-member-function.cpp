@@ -1,4 +1,4 @@
-// tidal-rules: CLS-4
+// tidal-rules: CLS-24
 // tidal-expect: reject
 // tidal-error-clang: reference to non-static member function must be called
 // tidal-error-gcc: cannot convert .S::f. from type

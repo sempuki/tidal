@@ -1,4 +1,4 @@
-// tidal-rules: ILC-1
+// tidal-rules: ILC-7
 // tidal-expect: reject
 // tidal-error-clang: no matching constructor for initialization of .P
 // tidal-error-gcc: no matching function for call to .P::P

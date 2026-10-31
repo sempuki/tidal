@@ -1,4 +1,4 @@
-// tidal-rules: NEW-1
+// tidal-rules: NEW-16
 // tidal-expect: reject
 // tidal-error-clang: contains multiple constructor arguments
 // tidal-error-gcc: type .auto. requires exactly one element

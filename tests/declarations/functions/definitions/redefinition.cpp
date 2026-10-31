@@ -1,4 +1,4 @@
-// tidal-rules: FN-2
+// tidal-rules: FN-14
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .f
 // tidal-error-gcc: redefinition of .int f\(\)

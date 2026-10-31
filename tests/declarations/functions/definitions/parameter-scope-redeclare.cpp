@@ -1,4 +1,4 @@
-// tidal-rules: FN-1
+// tidal-rules: FN-13
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .x
 // tidal-error-gcc: shadows a parameter

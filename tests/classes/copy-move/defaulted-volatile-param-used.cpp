@@ -1,4 +1,4 @@
-// tidal-rules: CPY-14
+// tidal-rules: CPY-26
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted
 // tidal-error-gcc: does not match the expected signature|use of deleted function

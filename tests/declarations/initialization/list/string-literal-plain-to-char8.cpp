@@ -1,4 +1,4 @@
-// tidal-rules: LIST-6
+// tidal-rules: LIST-15
 // tidal-expect: reject
 // tidal-error-clang: initializing .char8_t. array with plain string literal
 // tidal-error-gcc: cannot initialize array of .char8_t. from a string literal

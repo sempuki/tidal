@@ -1,4 +1,4 @@
-// tidal-rules: DCL-5
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: excess elements in array initializer
 // tidal-error-gcc: too many initializers

@@ -1,4 +1,4 @@
-// tidal-rules: UNEV-2
+// tidal-rules: UNEV-6
 // tidal-expect: reject
 // tidal-error-gcc: conversion of a volatile lvalue
 // tidal-error-clang: read of volatile-qualified type

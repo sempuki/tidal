@@ -169,7 +169,7 @@ expression. These rules apply:
 
 :::{rule} UN-14
 :kind: reject
-:tests: expressions/unary/sizeof-function.cpp expressions/unary/sizeof-incomplete.cpp expressions/unary/sizeof-void.cpp
+:tests: expressions/unary/sizeof-function.cpp expressions/unary/sizeof-incomplete.cpp expressions/unary/sizeof-void.cpp expressions/decltype/incomplete-return-sizeof.cpp
 
 The operand of `sizeof` must not have a function type, an incomplete
 type, or the type `void`.

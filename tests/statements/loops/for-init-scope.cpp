@@ -1,4 +1,4 @@
-// tidal-rules: LOOP-4
+// tidal-rules: LOOP-4 NAM-8
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .i
 // tidal-error-gcc: i. was not declared in this scope

@@ -1,4 +1,4 @@
-// tidal-rules: DCMP-5
+// tidal-rules: DCMP-11
 // tidal-expect: reject
 // tidal-error-clang: from .std::strong_ordering. to .int
 // tidal-error-gcc: use of deleted function .*operator<=>

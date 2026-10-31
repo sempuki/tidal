@@ -1,4 +1,4 @@
-// tidal-rules: NS-2
+// tidal-rules: NS-11
 // tidal-expect: reject
 // tidal-error-clang: nested namespace definition cannot be .inline
 // tidal-error-gcc: nested namespace definition cannot be inline

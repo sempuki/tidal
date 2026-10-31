@@ -1,4 +1,4 @@
-// tidal-rules: NS-1
+// tidal-rules: NS-10
 // tidal-expect: reject
 // tidal-error-clang: namespaces can only be defined in global or namespace scope
 // tidal-error-gcc: namespace. definition is not allowed here

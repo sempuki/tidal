@@ -1,4 +1,4 @@
-// tidal-rules: NS-7
+// tidal-rules: NS-16
 // tidal-expect: reject
 // tidal-error-clang: target of using declaration conflicts with declaration already in scope
 // tidal-error-gcc: N::x. conflicts with a previous declaration

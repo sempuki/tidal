@@ -6,7 +6,7 @@ two other operands, as the condition selects.
 ## Principles
 
 :::{principle} COND-P1
-:rules: COND-1 COND-2 COND-6 COND-7 COND-10
+:rules: COND-1 COND-2 COND-6 COND-7 COND-10 COND-14 COND-15
 
 `?:` is a selection. The condition is converted to `bool` by contextual
 conversion and evaluated first, with all its side effects. Then exactly
@@ -18,7 +18,7 @@ parentheses.
 :::
 
 :::{principle} COND-P2
-:rules: COND-3 COND-4 COND-5 COND-11
+:rules: COND-3 COND-4 COND-5 COND-11 COND-13
 
 Two operands have to give one result, with one type and one value
 category, and that is decided before either is evaluated. If both are
@@ -91,11 +91,18 @@ The second and third operands give one result type and
 
 :::{rule} COND-4
 :kind: required
-:tests: expressions/conditional/throw-operand.cpp expressions/conditional/void-operands.cpp expressions/conditional/void-and-value.cpp
+:tests: expressions/conditional/throw-operand.cpp expressions/conditional/void-operands.cpp
 
 A throw-expression operand does not affect the result. In that case the
 other operand gives the result its type and category. If both operands
-have type `void`, the result is `void`. A `void` operand with a value
+have type `void`, the result is `void`.
+:::
+
+:::{rule} COND-13
+:kind: reject
+:tests: expressions/conditional/void-and-value.cpp
+
+Apart from a throw-expression (COND-4), a `void` operand with a value
 operand is not valid.
 :::
 
@@ -110,19 +117,33 @@ ambiguous and not valid.
 
 :::{rule} COND-6
 :kind: required
-:tests: expressions/conditional/grouping.cpp expressions/conditional/precedence-assignment.cpp expressions/conditional/gnu-omitted-operand.cpp
+:tests: expressions/conditional/grouping.cpp expressions/conditional/precedence-assignment.cpp
 
 The operator groups from right to left. The third operand can be an
-assignment. The second operand must be present.
+assignment.
+:::
+
+:::{rule} COND-14
+:kind: reject
+:tests: expressions/conditional/gnu-omitted-operand.cpp
+
+The second operand of the conditional operator must be present (COND-6).
 :::
 
 :::{rule} COND-7
 :kind: required
-:tests: expressions/conditional/constant-unselected-fails.cpp expressions/conditional/constant-selected-fails.cpp
+:tests: expressions/conditional/constant-unselected-fails.cpp
 
-During {term}`constant evaluation`, only the selected operand must be a
-constant expression. The operand that is not selected can contain any
-expression.
+During {term}`constant evaluation`, the operand that is not selected can
+contain any expression.
+:::
+
+:::{rule} COND-15
+:kind: reject
+:tests: expressions/conditional/constant-selected-fails.cpp
+
+During {term}`constant evaluation`, the selected operand must be a
+constant expression. COND-7 gives the operand that is not selected.
 :::
 
 :::{rule} COND-8

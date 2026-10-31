@@ -1,4 +1,4 @@
-// tidal-rules: ASN-6
+// tidal-rules: ASN-14
 // tidal-expect: reject
 // tidal-expect-clang: accept
 // tidal-error-gcc: brace-enclosed initializer list

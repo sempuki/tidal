@@ -1,4 +1,4 @@
-// tidal-rules: TYN-1
+// tidal-rules: TYN-8
 // tidal-expect: reject
 // tidal-error-clang: unknown type name .I
 // tidal-error-gcc: .I. does not name a type

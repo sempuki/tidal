@@ -1,4 +1,4 @@
-// tidal-rules: CE-11
+// tidal-rules: CE-19
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed
 // tidal-error-gcc: narrowing conversion

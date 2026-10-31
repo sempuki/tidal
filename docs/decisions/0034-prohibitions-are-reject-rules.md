@@ -23,11 +23,12 @@ roadmap ranks this second (`docs/roadmap.md`, item C).
   only prohibitions changes class to `reject` instead.
 - The reject tests move to the new rule. Tests that expect acceptance
   stay with the `required` rule.
-- `tools/check_spec.py` reports each test that breaks the first point.
-  It warns until the sweep is done and then fails.
+- `tools/check_spec.py` fails on each test that breaks the first point.
 
 ## Consequences
 
-- About 175 rules split, and the rule count grows by about as many.
+- 175 rules were split or reclassed, and the rule count grew from 823
+  to 983. A few reject tests moved to an existing reject rule instead,
+  where the rejection already followed from it.
 - Diagnose batches and the front end can read what to reject from the
   class of the rules a test cites.

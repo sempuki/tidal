@@ -15,7 +15,7 @@ referenced)*:
 ## Principles
 
 :::{principle} LIST-P1
-:rules: LIST-1 LIST-2 LIST-7
+:rules: LIST-1 LIST-11 LIST-2 LIST-7
 
 Braces are the careful form of initialization. A value in braces must
 not lose information on its way to the target type, so a narrowing
@@ -25,7 +25,7 @@ next. A scalar takes one value, and no nesting.
 :::
 
 :::{principle} LIST-P2
-:rules: LIST-3 LIST-4 LIST-5 LIST-8 LIST-9 LIST-10
+:rules: LIST-3 LIST-12 LIST-4 LIST-13 LIST-5 LIST-14 LIST-8 LIST-16 LIST-9 LIST-10
 
 An aggregate is a class or array with nothing to hide, so a braced list
 initializes its parts directly, in the order they are declared, bases
@@ -38,7 +38,7 @@ initialization with one value per part and no elision.
 :::
 
 :::{principle} LIST-P3
-:rules: LIST-6
+:rules: LIST-6 LIST-15
 
 A character array is an aggregate of characters, so a string literal
 of the matching character type initializes it, with the terminating
@@ -60,11 +60,18 @@ null included.
 
 :::{rule} LIST-1
 :kind: required
-:tests: declarations/initialization/list/scalar-braces.cpp declarations/initialization/list/scalar-braces-two-values.cpp declarations/initialization/list/scalar-nested-braces.cpp
+:tests: declarations/initialization/list/scalar-braces.cpp
 
 A scalar can be initialized from braces that hold one expression, or from
-empty braces (INIT-2). The braces must not hold more than one expression, and that expression
-must not itself be a braced list.
+empty braces (INIT-2). LIST-11 lists what is not valid.
+:::
+
+:::{rule} LIST-11
+:kind: reject
+:tests: declarations/initialization/list/scalar-braces-two-values.cpp declarations/initialization/list/scalar-nested-braces.cpp
+
+The braces for a scalar must not hold more than one expression, and that
+expression must not itself be a braced list.
 :::
 
 :::{rule} LIST-2
@@ -91,34 +98,57 @@ permitted in parentheses (INIT-4).
 
 :::{rule} LIST-3
 :kind: required
-:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/aggregate-paren-init.cpp declarations/initialization/list/aggregate-with-base.cpp declarations/initialization/list/missing-reference-member.cpp
+:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-paren-init.cpp declarations/initialization/list/aggregate-with-base.cpp
 
 An aggregate is initialized in the order of declaration. Its base
 classes are initialized first, then its members. The values can be in
-braces or in parentheses. The list must not have more values than the
-aggregate has bases and members. A reference member without a default
-member initializer must have a value in the list.
+braces or in parentheses. LIST-12 lists what is not valid.
+:::
+
+:::{rule} LIST-12
+:kind: reject
+:tests: declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/missing-reference-member.cpp
+
+The list for an aggregate must not have more values than the aggregate
+has bases and members. A reference member without a default member
+initializer must have a value in the list.
 :::
 
 :::{rule} LIST-4
 :kind: required
-:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp declarations/initialization/list/empty-base-no-elision.cpp
+:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp
 
 The inner braces for a member that is an array or an aggregate can be
 omitted. The values then fill the elements of that member in order. The
 next values go to the next member. The inner braces are not omitted for
 a value that can initialize the member directly, such as an object of
-the member's type. A member that is an empty aggregate, such as an empty
-base, must have its own braces if later values follow.
+the member's type. LIST-13 lists what is not valid.
+:::
+
+:::{rule} LIST-13
+:kind: reject
+:tests: declarations/initialization/list/empty-base-no-elision.cpp
+
+A member that is an empty aggregate, such as an empty base, must have its
+own braces if later values follow.
 :::
 
 :::{rule} LIST-5
 :kind: required
-:tests: declarations/initialization/list/designated.cpp declarations/initialization/list/designated-nested-braces.cpp declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp declarations/initialization/list/union-designator.cpp
+:tests: declarations/initialization/list/designated.cpp declarations/initialization/list/designated-nested-braces.cpp declarations/initialization/list/union-designator.cpp
 
 A braced list for a class aggregate can name members with `.member =` or
 `.member {...}`. Members without a designator get values as LIST-3 gives.
-The designators must obey these conditions:
+For a union, one designator selects the member to initialize. Without a
+designator, the first member of the union is initialized. LIST-14 lists
+what is not valid.
+:::
+
+:::{rule} LIST-14
+:kind: reject
+:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp
+
+The designators in a braced list must obey these conditions:
 
 - They must be in the order of member declaration.
 - Each member must occur one time only.
@@ -126,24 +156,33 @@ The designators must obey these conditions:
 - A designator must name one member, without a chain such as `.a.b`.
 - A designator must not name an array element, such as `[1] =`.
 - The initializer of a scalar must not use a designator.
-
-For a union, one designator selects the member to initialize. Without a
-designator, the first member of the union is initialized.
 :::
 
 :::{rule} LIST-6
 :kind: required
-:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp declarations/initialization/list/char-array-rest-zero.cpp
+:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/char-array-rest-zero.cpp
 
 A character array can be initialized from a string literal, with or
 without braces. These conditions apply:
 
 - If the bound is omitted, it counts the terminating null character.
-- The literal, with its null character, must fit in the array. The
-  elements after it become zero.
-- The character type of the literal must match the element type.
+- The elements after the literal and its null character become zero.
 - A UTF-8 literal (`u8"..."`) can also initialize a `char` or
   `unsigned char` array.
+
+LIST-15 lists what is not valid.
+:::
+
+:::{rule} LIST-15
+:kind: reject
+:tests: declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp
+
+When a string literal initializes a character array, these conditions
+apply:
+
+- The literal, with its null character, must fit in the array.
+- The character type of the literal must match the element type, except
+  for the UTF-8 case that LIST-6 gives.
 :::
 
 :::{rule} LIST-9
@@ -153,6 +192,14 @@ without braces. These conditions apply:
 In parenthesized aggregate initialization, each value initializes one
 whole member or base. The values must not be split across the members of
 a nested aggregate ({question}`Q-0043`).
+:::
+
+:::{rule} LIST-16
+:kind: reject
+:tests: declarations/initialization/list/omitted-member-explicit-default.cpp
+
+An `explicit` default constructor cannot initialize a member that has no
+value in the list (LIST-8). Such a member must have a value in the list.
 :::
 
 ## Runtime Behavior
@@ -167,14 +214,13 @@ is evaluated completely before the next value starts.
 
 :::{rule} LIST-8
 :kind: required
-:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp declarations/initialization/list/omitted-member-explicit-default.cpp
+:tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp
 
 A member without a value in the list is initialized from its default
 member initializer. If it has none, it is initialized from an empty
 braced list. A scalar member becomes zero. A member of class type gets
-its default constructor *(classes referenced)*. An `explicit` default
-constructor cannot be used for this, so such a member must have a value
-in the list.
+its default constructor *(classes referenced)*. LIST-16 lists what is not
+valid.
 :::
 
 :::{rule} LIST-10
@@ -221,7 +267,7 @@ char8_t k[] = "x";        // rejected: wrong character type
 All seven compilers agree on 52 of 54 tests. The results are in
 `tests/RESULTS.md`.
 
-- **LIST-5.** Clang accepts array designators, chained designators, and a
+- **LIST-14.** Clang accepts array designators, chained designators, and a
   mix of designated and plain values as C99 extensions. It rejects them
   only under `-pedantic-errors`. GCC and EDG reject them.
 

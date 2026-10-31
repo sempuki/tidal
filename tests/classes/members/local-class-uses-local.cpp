@@ -1,4 +1,4 @@
-// tidal-rules: CLS-12
+// tidal-rules: CLS-28
 // tidal-expect: reject
 // tidal-error-clang: reference to local variable .local. declared in enclosing function
 // tidal-error-gcc: use of local variable with automatic storage from containing function

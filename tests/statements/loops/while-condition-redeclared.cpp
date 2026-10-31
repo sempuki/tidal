@@ -1,4 +1,4 @@
-// tidal-rules: LOOP-4
+// tidal-rules: LOOP-8
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .x
 // tidal-error-gcc: redeclaration of .int x

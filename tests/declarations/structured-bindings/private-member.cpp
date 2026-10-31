@@ -1,4 +1,4 @@
-// tidal-rules: SB-3
+// tidal-rules: SB-13
 // tidal-expect: reject
 // tidal-error-clang: private member .a. of .S
 // tidal-error-gcc: inaccessible member .S::a

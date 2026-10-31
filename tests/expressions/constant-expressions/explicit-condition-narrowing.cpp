@@ -1,4 +1,4 @@
-// tidal-rules: CE-11
+// tidal-rules: CE-19
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: cannot be narrowed to type .bool.

@@ -1,4 +1,4 @@
-// tidal-rules: DEFARG-2
+// tidal-rules: DEFARG-9
 // tidal-expect: reject
 // tidal-error-clang: redefinition of default argument
 // tidal-error-gcc: default argument given for parameter 1

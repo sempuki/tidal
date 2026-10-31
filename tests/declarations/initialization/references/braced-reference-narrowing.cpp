@@ -1,4 +1,4 @@
-// tidal-rules: REF-6
+// tidal-rules: REF-11
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed
 // tidal-error-gcc: narrowing conversion of

@@ -1,4 +1,4 @@
-// tidal-rules: ILC-3
+// tidal-rules: ILC-8
 // tidal-expect: reject
 // tidal-error-clang: constructor is explicit in copy-initialization
 // tidal-error-gcc: would use explicit constructor

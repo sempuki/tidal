@@ -1,4 +1,4 @@
-// tidal-rules: NS-8
+// tidal-rules: NS-17
 // tidal-expect: reject
 // tidal-error-clang: expected namespace name
 // tidal-error-gcc: S. is not a namespace-name

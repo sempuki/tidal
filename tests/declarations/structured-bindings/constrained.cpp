@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: cannot be declared with constrained .auto

@@ -1,4 +1,4 @@
-// tidal-rules: LAM-10
+// tidal-rules: LAM-25
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion from .\(lambda
 // tidal-error-gcc: cannot convert .f\(\)::<lambda\(\)>. to .int \(\*\)\(\).

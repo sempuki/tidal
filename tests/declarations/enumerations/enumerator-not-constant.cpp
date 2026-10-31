@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-1
+// tidal-rules: ENUM-14
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: enumerator value for .A. is not an integer constant

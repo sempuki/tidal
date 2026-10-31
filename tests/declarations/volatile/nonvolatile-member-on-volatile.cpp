@@ -1,4 +1,4 @@
-// tidal-rules: VOL-2
+// tidal-rules: VOL-9
 // tidal-expect: reject
 // tidal-error-clang: function is not marked volatile
 // tidal-error-gcc: volatile Port. as .this. argument discards qualifiers

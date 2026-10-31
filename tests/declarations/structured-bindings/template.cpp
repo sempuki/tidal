@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: decomposition declaration template not supported|structured binding declaration cannot be a template
 // tidal-error-gcc: expected unqualified-id before .\[. token

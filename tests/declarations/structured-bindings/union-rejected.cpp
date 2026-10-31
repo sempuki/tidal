@@ -1,4 +1,4 @@
-// tidal-rules: SB-3
+// tidal-rules: SB-13
 // tidal-expect: reject
 // tidal-error-clang: union type .U
 // tidal-error-gcc: cannot decompose union type .U

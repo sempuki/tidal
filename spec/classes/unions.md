@@ -13,7 +13,7 @@ copy and move, list initialization and aggregates, standard conversions.
 
 :::{principle} UNI-P1
 :rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8
-:exceptions: UNI-10
+:exceptions: UNI-10 UNI-12
 
 A union is one piece of storage with several views. All its members start
 at its first byte, and at most one of them is an object at a time. The
@@ -25,7 +25,7 @@ own, so a union cannot hold one.
 :::
 
 :::{principle} UNI-P2
-:rules: UNI-3
+:rules: UNI-3 UNI-11
 
 The union does not know which member is active, so it cannot build,
 copy, or destroy its members on its own. When a member would need that,
@@ -43,7 +43,7 @@ because its members have no name to link by.
 :::
 
 :::{principle} UNI-P4
-:rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7
+:rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7 BF-11
 
 A bit-field is a member with a width in bits. The width sets the range
 of values it holds and the way it promotes, while its declared type gives
@@ -78,7 +78,7 @@ no variable.
 
 :::{rule} UNI-1
 :kind: required
-:tests: classes/unions/alignment-strictest-not-largest.cpp classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-private-members.cpp classes/unions/union-static-member.cpp
+:tests: classes/unions/alignment-strictest-not-largest.cpp classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-static-member.cpp
 
 Each data member of a union that is not static begins at the first byte
 of the union. A union is at least as large as its largest member, and at
@@ -97,14 +97,21 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
 
 If a variant member has a non-trivial default constructor, copy or move
 function, or destructor, the matching special member of the union is
-deleted. The union must then declare that function itself. The same
-applies to a class with an anonymous union member. A default member
-initializer on a variant member gives the union a usable default
-constructor.
+deleted. The same applies to a class with an anonymous union member. A
+default member initializer on a variant member gives the union a usable
+default constructor.
+:::
+
+:::{rule} UNI-11
+:kind: reject
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp
+
+A program must not use a special member function that UNI-3 deletes. The
+union must then declare that function itself.
 :::
 
 :::{rule} UNI-4
@@ -216,11 +223,27 @@ type of the bit-field for `auto` deduction is the declared type.
 
 :::{rule} BF-7
 :kind: required
-:tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp classes/unions/bitfield-narrowing-init.cpp
+:tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp
 
 A named bit-field can have a default member initializer, with `=` or
 braces. Aggregate initialization skips unnamed bit-fields. The test for
 narrowing uses the declared type, not the width.
+:::
+
+:::{rule} BF-11
+:kind: reject
+:tests: classes/unions/bitfield-narrowing-init.cpp
+
+A braced initializer for a bit-field must not need a narrowing
+conversion from the declared type of the bit-field.
+:::
+
+:::{rule} UNI-12
+:kind: reject
+:tests: classes/unions/common-initial-sequence-constant.cpp
+
+Constant evaluation does not permit a read through the other struct that
+UNI-10 describes.
 :::
 
 ## Runtime Behavior
@@ -245,13 +268,12 @@ values that fit in its width.
 
 :::{rule} UNI-10
 :kind: required
-:tests: classes/unions/common-initial-sequence-constant.cpp classes/unions/common-initial-sequence.cpp
+:tests: classes/unions/common-initial-sequence.cpp
 
 Two standard-layout *(referenced)* structs that are members of a union
 can begin with members of the same types, a *common initial sequence*.
 While one struct is active, a program can read a member of that sequence
-through the other struct. The read gives the stored value. Constant
-evaluation does not permit such a read.
+through the other struct. The read gives the stored value.
 :::
 
 ## Undefined Behavior

@@ -1,4 +1,4 @@
-// tidal-rules: EXS-1
+// tidal-rules: EXS-7
 // tidal-expect: reject
 // tidal-error-clang: dynamic exception specifications
 // tidal-error-gcc: dynamic exception specifications

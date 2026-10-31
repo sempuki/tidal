@@ -1,4 +1,4 @@
-// tidal-rules: ACC-10
+// tidal-rules: ACC-19
 // tidal-expect: reject
 // tidal-error-clang: is a private member
 // tidal-error-gcc: (private|inaccessible) within this context

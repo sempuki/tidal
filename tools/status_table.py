@@ -20,7 +20,10 @@ TESTS = ROOT / "tests"
 STATUS = ROOT / "docs" / "status.md"
 KINDS = ["required", "reject", "undefined", "unspecified", "impl-defined",
          "no-diagnostic", "conditionally-supported", "recommended"]
-HEADER = "| Section | Rules | Classes | Tests | Questions | Similarity |"
+HEADER = ("| Section | Rules | Classes | Tests | Single-test rules | Overrides "
+          "| Report mentions | Questions | Similarity |")
+REPORTS = ROOT / "reports" / "clean-room"
+TESTS = ROOT / "tests"
 
 
 def pages(index: Path):
@@ -42,12 +45,21 @@ def row(page: Path) -> str:
     title = src.splitlines()[0][2:].strip()
     kinds = Counter(re.findall(r"^:kind: (\S+)", src, flags=re.M))
     tests = set()
+    single = 0
     for line in re.findall(r"^:tests: (.*)$", src, flags=re.M):
         tests.update(line.split())
+        single += len(line.split()) == 1
+    overrides = sum(1 for t in tests if (TESTS / t).exists()
+                    and re.search(r"^// tidal-expect-", (TESTS / t).read_text(), flags=re.M))
+    ids = set(re.findall(r"^:::\{rule\} (\S+)$", src, flags=re.M))
+    pattern = re.compile(r"\b(" + "|".join(map(re.escape, ids)) + r")\b") if ids else None
+    mentions = sum(1 for f in REPORTS.rglob("*.md") for l in f.read_text().splitlines()
+                   if pattern and pattern.search(l))
     classes = ", ".join(f"{kinds[k]} {k}" for k in KINDS if kinds[k])
     questions = ", ".join(sorted(set(re.findall(r"Q-\d{4}", src))))
     rel = page.relative_to(ROOT)
-    return f"| [{title}](../{rel}) | {sum(kinds.values())} | {classes} | {len(tests)} | {questions} | 0 flagged |"
+    return (f"| [{title}](../{rel}) | {sum(kinds.values())} | {classes} | {len(tests)} | {single} "
+            f"| {overrides} | {mentions} | {questions} | 0 flagged |")
 
 
 def main() -> int:
@@ -56,7 +68,7 @@ def main() -> int:
         rows += [row(p) for p in pages(SPEC / section / "index.md")]
     glossary = (SPEC / "glossary.md").read_text()
     terms = len(re.findall(r"^\S.*$", glossary.split(":::{glossary}")[1].split(":::")[0], flags=re.M))
-    rows.append(f"| [Glossary](../spec/glossary.md) | {terms} terms | | | | 0 flagged |")
+    rows.append(f"| [Glossary](../spec/glossary.md) | {terms} terms | | | | | | | 0 flagged |")
     lines = STATUS.read_text().split("\n")
     start = lines.index(HEADER) + 2
     end = next(i for i in range(start, len(lines)) if not lines[i].startswith("|"))

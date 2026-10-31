@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-9
+// tidal-rules: ENUM-20
 // tidal-expect: reject
 // tidal-error-clang: target of using declaration conflicts with declaration already in scope
 // tidal-error-gcc: Color::Red. conflicts with a previous declaration

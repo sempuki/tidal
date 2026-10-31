@@ -1,4 +1,4 @@
-// tidal-rules: VOL-3
+// tidal-rules: VOL-10
 // tidal-expect: reject
 // tidal-error-clang: drops .volatile. qualifier
 // tidal-error-gcc: to .volatile int. discards qualifiers

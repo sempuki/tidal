@@ -1,4 +1,4 @@
-// tidal-rules: STMT-2
+// tidal-rules: STMT-8
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .x
 // tidal-error-gcc: redeclaration of .int x

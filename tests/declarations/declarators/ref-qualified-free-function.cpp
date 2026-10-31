@@ -1,4 +1,4 @@
-// tidal-rules: DCL-7
+// tidal-rules: DCL-21
 // tidal-expect: reject
 // tidal-error-clang: non-member function cannot have .&. qualifier
 // tidal-error-gcc: non-member function .* cannot have ref-qualifier

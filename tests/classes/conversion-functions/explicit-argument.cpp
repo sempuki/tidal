@@ -1,4 +1,4 @@
-// tidal-rules: CVF-3
+// tidal-rules: CVF-11
 // tidal-expect: reject
 // tidal-error-clang: no matching function for call to .take
 // tidal-error-gcc: cannot convert .S. to .int

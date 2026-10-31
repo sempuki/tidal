@@ -1,4 +1,4 @@
-// tidal-rules: CVF-4
+// tidal-rules: CVF-12
 // tidal-expect: reject
 // tidal-error-clang: conversion from .A. to .B. is ambiguous
 // tidal-error-gcc: conversion from .A. to .B. is ambiguous

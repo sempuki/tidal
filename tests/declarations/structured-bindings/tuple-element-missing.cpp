@@ -1,4 +1,4 @@
-// tidal-rules: SB-5
+// tidal-rules: SB-14
 // tidal-expect: reject
 // tidal-error-clang: undefined template .std::tuple_element<0, P>
 // tidal-error-gcc: incomplete type .struct std::tuple_element<0, P>

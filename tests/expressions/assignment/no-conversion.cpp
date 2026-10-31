@@ -1,4 +1,4 @@
-// tidal-rules: ASN-1
+// tidal-rules: ASN-12
 // tidal-expect: reject
 // tidal-error-clang: incompatible integer to pointer conversion
 // tidal-error-gcc: invalid conversion from .int. to .int\*.

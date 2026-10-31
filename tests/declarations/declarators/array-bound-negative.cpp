@@ -1,4 +1,4 @@
-// tidal-rules: DCL-5
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: declared as an array with a negative size
 // tidal-error-gcc: narrowing conversion of .-1.

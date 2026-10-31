@@ -1,4 +1,4 @@
-// tidal-rules: DCL-5
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: conversion from .double. to .* is not allowed in a converted constant expression
 // tidal-error-gcc: conversion from .double. to .long unsigned int. in a converted constant expression

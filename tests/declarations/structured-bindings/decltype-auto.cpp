@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: with type .decltype\(auto\).; declared type must be .auto
 // tidal-error-gcc: cannot have type .decltype\(auto\)

@@ -38,7 +38,7 @@ inline function once.
 :::
 
 :::{principle} INL-P3
-:rules: INL-3 INL-4
+:rules: INL-3 INL-4 INL-8
 
 What is defined inside a class body is meant to be seen in every unit
 that sees the class, so it is inline without the keyword: member and
@@ -104,13 +104,21 @@ These declarations are inline without the keyword:
 
 :::{rule} INL-4
 :kind: required
-:tests: declarations/inline/inline-static-member-incomplete.cpp declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp declarations/inline/inline-nonconst-static-member-out-of-class.cpp
+:tests: declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp declarations/inline/inline-nonconst-static-member-out-of-class.cpp
 
 An inline static data member is defined in its class, with its
-initializer. It needs no definition outside the class. Its type must be
-complete there. A static data member declared in its class can also be
-defined `inline` outside it. A static data member that is not inline
-needs one definition outside its class if it is used.
+initializer. It needs no definition outside the class. A static data
+member declared in its class can also be defined `inline` outside it. A
+static data member that is not inline needs one definition outside its
+class if it is used. INL-8 states what its type must be.
+:::
+
+:::{rule} INL-8
+:kind: reject
+:tests: declarations/inline/inline-static-member-incomplete.cpp
+
+The type of an inline static data member (INL-4) must be complete at its
+definition in the class.
 :::
 
 ## Runtime Behavior

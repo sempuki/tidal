@@ -1,4 +1,4 @@
-// tidal-rules: TYN-3
+// tidal-rules: TYN-9
 // tidal-expect: reject
 // tidal-expect-gcc-14: accept
 // tidal-error-clang: non-C-compatible type given name for linkage purposes

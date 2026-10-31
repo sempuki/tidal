@@ -1,4 +1,4 @@
-// tidal-rules: ALN-1
+// tidal-rules: ALN-7
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-expect-gcc-14: accept

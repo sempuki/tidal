@@ -1,4 +1,4 @@
-// tidal-rules: CLS-2
+// tidal-rules: CLS-22
 // tidal-expect: reject
 // tidal-error-clang: sizeof. to an incomplete type
 // tidal-error-gcc: sizeof. to incomplete type

@@ -28,7 +28,7 @@ the object is gone.
 :::
 
 :::{principle} CTOR-P2
-:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4
+:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4 CTOR-19 CTOR-20
 
 The implementation writes a default constructor and a destructor for a
 class that writes none, because building and ending the parts is right
@@ -42,7 +42,7 @@ from its parts.
 :::
 
 :::{principle} CTOR-P3
-:rules: CTOR-5 CTOR-6 CTOR-11 CTOR-12 CTOR-13 CTOR-18
+:rules: CTOR-5 CTOR-6 CTOR-11 CTOR-12 CTOR-13 CTOR-18 CTOR-21
 
 A constructor builds the parts first and then runs its body. The parts
 are built in declaration order, bases before members, whatever order the
@@ -77,7 +77,7 @@ object is gone, and using it or destroying it again is undefined
 :::
 
 :::{principle} CTOR-P5
-:rules: CTOR-9 CTOR-10
+:rules: CTOR-9 CTOR-10 CTOR-22
 
 A constructor that takes one argument is a conversion from that argument
 type, and an implicit conversion can use it. `explicit` withdraws that
@@ -122,7 +122,7 @@ A program cannot take the address of a constructor.
 
 :::{rule} CTOR-2
 :kind: required
-:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/no-implicit-default-with-copy-ctor.cpp classes/constructors/no-implicit-default-with-ctor.cpp classes/constructors/inherited-ctors-keep-default.cpp
+:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
@@ -131,9 +131,17 @@ using-declaration that inherits constructors does not declare a
 constructor, so the implicit default constructor stays.
 :::
 
+:::{rule} CTOR-19
+:kind: reject
+:tests: classes/constructors/no-implicit-default-with-copy-ctor.cpp classes/constructors/no-implicit-default-with-ctor.cpp
+
+If CTOR-2 gives a class no default constructor, an initialization that
+needs one is not valid.
+:::
+
 :::{rule} CTOR-3
 :kind: required
-:tests: classes/constructors/deleted-default-base.cpp classes/constructors/deleted-default-const-class-member.cpp classes/constructors/deleted-default-const-member.cpp classes/constructors/deleted-default-const-aggregate-member.cpp classes/constructors/deleted-default-member-no-default.cpp classes/constructors/deleted-default-member-private.cpp classes/constructors/deleted-default-only-if-used.cpp classes/constructors/deleted-default-reference-init.cpp classes/constructors/deleted-default-reference.cpp classes/constructors/explicitly-defaulted-but-deleted.cpp classes/constructors/const-member-all-default-inits.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp
+:tests: classes/constructors/deleted-default-const-class-member.cpp classes/constructors/deleted-default-only-if-used.cpp classes/constructors/deleted-default-reference-init.cpp classes/constructors/const-member-all-default-inits.cpp
 
 The implicit or defaulted default constructor is deleted if one of these
 has no default member initializer:
@@ -147,6 +155,13 @@ It is also deleted if a base or member has no default constructor that is
 accessible and not deleted, or has a destructor that is deleted or not
 accessible. A deleted default constructor makes only its
 use invalid.
+:::
+
+:::{rule} CTOR-20
+:kind: reject
+:tests: classes/constructors/deleted-default-base.cpp classes/constructors/deleted-default-const-member.cpp classes/constructors/deleted-default-const-aggregate-member.cpp classes/constructors/deleted-default-member-no-default.cpp classes/constructors/deleted-default-member-private.cpp classes/constructors/deleted-default-reference.cpp classes/constructors/explicitly-defaulted-but-deleted.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp
+
+A program must not use a default constructor that CTOR-3 deletes.
 :::
 
 :::{rule} CTOR-4
@@ -169,12 +184,19 @@ user-provided.
 
 :::{rule} CTOR-5
 :kind: required
-:tests: classes/constructors/mem-init-base-and-member.cpp classes/constructors/mem-init-braces-narrowing.cpp classes/constructors/mem-init-braces.cpp classes/constructors/mem-init-overrides-default.cpp classes/constructors/mem-init-type-alias-base.cpp classes/constructors/mem-init-uses-param.cpp
+:tests: classes/constructors/mem-init-base-and-member.cpp classes/constructors/mem-init-braces.cpp classes/constructors/mem-init-overrides-default.cpp classes/constructors/mem-init-type-alias-base.cpp classes/constructors/mem-init-uses-param.cpp
 
 A member initializer list initializes direct bases and non-static data
 members. Each initializer uses parentheses or braces. Braces use the
-rules of list initialization, so a narrowing conversion is not valid. An
-initializer for a member replaces its default member initializer.
+rules of list initialization. An initializer for a member replaces its
+default member initializer.
+:::
+
+:::{rule} CTOR-21
+:kind: reject
+:tests: classes/constructors/mem-init-braces-narrowing.cpp
+
+A member initializer with braces must not need a narrowing conversion.
 :::
 
 :::{rule} CTOR-15
@@ -224,12 +246,18 @@ can have `explicit`.
 
 :::{rule} CTOR-10
 :kind: required
-:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp classes/constructors/one-user-conversion.cpp
+:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp
 
 A constructor that is not `explicit` is a *converting constructor*. An
 implicit conversion can use it to make an object from its arguments,
-including from a braced list. An implicit conversion uses at most one
-converting constructor. Standard conversions can come before it.
+including from a braced list. Standard conversions can come before it.
+:::
+
+:::{rule} CTOR-22
+:kind: reject
+:tests: classes/constructors/one-user-conversion.cpp
+
+An implicit conversion uses at most one converting constructor.
 :::
 
 :::{rule} DTOR-1

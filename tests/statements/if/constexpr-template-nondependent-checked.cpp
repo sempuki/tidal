@@ -1,4 +1,4 @@
-// tidal-rules: IF-13
+// tidal-rules: IF-22
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .never_declared
 // tidal-error-gcc: declaration of .never_declared. must be available

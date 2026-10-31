@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-6
+// tidal-rules: AUTO-20
 // tidal-expect: reject
 // tidal-error-clang: initializer for variable .* is empty
 // tidal-error-gcc: requires exactly one element

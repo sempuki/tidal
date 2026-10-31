@@ -1,4 +1,4 @@
-// tidal-rules: JMP-5
+// tidal-rules: JMP-14
 // tidal-expect: reject
 // tidal-error-clang: redefinition of label .here
 // tidal-error-gcc: duplicate label .here

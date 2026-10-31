@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: requires an initializer
 // tidal-error-gcc: expected initializer before

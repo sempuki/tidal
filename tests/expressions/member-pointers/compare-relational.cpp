@@ -1,4 +1,4 @@
-// tidal-rules: MPTR-5
+// tidal-rules: MPTR-12
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression .*int S::\*
 // tidal-error-gcc: invalid operands of types .int S::\*. and .int S::\*.

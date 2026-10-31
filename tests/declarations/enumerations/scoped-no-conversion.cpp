@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-3
+// tidal-rules: ENUM-16
 // tidal-expect: reject
 // tidal-error-clang: variable of type .int. with an rvalue of type .E
 // tidal-error-gcc: cannot convert .E. to .int

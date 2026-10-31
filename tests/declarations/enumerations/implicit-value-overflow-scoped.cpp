@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-1
+// tidal-rules: ENUM-14
 // tidal-expect: reject
 // tidal-error-clang: not representable in the underlying type
 // tidal-error-gcc: outside the range of underlying type

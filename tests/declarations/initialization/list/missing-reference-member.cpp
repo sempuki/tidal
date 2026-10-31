@@ -1,4 +1,4 @@
-// tidal-rules: LIST-3
+// tidal-rules: LIST-12
 // tidal-expect: reject
 // tidal-error-clang: reference member of type .int &. uninitialized
 // tidal-error-gcc: is uninitialized reference

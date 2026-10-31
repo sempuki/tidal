@@ -1,4 +1,4 @@
-// tidal-rules: CLS-7
+// tidal-rules: CLS-27
 // tidal-expect: reject
 // tidal-error-clang: invalid use of .this. outside of a non-static member function
 // tidal-error-gcc: this. is unavailable for static member functions

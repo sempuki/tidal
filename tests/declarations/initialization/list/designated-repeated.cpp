@@ -1,4 +1,4 @@
-// tidal-rules: LIST-5
+// tidal-rules: LIST-14
 // tidal-expect: reject
 // tidal-error-clang: initializer overrides prior initialization of this subobject
 // tidal-error-gcc: designator used multiple times

@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: declaration not permitted in this context
 // tidal-error-gcc: expected unqualified-id before .\[. token

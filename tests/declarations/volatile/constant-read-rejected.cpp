@@ -1,4 +1,4 @@
-// tidal-rules: VOL-1
+// tidal-rules: VOL-8
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: conversion of a volatile lvalue

@@ -1,4 +1,4 @@
-// tidal-rules: DCL-13
+// tidal-rules: DCL-13 PFX-11
 // tidal-expect: reject
 // tidal-error-clang: is not a structure or union
 // tidal-error-gcc: which is of non-class type

@@ -7,7 +7,7 @@ permits most operations. This page lists the operations that it rejects.
 ## Principles
 
 :::{principle} CE-P1
-:rules: CE-1 CE-17 CE-18
+:rules: CE-1 CE-17 CE-18 CE-20
 
 Constant evaluation is the same program run at translation time
 ({principle}`TR-P4`). Within one evaluation it can do what a run can do:
@@ -46,7 +46,7 @@ reaches ends it.
 :::
 
 :::{principle} CE-P4
-:rules: CE-11
+:rules: CE-11 CE-19
 
 Where the language needs a constant to build the program, it needs the
 exact value: an array bound, an enumerator, a case label, the operands
@@ -156,15 +156,21 @@ whose block has ended.
 
 :::{rule} CE-11
 :kind: required
-:tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/integral-constant-array-bound.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
+:tests: expressions/constant-expressions/integral-constant-array-bound.cpp
 
 An array bound, an enumerator value, and a case label need a constant
-expression of integer or enumeration type. Where a constant converts to
-another type for such a use, the conversion must not narrow. This also
-applies to the condition of `explicit(...)`, to the operand of a
-`noexcept` specifier (EXS-1), and to a non-type template argument
-*(templates referenced)*. The condition of `if constexpr` is an
-exception (IF-16).
+expression of integer or enumeration type.
+:::
+
+:::{rule} CE-19
+:kind: reject
+:tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
+
+Where a constant converts to another type for a use in CE-11, the
+conversion must not narrow. This also applies to the condition of
+`explicit(...)`, to the operand of a `noexcept` specifier (EXS-1), and
+to a non-type template argument *(templates referenced)*. The condition
+of `if constexpr` is an exception (IF-16).
 :::
 
 :::{rule} CE-12
@@ -213,11 +219,20 @@ definition later in the translation unit does not help.
 
 :::{rule} CE-17
 :kind: required
-:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp
+:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp
 
 A `constexpr` function can contain a `goto`, a `static` or `thread_local`
-variable, and a variable of a type that is not a literal type. Constant
-evaluation rejects a call only if the evaluation reaches one of them.
+variable, and a variable of a type that is not a literal type. CE-20
+rejects a call only if the evaluation reaches one of them.
+:::
+
+:::{rule} CE-20
+:kind: reject
+:tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp
+
+Constant evaluation must not reach a `goto`, a `static` or
+`thread_local` variable, or a variable of a type that is not a literal
+type (CE-17).
 :::
 
 :::{rule} CE-18

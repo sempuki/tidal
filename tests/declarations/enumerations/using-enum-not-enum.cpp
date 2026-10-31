@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-9
+// tidal-rules: ENUM-20
 // tidal-expect: reject
 // tidal-error-clang: S. is not an enumerated type
 // tidal-error-gcc: using enum. of non-enumeration type

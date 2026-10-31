@@ -1,4 +1,4 @@
-// tidal-rules: UNI-3
+// tidal-rules: UNI-11
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted copy constructor of .U
 // tidal-error-gcc: use of deleted function .*U::U\(const U&\)

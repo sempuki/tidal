@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-20
 // tidal-expect: reject
 // tidal-error-clang: calling a private constructor
 // tidal-error-gcc: private within this context

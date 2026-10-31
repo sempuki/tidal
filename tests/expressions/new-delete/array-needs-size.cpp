@@ -1,4 +1,4 @@
-// tidal-rules: NEW-2
+// tidal-rules: NEW-17
 // tidal-expect: reject
 // tidal-error-clang: array size must be specified in new expression
 // tidal-error-gcc: array with unspecified bounds

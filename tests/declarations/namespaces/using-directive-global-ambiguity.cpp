@@ -1,4 +1,4 @@
-// tidal-rules: NS-8
+// tidal-rules: NS-17
 // tidal-expect: reject
 // tidal-error-clang: reference to .v. is ambiguous
 // tidal-error-gcc: reference to .v. is ambiguous

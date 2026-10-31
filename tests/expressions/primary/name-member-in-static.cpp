@@ -1,4 +1,4 @@
-// tidal-rules: PRIM-12
+// tidal-rules: PRIM-25
 // tidal-expect: reject
 // tidal-error-clang: invalid use of member .v. in static member function
 // tidal-error-gcc: invalid use of member .S::v. in static member function

@@ -1,4 +1,4 @@
-// tidal-rules: DCL-3
+// tidal-rules: DCL-18
 // tidal-expect: reject
 // tidal-error-clang: reference variable .r. requires an initializer
 // tidal-error-gcc: declared as reference but not initialized

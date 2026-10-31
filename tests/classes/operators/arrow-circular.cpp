@@ -1,4 +1,4 @@
-// tidal-rules: OPR-5
+// tidal-rules: OPR-14
 // tidal-expect: reject
 // tidal-error-clang: circular pointer delegation
 // tidal-error-gcc: circular pointer delegation

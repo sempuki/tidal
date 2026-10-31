@@ -1,4 +1,4 @@
-// tidal-rules: SB-7
+// tidal-rules: SB-15
 // tidal-expect: reject
 // tidal-error-clang: cannot be declared .constexpr
 // tidal-error-gcc: structured binding declaration can(not)? be .constexpr

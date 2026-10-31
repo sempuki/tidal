@@ -1,4 +1,4 @@
-// tidal-rules: CMP-12
+// tidal-rules: CMP-25
 // tidal-expect: reject
 // tidal-error-clang: ordered comparison of function pointers
 // tidal-error-gcc: invalid operands of types .void \(\*\)\(\). and .void \(\*\)\(\). to binary .operator<=>

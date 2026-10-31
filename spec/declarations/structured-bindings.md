@@ -19,7 +19,7 @@ do ({principle}`OBJ-P3`).
 :::
 
 :::{principle} SB-P2
-:rules: SB-2 SB-3 SB-4 SB-5 SB-9 SB-10
+:rules: SB-2 SB-3 SB-13 SB-4 SB-5 SB-14 SB-9 SB-10 SB-16
 
 The type of the hidden variable decides what its elements are, in a
 fixed order of tests: an array gives its elements, a type with a tuple
@@ -31,7 +31,7 @@ member or a bit-field behaves as that member does.
 :::
 
 :::{principle} SB-P3
-:rules: SB-7 SB-8 SB-11
+:rules: SB-7 SB-15 SB-8 SB-11
 
 The declaration is deliberately narrow. It uses `auto`, takes a few
 specifiers, and has one declarator with one list of names. Each name is
@@ -53,7 +53,7 @@ and must not repeat a name of that scope ({principle}`NAM-P1`).
 
 :::{rule} SB-2
 :kind: reject
-:tests: declarations/structured-bindings/count-mismatch-array.cpp declarations/structured-bindings/count-mismatch-class.cpp
+:tests: declarations/structured-bindings/count-mismatch-array.cpp declarations/structured-bindings/count-mismatch-class.cpp declarations/structured-bindings/tuple-count-mismatch.cpp
 
 The number of names must be equal to the number of elements. The number
 of elements is one of these:
@@ -65,11 +65,18 @@ of elements is one of these:
 
 :::{rule} SB-3
 :kind: required
-:tests: declarations/structured-bindings/aggregate-members.cpp declarations/structured-bindings/members-in-base.cpp declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp declarations/structured-bindings/friend-binds-private.cpp
+:tests: declarations/structured-bindings/aggregate-members.cpp declarations/structured-bindings/members-in-base.cpp declarations/structured-bindings/friend-binds-private.cpp
 
 If the hidden variable has class type and SB-5 does not apply, the names
-refer to its non-static data members in declaration order. These members
-must:
+refer to its non-static data members in declaration order. SB-13 lists
+what is not valid.
+:::
+
+:::{rule} SB-13
+:kind: reject
+:tests: declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp
+
+The members that SB-3 names must:
 
 - all be in the same class, which can be a base class,
 - all be accessible at the declaration, for example in a member function
@@ -91,27 +98,44 @@ reference type.
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-count-mismatch.cpp declarations/structured-bindings/tuple-element-missing.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable. Its `value` gives the number of
 elements. Element `i` comes from a call to `get<i>()` *(lookup
-referenced)*. Its type is `std::tuple_element<i, E>::type`, which must
-exist *(library referenced)*.
+referenced)*. Its type is `std::tuple_element<i, E>::type` *(library
+referenced)*.
 
 The calls to `get` occur in the order of the elements. If
 `std::tuple_size<E>` is complete but has no `value` member, the names
-refer to data members, as SB-3 gives ({question}`Q-0048`).
+refer to data members, as SB-3 gives ({question}`Q-0048`). SB-14 lists
+what is not valid.
+:::
+
+:::{rule} SB-14
+:kind: reject
+:tests: declarations/structured-bindings/tuple-element-missing.cpp
+
+In the tuple protocol of SB-5, `std::tuple_element<i, E>::type` must
+exist for each element.
 :::
 
 :::{rule} SB-7
 :kind: required
-:tests: declarations/structured-bindings/initializer-equals.cpp declarations/structured-bindings/initializer-parens.cpp declarations/structured-bindings/initializer-braces.cpp declarations/structured-bindings/static-and-thread-local.cpp declarations/structured-bindings/explicit-type.cpp declarations/structured-bindings/pointer-declarator.cpp declarations/structured-bindings/decltype-auto.cpp declarations/structured-bindings/constexpr-binding.cpp declarations/structured-bindings/no-initializer.cpp declarations/structured-bindings/empty-bindings.cpp declarations/structured-bindings/as-class-member.cpp declarations/structured-bindings/as-parameter.cpp declarations/structured-bindings/with-other-declarator.cpp declarations/structured-bindings/parenthesized.cpp declarations/structured-bindings/constrained.cpp declarations/structured-bindings/template.cpp
+:tests: declarations/structured-bindings/initializer-equals.cpp declarations/structured-bindings/initializer-parens.cpp declarations/structured-bindings/initializer-braces.cpp declarations/structured-bindings/static-and-thread-local.cpp
 
 A structured binding declaration uses `auto`. It can add `const`,
-`volatile`, `&`, `&&`, `static`, and `thread_local`. It must have an
-initializer after `=`, in parentheses, or in braces. The declaration must
-not:
+`volatile`, `&`, `&&`, `static`, and `thread_local`. Its initializer
+comes after `=`, in parentheses, or in braces. SB-15 lists what is not
+valid.
+:::
+
+:::{rule} SB-15
+:kind: reject
+:tests: declarations/structured-bindings/explicit-type.cpp declarations/structured-bindings/pointer-declarator.cpp declarations/structured-bindings/decltype-auto.cpp declarations/structured-bindings/constexpr-binding.cpp declarations/structured-bindings/no-initializer.cpp declarations/structured-bindings/empty-bindings.cpp declarations/structured-bindings/as-class-member.cpp declarations/structured-bindings/as-parameter.cpp declarations/structured-bindings/with-other-declarator.cpp declarations/structured-bindings/parenthesized.cpp declarations/structured-bindings/constrained.cpp declarations/structured-bindings/template.cpp
+
+A structured binding declaration must have an initializer in one of the
+forms that SB-7 gives. The declaration must not:
 
 - use an explicit type, `auto*`, or `decltype(auto)`,
 - be `constexpr` ({question}`Q-0007`),
@@ -142,11 +166,17 @@ variable is `const`.
 
 :::{rule} SB-10
 :kind: required
-:tests: declarations/structured-bindings/bit-field-address.cpp declarations/structured-bindings/bit-field-assign.cpp
+:tests: declarations/structured-bindings/bit-field-assign.cpp
 
 A binding to a bit-field member refers to the bit-field *(classes
-referenced)*. A program can assign to it. A program must not take its
-address.
+referenced)*. A program can assign to it. SB-16 lists what is not valid.
+:::
+
+:::{rule} SB-16
+:kind: reject
+:tests: declarations/structured-bindings/bit-field-address.cpp
+
+A program must not take the address of a binding to a bit-field member.
 :::
 
 :::{rule} SB-11
@@ -214,14 +244,14 @@ auto [c, d]{a};           // valid: braced initializer
 All seven compilers agree on 45 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
-- **SB-7.** Clang and GCC accept `constexpr` structured bindings and two
+- **SB-15.** Clang and GCC accept `constexpr` structured bindings and two
   `_` names as extensions from a later language version. They reject them
   only under `-pedantic-errors`. Clang reports an empty list of names as a
   pedantic diagnostic.
 - **SB-7, braced array initializer.** Clang 18.1.3 rejects `auto [r, s]{a};`
   when `a` is an array. Clang 22, GCC, and EDG accept it. The provisional
   answer is that it is valid. See {question}`Q-0015`.
-- **SB-7, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
+- **SB-15, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
   Clang and GCC reject it. The provisional answer is that it is rejected.
   See {question}`Q-0016`.
 - **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured

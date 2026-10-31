@@ -1,4 +1,4 @@
-// tidal-rules: LIST-5
+// tidal-rules: LIST-14
 // tidal-expect: reject
 // tidal-error-clang: mixture of designated and non-designated initializers
 // tidal-error-gcc: either all initializer clauses should be designated or none

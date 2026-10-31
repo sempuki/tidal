@@ -1,4 +1,4 @@
-// tidal-rules: CMP-12
+// tidal-rules: CMP-25
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression .*nullptr_t
 // tidal-error-gcc: ordered comparison of pointer with integer zero

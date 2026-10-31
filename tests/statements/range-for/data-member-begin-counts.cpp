@@ -1,4 +1,4 @@
-// tidal-rules: RFOR-2
+// tidal-rules: RFOR-7
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: called object type .int. is not a function

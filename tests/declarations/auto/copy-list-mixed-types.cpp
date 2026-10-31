@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-7
+// tidal-rules: AUTO-21
 // tidal-expect: reject
 // tidal-error-clang: deduced conflicting types
 // tidal-error-gcc: unable to deduce .*initializer_list<auto>

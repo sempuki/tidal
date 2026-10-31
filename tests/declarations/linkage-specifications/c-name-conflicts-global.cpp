@@ -1,4 +1,4 @@
-// tidal-rules: LSP-4
+// tidal-rules: LSP-7
 // tidal-expect: reject
 // tidal-expect-gcc: accept
 // tidal-error-clang: C language linkage conflicts with declaration in global scope

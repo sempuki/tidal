@@ -7,7 +7,7 @@ result, and when a temporary object exists.
 ## Principles
 
 :::{principle} VC-P1
-:rules: VC-1 VC-2 VC-3
+:rules: VC-1 VC-2 VC-3 VC-12 VC-13 VC-14
 
 Every expression denotes an object, a function, or a value. An *lvalue*
 names something with an identity: a program can take its address, assign
@@ -62,7 +62,7 @@ it is destroyed.
 
 :::{rule} VC-1
 :kind: required
-:tests: expressions/value-categories/lvalues.cpp expressions/value-categories/rvalue-reference-name-is-lvalue.cpp expressions/value-categories/rvalue-reference-name-binding.cpp expressions/value-categories/more-categories.cpp expressions/value-categories/member-access-lvalue.cpp
+:tests: expressions/value-categories/lvalues.cpp expressions/value-categories/rvalue-reference-name-is-lvalue.cpp expressions/value-categories/more-categories.cpp expressions/value-categories/member-access-lvalue.cpp
 
 These expressions are lvalues:
 
@@ -77,9 +77,17 @@ These expressions are lvalues:
 - a comma expression whose right operand is an lvalue (COMMA-2).
 :::
 
+:::{rule} VC-14
+:kind: reject
+:tests: expressions/value-categories/rvalue-reference-name-binding.cpp
+
+The name of a variable of rvalue reference type is an lvalue (VC-1). An
+rvalue reference must not bind to it directly.
+:::
+
 :::{rule} VC-2
 :kind: required
-:tests: expressions/value-categories/prvalues.cpp expressions/value-categories/address-of-prvalue.cpp expressions/value-categories/assign-to-prvalue.cpp expressions/value-categories/cv-prvalue-dropped.cpp expressions/value-categories/member-function-access-not-address.cpp expressions/value-categories/assign-to-class-prvalue.cpp expressions/value-categories/assign-to-scalar-prvalue.cpp
+:tests: expressions/value-categories/prvalues.cpp expressions/value-categories/cv-prvalue-dropped.cpp expressions/value-categories/assign-to-class-prvalue.cpp
 
 These expressions are prvalues:
 
@@ -93,15 +101,22 @@ These expressions are prvalues:
 
 A prvalue of a type that is not a class type has no cv-qualifiers. So a
 function can declare a return type such as `const int`, and a call to
-it still gives a plain `int`. A program must not take the address of a
+it still gives a plain `int`. A class prvalue can be assigned to,
+because the assignment is a call of a member function. ASN-6 covers a
+braced list as the right operand.
+:::
+
+:::{rule} VC-12
+:kind: reject
+:tests: expressions/value-categories/address-of-prvalue.cpp expressions/value-categories/assign-to-prvalue.cpp expressions/value-categories/member-function-access-not-address.cpp expressions/value-categories/assign-to-scalar-prvalue.cpp expressions/additive/result-prvalue.cpp expressions/shift/result-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/primary/this-prvalue.cpp expressions/primary/name-enumerator-prvalue.cpp
+
+VC-2 gives the prvalues. A program must not take the address of a
 prvalue. A prvalue of a type that is not a class cannot be assigned to.
-A class prvalue can be, because the assignment is a call of a member
-function. ASN-6 covers a braced list as the right operand.
 :::
 
 :::{rule} VC-3
 :kind: required
-:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp expressions/value-categories/xvalue-array-subscript.cpp expressions/value-categories/xvalue-member-pointer.cpp
+:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp expressions/value-categories/xvalue-array-subscript.cpp expressions/value-categories/xvalue-member-pointer.cpp
 
 These expressions are xvalues:
 
@@ -114,8 +129,14 @@ These expressions are xvalues:
 - `.*` applied to an xvalue, for a data member.
 
 A cast to an rvalue reference to a function type gives an lvalue. A
-reference member and a static data member give lvalues. A program must
-not take the address of an xvalue.
+reference member and a static data member give lvalues.
+:::
+
+:::{rule} VC-13
+:kind: reject
+:tests: expressions/value-categories/address-of-xvalue.cpp
+
+A program must not take the address of an xvalue (VC-3).
 :::
 
 :::{rule} VC-11

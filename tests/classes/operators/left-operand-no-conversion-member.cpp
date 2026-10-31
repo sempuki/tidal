@@ -1,4 +1,4 @@
-// tidal-rules: OPR-6
+// tidal-rules: OPR-15
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression
 // tidal-error-gcc: no match for .operator\+

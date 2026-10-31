@@ -1,4 +1,4 @@
-// tidal-rules: OBJ-8
+// tidal-rules: OBJ-8 OBJ-2
 // tidal-expect: reject
 // tidal-error-gcc: accessing .x. outside its lifetime
 // tidal-error-clang: read of object outside its lifetime

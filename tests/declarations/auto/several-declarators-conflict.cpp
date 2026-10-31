@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-9
+// tidal-rules: AUTO-22
 // tidal-expect: reject
 // tidal-error-clang: deduced as .int. in declaration of .* deduced as .double
 // tidal-error-gcc: inconsistent deduction for .auto

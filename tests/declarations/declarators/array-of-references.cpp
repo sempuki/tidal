@@ -1,4 +1,4 @@
-// tidal-rules: DCL-3
+// tidal-rules: DCL-18
 // tidal-expect: reject
 // tidal-error-clang: declared as array of references
 // tidal-error-gcc: as array of references

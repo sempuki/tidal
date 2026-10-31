@@ -1,4 +1,4 @@
-// tidal-rules: LIST-6
+// tidal-rules: LIST-15
 // tidal-expect: reject
 // tidal-error-clang: initializer-string for char array is too long
 // tidal-error-gcc: initializer-string for .char \[2\]. is too long

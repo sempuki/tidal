@@ -1,4 +1,4 @@
-// tidal-rules: OPR-6
+// tidal-rules: OPR-15
 // tidal-expect: reject
 // tidal-error-clang: no viable overloaded .\+=
 // tidal-error-gcc: no match for .operator\+=

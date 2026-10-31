@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-3
+// tidal-rules: ENUM-16
 // tidal-expect: reject
 // tidal-error-clang: cannot increment expression of enum type
 // tidal-error-gcc: no match for .operator\+\+

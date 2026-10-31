@@ -1,4 +1,4 @@
-// tidal-rules: NS-8
+// tidal-rules: NS-10
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .x
 // tidal-error-gcc: x. was not declared in this scope

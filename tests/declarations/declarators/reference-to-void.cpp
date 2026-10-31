@@ -1,4 +1,4 @@
-// tidal-rules: DCL-3
+// tidal-rules: DCL-18
 // tidal-expect: reject
 // tidal-error-clang: cannot form a reference to .void
 // tidal-error-gcc: cannot declare reference to .void

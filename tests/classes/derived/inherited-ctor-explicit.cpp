@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-20
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion from .int. to .D
 // tidal-error-gcc: conversion from .int. to non-scalar type .D

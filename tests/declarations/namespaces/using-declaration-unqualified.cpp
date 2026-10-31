@@ -1,4 +1,4 @@
-// tidal-rules: NS-7
+// tidal-rules: NS-16
 // tidal-expect: reject
 // tidal-error-clang: using declaration requires a qualified name
 // tidal-error-gcc: expected nested-name-specifier before .x

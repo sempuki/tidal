@@ -1,4 +1,4 @@
-// tidal-rules: CPY-6
+// tidal-rules: CPY-22
 // tidal-expect: reject
 // tidal-error-clang: no viable overloaded .=
 // tidal-error-gcc: discards qualifiers

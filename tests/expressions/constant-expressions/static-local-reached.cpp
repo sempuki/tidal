@@ -1,4 +1,4 @@
-// tidal-rules: CE-17
+// tidal-rules: CE-20
 // tidal-expect: reject
 // tidal-error-gcc: with static storage duration
 // tidal-error-clang: control flows through the definition of a static variable

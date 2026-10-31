@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-13
+// tidal-rules: AUTO-16
 // tidal-expect: reject
 // tidal-error-clang: does not satisfy
 // tidal-error-gcc: does not satisfy placeholder constraints

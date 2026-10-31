@@ -1,4 +1,4 @@
-// tidal-rules: CPY-11
+// tidal-rules: CPY-25
 // tidal-expect: reject
 // tidal-error-clang: cannot bind to a temporary
 // tidal-error-gcc: cannot bind non-const lvalue reference

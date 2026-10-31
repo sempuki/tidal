@@ -1,4 +1,4 @@
-// tidal-rules: NAM-5
+// tidal-rules: NAM-5 NAM-8
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier .twice
 // tidal-error-gcc: twice. was not declared in this scope

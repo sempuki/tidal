@@ -1,4 +1,4 @@
-// tidal-rules: SB-3
+// tidal-rules: SB-13
 // tidal-expect: reject
 // tidal-error-clang: both it and its base class .B. have non-static data members
 // tidal-error-gcc: both it and its base class .B. have non-static data members

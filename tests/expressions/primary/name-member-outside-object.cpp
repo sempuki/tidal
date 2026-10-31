@@ -1,4 +1,4 @@
-// tidal-rules: PRIM-12
+// tidal-rules: PRIM-25
 // tidal-expect: reject
 // tidal-error-clang: invalid use of non-static data member
 // tidal-error-gcc: invalid use of non-static data member

@@ -21,7 +21,7 @@ different function, so a label in it belongs to nothing outside.
 :::
 
 :::{principle} SW-P2
-:rules: SW-4 SW-5
+:rules: SW-4 SW-5 SW-6
 
 The statement has the scopes of an `if` ({principle}`IF-P2`), with an
 initializer and a condition that can declare a variable. Because its
@@ -74,13 +74,20 @@ so a label in it belongs to no enclosing `switch`.
 
 :::{rule} SW-4
 :kind: required
-:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp statements/switch/condition-name-redeclared.cpp statements/switch/init-name-redeclared.cpp
+:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp
 
 A `switch` can have an initializer statement, as in IF-7. Its condition
 can be a declaration, as in IF-5. The scope rules of IF-9 and IF-10
-apply: a name that the initializer or the condition declares is visible
-to the end of the statement and must not be declared again in the
-outermost block of the body.
+apply. A name that the initializer or the condition declares is visible
+to the end of the statement.
+:::
+
+:::{rule} SW-6
+:kind: reject
+:tests: statements/switch/condition-name-redeclared.cpp statements/switch/init-name-redeclared.cpp
+
+A name that the initializer or the condition of a `switch` declares
+must not be declared again in the outermost block of the body (SW-4).
 :::
 
 :::{rule} SW-5

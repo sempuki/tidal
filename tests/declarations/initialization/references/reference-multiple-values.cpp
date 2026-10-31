@@ -1,4 +1,4 @@
-// tidal-rules: REF-6
+// tidal-rules: REF-11
 // tidal-expect: reject
 // tidal-error-clang: reference cannot be initialized with multiple values
 // tidal-error-gcc: expression list treated as compound expression

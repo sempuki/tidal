@@ -1,4 +1,4 @@
-// tidal-rules: MUL-5
+// tidal-rules: MUL-19
 // tidal-expect: reject
 // tidal-error-clang: cannot take the address of an rvalue
 // tidal-error-gcc: lvalue required as unary

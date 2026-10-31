@@ -1,4 +1,4 @@
-// tidal-rules: COND-3
+// tidal-rules: COND-3 VC-12
 // tidal-expect: reject
 // tidal-error-clang: cannot take the address of an rvalue
 // tidal-error-gcc: lvalue required as unary

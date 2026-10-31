@@ -7,7 +7,7 @@ and arrays. Initialization by constructors belongs to classes
 ## Principles
 
 :::{principle} INIT-P1
-:rules: INIT-2 INIT-4 INIT-5
+:rules: INIT-2 INIT-4 INIT-7 INIT-5 INIT-8
 
 An initializer gives an object its first value by converting the
 initializer to the object's type ({principle}`VC-P2`). `=` and
@@ -61,29 +61,44 @@ It never declares a variable.
 
 :::{rule} INIT-4
 :kind: required
-:tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/nullptr-bool-copy.cpp declarations/initialization/forms/nullptr-bool-direct.cpp
+:tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/nullptr-bool-direct.cpp
 
 An initializer after `=` or in parentheses is converted to the type of the
 variable by implicit conversion *(referenced)*. A conversion that loses
-information is permitted. These conditions apply:
+information is permitted. `nullptr` converts to `bool` in direct
+initialization, with parentheses or braces, and gives `false`. INIT-7
+lists what is not valid.
+:::
+
+:::{rule} INIT-7
+:kind: reject
+:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/nullptr-bool-copy.cpp
+
+An initializer after `=` or in parentheses must meet these conditions:
 
 - The expression must be convertible to the type of the variable.
 - For a scalar, the parentheses must hold exactly one expression.
 - For a scalar, the expression in parentheses must not be a braced list.
 - The type of the variable must be complete.
 - An `explicit` constructor *(referenced)* must not be used with `=`.
-- `nullptr` converts to `bool` only in direct initialization, with
-  parentheses or braces, and gives `false`.
+- `nullptr` converts to `bool` only in direct initialization.
 :::
 
 :::{rule} INIT-5
 :kind: required
-:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/array-from-array.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
+:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
 
 An array is initialized from a list of values in braces or in parentheses.
 In parentheses, a conversion that loses information is permitted. In parentheses, an
-array without a bound gets the number of values as its bound. An array
-must not be initialized from another array.
+array without a bound gets the number of values as its bound. INIT-8
+lists what is not valid.
+:::
+
+:::{rule} INIT-8
+:kind: reject
+:tests: declarations/initialization/forms/array-from-array.cpp
+
+An array must not be initialized from another array.
 :::
 
 ## Runtime Behavior

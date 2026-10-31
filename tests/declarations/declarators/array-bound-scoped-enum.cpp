@@ -1,4 +1,4 @@
-// tidal-rules: DCL-5
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: value of type .N. is not implicitly convertible
 // tidal-error-gcc: has non-integral type .N|could not convert .N::Three.

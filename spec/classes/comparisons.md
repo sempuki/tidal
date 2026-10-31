@@ -12,7 +12,7 @@ Depends on: comparison operators, operator overloading, derived classes.
 ## Principles
 
 :::{principle} DCMP-P1
-:rules: DCMP-1 DCMP-2 DCMP-3 DCMP-4 DCMP-5 DCMP-8
+:rules: DCMP-1 DCMP-2 DCMP-3 DCMP-4 DCMP-5 DCMP-8 DCMP-9 DCMP-10 DCMP-11
 
 A defaulted comparison compares part by part, bases first, in
 declaration order, and stops at the first difference. The
@@ -24,7 +24,7 @@ defaulted `<=>` brings a defaulted `==` with it.
 :::
 
 :::{principle} DCMP-P2
-:rules: DCMP-6 DCMP-7
+:rules: DCMP-6 DCMP-7 DCMP-12
 
 The other comparison operators are spelled from these two. An
 expression with `!=` or a relational operator also tries `==` or `<=>`,
@@ -80,7 +80,7 @@ constant evaluation, and it has access to private members.
 
 :::{rule} DCMP-2
 :kind: required
-:tests: classes/comparisons/eq-anonymous-union-member.cpp classes/comparisons/eq-member-eq-private.cpp classes/comparisons/eq-member-not-comparable-unused.cpp classes/comparisons/eq-member-not-comparable.cpp classes/comparisons/eq-reference-member.cpp classes/comparisons/eq-union.cpp classes/comparisons/member-eq-returns-int.cpp
+:tests: classes/comparisons/eq-member-not-comparable-unused.cpp classes/comparisons/member-eq-returns-int.cpp
 
 A defaulted `==` is deleted if one of these is true:
 
@@ -92,9 +92,16 @@ A defaulted `==` is deleted if one of these is true:
 A deleted defaulted `==` makes only its use invalid.
 :::
 
+:::{rule} DCMP-9
+:kind: reject
+:tests: classes/comparisons/eq-anonymous-union-member.cpp classes/comparisons/eq-member-eq-private.cpp classes/comparisons/eq-member-not-comparable.cpp classes/comparisons/eq-reference-member.cpp classes/comparisons/eq-union.cpp
+
+A program must not use a defaulted `==` that DCMP-2 deletes.
+:::
+
 :::{rule} DCMP-4
 :kind: required
-:tests: classes/comparisons/empty-class-compares-equal.cpp classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp classes/comparisons/spaceship-no-header-types.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp
+:tests: classes/comparisons/empty-class-compares-equal.cpp classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp
 
 A defaulted `<=>` compares the bases and members in the same order as
 `==`. The result is the first result that is not equal, or equal if all
@@ -111,9 +118,18 @@ rules apply:
 - A defaulted secondary operator calls `<=>`.
 :::
 
+:::{rule} DCMP-10
+:kind: reject
+:tests: classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp classes/comparisons/spaceship-no-header-types.cpp
+
+If a class has a `<=>` that is not defaulted and declares no `==`, a
+program must not compare its objects with `==`. A program that uses a
+defaulted `<=>` must declare the comparison category types.
+:::
+
 :::{rule} DCMP-5
 :kind: required
-:tests: classes/comparisons/secondary-without-spaceship.cpp classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-member-returns-non-category.cpp classes/comparisons/spaceship-wrong-return-used.cpp classes/comparisons/spaceship-wrong-return.cpp
+:tests: classes/comparisons/spaceship-wrong-return.cpp
 
 A defaulted `<=>` is deleted in these cases:
 
@@ -125,9 +141,17 @@ A defaulted secondary operator is deleted if the class has no usable
 `<=>`.
 :::
 
+:::{rule} DCMP-11
+:kind: reject
+:tests: classes/comparisons/secondary-without-spaceship.cpp classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-member-returns-non-category.cpp classes/comparisons/spaceship-wrong-return-used.cpp
+
+A program must not use a defaulted `<=>` or secondary operator that
+DCMP-5 deletes.
+:::
+
 :::{rule} DCMP-6
 :kind: required
-:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp
+:tests: classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp
 
 An expression with `==`, `!=`, `<`, `>`, `<=`, `>=` also considers these
 candidates:
@@ -138,10 +162,17 @@ candidates:
 - each of these with the operands reversed, such as `y == x` for
   `x == y`.
 
-An `==` used to rewrite `!=` must return `bool`. `<=>` is never used to
-rewrite `==` or `!=`. A declared `!=` is used before a rewritten one. If
-the scope of an `==` declares a matching `!=`, that `==` is not used for
-reversed or rewritten candidates.
+`<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
+before a rewritten one. If the scope of an `==` declares a matching
+`!=`, that `==` is not used for reversed or rewritten candidates.
+:::
+
+:::{rule} DCMP-12
+:kind: reject
+:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp
+
+An `==` used to rewrite `!=` must return `bool`. A comparison that needs
+a candidate that DCMP-6 excludes is not valid.
 :::
 
 ## Implementation Requirements

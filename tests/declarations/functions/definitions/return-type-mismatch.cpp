@@ -1,4 +1,4 @@
-// tidal-rules: FN-2
+// tidal-rules: FN-14
 // tidal-expect: reject
 // tidal-error-clang: differ only in their return type
 // tidal-error-gcc: ambiguating new declaration

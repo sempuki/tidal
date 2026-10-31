@@ -22,7 +22,7 @@ alternative spelling as a word.
 :::
 
 :::{principle} LOG-P2
-:rules: LOG-4 LOG-5 LOG-7
+:rules: LOG-4 LOG-5 LOG-7 LOG-14
 :exceptions: LOG-11
 
 The built-in `&&` and `||` evaluate the left operand first, completely,
@@ -88,12 +88,20 @@ left to right.
 
 :::{rule} LOG-7
 :kind: required
-:tests: expressions/logical/constant-unevaluated-division.cpp expressions/logical/constant-unevaluated-call.cpp expressions/logical/constant-evaluated-call.cpp
+:tests: expressions/logical/constant-unevaluated-division.cpp expressions/logical/constant-unevaluated-call.cpp
 
 During {term}`constant evaluation`, a right operand that is not evaluated
 has no effect on the result. It can contain an operation that constant
-evaluation does not permit. If the right operand is evaluated, such an
-operation makes the expression not constant.
+evaluation does not permit.
+:::
+
+:::{rule} LOG-14
+:kind: reject
+:tests: expressions/logical/constant-evaluated-call.cpp
+
+During {term}`constant evaluation`, if the right operand is evaluated, an
+operation that constant evaluation does not permit makes the expression
+not constant (LOG-7).
 :::
 
 :::{rule} LOG-12

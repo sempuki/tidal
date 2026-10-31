@@ -1,4 +1,4 @@
-// tidal-rules: SB-10
+// tidal-rules: SB-16
 // tidal-expect: reject
 // tidal-error-clang: address of bit-field requested
 // tidal-error-gcc: take address of bit-field

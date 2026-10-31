@@ -112,7 +112,7 @@ when the value that the undefined step produced is never used.
 :::
 
 :::{principle} TR-P4
-:rules: TR-5
+:rules: TR-5 TR-10
 
 Constant evaluation runs the same functions as execution, with the
 same meaning, at translation time. It differs in two ways. It happens
@@ -139,6 +139,15 @@ when the broken code is in a function that the program never calls.
 `main` must return `int` and must not be a template. Its parameter
 list must be one that the implementation accepts (FN-6). A program must
 not call `main` or take its address.
+:::
+
+:::{rule} TR-10
+:kind: reject
+:tests: foundations/translation/constant-evaluation-rejects-ub.cpp
+
+An operation that would be undefined, such as division by zero, makes a
+constant evaluation not constant (TR-5). The implementation rejects the
+program there.
 :::
 
 ## Runtime Behavior
@@ -168,17 +177,16 @@ another unit declares cannot be used (NAM-8).
 
 :::{rule} TR-5
 :kind: required
-:tests: foundations/translation/constant-evaluation-same-function.cpp foundations/translation/constant-evaluation-rejects-ub.cpp foundations/translation/constant-evaluation-only-where-needed.cpp foundations/translation/if-consteval-selects.cpp
+:tests: foundations/translation/constant-evaluation-same-function.cpp foundations/translation/constant-evaluation-only-where-needed.cpp foundations/translation/if-consteval-selects.cpp
 
 A `constexpr` function gives the same result in constant evaluation and
 at run time. Constant evaluation occurs only where a constant is
-needed, such as a `static_assert`. An operation that would be undefined,
-such as division by zero, makes the evaluation not constant, and the
-program is rejected there, while the same call at run time with a
-value that is never zero is valid. `if consteval` selects its first
-branch in constant evaluation and its second at run time. A
-`constexpr` function that never gives a constant is still valid
-(CX-3), as long as no constant evaluation reaches it.
+needed, such as a `static_assert`. A call that TR-10 rejects in
+constant evaluation is valid at run time if it reaches no undefined
+operation. `if consteval` selects its first branch in constant evaluation
+and its second at run time. A `constexpr` function that never gives a
+constant is still valid (CX-3), as long as no constant evaluation
+reaches it.
 :::
 
 :::{rule} TR-7

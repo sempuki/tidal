@@ -36,7 +36,7 @@ written out.
 :::
 
 :::{principle} UNEV-P1
-:rules: UNEV-1 UNEV-4
+:rules: UNEV-1 UNEV-4 UNEV-5
 
 Some operands exist only to be asked about. The operands of `decltype`,
 `sizeof`, and `noexcept` are never evaluated, so they cause no side
@@ -49,7 +49,7 @@ happens, and an implementation should say so.
 :::
 
 :::{principle} UNEV-P2
-:rules: UNEV-2 UNEV-3
+:rules: UNEV-2 UNEV-3 UNEV-6
 
 A discarded value is the opposite case. The expression is evaluated in
 full and its result is dropped, so its effects are the point. A class
@@ -134,7 +134,7 @@ the name of a member function defined outside its class
 
 :::{rule} UNEV-1
 :kind: required
-:tests: expressions/decltype/abstract-prvalue-decltype.cpp expressions/decltype/constexpr-not-needed.cpp expressions/decltype/deleted-function-in-unevaluated.cpp expressions/decltype/incomplete-return-prvalue.cpp expressions/decltype/incomplete-return-sizeof.cpp expressions/decltype/lambda-in-unevaluated.cpp expressions/decltype/member-without-object.cpp expressions/decltype/nested-class-member-evaluated.cpp expressions/decltype/nested-class-member-unevaluated.cpp expressions/decltype/no-definition-needed.cpp expressions/decltype/no-side-effects.cpp expressions/decltype/odr-use-not-counted.cpp expressions/decltype/private-access-still-checked.cpp expressions/decltype/template-instantiation-not-needed.cpp expressions/decltype/ub-not-evaluated.cpp expressions/decltype/deleted-destructor-decltype.cpp expressions/decltype/deleted-destructor-sizeof.cpp expressions/decltype/incomplete-member-access.cpp
+:tests: expressions/decltype/abstract-prvalue-decltype.cpp expressions/decltype/constexpr-not-needed.cpp expressions/decltype/incomplete-return-prvalue.cpp expressions/decltype/incomplete-return-sizeof.cpp expressions/decltype/lambda-in-unevaluated.cpp expressions/decltype/member-without-object.cpp expressions/decltype/nested-class-member-evaluated.cpp expressions/decltype/nested-class-member-unevaluated.cpp expressions/decltype/no-definition-needed.cpp expressions/decltype/no-side-effects.cpp expressions/decltype/odr-use-not-counted.cpp expressions/decltype/template-instantiation-not-needed.cpp expressions/decltype/ub-not-evaluated.cpp expressions/decltype/deleted-destructor-decltype.cpp
 
 The operands of `decltype`, `sizeof`, and `noexcept` are not evaluated.
 These rules apply to them:
@@ -151,16 +151,34 @@ These rules apply to them:
 
 For `decltype`, a function call that gives a prvalue of class type can
 have an incomplete or abstract type, and the class needs no usable
-destructor. `sizeof` needs a usable destructor. A member access on such
-a call needs a complete class. Name lookup, access control, and deleted functions are
-still checked.
+destructor.
+:::
+
+:::{rule} UNEV-5
+:kind: reject
+:tests: expressions/decltype/deleted-function-in-unevaluated.cpp expressions/decltype/private-access-still-checked.cpp expressions/decltype/deleted-destructor-sizeof.cpp expressions/decltype/incomplete-member-access.cpp
+
+The operands of UNEV-1 still have these requirements:
+
+- `sizeof` needs a usable destructor.
+- A member access on a call that gives a prvalue of class type needs a
+  complete class.
+- Name lookup, access control, and deleted functions are still checked.
+:::
+
+:::{rule} UNEV-6
+:kind: reject
+:tests: expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp
+
+Constant evaluation rejects both reads of a volatile object that UNEV-2
+gives (CE-12).
 :::
 
 ## Runtime Behavior
 
 :::{rule} UNEV-2
 :kind: required
-:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp
+:tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp
 
 A discarded-value expression is evaluated, and its value is not used. A
 prvalue of class type creates a temporary object, which is then
@@ -170,8 +188,7 @@ unused result. Constant evaluation follows these rules.
 
 If the expression is a name, a member access, a subscript, or an
 indirection that refers to a volatile object, the program reads that
-object. A volatile operand of an operator is read too. Constant
-evaluation rejects both.
+object. A volatile operand of an operator is read too.
 :::
 
 ## Recommended Practice

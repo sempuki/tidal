@@ -1,4 +1,4 @@
-// tidal-rules: LSP-4
+// tidal-rules: LSP-7
 // tidal-expect: reject
 // tidal-error-clang: as different kind of symbol
 // tidal-error-gcc: conflicting C language linkage declaration

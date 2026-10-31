@@ -1,4 +1,4 @@
-// tidal-rules: RFOR-2
+// tidal-rules: RFOR-7
 // tidal-expect: reject
 // tidal-error-clang: cannot increment value of type .It
 // tidal-error-gcc: no match for .operator\+\+.

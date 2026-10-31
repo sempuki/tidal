@@ -1,4 +1,4 @@
-// tidal-rules: SA-5
+// tidal-rules: SA-5 SA-1
 // tidal-expect: reject
 // tidal-error-clang: static assertion failed
 // tidal-error-gcc: static assertion failed

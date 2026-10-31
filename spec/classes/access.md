@@ -30,7 +30,7 @@ protected parts of another.
 :::
 
 :::{principle} ACC-P3
-:rules: ACC-5 ACC-6 ACC-7 ACC-15
+:rules: ACC-5 ACC-6 ACC-7 ACC-15 ACC-17
 
 Friendship is granted by the class and belongs to the one it names. It
 does not pass on to the friends of a friend or to the classes derived
@@ -42,7 +42,7 @@ arguments, so it stays with the class it serves.
 :::
 
 :::{principle} ACC-P4
-:rules: ACC-8 ACC-9 ACC-10 ACC-12 ACC-13 ACC-14
+:rules: ACC-8 ACC-9 ACC-10 ACC-12 ACC-13 ACC-14 ACC-18 ACC-19
 
 A derived class sees its base's public and protected members, and the
 access of the base caps what the derived class passes on. A conversion
@@ -72,7 +72,7 @@ declaration* is a `friend_decl` in a class body.
 
 :::{rule} ACC-1
 :kind: required
-:tests: classes/access/class-default-private.cpp classes/access/struct-default-public.cpp classes/access/union-default-public.cpp classes/access/labels.cpp classes/access/access-label-on-nothing.cpp
+:tests: classes/access/struct-default-public.cpp classes/access/union-default-public.cpp classes/access/labels.cpp classes/access/access-label-on-nothing.cpp
 
 The default access of a member depends on the class key:
 
@@ -85,7 +85,7 @@ label. A class can have any number of labels, in any order.
 
 :::{rule} ACC-2
 :kind: reject
-:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp
+:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
 
 Only the members and friends of a class can use the name of a private
 member. This applies to data members, member functions, static members,
@@ -121,7 +121,7 @@ Access control applies to names. It does not apply in these cases:
 
 :::{rule} ACC-4
 :kind: reject
-:tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp
+:tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp classes/derived/base-protected-dtor-direct.cpp
 
 A protected member has the access of a private member. Members and
 friends of a derived class `D` also have access to it, with these limits:
@@ -135,7 +135,7 @@ A static protected member has no such limit.
 
 :::{rule} ACC-5
 :kind: required
-:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-member-function-only.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp
+:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp
 
 A friend declaration gives a function or a class the access of a member.
 A friend can be:
@@ -160,17 +160,24 @@ does not get access.
 
 :::{rule} ACC-7
 :kind: required
-:tests: classes/access/hidden-friend.cpp classes/access/hidden-friend-not-visible.cpp
+:tests: classes/access/hidden-friend.cpp
 
 A friend function that is first declared in a class is a member of the
-enclosing namespace. Ordinary name lookup does not find it. Only
-argument-dependent lookup *(referenced)* finds it, unless the namespace
-also declares it.
+enclosing namespace. Only argument-dependent lookup *(referenced)* finds
+it, unless the namespace also declares it.
+:::
+
+:::{rule} ACC-17
+:kind: reject
+:tests: classes/access/hidden-friend-not-visible.cpp
+
+Ordinary name lookup does not find a friend function that ACC-7
+describes. A use of its name that needs ordinary lookup is not valid.
 :::
 
 :::{rule} ACC-8
 :kind: required
-:tests: classes/access/private-base.cpp classes/access/struct-base-default-public.cpp classes/access/protected-base-in-derived.cpp classes/access/private-base-name-in-derived.cpp classes/access/access-best-path.cpp
+:tests: classes/access/struct-base-default-public.cpp classes/access/protected-base-in-derived.cpp classes/access/access-best-path.cpp
 
 The access specifier of a base sets the access of the base's public and
 protected members in the derived class:
@@ -181,10 +188,17 @@ protected members in the derived class:
 | `protected` | protected | protected |
 | `private` | private | private |
 
-If the base has no access specifier, a `class` makes the base private and
-a `struct` makes the base public. Private members of a base are not
-accessible in the derived class. If a member can be reached through
+If the base has no access specifier, a `class` makes the base private
+and a `struct` makes the base public. If a member can be reached through
 several paths, the path that gives the most access applies.
+:::
+
+:::{rule} ACC-18
+:kind: reject
+:tests: classes/access/private-base-name-in-derived.cpp
+
+The private members of a base are not accessible in the derived class.
+ACC-8 gives the access of the other members.
 :::
 
 :::{rule} ACC-12
@@ -199,7 +213,7 @@ valid.
 
 :::{rule} ACC-9
 :kind: required
-:tests: classes/access/using-changes-access.cpp classes/access/using-reduces-access.cpp
+:tests: classes/access/using-changes-access.cpp
 
 A using-declaration *(referenced)* in a derived class gives a base member
 the access of the label where the declaration occurs. This can increase
@@ -216,12 +230,19 @@ derived class.
 
 :::{rule} ACC-10
 :kind: required
-:tests: classes/access/nested-accesses-enclosing.cpp classes/access/enclosing-not-access-nested.cpp classes/access/local-class-member-access.cpp
+:tests: classes/access/nested-accesses-enclosing.cpp classes/access/local-class-member-access.cpp
 
 A nested class is a member of its enclosing class. It has access to the
-private and protected members of the enclosing class. The enclosing class
-has no special access to the members of the nested class. A local class
-in a member function has the access of that member function.
+private and protected members of the enclosing class. A local class in a
+member function has the access of that member function.
+:::
+
+:::{rule} ACC-19
+:kind: reject
+:tests: classes/access/enclosing-not-access-nested.cpp
+
+The enclosing class of a nested class (ACC-10) has no special access to
+the members of the nested class.
 :::
 
 :::{rule} ACC-14
@@ -282,7 +303,7 @@ class Token {
 
 The results are in `tests/RESULTS.md`. All seven compilers agree on 45 of 46 tests.
 
-- ACC-9: EDG 7.0 accepts a use of a member that a using-declaration makes
+- ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a using-declaration makes
   private, if the member is public in the base ({question}`Q-0052`).
 
 Inputs: clang-sema-access, edg-class-decl.

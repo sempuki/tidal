@@ -18,7 +18,7 @@ dereferences a pointer to nothing, which is undefined (ADD-P3).
 :::
 
 :::{principle} PFX-P2
-:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15
+:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16
 
 A call passes one argument to each parameter, so the counts must match,
 with default arguments filling in and an ellipsis taking any extra.
@@ -102,10 +102,16 @@ the function has an ellipsis.
 
 :::{rule} PFX-6
 :kind: required
-:tests: expressions/postfix/call-copy-initializes.cpp expressions/postfix/call-explicit-constructor.cpp
+:tests: expressions/postfix/call-copy-initializes.cpp
 
-Each parameter is copy-initialized from its argument. An `explicit`
-constructor cannot do this conversion.
+Each parameter is copy-initialized from its argument.
+:::
+
+:::{rule} PFX-16
+:kind: reject
+:tests: expressions/postfix/call-explicit-constructor.cpp
+
+An `explicit` constructor cannot do the conversion of PFX-6.
 :::
 
 :::{rule} PFX-9
@@ -131,7 +137,7 @@ without `const`.
 
 :::{rule} PFX-11
 :kind: reject
-:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp
+:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp
 
 The operand of `.` must be a class object, and the operand of `->` must be
 a pointer to a class. The class must have the named member.

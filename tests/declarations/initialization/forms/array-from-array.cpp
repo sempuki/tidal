@@ -1,4 +1,4 @@
-// tidal-rules: INIT-5
+// tidal-rules: INIT-8
 // tidal-expect: reject
 // tidal-error-clang: array initializer must be an initializer list
 // tidal-error-gcc: array must be initialized with a brace-enclosed initializer

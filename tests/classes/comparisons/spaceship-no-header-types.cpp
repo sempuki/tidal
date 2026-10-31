@@ -1,4 +1,4 @@
-// tidal-rules: DCMP-4
+// tidal-rules: DCMP-10
 // tidal-expect: reject
 // tidal-error-clang: strong_ordering. was not found
 // tidal-error-gcc: strong_ordering. is not a member of .std

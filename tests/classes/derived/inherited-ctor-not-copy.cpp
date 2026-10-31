@@ -1,4 +1,4 @@
-// tidal-rules: DER-8
+// tidal-rules: DER-20
 // tidal-expect: reject
 // tidal-error-clang: no matching constructor for initialization of .D
 // tidal-error-gcc: no matching function for call to .D::D\(B&\)

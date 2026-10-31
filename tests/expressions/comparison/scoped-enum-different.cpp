@@ -1,4 +1,4 @@
-// tidal-rules: CMP-10
+// tidal-rules: CMP-23
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression .*E.*F
 // tidal-error-gcc: no match for .operator==.

@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: unknown type name .Local
 // tidal-error-gcc: .Local. does not name a type

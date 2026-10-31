@@ -7,7 +7,7 @@ with `begin` and `end`.
 ## Principles
 
 :::{principle} RFOR-P1
-:rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4
+:rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4 RFOR-7
 
 A range-based `for` is an ordinary loop that the language writes for
 you. It evaluates the range one time and keeps it, so a temporary in
@@ -46,22 +46,35 @@ name two meanings, so both are rejected.
 
 :::{rule} RFOR-2
 :kind: required
-:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/data-member-begin-counts.cpp statements/range-for/callable-data-members.cpp
+:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp
 
 For a range of class type, `begin` and `end` are found as follows:
 
 - If the class has a member named `begin` and a member named `end`, of
   any kind, the loop calls `range.begin()` and `range.end()`. A data
-  member counts, so a data member of a callable type works and a data
-  member of type `int` makes the loop not valid ({question}`Q-0098`).
+  member counts, so a data member of a callable type works
+  ({question}`Q-0098`).
 - If only one of the names is a member, or neither, both are free
-  functions that argument-dependent lookup finds *(referenced)*. Other
-  free functions are not used.
+  functions that argument-dependent lookup finds *(referenced)*.
 
 `begin` and `end` can return different types. The loop advances the
 iterator with prefix `++`. It compares the iterator with `end` by `!=`,
-which can come from `==`. The range must have a complete type, and it
-must have both `begin` and `end`.
+which can come from `==`.
+:::
+
+:::{rule} RFOR-7
+:kind: reject
+:tests: statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/data-member-begin-counts.cpp
+
+These conditions apply to the loop of RFOR-2:
+
+- The range must have a complete type, and it must have both `begin`
+  and `end`.
+- A data member `begin` or `end` of type `int` makes the loop not valid
+  ({question}`Q-0098`).
+- Free functions that argument-dependent lookup does not find are not
+  used.
+- The iterator must have prefix `++`.
 :::
 
 :::{rule} RFOR-5

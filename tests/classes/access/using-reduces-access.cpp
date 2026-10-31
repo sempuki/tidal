@@ -1,4 +1,4 @@
-// tidal-rules: ACC-9
+// tidal-rules: ACC-2
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: is a private member

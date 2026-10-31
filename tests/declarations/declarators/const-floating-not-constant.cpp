@@ -1,4 +1,4 @@
-// tidal-rules: CV-8
+// tidal-rules: CV-11
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: value of .d. is not usable in a constant expression

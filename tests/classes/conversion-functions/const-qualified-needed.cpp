@@ -1,4 +1,4 @@
-// tidal-rules: CVF-1
+// tidal-rules: CVF-9
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion
 // tidal-error-gcc: discards qualifiers

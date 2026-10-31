@@ -1,4 +1,4 @@
-// tidal-rules: CPY-9
+// tidal-rules: CPY-24
 // tidal-expect: reject
 // tidal-error-clang: no matching constructor for initialization of .S
 // tidal-error-gcc: no matching function for call to .S::S

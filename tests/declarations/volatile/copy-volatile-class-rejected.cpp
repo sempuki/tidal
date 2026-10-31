@@ -1,4 +1,4 @@
-// tidal-rules: VOL-4
+// tidal-rules: VOL-11
 // tidal-expect: reject
 // tidal-error-clang: from .volatile S.|no matching constructor for initialization of .S
 // tidal-error-gcc: S\(volatile S&\)

@@ -1,4 +1,4 @@
-// tidal-rules: UNEV-1
+// tidal-rules: UNEV-5
 // tidal-expect: reject
 // tidal-error-clang: member access into incomplete type
 // tidal-error-gcc: invalid use of incomplete type

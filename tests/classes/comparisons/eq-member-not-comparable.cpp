@@ -1,4 +1,4 @@
-// tidal-rules: DCMP-2
+// tidal-rules: DCMP-9
 // tidal-expect: reject
 // tidal-error-clang: implicitly deleted
 // tidal-error-gcc: use of deleted function

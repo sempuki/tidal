@@ -1,4 +1,4 @@
-// tidal-rules: DER-18
+// tidal-rules: DER-22
 // tidal-expect: reject
 // tidal-error-clang: found in multiple base
 // tidal-error-gcc: request for member .* is ambiguous

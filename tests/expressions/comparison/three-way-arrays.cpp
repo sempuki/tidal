@@ -1,4 +1,4 @@
-// tidal-rules: CMP-11
+// tidal-rules: CMP-24
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression .*int\[2\]
 // tidal-error-gcc: invalid operands of types .int \[2\]. and .int \[2\]. to binary .operator<=>

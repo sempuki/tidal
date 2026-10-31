@@ -1,4 +1,4 @@
-// tidal-rules: CPY-4
+// tidal-rules: CPY-21
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted|call to deleted
 // tidal-error-gcc: use of deleted function

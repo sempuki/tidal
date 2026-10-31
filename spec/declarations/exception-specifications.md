@@ -15,7 +15,7 @@ constructors and destructors, constant expressions.
 ## Principles
 
 :::{principle} EXS-P1
-:rules: EXS-1 EXS-2
+:rules: EXS-1 EXS-7 EXS-2 EXS-8
 
 A `noexcept` specifier is part of the function's type, and the type is
 what travels: through type aliases, pointers, references, and
@@ -69,18 +69,26 @@ declarator. `noexcept` alone means `noexcept(true)`. A function with
 
 :::{rule} EXS-1
 :kind: required
-:tests: declarations/exception-specifications/forms.cpp declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/operand-later-member.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp declarations/exception-specifications/operand-uses-parameters.cpp
+:tests: declarations/exception-specifications/forms.cpp declarations/exception-specifications/operand-later-member.cpp declarations/exception-specifications/operand-uses-parameters.cpp
 
 The operand of `noexcept` is a constant expression that converts to
-`bool` without narrowing ({question}`Q-0078`). In a member function, the
-operand can name members declared later in the class. It can also use
-the parameters of the function. A list of types in
-the form `throw(T)` is not valid.
+`bool`. In a member function, the operand can name members declared
+later in the class. It can also use the parameters of the function.
+EXS-7 lists what is not valid.
+:::
+
+:::{rule} EXS-7
+:kind: reject
+:tests: declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp
+
+The operand of `noexcept` (EXS-1) must be a constant expression. Its
+conversion to `bool` must not narrow ({question}`Q-0078`). A list of
+types in the form `throw(T)` is not valid.
 :::
 
 :::{rule} EXS-2
 :kind: required
-:tests: declarations/exception-specifications/alias-noexcept-function.cpp declarations/exception-specifications/call-through-noexcept-pointer.cpp declarations/exception-specifications/decltype-keeps-noexcept.cpp declarations/exception-specifications/in-type.cpp declarations/exception-specifications/member-function-noexcept.cpp declarations/exception-specifications/nested-indirection.cpp declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp declarations/exception-specifications/overload-on-noexcept.cpp declarations/exception-specifications/parameter-noexcept-overloads.cpp declarations/exception-specifications/typedef-noexcept.cpp
+:tests: declarations/exception-specifications/alias-noexcept-function.cpp declarations/exception-specifications/call-through-noexcept-pointer.cpp declarations/exception-specifications/decltype-keeps-noexcept.cpp declarations/exception-specifications/in-type.cpp declarations/exception-specifications/member-function-noexcept.cpp declarations/exception-specifications/nested-indirection.cpp declarations/exception-specifications/parameter-noexcept-overloads.cpp declarations/exception-specifications/typedef-noexcept.cpp
 
 The `noexcept` specifier is part of a function type. It is kept in:
 
@@ -88,10 +96,17 @@ The `noexcept` specifier is part of a function type. It is kept in:
 - pointers to functions, at any depth, and pointers to member functions,
 - the type that `decltype` gives.
 
-A call through a pointer to a non-throwing function is non-throwing. Two
-declarations that differ only in `noexcept` are not overloads, and the
-second one is not valid. Parameter types that differ in `noexcept` are
-different types, so functions with them overload.
+A call through a pointer to a non-throwing function is non-throwing.
+Parameter types that differ in `noexcept` are different types, so
+functions with them overload. EXS-8 lists what is not valid.
+:::
+
+:::{rule} EXS-8
+:kind: reject
+:tests: declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp declarations/exception-specifications/overload-on-noexcept.cpp
+
+Two declarations that differ only in `noexcept` are not overloads
+(EXS-2), and the second one is not valid.
 :::
 
 :::{rule} EXS-3

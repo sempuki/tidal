@@ -14,7 +14,7 @@ storage duration and the storage class specifiers. Rules with the prefix
 ## Principles
 
 :::{principle} STO-P1
-:rules: STO-1 STO-2 STO-3 STO-4 STO-8 STO-9 STO-10
+:rules: STO-1 STO-2 STO-3 STO-4 STO-12 STO-8 STO-9 STO-10
 
 The place of a declaration and its storage class decide the storage
 duration of the variable ({principle}`OBJ-P2`). A block gives automatic
@@ -28,7 +28,7 @@ the reverse of the order in which their initialization completed.
 :::
 
 :::{principle} STO-P2
-:rules: STO-5 STO-6 STO-7 STO-11
+:rules: STO-5 STO-6 STO-7 STO-13 STO-11
 
 A storage class is one word in one place, and only on things that have
 storage. So two storage classes do not combine, except `thread_local`
@@ -40,7 +40,7 @@ which has no name to share, must be `static`.
 :::
 
 :::{principle} STO-P3
-:rules: LNK-1 LNK-2 LNK-3 LNK-5 LNK-8 LNK-9
+:rules: LNK-1 LNK-2 LNK-3 LNK-5 LNK-8 LNK-10 LNK-9
 
 Linkage says whether declarations in different scopes or translation
 units name one entity. A name at namespace scope is shared across the
@@ -75,12 +75,18 @@ duplicated definition is found when the program is linked, if at all.
 
 :::{rule} STO-4
 :kind: required
-:tests: declarations/storage-linkage/thread-local-combinations.cpp declarations/storage-linkage/thread-local-after-plain.cpp declarations/storage-linkage/plain-after-thread-local.cpp
+:tests: declarations/storage-linkage/thread-local-combinations.cpp
 
 A variable declared `thread_local` has thread {term}`storage duration`.
 `thread_local` can be combined with `static` or `extern`. In a block, it
-implies `static`. All declarations of a variable must agree on
-`thread_local`.
+implies `static`. STO-12 lists what is not valid.
+:::
+
+:::{rule} STO-12
+:kind: reject
+:tests: declarations/storage-linkage/thread-local-after-plain.cpp declarations/storage-linkage/plain-after-thread-local.cpp
+
+All declarations of a variable must agree on `thread_local` (STO-4).
 :::
 
 :::{rule} STO-5
@@ -111,13 +117,20 @@ A declaration must not:
 
 :::{rule} STO-7
 :kind: required
-:tests: declarations/storage-linkage/block-extern-same-unit.cpp declarations/storage-linkage/block-extern-initializer.cpp declarations/storage-linkage/block-extern-after-local.cpp declarations/storage-linkage/extern-with-initializer.cpp
+:tests: declarations/storage-linkage/block-extern-same-unit.cpp declarations/storage-linkage/extern-with-initializer.cpp
 
 A block-scope `extern` declaration refers to a variable with linkage
-outside the block. It must not have an initializer, or follow a local
-variable of the same name in the same block. At namespace scope, `extern`
-with an initializer is a definition. LNK-9 says which entity a block-scope
-`extern` declaration refers to.
+outside the block. At namespace scope, `extern` with an initializer is a
+definition. LNK-9 says which entity a block-scope `extern` declaration
+refers to. STO-13 lists what is not valid.
+:::
+
+:::{rule} STO-13
+:kind: reject
+:tests: declarations/storage-linkage/block-extern-initializer.cpp declarations/storage-linkage/block-extern-after-local.cpp
+
+A block-scope `extern` declaration (STO-7) must not have an initializer,
+or follow a local variable of the same name in the same block.
 :::
 
 :::{rule} LNK-1
@@ -169,12 +182,19 @@ to an entity of its own translation unit only.
 
 :::{rule} LNK-8
 :kind: required
-:tests: declarations/storage-linkage/static-then-extern.cpp declarations/storage-linkage/extern-then-static.cpp declarations/storage-linkage/function-then-static.cpp
+:tests: declarations/storage-linkage/static-then-extern.cpp
 
 A later `extern` declaration keeps the internal linkage of an earlier
 `static` declaration. A later function declaration without a storage class
-also keeps it. A `static` declaration must not follow a declaration with
-external linkage.
+also keeps it. LNK-10 lists what is not valid.
+:::
+
+:::{rule} LNK-10
+:kind: reject
+:tests: declarations/storage-linkage/extern-then-static.cpp declarations/storage-linkage/function-then-static.cpp
+
+A `static` declaration must not follow a declaration with external
+linkage (LNK-8).
 :::
 
 :::{rule} LNK-9

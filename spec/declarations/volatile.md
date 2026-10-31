@@ -12,7 +12,7 @@ conversions, copy and move.
 ## Principles
 
 :::{principle} VOL-P1
-:rules: VOL-1 VOL-6
+:rules: VOL-1 VOL-8 VOL-6
 
 `volatile` marks an object whose accesses the program can observe, so
 each read and each write through a volatile path is performed as
@@ -24,7 +24,7 @@ observable effect.
 :::
 
 :::{principle} VOL-P2
-:rules: VOL-2 VOL-3 VOL-4 VOL-7
+:rules: VOL-2 VOL-9 VOL-3 VOL-10 VOL-4 VOL-11 VOL-7
 
 `volatile` is a qualifier, and it follows the rules that `const`
 follows ({principle}`DCL-P4`). A conversion can add it and cannot
@@ -52,36 +52,60 @@ parameter list, as `const` can.
 
 :::{rule} VOL-2
 :kind: required
-:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
+:tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
 
 A member function declared `volatile` can be called on a volatile object
-and on other objects. A member function that is not `volatile` cannot be
-called on a volatile object. Two member functions can overload on
+and on other objects. Two member functions can overload on
 `volatile`. A member of a volatile object is volatile. A `static const
 volatile` integer member can have an initializer in its class
 ({question}`Q-0080`). A volatile object of class type is initialized by
 an ordinary constructor. It is volatile after the constructor ends.
 :::
 
+:::{rule} VOL-9
+:kind: reject
+:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp
+
+A member function that is not `volatile` (VOL-2) cannot be called on a
+volatile object.
+:::
+
 :::{rule} VOL-3
 :kind: required
-:tests: declarations/volatile/const-cast-removes.cpp declarations/volatile/const-ref-volatile-no-temporary.cpp declarations/volatile/overload-param-volatile-ref.cpp declarations/volatile/pointer-add-volatile.cpp declarations/volatile/pointer-remove-volatile.cpp declarations/volatile/ref-plain-to-volatile.cpp declarations/volatile/ref-volatile-to-plain.cpp
+:tests: declarations/volatile/const-cast-removes.cpp declarations/volatile/overload-param-volatile-ref.cpp declarations/volatile/pointer-add-volatile.cpp declarations/volatile/ref-volatile-to-plain.cpp
 
 A conversion can add `volatile` to the target of a pointer or reference.
-It cannot remove it, except by `const_cast`. So a reference that is not
+`const_cast` can remove it. Overload resolution can choose between `T&`
+and `volatile T&`. VOL-10 lists what is not valid.
+:::
+
+:::{rule} VOL-10
+:kind: reject
+:tests: declarations/volatile/const-ref-volatile-no-temporary.cpp declarations/volatile/pointer-remove-volatile.cpp declarations/volatile/ref-plain-to-volatile.cpp
+
+A conversion other than `const_cast` cannot remove `volatile` from the
+target of a pointer or reference (VOL-3). So a reference that is not
 `volatile` does not bind to a volatile object, and a `const volatile`
-reference does not bind to a temporary. Overload resolution can choose
-between `T&` and `volatile T&`.
+reference does not bind to a temporary.
 :::
 
 :::{rule} VOL-4
 :kind: required
-:tests: declarations/volatile/assign-to-volatile-class.cpp declarations/volatile/copy-volatile-class-rejected.cpp declarations/volatile/copy-volatile-scalar-ok.cpp declarations/volatile/volatile-class-user-copy.cpp
+:tests: declarations/volatile/copy-volatile-scalar-ok.cpp declarations/volatile/volatile-class-user-copy.cpp
 
-A volatile object of scalar type can be copied. The implicit copy
-functions of a class take `const T&`, which does not bind to a volatile
-object. A volatile class object can only be copied or assigned with
-functions that the class declares for volatile operands.
+A volatile object of scalar type can be copied. A volatile class object
+can be copied or assigned with functions that the class declares for
+volatile operands. VOL-11 lists what is not valid.
+:::
+
+:::{rule} VOL-11
+:kind: reject
+:tests: declarations/volatile/assign-to-volatile-class.cpp declarations/volatile/copy-volatile-class-rejected.cpp
+
+The implicit copy functions of a class take `const T&`, which does not
+bind to a volatile object. A volatile class object can only be copied or
+assigned with functions that the class declares for volatile operands
+(VOL-4).
 :::
 
 :::{rule} VOL-7
@@ -91,18 +115,25 @@ functions that the class declares for volatile operands.
 A constructor or a destructor must not be declared `volatile`.
 :::
 
+:::{rule} VOL-8
+:kind: reject
+:tests: declarations/volatile/constant-read-rejected.cpp
+
+Constant evaluation cannot read a volatile object (VOL-1).
+:::
+
 ## Runtime Behavior
 
 :::{rule} VOL-1
 :kind: required
-:tests: declarations/volatile/access-run.cpp declarations/volatile/constant-read-rejected.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
+:tests: declarations/volatile/access-run.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
 
 Each read and each write of an object through a volatile lvalue is an
 observable effect *(referenced)*. The implementation performs it. The
 type of a volatile variable keeps `volatile`, but the result of an
-arithmetic operation on its value does not. Constant evaluation cannot
-read a volatile object. A `const volatile` variable at namespace scope has
-external linkage, so all translation units share it.
+arithmetic operation on its value does not. A `const volatile` variable
+at namespace scope has external linkage, so all translation units share
+it.
 :::
 
 ## Undefined Behavior

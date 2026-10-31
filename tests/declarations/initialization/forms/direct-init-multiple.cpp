@@ -1,4 +1,4 @@
-// tidal-rules: INIT-4
+// tidal-rules: INIT-7
 // tidal-expect: reject
 // tidal-error-clang: excess elements in scalar initializer
 // tidal-error-gcc: expression list treated as compound expression

@@ -1,4 +1,4 @@
-// tidal-rules: LNK-8
+// tidal-rules: LNK-10
 // tidal-expect: reject
 // tidal-error-clang: static declaration of .g. follows non-static declaration
 // tidal-error-gcc: was declared .extern. and later .static

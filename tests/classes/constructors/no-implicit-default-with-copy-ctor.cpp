@@ -1,4 +1,4 @@
-// tidal-rules: CTOR-2
+// tidal-rules: CTOR-19
 // tidal-expect: reject
 // tidal-error-clang: no matching constructor for initialization of .S
 // tidal-error-gcc: no matching function for call to .S::S\(\)

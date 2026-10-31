@@ -1,4 +1,4 @@
-// tidal-rules: VC-1
+// tidal-rules: VC-14
 // tidal-expect: reject
 // tidal-error-clang: rvalue reference to type .int. cannot bind to lvalue
 // tidal-error-gcc: cannot bind rvalue reference of type .int&&. to lvalue

@@ -1,4 +1,4 @@
-// tidal-rules: REF-1
+// tidal-rules: REF-8
 // tidal-expect: reject
 // tidal-error-clang: drops .const. qualifier
 // tidal-error-gcc: discards qualifiers

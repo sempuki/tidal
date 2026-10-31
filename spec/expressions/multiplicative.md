@@ -7,7 +7,7 @@ function call *(overload resolution referenced)*.
 ## Principles
 
 :::{principle} MUL-P1
-:rules: MUL-1 MUL-2 MUL-3 MUL-4 MUL-5 MUL-15
+:rules: MUL-1 MUL-2 MUL-3 MUL-4 MUL-5 MUL-15 MUL-19
 
 The multiplicative operators compute on numbers, so their operands are
 the types that hold numbers: the arithmetic types and the unscoped
@@ -108,11 +108,17 @@ enumeration type. An operand of `%` must not have floating-point type.
 
 :::{rule} MUL-5
 :kind: required
-:tests: expressions/multiplicative/result-types.cpp expressions/multiplicative/result-prvalue-address.cpp expressions/multiplicative/result-prvalue-assign.cpp
+:tests: expressions/multiplicative/result-types.cpp
 
 Both operands go through the {term}`usual arithmetic conversions`. The
 result has the common type and is a prvalue (see {term}`value category`).
-A program cannot assign to the result or take its address.
+:::
+
+:::{rule} MUL-19
+:kind: reject
+:tests: expressions/multiplicative/result-prvalue-address.cpp expressions/multiplicative/result-prvalue-assign.cpp
+
+A program cannot assign to the result of MUL-5 or take its address.
 :::
 
 ## Runtime Behavior

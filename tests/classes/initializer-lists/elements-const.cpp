@@ -1,4 +1,4 @@
-// tidal-rules: ILC-5
+// tidal-rules: ILC-9
 // tidal-expect: reject
 // tidal-error-clang: read-only variable is not assignable
 // tidal-error-gcc: assignment of read-only location

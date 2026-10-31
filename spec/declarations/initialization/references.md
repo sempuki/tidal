@@ -7,7 +7,7 @@ accepts, when a temporary object is created, and how long it lives.
 ## Principles
 
 :::{principle} REF-P1
-:rules: REF-1 REF-2 REF-3 REF-6
+:rules: REF-1 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives it that object. What a
@@ -46,47 +46,78 @@ defined meaning.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp
 
 A non-`const` lvalue reference binds directly to an lvalue. The reference
-and the lvalue are then the same object. The lvalue must have the same
+and the lvalue are then the same object. The lvalue can have the same
 type, the same type with fewer {term}`cv-qualifiers <cv-qualifier>`, or
 a class derived from the type through an accessible base. A reference
-to an array of unknown bound binds to an array of known bound. A
-non-`const` lvalue reference must not bind to a bit-field.
+to an array of unknown bound binds to an array of known bound. REF-8
+lists what is not valid.
+:::
+
+:::{rule} REF-8
+:kind: reject
+:tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp
+
+The lvalue that a non-`const` lvalue reference binds to must have one of
+the types that REF-1 lists. A non-`const` lvalue reference must not bind
+to a bit-field.
 :::
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/const-volatile-ref-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp
 
 A `const` lvalue reference that is not `volatile` can also bind to an
 rvalue. It can also bind to an expression of a different type that
 converts to its type, and to a bit-field. If the rvalue is an xvalue of the
 same type, or a class rvalue, the reference binds to that object
 directly. In the other cases, the reference binds to a temporary object
-that holds a copy of the value.
+that holds a copy of the value. REF-9 lists what is not valid.
+:::
+
+:::{rule} REF-9
+:kind: reject
+:tests: declarations/initialization/references/const-volatile-ref-rvalue.cpp
+
+An lvalue reference that is `volatile`, or that is not `const`, must not
+bind to an rvalue.
 :::
 
 :::{rule} REF-3
 :kind: required
-:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp
+:tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp
 
 An rvalue reference to an object type binds to an rvalue, including an
 xvalue. It can bind to an lvalue of a different type through a temporary
-object, as REF-2 gives. It must not bind to an lvalue of the same type, or
-of a class derived from that type, and it must not drop a cv-qualifier
-of the object. An rvalue reference to a function type
-binds to a function.
+object, as REF-2 gives. An rvalue reference to a function type binds to
+a function. REF-10 lists what is not valid.
+:::
+
+:::{rule} REF-10
+:kind: reject
+:tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp
+
+An rvalue reference to an object type must not bind to an lvalue of the
+same type, or of a class derived from that type. It must not drop a
+cv-qualifier of the object.
 :::
 
 :::{rule} REF-6
 :kind: required
-:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp
+:tests: declarations/initialization/references/braced-reference.cpp
 
-A reference can be initialized with `=`, parentheses, or braces. The
-initializer must hold exactly one expression. In braces, a narrowing
-conversion must not occur (LIST-2).
+A reference can be initialized with `=`, parentheses, or braces. REF-11
+lists what is not valid.
+:::
+
+:::{rule} REF-11
+:kind: reject
+:tests: declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp
+
+The initializer of a reference must hold exactly one expression. In
+braces, a narrowing conversion must not occur (LIST-2).
 :::
 
 ## Runtime Behavior

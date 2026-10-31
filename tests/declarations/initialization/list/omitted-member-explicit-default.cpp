@@ -1,4 +1,4 @@
-// tidal-rules: LIST-8
+// tidal-rules: LIST-16
 // tidal-expect: reject
 // tidal-error-clang: chosen constructor is explicit in copy-initialization
 // tidal-error-gcc: would use explicit constructor

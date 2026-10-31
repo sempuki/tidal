@@ -1,4 +1,4 @@
-// tidal-rules: NS-5
+// tidal-rules: NS-14
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .ln. as different kind of symbol
 // tidal-error-gcc: namespace alias .ln. not allowed here

@@ -1,4 +1,4 @@
-// tidal-rules: ACC-7
+// tidal-rules: ACC-17
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier
 // tidal-error-gcc: was not declared in this scope

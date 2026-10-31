@@ -1,4 +1,4 @@
-// tidal-rules: REF-2
+// tidal-rules: REF-9
 // tidal-expect: reject
 // tidal-error-clang: volatile lvalue reference .* cannot bind to a temporary
 // tidal-error-gcc: cannot bind lvalue reference of type .const volatile int&. to an rvalue

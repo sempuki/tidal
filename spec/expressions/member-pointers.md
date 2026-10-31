@@ -52,7 +52,7 @@ ordinary pointers.
 :::
 
 :::{principle} MPTR-P4
-:rules: MPTR-5 MPTR-7 MPTR-6
+:rules: MPTR-5 MPTR-7 MPTR-6 MPTR-12
 
 Pointers to members have no order, so only equality is defined. Pointers
 to virtual functions compare by implementation detail, so their
@@ -191,12 +191,21 @@ These conversions are not valid:
 
 :::{rule} MPTR-5
 :kind: required
-:tests: expressions/member-pointers/compare-equal.cpp expressions/member-pointers/compare-relational.cpp expressions/member-pointers/virtual-vs-null.cpp expressions/member-pointers/union-members-equal.cpp
+:tests: expressions/member-pointers/compare-equal.cpp expressions/member-pointers/virtual-vs-null.cpp expressions/member-pointers/union-members-equal.cpp
 
 Two pointers to members can be compared with `==` and `!=`, also with
-`nullptr`. Relational operators do not apply to them. A pointer to a
-virtual member function compares unequal to a null pointer to member.
-Pointers to two members of one union with the same type compare equal.
+`nullptr`. A pointer to a virtual member function compares unequal to a
+null pointer to member. Pointers to two members of one union with the
+same type compare equal.
+:::
+
+:::{rule} MPTR-12
+:kind: reject
+:tests: expressions/member-pointers/compare-relational.cpp expressions/member-pointers/compare-three-way.cpp
+
+Members have no order, so a program must not compare two member
+pointers with `<`, `>`, `<=`, `>=`, or `<=>`. MPTR-5 gives the
+comparisons that are valid.
 :::
 
 ## Undefined Behavior

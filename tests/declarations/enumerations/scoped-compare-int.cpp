@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-3
+// tidal-rules: ENUM-16
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression \(.E. and .int.\)
 // tidal-error-gcc: no match for .operator==

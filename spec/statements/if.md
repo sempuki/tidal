@@ -49,7 +49,7 @@ any statement.
 :::
 
 :::{principle} IF-P3
-:rules: IF-13 IF-14 IF-15 IF-16 IF-17
+:rules: IF-13 IF-14 IF-15 IF-16 IF-17 IF-22 IF-23
 
 `if constexpr` moves the decision to translation. The condition is a
 constant, so the implementation knows which branch is dead and discards
@@ -62,7 +62,7 @@ cannot enter a branch that was never selected.
 :::
 
 :::{principle} IF-P4
-:rules: IF-18 IF-19 IF-20
+:rules: IF-18 IF-19 IF-20 IF-24
 
 `if consteval` asks which mode the program is running in
 ({principle}`TR-P4`). The first branch runs in constant evaluation and
@@ -156,7 +156,7 @@ The initializer must not be a declaration of another kind, such as a
 :::
 
 :::{rule} IF-8
-:kind: required
+:kind: reject
 :tests: statements/if/substatement-scope.cpp
 
 Each branch has its own scope. This is also true for a branch without
@@ -190,13 +190,21 @@ the first one.
 
 :::{rule} IF-13
 :kind: required
-:tests: statements/if/constexpr-discard-in-template.cpp statements/if/constexpr-template-nondependent-checked.cpp
+:tests: statements/if/constexpr-discard-in-template.cpp
 
 In the `if constexpr` form, the branch that the condition does not select
 is a {term}`discarded statement`. In a template, a discarded statement is
 not instantiated. It can contain code that is not valid for the template
-arguments. The implementation still checks the parts of it that are the
-same for every template argument.
+arguments.
+:::
+
+:::{rule} IF-22
+:kind: reject
+:tests: statements/if/constexpr-template-nondependent-checked.cpp
+
+In a template, the parts of a {term}`discarded statement` that are the
+same for every template argument must be valid (IF-13). The
+implementation checks them.
 :::
 
 :::{rule} IF-14
@@ -209,10 +217,17 @@ return type deduction. This applies in templates and in other functions.
 
 :::{rule} IF-15
 :kind: required
-:tests: statements/if/constexpr-non-template-checked.cpp statements/if/constexpr-non-template-no-definition.cpp
+:tests: statements/if/constexpr-non-template-no-definition.cpp
 
-Outside a template, a discarded statement must be valid. A function or
-variable that only discarded statements use needs no definition.
+A function or variable that only discarded statements use needs no
+definition.
+:::
+
+:::{rule} IF-23
+:kind: reject
+:tests: statements/if/constexpr-non-template-checked.cpp
+
+Outside a template, a {term}`discarded statement` must be valid (IF-15).
 :::
 
 :::{rule} IF-16
@@ -235,13 +250,19 @@ branches.
 
 :::{rule} IF-19
 :kind: required
-:tests: statements/if/consteval-immediate-context.cpp statements/if/not-consteval-else-immediate.cpp statements/if/consteval-immediate-outside.cpp
+:tests: statements/if/consteval-immediate-context.cpp statements/if/not-consteval-else-immediate.cpp
 
 The branch that executes during constant evaluation is an
 {term}`immediate function context`. This is the then branch of
-`if consteval` and the else branch of `if !consteval`. A call to a
-`consteval` function with arguments that are not constant is valid only
-in that branch.
+`if consteval` and the else branch of `if !consteval`.
+:::
+
+:::{rule} IF-24
+:kind: reject
+:tests: statements/if/consteval-immediate-outside.cpp
+
+A call to a `consteval` function with arguments that are not constant is
+valid only in the branch that IF-19 gives.
 :::
 
 :::{rule} IF-20

@@ -1,4 +1,4 @@
-// tidal-rules: CLS-12
+// tidal-rules: CLS-28
 // tidal-expect: reject
 // tidal-error-clang: function definition is not allowed here
 // tidal-error-gcc: qualified-id in declaration

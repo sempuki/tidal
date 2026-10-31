@@ -1,4 +1,4 @@
-// tidal-rules: ASN-6
+// tidal-rules: ASN-14
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed
 // tidal-error-gcc: narrowing conversion

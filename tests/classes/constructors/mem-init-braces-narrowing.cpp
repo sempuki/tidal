@@ -1,4 +1,4 @@
-// tidal-rules: CTOR-5
+// tidal-rules: CTOR-21
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed
 // tidal-error-gcc: narrowing conversion

@@ -1,4 +1,4 @@
-// tidal-rules: CLS-5
+// tidal-rules: CLS-25
 // tidal-expect: reject
 // tidal-error-clang: but function is not marked const
 // tidal-error-gcc: passing .const S. as .this. argument discards qualifiers

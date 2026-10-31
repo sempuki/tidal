@@ -1,4 +1,4 @@
-// tidal-rules: CLS-12
+// tidal-rules: CLS-28
 // tidal-expect: reject
 // tidal-error-clang: no matching function found in local scope|cannot define friend function in a local class
 // tidal-error-gcc: cannot define friend function .h. in a local class definition

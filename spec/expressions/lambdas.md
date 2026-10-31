@@ -7,7 +7,7 @@ can capture variables from the enclosing scope.
 ## Principles
 
 :::{principle} LAM-P1
-:rules: LAM-1 LAM-2 LAM-3 LAM-12 LAM-13 LAM-15 LAM-16 LAM-14
+:rules: LAM-1 LAM-2 LAM-3 LAM-12 LAM-13 LAM-15 LAM-16 LAM-14 LAM-22 LAM-23 LAM-27
 
 A lambda expression is a class written in place. It makes a closure
 type that no other expression shares, with a call operator whose
@@ -22,7 +22,7 @@ no evaluation happens.
 :::
 
 :::{principle} LAM-P2
-:rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-18
+:rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-18 LAM-24
 
 Captures are how the closure reaches the automatic variables of the
 enclosing function. A capture by copy is a member that the enclosing
@@ -48,7 +48,7 @@ without a capture that holds it.
 :::
 
 :::{principle} LAM-P4
-:rules: LAM-10 LAM-11
+:rules: LAM-10 LAM-11 LAM-25 LAM-26
 
 A closure with no captures carries no state, so it is as good as a
 function. It converts to a pointer to function, and its type can be
@@ -82,12 +82,21 @@ behind a copy default, so an implementation should warn about it.
 
 :::{rule} LAM-1
 :kind: required
-:tests: expressions/lambdas/default-arguments.cpp expressions/lambdas/immediately-invoked.cpp expressions/lambdas/return-deduction.cpp expressions/lambdas/syntax-forms.cpp
+:tests: expressions/lambdas/default-arguments.cpp expressions/lambdas/immediately-invoked.cpp expressions/lambdas/syntax-forms.cpp
 
 A lambda can have parameters, default arguments, and a trailing return
 type. Without a trailing return type, the return type comes from its
 `return` statements, as for a function with an `auto` return type. A
 program can call a lambda in the expression that creates it.
+:::
+
+:::{rule} LAM-22
+:kind: reject
+:tests: expressions/lambdas/return-deduction.cpp
+
+Without a trailing return type, all `return` statements of a lambda must
+give the same type, as for a function with an `auto` return type
+(LAM-1).
 :::
 
 :::{rule} LAM-2
@@ -100,11 +109,18 @@ never have the same type.
 
 :::{rule} LAM-3
 :kind: required
-:tests: expressions/lambdas/const-call-operator.cpp expressions/lambdas/mutable.cpp expressions/lambdas/modify-through-reference-capture.cpp
+:tests: expressions/lambdas/mutable.cpp expressions/lambdas/modify-through-reference-capture.cpp
 
-The call operator is `const` unless the lambda is `mutable`. Without
-`mutable`, the body must not change a variable captured by copy. A variable captured by reference can be changed
-also without `mutable`.
+The call operator is `const` unless the lambda is `mutable`. A variable
+captured by reference can be changed also without `mutable`.
+:::
+
+:::{rule} LAM-23
+:kind: reject
+:tests: expressions/lambdas/const-call-operator.cpp
+
+Without `mutable`, the body must not change a variable captured by copy
+(LAM-3).
 :::
 
 :::{rule} LAM-5
@@ -145,12 +161,19 @@ can use an outer variable with the same name as the capture.
 
 :::{rule} LAM-8
 :kind: required
-:tests: expressions/lambdas/capture-this.cpp expressions/lambdas/this-outside-member.cpp expressions/lambdas/default-member-initializer-captures-this.cpp
+:tests: expressions/lambdas/capture-this.cpp expressions/lambdas/default-member-initializer-captures-this.cpp
 
 In a member function, `[this]` captures the object by reference, and
 `[*this]` captures a copy of it. A lambda in a default member initializer
-can capture `this` too. Any other lambda outside a member function must
-not capture `this`.
+can capture `this` too.
+:::
+
+:::{rule} LAM-24
+:kind: reject
+:tests: expressions/lambdas/this-outside-member.cpp
+
+The lambdas that LAM-8 gives are the only ones that can capture `this`.
+Any other lambda outside a member function must not capture `this`.
 :::
 
 :::{rule} LAM-9
@@ -165,20 +188,35 @@ variables need no capture.
 
 :::{rule} LAM-10
 :kind: required
-:tests: expressions/lambdas/capturing-no-function-pointer.cpp expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp
+:tests: expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp
 
 A lambda without captures converts to a pointer to a function with the
-same parameters and return type. A lambda with captures does not. For a `noexcept` lambda, the pointer is a pointer
-to a `noexcept` function.
+same parameters and return type. For a `noexcept` lambda, the pointer is
+a pointer to a `noexcept` function.
+:::
+
+:::{rule} LAM-25
+:kind: reject
+:tests: expressions/lambdas/capturing-no-function-pointer.cpp
+
+A lambda with captures does not convert to a pointer to a function
+(LAM-10).
 :::
 
 :::{rule} LAM-11
 :kind: required
-:tests: expressions/lambdas/capturing-not-default-constructible.cpp expressions/lambdas/default-constructible.cpp expressions/lambdas/closure-copy-assign-deleted.cpp
+:tests: expressions/lambdas/default-constructible.cpp
 
 The closure type of a lambda without captures can be default-constructed
-and assigned. The closure type of a lambda with captures cannot be
-default-constructed.
+and assigned.
+:::
+
+:::{rule} LAM-26
+:kind: reject
+:tests: expressions/lambdas/capturing-not-default-constructible.cpp expressions/lambdas/closure-copy-assign-deleted.cpp
+
+The closure type of a lambda with captures cannot be default-constructed
+or assigned (LAM-11).
 :::
 
 :::{rule} LAM-12
@@ -191,10 +229,16 @@ call such a lambda during {term}`constant evaluation`.
 
 :::{rule} LAM-13
 :kind: required
-:tests: expressions/lambdas/static-call-operator.cpp expressions/lambdas/static-with-capture.cpp
+:tests: expressions/lambdas/static-call-operator.cpp
 
-A lambda declared `static` has a static call operator. It must not have
-captures.
+A lambda declared `static` has a static call operator.
+:::
+
+:::{rule} LAM-27
+:kind: reject
+:tests: expressions/lambdas/static-with-capture.cpp
+
+A lambda declared `static` must not have captures (LAM-13).
 :::
 
 :::{rule} LAM-14

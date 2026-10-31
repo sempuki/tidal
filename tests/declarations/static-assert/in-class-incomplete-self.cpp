@@ -1,4 +1,4 @@
-// tidal-rules: SA-2
+// tidal-rules: SA-6
 // tidal-expect: reject
 // tidal-error-clang: sizeof.*incomplete type
 // tidal-error-gcc: sizeof.*incomplete type

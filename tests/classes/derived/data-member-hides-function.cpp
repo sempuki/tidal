@@ -1,4 +1,4 @@
-// tidal-rules: DER-3
+// tidal-rules: DER-19
 // tidal-expect: reject
 // tidal-error-clang: is not a function or function pointer
 // tidal-error-gcc: cannot be used as a function

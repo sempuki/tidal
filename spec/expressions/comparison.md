@@ -20,7 +20,7 @@ tightly than both, and each group associates to the left, which is why
 :::
 
 :::{principle} CMP-P2
-:rules: CMP-6 CMP-9 CMP-10 CMP-11 CMP-19
+:rules: CMP-6 CMP-9 CMP-10 CMP-11 CMP-19 CMP-23 CMP-24
 
 Two operands can be compared when they are the same kind of thing, or
 one converts to the other's kind. Two pointers compare when one
@@ -60,7 +60,7 @@ greater than anything. So every comparison with a NaN is `false`, except
 :::
 
 :::{principle} CMP-P5
-:rules: CMP-12 CMP-13 CMP-17 CMP-18
+:rules: CMP-12 CMP-13 CMP-17 CMP-18 CMP-25
 
 `<=>` compares once and gives an ordering value: `strong_ordering`
 where equal values are the same, as for integers and object pointers,
@@ -135,31 +135,53 @@ A comparison must not have these operands:
 
 :::{rule} CMP-10
 :kind: required
-:tests: expressions/comparison/scoped-enum-same.cpp expressions/comparison/scoped-enum-different.cpp
+:tests: expressions/comparison/scoped-enum-same.cpp
 
-Two values of the same scoped enumeration can be compared. Values of two
-different scoped enumerations must not be compared.
+Two values of the same scoped enumeration can be compared.
+:::
+
+:::{rule} CMP-23
+:kind: reject
+:tests: expressions/comparison/scoped-enum-different.cpp
+
+Values of two different scoped enumerations must not be compared
+(CMP-10).
 :::
 
 :::{rule} CMP-11
 :kind: required
-:tests: expressions/comparison/array-comparison.cpp expressions/comparison/three-way-arrays.cpp
+:tests: expressions/comparison/array-comparison.cpp
 
 If both operands of `==`, `!=`, `<`, `>`, `<=`, or `>=` are arrays, each
 converts to a pointer to its first element. The comparison then compares
-the addresses. `<=>` must not have two array operands.
+the addresses.
+:::
+
+:::{rule} CMP-24
+:kind: reject
+:tests: expressions/comparison/three-way-arrays.cpp
+
+`<=>` must not have two array operands (CMP-11).
 :::
 
 :::{rule} CMP-12
 :kind: required
-:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-precedence.cpp expressions/comparison/three-way-function-pointers.cpp expressions/comparison/three-way-member-pointers.cpp expressions/comparison/three-way-nullptr-values.cpp expressions/comparison/three-way-function-pointer-nullptr.cpp
+:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-precedence.cpp
 
 `<=>` on integer, enumeration, or object pointer operands gives
 `std::strong_ordering`. On floating-point operands it gives
-`std::partial_ordering`. These types come from the library *(referenced)*,
-and must be declared before `<=>` is used. `<=>` must not compare two
-function pointers, a function pointer and `nullptr`, two pointers to
-members, or two values of the type of `nullptr`.
+`std::partial_ordering`. These types come from the library
+*(referenced)*.
+:::
+
+:::{rule} CMP-25
+:kind: reject
+:tests: expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-function-pointers.cpp expressions/comparison/three-way-member-pointers.cpp expressions/comparison/three-way-nullptr-values.cpp expressions/comparison/three-way-function-pointer-nullptr.cpp
+
+The types that CMP-12 gives must be declared before `<=>` is used.
+`<=>` must not compare two function pointers, a function pointer and
+`nullptr`, two pointers to members, or two values of the type of
+`nullptr`.
 :::
 
 :::{rule} CMP-13

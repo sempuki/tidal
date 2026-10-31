@@ -13,7 +13,7 @@ resolution *(referenced)*, deleted and defaulted functions.
 ## Principles
 
 :::{principle} CPY-P1
-:rules: CPY-1 CPY-2 CPY-3 CPY-15 CPY-16 CPY-8
+:rules: CPY-1 CPY-2 CPY-3 CPY-15 CPY-16 CPY-8 CPY-20
 
 A class object is copied or moved part by part: the bases in the order
 of the base list, then the members in the order of their declarations,
@@ -27,7 +27,7 @@ would need itself to copy its argument.
 :::
 
 :::{principle} CPY-P2
-:rules: CPY-4 CPY-5 CPY-6
+:rules: CPY-4 CPY-5 CPY-6 CPY-21 CPY-22
 
 The implementation writes these four functions for a class unless the
 class writes them, because part-by-part copying is right for most
@@ -50,7 +50,7 @@ resource, and both objects release it (NEW-5).
 :::
 
 :::{principle} CPY-P3
-:rules: CPY-7 CPY-14 CPY-17
+:rules: CPY-7 CPY-14 CPY-17 CPY-23 CPY-26
 
 When a part cannot be copied or moved part by part, the implicit function
 is not an error. It is deleted, so the problem appears only at a use. A
@@ -65,7 +65,7 @@ that works, because by then the class has promised it.
 :::
 
 :::{principle} CPY-P4
-:rules: CPY-9 CPY-10 CPY-11
+:rules: CPY-9 CPY-10 CPY-11 CPY-24 CPY-25
 
 Whether a copy or a move happens follows from the value category of the
 source. An lvalue copies. An rvalue moves if it can and copies if it
@@ -115,12 +115,20 @@ The four functions are the *copy and move functions* of a class. A
 
 :::{rule} CPY-1
 :kind: required
-:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp
+:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp
 
 A *copy constructor* of class `T` is a constructor that is not a template.
 Its first parameter is `T&`, `const T&`, `volatile T&`, or
 `const volatile T&`. Each other parameter has a default argument. A
 constructor template is never a copy constructor.
+:::
+
+:::{rule} CPY-20
+:kind: reject
+:tests: classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp
+
+A copy constructor whose first parameter is `T&` or `volatile T&` cannot
+copy a `const` object.
 :::
 
 :::{rule} CPY-15
@@ -164,13 +172,20 @@ valid.
 
 :::{rule} CPY-4
 :kind: required
-:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp
+:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp
 
 If a class has no user-declared copy constructor, it has an implicit one.
 If it has no user-declared copy assignment operator, it has an implicit
 one. Each implicit copy function is deleted if the class has a
 user-declared move constructor or move assignment operator. A
 user-declared destructor does not remove them.
+:::
+
+:::{rule} CPY-21
+:kind: reject
+:tests: classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp
+
+A program must not use an implicit copy function that CPY-4 deletes.
 :::
 
 :::{rule} CPY-5
@@ -189,7 +204,7 @@ If a class has no move function, an rvalue uses the copy function.
 
 :::{rule} CPY-6
 :kind: required
-:tests: classes/copy-move/assign-result-lvalue.cpp classes/copy-move/implicit-copy-assign-nonconst.cpp classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp classes/copy-move/implicit-copy-nonconst-from-member.cpp classes/copy-move/derived-assign-hides-base.cpp
+:tests: classes/copy-move/assign-result-lvalue.cpp classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp
 
 The implicit copy constructor takes `const T&` if each base and member
 can be copied from a `const` object. If not, it takes `T&`. The same
@@ -199,9 +214,18 @@ copy assignment operator of a derived class hides all assignment
 operators of its bases.
 :::
 
+:::{rule} CPY-22
+:kind: reject
+:tests: classes/copy-move/implicit-copy-assign-nonconst.cpp classes/copy-move/implicit-copy-nonconst-from-member.cpp classes/copy-move/derived-assign-hides-base.cpp
+
+An implicit copy function that takes `T&` cannot copy a `const` object.
+An assignment to an object of a derived class does not use a base
+assignment operator that CPY-6 hides.
+:::
+
 :::{rule} CPY-7
 :kind: required
-:tests: classes/copy-move/const-member-assign.cpp classes/copy-move/const-member-move-assign.cpp classes/copy-move/defaulted-copy-deleted-used.cpp classes/copy-move/deleted-copy-move-only-member.cpp classes/copy-move/deleted-copy-private-member.cpp classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/explicitly-deleted-move-not-ignored.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-assign.cpp classes/copy-move/reference-member-copy-ctor.cpp classes/copy-move/rvalue-ref-member-copy-deleted.cpp classes/copy-move/copy-deleted-by-member-dtor.cpp
+:tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp
 
 An implicit or defaulted copy or move function is deleted if a base or
 member cannot be copied or moved in the same way. A function that is
@@ -214,15 +238,30 @@ in overload resolution, so an rvalue uses the copy function. A move
 function that the program deletes explicitly takes part.
 :::
 
+:::{rule} CPY-23
+:kind: reject
+:tests: classes/copy-move/const-member-assign.cpp classes/copy-move/const-member-move-assign.cpp classes/copy-move/defaulted-copy-deleted-used.cpp classes/copy-move/deleted-copy-move-only-member.cpp classes/copy-move/deleted-copy-private-member.cpp classes/copy-move/explicitly-deleted-move-not-ignored.cpp classes/copy-move/reference-member-assign.cpp classes/copy-move/rvalue-ref-member-copy-deleted.cpp classes/copy-move/copy-deleted-by-member-dtor.cpp
+
+A program must not use a copy or move function that CPY-7 deletes. It
+must not use a move function that the program deletes explicitly.
+:::
+
 :::{rule} CPY-14
 :kind: required
-:tests: classes/copy-move/defaulted-copy-const-mismatch-unused.cpp classes/copy-move/defaulted-copy-const-mismatch-used.cpp classes/copy-move/defaulted-copy-nonconst-param.cpp classes/copy-move/defaulted-move-const-param-used.cpp classes/copy-move/defaulted-move-const-param.cpp classes/copy-move/defaulted-out-of-line-copy.cpp classes/copy-move/defaulted-volatile-param-used.cpp classes/copy-move/defaulted-volatile-param.cpp
+:tests: classes/copy-move/defaulted-copy-const-mismatch-unused.cpp classes/copy-move/defaulted-copy-nonconst-param.cpp classes/copy-move/defaulted-move-const-param.cpp classes/copy-move/defaulted-out-of-line-copy.cpp classes/copy-move/defaulted-volatile-param.cpp
 
 A copy or move constructor defaulted in its class can have a parameter
 type different from the implicit one. Then it is deleted
 ({question}`Q-0055`). A defaulted copy constructor can take `T&`. A
 function defaulted after its class definition is not deleted by this
 rule.
+:::
+
+:::{rule} CPY-26
+:kind: reject
+:tests: classes/copy-move/defaulted-copy-const-mismatch-used.cpp classes/copy-move/defaulted-move-const-param-used.cpp classes/copy-move/defaulted-volatile-param-used.cpp
+
+A program must not use a copy or move constructor that CPY-14 deletes.
 :::
 
 :::{rule} CPY-17
@@ -236,13 +275,18 @@ one that would be deleted.
 
 :::{rule} CPY-9
 :kind: required
-:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/explicit-copy-ctor-copy-init.cpp classes/copy-move/lvalue-move-only-rejected.cpp classes/copy-move/rvalue-picks-move.cpp
+:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/rvalue-picks-move.cpp
 
 Overload resolution chooses between the copy and move functions:
 
 - An lvalue uses the copy function.
 - A non-`const` rvalue uses the move function, if there is one.
 - A `const` rvalue uses the copy function.
+:::
+
+:::{rule} CPY-24
+:kind: reject
+:tests: classes/copy-move/explicit-copy-ctor-copy-init.cpp classes/copy-move/lvalue-move-only-rejected.cpp
 
 An lvalue of a class with no usable copy constructor cannot initialize a
 new object. An `explicit` copy constructor is not used in
@@ -260,7 +304,7 @@ deleted. This applies to nested prvalues, return values, and arguments.
 
 :::{rule} CPY-11
 :kind: required
-:tests: classes/copy-move/named-return-needs-move.cpp classes/copy-move/return-converting-move.cpp classes/copy-move/return-global-not-moved.cpp classes/copy-move/return-local-as-lvalue-ref.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-lvalue-ref-not-moved.cpp classes/copy-move/return-member-not-moved.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp
+:tests: classes/copy-move/return-converting-move.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp
 
 In a `return` statement, a name of one of these is an xvalue:
 
@@ -273,6 +317,15 @@ initialized by a move, or by a converting constructor that takes an
 rvalue. A name of a variable of lvalue reference type, a global variable,
 or a member is an lvalue. A parameter is always moved to the return value,
 once.
+:::
+
+:::{rule} CPY-25
+:kind: reject
+:tests: classes/copy-move/named-return-needs-move.cpp classes/copy-move/return-global-not-moved.cpp classes/copy-move/return-local-as-lvalue-ref.cpp classes/copy-move/return-lvalue-ref-not-moved.cpp classes/copy-move/return-member-not-moved.cpp
+
+The return value must be valid to initialize from the name, as CPY-11
+classifies it. An xvalue name cannot bind to an lvalue reference return
+type. An lvalue name needs a usable copy constructor.
 :::
 
 ## Runtime Behavior

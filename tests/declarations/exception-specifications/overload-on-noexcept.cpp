@@ -1,4 +1,4 @@
-// tidal-rules: EXS-2
+// tidal-rules: EXS-8
 // tidal-expect: reject
 // tidal-error-clang: exception specification in declaration does not match
 // tidal-error-gcc: different exception specifier

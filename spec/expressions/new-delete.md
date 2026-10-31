@@ -7,7 +7,7 @@ object and frees its storage.
 ## Principles
 
 :::{principle} NEW-P1
-:rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3
+:rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3 NEW-16 NEW-17
 
 `new` creates an object whose life does not depend on any scope
 ({principle}`OBJ-P2`). It first obtains storage and then initializes
@@ -68,28 +68,45 @@ object made in it must be deleted before it ends.
 
 :::{rule} NEW-1
 :kind: required
-:tests: expressions/new-delete/array-of-auto.cpp expressions/new-delete/forms.cpp expressions/new-delete/new-auto-no-initializer.cpp expressions/new-delete/new-auto-two-values.cpp expressions/new-delete/const-scalar-with-init.cpp
+:tests: expressions/new-delete/forms.cpp expressions/new-delete/const-scalar-with-init.cpp
 
 `new T`, `new T(args)`, and `new T{args}` create one object of type `T`.
-With `new auto`, the type comes from exactly one initializer. A program
-must not use `auto` as the element type of an array in `new`.
+With `new auto`, the type comes from the initializer.
+:::
+
+:::{rule} NEW-16
+:kind: reject
+:tests: expressions/new-delete/array-of-auto.cpp expressions/new-delete/new-auto-no-initializer.cpp expressions/new-delete/new-auto-two-values.cpp
+
+With `new auto` (NEW-1), the type must come from exactly one
+initializer. A program must not use `auto` as the element type of an
+array in `new`.
 :::
 
 :::{rule} NEW-2
 :kind: required
-:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-too-many-initializers.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp
+:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp
 
 `new T[n]` creates an array of `n` elements. These rules apply:
 
 - `n` can be known only at run time, and it can be zero. With zero, the
   result is a non-null pointer that differs from other live allocations.
-- Each bound after the first must be a positive constant. The result
-  points to the first element, which is itself an array for a
-  multi-dimensional `new`.
+- The result points to the first element, which is itself an array for
+  a multi-dimensional `new`.
+- If `n` is absent, the initializer gives the number of elements.
+- `n` is converted to the type of `sizeof` ({question}`Q-0036`).
+:::
+
+:::{rule} NEW-17
+:kind: reject
+:tests: expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-too-many-initializers.cpp
+
+These conditions apply to `new T[n]` (NEW-2):
+
+- Each bound after the first must be a positive constant.
 - If `n` is absent, the initializer must give the number of elements.
 - A constant `n` must not be negative.
 - The initializer must not have more elements than `n`.
-- `n` is converted to the type of `sizeof` ({question}`Q-0036`).
 :::
 
 :::{rule} NEW-6

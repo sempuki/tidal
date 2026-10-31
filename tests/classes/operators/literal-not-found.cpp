@@ -1,4 +1,4 @@
-// tidal-rules: OPR-8
+// tidal-rules: OPR-16
 // tidal-expect: reject
 // tidal-error-clang: no matching literal operator
 // tidal-error-gcc: unable to find numeric literal operator

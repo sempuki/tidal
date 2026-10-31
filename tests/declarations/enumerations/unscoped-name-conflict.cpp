@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-2
+// tidal-rules: ENUM-15
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .Red
 // tidal-error-gcc: Red. redeclared as different kind of entity

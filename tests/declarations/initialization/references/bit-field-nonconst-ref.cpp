@@ -1,4 +1,4 @@
-// tidal-rules: REF-1
+// tidal-rules: REF-8
 // tidal-expect: reject
 // tidal-error-clang: non-const reference cannot bind to bit-field
 // tidal-error-gcc: cannot bind bit-field

@@ -1,4 +1,4 @@
-// tidal-rules: PRIM-10
+// tidal-rules: PRIM-24
 // tidal-expect: reject
 // tidal-error-clang: type .bool. with an rvalue of type .std::nullptr_t.
 // tidal-error-gcc: requires direct-initialization

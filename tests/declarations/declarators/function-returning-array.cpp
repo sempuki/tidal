@@ -1,4 +1,4 @@
-// tidal-rules: DCL-7
+// tidal-rules: DCL-21
 // tidal-expect: reject
 // tidal-error-clang: function cannot return array type
 // tidal-error-gcc: declared as function returning an array

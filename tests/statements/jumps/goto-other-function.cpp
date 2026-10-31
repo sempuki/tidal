@@ -1,4 +1,4 @@
-// tidal-rules: JMP-5
+// tidal-rules: JMP-14
 // tidal-expect: reject
 // tidal-error-clang: undeclared label .there
 // tidal-error-gcc: label .there. used but not defined

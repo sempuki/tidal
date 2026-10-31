@@ -1,4 +1,4 @@
-// tidal-rules: COND-6
+// tidal-rules: COND-14
 // tidal-expect: reject
 // tidal-error-clang: omitting middle operand
 // tidal-error-gcc: omitted middle operand

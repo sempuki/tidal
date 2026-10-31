@@ -1,4 +1,4 @@
-// tidal-rules: VC-3
+// tidal-rules: VC-13
 // tidal-expect: reject
 // tidal-error-clang: cannot take the address of an rvalue
 // tidal-error-gcc: taking address of rvalue

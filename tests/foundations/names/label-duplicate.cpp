@@ -1,4 +1,4 @@
-// tidal-rules: NAM-7
+// tidal-rules: NAM-11
 // tidal-expect: reject
 // tidal-error-clang: redefinition of label .a
 // tidal-error-gcc: duplicate label .a

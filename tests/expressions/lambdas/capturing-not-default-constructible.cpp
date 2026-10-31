@@ -1,4 +1,4 @@
-// tidal-rules: LAM-11
+// tidal-rules: LAM-26
 // tidal-expect: reject
 // tidal-error-clang: no matching constructor for initialization of .decltype\(g\).
 // tidal-error-gcc: use of deleted function .f\(\)::<lambda\(\)>::<lambda>\(\).

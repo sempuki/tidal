@@ -1,4 +1,4 @@
-// tidal-rules: UNI-1
+// tidal-rules: ACC-2
 // tidal-expect: reject
 // tidal-error-clang: is a private member
 // tidal-error-gcc: private within this context

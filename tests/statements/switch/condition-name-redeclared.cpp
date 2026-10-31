@@ -1,4 +1,4 @@
-// tidal-rules: SW-4
+// tidal-rules: SW-6
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .c
 // tidal-error-gcc: redeclaration of .int c

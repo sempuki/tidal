@@ -23,7 +23,7 @@ does.
 :::
 
 :::{principle} LSP-P2
-:rules: LSP-4
+:rules: LSP-4 LSP-7
 
 C has no namespaces and no overloading, so a C name is its spelling
 alone. All declarations of one spelling with C language linkage are one
@@ -92,20 +92,33 @@ if it would be one without the braces.
 
 :::{rule} LSP-4
 :kind: required
-:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/c-name-conflict-types.cpp declarations/linkage-specifications/c-name-conflicts-global.cpp declarations/linkage-specifications/c-overload-rejected.cpp declarations/linkage-specifications/c-variable-and-function-conflict.cpp declarations/linkage-specifications/c-variable-named-main.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp declarations/linkage-specifications/redeclare-linkage-mismatch.cpp
+:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp
 
 A C name is known by its spelling alone. These rules follow:
 
 - C names with the same spelling in different namespaces are one entity.
-  They must agree in type and kind.
+- A C function and a C++ function can overload.
+- A later declaration without a linkage specification keeps the C
+  language linkage.
+
+LSP-7 lists what is not valid.
+:::
+
+:::{rule} LSP-7
+:kind: reject
+:tests: declarations/linkage-specifications/c-name-conflict-types.cpp declarations/linkage-specifications/c-name-conflicts-global.cpp declarations/linkage-specifications/c-overload-rejected.cpp declarations/linkage-specifications/c-variable-and-function-conflict.cpp declarations/linkage-specifications/c-variable-named-main.cpp declarations/linkage-specifications/redeclare-linkage-mismatch.cpp
+
+These rules also follow from LSP-4:
+
+- C names with the same spelling in different namespaces must agree in
+  type and kind.
 - Two C functions with one name are not overloads, so the second is not
-  valid. A C function and a C++ function can overload.
+  valid.
 - A C name must not have the spelling of a global variable with C++
   linkage ({question}`Q-0075`), or the spelling `main`
   ({question}`Q-0076`).
-- A later declaration without a linkage specification keeps the C
-  language linkage. A C++ declaration must not be followed by a C
-  declaration of the same function.
+- A C++ declaration must not be followed by a C declaration of the same
+  function.
 :::
 
 ## Implementation Requirements

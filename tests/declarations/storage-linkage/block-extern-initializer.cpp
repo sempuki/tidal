@@ -1,4 +1,4 @@
-// tidal-rules: STO-7
+// tidal-rules: STO-13
 // tidal-expect: reject
 // tidal-error-clang: identifier with linkage cannot have an initializer
 // tidal-error-gcc: has both .extern. and initializer

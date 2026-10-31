@@ -1,4 +1,4 @@
-// tidal-rules: CLS-4
+// tidal-rules: CLS-24
 // tidal-expect: reject
 // tidal-error-clang: does not match any declaration in .S
 // tidal-error-gcc: no declaration matches

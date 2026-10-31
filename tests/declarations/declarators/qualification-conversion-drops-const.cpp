@@ -1,4 +1,4 @@
-// tidal-rules: CV-7
+// tidal-rules: CV-10
 // tidal-expect: reject
 // tidal-error-clang: cannot initialize a variable of type .int \*. with an rvalue of type .const int \*
 // tidal-error-gcc: invalid conversion from .const int\*. to .int\*

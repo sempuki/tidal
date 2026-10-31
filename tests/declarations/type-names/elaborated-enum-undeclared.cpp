@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: forward references to .enum. types
 // tidal-error-gcc: use of enum .* without previous declaration

@@ -1,4 +1,4 @@
-// tidal-rules: VOL-3
+// tidal-rules: VOL-10
 // tidal-expect: reject
 // tidal-error-clang: of type .int \*. with an rvalue of type .volatile int \*
 // tidal-error-gcc: invalid conversion from .volatile int\*. to .int\*

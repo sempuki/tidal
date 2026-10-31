@@ -1,4 +1,4 @@
-// tidal-rules: VOL-4
+// tidal-rules: VOL-11
 // tidal-expect: reject
 // tidal-error-clang: no viable overloaded .=
 // tidal-error-gcc: volatile S. as .this. argument discards qualifiers

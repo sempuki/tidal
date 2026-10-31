@@ -1,4 +1,4 @@
-// tidal-rules: DCMP-4
+// tidal-rules: DCMP-10
 // tidal-expect: reject
 // tidal-error-clang: invalid operands to binary expression
 // tidal-error-gcc: no match for .operator==

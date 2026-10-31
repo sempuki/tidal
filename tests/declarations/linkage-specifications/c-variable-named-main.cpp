@@ -1,4 +1,4 @@
-// tidal-rules: LSP-4
+// tidal-rules: LSP-7
 // tidal-expect: reject
 // tidal-expect-gcc-14: accept
 // tidal-expect-clang-18: accept

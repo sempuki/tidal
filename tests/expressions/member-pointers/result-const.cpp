@@ -1,4 +1,4 @@
-// tidal-rules: MPTR-3
+// tidal-rules: MPTR-3 ASN-2
 // tidal-expect: reject
 // tidal-error-clang: read-only variable is not assignable
 // tidal-error-gcc: assignment of read-only location

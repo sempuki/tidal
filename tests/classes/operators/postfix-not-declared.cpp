@@ -1,4 +1,4 @@
-// tidal-rules: OPR-4
+// tidal-rules: OPR-13
 // tidal-expect: reject
 // tidal-error-clang: cannot increment value of type .C
 // tidal-error-gcc: no .operator\+\+\(int\). declared for postfix

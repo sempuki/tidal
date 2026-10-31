@@ -1,4 +1,4 @@
-// tidal-rules: SA-2
+// tidal-rules: SA-6
 // tidal-expect: reject
 // tidal-error-gcc: before .?static_assert
 // tidal-error-edg: declaration is not valid here

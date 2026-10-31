@@ -1,4 +1,4 @@
-// tidal-rules: CTOR-3
+// tidal-rules: CTOR-20
 // tidal-expect: reject
 // tidal-error-clang: implicitly-deleted default constructor
 // tidal-error-gcc: use of deleted function .*S::S\(\)

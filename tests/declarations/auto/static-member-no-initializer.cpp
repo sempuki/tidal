@@ -1,4 +1,4 @@
-// tidal-rules: AUTO-14
+// tidal-rules: AUTO-17
 // tidal-expect: reject
 // tidal-error-clang: requires an initializer
 // tidal-error-gcc: has no initializer

@@ -11,7 +11,7 @@ in classes are other topics *(referenced)*.
 ## Principles
 
 :::{principle} NS-P1
-:rules: NS-1 NS-2 NS-6 NS-5
+:rules: NS-1 NS-10 NS-2 NS-11 NS-6 NS-15 NS-5 NS-14
 
 A namespace is a scope with a name that never closes. A program can
 reopen it, nest it by a path, define a member outside it with a
@@ -22,7 +22,7 @@ there can have that name.
 :::
 
 :::{principle} NS-P2
-:rules: NS-3 NS-4
+:rules: NS-3 NS-12 NS-4 NS-13
 
 Two kinds of namespace lend their members to the enclosing namespace.
 An `inline` namespace does so by name, so a qualified name through the
@@ -33,7 +33,7 @@ the other.
 :::
 
 :::{principle} NS-P3
-:rules: NS-7 NS-8 NS-9
+:rules: NS-7 NS-16 NS-8 NS-17 NS-9
 
 There are two ways to use a namespace's names without qualification,
 and they differ in strength. A using declaration is a declaration in the
@@ -60,37 +60,60 @@ ambiguous. Neither form belongs in a class.
 
 :::{rule} NS-1
 :kind: required
-:tests: declarations/namespaces/define-and-qualify.cpp declarations/namespaces/global-qualifier.cpp declarations/namespaces/unqualified-outside.cpp declarations/namespaces/block-scope-namespace.cpp declarations/namespaces/name-conflict.cpp
+:tests: declarations/namespaces/define-and-qualify.cpp declarations/namespaces/global-qualifier.cpp
 
-A namespace definition must be at namespace scope. A second definition of
-the same namespace adds members to it. A program must use these forms to
-name a member from outside its namespace:
+A second definition of the same namespace adds members to it. A program
+can name a member from outside its namespace in these forms:
 
 - `N::member` for a member of `N`,
 - `::member` for a member of the global namespace,
 - a name that a using declaration or using directive makes visible.
 
+NS-10 lists what is not valid.
+:::
+
+:::{rule} NS-10
+:kind: reject
+:tests: declarations/namespaces/unqualified-outside.cpp declarations/namespaces/block-scope-namespace.cpp declarations/namespaces/name-conflict.cpp declarations/namespaces/using-directive-block-scope.cpp
+
+A namespace definition must be at namespace scope. A program must use
+the forms that NS-1 lists to name a member from outside its namespace.
 A namespace must not have the name of another entity in the same scope.
 :::
 
 :::{rule} NS-2
 :kind: required
-:tests: declarations/namespaces/nested-definition.cpp declarations/namespaces/nested-inline-definition.cpp declarations/namespaces/nested-first-inline.cpp
+:tests: declarations/namespaces/nested-definition.cpp declarations/namespaces/nested-inline-definition.cpp
 
 `namespace A::B::C` defines or reopens each namespace in the path, in
-nested order. Each name after the first can have `inline`.
+nested order. Each name after the first can have `inline`. NS-11 lists
+what is not valid.
+:::
 
-The first name in the path must not be `inline`.
+:::{rule} NS-11
+:kind: reject
+:tests: declarations/namespaces/nested-first-inline.cpp
+
+The first name in the path of a nested namespace definition must not be
+`inline`.
 :::
 
 :::{rule} NS-3
 :kind: required
-:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/inline-on-reopen.cpp declarations/namespaces/inline-namespace-duplicate.cpp
+:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp
 
 The members of an `inline` namespace are also members of the enclosing
-namespace. An inline namespace must have `inline` in its first definition.
-A later definition can omit `inline`. A namespace that is first defined
-without `inline` must not be defined with `inline` later.
+namespace. A later definition of an inline namespace can omit `inline`.
+NS-12 lists what is not valid.
+:::
+
+:::{rule} NS-12
+:kind: reject
+:tests: declarations/namespaces/inline-on-reopen.cpp declarations/namespaces/inline-namespace-duplicate.cpp
+
+An inline namespace must have `inline` in its first definition. A
+namespace that is first defined without `inline` must not be defined
+with `inline` later.
 
 If a name is declared both in an inline namespace and in its enclosing
 namespace, a qualified use through the enclosing namespace is ambiguous.
@@ -98,10 +121,16 @@ namespace, a qualified use through the enclosing namespace is ambiguous.
 
 :::{rule} NS-4
 :kind: required
-:tests: declarations/namespaces/unnamed-namespace.cpp declarations/namespaces/unnamed-namespace-duplicate.cpp
+:tests: declarations/namespaces/unnamed-namespace.cpp
 
 The enclosing scope can use the members of an unnamed namespace without
 qualification. These members have internal {term}`linkage` (LNK-5).
+NS-13 lists what is not valid.
+:::
+
+:::{rule} NS-13
+:kind: reject
+:tests: declarations/namespaces/unnamed-namespace-duplicate.cpp
 
 If a name is declared both in an unnamed namespace and in the enclosing
 namespace, an unqualified use is ambiguous.
@@ -109,56 +138,85 @@ namespace, an unqualified use is ambiguous.
 
 :::{rule} NS-5
 :kind: required
-:tests: declarations/namespaces/alias.cpp declarations/namespaces/alias-conflict.cpp declarations/namespaces/alias-not-reopen.cpp
+:tests: declarations/namespaces/alias.cpp
 
-`namespace L = A::B;` makes `L` a second name for `A::B`. In the same
-scope, `L` must not be an alias for a different namespace. A namespace
-definition must not use `L` to reopen `A::B`.
+`namespace L = A::B;` makes `L` a second name for `A::B`. NS-14 lists
+what is not valid.
+:::
+
+:::{rule} NS-14
+:kind: reject
+:tests: declarations/namespaces/alias-conflict.cpp declarations/namespaces/alias-not-reopen.cpp
+
+In the same scope, a namespace alias `L` must not be an alias for a
+different namespace. A namespace definition must not use `L` to reopen
+the namespace that `L` names.
 :::
 
 :::{rule} NS-6
 :kind: required
-:tests: declarations/namespaces/out-of-namespace-definition.cpp declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp
+:tests: declarations/namespaces/out-of-namespace-definition.cpp
 
 A program can define a member of `N` outside `N` with a qualified name.
-The member must have a declaration in `N` first. The definition must be
-in a namespace that encloses `N`.
+NS-15 lists what is not valid.
+:::
+
+:::{rule} NS-15
+:kind: reject
+:tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp
+
+For a definition of a member of `N` outside `N`, the member must have a
+declaration in `N` first. The definition must be in a namespace that encloses `N`.
 :::
 
 :::{rule} NS-7
 :kind: required
-:tests: declarations/namespaces/using-declaration.cpp declarations/namespaces/using-declaration-overloads.cpp declarations/namespaces/using-declaration-snapshot.cpp declarations/namespaces/using-declaration-repeat-namespace.cpp declarations/namespaces/using-declaration-repeat-block.cpp declarations/namespaces/using-declaration-unqualified.cpp declarations/namespaces/using-declaration-namespace.cpp declarations/namespaces/using-declaration-conflict.cpp declarations/namespaces/using-declaration-then-conflict.cpp declarations/namespaces/using-list.cpp
+:tests: declarations/namespaces/using-declaration.cpp declarations/namespaces/using-declaration-overloads.cpp declarations/namespaces/using-declaration-snapshot.cpp declarations/namespaces/using-declaration-repeat-namespace.cpp declarations/namespaces/using-declaration-repeat-block.cpp declarations/namespaces/using-list.cpp
 
 `using N::name;` declares `name` in the current scope for the member of
 `N`. For a function, it includes the overloads that `N` declares before
-the using declaration. A using declaration:
+the using declaration. A using declaration can list several names
+separated by commas. It can occur again in the same scope, also in a
+block ({question}`Q-0019`). NS-16 lists what is not valid.
+:::
 
-- must have a qualified name, and can list several names separated by
-  commas,
+:::{rule} NS-16
+:kind: reject
+:tests: declarations/namespaces/using-declaration-unqualified.cpp declarations/namespaces/using-declaration-namespace.cpp declarations/namespaces/using-declaration-conflict.cpp declarations/namespaces/using-declaration-then-conflict.cpp
+
+A using declaration:
+
+- must have a qualified name,
 - must not name a namespace,
-- must not conflict with another declaration of `name` in the same scope,
-- can occur again in the same scope, also in a block
-  ({question}`Q-0019`).
+- must not conflict with another declaration of `name` in the same scope.
 :::
 
 :::{rule} NS-8
 :kind: required
-:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-block-scope.cpp declarations/namespaces/using-directive-not-namespace.cpp declarations/namespaces/using-directive-global-ambiguity.cpp declarations/namespaces/directive-sees-later-members.cpp
+:tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/directive-sees-later-members.cpp
 
 `using namespace N;` makes the members of `N` visible to unqualified
 lookup until the current scope ends. The rules for this are:
 
-- The directive must name a namespace.
 - Members that `N` declares after the directive are visible too.
 - The members of namespaces that using directives in `N` name also become
   visible.
 - A name that the current scope declares hides these members.
 - If two such namespaces have a member with the same name, an unqualified
-  use of that name is ambiguous. A program must not use an ambiguous name.
+  use of that name is ambiguous.
 
 Unqualified lookup finds the members at the level of the innermost
 namespace that contains both the directive and the named namespace. So a
-global variable with the same name gives an ambiguous use.
+global variable with the same name gives an ambiguous use. NS-17 lists
+what is not valid.
+:::
+
+:::{rule} NS-17
+:kind: reject
+:tests: declarations/namespaces/using-directive-ambiguous-use.cpp declarations/namespaces/using-directive-not-namespace.cpp declarations/namespaces/using-directive-global-ambiguity.cpp
+
+A using directive must name a namespace. A program must not use a name
+that NS-8 makes ambiguous.
 :::
 
 :::{rule} NS-9

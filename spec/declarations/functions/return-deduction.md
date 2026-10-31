@@ -6,7 +6,7 @@ return type from its `return` statements.
 ## Principles
 
 :::{principle} RET-P1
-:rules: RET-1 RET-2 RET-6
+:rules: RET-1 RET-7 RET-2 RET-6
 
 A deduced return type is found as if each `return` statement initialized
 a variable declared with the placeholder, and all statements must
@@ -30,15 +30,22 @@ cannot deduce, because its callers never see its definition.
 
 :::{rule} RET-1
 :kind: required
-:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp declarations/functions/return-deduction/void-call-return.cpp
+:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp declarations/functions/return-deduction/void-call-return.cpp
 
 Each `return` statement gives a type, as for a variable that the
-returned expression initializes. All `return` statements must give the
-same type. A function with no `return` statement, or with only
-`return;`, returns `void`. A `return` of an expression of type `void`,
-such as a call of a `void` function, also gives `void`. A `return` statement must not return a
-braced list. A `return` statement in a {term}`discarded statement` does
-not take part, also outside a template.
+returned expression initializes. A function with no `return` statement,
+or with only `return;`, returns `void`. A `return` of an expression of
+type `void`, such as a call of a `void` function, also gives `void`. A
+`return` statement in a {term}`discarded statement` does not take part,
+also outside a template. RET-7 lists what is not valid.
+:::
+
+:::{rule} RET-7
+:kind: reject
+:tests: declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp
+
+All `return` statements that RET-1 counts must give the same type. A
+`return` statement must not return a braced list.
 :::
 
 :::{rule} RET-2

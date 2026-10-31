@@ -1,4 +1,4 @@
-// tidal-rules: DCL-5
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: needs an explicit size or an initializer
 // tidal-error-gcc: storage size of .a. isn.t known

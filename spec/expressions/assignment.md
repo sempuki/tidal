@@ -7,7 +7,7 @@ operation with the assignment.
 ## Principles
 
 :::{principle} ASN-P1
-:rules: ASN-1 ASN-2 ASN-3 ASN-6 ASN-7 ASN-10
+:rules: ASN-1 ASN-2 ASN-3 ASN-6 ASN-7 ASN-10 ASN-12 ASN-14
 
 Assignment stores a value into an object. So the left operand must be
 an object that can be changed: an lvalue, not `const`, not an array, and
@@ -22,7 +22,7 @@ can be.
 :::
 
 :::{principle} ASN-P2
-:rules: ASN-5 ASN-9 ASN-11
+:rules: ASN-5 ASN-9 ASN-11 ASN-13
 
 A compound assignment `E1 op= E2` means `E1 = E1 op E2`, with one
 difference: `E1` is evaluated once. The read, the operation, and the
@@ -51,16 +51,23 @@ freedom (SEQ-1).
 
 :::{rule} ASN-1
 :kind: required
-:tests: expressions/assignment/converts-right.cpp expressions/assignment/no-conversion.cpp expressions/assignment/self-assignment.cpp
+:tests: expressions/assignment/converts-right.cpp expressions/assignment/self-assignment.cpp
 
 The right operand is converted to the type of the left operand by an
-implicit conversion. If no implicit conversion exists, the expression is
-not valid. An object can be assigned to itself.
+implicit conversion. An object can be assigned to itself.
+:::
+
+:::{rule} ASN-12
+:kind: reject
+:tests: expressions/assignment/no-conversion.cpp
+
+If no implicit conversion from the right operand to the type of the
+left operand exists (ASN-1), the expression is not valid.
 :::
 
 :::{rule} ASN-2
 :kind: reject
-:tests: expressions/assignment/const-left.cpp expressions/assignment/rvalue-left.cpp expressions/assignment/array-left.cpp expressions/assignment/function-left.cpp expressions/assignment/class-prvalue-left.cpp expressions/assignment/scalar-xvalue-left.cpp
+:tests: expressions/assignment/const-left.cpp expressions/assignment/rvalue-left.cpp expressions/assignment/array-left.cpp expressions/assignment/function-left.cpp expressions/assignment/class-prvalue-left.cpp expressions/assignment/scalar-xvalue-left.cpp expressions/member-pointers/result-const.cpp expressions/primary/this-const-member-modify.cpp expressions/primary/member-const-in-const-function.cpp
 
 The left operand of a built-in assignment must be a modifiable lvalue. It
 must not be:
@@ -84,23 +91,36 @@ from right to left, so `a = b = c` assigns `c` to `b` and then to `a`.
 
 :::{rule} ASN-5
 :kind: required
-:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-float-modulo.cpp expressions/assignment/compound-converts.cpp expressions/assignment/bool-compound.cpp
+:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-converts.cpp expressions/assignment/bool-compound.cpp
 
-`E1 op= E2` has the effect of `E1 = E1 op E2`. The operands must be valid
-for `op`. The result of `op` is converted to the type of `E1`, so a
-`bool` operand becomes `true` or `false`. For `+=` and `-=`, `E1` can be
-a pointer and `E2` an integer.
+`E1 op= E2` has the effect of `E1 = E1 op E2`. The result of `op` is
+converted to the type of `E1`, so a `bool` operand becomes `true` or
+`false`. For `+=` and `-=`, `E1` can be a pointer and `E2` an integer.
+:::
+
+:::{rule} ASN-13
+:kind: reject
+:tests: expressions/assignment/compound-float-modulo.cpp
+
+The operands of `E1 op= E2` must be valid for `op` (ASN-5).
 :::
 
 :::{rule} ASN-6
 :kind: required
-:tests: expressions/assignment/braced-empty.cpp expressions/assignment/braced-narrowing.cpp expressions/assignment/braced-ok.cpp expressions/assignment/braced-compound.cpp expressions/assignment/braced-compound-class.cpp
+:tests: expressions/assignment/braced-empty.cpp expressions/assignment/braced-ok.cpp expressions/assignment/braced-compound-class.cpp
 
-The right operand of `=` can be a braced list. For a scalar, the list
-must have zero or one value, and the conversion must not narrow (LIST-2).
-The right operand of a compound assignment to a scalar must not be a
-braced list ({question}`Q-0032`). For a class type, the braced list is the
-argument of the operator function *(referenced)*.
+The right operand of `=` can be a braced list. For a class type, the
+braced list is the argument of the operator function *(referenced)*.
+:::
+
+:::{rule} ASN-14
+:kind: reject
+:tests: expressions/assignment/braced-narrowing.cpp expressions/assignment/braced-compound.cpp
+
+For a scalar, a braced list on the right of `=` (ASN-6) must have zero
+or one value, and the conversion must not narrow (LIST-2). The right
+operand of a compound assignment to a scalar must not be a braced list
+({question}`Q-0032`).
 :::
 
 :::{rule} ASN-7

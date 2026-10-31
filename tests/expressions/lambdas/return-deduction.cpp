@@ -1,4 +1,4 @@
-// tidal-rules: LAM-1
+// tidal-rules: LAM-22
 // tidal-expect: reject
 // tidal-error-clang: must match previous return type
 // tidal-error-gcc: inconsistent types .int. and .double. deduced

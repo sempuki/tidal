@@ -1,4 +1,4 @@
-// tidal-rules: PRIM-11
+// tidal-rules: PRIM-11 VC-12
 // tidal-expect: reject
 // tidal-error-clang: cannot take the address of an rvalue of type .S \*.
 // tidal-error-gcc: lvalue required as unary

@@ -1,4 +1,4 @@
-// tidal-rules: CPY-6
+// tidal-rules: CPY-22
 // tidal-expect: reject
 // tidal-error-clang: no viable conversion from .const S
 // tidal-error-gcc: discards qualifiers

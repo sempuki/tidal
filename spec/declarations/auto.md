@@ -23,7 +23,7 @@ pointer that the initializer converts to ({principle}`VC-P1`).
 :::
 
 :::{principle} AUTO-P2
-:rules: AUTO-3 AUTO-4 AUTO-5 AUTO-13
+:rules: AUTO-3 AUTO-18 AUTO-4 AUTO-5 AUTO-19 AUTO-13 AUTO-16
 
 What the declaration writes around `auto` applies to the deduced type.
 `auto&` makes a reference, so it keeps the initializer's type whole,
@@ -35,7 +35,7 @@ concept before `auto` is a check on the result.
 :::
 
 :::{principle} AUTO-P3
-:rules: AUTO-6 AUTO-7 AUTO-10
+:rules: AUTO-6 AUTO-20 AUTO-7 AUTO-21 AUTO-10
 
 The form of the initializer sets how the type is read from it.
 Parentheses and braces without `=` hold one expression and read its
@@ -47,7 +47,7 @@ plain type.
 :::
 
 :::{principle} AUTO-P4
-:rules: AUTO-8 AUTO-9 AUTO-11 AUTO-15
+:rules: AUTO-8 AUTO-9 AUTO-22 AUTO-11 AUTO-15
 
 Deduction must have exactly one answer. The constraints follow from
 that. The variable needs an initializer, the initializer must have a
@@ -59,7 +59,7 @@ list, and it can name an array type, which no initializer can copy.
 :::
 
 :::{principle} AUTO-P5
-:rules: AUTO-12 AUTO-14
+:rules: AUTO-12 AUTO-14 AUTO-17
 
 A placeholder means the same thing wherever a variable is declared: in a
 condition, in the initializer statement of `if`, `switch`, or `for`, and
@@ -107,13 +107,20 @@ pointer to `const` of its character type, for example `const char*` or
 
 :::{rule} AUTO-3
 :kind: required
-:tests: declarations/auto/lvalue-reference.cpp declarations/auto/lvalue-reference-to-rvalue.cpp declarations/auto/const-lvalue-reference-to-rvalue.cpp declarations/auto/ref-const-xvalue.cpp
+:tests: declarations/auto/lvalue-reference.cpp declarations/auto/const-lvalue-reference-to-rvalue.cpp declarations/auto/ref-const-xvalue.cpp
 
 `auto&` gives an lvalue reference to the type of the initializer. The
 type keeps its `const` and `volatile`, and arrays and functions do not
-decay. The initializer must be an lvalue, unless the deduced type is `const`.
-The `const` can come from the declaration or from the initializer, so an
-xvalue of `const` type is valid.
+decay. AUTO-18 states what the initializer must be.
+:::
+
+:::{rule} AUTO-18
+:kind: reject
+:tests: declarations/auto/lvalue-reference-to-rvalue.cpp
+
+The initializer of `auto&` (AUTO-3) must be an lvalue, unless the deduced
+type is `const`. The `const` can come from the declaration or from the
+initializer, so an xvalue of `const` type is valid.
 :::
 
 :::{rule} AUTO-4
@@ -127,30 +134,53 @@ of the initializer.
 
 :::{rule} AUTO-5
 :kind: required
-:tests: declarations/auto/added-qualifiers.cpp declarations/auto/pointer-from-non-pointer.cpp declarations/auto/constexpr-adds-const.cpp
+:tests: declarations/auto/added-qualifiers.cpp declarations/auto/constexpr-adds-const.cpp
 
 `const`, `volatile`, and `*` written with `auto` apply to the deduced
-type. With `auto*`, the initializer must have pointer type. `constexpr`
-makes the variable `const`.
+type. `constexpr` makes the variable `const`. AUTO-19 states what `auto*`
+needs.
+:::
+
+:::{rule} AUTO-19
+:kind: reject
+:tests: declarations/auto/pointer-from-non-pointer.cpp
+
+With `auto*` (AUTO-5), the initializer must have pointer type.
 :::
 
 :::{rule} AUTO-6
 :kind: required
-:tests: declarations/auto/braced-direct-single.cpp declarations/auto/braced-direct-multiple.cpp declarations/auto/braced-direct-empty.cpp declarations/auto/paren-single.cpp declarations/auto/paren-multiple.cpp declarations/auto/paren-braced.cpp
+:tests: declarations/auto/braced-direct-single.cpp declarations/auto/paren-single.cpp
 
-An initializer in parentheses, or in braces without `=`, must contain
-exactly one expression. That expression gives the type, as it does after
-`=`. A braced list in parentheses is not permitted.
+An initializer in parentheses, or in braces without `=`, can hold one
+expression. That expression gives the type, as it does after `=`.
+AUTO-20 lists what is not valid.
+:::
+
+:::{rule} AUTO-20
+:kind: reject
+:tests: declarations/auto/braced-direct-multiple.cpp declarations/auto/braced-direct-empty.cpp declarations/auto/paren-multiple.cpp declarations/auto/paren-braced.cpp
+
+An initializer in parentheses, or in braces without `=` (AUTO-6), must
+contain exactly one expression. A braced list in parentheses is not
+permitted.
 :::
 
 :::{rule} AUTO-7
 :kind: required
-:tests: declarations/auto/copy-list-deduces-initializer-list.cpp declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp
+:tests: declarations/auto/copy-list-deduces-initializer-list.cpp
 
-`auto x = { ... };` gives `x` the type `std::initializer_list<T>`. Each
-element must give the same `T`, and the list must not be empty. A
-declaration of `std::initializer_list` must come first *(library
-referenced)*.
+`auto x = { ... };` gives `x` the type `std::initializer_list<T>`.
+AUTO-21 lists what is not valid.
+:::
+
+:::{rule} AUTO-21
+:kind: reject
+:tests: declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp
+
+In `auto x = { ... };` (AUTO-7), each element must give the same `T`, and
+the list must not be empty. A declaration of `std::initializer_list` must
+come first *(library referenced)*.
 :::
 
 :::{rule} AUTO-8
@@ -169,14 +199,22 @@ A variable declared with `auto` must:
 
 :::{rule} AUTO-9
 :kind: required
-:tests: declarations/auto/several-declarators.cpp declarations/auto/several-declarators-conflict.cpp declarations/auto/later-declarator-uses-earlier.cpp
+:tests: declarations/auto/several-declarators.cpp declarations/auto/later-declarator-uses-earlier.cpp
 
 One declaration can declare several variables with `auto`. Each
 {term}`declarator` gives its type separately, and can add `*` or `&`.
-`auto` must stand for the same type in all declarators.
+AUTO-22 states what the declarators must agree on.
 
 A later declarator can use a name that an earlier declarator in the same
 declaration introduced.
+:::
+
+:::{rule} AUTO-22
+:kind: reject
+:tests: declarations/auto/several-declarators-conflict.cpp
+
+If one declaration declares several variables with `auto` (AUTO-9),
+`auto` must stand for the same type in all declarators.
 :::
 
 :::{rule} AUTO-10
@@ -219,19 +257,36 @@ and `switch`, and in the initializer statements of `if`, `switch`, and
 
 :::{rule} AUTO-13
 :kind: required
-:tests: declarations/auto/constrained-satisfied.cpp declarations/auto/constrained-not-satisfied.cpp
+:tests: declarations/auto/constrained-satisfied.cpp
 
 A concept name can come before `auto` or `decltype(auto)` *(referenced)*.
-The deduced type must satisfy the concept.
+AUTO-16 states its constraint.
+:::
+
+:::{rule} AUTO-16
+:kind: reject
+:tests: declarations/auto/constrained-not-satisfied.cpp
+
+If a concept name comes before `auto` or `decltype(auto)` (AUTO-13), the
+deduced type must satisfy the concept.
 :::
 
 :::{rule} AUTO-14
 :kind: required
-:tests: declarations/auto/inline-static-member.cpp declarations/auto/static-member-no-initializer.cpp declarations/auto/static-const-member.cpp
+:tests: declarations/auto/inline-static-member.cpp declarations/auto/static-const-member.cpp
 
 A static data member can have a {term}`placeholder type` if it has an initializer
 in the class and is `inline`, `constexpr`, or `const`. The type comes from the
 initializer.
+:::
+
+:::{rule} AUTO-17
+:kind: reject
+:tests: declarations/auto/static-member-no-initializer.cpp
+
+The static data members that AUTO-14 describes are the only ones that can
+have a {term}`placeholder type`. Other static data members must not have
+one.
 :::
 
 :::{rule} AUTO-15

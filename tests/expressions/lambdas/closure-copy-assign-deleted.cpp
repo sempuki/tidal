@@ -1,4 +1,4 @@
-// tidal-rules: LAM-11
+// tidal-rules: LAM-26
 // tidal-expect: reject
 // tidal-error-clang: copy assignment operator is implicitly deleted
 // tidal-error-gcc: use of deleted function .*operator=

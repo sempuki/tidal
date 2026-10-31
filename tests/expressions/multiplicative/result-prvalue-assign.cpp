@@ -1,4 +1,4 @@
-// tidal-rules: MUL-5
+// tidal-rules: MUL-19
 // tidal-expect: reject
 // tidal-error-clang: expression is not assignable
 // tidal-error-gcc: lvalue required as left operand of assignment

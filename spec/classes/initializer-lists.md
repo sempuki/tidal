@@ -14,7 +14,7 @@ destructors, overload resolution *(referenced)*.
 ## Principles
 
 :::{principle} ILC-P1
-:rules: ILC-1 ILC-2
+:rules: ILC-1 ILC-2 ILC-7
 
 For a class with constructors, a braced list is a constructor call. The
 elements are the arguments, and empty braces call the default
@@ -22,7 +22,7 @@ constructor.
 :::
 
 :::{principle} ILC-P2
-:rules: ILC-3 ILC-4
+:rules: ILC-3 ILC-4 ILC-8
 
 A class that accepts a `std::initializer_list` means the braces as a
 list of values, so that constructor is tried first with the whole list,
@@ -33,7 +33,7 @@ another constructor.
 :::
 
 :::{principle} ILC-P3
-:rules: ILC-5 ILC-6
+:rules: ILC-5 ILC-6 ILC-9 ILC-10
 
 A `std::initializer_list` is a view of a temporary array of `const`
 elements that the braces create. The array lives as long as a temporary
@@ -52,14 +52,21 @@ standard library *(referenced)*.
 
 :::{rule} ILC-1
 :kind: required
-:tests: classes/initializer-lists/designated-non-aggregate.cpp classes/initializer-lists/not-aggregate-with-ctor.cpp classes/initializer-lists/selects-constructor.cpp
+:tests: classes/initializer-lists/selects-constructor.cpp
 
-A braced list for a class that is not an aggregate selects a constructor.
-The elements of the list are the arguments. This applies to direct list
-initialization, as in `T x{a, b}`, and to copy list initialization, as in
-`T x = {a, b}`. A class with a user-declared constructor is not an
-aggregate, so the list cannot initialize its members directly or use
-designators.
+A braced list for a class that is not an aggregate selects a
+constructor. The elements of the list are the arguments. This applies to
+direct list initialization, as in `T x{a, b}`, and to copy list
+initialization, as in `T x = {a, b}`. A class with a user-declared
+constructor is not an aggregate.
+:::
+
+:::{rule} ILC-7
+:kind: reject
+:tests: classes/initializer-lists/designated-non-aggregate.cpp classes/initializer-lists/not-aggregate-with-ctor.cpp
+
+A braced list for a class that is not an aggregate cannot initialize its
+members directly or use designators.
 :::
 
 :::{rule} ILC-2
@@ -73,7 +80,7 @@ constructor, an initializer-list constructor receives an empty list.
 
 :::{rule} ILC-3
 :kind: required
-:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp classes/initializer-lists/explicit-best-match-braced.cpp classes/initializer-lists/explicit-not-candidate-equals.cpp
+:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp classes/initializer-lists/explicit-not-candidate-equals.cpp
 
 Constructor selection from a braced list has two phases:
 
@@ -87,9 +94,16 @@ better. A list with one object of the same class also uses the first
 phase ({question}`Q-0081`). Nested braces initialize the elements.
 
 In copy list initialization, `explicit` constructors are candidates too.
-If the best match is `explicit`, the program is not valid, and a worse
-match is not used. Copy initialization with `=` and one value is
-different, because `explicit` constructors are not candidates there.
+Copy initialization with `=` and one value is different, because
+`explicit` constructors are not candidates there.
+:::
+
+:::{rule} ILC-8
+:kind: reject
+:tests: classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/explicit-best-match-braced.cpp
+
+In copy list initialization, if the best match is `explicit`, the
+program is not valid. A worse match is not used.
 :::
 
 :::{rule} ILC-4
@@ -105,27 +119,41 @@ Parentheses do not check narrowing.
 
 :::{rule} ILC-6
 :kind: required
-:tests: classes/initializer-lists/deduce-list-element-type-mismatch.cpp classes/initializer-lists/deduce-list-element-type.cpp classes/initializer-lists/function-param-list.cpp classes/initializer-lists/return-braced-list.cpp classes/initializer-lists/return-deduced-from-list.cpp
+:tests: classes/initializer-lists/deduce-list-element-type.cpp classes/initializer-lists/function-param-list.cpp classes/initializer-lists/return-braced-list.cpp
 
 A function parameter of type `std::initializer_list<E>` accepts a braced
 list, also an empty one. A function template can deduce `E` if all
 elements have the same type. A `return` statement with a braced list
-initializes a class return type through its constructors. A braced list
-cannot deduce an `auto` return type.
+initializes a class return type through its constructors.
+:::
+
+:::{rule} ILC-10
+:kind: reject
+:tests: classes/initializer-lists/deduce-list-element-type-mismatch.cpp classes/initializer-lists/return-deduced-from-list.cpp
+
+A function template cannot deduce `E` from a braced list whose elements
+have different types. A braced list cannot deduce an `auto` return type.
+:::
+
+:::{rule} ILC-9
+:kind: reject
+:tests: classes/initializer-lists/elements-const.cpp classes/initializer-lists/move-only-element.cpp
+
+A program cannot change or move the elements of the array that ILC-5
+describes, so an element type that cannot be copied is not valid.
 :::
 
 ## Runtime Behavior
 
 :::{rule} ILC-5
 :kind: required
-:tests: classes/initializer-lists/backing-array-copy-elements.cpp classes/initializer-lists/backing-array-lives-with-list.cpp classes/initializer-lists/elements-const.cpp classes/initializer-lists/move-only-element.cpp
+:tests: classes/initializer-lists/backing-array-copy-elements.cpp classes/initializer-lists/backing-array-lives-with-list.cpp
 
-A braced list for `std::initializer_list<E>` creates an array of `const E`
-and copies each element into it. The `std::initializer_list` refers to
-that array. The array lives as long as the `std::initializer_list`
+A braced list for `std::initializer_list<E>` creates an array of
+`const E` and copies each element into it. The `std::initializer_list`
+refers to that array. The array lives as long as the `std::initializer_list`
 object that the list initializes, as for a reference that binds to a
-temporary. A program cannot change or move the elements, so an element
-type that cannot be copied is not valid.
+temporary.
 :::
 
 ## Examples

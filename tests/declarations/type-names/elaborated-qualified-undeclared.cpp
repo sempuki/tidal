@@ -1,4 +1,4 @@
-// tidal-rules: TYN-4
+// tidal-rules: TYN-10
 // tidal-expect: reject
 // tidal-error-clang: no struct named .Missing
 // tidal-error-gcc: .Missing. in namespace .n. does not name a type

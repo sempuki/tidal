@@ -1,4 +1,4 @@
-// tidal-rules: INL-4
+// tidal-rules: INL-8
 // tidal-expect: reject
 // tidal-error-clang: incomplete type .S
 // tidal-error-gcc: has incomplete type

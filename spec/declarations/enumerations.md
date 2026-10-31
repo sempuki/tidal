@@ -9,7 +9,7 @@ integer type that holds the values.
 ## Principles
 
 :::{principle} ENUM-P1
-:rules: ENUM-10 ENUM-1 ENUM-12 ENUM-13
+:rules: ENUM-10 ENUM-1 ENUM-14 ENUM-12 ENUM-13
 
 An enumeration is a type of its own whose values are integers. It is
 different from its underlying type and from every other enumeration,
@@ -21,7 +21,7 @@ exists only after its value, so the value cannot name it
 :::
 
 :::{principle} ENUM-P2
-:rules: ENUM-2 ENUM-3 ENUM-11 ENUM-9
+:rules: ENUM-2 ENUM-15 ENUM-3 ENUM-16 ENUM-11 ENUM-9 ENUM-20
 
 The two kinds of enumeration differ in where their names go and how
 freely their values convert. An unscoped enumeration puts its
@@ -33,7 +33,7 @@ the enumerators of either kind into a scope by name.
 :::
 
 :::{principle} ENUM-P3
-:rules: ENUM-4 ENUM-5 ENUM-6 ENUM-7 ENUM-8
+:rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-7 ENUM-18 ENUM-8 ENUM-19
 
 The underlying type holds the values. If the program fixes it, or the
 enumeration is scoped, the type is known from the first declaration, so
@@ -60,40 +60,64 @@ need, and a value outside that range has no meaning.
 
 :::{rule} ENUM-1
 :kind: required
-:tests: declarations/enumerations/enumerator-values.cpp declarations/enumerations/enumerator-refers-earlier.cpp declarations/enumerations/duplicate-values.cpp declarations/enumerations/enumerator-not-constant.cpp declarations/enumerations/duplicate-enumerator.cpp declarations/enumerations/implicit-value-overflow-scoped.cpp declarations/enumerations/implicit-after-explicit.cpp
+:tests: declarations/enumerations/enumerator-values.cpp declarations/enumerations/enumerator-refers-earlier.cpp declarations/enumerations/duplicate-values.cpp declarations/enumerations/implicit-after-explicit.cpp
 
 An enumerator without a value gets the value of the previous enumerator
 plus one. If the first enumerator of the list has no value, it gets 0.
 A later enumerator without a value gets the previous value plus one,
-also when it is the first one without a value. A value must be a
-constant expression, and it can use earlier enumerators. These conditions
-apply:
+also when it is the first one without a value. A value can use earlier
+enumerators, and several enumerators can have the same value. ENUM-14
+lists what is not valid.
+:::
 
-- Several enumerators can have the same value.
+:::{rule} ENUM-14
+:kind: reject
+:tests: declarations/enumerations/enumerator-not-constant.cpp declarations/enumerations/duplicate-enumerator.cpp declarations/enumerations/implicit-value-overflow-scoped.cpp
+
+These conditions apply to the enumerators of ENUM-1:
+
+- A value must be a constant expression.
 - Two enumerators must not have the same name.
 - An implicit value must fit in a fixed underlying type (ENUM-4).
 :::
 
 :::{rule} ENUM-2
 :kind: required
-:tests: declarations/enumerations/unscoped-names-in-enclosing-scope.cpp declarations/enumerations/unscoped-converts-to-int.cpp declarations/enumerations/mixed-enum-arithmetic.cpp declarations/enumerations/int-to-unscoped-rejected.cpp declarations/enumerations/unscoped-name-conflict.cpp
+:tests: declarations/enumerations/unscoped-names-in-enclosing-scope.cpp declarations/enumerations/unscoped-converts-to-int.cpp declarations/enumerations/mixed-enum-arithmetic.cpp
 
 The enumerators of an unscoped enumeration are declared in the enclosing
 scope. They can also be named through the enumeration. A value converts
-implicitly to an integer by {term}`integer promotion`. An integer does not
-convert implicitly to the enumeration. An enumerator name must not be
-declared already in the enclosing scope.
+implicitly to an integer by {term}`integer promotion`. ENUM-15 lists what
+is not valid.
+:::
+
+:::{rule} ENUM-15
+:kind: reject
+:tests: declarations/enumerations/int-to-unscoped-rejected.cpp declarations/enumerations/unscoped-name-conflict.cpp
+
+An integer does not convert implicitly to an unscoped enumeration
+(ENUM-2). An enumerator name must not be declared already in the
+enclosing scope.
 :::
 
 :::{rule} ENUM-3
 :kind: required
-:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-same-type.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/scoped-explicit-conversion.cpp declarations/enumerations/increment-enum.cpp
+:tests: declarations/enumerations/scoped-compare-same-type.cpp declarations/enumerations/scoped-explicit-conversion.cpp
 
-The enumerators of a scoped enumeration are named only through the
-enumeration. A value converts to and from an integer only with an
-explicit cast. Two values of the same scoped enumeration can be compared.
-A program must not:
+The enumerators of a scoped enumeration are named through the
+enumeration. A value converts to and from an integer with an explicit
+cast. Two values of the same scoped enumeration can be compared. ENUM-16
+lists what is not valid.
+:::
 
+:::{rule} ENUM-16
+:kind: reject
+:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp
+
+The forms that ENUM-3 allows are the only ones. A program must not:
+
+- name an enumerator of a scoped enumeration without the enumeration,
+- convert a scoped value to or from an integer without an explicit cast,
 - use a scoped value in arithmetic,
 - compare a scoped value with an integer,
 - initialize an integer from a scoped value,
@@ -103,35 +127,56 @@ A program must not:
 
 :::{rule} ENUM-4
 :kind: required
-:tests: declarations/enumerations/scoped-default-underlying-int.cpp declarations/enumerations/fixed-underlying.cpp declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp declarations/enumerations/fixed-bool.cpp
+:tests: declarations/enumerations/scoped-default-underlying-int.cpp declarations/enumerations/fixed-underlying.cpp declarations/enumerations/fixed-bool.cpp
 
 A scoped enumeration without `: type` has the underlying type `int`. A
-fixed underlying type after `:` must be an integer type. Each enumerator
-value must fit in the underlying type without narrowing.
+fixed underlying type comes after `:`. ENUM-17 lists what is not valid.
 
 The fixed underlying type can be `bool` or a character type. A
 cv-qualifier on the underlying type is ignored.
 :::
 
+:::{rule} ENUM-17
+:kind: reject
+:tests: declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp
+
+A fixed underlying type (ENUM-4) must be an integer type. Each enumerator
+value must fit in the underlying type without narrowing.
+:::
+
 :::{rule} ENUM-7
 :kind: required
-:tests: declarations/enumerations/opaque-declaration.cpp declarations/enumerations/opaque-unscoped-without-type.cpp declarations/enumerations/opaque-mismatch.cpp declarations/enumerations/redeclare-scoped-as-unscoped.cpp
+:tests: declarations/enumerations/opaque-declaration.cpp
 
 An enumeration can be declared without its enumerators before its
-definition. Its underlying type must be known, so it must be scoped or
-have `: type`. All declarations must agree on scoped or unscoped and on
-the underlying type.
+definition. ENUM-18 lists what such a declaration needs.
+:::
+
+:::{rule} ENUM-18
+:kind: reject
+:tests: declarations/enumerations/opaque-unscoped-without-type.cpp declarations/enumerations/opaque-mismatch.cpp declarations/enumerations/redeclare-scoped-as-unscoped.cpp
+
+If an enumeration is declared without its enumerators (ENUM-7), its
+underlying type must be known, so it must be scoped or have `: type`. All
+declarations must agree on scoped or unscoped and on the underlying type.
 :::
 
 :::{rule} ENUM-8
 :kind: required
-:tests: declarations/enumerations/list-init-fixed.cpp declarations/enumerations/list-init-no-fixed.cpp declarations/enumerations/list-init-narrowing.cpp declarations/enumerations/copy-list-from-integer.cpp
+:tests: declarations/enumerations/list-init-fixed.cpp
 
 A variable of an enumeration type with a fixed underlying type can be
 initialized from an integer in braces. This includes all scoped
-enumerations. The conversion to the underlying type must not narrow. An
-enumeration without a fixed underlying type cannot be initialized this
-way.
+enumerations. ENUM-19 lists what is not valid.
+:::
+
+:::{rule} ENUM-19
+:kind: reject
+:tests: declarations/enumerations/list-init-no-fixed.cpp declarations/enumerations/list-init-narrowing.cpp declarations/enumerations/copy-list-from-integer.cpp
+
+In the initialization that ENUM-8 allows, the conversion to the
+underlying type must not narrow. An enumeration without a fixed
+underlying type cannot be initialized from an integer in braces.
 
 This applies only to direct-list-initialization. Initialization with `=`
 and a braced integer is not valid.
@@ -139,15 +184,23 @@ and a braced integer is not valid.
 
 :::{rule} ENUM-9
 :kind: required
-:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-opaque.cpp declarations/enumerations/using-enum-alias.cpp
+:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp
 
 `using enum E;` declares the enumerators of `E` in the current scope. `E`
-must be an enumeration. It can be a type alias of one. No enumerator name of `E` can be declared already
-in that scope.
+can be a type alias of an enumeration. A using declaration can also name
+one enumerator of a scoped enumeration, such as `using C::R;`. ENUM-20
+lists what is not valid.
+:::
+
+:::{rule} ENUM-20
+:kind: reject
+:tests: declarations/enumerations/using-enum-conflict.cpp declarations/enumerations/using-enum-not-enum.cpp declarations/enumerations/using-enum-opaque.cpp
+
+In `using enum E;` (ENUM-9), `E` must be an enumeration. No enumerator
+name of `E` can be declared already in that scope.
 
 The enumeration must be complete at the `using enum` declaration. An
-opaque declaration is not enough ({question}`Q-0047`). A using declaration can
-also name one enumerator of a scoped enumeration, such as `using C::R;`.
+opaque declaration is not enough ({question}`Q-0047`).
 :::
 
 :::{rule} ENUM-10

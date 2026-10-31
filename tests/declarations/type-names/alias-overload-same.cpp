@@ -1,4 +1,4 @@
-// tidal-rules: TYN-1
+// tidal-rules: TYN-8
 // tidal-expect: reject
 // tidal-error-clang: redefinition of .f
 // tidal-error-gcc: redefinition of .void f\(int\)

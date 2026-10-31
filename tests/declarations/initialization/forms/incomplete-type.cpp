@@ -1,4 +1,4 @@
-// tidal-rules: INIT-4
+// tidal-rules: INIT-7
 // tidal-expect: reject
 // tidal-error-clang: incomplete type .I
 // tidal-error-gcc: has initializer but incomplete type

@@ -1,4 +1,4 @@
-// tidal-rules: IF-19
+// tidal-rules: IF-24
 // tidal-expect: reject
 // tidal-error-clang: call to consteval function .twice. is not a constant expression
 // tidal-error-gcc: call to consteval function .twice\(v\). is not a constant expression

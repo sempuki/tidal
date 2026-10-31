@@ -12,7 +12,7 @@ Depends on: declarators, enumerations, class definitions and members.
 ## Principles
 
 :::{principle} TYN-P1
-:rules: TYN-1 TYN-2 TYN-3
+:rules: TYN-1 TYN-8 TYN-2 TYN-3 TYN-9
 
 An alias is a second name for a type that already exists. It makes no
 new type, so it makes no new overload, and a qualifier applied to it
@@ -24,7 +24,7 @@ an unnamed class with nothing in it that needs a name of its own.
 :::
 
 :::{principle} TYN-P2
-:rules: TYN-4
+:rules: TYN-4 TYN-10
 
 A class key before a name restricts lookup to classes and enumerations,
 so a function or a variable with the same spelling does not get in the
@@ -73,7 +73,7 @@ body. The class is incomplete until its definition.
 
 :::{rule} TYN-1
 :kind: required
-:tests: declarations/type-names/alias-cv.cpp declarations/type-names/alias-defines-class.cpp declarations/type-names/alias-function-type.cpp declarations/type-names/alias-in-block.cpp declarations/type-names/alias-in-class.cpp declarations/type-names/alias-of-incomplete.cpp declarations/type-names/alias-overload-same.cpp declarations/type-names/alias-scope.cpp declarations/type-names/typedef-multiple.cpp declarations/type-names/typedef-redeclare-same.cpp declarations/type-names/typedef-same-type.cpp declarations/type-names/alias-inner-scope-hides.cpp declarations/type-names/alias-same-name-as-class.cpp declarations/type-names/alias-cv-reference-ignored.cpp
+:tests: declarations/type-names/alias-cv.cpp declarations/type-names/alias-defines-class.cpp declarations/type-names/alias-function-type.cpp declarations/type-names/alias-in-block.cpp declarations/type-names/alias-in-class.cpp declarations/type-names/alias-of-incomplete.cpp declarations/type-names/typedef-multiple.cpp declarations/type-names/typedef-redeclare-same.cpp declarations/type-names/typedef-same-type.cpp declarations/type-names/alias-inner-scope-hides.cpp declarations/type-names/alias-same-name-as-class.cpp declarations/type-names/alias-cv-reference-ignored.cpp
 
 A `typedef` or an alias declaration declares a name for a type. The name
 denotes the same type, so it does not make a new type or a new overload.
@@ -91,6 +91,19 @@ These rules apply:
   outer one.
 - An alias declaration can define an unnamed class. An alias can name an
   incomplete class.
+
+TYN-8 lists what is not valid.
+:::
+
+:::{rule} TYN-8
+:kind: reject
+:tests: declarations/type-names/alias-overload-same.cpp declarations/type-names/alias-scope.cpp
+
+These consequences of TYN-1 make a program not valid:
+
+- A program must not use an alias outside its scope.
+- A function declared with an alias and a function declared with its
+  type are one function. A program must not define it twice.
 :::
 
 :::{rule} TYN-2
@@ -110,16 +123,24 @@ A type alias must not:
 
 :::{rule} TYN-3
 :kind: required
-:tests: declarations/type-names/typedef-unnamed-c-like.cpp declarations/type-names/typedef-unnamed-class-member-function.cpp
+:tests: declarations/type-names/typedef-unnamed-c-like.cpp
 
 If a `typedef` declares a name for an unnamed class, the class uses that
-name for linkage. Such a class must be C-like. It has no member
-functions, bases, or default member initializers ({question}`Q-0067`).
+name for linkage. TYN-9 states what such a class must be.
+:::
+
+:::{rule} TYN-9
+:kind: reject
+:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp
+
+A class that uses a `typedef` name for linkage (TYN-3) must be C-like. It
+has no member functions, bases, or default member initializers
+({question}`Q-0067`).
 :::
 
 :::{rule} TYN-4
 :kind: required
-:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-declares.cpp declarations/type-names/elaborated-enum-declared.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-hides-function.cpp declarations/type-names/elaborated-in-parameter-scope.cpp declarations/type-names/elaborated-key-class-struct.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-in-member-declares-namespace.cpp declarations/type-names/elaborated-scoped-enum-key.cpp
+:tests: declarations/type-names/elaborated-declares.cpp declarations/type-names/elaborated-enum-declared.cpp declarations/type-names/elaborated-hides-function.cpp declarations/type-names/elaborated-in-parameter-scope.cpp declarations/type-names/elaborated-key-class-struct.cpp declarations/type-names/elaborated-in-member-declares-namespace.cpp
 
 An elaborated type specifier refers to a class or enumeration that lookup
 finds with that key. Other names with the same spelling, such as
@@ -130,13 +151,23 @@ functions, do not hide it. If lookup finds no class, `struct S` or
   member declaration of a class, or namespace scope,
 - in the block, if it occurs in a block.
 
-`class` and `struct` can refer to the same class. These are not valid:
+`class` and `struct` can refer to the same class. TYN-10 lists what is
+not valid.
+:::
+
+:::{rule} TYN-10
+:kind: reject
+:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-scoped-enum-key.cpp
+
+These uses of an elaborated type specifier (TYN-4) are not valid:
 
 - `union` for a class, or a class key for an enumeration,
 - `enum class` or `enum struct` in a reference to an enumeration,
 - `enum E` before `E` is declared,
 - a qualified name that lookup does not find,
-- a class key with the name of a type alias.
+- a class key with the name of a type alias,
+- a class that `struct S` or `class S` declared, used outside the scope
+  that TYN-4 gives it.
 :::
 
 :::{rule} TYN-6

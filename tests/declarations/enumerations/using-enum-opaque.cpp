@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-9
+// tidal-rules: ENUM-20
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: enumeration .C. is incomplete

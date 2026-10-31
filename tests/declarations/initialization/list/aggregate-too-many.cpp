@@ -1,4 +1,4 @@
-// tidal-rules: LIST-3
+// tidal-rules: LIST-12
 // tidal-expect: reject
 // tidal-error-clang: excess elements in struct initializer
 // tidal-error-gcc: too many initializers for .S

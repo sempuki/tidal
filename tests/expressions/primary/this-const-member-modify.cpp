@@ -1,4 +1,4 @@
-// tidal-rules: PRIM-11
+// tidal-rules: PRIM-11 ASN-2
 // tidal-expect: reject
 // tidal-error-clang: within const member function
 // tidal-error-gcc: in read-only object

@@ -154,7 +154,7 @@ temporary ends after that (VC-6).
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp
 
 If a program reads an object outside its lifetime, or reads a scalar
 object or member that has no value yet, the behavior is undefined. This

@@ -1,4 +1,4 @@
-// tidal-rules: SB-3
+// tidal-rules: SB-13
 // tidal-expect: reject
 // tidal-error-clang: because it has an anonymous union member
 // tidal-error-gcc: because it has an anonymous union member

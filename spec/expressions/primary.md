@@ -14,7 +14,7 @@ Depends on: value categories, standard conversions.
 ## Principles
 
 :::{principle} PRIM-P1
-:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10
+:rules: PRIM-1 PRIM-2 PRIM-3 PRIM-16 PRIM-10 PRIM-24
 
 A literal is a value written in the source. Its spelling alone decides
 its type and its value, and no context changes them. The base and the
@@ -49,7 +49,7 @@ no reason to ask.
 :::
 
 :::{principle} PRIM-P3
-:rules: PRIM-11 PRIM-20 PRIM-12 PRIM-14
+:rules: PRIM-11 PRIM-20 PRIM-12 PRIM-14 PRIM-25
 
 A name is not a value. It denotes the entity that lookup finds
 ({principle}`NAM-P2`), and its value category follows from what that
@@ -223,12 +223,19 @@ character such as a tab.
 
 :::{rule} PRIM-10
 :kind: required
-:tests: expressions/primary/bool-nullptr.cpp expressions/primary/nullptr-member-pointer.cpp expressions/primary/nullptr-to-bool-copy.cpp expressions/primary/nullptr-to-int.cpp
+:tests: expressions/primary/bool-nullptr.cpp expressions/primary/nullptr-member-pointer.cpp
 
 `true` and `false` have type `bool`. `nullptr` has type
 `std::nullptr_t`. It converts to every pointer and pointer-to-member
-type. It converts to `bool` only by direct initialization, and it does
-not convert to an integer.
+type. It converts to `bool` by direct initialization.
+:::
+
+:::{rule} PRIM-24
+:kind: reject
+:tests: expressions/primary/nullptr-to-bool-copy.cpp expressions/primary/nullptr-to-int.cpp
+
+`nullptr` converts to `bool` only by direct initialization (PRIM-10). It
+does not convert to an integer.
 :::
 
 :::{rule} PRIM-11
@@ -251,7 +258,7 @@ function with an explicit object parameter, or outside a class.
 
 :::{rule} PRIM-12
 :kind: required
-:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp
+:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp expressions/primary/member-mutable-in-const.cpp expressions/primary/member-const-in-const-function.cpp
 
 A name refers to the entity that lookup finds *(referenced)*. Its value
 category is:
@@ -261,10 +268,16 @@ category is:
 
 In a member function, the name of a non-static member means `this->m`.
 A data member then has the cv-qualifiers of the object, unless it is
-`mutable` or a reference.
-Elsewhere, such a name is valid only in an unevaluated operand. `::x`
-names `x` in the global namespace. `N::x` names `x` in the namespace or
-class `N`.
+`mutable` or a reference. `::x` names `x` in the global namespace.
+`N::x` names `x` in the namespace or class `N`.
+:::
+
+:::{rule} PRIM-25
+:kind: reject
+:tests: expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/decltype/nested-class-member-evaluated.cpp
+
+Outside a member function, the name of a non-static member is valid only
+in an unevaluated operand (PRIM-12).
 :::
 
 :::{rule} PRIM-14

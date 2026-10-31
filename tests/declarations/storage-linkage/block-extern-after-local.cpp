@@ -1,4 +1,4 @@
-// tidal-rules: STO-7
+// tidal-rules: STO-13
 // tidal-expect: reject
 // tidal-error-clang: extern declaration of .x. follows non-extern declaration
 // tidal-error-gcc: conflicts with a previous declaration

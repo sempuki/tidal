@@ -1,4 +1,4 @@
-// tidal-rules: TR-5
+// tidal-rules: TR-10
 // tidal-expect: reject
 // tidal-error-gcc: \(1 / 0\). is not a constant expression
 // tidal-error-clang: division by zero

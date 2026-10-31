@@ -1,4 +1,4 @@
-// tidal-rules: ENUM-8
+// tidal-rules: ENUM-19
 // tidal-expect: reject
 // tidal-error-clang: cannot be narrowed to type .F
 // tidal-error-gcc: narrowing conversion of .300

@@ -1,4 +1,4 @@
-// tidal-rules: OPR-6
+// tidal-rules: OPR-15
 // tidal-expect: reject
 // tidal-error-clang: use of overloaded operator .\+. is ambiguous
 // tidal-error-gcc: ambiguous overload for .operator\+

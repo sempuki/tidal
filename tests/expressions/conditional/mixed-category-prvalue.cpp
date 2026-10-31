@@ -1,4 +1,4 @@
-// tidal-rules: COND-3
+// tidal-rules: COND-3 VC-12
 // tidal-expect: reject
 // tidal-error-clang: expression is not assignable
 // tidal-error-gcc: lvalue required as left operand of assignment

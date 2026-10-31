@@ -15,7 +15,7 @@ move, sequencing and evaluation order, overload resolution
 ## Principles
 
 :::{principle} OPR-P1
-:rules: OPR-1 OPR-6 OPR-7 OPR-11 OPR-12
+:rules: OPR-1 OPR-6 OPR-7 OPR-11 OPR-12 OPR-15
 
 An operator applied to a class or enumeration operand is a function call
 in operator syntax. The function is chosen by overload resolution among
@@ -27,7 +27,7 @@ language promises that order.
 :::
 
 :::{principle} OPR-P2
-:rules: OPR-2 OPR-3 OPR-4 OPR-5
+:rules: OPR-2 OPR-3 OPR-4 OPR-5 OPR-13 OPR-14
 
 An operator function keeps the shape of the operator it stands for. It
 has the same number of operands, no default arguments, and no new
@@ -39,7 +39,7 @@ appears.
 :::
 
 :::{principle} OPR-P3
-:rules: OPR-8 OPR-9 OPR-10
+:rules: OPR-8 OPR-9 OPR-10 OPR-16
 
 A literal with a suffix is a call to the literal operator for that
 suffix, and the form of the literal picks the parameter list. Literal
@@ -119,27 +119,41 @@ expression as an argument.
 
 :::{rule} OPR-4
 :kind: required
-:tests: classes/operators/postfix-arg-zero.cpp classes/operators/postfix-nonmember.cpp classes/operators/postfix-not-declared.cpp classes/operators/prefix-postfix.cpp
+:tests: classes/operators/postfix-arg-zero.cpp classes/operators/postfix-nonmember.cpp classes/operators/prefix-postfix.cpp
 
-`operator++()` with no extra parameter is the prefix form. `operator++(int)`
-is the postfix form, and the same applies to `--`. A postfix use passes
-`0` as the argument. An expression uses only the form that the class
+`operator++()` with no extra parameter is the prefix form.
+`operator++(int)` is the postfix form, and the same applies to `--`. A
+postfix use passes `0` as the argument.
+:::
+
+:::{rule} OPR-13
+:kind: reject
+:tests: classes/operators/postfix-not-declared.cpp
+
+An expression with `++` or `--` uses only the form that the class
 declares.
 :::
 
 :::{rule} OPR-5
 :kind: required
-:tests: classes/operators/arrow-chain.cpp classes/operators/arrow-circular.cpp classes/operators/arrow-declaration-ok.cpp classes/operators/arrow-returns-int.cpp
+:tests: classes/operators/arrow-chain.cpp classes/operators/arrow-declaration-ok.cpp
 
 For `x->m`, if `x` has class type, `x.operator->()` is called. If the
 result has class type, `->` applies to it again, until the result is a
-pointer. A declaration of `operator->` can have any return type. A use is
-not valid if the chain does not end in a pointer.
+pointer. A declaration of `operator->` can have any return type.
+:::
+
+:::{rule} OPR-14
+:kind: reject
+:tests: classes/operators/arrow-circular.cpp classes/operators/arrow-returns-int.cpp
+
+A use of `->` that OPR-5 describes is not valid if the chain does not
+end in a pointer.
 :::
 
 :::{rule} OPR-6
 :kind: required
-:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/compound-not-synthesized.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/member-hides-not-nonmember.cpp classes/operators/no-candidate.cpp
+:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp
 
 An expression with an operand of class or enumeration type selects its
 function from these candidates:
@@ -150,14 +164,21 @@ function from these candidates:
 - built-in operators, after conversion of the operands.
 
 Implicit conversions apply to every operand of a non-member and to no
-left operand of a member. An ambiguity or no viable candidate makes the
-expression not valid. `a @= b` uses only `operator@=`. It is never
+left operand of a member. `a @= b` uses only `operator@=`. It is never
 rewritten as `a = a @ b`.
+:::
+
+:::{rule} OPR-15
+:kind: reject
+:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp
+
+For an expression that OPR-6 describes, an ambiguity or no viable
+candidate makes the expression not valid.
 :::
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-integer.cpp classes/operators/literal-not-found.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp
 
 A literal with a suffix calls a literal operator with that suffix. The
 form of the literal selects the parameter list:
@@ -170,10 +191,16 @@ form of the literal selects the parameter list:
 
 If both a numeric form and the `const char*` form exist for a suffix, a
 numeric or floating literal uses the numeric form. Adjacent string
-literals with the same suffix, or with a suffix on only one of them,
-are joined and then passed to the literal operator. A literal for which
-no matching literal operator exists is not valid. A literal operator can
+literals with the same suffix, or with a suffix on only one of them, are
+joined and then passed to the literal operator. A literal operator can
 be `constexpr`.
+:::
+
+:::{rule} OPR-16
+:kind: reject
+:tests: classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-not-found.cpp
+
+A literal for which no matching literal operator exists is not valid.
 :::
 
 :::{rule} OPR-10
