@@ -167,5 +167,5 @@ typical of a simple operator family.
   that size each.
 
 That totals about 66 section-units. Drafting one unit takes one working
-session for the spec writer. Review and adjudication are not included and are
+session for the clean-room writer. Review and adjudication are not included and are
 expected to dominate once reviewers are involved.

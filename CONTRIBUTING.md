@@ -12,9 +12,9 @@ read.
 
 | Role | Has read | Can do |
 |---|---|---|
-| **Spec writer** | No ISO text, WG21 papers, cppreference, or unsanitized implementation sources | Write and change specification text, tests, tools, and docs |
+| **Clean-room writer** | No ISO text, WG21 papers, cppreference, or unsanitized implementation sources | Write and change specification text, tests, tools, and docs |
 | **Clean-room reader** | Only Tidal's own files, while taking part | Use the spec as its audience would (write programs, predict test outcomes, extend `frontend/`, plan what to specify next) and report findings by rule ID. Write only in your exercise's directories |
-| **Source reader** | Any of the above | Give spec writers summaries in prose: gaps, doubts, behaviors to probe. No code, no quotes, no stable names. Never change a file |
+| **Source reader** | Any of the above | Give clean-room writers summaries in prose: gaps, doubts, behaviors to probe. No code, no quotes, no stable names. Never change a file |
 | **Contributor** | Anything | Argue for an answer to a question in `questions/` from evidence anyone can check |
 
 A source reader stays a source reader for the rest of that session or
@@ -28,13 +28,13 @@ reader.
   a test program, compiler output, or permissively licensed source. See
   `questions/README.md`.
 - **Report a gap.** As a source reader, write a summary under the rules
-  in `AGENTS.md`. A spec writer checks it with `tools/similarity.py` and
+  in `AGENTS.md`. A clean-room writer checks it with `tools/similarity.py` and
   triages it into probes (decision 0019).
 - **Use the spec on its own.** As a clean-room reader, write programs,
   predict test outcomes, or extend the front end in `frontend/` from the
   spec pages alone, and report where the text was not enough
   (`docs/exercises.md`).
-- **Draft or extend a page.** As a spec writer, follow the pipeline below.
+- **Draft or extend a page.** As a clean-room writer, follow the pipeline below.
 - **Improve the tooling.** The runner, the checks, and the site build are
   in `tools/` and `site/`.
 

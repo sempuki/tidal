@@ -21,7 +21,7 @@ constructs covered, and the "Depends on" list. No rules yet.
 Fetch the permissively licensed implementation sources (Clang and EDG)
 that the section needs with `tools/fetch_inputs.py`. It downloads pinned files into `inputs/raw/`, writes
 sanitized copies to `inputs/clean/`, and updates `inputs/MANIFEST.md` with the
-upstream commit, path, license, class, and SHA-256 of each file. The spec writer
+upstream commit, path, license, class, and SHA-256 of each file. The clean-room writer
 reads only `inputs/clean/`.
 
 ## 3. Probe
@@ -31,7 +31,7 @@ declaration as its condition?", "is the right operand of `&&` evaluated when
 the left is false?"). Run them with `tools/run_tests.py`. Probes that pass
 become conformance tests.
 
-Each probe records the spec writer's predicted outcome in `tidal-expect`. The
+Each probe records the clean-room writer's predicted outcome in `tidal-expect`. The
 compilers overrule the prediction when they disagree with it, so background
 knowledge never reaches the spec without a test behind it.
 
@@ -90,7 +90,7 @@ Writing guidance:
 
 ## 7. Questions
 
-For every compiler disagreement or unclear classification, the spec writer adds
+For every compiler disagreement or unclear classification, the clean-room writer adds
 a file to `questions/` from `questions/TEMPLATE.md`: the facts, the
 evidence, the options, and a provisional answer. The spec follows the
 provisional answer, and the section's "Divergences" heading links to the
@@ -101,7 +101,7 @@ answers through pull requests (`questions/README.md`).
 
 Run `tools/similarity.py` against the reference corpus and commit the report
 to `reports/similarity/` (`reports/README.md`). Anyone may run it, including
-the spec writer, because it prints only Tidal text.
+the clean-room writer, because it prints only Tidal text.
 
 ## 9. Rewrite
 

@@ -1,7 +1,7 @@
 # 0031. Role names: spec writer and clean-room reader
 
 Date: 2026-10-31
-Status: Accepted. Amends 0020, 0029, and 0030.
+Status: Accepted. Amends 0020, 0029, and 0030. Amended by 0032.
 
 ## Context
 
