@@ -197,6 +197,30 @@
       "repo": "edg",
       "path": "cmake/macro-conf/support/target/linux_i686/base.cmakedef",
       "class": "sanitized"
+    },
+    {
+      "id": "clang-parse-decl",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseDecl.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-parse-declcxx",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseDeclCXX.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-parse-exprcxx",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseExprCXX.cpp",
+      "class": "sanitized"
+    },
+    {
+      "id": "clang-parse-init",
+      "repo": "llvm",
+      "path": "clang/lib/Parse/ParseInit.cpp",
+      "class": "sanitized"
     }
   ]
 }

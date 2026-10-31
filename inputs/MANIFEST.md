@@ -14,8 +14,8 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 
 | ID | Repo | Path | Class | SHA-256 (raw) |
 |---|---|---|---|---|
-| clang-parse-stmt | llvm | `clang/lib/Parse/ParseStmt.cpp` | sanitized | `(not fetched)` |
-| clang-parse-expr | llvm | `clang/lib/Parse/ParseExpr.cpp` | sanitized | `(not fetched)` |
+| clang-parse-stmt | llvm | `clang/lib/Parse/ParseStmt.cpp` | sanitized | `2924c7fd490855f3b63d1c4abdca050a7599d6382a1b2bc9f2735eef05217ec5` |
+| clang-parse-expr | llvm | `clang/lib/Parse/ParseExpr.cpp` | sanitized | `be659823e85cf4401510fed6b6f3a9a2d266499c6714165e7d8ab17f7a3936e7` |
 | clang-sema-stmt | llvm | `clang/lib/Sema/SemaStmt.cpp` | sanitized | `(not fetched)` |
 | clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `(not fetched)` |
 | clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `(not fetched)` |
@@ -35,7 +35,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | edg-statements | edg | `src/statements.c` | sanitized | `(not fetched)` |
 | clang-sema-access | llvm | `clang/lib/Sema/SemaAccess.cpp` | sanitized | `(not fetched)` |
 | edg-class-decl | edg | `src/class_decl.c` | sanitized | `(not fetched)` |
-| clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `(not fetched)` |
+| clang-lex-literal | llvm | `clang/lib/Lex/LiteralSupport.cpp` | sanitized | `4c0dcf0757557885412a691c9ea716d4cfd7f8a796ce85aeffee7da7c7cfdd28` |
 | clang-diag-lex | llvm | `clang/include/clang/Basic/DiagnosticLexKinds.td` | sanitized | `(not fetched)` |
 | clang-ast-exprconstant | llvm | `clang/lib/AST/ExprConstant.cpp` | sanitized | `(not fetched)` |
 | clang-diag-ast | llvm | `clang/include/clang/Basic/DiagnosticASTKinds.td` | sanitized | `(not fetched)` |
@@ -45,3 +45,7 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-ast-context | llvm | `clang/lib/AST/ASTContext.cpp` | sanitized | `53e3000328ded3ef4f6a32591dd2e9c34721518a99e7bdcc791ebc20fecef257` |
 | edg-targ-def | edg | `src/targ_def.h` | sanitized | `e39ed09cdd9d150092231dce1d2b39032ffd442efe57ced0ad7636e12cf1958b` |
 | edg-target-i686 | edg | `cmake/macro-conf/support/target/linux_i686/base.cmakedef` | sanitized | `a3fafc3c61867e2b4f624b5ebd70c2571011b5f599a9980fb519e704822a0aee` |
+| clang-parse-decl | llvm | `clang/lib/Parse/ParseDecl.cpp` | sanitized | `28aa51a88ccebd2d19825b2d61246caf8b83ad8d83dc9313669a7c34154b6591` |
+| clang-parse-declcxx | llvm | `clang/lib/Parse/ParseDeclCXX.cpp` | sanitized | `6598dcd7f0fdef7c8cdf3d7e14846adffa6f8fcb3c4ff62aaed2b3dc238c2b46` |
+| clang-parse-exprcxx | llvm | `clang/lib/Parse/ParseExprCXX.cpp` | sanitized | `6a61327601814e49573f338da7823fdda3e96db2de40cc31fc29556da342195b` |
+| clang-parse-init | llvm | `clang/lib/Parse/ParseInit.cpp` | sanitized | `e24a7bcfad1b914a3951bed6800eb254b8adb1a4a9d9c146e0b38af4cb65a7ca` |
