@@ -17,14 +17,14 @@ Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 :::{principle} CX-P1
 :rules: CX-3 CX-6 CX-4 CX-5
 
-`constexpr` on a function is a permission, not a demand. It lets
-constant evaluation call the function ({principle}`TR-P4`), and the same
-function still runs at run time with the same meaning. The body can
-contain operations that constant evaluation cannot do, as long as no
-constant evaluation reaches them. Because every translation unit that
-evaluates the function needs its body, the function is `inline`. The
-specifier applies to functions and variables only, and all declarations
-of a function must agree on it.
+`constexpr` on a function is a permission. It lets constant evaluation
+call the function ({principle}`TR-P4`), and the same function still
+runs at run time with the same meaning. The body can contain operations
+that constant evaluation cannot do, as long as no constant evaluation
+reaches them. Because every translation unit that evaluates the
+function needs its body, the function is `inline`. The specifier
+applies to functions and variables only, and all declarations of a
+function must agree on it.
 :::
 
 :::{principle} CX-P2
@@ -72,15 +72,17 @@ and asks nothing of the destructor. A variable is either `constinit` or
 :kind: reject
 :tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp
 
-A `constexpr` variable is `const`.
+A `constexpr` variable is `const`, and it must obey these rules:
 
-- It must be initialized, and the initialization must be a constant
-  expression. A variable of class type can have no initializer if a
+- It must have an initializer, unless it has class type and a
   `constexpr` default constructor gives every member a value.
+- Its initialization must be a constant expression.
 - Its type must be a {term}`literal type` (CE-23).
-- A `constexpr` reference at namespace scope can bind to a temporary,
-  because that temporary has static storage. In a block without
-  `static`, it cannot.
+- A `constexpr` reference in a block, without `static`, must not bind
+  to a temporary.
+
+A `constexpr` reference at namespace scope can bind to a temporary,
+because that temporary has static storage.
 :::
 
 :::{rule} CX-2

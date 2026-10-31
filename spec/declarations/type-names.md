@@ -184,10 +184,10 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 :kind: required
 :tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp
 
-After a forward declaration, a program can declare pointers and
-references to the class, and functions that take or return it. These
-rules also apply:
+These rules apply to forward declarations and complete types:
 
+- After a forward declaration, a program can declare pointers and
+  references to the class, and functions that take or return it.
 - A class is complete after its definition.
 - A forward declaration after the definition is valid.
 - A nested class can be declared in its class and defined outside it.

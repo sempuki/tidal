@@ -30,9 +30,8 @@ constant initializer
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
   necessary, for example in an `if` condition. The value `e` is converted
-  as `bool t(e);` converts it. This form uses `explicit` conversion
-  functions. A zero value or a null pointer gives `false`. Other values
-  give `true`.
+  as `bool t(e);` converts it, so `explicit` conversion functions are
+  used. {rule}`CONV-3` gives the values that convert to `false`.
 
 cv-qualifier
   `const` or `volatile` applied to a type. A program cannot change a
@@ -65,9 +64,8 @@ integer promotion
   These types are:
 
   - `bool`,
-  - the character types,
-  - `short`,
-  - their signed and unsigned forms.
+  - `char`, `signed char`, and `unsigned char`,
+  - `short` and `unsigned short`.
 
   If `int` can hold all values of the type, the result is
   `int`. If not, the result is `unsigned int`. The types `wchar_t`,
@@ -88,14 +86,17 @@ linkage
     declaration.
 
 literal type
-  A type whose objects constant evaluation can create and destroy
-  (CE-23). These types are literal types:
+  A type whose objects constant evaluation can create and destroy.
+  These types are literal types:
 
   - scalar and reference types,
   - arrays of literal types,
-  - closure types,
-  - classes with a `constexpr` or implicit destructor whose parts all
-    have literal types.
+  - closure types whose captures have literal types,
+  - classes with an implicit, defaulted, or `constexpr` destructor whose
+    bases and non-static data members have literal types that are not
+    `volatile`. A union needs only one member that is not `volatile`.
+
+  {rule}`CE-23` gives the full rule.
 
 observable behavior
   The part of an execution that an implementation must reproduce:

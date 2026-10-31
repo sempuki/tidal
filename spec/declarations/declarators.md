@@ -81,7 +81,7 @@ nothing else.
 :rules: CV-3 CV-4 CV-5 CV-6 CV-7 CV-10 CV-8 CV-11 CV-9
 
 `const` is a promise that an object does not change after
-initialization. The promise is kept at both ends:
+initialization. Three rules keep the promise:
 
 - a `const` scalar must get its value when it is defined,
 - no assignment goes through a `const` path,
@@ -208,17 +208,16 @@ what is not valid.
 :kind: reject
 :tests: declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/unknown-bound-empty-braces.cpp
 
-An array bound must obey these rules:
+An array declaration must obey these rules:
 
 - The bound must be a constant expression that converts to the type of
-  `sizeof` without loss of value. A scoped enumeration is not valid.
+  `sizeof` without loss of value.
+- The bound must not have a scoped enumeration type.
 - The bound must be greater than zero.
-- The bound must not be omitted in cases other than those that DCL-5
-  lists.
-
-The initializer must not have more elements than the bound. An array
-without a bound must not have an empty braced initializer, because it
-would have zero elements.
+- The bound can be omitted only in the cases that DCL-5 lists.
+- The initializer must not have more elements than the bound.
+- An array without a bound must not have an empty braced initializer,
+  because it would have zero elements.
 :::
 
 :::{rule} DCL-6

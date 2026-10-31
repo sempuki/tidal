@@ -100,8 +100,8 @@ the declaration, also if no call uses it.
 :kind: reject
 :tests: declarations/functions/default-arguments/operator-default-argument.cpp
 
-An operator function other than `operator()` must not have default
-arguments ({rule}`OPR-2`).
+An operator function other than `operator()` and `operator[]` must not
+have default arguments ({rule}`OPR-2`, {rule}`OPR-3`).
 :::
 
 ## Runtime Behavior

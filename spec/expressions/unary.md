@@ -202,9 +202,9 @@ The operand of `sizeof` must not have one of these types:
 apply:
 
 - `char` has alignment 1.
-- An array has the alignment of its element type.
+- An array, of known or unknown bound, has the alignment of its element
+  type.
 - A reference type gives the alignment of the referenced type.
-- An array of unknown bound has the alignment of its element type.
 :::
 
 :::{rule} UN-17

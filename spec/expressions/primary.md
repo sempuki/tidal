@@ -151,12 +151,14 @@ can come before or after the length suffix.
 :kind: reject
 :tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp expressions/primary/int-prefix-no-digits-hex.cpp expressions/primary/int-prefix-no-digits-binary.cpp
 
-These requirements apply:
+These requirements apply to an integer literal:
 
 - A base prefix must have at least one digit after it.
 - Each digit must be valid for the base of the literal.
-- A digit separator must have a digit on each side.
 - A suffix must be one of the forms in the syntax.
+
+In an integer or floating literal, a digit separator must have a digit
+on each side.
 :::
 
 :::{rule} PRIM-4

@@ -21,7 +21,7 @@ you.
    the class has both names as members of any kind, and otherwise as
    free functions found through the argument's namespace
    ({principle}`NAM-P3`).
-3. It then advances with `++`, stops when the iterator compares unequal
+3. It then advances with `++`, stops when the iterator compares equal
    to `end`, and initializes the loop variable from each element.
 
 The loop variable is not yet declared when

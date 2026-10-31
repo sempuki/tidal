@@ -215,12 +215,15 @@ prvalue.
 :kind: required
 :tests: declarations/structured-bindings/array-copy.cpp declarations/structured-bindings/array-reference.cpp declarations/structured-bindings/array-hidden-copy.cpp
 
-A structured binding declaration creates one hidden variable. The
-variable has the written `auto`, cv-qualifiers, and reference, and the
-initializer initializes it. Each name refers to one element of the hidden
-variable. For an array initializer without a reference, the hidden
-variable is an array with the same element type and bound, and each
-element is copied. The array does not decay to a pointer.
+A structured binding declaration creates one hidden variable, and each
+name refers to one element of it. The hidden variable has these
+properties:
+
+- It has the written `auto`, cv-qualifiers, and reference.
+- The initializer initializes it.
+- For an array initializer without a reference, it is an array with the
+  same element type and bound, and each element is copied. The
+  initializer does not decay to a pointer.
 :::
 
 :::{rule} SB-6

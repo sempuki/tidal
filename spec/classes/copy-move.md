@@ -91,12 +91,15 @@ name as an rvalue, because the object is about to end.
 :::{principle} CPY-P5
 :rules: CPY-12 CPY-18 CPY-13
 
-The implementation keeps some freedom. It can make a named local
-variable the return object instead of moving it, except for a parameter
-and except in constant evaluation. It can assign a shared virtual base
-more than once. It should warn when a program relies on the implicit
-copy of a class that manages its own copying, and when a cast in a
-`return` statement defeats the freedom to elide.
+The implementation has two choices and two recommended warnings:
+
+- It can make a named local variable the return object instead of
+  moving it, except for a parameter and except in constant evaluation.
+- It can assign a shared virtual base more than once.
+- It should warn when a program relies on the implicit copy of a class
+  that manages its own copying.
+- It should warn when a cast in a `return` statement defeats the
+  freedom to elide.
 :::
 
 :::{principle} CPY-P6
@@ -245,15 +248,20 @@ assignment operator that CPY-6 hides.
 :kind: required
 :tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp
 
-An implicit or defaulted copy or move function is deleted if a base or
-member cannot be copied or moved in the same way. A function that is
-deleted or not accessible prevents this, and so does a destructor of a
-base or member that is deleted or not accessible. An rvalue reference
-member deletes the implicit copy constructor. Also, the implicit copy and move
-assignment operators are deleted if the class has a reference member or a
-`const` member. A defaulted move function that is deleted takes no part
-in overload resolution, so an rvalue uses the copy function. A move
-function that the program deletes explicitly takes part.
+An implicit or defaulted copy or move function is deleted if one of
+these conditions is true:
+
+- A base or member cannot be copied or moved in the same way, for
+  example because the function for it is deleted or not accessible.
+- A base or member has a destructor that is deleted or not accessible.
+- The function is the copy constructor, and the class has an rvalue
+  reference member.
+- The function is a copy or move assignment operator, and the class has
+  a reference member or a `const` member.
+
+A defaulted move function that is deleted takes no part in overload
+resolution, so an rvalue uses the copy function. A move function that
+the program deletes explicitly takes part.
 :::
 
 :::{rule} CPY-23

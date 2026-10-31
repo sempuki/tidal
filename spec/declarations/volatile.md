@@ -57,15 +57,16 @@ parameter list, as `const` can.
 :kind: required
 :tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
 
-A member function declared `volatile` can be called on a volatile object
-and on other objects. These rules also apply:
+These rules apply to `volatile` and classes:
 
+- A member function declared `volatile` can be called on a volatile
+  object and on other objects.
 - Two member functions can overload on `volatile`.
 - A member of a volatile object is volatile.
 - A `static const volatile` integer member can have an initializer in
   its class ({question}`Q-0080`).
 - A volatile object of class type is initialized by an ordinary
-  constructor. It is volatile after the constructor ends.
+  constructor, and it is volatile after the constructor ends.
 :::
 
 :::{rule} VOL-9

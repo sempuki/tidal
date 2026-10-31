@@ -25,14 +25,15 @@ category, and that is decided before either is evaluated.
 
 - If both are lvalues of one type, the result is an lvalue, with the
   union of their cv-qualifiers.
-- Otherwise the result is a prvalue, and each operand is converted to
-  the result type. Arithmetic operands convert by the usual arithmetic
-  conversions (CONV-3). Class operands convert by their own conversions,
-  with overload resolution choosing when the types differ.
 - An operand that throws takes no part, because it gives no value.
 - A `void` operand can pair only with another `void`.
 - If two class types each convert to the other, there is no single
   answer, and the expression is rejected.
+- Otherwise the result is a prvalue, and each operand is converted to
+  the result type. Arithmetic operands convert by the
+  {term}`usual arithmetic conversions`. Class operands convert by their
+  own conversions, with overload resolution choosing when the types
+  differ.
 :::
 
 :::{principle} COND-P3

@@ -62,7 +62,9 @@ it. For a discarded branch:
 - Its `return` statements do not deduce the return type, and nothing it
   names needs a definition, because it never runs.
 
-A jump cannot enter a branch that was never selected.
+A `goto`, `case` label, or `default` label outside the statement cannot
+jump into either branch, whether it is selected or discarded. The same
+holds for `if consteval`.
 :::
 
 :::{principle} IF-P4

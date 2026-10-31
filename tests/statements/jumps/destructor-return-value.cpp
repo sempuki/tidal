@@ -1,4 +1,4 @@
-// tidal-rules: JMP-13
+// tidal-rules: JMP-12
 // tidal-expect: reject
 // tidal-error-clang: destructor .~S. should not return a value
 // tidal-error-gcc: returning a value from a destructor

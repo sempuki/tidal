@@ -98,7 +98,7 @@ to the return type, and a braced list initializes the result. In a
 
 :::{rule} JMP-13
 :kind: reject
-:tests: statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp statements/jumps/destructor-return-value.cpp
+:tests: statements/jumps/return-missing-value.cpp statements/jumps/return-value-in-void.cpp
 
 In a function that returns a value, `return` must have an expression.
 In a `void` function, `return` must not have an expression of a type
@@ -130,18 +130,16 @@ These conditions apply to labels (JMP-5):
 :tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp
 
 A jump must not skip the declaration of a variable with
-{term}`automatic storage` that is in scope at the target, if the declaration
-has an initializer. A jump can skip a declaration without an initializer
-if the type is one of these:
+{term}`automatic storage` that is in scope at the target. The one
+exception is a declaration with no initializer whose type is one of
+these:
 
 - a scalar type,
 - a class type whose default constructor and destructor are both
   trivial *(class properties referenced)*,
 - an array of these types.
 
-A jump can also skip a `static` local variable ({question}`Q-0041`). A
-class with a destructor that is not trivial is not in the list, also
-without an initializer ({question}`Q-0097`).
+A jump can skip the declaration of a `static` local variable.
 :::
 
 :::{rule} JMP-10
@@ -169,10 +167,10 @@ returned, because JMP-10 does not count it.
 
 :::{rule} JMP-12
 :kind: reject
-:tests: statements/jumps/constructor-return-void-expression.cpp statements/jumps/destructor-return-void-expression.cpp
+:tests: statements/jumps/constructor-return-void-expression.cpp statements/jumps/destructor-return-void-expression.cpp statements/jumps/destructor-return-value.cpp
 
-In a constructor or a destructor, `return` must have no expression, also
-not an expression of type `void`.
+In a constructor or a destructor, `return` must have no expression.
+This includes an expression of type `void`.
 :::
 
 ## Runtime Behavior
@@ -262,8 +260,9 @@ All seven compilers agree on every test, except where a question is
 noted. The results are in `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
-  whose destructor is not trivial. Clang and EDG reject it (question
-  pending).
+  whose destructor is not trivial. Clang and EDG reject it, so a class
+  type whose destructor is not trivial is not an exception
+  ({question}`Q-0041`, {question}`Q-0097`).
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
   accepts zero or one copy.

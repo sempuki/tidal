@@ -180,7 +180,8 @@ Point q{1.5, 2};       // rejected: narrowing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 29 of 30 tests. The tests declare a minimal `std::initializer_list`.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 29
+of 30 tests. The tests declare a minimal `std::initializer_list`.
 
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that

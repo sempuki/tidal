@@ -11,7 +11,7 @@ and arrays. Initialization by constructors is on the page on
 
 An initializer gives an object its first value by converting the
 initializer to the object's type ({principle}`VC-P2`). `=` and
-parentheses mean the same conversion, with one difference: `=` is
+parentheses mean the same conversion. The one difference is that `=` is
 copy-initialization, so it does not use an `explicit` constructor. An
 array takes a list of values, one per element. Empty braces and `T()`
 mean the zero of the type.
@@ -136,12 +136,16 @@ left to right.
 :kind: undefined
 :tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp declarations/initialization/forms/self-initialization.cpp
 
-A variable with {term}`automatic storage` and no initializer has no value
-until the program assigns one. A read of the variable before that time is
-undefined. This also applies to each element of an array. A copy of such a
-value into an object of type `unsigned char` or `std::byte` is not
-undefined, and the copy also has no value ({question}`Q-0039`).
-This includes a variable that its own initializer reads.
+A variable with {term}`automatic storage` and no initializer has no
+value until the program assigns one. A read of the variable before that
+time is undefined. These rules also apply:
+
+- A variable that its own initializer reads has no value at that read.
+- Each element of an array with no initializer has no value in the same
+  way.
+- A copy of such a value into an object of type `unsigned char` or
+  `std::byte` is not undefined, and the copy also has no value
+  ({question}`Q-0039`).
 :::
 
 ## Examples

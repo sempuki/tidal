@@ -102,7 +102,9 @@ The cast was valid; the use of its result was not.
 - convert a pointer to an integer,
 - convert an integer other than a null pointer constant to a pointer,
 - convert between a pointer to a function and a pointer to an object,
-- convert to a derived class through a base that is not accessible.
+- convert a pointer to a base class to a pointer to a derived class,
+  if the base is not accessible at the cast (for example, a private
+  base).
 :::
 
 :::{rule} CAST-4

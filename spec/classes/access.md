@@ -139,10 +139,11 @@ Access control applies to names. It does not apply in these cases:
 :tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp classes/derived/base-protected-dtor-direct.cpp
 
 A protected member has the access of a private member. Members and
-friends of a derived class `D` also have access to it, with these limits:
+friends of a derived class `D` also have access to it, with these
+limits:
 
-- For a non-static member used through an object, the class of the object
-  must be `D` or a class derived from `D`.
+- For a non-static member used through an object, the class of the
+  object must be `D` or a class derived from `D`.
 - A pointer to a non-static member must be formed with `D`, as `&D::m`.
 
 A static protected member has no such limit.
@@ -157,12 +158,12 @@ A friend can be:
 
 - a function,
 - a member function of another class, and only that function,
-- a class, and all its member functions.
+- a class, and all its member functions. The class can be named with
+  its class key, or by a type name or type alias of a class that is
+  already declared.
 
-A friend class can be named with its class key, or by a type name or type
-alias of a class that is already declared. A friend declaration that
-names a type that is not a class is ignored. An access label has no
-effect on a friend declaration.
+A friend declaration that names a type that is not a class is ignored.
+An access label has no effect on a friend declaration.
 :::
 
 :::{rule} ACC-6
@@ -321,9 +322,11 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 45 of 46 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 45
+of 46 tests.
 
-- ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a using-declaration makes
-  private, if the member is public in the base ({question}`Q-0052`).
+- ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
+  using-declaration makes private, if the member is public in the base
+  ({question}`Q-0052`).
 
 Inputs: clang-sema-access, edg-class-decl.

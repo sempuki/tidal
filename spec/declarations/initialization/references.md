@@ -141,18 +141,20 @@ braces, a narrowing conversion must not occur (LIST-2).
 :tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp
 
 If a reference variable binds to a temporary object, or to a member of
-one, the temporary lives as long as the reference. This also applies to a
-reference member of an aggregate initialized with braces, and through:
+one, the temporary lives as long as the reference. This also applies to
+a reference member of an aggregate initialized with braces, and to a
+binding through one of these:
 
 - parentheses,
 - the selected operand of `?:`,
 - the right operand of a comma,
-- a cast without a user-defined conversion such as `static_cast`,
+- a cast to a reference type that uses no user-defined conversion, for
+  example a `static_cast`,
 - a subscript of an array member of the temporary ({question}`Q-0109`).
 
-The temporary is destroyed when the reference goes out of scope, in
-order with the other objects of that scope. A reference with static
-storage keeps its temporary until the program ends.
+The temporary is destroyed when the reference ends, in order with the
+other objects of its scope, or when the program ends if the reference
+has static storage.
 :::
 
 :::{rule} REF-7

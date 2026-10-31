@@ -22,8 +22,8 @@ of the value that the initializer produces.
 
 - A reference in the initializer's type is dropped, because the variable
   is a new object and does not refer to the old one.
-- The top-level `const` and `volatile` are dropped for the same reason:
-  they belonged to the old object.
+- The top-level `const` and `volatile` are dropped for the same reason,
+  because they belonged to the old object.
 - An array or a function cannot be held as a value, so the variable gets
   the pointer that the initializer converts to ({principle}`VC-P1`).
 :::

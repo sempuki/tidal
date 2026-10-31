@@ -285,9 +285,12 @@ condition.
 :kind: reject
 :tests: expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp expressions/constant-expressions/unset-member-not-copied.cpp expressions/constant-expressions/copy-after-every-part-set.cpp
 
-A copy or move of an object during constant evaluation reads each of
-its scalar parts (CPY-8). Constant evaluation must not copy or move an
-object that has a scalar part with no value (OBJ-2).
+During constant evaluation, an implicit copy or move function
+({rule}`CPY-8`) reads each scalar part of the source object. A
+user-provided copy or move function reads only what its body reads.
+Constant evaluation must not use an implicit copy or move function on
+an object that has a scalar part with no value (OBJ-2), including the
+move of a returned local variable ({rule}`CPY-12`).
 :::
 
 :::{rule} CE-23
@@ -311,7 +314,8 @@ A *literal type* is one of these:
 
 A *constant initializer* is an initializer whose whole initialization of
 the variable, with each conversion and constructor call in it, is a
-constant expression.
+constant expression. For a variable with no initializer, its default
+initialization is the initialization that this rule and CE-21 judge.
 :::
 
 :::{rule} CE-18

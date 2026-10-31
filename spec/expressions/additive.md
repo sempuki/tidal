@@ -9,10 +9,10 @@ into the same array.
 :::{principle} ADD-P1
 :rules: ADD-1 ADD-2 ADD-3 ADD-4
 
-`+` and `-` have two jobs. They take these operands:
+`+` and `-` have three jobs, one for each of these operand forms:
 
 - On numbers they add and subtract, with the operands brought to one
-  common type by the usual arithmetic conversions (CONV-3), so the
+  common type by the {term}`usual arithmetic conversions`, so the
   result has that type.
 - On a pointer and an integer they move the pointer, and the result has
   the pointer's type.

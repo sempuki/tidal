@@ -154,10 +154,10 @@ has no default member initializer:
 - a `const` member of a class that has no user-provided default
   constructor and leaves a member without a value.
 
-It is also deleted if a base or member has no default constructor that is
-accessible and not deleted, or has a destructor that is deleted or not
-accessible. A deleted default constructor makes only its
-use invalid.
+It is also deleted if a base or member has no default constructor that
+is accessible and not deleted, or has a destructor that is deleted or
+not accessible. A deleted default constructor makes only its use
+invalid.
 :::
 
 :::{rule} CTOR-20
@@ -298,18 +298,17 @@ A destructor can run on a `const` object.
 :kind: reject
 :tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp
 
-If the destructor of a class is deleted or not accessible, a program must
-not:
+If the destructor of a class is deleted or not accessible, a program
+must not:
 
 - declare a variable of the class with automatic, static, or thread
   storage duration,
 - create a temporary of the class,
 - apply `delete` to an object of the class.
 
-A `new` expression for the class is valid, also for an array (question
-pending). The implicit destructor is
-deleted if a base or member has a destructor that is deleted or not
-accessible.
+A `new` expression for the class is valid, also for an array
+({question}`Q-0082`). The implicit destructor is deleted if a base or
+member has a destructor that is deleted or not accessible.
 :::
 
 :::{rule} DTOR-4
@@ -477,7 +476,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 114 of 120 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 114
+of 120 tests.
 
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).
