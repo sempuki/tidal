@@ -1,4 +1,4 @@
-// tidal-rules: MPTR-4
+// tidal-rules: MPTR-11
 // tidal-expect: reject
 struct B { int x; };
 struct D : virtual B { };

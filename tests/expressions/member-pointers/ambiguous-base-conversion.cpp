@@ -1,4 +1,4 @@
-// tidal-rules: MPTR-4
+// tidal-rules: MPTR-11
 // tidal-expect: reject
 struct A { int x; };
 struct B : A {};
