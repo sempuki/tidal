@@ -1,6 +1,8 @@
 // tidal-rules: CMP-13
 // tidal-expect: reject
 // tidal-expect-edg: accept
+// tidal-error-clang: ordered comparison between pointer and zero
+// tidal-error-gcc: ordered comparison of pointer with integer zero
 // tidal-note: Q-0030. EDG accepts an ordered comparison between a pointer and the literal 0, as in pointer-relational-zero.cpp.
 namespace std {
 struct strong_ordering {

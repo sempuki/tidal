@@ -1,5 +1,6 @@
 // tidal-rules: UN-21
 // tidal-expect: reject
+// tidal-error-gcc: overflow in constant expression
 // tidal-note: Gap review 2026-10-31.
 constexpr int f() { int i = -2147483647 - 1; --i; return i; }
 static_assert(f() > 0);

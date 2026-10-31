@@ -1,5 +1,8 @@
 // tidal-rules: CMP-13
 // tidal-expect: reject
+// tidal-error-clang: invalid operands to binary expression .*bool.*int
+// tidal-error-gcc: invalid operands of types .bool. and .int. to binary .operator<=>
+// tidal-error-edg: for built-in operator<=>
 namespace std {
 struct strong_ordering {
   signed char value;

@@ -1,5 +1,8 @@
 // tidal-rules: CMP-12
 // tidal-expect: reject
+// tidal-error-clang: ordered comparison of function pointers
+// tidal-error-gcc: invalid operands of types .void \(\*\)\(\). and .void \(\*\)\(\). to binary .operator<=>
+// tidal-error-edg: for built-in operator<=>
 // tidal-note: Gap review 2026-10-30.
 namespace std {
 struct strong_ordering {

@@ -1,5 +1,8 @@
 // tidal-rules: CMP-12
 // tidal-expect: reject
+// tidal-error-clang: invalid operands to binary expression .*nullptr_t
+// tidal-error-gcc: ordered comparison of pointer with integer zero
+// tidal-error-edg: for built-in operator<=>
 // tidal-note: Gap review 2026-10-31 (third).
 namespace std {
 struct strong_ordering {

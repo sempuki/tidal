@@ -1,5 +1,6 @@
 // tidal-rules: CE-8
 // tidal-expect: reject
+// tidal-error-gcc: <throw-expression>. is not a constant expression
 constexpr int f(int v) {
   if (v < 0) throw v;
   return v;

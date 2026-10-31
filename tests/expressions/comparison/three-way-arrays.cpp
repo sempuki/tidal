@@ -1,5 +1,8 @@
 // tidal-rules: CMP-11
 // tidal-expect: reject
+// tidal-error-clang: invalid operands to binary expression .*int\[2\]
+// tidal-error-gcc: invalid operands of types .int \[2\]. and .int \[2\]. to binary .operator<=>
+// tidal-error-edg: for built-in operator<=>
 // tidal-note: Gap review 2026-10-30.
 namespace std {
 struct strong_ordering {

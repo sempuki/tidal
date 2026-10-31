@@ -304,7 +304,8 @@ matrix, `'ab'` is `0x6162` and `char` is signed.
 
 It is unspecified if two string literals with the same characters are
 the same object. This also applies to two evaluations of one string
-literal. Constant evaluation rejects a comparison of their addresses.
+literal. Constant evaluation rejects a comparison of their addresses
+({question}`Q-0033`).
 :::
 
 :::{rule} PRIM-15
@@ -375,7 +376,7 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 91 of 94 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 90 of 94 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -384,6 +385,9 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 91 of 94 tes
   infinity. EDG rejects it ({question}`Q-0063`).
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
   rejects them. Support is conditional.
+- PRIM-9: Clang rejects a comparison of the addresses of two string
+  literals during constant evaluation. GCC and EDG accept it and fold it
+  ({question}`Q-0033`).
 
 Inputs: clang-lex-literal, clang-diag-lex, clang-sema-expr,
 clang-diag-sema, edg-decls.

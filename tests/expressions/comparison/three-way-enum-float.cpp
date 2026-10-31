@@ -1,6 +1,8 @@
 // tidal-rules: CMP-18
 // tidal-expect: reject
 // tidal-expect-edg: accept
+// tidal-error-clang: invalid operands to binary expression .*E.*double
+// tidal-error-gcc: invalid operands of types .E. and .double. to binary .operator<=>
 // tidal-note: Gap review 2026-10-30. Q-0050. EDG accepts <=> between an unscoped enumeration and a floating-point value; Clang and GCC reject it.
 namespace std {
 struct strong_ordering {

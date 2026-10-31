@@ -1,5 +1,8 @@
 // tidal-rules: CMP-18
 // tidal-expect: reject
+// tidal-error-clang: invalid operands to binary expression .*E.*F
+// tidal-error-gcc: invalid operands of types .E. and .F. to binary .operator<=>
+// tidal-error-edg: comparison between two different enum types
 // tidal-note: Gap review 2026-10-30.
 namespace std {
 struct strong_ordering {

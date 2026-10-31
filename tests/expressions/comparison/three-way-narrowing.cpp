@@ -1,5 +1,8 @@
 // tidal-rules: CMP-13
 // tidal-expect: reject
+// tidal-error-clang: cannot be narrowed
+// tidal-error-gcc: narrowing conversion
+// tidal-error-edg: narrowing conversion
 namespace std {
 struct strong_ordering {
   signed char value;
