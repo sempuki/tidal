@@ -186,8 +186,9 @@ object.
 :kind: required
 :tests: exceptions/throw/throw-in-noexcept-terminates.cpp
 
-If an exception leaves a function declared `noexcept`, the program
-terminates. No handler in a caller catches the exception.
+If an exception leaves a non-throwing function, the program terminates.
+This includes a function that is non-throwing without a written
+specifier ({rule}`EXS-4`). No handler in a caller catches the exception.
 :::
 
 ## Recommended Practice

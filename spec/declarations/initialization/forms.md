@@ -117,7 +117,7 @@ An array must not be initialized from another array.
 
 :::{rule} INIT-2
 :kind: required
-:tests: declarations/initialization/forms/value-init-forms.cpp
+:tests: declarations/initialization/forms/value-init-forms.cpp declarations/initialization/forms/zero-of-other-scalars.cpp
 
 Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is:
 
@@ -127,6 +127,9 @@ Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is:
 | A floating-point type | `0.0` |
 | `bool` | `false` |
 | A pointer | A null pointer |
+| An enumeration | The enumeration value of `0` |
+| A pointer to member | A null pointer to member |
+| The type of `nullptr` | `nullptr` |
 
 An array element without a value in the list also gets zero.
 :::
@@ -199,7 +202,7 @@ int f[2] = d;        // rejected
 
 ## Evidence
 
-All eight compilers agree on 29 of 30 tests. The results are in
+All eight compilers agree on 30 of 31 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

@@ -189,8 +189,8 @@ the temporary when the statement ends.
 The life of a temporary object ends when its full expression ends. A
 reference bound to the temporary or to a member of the temporary
 (REF-4), or a range-based `for` (RFOR-4), can make the life longer. The
-temporaries of one full expression go away in the reverse order of their
-creation.
+temporaries that end with a full expression go away in the reverse order
+of their creation.
 :::
 
 :::{rule} VC-8

@@ -137,7 +137,7 @@ braces, a narrowing conversion must not occur (LIST-2).
 
 :::{rule} REF-4
 :kind: required
-:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp
+:tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp declarations/initialization/references/reference-member-not-extended.cpp declarations/initialization/references/extended-temporary-unwinding.cpp
 
 If a reference variable binds to a temporary object, or to a member of
 one, the temporary lives as long as the reference. The rule also applies
@@ -151,9 +151,15 @@ binding through one of these:
   example a `static_cast`,
 - a subscript of an array member of the temporary ({question}`Q-0109`).
 
-The temporary is destroyed when the reference ends, in order with the
-other objects of its scope, or when the program ends if the reference
-has static storage.
+The extended temporary is destroyed:
+
+- when the reference ends, in order with the other objects of its
+  scope, or when the program ends if the reference has static storage,
+- with the other objects of its block, when an exception leaves the
+  block ({rule}`UNW-1`).
+
+A binding to a reference member of the temporary does not extend the
+temporary.
 :::
 
 :::{rule} REF-7
@@ -209,7 +215,7 @@ const int& w = pass(1);      // the temporary ends here; w dangles
 
 ## Evidence
 
-All eight compilers agree on 28 of 31 tests. The results are in
+All eight compilers agree on 30 of 33 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during

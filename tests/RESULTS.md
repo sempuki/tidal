@@ -1380,6 +1380,7 @@ compilers affect the Status column.
 | `declarations/initialization/forms/self-initialization.cpp` | INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/value-init-forms.cpp` | INIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/write-before-read.cpp` | INIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/zero-of-other-scalars.cpp` | INIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/aggregate-default-member-initializer.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/aggregate-members-in-order.cpp` | LIST-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/aggregate-missing-members-zero.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
@@ -1448,6 +1449,7 @@ compilers affect the Status column.
 | `declarations/initialization/references/dangling-local-return.cpp` | REF-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/extend-through-array-member-subscript.cpp` | REF-4 | run | run | run | reject | skip | run | run | run | run | pass |
 | `declarations/initialization/references/extend-through-static-cast.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/extended-temporary-unwinding.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/lifetime-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/lifetime-member-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/lifetime-not-through-return.cpp` | REF-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -1456,6 +1458,7 @@ compilers affect the Status column.
 | `declarations/initialization/references/lvalue-ref-drops-const.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/lvalue-ref-other-type.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/null-dereference-bind-constant.cpp` | REF-5 | reject | reject | reject | accept | skip | reject | accept | reject | reject | pass |
+| `declarations/initialization/references/reference-member-not-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
 | `declarations/initialization/references/reference-multiple-values.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp` | REF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/rvalue-ref-binds-rvalue.cpp` | REF-3 | run | run | run | accept | skip | run | run | run | run | pass |
@@ -2412,6 +2415,7 @@ compilers affect the Status column.
 | `expressions/lambdas/generic.cpp` | LAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `expressions/lambdas/immediately-invoked.cpp` | LAM-1 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/lambdas/implicit-this-capture-warns.cpp` | LAM-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/init-capture-extends-temporary.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/lambdas/init-capture-outer-lookup.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/lambdas/init-capture.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
 | `expressions/lambdas/member-use-without-this.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -3344,7 +3348,7 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
-3328/3328 tests pass on baseline compilers.
+3332/3332 tests pass on baseline compilers.
 
 ## Rejections
 

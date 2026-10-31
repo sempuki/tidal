@@ -146,8 +146,8 @@ initialization runs again.
 
 The program ends, without returning from `main`, when an exception:
 
-- leaves a function declared `noexcept`, also when the throw is in a
-  function that the `noexcept` function calls,
+- leaves a non-throwing function ({rule}`EXS-4`), also when the throw is
+  in a function that the non-throwing function calls,
 - leaves a destructor that is not declared `noexcept(false)`,
 - leaves a destructor that runs during the unwinding of another
   exception,

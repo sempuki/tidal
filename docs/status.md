@@ -40,7 +40,7 @@ current state only. The history of how the project got here is in
 | [Postfix expressions](../spec/expressions/postfix.md) | 17 | 7 required, 7 reject, 2 undefined, 1 conditionally-supported | 47 | 7 | 2 | 14 | Q-0034 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 49 | 6 | 1 | 9 | Q-0017 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 18 | 8 required, 6 reject, 2 undefined, 2 unspecified | 50 | 5 | 3 | 27 | Q-0005, Q-0035, Q-0036, Q-0091 | 0 flagged |
-| [Lambda expressions](../spec/expressions/lambdas.md) | 27 | 15 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 57 | 15 | 2 | 22 | Q-0037, Q-0092 | 0 flagged |
+| [Lambda expressions](../spec/expressions/lambdas.md) | 27 | 15 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 58 | 15 | 2 | 22 | Q-0037, Q-0092 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 22 | 12 required, 10 reject | 49 | 9 | 0 | 5 | Q-0010 | 0 flagged |
 | [Type aliases and class names](../spec/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 60 | 3 | 3 | 2 | Q-0066, Q-0067, Q-0093 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 54 | 11 | 2 | 22 | Q-0011, Q-0045, Q-0105 | 0 flagged |
@@ -48,9 +48,9 @@ current state only. The history of how the project got here is in
 | [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 82 | 8 | 2 | 26 | Q-0012, Q-0106 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 3 | Q-0080 | 0 flagged |
-| [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 30 | 4 | 1 | 23 | Q-0013, Q-0039 | 0 flagged |
+| [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 31 | 3 | 1 | 23 | Q-0013, Q-0039 | 0 flagged |
 | [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 55 | 4 | 2 | 16 | Q-0042, Q-0043 | 0 flagged |
-| [Reference binding](../spec/declarations/initialization/references.md) | 11 | 6 required, 4 reject, 1 undefined | 31 | 2 | 3 | 38 | Q-0040, Q-0109, Q-0110 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 11 | 6 required, 4 reject, 1 undefined | 33 | 2 | 3 | 38 | Q-0040, Q-0109, Q-0110 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | 2 | 0 | 15 | Q-0014 | 0 flagged |
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 16 | 9 required, 7 reject | 49 | 6 | 4 | 11 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 20 | 9 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 58 | 4 | 3 | 17 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
@@ -92,7 +92,7 @@ report, covering every page, is
 
 ## Test matrix
 
-All compilers are baseline. 3328/3328 tests pass on each. Tests may
+All compilers are baseline. 3332/3332 tests pass on each. Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 

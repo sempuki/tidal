@@ -175,13 +175,15 @@ A capture list must obey these rules:
 
 :::{rule} LAM-7
 :kind: required
-:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp
+:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
 
 An init capture `[x = e]` declares a new member `x` that `e`
 initializes, and `[&r = v]` declares a reference to `v`. These rules
 apply:
 
 - Init captures are initialized in the order they are written.
+- An init capture by reference that binds to a temporary makes the
+  temporary live as long as the closure object.
 - A structured binding can be captured.
 - A lambda at namespace scope can have an init capture.
 - Name lookup for the initializer uses the enclosing scope, so the
@@ -389,8 +391,8 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 55
-of 57 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 56
+of 58 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
