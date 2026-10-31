@@ -101,6 +101,12 @@ These practices apply to every agent that changes the repository.
 - **Check reports before use.** A review summary or a clean-room report
   passes `tools/similarity.py` before a clean-room writer acts on it (decisions
   0019, 0029).
+- **A source-reader subagent checks its own summary.** A subagent's
+  final message enters the integrator's context at once. So a source
+  reader that runs as a subagent saves its summary in a directory
+  outside the repository, runs `tools/similarity.py --spec` on that
+  directory, and rewords each flagged passage before it returns the
+  summary.
 
 ### Shell habits
 
