@@ -16,6 +16,7 @@ findings by rule ID, and never cites ISO wording. Reports go under
 | Port (P) | translates a short program from the persona's own language | idioms with no stated equivalent | by hand |
 | Predict (R) | reads a Tidal test with its directives removed, and says whether it compiles, links, runs, or has undefined behavior, citing rules | wrong, ambiguous, and missing rules | automatic, against the test's expectations |
 | Diagnose (D) | gets a program and a compiler or sanitizer message, names the rule that explains it, and fixes the program | rules that do not match how compilers report errors | automatic for the rule ID; the fix is built and run |
+| Propose (X) | writes the design and impact sections of a proposal for a new feature, citing the rules it changes or meets | missing rules that a change to the language must state its effect on | by hand, from the report |
 
 Write and Port need tasks written by hand, and they test whether a
 person can use the spec. Predict and Diagnose are generated from the
@@ -40,6 +41,11 @@ whose habits are most likely to mislead it.
 
 Predict and Diagnose batches use a neutral persona: a programmer new to
 C++.
+
+Propose uses a language designer (decision 0037). The designer knows
+what a proposal must settle and takes all of its C++ knowledge from
+Tidal. It does not recall WG21 papers or the ISO text, and its features
+are its own inventions.
 
 ## 3. Write suites
 
