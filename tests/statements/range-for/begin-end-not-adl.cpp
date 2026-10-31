@@ -1,5 +1,8 @@
 // tidal-rules: RFOR-2
 // tidal-expect: reject
+// tidal-error-clang: no viable .begin. function
+// tidal-error-gcc: begin. was not declared in this scope
+// tidal-error-edg: requires a suitable .begin. function
 // tidal-note: Gap review 2026-10-30.
 namespace data { struct Bag { int d[2]; }; }
 namespace helpers {

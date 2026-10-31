@@ -1,5 +1,8 @@
 // tidal-rules: RFOR-2
 // tidal-expect: reject
+// tidal-error-clang: cannot increment value of type .It
+// tidal-error-gcc: no match for .operator\+\+.
+// tidal-error-edg: no operator .\+\+. matches these operands
 // tidal-note: Gap review 2026-10-30.
 struct It {
   int v;

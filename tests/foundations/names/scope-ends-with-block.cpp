@@ -1,3 +1,6 @@
 // tidal-rules: NAM-1
 // tidal-expect: reject
+// tidal-error-clang: undeclared identifier .a
+// tidal-error-gcc: a. was not declared in this scope
+// tidal-error-edg: identifier .a. is undefined
 int main() { { int a = 1; } return a; }
