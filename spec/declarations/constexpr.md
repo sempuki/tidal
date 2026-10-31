@@ -66,10 +66,12 @@ and asks nothing of the destructor. A variable is either `constinit` or
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp
 
-A `constexpr` variable is `const`. It must have an initializer, and the
-initializer must be a constant expression. Its type must be a literal type
+A `constexpr` variable is `const`. It must be initialized, and the
+initialization must be a constant expression. A variable of class type
+can have no initializer if a `constexpr` default constructor gives every
+member a value. Its type must be a literal type
 *(referenced)*. A `constexpr` reference at namespace scope can bind to a
 temporary, because that temporary has static storage. In a block
 without `static`, it cannot.

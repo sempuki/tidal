@@ -1,0 +1,99 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   questions_Q-0112-main-parameter-types.md:Q-0112: Must the parameters of main have longest=0   overlap=0.00
+ok   questions_Q-0112-main-parameter-types.md:Context longest=0   overlap=0.05
+ok   questions_Q-0112-main-parameter-types.md:Options longest=0   overlap=0.00
+ok   questions_Q-0112-main-parameter-types.md:Provisional answer longest=0   overlap=0.02
+ok   questions_Q-0114-type-of-a-growing-enumerator.md:Q-0114: What type does an enumerator get longest=0   overlap=0.00
+ok   questions_Q-0114-type-of-a-growing-enumerator.md:Context longest=0   overlap=0.00
+ok   questions_Q-0114-type-of-a-growing-enumerator.md:Options longest=0   overlap=0.07
+ok   questions_Q-0114-type-of-a-growing-enumerator.md:Provisional answer longest=0   overlap=0.00
+ok   spec_declarations_constexpr.md:The constexpr, consteval, and constinit  longest=0   overlap=0.03
+ok   CX-P1                            longest=0   overlap=0.00
+ok   CX-P2                            longest=0   overlap=0.05
+ok   CX-P3                            longest=0   overlap=0.00
+ok   CX-P4                            longest=0   overlap=0.00
+ok   CX-1                             longest=0   overlap=0.03
+ok   CX-2                             longest=0   overlap=0.05
+ok   CX-3                             longest=0   overlap=0.05
+ok   CX-4                             longest=0   overlap=0.00
+ok   CX-5                             longest=0   overlap=0.00
+ok   CEV-1                            longest=0   overlap=0.02
+ok   CEV-2                            longest=0   overlap=0.08
+ok   CEV-3                            longest=0   overlap=0.00
+ok   CINIT-1                          longest=0   overlap=0.00
+ok   CINIT-2                          longest=0   overlap=0.06
+ok   CEV-4                            longest=0   overlap=0.00
+ok   spec_declarations_constexpr.md:Examples longest=0   overlap=0.02
+ok   spec_declarations_constexpr.md:Evidence longest=0   overlap=0.00
+ok   spec_declarations_enumerations.md:Enumerations longest=0   overlap=0.04
+ok   ENUM-P1                          longest=0   overlap=0.00
+ok   ENUM-P2                          longest=0   overlap=0.00
+ok   ENUM-P3                          longest=0   overlap=0.03
+ok   spec_declarations_enumerations.md:Syntax longest=0   overlap=0.00
+ok   ENUM-1                           longest=0   overlap=0.02
+ok   ENUM-2                           longest=0   overlap=0.04
+ok   ENUM-3                           longest=0   overlap=0.00
+ok   ENUM-4                           longest=0   overlap=0.00
+ok   ENUM-7                           longest=0   overlap=0.00
+ok   ENUM-8                           longest=0   overlap=0.04
+ok   ENUM-9                           longest=0   overlap=0.00
+ok   ENUM-10                          longest=0   overlap=0.08
+ok   ENUM-11                          longest=0   overlap=0.07
+ok   ENUM-12                          longest=0   overlap=0.00
+ok   ENUM-6                           longest=0   overlap=0.05
+ok   ENUM-13                          longest=0   overlap=0.08
+ok   ENUM-5                           longest=0   overlap=0.02
+ok   spec_declarations_enumerations.md:Examples longest=0   overlap=0.01
+ok   spec_declarations_enumerations.md:Evidence longest=0   overlap=0.01
+ok   spec_declarations_functions_definitions.md:Function definitions longest=0   overlap=0.09
+ok   FN-P1                            longest=0   overlap=0.00
+ok   FN-P2                            longest=0   overlap=0.00
+ok   FN-P3                            longest=0   overlap=0.12
+ok   FN-P4                            longest=0   overlap=0.00
+ok   FN-P5                            longest=0   overlap=0.00
+ok   spec_declarations_functions_definitions.md:Syntax longest=0   overlap=0.00
+ok   FN-1                             longest=0   overlap=0.00
+ok   FN-2                             longest=0   overlap=0.00
+ok   FN-4                             longest=0   overlap=0.02
+ok   FN-5                             longest=0   overlap=0.00
+ok   FN-9                             longest=0   overlap=0.00
+ok   FN-12                            longest=0   overlap=0.00
+ok   FN-8                             longest=0   overlap=0.13
+ok   FN-3                             longest=0   overlap=0.20
+ok   FN-6                             longest=0   overlap=0.00
+ok   FN-10                            longest=0   overlap=0.02
+ok   FN-11                            longest=0   overlap=0.00
+ok   FN-7                             longest=0   overlap=0.15
+ok   spec_declarations_functions_definitions.md:Examples longest=0   overlap=0.04
+ok   spec_declarations_functions_definitions.md:Evidence longest=0   overlap=0.02
+ok   spec_declarations_functions_return-deduction.md:Return type deduction longest=0   overlap=0.00
+ok   RET-P1                           longest=0   overlap=0.02
+ok   RET-P2                           longest=0   overlap=0.02
+ok   RET-1                            longest=0   overlap=0.03
+ok   RET-2                            longest=0   overlap=0.00
+ok   RET-3                            longest=0   overlap=0.01
+ok   RET-4                            longest=0   overlap=0.00
+ok   RET-5                            longest=0   overlap=0.22
+ok   RET-6                            longest=0   overlap=0.07
+ok   spec_declarations_functions_return-deduction.md:Examples longest=0   overlap=0.00
+ok   spec_declarations_functions_return-deduction.md:Evidence longest=0   overlap=0.00
+ok   spec_foundations_translation.md:Translation, execution, and behavior cla longest=0   overlap=0.01
+ok   TR-P1                            longest=0   overlap=0.00
+ok   TR-P2                            longest=0   overlap=0.03
+ok   TR-P3                            longest=0   overlap=0.00
+ok   TR-P5                            longest=0   overlap=0.00
+ok   TR-P4                            longest=0   overlap=0.00
+ok   TR-1                             longest=0   overlap=0.00
+ok   TR-3                             longest=0   overlap=0.00
+ok   TR-2                             longest=0   overlap=0.05
+ok   TR-4                             longest=0   overlap=0.00
+ok   TR-5                             longest=0   overlap=0.00
+ok   TR-7                             longest=0   overlap=0.08
+ok   TR-8                             longest=0   overlap=0.08
+ok   TR-9                             longest=0   overlap=0.00
+ok   TR-6                             longest=0   overlap=0.00
+ok   spec_foundations_translation.md:Examples longest=0   overlap=0.00
+ok   spec_foundations_translation.md:Evidence longest=0   overlap=0.01
+
+0 flagged

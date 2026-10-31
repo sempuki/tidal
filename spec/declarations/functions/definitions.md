@@ -147,7 +147,7 @@ that returns `void` returns normally at the end.
 
 :::{rule} FN-6
 :kind: impl-defined
-:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp
+:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp foundations/translation/main-wrong-parameter-types.cpp
 
 An implementation accepts `main` with the parameter lists `()` and
 `(int, char**)`. It is implementation-defined if it accepts other

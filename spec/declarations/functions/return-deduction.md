@@ -30,12 +30,13 @@ cannot deduce, because its callers never see its definition.
 
 :::{rule} RET-1
 :kind: required
-:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp
+:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/conflicting-returns.cpp declarations/functions/return-deduction/void-and-value.cpp declarations/functions/return-deduction/braced-return.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp declarations/functions/return-deduction/void-call-return.cpp
 
 Each `return` statement gives a type, as for a variable that the
 returned expression initializes. All `return` statements must give the
 same type. A function with no `return` statement, or with only
-`return;`, returns `void`. A `return` statement must not return a
+`return;`, returns `void`. A `return` of an expression of type `void`,
+such as a call of a `void` function, also gives `void`. A `return` statement must not return a
 braced list. A `return` statement in a {term}`discarded statement` does
 not take part, also outside a template.
 :::

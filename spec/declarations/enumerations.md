@@ -9,7 +9,7 @@ integer type that holds the values.
 ## Principles
 
 :::{principle} ENUM-P1
-:rules: ENUM-10 ENUM-1 ENUM-12
+:rules: ENUM-10 ENUM-1 ENUM-12 ENUM-13
 
 An enumeration is a type of its own whose values are integers. It is
 different from its underlying type and from every other enumeration,
@@ -152,12 +152,19 @@ also name one enumerator of a scoped enumeration, such as `using C::R;`.
 
 :::{rule} ENUM-10
 :kind: required
-:tests: declarations/enumerations/distinct-types.cpp
+:tests: declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp
 
 Each enumeration is a distinct type. It is different from its underlying
-type and from all other enumerations. An enumerator has the type of its
-enumeration. Unary `+` on an unscoped value gives its promoted integer
-type.
+type and from all other enumerations. After the closing brace, an
+enumerator has the type of its enumeration. Unary `+` on an unscoped
+value gives its promoted integer type.
+
+Inside the enumerator list, the enumeration is not complete, so an
+enumerator has another type there. With a fixed underlying type, which
+every scoped enumeration has, it has that type. Without one, an
+enumerator with an initializer has the type of the initializer, and one
+without an initializer has the type of the enumerator before it, if
+that type can hold its value (ENUM-13).
 :::
 
 :::{rule} ENUM-11
@@ -193,6 +200,16 @@ values 0 and 1.
 :::
 
 ## Implementation Requirements
+
+:::{rule} ENUM-13
+:kind: unspecified
+:tests: declarations/enumerations/enumerator-type-grows.cpp
+
+Inside the enumerator list of an enumeration without a fixed type, an
+enumerator without an initializer whose value the type of the
+enumerator before it cannot hold has an integer type that can hold the
+value. Which type is unspecified ({question}`Q-0114`).
+:::
 
 :::{rule} ENUM-5
 :kind: impl-defined

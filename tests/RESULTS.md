@@ -1040,6 +1040,8 @@ compilers affect the Status column.
 | `declarations/constexpr/static-local-to-static-local.cpp` | CX-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/variable-assign.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-const.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-default-constructor.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-default-initialized-no-value.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-no-initializer.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1135,6 +1137,8 @@ compilers affect the Status column.
 | `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-scope-after-value.cpp` | ENUM-12 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/enumerations/enumerator-type-grows.cpp` | ENUM-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-inside-list.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/fixed-bool.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/fixed-underlying-narrowing.cpp` | ENUM-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1305,6 +1309,7 @@ compilers affect the Status column.
 | `declarations/functions/return-deduction/use-before-definition.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/virtual-auto.cpp` | RET-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/void-and-value.cpp` | RET-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/void-call-return.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-from-array.cpp` | INIT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2866,7 +2871,7 @@ compilers affect the Status column.
 | `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-with-args.cpp` | TR-2 TR-9 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `foundations/translation/observable-volatile-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
 | `foundations/translation/undefined-at-link.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
 | `foundations/translation/undefined-on-taken-path-only.cpp` | TR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3074,7 +3079,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3059/3059 tests pass on baseline compilers.
+3064/3064 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -6447,6 +6452,13 @@ check that the rejection has the intended cause.
 - `declarations/constexpr/variable-assign.cpp` (clang-18): error: cannot assign to variable 'n' with const-qualified type 'const int' / note: variable 'n' declared const here
 - `declarations/constexpr/variable-assign.cpp` (gcc-16): error: assignment of read-only variable 'n'
 - `declarations/constexpr/variable-assign.cpp` (clang-22): error: cannot assign to variable 'n' with const-qualified type 'const int' / note: variable 'n' declared const here
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (clang-host): error: default initialization of an object of const type 'const Point' without a user-provided default constructor
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (gcc-host): error: uninitialized ‘const p’ [-fpermissive] / note: ‘const struct Point’ has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize ‘int Point::x’
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (edg-7.0): error: const variable "p" requires an initializer -- class "Point" has no user-provided default constructor
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (gcc-14): error: uninitialized 'const p' [-fpermissive] / note: 'const struct Point' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Point::x'
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (clang-18): error: default initialization of an object of const type 'const Point' without a user-provided default constructor
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (gcc-16): error: uninitialized 'const p' [-fpermissive] / note: 'const struct Point' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Point::x'
+- `declarations/constexpr/variable-default-initialized-no-value.cpp` (clang-22): error: default initialization of an object of const type 'const Point' without a user-provided default constructor
 - `declarations/constexpr/variable-no-initializer.cpp` (clang-host): error: constexpr variable 'n' must be initialized by a constant expression
 - `declarations/constexpr/variable-no-initializer.cpp` (gcc-host): error: uninitialized ‘const n’ [-fpermissive]
 - `declarations/constexpr/variable-no-initializer.cpp` (edg-7.0): error: missing initializer for constexpr variable

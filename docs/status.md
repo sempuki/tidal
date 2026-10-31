@@ -49,16 +49,16 @@ current state only. The history of how it got here is in `git log`.
 | [Reference binding](../spec/declarations/initialization/references.md) | 7 | 6 required, 1 undefined | 31 | Q-0040, Q-0109, Q-0110 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | Q-0014 | 0 flagged |
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 12 | 9 required, 3 reject | 49 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
-| [Enumerations](../spec/declarations/enumerations.md) | 12 | 9 required, 1 reject, 1 undefined, 1 impl-defined | 53 | Q-0017, Q-0018, Q-0047 | 0 flagged |
+| [Enumerations](../spec/declarations/enumerations.md) | 13 | 9 required, 1 reject, 1 undefined, 1 unspecified, 1 impl-defined | 55 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
 | [Namespaces and using](../spec/declarations/namespaces.md) | 9 | 8 required, 1 reject | 41 | Q-0019 | 0 flagged |
 | [Linkage specifications](../spec/declarations/linkage-specifications.md) | 6 | 3 required, 1 reject, 2 impl-defined | 29 | Q-0074, Q-0075, Q-0076 | 0 flagged |
 | [Standard attributes](../spec/declarations/attributes.md) | 17 | 6 required, 3 reject, 2 undefined, 1 impl-defined, 5 recommended | 48 | Q-0020, Q-0021, Q-0046, Q-0108 | 0 flagged |
-| [Function definitions](../spec/declarations/functions/definitions.md) | 12 | 3 required, 4 reject, 1 undefined, 3 impl-defined, 1 recommended | 39 | Q-0022, Q-0024, Q-0076 | 0 flagged |
+| [Function definitions](../spec/declarations/functions/definitions.md) | 12 | 3 required, 4 reject, 1 undefined, 3 impl-defined, 1 recommended | 40 | Q-0022, Q-0024, Q-0076 | 0 flagged |
 | [Default arguments](../spec/declarations/functions/default-arguments.md) | 7 | 3 required, 3 reject, 1 no-diagnostic | 21 | Q-0038, Q-0111 | 0 flagged |
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 13 | Q-0007, Q-0023 | 0 flagged |
-| [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 20 |  | 0 flagged |
+| [Return type deduction](../spec/declarations/functions/return-deduction.md) | 6 | 2 required, 3 reject, 1 undefined | 21 |  | 0 flagged |
 | [Exception specifications](../spec/declarations/exception-specifications.md) | 6 | 3 required, 1 reject, 1 impl-defined, 1 no-diagnostic | 36 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
-| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 53 | Q-0020, Q-0025 | 0 flagged |
+| [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 11 | 3 required, 8 reject | 55 | Q-0020, Q-0025 | 0 flagged |
 | [Static assertions](../spec/declarations/static-assert.md) | 5 | 4 required, 1 reject | 28 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 20 | 14 required, 4 reject, 1 impl-defined, 1 no-diagnostic | 84 | Q-0027 | 0 flagged |
 | [Access control and friends](../spec/classes/access.md) | 16 | 8 required, 8 reject | 46 | Q-0052 | 0 flagged |
@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3059/3059 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3064/3064 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -103,7 +103,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and twelve questions are open for opinions, each with a provisional answer the
+One hundred and thirteen questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -113,7 +113,7 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- 1449 tests carry `tidal-error` patterns, which check that a compiler
+- 1450 tests carry `tidal-error` patterns, which check that a compiler
   rejects them, fails to link them, or stops them at run time, for the
   reason their rule gives.
   About 50 tests have no pattern for some compiler family, because that
@@ -141,13 +141,12 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). The current phase is
 phase 1, repair what exists:
 
-1. Fix the contradictions between rules (roadmap item A).
-2. Decide and check that a reject test cites a `reject` rule, then split
+1. Decide and check that a reject test cites a `reject` rule, then split
    prohibitions out of `required` rules (item C).
-3. Replace stale *(referenced)* markers with rule links (item B).
-4. Finish constant evaluation: initialized subobjects, "literal type",
+2. Replace stale *(referenced)* markers with rule links (item B).
+3. Finish constant evaluation: initialized subobjects, "literal type",
    and an index of `undefined` rules (item D).
-5. The process checks and status columns of phase 1.
+4. The process checks and status columns of phase 1.
 
 Waiting on the maintainer:
 

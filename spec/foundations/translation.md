@@ -136,10 +136,9 @@ when the broken code is in a function that the program never calls.
 :kind: reject
 :tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp
 
-`main` must return `int`, must not be a template, and must have no
-parameters or the two parameters `int` and `char**`
-({question}`Q-0112`). A program must not call `main` or take its
-address.
+`main` must return `int` and must not be a template. Its parameter
+list must be one that the implementation accepts (FN-6). A program must
+not call `main` or take its address.
 :::
 
 ## Runtime Behavior

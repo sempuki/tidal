@@ -1,4 +1,4 @@
-// tidal-rules: TR-3
+// tidal-rules: TR-3 FN-6
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: first parameter of .main.
