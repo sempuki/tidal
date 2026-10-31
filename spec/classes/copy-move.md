@@ -42,6 +42,11 @@ user-declared copy function or destructor removes the implicit move
 functions, and rvalues of that class fall back to copying. The implicit
 assignment operator of a derived class hides those of its bases for the
 same reason: a derived class decides for its own parts.
+
+A user-declared destructor is the exception: it keeps the implicit copy
+functions. So a class that releases a resource in its destructor must
+write or delete its copy functions. Otherwise a copy shares the
+resource, and both objects release it (NEW-5).
 :::
 
 :::{principle} CPY-P3
@@ -357,6 +362,25 @@ Handle reopen() {
 struct Point { int x, y; ~Point() {} };
 Point p{1, 2};
 Point q = static_cast<Point&&>(p); // copies: the destructor removes the move
+
+struct Owner {                     // owns an array, so it writes its copies
+  int n;
+  int* items;
+  explicit Owner(int count) : n(count), items(new int[count]()) {}
+  Owner(const Owner& o) : n(o.n), items(new int[o.n]) {
+    for (int i = 0; i < n; ++i) items[i] = o.items[i];
+  }
+  Owner& operator=(const Owner& o) {
+    if (this != &o) {              // without the test, o = o frees o.items
+      delete[] items;              // and then copies from it
+      n = o.n;
+      items = new int[n];
+      for (int i = 0; i < n; ++i) items[i] = o.items[i];
+    }
+    return *this;
+  }
+  ~Owner() { delete[] items; }
+};
 ```
 
 ## Evidence

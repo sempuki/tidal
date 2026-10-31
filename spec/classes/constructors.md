@@ -419,6 +419,8 @@ struct Buffer {
   Buffer(int n) : data(new int[n]), size(n) {}  // size is initialized first
   Buffer() : Buffer(16) {}                        // delegating
   ~Buffer() { delete[] data; }
+  Buffer(const Buffer&) = delete;             // an implicit copy would share
+  Buffer& operator=(const Buffer&) = delete;  // data and delete it twice
 };
 
 struct Meters { explicit Meters(double v) : v(v) {} double v; };
