@@ -1,0 +1,30 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   handlers.md:Try blocks and handlers longest=0   overlap=0.00
+ok   TRY-P1                           longest=0   overlap=0.00
+ok   TRY-P2                           longest=0   overlap=0.01
+ok   TRY-P3                           longest=0   overlap=0.01
+ok   TRY-P4                           longest=0   overlap=0.00
+ok   TRY-P5                           longest=0   overlap=0.04
+ok   handlers.md:Syntax               longest=0   overlap=0.00
+ok   TRY-16                           longest=0   overlap=0.00
+ok   TRY-3                            longest=0   overlap=0.00
+ok   TRY-5                            longest=0   overlap=0.05
+ok   TRY-14                           longest=0   overlap=0.03
+ok   TRY-7                            longest=0   overlap=0.06
+ok   TRY-17                           longest=0   overlap=0.00
+ok   TRY-1                            longest=0   overlap=0.00
+ok   TRY-2                            longest=0   overlap=0.07
+ok   TRY-6                            longest=0   overlap=0.00
+ok   TRY-15                           longest=0   overlap=0.00
+ok   TRY-8                            longest=0   overlap=0.03
+ok   TRY-9                            longest=0   overlap=0.02
+ok   TRY-10                           longest=0   overlap=0.06
+ok   TRY-11                           longest=0   overlap=0.03
+ok   TRY-4                            longest=0   overlap=0.00
+ok   TRY-12                           longest=0   overlap=0.00
+ok   TRY-13                           longest=0   overlap=0.21
+ok   handlers.md:Examples             longest=0   overlap=0.00
+ok   handlers.md:Evidence             longest=0   overlap=0.01
+
+0 flagged
