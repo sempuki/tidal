@@ -34,12 +34,12 @@ integer, character, `bool`, and floating-point types.
 
 :::{rule} MUL-3
 :kind: reject
-:tests: expressions/multiplicative/operands-pointer.cpp expressions/multiplicative/operands-scoped-enum.cpp expressions/multiplicative/operands-class.cpp
+:tests: expressions/multiplicative/operands-pointer.cpp expressions/multiplicative/operands-scoped-enum.cpp expressions/multiplicative/operands-class.cpp expressions/multiplicative/nullptr-operand.cpp expressions/multiplicative/member-pointer-operand.cpp
 
 An operand of `*`, `/`, or `%` must not have pointer type, scoped
-enumeration type, or class type. This rule does not apply if overload
-resolution *(referenced)* finds a user-declared operator or a usable
-conversion.
+enumeration type, class type, pointer-to-member type, or the type of
+`nullptr`. The class type rule does not apply if overload resolution
+*(referenced)* finds a user-declared operator or a usable conversion.
 :::
 
 :::{rule} MUL-4
@@ -84,6 +84,15 @@ For integer operands, `a % b` is the value that makes
 If the common type is an unsigned integer type, the result wraps around.
 The result differs from the mathematical result by a multiple of one more
 than the largest value of the type.
+:::
+
+:::{rule} MUL-18
+:kind: required
+:tests: expressions/multiplicative/product-value.cpp
+
+For arithmetic operands, `*` gives the mathematical product and `/` on
+floating-point operands gives the mathematical quotient. For a
+floating-point type, the result is rounded to the type.
 :::
 
 ## Undefined Behavior
@@ -149,6 +158,17 @@ The order of evaluation of the two operands is unspecified.
 
 The common type, and so the result type, can depend on the sizes of the
 integer types. The sizes of the integer types are implementation-defined.
+:::
+
+:::{rule} MUL-17
+:kind: unspecified
+:tests: expressions/multiplicative/excess-precision-either.cpp expressions/multiplicative/cast-rounds-to-type.cpp
+
+An implementation can evaluate floating-point operations with more range
+and precision than the type of the expression. The type does not change.
+A cast or an assignment rounds the value to its type. This applies to
+the additive operators too. On the x86-64 targets in the matrix, each
+operation rounds to its type.
 :::
 
 ## Recommended Practice

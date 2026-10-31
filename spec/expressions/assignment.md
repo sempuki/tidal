@@ -26,14 +26,18 @@ not valid. An object can be assigned to itself.
 
 :::{rule} ASN-2
 :kind: reject
-:tests: expressions/assignment/const-left.cpp expressions/assignment/rvalue-left.cpp expressions/assignment/array-left.cpp expressions/assignment/function-left.cpp
+:tests: expressions/assignment/const-left.cpp expressions/assignment/rvalue-left.cpp expressions/assignment/array-left.cpp expressions/assignment/function-left.cpp expressions/assignment/class-prvalue-left.cpp expressions/assignment/scalar-xvalue-left.cpp
 
-The left operand must be a modifiable lvalue. It must not be:
+The left operand of a built-in assignment must be a modifiable lvalue. It
+must not be:
 
 - `const`,
-- a prvalue,
+- a prvalue or an xvalue,
 - an array,
 - a function.
+
+For a class type, assignment calls an operator function *(referenced)*,
+so a class prvalue can be the left operand.
 :::
 
 :::{rule} ASN-3
@@ -73,6 +77,14 @@ The left operand can be `volatile`. Simple and compound assignment both
 apply to it.
 :::
 
+:::{rule} ASN-10
+:kind: reject
+:tests: expressions/assignment/bitfield-result-address.cpp
+
+If the left operand is a bit-field, the result is that bit-field. A
+program must not take the address of the result.
+:::
+
 ## Dynamic Semantics
 
 :::{rule} ASN-4
@@ -88,6 +100,18 @@ the right operand complete before the store.
 :tests: expressions/assignment/compound-evaluates-once.cpp
 
 In `E1 op= E2`, `E1` is evaluated one time.
+:::
+
+## Implementation Requirements
+
+:::{rule} ASN-11
+:kind: unspecified
+:tests: expressions/assignment/compound-indeterminate-with-call.cpp expressions/assignment/compound-indeterminate-run.cpp
+
+A compound assignment is one evaluation with respect to a function call
+whose order with it is not set. The call runs before the read or after
+the write, never between them. Which of the two orders occurs is
+unspecified, and the behavior is not undefined.
 :::
 
 ## Examples
@@ -111,8 +135,7 @@ x += {1};         // rejected: braced list in compound assignment
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 21 of
-22 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of 29 tests.
 
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.

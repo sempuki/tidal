@@ -32,7 +32,7 @@ enumeration type, in any combination.
 
 :::{rule} ADD-3
 :kind: reject
-:tests: expressions/additive/operands-scoped-enum.cpp expressions/additive/operands-class.cpp expressions/additive/pointer-plus-pointer.cpp expressions/additive/integer-minus-pointer.cpp expressions/additive/void-pointer-arithmetic.cpp expressions/additive/function-pointer-arithmetic.cpp expressions/additive/pointer-to-incomplete.cpp expressions/additive/pointer-minus-different-types.cpp expressions/additive/void-pointer-difference.cpp
+:tests: expressions/additive/operands-scoped-enum.cpp expressions/additive/operands-class.cpp expressions/additive/pointer-plus-pointer.cpp expressions/additive/integer-minus-pointer.cpp expressions/additive/void-pointer-arithmetic.cpp expressions/additive/function-pointer-arithmetic.cpp expressions/additive/pointer-to-incomplete.cpp expressions/additive/pointer-minus-different-types.cpp expressions/additive/void-pointer-difference.cpp expressions/additive/pointer-plus-unscoped-enum.cpp expressions/additive/pointer-plus-scoped-enum.cpp expressions/additive/nullptr-plus-int.cpp
 
 The operands must have one of these forms:
 
@@ -41,8 +41,10 @@ The operands must have one of these forms:
 - for `-`, a pointer and then an integer,
 - for `-`, two pointers to the same type, ignoring cv-qualifiers.
 
-A pointer operand must point to a complete object type. A pointer to
-`void` or to a function is not valid.
+Here an integer includes `bool`, the character types, and an unscoped
+enumeration. A scoped enumeration and the type of `nullptr` are not
+valid. A pointer operand must point to a complete object type. A pointer
+to `void` or to a function is not valid.
 :::
 
 :::{rule} ADD-4
@@ -124,12 +126,21 @@ If two pointers do not point into the same array, `p - q` is undefined.
 
 :::{rule} ADD-14
 :kind: undefined
-:tests: expressions/additive/base-pointer-derived-array.cpp
+:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp
 
-Pointer arithmetic is undefined if the pointer's element type differs
-from the type of the array elements, apart from cv-qualifiers. An example
-is a base class pointer into an array of a derived class (question
-pending).
+Pointer arithmetic, including the subtraction of two pointers, is
+undefined if a pointer's element type differs from the type of the array
+elements, apart from cv-qualifiers. An example is a base class pointer
+into an array of a derived class ({question}`Q-0049`).
+:::
+
+:::{rule} ADD-17
+:kind: undefined
+:tests: expressions/additive/float-overflow-constant.cpp
+
+If the exact result of a floating-point `+` or `-` is finite but outside
+the range of its type, the behavior is undefined, as for MUL-12
+({question}`Q-0001`).
 :::
 
 ## Implementation Requirements
@@ -177,8 +188,7 @@ int b[2];
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of
-30 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 33 of 38 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject it in
@@ -197,5 +207,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of
   array of a derived class during constant evaluation. GCC accepts it
   ({question}`Q-0049`).
 - ADD-16, MUL-16: Clang and GCC warn about these operations as deprecated.
+- ADD-17: Clang gives infinity during constant evaluation. GCC and EDG
+  reject it ({question}`Q-0001`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

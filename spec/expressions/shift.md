@@ -30,10 +30,12 @@ includes `bool` and the character types.
 
 :::{rule} SHF-3
 :kind: reject
-:tests: expressions/shift/operand-floating.cpp expressions/shift/count-floating.cpp expressions/shift/operand-scoped-enum.cpp expressions/shift/operand-pointer.cpp
+:tests: expressions/shift/operand-floating.cpp expressions/shift/count-floating.cpp expressions/shift/operand-scoped-enum.cpp expressions/shift/operand-pointer.cpp expressions/shift/class-operand.cpp expressions/shift/nullptr-operand.cpp expressions/shift/member-pointer-operand.cpp
 
-An operand must not have floating-point type, pointer type, or scoped
-enumeration type.
+An operand must not have floating-point type, pointer type, scoped
+enumeration type, pointer-to-member type, or the type of `nullptr`. A
+class operand is valid only through a usable conversion or an operator
+function *(referenced)*.
 :::
 
 :::{rule} SHF-4
@@ -107,8 +109,7 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all 20
-tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on all 23 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The results

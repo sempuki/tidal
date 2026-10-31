@@ -44,14 +44,16 @@ conversion can add {term}`cv-qualifiers <cv-qualifier>` or convert to
 
 :::{rule} CMP-9
 :kind: reject
-:tests: expressions/comparison/pointer-integer.cpp expressions/comparison/pointer-relational-zero.cpp expressions/comparison/pointer-different-types.cpp expressions/comparison/function-pointer-void.cpp expressions/comparison/pointer-relational-nullptr.cpp
+:tests: expressions/comparison/pointer-integer.cpp expressions/comparison/pointer-relational-zero.cpp expressions/comparison/pointer-different-types.cpp expressions/comparison/function-pointer-void.cpp expressions/comparison/pointer-relational-nullptr.cpp expressions/comparison/relational-member-pointers.cpp expressions/comparison/relational-nullptr-values.cpp
 
 A comparison must not have these operands:
 
 - a pointer and an integer other than a literal `0` for equality,
 - a pointer and the literal `0` or `nullptr` for a relational operator,
 - pointers to unrelated types,
-- a pointer to a function and `void*`.
+- a pointer to a function and `void*`,
+- two pointers to members, or two values of the type of `nullptr`, for a
+  relational operator (question pending for `nullptr`).
 :::
 
 :::{rule} CMP-10
@@ -73,22 +75,24 @@ the addresses. `<=>` must not have two array operands.
 
 :::{rule} CMP-12
 :kind: required
-:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-precedence.cpp expressions/comparison/three-way-function-pointers.cpp
+:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-no-library.cpp expressions/comparison/three-way-precedence.cpp expressions/comparison/three-way-function-pointers.cpp expressions/comparison/three-way-member-pointers.cpp expressions/comparison/three-way-nullptr-values.cpp expressions/comparison/three-way-function-pointer-nullptr.cpp
 
 `<=>` on integer, enumeration, or object pointer operands gives
 `std::strong_ordering`. On floating-point operands it gives
 `std::partial_ordering`. These types come from the library *(referenced)*,
 and must be declared before `<=>` is used. `<=>` must not compare two
-function pointers.
+function pointers, a function pointer and `nullptr`, two pointers to
+members, or two values of the type of `nullptr`.
 :::
 
 :::{rule} CMP-13
 :kind: reject
-:tests: expressions/comparison/three-way-narrowing.cpp expressions/comparison/three-way-bool-int.cpp expressions/comparison/three-way-pointer-zero.cpp
+:tests: expressions/comparison/three-way-narrowing.cpp expressions/comparison/three-way-bool-int.cpp expressions/comparison/three-way-pointer-zero.cpp expressions/comparison/three-way-int-to-double.cpp
 
-The operands of `<=>` must not need a narrowing conversion. A `bool` must
-not be compared with another type. A pointer must not be compared with the
-literal `0`.
+The operands of `<=>` must not need a narrowing conversion. The conversion
+of an integer to a floating-point type is not counted as narrowing here. A
+`bool` must not be compared with another type. A pointer must not be
+compared with the literal `0`.
 :::
 
 :::{rule} CMP-18
@@ -102,7 +106,7 @@ and an integer are valid ({question}`Q-0050` for the floating-point case).
 
 :::{rule} CMP-19
 :kind: required
-:tests: expressions/comparison/derived-base-pointer-equality.cpp expressions/comparison/multilevel-qualification.cpp expressions/comparison/null-pointer-equality.cpp
+:tests: expressions/comparison/derived-base-pointer-equality.cpp expressions/comparison/multilevel-qualification.cpp expressions/comparison/null-pointer-equality.cpp expressions/comparison/noexcept-function-pointer-equality.cpp expressions/comparison/nullptr-equals-zero.cpp
 
 Equality comparison is valid for these pointer operands:
 
@@ -111,7 +115,10 @@ Equality comparison is valid for these pointer operands:
 - a pointer to a derived class and a pointer to its base class, after
   CONV-14,
 - two values of the type of `nullptr`, which compare equal,
-- two pointers to members, where two null values compare equal.
+- two pointers to members, where two null values compare equal,
+- a pointer to a `noexcept` function and a pointer to a function of the
+  same type without `noexcept`,
+- `nullptr` and the literal `0`, which compare equal.
 :::
 
 ## Dynamic Semantics
@@ -134,40 +141,59 @@ If an operand is a NaN, `<`, `>`, `<=`, `>=`, and `==` give `false`.
 
 :::{rule} CMP-7
 :kind: required
-:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp
+:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp expressions/comparison/subobject-order.cpp expressions/comparison/subobject-order-constant.cpp
 
 Pointers to elements of the same array compare in the order of their
 indexes. A pointer one past the last element is greater than all element
 pointers. Pointers to data members of one object compare in the order of
-the member declarations (CLS-10).
+the member declarations (CLS-10). The order also applies to pointers into
+these subobjects, for example into two elements or two members. Constant
+evaluation can do these comparisons.
 :::
 
 :::{rule} CMP-15
 :kind: required
-:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp
+:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp expressions/comparison/struct-and-first-member-equal.cpp expressions/comparison/union-members-equal.cpp
 
-Two pointers are equal if they point to the same object or function, or
-if both are null. Pointers to two distinct objects are not equal.
+Two pointers are equal if they hold the same address, or if both are
+null. Pointers to different objects can be equal. Examples are a pointer
+to a class object and a pointer to its first member, after conversion to
+`void*`, and pointers to two members of a union (question pending).
 :::
 
 :::{rule} CMP-17
 :kind: required
-:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp
+:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp expressions/comparison/three-way-negative-zero.cpp
 
-`a <=> b` gives `less`, `equal`, or `greater` as `a` is less than, equal
-to, or greater than `b`. If a floating-point operand is a NaN, the result
-is `std::partial_ordering::unordered`.
+For integer and pointer operands, `a <=> b` gives `less`, `equal`, or
+`greater` as `a` is less than, equal to, or greater than `b`. For
+floating-point operands, equal values give `equivalent`, and `-0.0` and
+`0.0` are equal. If a floating-point operand is a NaN, the result is
+`std::partial_ordering::unordered`.
+:::
+
+:::{rule} CMP-22
+:kind: required
+:tests: expressions/comparison/member-pointer-two-paths.cpp
+
+Two pointers to members that are not null are equal if they select the
+same member of the same subobject. If a class has one base on two paths,
+the same member of the base through each path gives two different
+pointers to members.
 :::
 
 ## Implementation Requirements
 
 :::{rule} CMP-8
 :kind: unspecified
-:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp
+:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp
 
-The result of a relational operator on pointers to unrelated objects or
-functions is unspecified. One of `a < b` and `a > b` is true. During
-{term}`constant evaluation`, this comparison is not a constant expression.
+If no rule orders two pointers, each relational operator and `<=>` gives
+an unspecified result. The results of `a < b` and `a > b` need not agree.
+This applies to pointers to unrelated objects or functions, to members
+of a union, and to members that occupy no storage. During
+{term}`constant evaluation`, such a comparison is not a constant
+expression.
 :::
 
 :::{rule} CMP-20
@@ -207,10 +233,11 @@ An implementation should warn when a comparison has two array operands.
 
 :::{rule} CMP-21
 :kind: recommended
-:tests: expressions/comparison/different-enums-warns.cpp
+:tests: expressions/comparison/different-enums-warns.cpp expressions/comparison/enum-float-comparison-warns.cpp
 
 An implementation should warn about a comparison between two different
-enumeration types.
+enumeration types, and between an unscoped enumeration and a
+floating-point value. Both are deprecated.
 :::
 
 ## Examples
@@ -258,5 +285,10 @@ even for integer operands.
   floating-point value. Clang and GCC reject it ({question}`Q-0050`).
 - CMP-20: Clang and GCC reject the comparison during constant evaluation.
   EDG accepts it ({question}`Q-0051`).
+- CMP-15: EDG evaluates the comparison of a class object and its first
+  member, after conversion to `void*`, to `false`. Clang and GCC give
+  `true` (question pending).
+- CMP-9: EDG accepts a relational comparison of two values of the type of
+  `nullptr`. Clang and GCC reject it (question pending).
 
 Inputs: clang-sema-expr, clang-diag-sema.
