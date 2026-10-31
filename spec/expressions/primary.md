@@ -10,3 +10,280 @@ primary expressions too. Lambdas have their own page. Fold and requires
 expressions belong with templates *(referenced)*.
 
 Depends on: value categories, standard conversions.
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: prim
+   primary: `literal` | "this" | "(" `expression` ")" | `id_expression`
+          : `lambda_expression`
+   integer_literal: `integer_digits` [`integer_suffix`]
+   integer_digits: `decimal` | "0" `octal_digits` | ("0x" | "0X") `hex_digits` | ("0b" | "0B") `binary_digits`
+   integer_suffix: ["u" | "U"] ["l" | "L" | "ll" | "LL" | "z" | "Z"]
+                 : ("l" | "L" | "ll" | "LL" | "z" | "Z") ("u" | "U")
+   char_prefix: "u8" | "u" | "U" | "L"
+   string_literal: [`char_prefix`] '"' {`s_char`} '"'
+                 : [`char_prefix`] 'R"' `delimiter` "(" {`raw_char`} ")" `delimiter` '"'
+   id_expression: [`nested_name`] `identifier`
+   nested_name: "::" | `name` "::" | `nested_name` `name` "::"
+```
+
+A single quote `'` can separate digits in any numeric literal. It must
+occur between two digits. A *raw string* has no escape sequences.
+
+## Constraints
+
+:::{rule} PRIM-1
+:kind: required
+:tests: expressions/primary/int-decimal-types.cpp expressions/primary/int-hex-fits-unsigned-ll.cpp expressions/primary/int-hex-types.cpp expressions/primary/int-negative-is-unary.cpp expressions/primary/int-size-suffix.cpp expressions/primary/int-suffix-types.cpp
+
+The type of an integer literal is the first type in its list that can
+hold its value:
+
+| Literal | Types, in order |
+|---|---|
+| decimal, no suffix | `int`, `long`, `long long` |
+| octal, hex, or binary, no suffix | `int`, `unsigned int`, `long`, `unsigned long`, `long long`, `unsigned long long` |
+| `u` | `unsigned int`, `unsigned long`, `unsigned long long` |
+| `l` | `long`, `long long`, or the unsigned types for octal, hex, and binary |
+| `ul` | `unsigned long`, `unsigned long long` |
+| `ll` | `long long`, or `unsigned long long` for octal, hex, and binary |
+| `ull` | `unsigned long long` |
+| `z` | the signed type that matches `std::size_t` |
+| `uz` | `std::size_t` |
+
+A minus sign is a unary operator. It is not part of the literal.
+:::
+
+:::{rule} PRIM-2
+:kind: reject
+:tests: expressions/primary/int-too-large-signed-decimal.cpp expressions/primary/int-too-large.cpp
+
+An integer literal must have a type in its list. A decimal literal with
+no `u` suffix that only an unsigned type can hold is not valid
+({question}`Q-0064`).
+:::
+
+:::{rule} PRIM-3
+:kind: required
+:tests: expressions/primary/int-forms.cpp
+
+`0x` starts a hexadecimal literal, `0b` a binary literal, and `0` followed
+by digits an octal literal. Suffix letters can be in either case, and `u`
+can come before or after the length suffix.
+:::
+
+:::{rule} PRIM-16
+:kind: reject
+:tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp
+
+Each digit must be valid for the base of the literal. A digit separator
+must have a digit on each side. A suffix must be one of the forms in the
+syntax.
+:::
+
+:::{rule} PRIM-4
+:kind: required
+:tests: expressions/primary/float-forms.cpp expressions/primary/float-types.cpp
+
+A floating literal has type `double`. The suffix `f` gives `float` and
+`l` gives `long double`. A decimal floating literal has a decimal point,
+an exponent `e`, or both. A hexadecimal floating literal starts with `0x`
+and has a binary exponent `p`, which is a power of 2.
+:::
+
+:::{rule} PRIM-17
+:kind: reject
+:tests: expressions/primary/float-exponent-no-digits.cpp expressions/primary/float-exponent-sign-no-digits.cpp expressions/primary/float-hex-needs-exponent.cpp expressions/primary/float-integer-suffix.cpp
+
+A hexadecimal floating literal must have an exponent. An exponent must
+have digits. A floating literal must not have an integer suffix.
+:::
+
+:::{rule} PRIM-5
+:kind: required
+:tests: expressions/primary/char-escapes.cpp expressions/primary/char-types.cpp expressions/primary/char-ucn-basic.cpp expressions/primary/char-ucn-control.cpp
+
+The prefix of a character literal sets its type:
+
+| Prefix | Type |
+|---|---|
+| none | `char` |
+| `L` | `wchar_t` |
+| `u8` | `char8_t` |
+| `u` | `char16_t` |
+| `U` | `char32_t` |
+
+An escape sequence gives one code unit or character. The forms are simple
+escapes such as `\n`, octal `\101` or `\o{101}`, hexadecimal `\x41` or
+`\x{41}`, and universal character names `\u00e9` and `\U0001F600`. A
+universal character name can name a basic or a control character.
+:::
+
+:::{rule} PRIM-18
+:kind: reject
+:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp
+
+A character literal must contain at least one character. It must not
+have:
+
+- an unknown escape sequence, or `\x` or `\x{}` with no digits,
+- an octal or hexadecimal escape too large for the type,
+- a universal character name for a surrogate,
+- more than one character with a `u8`, `u`, `U`, or `L` prefix,
+- a character that does not fit in one code unit of its type.
+:::
+
+:::{rule} PRIM-7
+:kind: required
+:tests: expressions/primary/string-concat.cpp expressions/primary/string-escape-in-string.cpp expressions/primary/string-index-constant.cpp expressions/primary/string-lvalue.cpp expressions/primary/string-raw-long-delimiter.cpp expressions/primary/string-raw.cpp expressions/primary/string-type.cpp
+
+A string literal is an lvalue of type array of `N` constant characters.
+`N` counts a terminating null character. The prefix sets the character
+type as for character literals. Adjacent string literals are joined into
+one. If one has a prefix, the result has that prefix. A raw string keeps
+each character as written.
+:::
+
+:::{rule} PRIM-19
+:kind: reject
+:tests: expressions/primary/string-concat-mixed.cpp expressions/primary/string-raw-bad-delimiter.cpp expressions/primary/string-to-nonconst-pointer.cpp expressions/primary/string-raw-delimiter-too-long.cpp expressions/primary/string-raw-delimiter-backslash.cpp expressions/primary/string-concat-u8-u.cpp
+
+If two adjacent string literals both have a prefix, the prefixes must be
+the same. A string literal does not convert to a pointer to non-const
+characters. A raw string delimiter must have at most 16 characters and
+must not contain a space or a backslash.
+:::
+
+:::{rule} PRIM-10
+:kind: required
+:tests: expressions/primary/bool-nullptr.cpp expressions/primary/nullptr-member-pointer.cpp expressions/primary/nullptr-to-bool-copy.cpp expressions/primary/nullptr-to-int.cpp
+
+`true` and `false` have type `bool`. `nullptr` has type
+`std::nullptr_t`. It converts to every pointer and pointer-to-member
+type. It converts to `bool` only by direct initialization, and it does
+not convert to an integer.
+:::
+
+:::{rule} PRIM-11
+:kind: required
+:tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp
+
+In a member function of class `C`, `this` is a prvalue that points to
+the object. Its type is pointer to `C` with the cv-qualifiers of the
+member function. A program can also use `this` in a default member
+initializer.
+:::
+
+:::{rule} PRIM-20
+:kind: reject
+:tests: expressions/primary/this-namespace.cpp expressions/primary/this-static.cpp
+
+A program must not use `this` in a static member function or outside a
+class.
+:::
+
+:::{rule} PRIM-12
+:kind: required
+:tests: expressions/primary/name-enumerator-prvalue.cpp expressions/primary/name-function-lvalue.cpp expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/primary/name-member-unevaluated.cpp expressions/primary/name-parameter-in-scope.cpp expressions/primary/name-qualified-class-static.cpp expressions/primary/name-qualified-global.cpp expressions/primary/name-undeclared.cpp expressions/primary/name-variable-lvalue.cpp expressions/primary/this-implicit-member.cpp
+
+A name refers to the entity that lookup finds *(referenced)*. Its value
+category is:
+
+- an lvalue for a variable, a parameter, or a function,
+- a prvalue for an enumerator.
+
+In a member function, the name of a non-static member means `this->m`.
+Elsewhere, such a name is valid only in an unevaluated operand. `::x`
+names `x` in the global namespace. `N::x` names `x` in the namespace or
+class `N`.
+:::
+
+:::{rule} PRIM-14
+:kind: required
+:tests: expressions/primary/paren-function-call.cpp expressions/primary/paren-lvalue.cpp expressions/primary/paren-same-type.cpp
+
+An expression in parentheses has the same type, value, and value
+category as the expression.
+:::
+
+## Undefined Behavior
+
+:::{rule} PRIM-8
+:kind: undefined
+:tests: expressions/primary/string-modify-constant.cpp
+
+If a program changes a string literal, the behavior is undefined.
+:::
+
+## Implementation Requirements
+
+:::{rule} PRIM-6
+:kind: impl-defined
+:tests: expressions/primary/char-multichar.cpp expressions/primary/char-plain-signedness.cpp
+
+The value of a character literal with more than one character and no
+prefix is implementation-defined. Its type is `int`. If plain `char` is
+signed is implementation-defined. On the x86-64 Linux targets in the
+matrix, `'ab'` is `0x6162` and `char` is signed.
+:::
+
+:::{rule} PRIM-9
+:kind: unspecified
+:tests: expressions/primary/string-compare-constant.cpp expressions/primary/string-same-object-either.cpp
+
+It is unspecified if two string literals with the same characters are
+the same object. Constant evaluation rejects a comparison of their
+addresses.
+:::
+
+:::{rule} PRIM-15
+:kind: impl-defined
+:tests: expressions/primary/float-overflow.cpp
+
+The value of a floating literal outside the range of its type is
+implementation-defined. An implementation can reject it
+({question}`Q-0063`).
+:::
+
+## Recommended Practice
+
+:::{rule} PRIM-13
+:kind: recommended
+:tests: expressions/primary/char-multichar-warns.cpp expressions/primary/float-overflow-warns.cpp
+
+An implementation should warn about a floating literal outside the range
+of its type and about a multi-character literal.
+:::
+
+## Examples
+
+```cpp
+auto a = 4'294'967'295;   // long: too large for int
+auto b = 0xFFFF'FFFF;     // unsigned int
+auto c = 10uz;            // std::size_t
+auto d = 0x1.8p3;         // 12.0
+auto e = u8'x';           // char8_t
+auto f = u"ab" "cd";      // const char16_t[5]
+auto g = R"(C:\path)";    // backslash kept
+int* p = nullptr;
+
+struct Counter {
+  int n = 0;
+  void bump() { ++n; }    // means ++this->n
+};
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 77 of
+79 tests.
+
+- PRIM-2: Clang and GCC reject a decimal literal that fits only an
+  unsigned type under `-pedantic-errors`. EDG accepts it
+  ({question}`Q-0064`).
+- PRIM-15: Clang and GCC accept `1e999f` with a warning and give
+  infinity. EDG rejects it ({question}`Q-0063`).
+
+Inputs: clang-lex-literal, clang-diag-lex, clang-sema-expr,
+clang-diag-sema, edg-decls.

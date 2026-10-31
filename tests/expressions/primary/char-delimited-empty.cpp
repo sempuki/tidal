@@ -1,3 +1,3 @@
-// tidal-rules: PRIM-5
+// tidal-rules: PRIM-18
 // tidal-expect: reject
 char c = '\x{}';
