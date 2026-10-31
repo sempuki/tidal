@@ -154,7 +154,7 @@ difference of two null pointers is zero.
 
 :::{rule} ADD-9
 :kind: undefined
-:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp
+:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp expressions/additive/signed-overflow-add-sanitizer.cpp
 
 If the common type is a signed integer type and the mathematical result
 does not fit in it, the behavior is undefined.
@@ -162,7 +162,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that is:
 

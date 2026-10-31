@@ -181,7 +181,7 @@ that expression, the name refers to an outer entity with that name.
 
 :::{rule} ENUM-6
 :kind: undefined
-:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp
+:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp declarations/enumerations/cast-out-of-range-sanitizer.cpp
 
 An enumeration with a fixed underlying type can hold all values of that
 type. An enumeration without one holds the values of the smallest set of

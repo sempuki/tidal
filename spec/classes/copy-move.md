@@ -164,7 +164,7 @@ valid.
 
 :::{rule} CPY-4
 :kind: required
-:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp
+:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp
 
 If a class has no user-declared copy constructor, it has an implicit one.
 If it has no user-declared copy assignment operator, it has an implicit

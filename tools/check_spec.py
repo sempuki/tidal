@@ -11,7 +11,8 @@ Fails when:
 - a test is not listed by any of the rules it names,
 - a spec, test, or doc refers to a question (Q-NNNN) with no file in questions/,
 - a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
-  tidal-error is on a test that no compiler is expected to reject.
+  tidal-error is on a test that no compiler is expected to reject, fail to
+  link, or fail to run.
 """
 
 import re
@@ -158,8 +159,8 @@ def main() -> int:
         for key in test.errors:
             if key and key not in known:
                 errors.append(f"{test.name}: tidal-error-{key} names no compiler or family")
-        if test.errors and not {"reject", "link-fail"} & {test.default, *test.overrides.values()}:
-            errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject or fail to link")
+        if test.errors and not {"reject", "link-fail", "run-fail"} & {test.default, *test.overrides.values()}:
+            errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject, fail to link, or fail to run")
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")

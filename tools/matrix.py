@@ -39,7 +39,7 @@ class Compiler:
     version: list[str]
     build: list[str] | None = None
     image: dict | None = None
-    unsupported_flags: list[str] = field(default_factory=list)
+    unsupported_flags: list[str] = field(default_factory=list)  # glob patterns; a test using one is skipped
     container: str | None = None
 
     @property

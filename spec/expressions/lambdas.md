@@ -263,7 +263,7 @@ A capture by copy of a reference copies the object that it refers to.
 
 :::{rule} LAM-19
 :kind: undefined
-:tests: expressions/lambdas/dangling-reference-capture-constant.cpp
+:tests: expressions/lambdas/dangling-reference-capture-constant.cpp expressions/lambdas/capture-outlived-sanitizer.cpp
 
 If a lambda that captured a variable by reference is called after the
 life of that variable ends, and the body uses the capture, the behavior

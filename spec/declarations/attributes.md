@@ -169,7 +169,7 @@ are declared `no_unique_address`.
 
 :::{rule} ATTR-3
 :kind: undefined
-:tests: declarations/attributes/noreturn-ok.cpp
+:tests: declarations/attributes/noreturn-ok.cpp declarations/attributes/noreturn-returns-sanitizer.cpp
 
 `[[noreturn]]` on a function states that a call to it never returns. If a
 call returns, the behavior is undefined.
@@ -177,7 +177,7 @@ call returns, the behavior is undefined.
 
 :::{rule} ATTR-10
 :kind: undefined
-:tests: declarations/attributes/assume-false-constant.cpp declarations/attributes/assume-true-constant.cpp
+:tests: declarations/attributes/assume-false-constant.cpp declarations/attributes/assume-true-constant.cpp declarations/attributes/assume-false-sanitizer.cpp
 
 `[[assume(expression)]];` states that `expression` is true at that point.
 If the expression is false there, the behavior is undefined.

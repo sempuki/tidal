@@ -116,7 +116,7 @@ The left operand is evaluated before the right operand.
 
 :::{rule} SHF-7
 :kind: undefined
-:tests: expressions/shift/count-negative.cpp expressions/shift/count-too-large.cpp expressions/shift/count-too-large-right.cpp expressions/shift/count-width-of-promoted.cpp
+:tests: expressions/shift/count-negative.cpp expressions/shift/count-too-large.cpp expressions/shift/count-too-large-right.cpp expressions/shift/count-width-of-promoted.cpp expressions/shift/count-negative-sanitizer.cpp expressions/shift/count-too-large-sanitizer.cpp
 
 A negative shift count gives undefined behavior. So does a shift count
 equal to or greater than the bit width of the promoted left operand.

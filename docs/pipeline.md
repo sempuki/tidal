@@ -64,7 +64,9 @@ for `undefined`:
 - **Warnings.** Some compilers warn about undefined behavior they can see
   (for example, unsequenced modification). A test can turn the warning into
   an error with `tidal-flags`.
-- **Sanitizers.** `-fsanitize=undefined` reports at run time.
+- **Sanitizers.** `-fsanitize=undefined` with recovery off, or
+  `-fsanitize=address`, stops the program and names the error. The test expects `run-fail` and matches
+  the report with `tidal-error` (decision 0028).
 - **Optimizer assumptions.** Code after the construct is removed or folded
   at `-O2`.
 

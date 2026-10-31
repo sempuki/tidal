@@ -270,7 +270,7 @@ other bases.
 
 :::{rule} DER-17
 :kind: undefined
-:tests: classes/derived/static-cast-downcast-wrong-object-constant.cpp
+:tests: classes/derived/static-cast-downcast-wrong-object-constant.cpp classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp
 
 If a `static_cast` to a derived class `D` applies to an object that is
 not a `D` subobject, the behavior is undefined. Constant evaluation

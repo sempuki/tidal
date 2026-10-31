@@ -155,14 +155,14 @@ floating-point type, the result is rounded to the type.
 
 :::{rule} MUL-9
 :kind: undefined
-:tests: expressions/multiplicative/divide-by-zero.cpp expressions/multiplicative/remainder-by-zero.cpp
+:tests: expressions/multiplicative/divide-by-zero.cpp expressions/multiplicative/remainder-by-zero.cpp expressions/multiplicative/divide-by-zero-sanitizer.cpp
 
 Integer division or remainder by zero is undefined.
 :::
 
 :::{rule} MUL-10
 :kind: undefined
-:tests: expressions/multiplicative/signed-overflow-multiply.cpp expressions/multiplicative/signed-overflow-divide.cpp expressions/multiplicative/signed-overflow-remainder.cpp expressions/multiplicative/signed-overflow-after-promotion.cpp
+:tests: expressions/multiplicative/signed-overflow-multiply.cpp expressions/multiplicative/signed-overflow-divide.cpp expressions/multiplicative/signed-overflow-remainder.cpp expressions/multiplicative/signed-overflow-after-promotion.cpp expressions/multiplicative/signed-overflow-divide-sanitizer.cpp expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp
 
 If the common type is a signed integer type, these conditions make the
 behavior undefined:
@@ -175,7 +175,7 @@ behavior undefined:
 
 :::{rule} MUL-11
 :kind: undefined
-:tests: expressions/multiplicative/floating-divide-by-zero.cpp expressions/multiplicative/floating-zero-by-zero.cpp
+:tests: expressions/multiplicative/floating-divide-by-zero.cpp expressions/multiplicative/floating-zero-by-zero.cpp expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp
 
 If the right operand of floating-point `/` is zero, the behavior is
 undefined. This includes `0.0 / 0.0`.

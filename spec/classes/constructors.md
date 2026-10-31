@@ -372,7 +372,7 @@ is also undefined.
 
 :::{rule} DTOR-7
 :kind: undefined
-:tests: classes/constructors/double-destroy-constant.cpp classes/constructors/use-after-dtor-constant.cpp
+:tests: classes/constructors/double-destroy-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp
 
 If a program uses an object after its destructor runs, the behavior is
 undefined. This includes a second destruction, for example at the end of

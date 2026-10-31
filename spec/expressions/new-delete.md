@@ -196,7 +196,7 @@ the program reads it before it writes it, the behavior is undefined.
 
 :::{rule} NEW-5
 :kind: undefined
-:tests: expressions/new-delete/delete-mismatch-array.cpp expressions/new-delete/delete-mismatch-scalar.cpp expressions/new-delete/delete-not-from-new.cpp expressions/new-delete/double-delete.cpp expressions/new-delete/delete-derived-array-through-base-constant.cpp
+:tests: expressions/new-delete/delete-mismatch-array.cpp expressions/new-delete/delete-mismatch-scalar.cpp expressions/new-delete/delete-not-from-new.cpp expressions/new-delete/double-delete.cpp expressions/new-delete/delete-derived-array-through-base-constant.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp expressions/new-delete/delete-array-mismatch-sanitizer.cpp expressions/new-delete/delete-twice-sanitizer.cpp
 
 The behavior is undefined if the program:
 

@@ -239,7 +239,7 @@ pointer, the result points to the next or previous element of the array.
 
 :::{rule} UN-4
 :kind: undefined
-:tests: expressions/unary/minus-int-min.cpp
+:tests: expressions/unary/minus-int-min.cpp expressions/unary/minus-int-min-sanitizer.cpp
 
 If the operand of unary `-` has a signed type and its negative does not
 fit in that type, the behavior is undefined.
@@ -247,7 +247,7 @@ fit in that type, the behavior is undefined.
 
 :::{rule} UN-7
 :kind: undefined
-:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp
+:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp expressions/unary/indirection-null-sanitizer.cpp foundations/objects/read-after-block-ends-sanitizer.cpp
 
 If the operand of `*` does not point to an object or a function, and the
 program uses the result, the behavior is undefined. This includes a null
@@ -257,7 +257,7 @@ whose lifetime has ended.
 
 :::{rule} UN-21
 :kind: undefined
-:tests: expressions/unary/increment-overflow-constant.cpp expressions/unary/decrement-overflow-constant.cpp expressions/unary/increment-pointer-past-end-constant.cpp
+:tests: expressions/unary/increment-overflow-constant.cpp expressions/unary/decrement-overflow-constant.cpp expressions/unary/increment-pointer-past-end-constant.cpp expressions/unary/increment-overflow-sanitizer.cpp
 
 The behavior of prefix `++` and `--` is undefined in these cases:
 

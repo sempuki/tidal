@@ -181,7 +181,7 @@ element.
 
 :::{rule} PFX-4
 :kind: undefined
-:tests: expressions/postfix/subscript-out-of-range.cpp expressions/postfix/subscript-write-past-end-constant.cpp expressions/postfix/subscript-form-beyond-end-constant.cpp
+:tests: expressions/postfix/subscript-out-of-range.cpp expressions/postfix/subscript-write-past-end-constant.cpp expressions/postfix/subscript-form-beyond-end-constant.cpp expressions/postfix/subscript-out-of-range-sanitizer.cpp expressions/postfix/subscript-past-end-heap-sanitizer.cpp
 
 If a subscript reads or writes an element outside the array, the
 behavior is undefined. Forming the address of an element more than one

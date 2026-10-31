@@ -240,6 +240,7 @@ compilers affect the Status column.
 | `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/reference-default-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
 | `classes/constructors/reference-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
+| `classes/constructors/use-after-delete-sanitizer.cpp` | DTOR-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/conversion-functions/alias-same-type-hides.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
@@ -345,6 +346,7 @@ compilers affect the Status column.
 | `classes/copy-move/implicit-copy-constexpr.cpp` | CPY-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp` | CPY-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/implicit-copy-nonconst-from-member.cpp` | CPY-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-of-owner-sanitizer.cpp` | NEW-5 CPY-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/copy-move/implicit-copy.cpp` | CPY-4 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/implicit-move-assign.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/implicit-move.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
@@ -448,6 +450,7 @@ compilers affect the Status column.
 | `classes/derived/sizeof-at-least-base.cpp` | DER-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/slicing.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
 | `classes/derived/static-cast-downcast-wrong-object-constant.cpp` | DER-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp` | DER-17 CAST-14 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/derived/static-cast-downcast.cpp` | DER-16 | run | run | run | accept | run | run | run | run | pass |
 | `classes/derived/union-as-derived.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/using-brings-overloads.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
@@ -892,6 +895,7 @@ compilers affect the Status column.
 | `declarations/alignment/zero-ignored.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/assume-comma.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-false-sanitizer.cpp` | ATTR-10 | run-fail | run-fail | run-fail | skip | run-fail | run | run-fail | run-fail | pass |
 | `declarations/attributes/assume-not-bool.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/attributes/assume-on-declaration.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
@@ -930,6 +934,7 @@ compilers affect the Status column.
 | `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
 | `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-returns-sanitizer.cpp` | ATTR-3 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -1120,6 +1125,7 @@ compilers affect the Status column.
 | `declarations/declarators/volatile-return-deprecated.cpp` | CV-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-in-range.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-out-of-range-sanitizer.cpp` | ENUM-6 CAST-14 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
 | `declarations/enumerations/copy-list-from-integer.cpp` | ENUM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/distinct-types.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -1230,6 +1236,7 @@ compilers affect the Status column.
 | `declarations/functions/definitions/argv-zero.cpp` | FN-6 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/functions/definitions/c-linkage-main-in-namespace.cpp` | FN-4 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
 | `declarations/functions/definitions/flow-off-end-not-reached.cpp` | FN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/flow-off-end-sanitizer.cpp` | FN-3 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/functions/definitions/flow-off-end-value.cpp` | FN-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/definitions/flow-off-end-void.cpp` | FN-3 | run | run | run | accept | run | run | run | run | pass |
 | `declarations/functions/definitions/flow-off-end-warns.cpp` | FN-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -1885,6 +1892,7 @@ compilers affect the Status column.
 | `expressions/additive/grouping.cpp` | ADD-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/additive/integer-minus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/mixed-enum-warns.cpp` | ADD-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/null-plus-nonzero-sanitizer.cpp` | ADD-10 | run-fail | run-fail | run | skip | run | run-fail | run | run-fail | pass |
 | `expressions/additive/null-plus-nonzero.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/null-plus-zero.cpp` | ADD-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/additive/nullptr-plus-int.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1910,6 +1918,7 @@ compilers affect the Status column.
 | `expressions/additive/pointer-within-array.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/additive/result-prvalue.cpp` | ADD-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/result-types.cpp` | ADD-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/additive/signed-overflow-add-sanitizer.cpp` | ADD-9 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/additive/signed-overflow-add.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/signed-overflow-subtract.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/subtract-base-pointers-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
@@ -2193,6 +2202,7 @@ compilers affect the Status column.
 | `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-narrowing-out-of-range.cpp` | CONV-11 | clang: accept, gcc: accept, edg: reject | accept | accept | reject | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-to-integral-out-of-range.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/floating-to-integral-sanitizer.cpp` | CONV-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2280,6 +2290,7 @@ compilers affect the Status column.
 | `expressions/lambdas/capture-data-member-by-name.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capture-default-at-namespace.cpp` | LAM-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capture-global-rejected.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-outlived-sanitizer.cpp` | LAM-19 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/lambdas/capture-repeated.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capture-same-as-default.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capture-structured-binding.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
@@ -2416,10 +2427,12 @@ compilers affect the Status column.
 | `expressions/member-pointers/virtual-vs-null.cpp` | MPTR-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/member-pointers/zero-literal-null.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/multiplicative/cast-rounds-to-type.cpp` | MUL-17 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/multiplicative/divide-by-zero-sanitizer.cpp` | MUL-9 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/enum-float-warns.cpp` | MUL-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/excess-precision-either.cpp` | MUL-17 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp` | MUL-11 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | reject | accept | reject | accept | pass |
 | `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
@@ -2444,7 +2457,9 @@ compilers affect the Status column.
 | `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-divide-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -2467,6 +2482,7 @@ compilers affect the Status column.
 | `expressions/new-delete/class-allocation-function.cpp` | NEW-13 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/new-delete/const-scalar-needs-init.cpp` | NEW-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/const-scalar-with-init.cpp` | NEW-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/new-delete/delete-array-mismatch-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/new-delete/delete-class-converting-to-pointer.cpp` | NEW-15 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/new-delete/delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `expressions/new-delete/delete-incomplete-class.cpp` | NEW-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2477,6 +2493,7 @@ compilers affect the Status column.
 | `expressions/new-delete/delete-null-constant.cpp` | NEW-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/delete-null.cpp` | NEW-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/new-delete/delete-pointer-to-const.cpp` | NEW-8 | run | run | run | accept | run | run | run | run | pass |
+| `expressions/new-delete/delete-twice-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/new-delete/delete-void-pointer.cpp` | NEW-8 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `expressions/new-delete/destroys-and-constructs.cpp` | NEW-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/new-delete/double-delete.cpp` | NEW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2529,7 +2546,9 @@ compilers affect the Status column.
 | `expressions/postfix/subscript-floating-index.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/subscript-form-beyond-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/subscript-is-pointer-arithmetic.cpp` | PFX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/postfix/subscript-out-of-range-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/postfix/subscript-out-of-range.cpp` | PFX-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-past-end-heap-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/postfix/subscript-prvalue-array.cpp` | PFX-3 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
 | `expressions/postfix/subscript-scoped-enum-index.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/subscript-two-integers.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2648,9 +2667,11 @@ compilers affect the Status column.
 | `expressions/shift/class-operand.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/shift/count-floating.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-negative-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/shift/count-negative-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `expressions/shift/count-negative.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-too-large-right.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/count-too-large-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/shift/count-too-large.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-width-of-promoted.cpp` | SHF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/grouping.cpp` | SHF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2685,6 +2706,7 @@ compilers affect the Status column.
 | `expressions/unary/increment-function-pointer.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/increment-incomplete-pointer.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/increment-overflow-constant.cpp` | UN-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-overflow-sanitizer.cpp` | UN-21 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/unary/increment-pointer-past-end-constant.cpp` | UN-21 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `expressions/unary/increment-rvalue.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-dangling-constant.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2693,11 +2715,13 @@ compilers affect the Status column.
 | `expressions/unary/indirection-incomplete-value.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-lvalue.cpp` | UN-5 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/unary/indirection-non-pointer.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-null-sanitizer.cpp` | UN-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/unary/indirection-null.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-nullptr-literal.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-past-end-constant.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-void-pointer.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/minus-bool.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/unary/minus-int-min-sanitizer.cpp` | UN-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/unary/minus-int-min.cpp` | UN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/minus-pointer.cpp` | UN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/minus-values.cpp` | UN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2803,6 +2827,7 @@ compilers affect the Status column.
 | `foundations/objects/loop-body-each-iteration.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
 | `foundations/objects/nested-block-ends-first.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
+| `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 UN-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/objects/read-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/read-before-init-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/reference-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3040,7 +3065,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3025/3025 tests pass on baseline compilers.
+3050/3050 tests pass on baseline compilers.
 
 ## Rejections
 

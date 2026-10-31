@@ -204,7 +204,7 @@ exactly, the result is that value.
 
 :::{rule} CONV-5
 :kind: undefined
-:tests: expressions/conversions/floating-to-integral-out-of-range.cpp expressions/conversions/floating-to-unsigned-negative.cpp expressions/conversions/negative-fraction-to-unsigned.cpp
+:tests: expressions/conversions/floating-to-integral-out-of-range.cpp expressions/conversions/floating-to-unsigned-negative.cpp expressions/conversions/negative-fraction-to-unsigned.cpp expressions/conversions/floating-to-integral-sanitizer.cpp
 
 If a floating-point value, without its fractional part, is outside the
 range of the target integer type, the conversion is undefined. The

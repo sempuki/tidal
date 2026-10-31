@@ -213,7 +213,7 @@ undefined (CV-5).
 
 :::{rule} CAST-14
 :kind: undefined
-:tests: expressions/casts/static-cast-enum-out-of-range-constant.cpp expressions/casts/static-cast-downcast-wrong-object-constant.cpp
+:tests: expressions/casts/static-cast-enum-out-of-range-constant.cpp expressions/casts/static-cast-downcast-wrong-object-constant.cpp classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp declarations/enumerations/cast-out-of-range-sanitizer.cpp
 
 The behavior is undefined in these cases:
 

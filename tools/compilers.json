@@ -85,8 +85,8 @@
         "-Wall",
         "-Werror",
         "-O2",
-        "-fsanitize=undefined",
-        "-fno-sanitize-recover=undefined"
+        "-fsanitize=*",
+        "-fno-sanitize-recover=*"
       ]
     },
     {

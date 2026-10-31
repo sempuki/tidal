@@ -136,7 +136,7 @@ null pointer.
 
 :::{rule} FN-3
 :kind: undefined
-:tests: declarations/functions/definitions/flow-off-end-value.cpp declarations/functions/definitions/flow-off-end-not-reached.cpp declarations/functions/definitions/flow-off-end-void.cpp
+:tests: declarations/functions/definitions/flow-off-end-value.cpp declarations/functions/definitions/flow-off-end-not-reached.cpp declarations/functions/definitions/flow-off-end-void.cpp declarations/functions/definitions/flow-off-end-sanitizer.cpp
 
 If control reaches the end of a function that returns a value, the
 behavior is undefined. This does not apply to `main` (FN-8). A function

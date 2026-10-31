@@ -20,6 +20,7 @@ Usage:
 
 import argparse
 import concurrent.futures
+import fnmatch
 import hashlib
 import json
 import os
@@ -36,7 +37,7 @@ from matrix import BUILD, TESTS, Compiler  # noqa: E402
 EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
 # Bump when outcome() changes how it computes a result, so cached results
 # from the old logic are not reused.
-OUTCOME_VERSION = 4
+OUTCOME_VERSION = 5
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
@@ -174,7 +175,9 @@ def run_binary(c: Compiler, out: str) -> tuple[str, str]:
     except subprocess.TimeoutExpired:
         return "run-fail", "timeout"
     if run.returncode != 0:
-        return "run-fail", f"exit {run.returncode}: {(run.stdout + run.stderr).strip()[:200]}"
+        # Keep every line, so a tidal-error pattern can match a sanitizer's report.
+        lines = [" ".join(l.split()) for l in (run.stdout + run.stderr).splitlines() if l.strip()]
+        return "run-fail", " / ".join([f"exit {run.returncode}", *lines])[:4000]
     return "run", ""
 
 
@@ -201,7 +204,7 @@ def multi_unit_outcome(test: Test, c: Compiler) -> tuple[str, str]:
 
 def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     """Return (outcome, detail): accept, reject, link-fail, run, run-fail, or skip."""
-    if any(f in c.unsupported_flags for f in test.flags):
+    if any(fnmatch.fnmatchcase(f, u) for f in test.flags for u in c.unsupported_flags):
         return "skip", "unsupported flags"
     if test.sources:
         return multi_unit_outcome(test, c)
@@ -275,7 +278,7 @@ def main() -> int:
             return True
         if got != t.expect(c):
             return False
-        pattern = t.error_pattern(c) if got in {"reject", "link-fail"} else None
+        pattern = t.error_pattern(c) if got in {"reject", "link-fail", "run-fail"} else None
         return pattern is None or re.search(pattern, detail, re.IGNORECASE) is not None
 
     failures, rows, differs = 0, [], []
@@ -304,7 +307,7 @@ def main() -> int:
         for t in tests:
             for c in compilers:
                 got, detail = results[(t, c)]
-                if got in {"reject", "link-fail"}:
+                if got in {"reject", "link-fail", "run-fail"}:
                     dump.setdefault(t.name, {})[c.id] = detail.split(" / ")
         args.errors_out.write_text(json.dumps(dump, indent=1, sort_keys=True))
     print(f"{len(tests) - failures}/{len(tests)} tests pass on baseline compilers; "
