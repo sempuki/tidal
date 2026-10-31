@@ -6,6 +6,7 @@ An expression computes a value, or causes an effect, or both. These pages give t
 value-categories
 conversions
 sequencing
+primary
 multiplicative
 additive
 shift
@@ -30,6 +31,7 @@ lambdas
 value-categories
 conversions
 sequencing
+primary
 multiplicative
 additive
 shift
