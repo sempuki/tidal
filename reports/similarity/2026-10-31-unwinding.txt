@@ -1,0 +1,18 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   unwinding.md:Unwinding and termination longest=0   overlap=0.01
+ok   UNW-P1                           longest=0   overlap=0.01
+ok   UNW-P2                           longest=0   overlap=0.01
+ok   UNW-P3                           longest=0   overlap=0.00
+ok   UNW-1                            longest=0   overlap=0.02
+ok   UNW-2                            longest=0   overlap=0.01
+ok   UNW-3                            longest=0   overlap=0.00
+ok   UNW-4                            longest=0   overlap=0.13
+ok   UNW-5                            longest=0   overlap=0.00
+ok   UNW-6                            longest=0   overlap=0.00
+ok   UNW-7                            longest=0   overlap=0.05
+ok   UNW-8                            longest=0   overlap=0.03
+ok   unwinding.md:Examples            longest=0   overlap=0.00
+ok   unwinding.md:Evidence            longest=0   overlap=0.00
+
+0 flagged
