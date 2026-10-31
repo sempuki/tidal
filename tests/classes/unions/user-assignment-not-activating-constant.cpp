@@ -2,6 +2,7 @@
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-gcc: member instead of (active|initialized)
+// tidal-error-clang: member call on member .* of union with active member
 // tidal-note: Q-0088. EDG accepts assignment through a user-provided operator to an inactive union member during constant evaluation. Clang and GCC reject it.
 struct T { int v; constexpr T& operator=(int x) { v = x; return *this; } };
 union U { int i; T t; };

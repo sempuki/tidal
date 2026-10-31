@@ -10,7 +10,7 @@ current state only. The history of how it got here is in `git log`.
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 8 | 4 required, 2 reject, 1 undefined, 1 recommended | 26 | Q-0112 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 27 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 11 | 8 required, 1 reject, 1 unspecified, 1 impl-defined | 41 | Q-0099 | 0 flagged |
-| [Standard conversions](../spec/foundations/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 47 | Q-0028, Q-0100 | 0 flagged |
+| [Standard conversions](../spec/foundations/conversions.md) | 17 | 9 required, 5 reject, 1 undefined, 2 impl-defined | 46 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 7 | 6 required, 1 reject | 26 |  | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 6 | 4 required, 1 undefined, 1 unspecified | 18 |  | 0 flagged |
 | [Constant expressions](../spec/foundations/constant-evaluation.md) | 18 | 4 required, 13 reject, 1 impl-defined | 46 | Q-0020, Q-0033, Q-0078, Q-0090 | 0 flagged |
@@ -20,7 +20,7 @@ current state only. The history of how it got here is in `git log`.
 | [Iteration statements](../spec/statements/loops.md) | 7 | 4 required, 3 reject | 19 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 6 | 4 required, 2 reject | 26 | Q-0020, Q-0026, Q-0098 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 12 | 8 required, 3 reject, 1 unspecified | 40 | Q-0041, Q-0097 | 0 flagged |
-| [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 94 | Q-0063, Q-0064 | 0 flagged |
+| [Primary expressions](../spec/expressions/primary.md) | 23 | 9 required, 6 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 93 | Q-0033, Q-0063, Q-0064 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 9 | 5 required, 2 reject, 2 recommended | 49 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 18 | 7 required, 2 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 34 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
 | [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 38 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
@@ -87,7 +87,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3027/3027 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3025/3025 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -113,9 +113,10 @@ spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- A `reject` test without a `tidal-error` pattern passes whenever
-  compilation fails, even for an unrelated reason. Patterns are being
-  added (next step 1).
+- 1421 tests carry `tidal-error` patterns, which check that a compiler
+  rejects them, or fails to link them, for the reason their rule gives.
+  About 50 tests have no pattern for some compiler family, because that
+  family reports only a generic parse or constant-evaluation error.
 - Undefined-behavior evidence comes from constant evaluation and warnings.
   Cases that constant evaluation can't express (some pointer and lifetime
   errors) will need sanitizers.
@@ -134,16 +135,13 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-1. Write `tidal-error` patterns for the reject tests, chapter by chapter.
-   Each pattern confirms that a test is rejected for the reason its rule
-   gives; a test rejected for another reason is a bug to fix.
-2. Ask the reviewer who prompted the principles-first change to read the
+1. Ask the reviewer who prompted the principles-first change to read the
    Foundations chapter and two topic pages, and decide whether rules also
    want short annotations (decision 0024).
-3. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
-4. Add sanitizer-based tests that run in the container images.
-5. Add EDG's 32-bit configuration as a second EDG matrix entry.
-6. Read EDG's sanitized source for the `if` section. GCC's source is read
+2. Report the EDG behavior in Q-0002 and Q-0003 to the EDG project.
+3. Add sanitizer-based tests that run in the container images.
+4. Add EDG's 32-bit configuration as a second EDG matrix entry.
+5. Read EDG's sanitized source for the `if` section. GCC's source is read
    only by source readers (decision 0021).
 
 ## Size estimate

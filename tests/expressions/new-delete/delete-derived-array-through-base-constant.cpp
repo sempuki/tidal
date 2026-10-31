@@ -1,6 +1,8 @@
 // tidal-rules: NEW-5
 // tidal-expect: reject
 // tidal-expect-gcc: accept
+// tidal-error-clang: delete of pointer to subobject
+// tidal-error-edg: deallocation of storage that was not dynamically allocated
 // tidal-note: Gap review 2026-10-31. Q-0091. GCC accepts delete[] of a derived array through a base pointer during constant evaluation. Clang and EDG reject it.
 struct B { int b = 0; constexpr virtual ~B() {} };
 struct D : B { int d = 0; };

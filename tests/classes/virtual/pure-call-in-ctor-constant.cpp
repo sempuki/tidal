@@ -1,6 +1,8 @@
 // tidal-rules: VIRT-12
 // tidal-expect: reject
 // tidal-error-gcc: __cxa_pure_virtual
+// tidal-error-clang: pure virtual function .* called
+// tidal-error-edg: constexpr function .B::f. .* is not defined
 struct B {
   int v;
   constexpr B() : v(call()) {}

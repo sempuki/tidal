@@ -2210,7 +2210,6 @@ compilers affect the Status column.
 | `expressions/conversions/member-pointer-virtual-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/nan-to-bool.cpp` | CONV-3 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/conversions/negative-fraction-to-unsigned.cpp` | CONV-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/negative-one-to-unsigned-constant.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/noexcept-function-pointer.cpp` | CONV-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/nonzero-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/null-derived-to-second-base.cpp` | CONV-14 | run | run | run | accept | run | run | run | run | pass |
@@ -2547,7 +2546,6 @@ compilers affect the Status column.
 | `expressions/primary/char-named-escape.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-octal-too-large.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-plain-signedness.cpp` | PRIM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-prefixed-not-single-unit.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-types.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-u8-not-single-byte.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-ucn-basic.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -3042,7 +3040,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3027/3027 tests pass on baseline compilers.
+3025/3025 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -5711,7 +5709,7 @@ check that the rejection has the intended cause.
 - `classes/virtual/override-out-of-class.cpp` (clang-22): error: 'override' specifier is not allowed outside a class definition
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-host): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-host): error: call to non-‘constexpr’ function ‘void __cxa_pure_virtual()’
-- `classes/virtual/pure-call-in-ctor-constant.cpp` (edg-7.0): error: initialization is not constant / note: constexpr function "B::f" (declared at line 8) is not defined / note: called from: / note: called from:
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (edg-7.0): error: initialization is not constant / note: constexpr function "B::f" (declared at line 10) is not defined / note: called from: / note: called from:
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-14): error: call to non-'constexpr' function 'void __cxa_pure_virtual()'
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-18): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-16): error: call to non-'constexpr' function 'void __cxa_pure_virtual()'
@@ -9690,7 +9688,7 @@ check that the rejection has the intended cause.
 - `expressions/conditional/const-volatile-lvalues-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
 - `expressions/conditional/constant-selected-fails.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
 - `expressions/conditional/constant-selected-fails.cpp` (gcc-host): error: non-constant condition for static assertion / error: call to non-‘constexpr’ function ‘int runtime()’
-- `expressions/conditional/constant-selected-fails.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime" (declared at line 4)
+- `expressions/conditional/constant-selected-fails.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime" (declared at line 6)
 - `expressions/conditional/constant-selected-fails.cpp` (gcc-14): error: non-constant condition for static assertion / error: call to non-'constexpr' function 'int runtime()'
 - `expressions/conditional/constant-selected-fails.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
 - `expressions/conditional/constant-selected-fails.cpp` (gcc-16): error: non-constant condition for static assertion / error: call to non-'constexpr' function 'int runtime()'
@@ -9749,7 +9747,7 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/allocation-not-freed.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
 - `expressions/constant-expressions/call-before-definition.cpp` (clang-host): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'later' cannot be used in a constant expression
 - `expressions/constant-expressions/call-before-definition.cpp` (gcc-host): error: ‘constexpr int later()’ used before its definition
-- `expressions/constant-expressions/call-before-definition.cpp` (edg-7.0): error: expression must have a constant value / note: constexpr function "later" (declared at line 5) is not defined
+- `expressions/constant-expressions/call-before-definition.cpp` (edg-7.0): error: expression must have a constant value / note: constexpr function "later" (declared at line 7) is not defined
 - `expressions/constant-expressions/call-before-definition.cpp` (gcc-14): error: 'constexpr int later()' used before its definition
 - `expressions/constant-expressions/call-before-definition.cpp` (clang-18): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'later' cannot be used in a constant expression
 - `expressions/constant-expressions/call-before-definition.cpp` (gcc-16): error: 'constexpr int later()' used before its definition
@@ -9825,28 +9823,28 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/modify-outside-object.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: a constant expression cannot modify an object that is visible outside that expression
 - `expressions/constant-expressions/non-constexpr-call.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'plain' cannot be used in a constant expression
 - `expressions/constant-expressions/non-constexpr-call.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression / note: ‘constexpr int f()’ is not usable as a ‘constexpr’ function because: / error: call to non-‘constexpr’ function ‘int plain()’
-- `expressions/constant-expressions/non-constexpr-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "plain" (declared at line 4)
+- `expressions/constant-expressions/non-constexpr-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "plain" (declared at line 6)
 - `expressions/constant-expressions/non-constexpr-call.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: call to non-'constexpr' function 'int plain()'
 - `expressions/constant-expressions/non-constexpr-call.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: non-constexpr function 'plain' cannot be used in a constant expression / error: static assertion expression is not an integral constant expression / note: non-constexpr function 'plain' cannot be used in a constant expression
 - `expressions/constant-expressions/non-constexpr-call.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: call to non-'constexpr' function 'int plain()'
 - `expressions/constant-expressions/non-constexpr-call.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'plain' cannot be used in a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: initializer of 'n' is not a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘n’ is not usable in a constant expression / note: ‘n’ was not initialized with a constant expression
-- `expressions/constant-expressions/read-const-runtime-init.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 5) cannot be used as a constant
+- `expressions/constant-expressions/read-const-runtime-init.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 7) cannot be used as a constant
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression / note: 'n' was not initialized with a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: initializer of 'n' is not a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression / note: 'n' was not initialized with a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: initializer of 'n' is not a constant expression
 - `expressions/constant-expressions/read-non-const-variable.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
 - `expressions/constant-expressions/read-non-const-variable.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘n’ is not usable in a constant expression / note: ‘int n’ is not const
-- `expressions/constant-expressions/read-non-const-variable.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 4) cannot be used as a constant
+- `expressions/constant-expressions/read-non-const-variable.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 6) cannot be used as a constant
 - `expressions/constant-expressions/read-non-const-variable.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
 - `expressions/constant-expressions/read-non-const-variable.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
 - `expressions/constant-expressions/read-non-const-variable.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression / note: 'int n' is not const
 - `expressions/constant-expressions/read-non-const-variable.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
 - `expressions/constant-expressions/read-parameter-outside.cpp` (clang-host): error: constexpr variable 'w' must be initialized by a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `expressions/constant-expressions/read-parameter-outside.cpp` (gcc-host): error: ‘v’ is not a constant expression
-- `expressions/constant-expressions/read-parameter-outside.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "v" (declared at line 4) cannot be used as a constant
+- `expressions/constant-expressions/read-parameter-outside.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "v" (declared at line 6) cannot be used as a constant
 - `expressions/constant-expressions/read-parameter-outside.cpp` (gcc-14): error: 'v' is not a constant expression
 - `expressions/constant-expressions/read-parameter-outside.cpp` (clang-18): error: constexpr variable 'w' must be initialized by a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `expressions/constant-expressions/read-parameter-outside.cpp` (gcc-16): error: 'v' is not a constant expression
@@ -9867,7 +9865,7 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/relational-unrelated-pointers.cpp` (clang-22): error: constexpr variable 'lt' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
 - `expressions/constant-expressions/result-points-to-local.cpp` (clang-host): error: constexpr variable 'p' must be initialized by a constant expression / note: pointer to 'local' is not a constant expression
 - `expressions/constant-expressions/result-points-to-local.cpp` (gcc-host): error: ‘& local’ is not a constant expression
-- `expressions/constant-expressions/result-points-to-local.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 5) cannot be used as a constant
+- `expressions/constant-expressions/result-points-to-local.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 7) cannot be used as a constant
 - `expressions/constant-expressions/result-points-to-local.cpp` (gcc-14): error: '& local' is not a constant expression
 - `expressions/constant-expressions/result-points-to-local.cpp` (clang-18): error: constexpr variable 'p' must be initialized by a constant expression / note: pointer to 'local' is not a constant expression
 - `expressions/constant-expressions/result-points-to-local.cpp` (gcc-16): error: '& local' is not a constant expression
@@ -10016,13 +10014,6 @@ check that the rejection has the intended cause.
 - `expressions/conversions/member-pointer-virtual-base.cpp` (clang-18): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
 - `expressions/conversions/member-pointer-virtual-base.cpp` (gcc-16): error: pointer to member conversion via virtual base 'B'
 - `expressions/conversions/member-pointer-virtual-base.cpp` (clang-22): error: conversion from pointer to member of class 'B' to pointer to member of class 'D' via virtual base 'B' is not allowed
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (clang-host): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (gcc-host): error: ‘(unsigned int)-1.0e+0’ is not a constant expression
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (edg-7.0): error: floating-point value does not fit in required integral type
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (gcc-14): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (clang-18): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (gcc-16): error: '(unsigned int)-1.0e+0' is not a constant expression
-- `expressions/conversions/negative-one-to-unsigned-constant.cpp` (clang-22): error: constexpr variable 'u' must be initialized by a constant expression / note: value -1 is outside the range of representable values of type 'const unsigned int'
 - `expressions/conversions/nonzero-to-pointer.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'int'
 - `expressions/conversions/nonzero-to-pointer.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
 - `expressions/conversions/nonzero-to-pointer.cpp` (edg-7.0): error: a value of type "int" cannot be used to initialize an entity of type "int *"
@@ -10295,7 +10286,7 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/uncaptured-variable.cpp` (clang-22): error: variable 'a' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'a' by value / note: capture 'a' by reference / note: default capture by value / note: default capture by reference
 - `expressions/logical/constant-evaluated-call.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime_only' cannot be used in a constant expression
 - `expressions/logical/constant-evaluated-call.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr bool h()’ called in a constant expression / note: ‘constexpr bool h()’ is not usable as a ‘constexpr’ function because: / error: call to non-‘constexpr’ function ‘int runtime_only()’
-- `expressions/logical/constant-evaluated-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime_only" (declared at line 4)
+- `expressions/logical/constant-evaluated-call.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime_only" (declared at line 6)
 - `expressions/logical/constant-evaluated-call.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr bool h()' called in a constant expression / note: 'constexpr bool h()' is not usable as a 'constexpr' function because: / error: call to non-'constexpr' function 'int runtime_only()'
 - `expressions/logical/constant-evaluated-call.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: non-constexpr function 'runtime_only' cannot be used in a constant expression / error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime_only' cannot be used in a constant expression
 - `expressions/logical/constant-evaluated-call.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr bool h()' called in a constant expression / note: 'constexpr bool h()' is not usable as a 'constexpr' function because: / error: call to non-'constexpr' function 'int runtime_only()'
@@ -11060,13 +11051,6 @@ check that the rejection has the intended cause.
 - `expressions/primary/char-octal-too-large.cpp` (clang-18): error: octal escape sequence out of range
 - `expressions/primary/char-octal-too-large.cpp` (gcc-16): error: octal escape sequence out of range
 - `expressions/primary/char-octal-too-large.cpp` (clang-22): error: octal escape sequence out of range
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (clang-host): error: character too large for enclosing character literal type
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (gcc-host): error: character not encodable in a single code unit
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (edg-7.0): error: a UTF-8 character literal value cannot occupy more than one code unit
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (gcc-14): error: character not encodable in a single code unit
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (clang-18): error: character too large for enclosing character literal type
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (gcc-16): error: character not encodable in a single code unit
-- `expressions/primary/char-prefixed-not-single-unit.cpp` (clang-22): error: character too large for enclosing character literal type
 - `expressions/primary/char-u8-not-single-byte.cpp` (clang-host): error: character too large for enclosing character literal type
 - `expressions/primary/char-u8-not-single-byte.cpp` (gcc-host): error: character not encodable in a single code unit
 - `expressions/primary/char-u8-not-single-byte.cpp` (edg-7.0): error: a UTF-8 character literal value cannot occupy more than one code unit
