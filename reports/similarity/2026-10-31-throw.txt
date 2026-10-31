@@ -1,0 +1,24 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   throw.md:Throw expressions and the exception obje longest=0   overlap=0.00
+ok   THR-P1                           longest=0   overlap=0.00
+ok   THR-P2                           longest=0   overlap=0.02
+ok   THR-P3                           longest=0   overlap=0.00
+ok   THR-P4                           longest=0   overlap=0.00
+ok   THR-P5                           longest=0   overlap=0.00
+ok   throw.md:Syntax                  longest=0   overlap=0.00
+ok   THR-3                            longest=0   overlap=0.02
+ok   THR-5                            longest=0   overlap=0.19
+ok   THR-10                           longest=0   overlap=0.03
+ok   THR-1                            longest=0   overlap=0.00
+ok   THR-2                            longest=0   overlap=0.10
+ok   THR-4                            longest=0   overlap=0.17
+ok   THR-6                            longest=0   overlap=0.00
+ok   THR-7                            longest=0   overlap=0.05
+ok   THR-8                            longest=0   overlap=0.00
+ok   THR-9                            longest=0   overlap=0.00
+ok   THR-11                           longest=0   overlap=0.00
+ok   throw.md:Examples                longest=0   overlap=0.00
+ok   throw.md:Evidence                longest=0   overlap=0.00
+
+0 flagged
