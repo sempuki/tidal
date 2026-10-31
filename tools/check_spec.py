@@ -37,6 +37,9 @@ PRULES = re.compile(r"^:(rules|exceptions):\s*(.*)$")
 OPTION = re.compile(r"^:(kind|tests):\s*(.*)$")
 SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Which classes each segment may hold (docs/style-guide.md, decision 0016).
+# Classes whose rules a reject test can cite (decision 0034).
+MAY_REJECT = {"reject", "undefined", "recommended", "impl-defined",
+              "conditionally-supported", "unspecified", "no-diagnostic"}
 SEGMENT_KINDS = {
     "Constraints": {"required", "reject", "withdrawn"},
     "Runtime Behavior": {"required", "withdrawn"},
@@ -149,6 +152,7 @@ def main() -> int:
 
     prefixes = {rid.rsplit("-", 1)[0] for rid in rules}
     warnings = []
+    unclassed = []
     import matrix
     known = {c.id for c in matrix.load()} | {c.family for c in matrix.load()}
     for path in test_files([TESTS]):
@@ -161,6 +165,9 @@ def main() -> int:
                 errors.append(f"{test.name}: tidal-error-{key} names no compiler or family")
         if test.errors and not {"reject", "link-fail", "run-fail"} & {test.default, *test.overrides.values()}:
             errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject, fail to link, or fail to run")
+        if test.default == "reject" and all(rid in rules for rid in test.rules) and not (
+                {rules[rid][1] for rid in test.rules} & MAY_REJECT):
+            unclassed.append(f"{test.name}: expects reject, but cites no rule of a class that allows it (decision 0034)")
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")
@@ -186,6 +193,13 @@ def main() -> int:
 
     for w in warnings:
         print("warning: " + w)
+    # Decision 0034: a warning while the sweep runs; an error once it is done.
+    if unclassed and "--list-unclassed" in sys.argv:
+        for u in unclassed:
+            print("warning: " + u)
+    if unclassed:
+        print(f"warning: {len(unclassed)} reject tests cite no rule that allows rejection "
+              f"(decision 0034; --list-unclassed lists them)")
     for e in errors:
         print(e)
     print(f"{len(rules)} rules, {len(errors)} problems")
