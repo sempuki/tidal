@@ -103,7 +103,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and twelve questions are open for opinions, each with a provisional answer the
+One hundred and eleven questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
