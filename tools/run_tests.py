@@ -34,6 +34,9 @@ import matrix  # noqa: E402
 from matrix import BUILD, TESTS, Compiler  # noqa: E402
 
 EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
+# Bump when outcome() changes how it computes a result, so cached results
+# from the old logic are not reused.
+OUTCOME_VERSION = 2
 EXTRA_SUFFIX = ".tu.cpp"  # extra translation units, not tests themselves
 DIRECTIVE = re.compile(r"^//\s*tidal-([a-z0-9.-]+):\s*(.*?)\s*$")
 CACHE = BUILD / "cache"
@@ -179,6 +182,15 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     if test.sources:
         return multi_unit_outcome(test, c)
     src, out, _ = c.paths(test.path)
+    if test.expect(c) == "link-fail":
+        # Check first, so a compile error is not reported as a link failure.
+        proc = c.run(c.argv(c.check, src, out, test.flags))
+        if proc.returncode != 0:
+            return "reject", failure(proc)
+        proc = c.run(c.argv(c.build, src, out, test.flags))
+        if proc.returncode != 0:
+            return "link-fail", failure(proc)
+        return "accept", ""
     wants_run = test.expect(c) in {"run", "run-fail"}
     template = c.build if wants_run else c.check
     proc = c.run(c.argv(template, src, out, test.flags))
@@ -192,7 +204,7 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
 def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> tuple[str, str]:
     key = hashlib.sha256(json.dumps([
         [s.read_text() for s in [test.path, *test.sources]],
-        c.id, identity, c.check, c.build, test.expect(c),
+        c.id, identity, c.check, c.build, test.expect(c), OUTCOME_VERSION,
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():
