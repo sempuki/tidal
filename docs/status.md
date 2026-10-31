@@ -9,7 +9,7 @@ current state only. The history of how the project got here is in
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 30 | Q-0112 | 0 flagged |
-| [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 0 | 4 |  | 0 flagged |
+| [Fundamental types](../spec/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 2 | 4 | Q-0120 | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 33 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 52 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 60 | 6 | 2 | 29 | Q-0028, Q-0100 | 0 flagged |
@@ -102,12 +102,13 @@ containerized compilers on every push and pull request (decision 0012).
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
 | EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 61 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 
 Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and eighteen questions are open for opinions, each with a
+One hundred and nineteen questions are open for opinions, each with a
 provisional answer the spec follows. Nine of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023, Q-0026,
@@ -157,14 +158,12 @@ forward-progress rule belongs with threads, which are out of scope.
 `docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
 current phase is phase 2, foundations that later pages need:
 
-1. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
-   which builds EDG itself as a 32-bit program.
-2. Item F: a grammar notation, then one grammar in which every
+1. Item F: a grammar notation, then one grammar in which every
    nonterminal is defined. `tools/check_spec.py` then makes an undefined
    nonterminal an error.
-3. Item G1: keywords, reserved names, and the literal suffix grammar.
-4. Item K: the language-support types, then the task-level guides.
-5. Act on the findings of exercises X1 to X4
+2. Item G1: keywords, reserved names, and the literal suffix grammar.
+3. Item K: the language-support types, then the task-level guides.
+4. Act on the findings of exercises X1 to X4
    (`reports/clean-room/X1/` to `X4/`). The most cited gaps: a list of
    implicit calls (X2-1) and the state of an object whose declaration a
    jump skips (X3-2). The orders that no rule gave (X1-2 to X1-8) are done.

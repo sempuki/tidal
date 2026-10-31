@@ -206,11 +206,11 @@ The alignment of each fundamental type is implementation-defined. On
 x86-64 Linux each type's alignment equals its size. On `-m32` the types
 in this table have a smaller alignment, also as a member of a class:
 
-| Type | Alignment on `-m32` |
-|---|---|
-| `long long` | 4 |
-| `double` | 4 |
-| `long double` | 4 |
+| Type | `-m32`, GCC and Clang | `-m32`, EDG |
+|---|---|---|
+| `long long` | 4 | 8 ({question}`Q-0120`) |
+| `double` | 4 | 4 |
+| `long double` | 4 | 4 |
 :::
 
 :::{rule} TYP-3
@@ -248,9 +248,10 @@ both matrix targets, the table gives the bits of precision:
 :tests: foundations/types/align-member-ilp32.cpp foundations/types/align-long-double-member-ilp32.cpp
 
 The padding between the members of a class follows the alignment of
-each member (TYP-2). On `-m32`, a `char` followed by a `long long` or a
-`double` takes 12 bytes, and a `char` followed by a `long double` takes
-16 bytes.
+each member (TYP-2). On `-m32`, a `char` followed by a `double` takes 12
+bytes, and a `char` followed by a `long double` takes 16 bytes. A `char`
+followed by a `long long` takes 12 bytes with GCC and Clang, and 16
+with EDG.
 :::
 
 ## Examples

@@ -7,3227 +7,3228 @@ compilers affect the Status column.
 - `clang-host` (baseline): `clang version 22.1.8 (Fedora 22.1.8-4.fc44)`
 - `gcc-host` (baseline): `g++ (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)`
 - `edg-7.0` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 31 2026 17:55:32)`
+- `edg-7.0-ilp32` (baseline): `Edison Design Group C/C++ Front End, version 7.0 (Oct 31 2026 20:01:05)`
 - `gcc-14` (baseline): `g++-14 (Ubuntu 14.2.0-4ubuntu2~24.04.1) 14.2.0`
 - `clang-18` (baseline): `Ubuntu clang version 18.1.3 (1ubuntu1)`
 - `gcc-16` (baseline): `g++ (GCC) 16.2.0`
 - `clang-22` (baseline): `Ubuntu clang version 22.1.8 (++20260714014902+ca7933e47d3a-1~exp1~20260714135019.80)`
 
-| Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `classes/access/access-after-overload-resolution.cpp` | ACC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/access-best-path.cpp` | ACC-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/access-label-on-nothing.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/class-default-private.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/default-argument-private.cpp` | ACC-16 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/enclosing-not-access-nested.cpp` | ACC-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/friend-class.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/friend-function.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/friend-ignores-label.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/friend-member-function-only.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/friend-member-function.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/friend-not-inherited.cpp` | ACC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/friend-not-transitive.cpp` | ACC-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/friend-plain-type-name.cpp` | ACC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/friend-private-member-of-other.cpp` | ACC-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/hidden-friend-not-visible.cpp` | ACC-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/hidden-friend.cpp` | ACC-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/injected-name-private-base.cpp` | ACC-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/injected-name-qualified.cpp` | ACC-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/labels.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/local-class-member-access.cpp` | ACC-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/nested-accesses-enclosing.cpp` | ACC-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/private-base-conversion.cpp` | ACC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-base-name-in-derived.cpp` | ACC-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-base.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-hides-public-base.cpp` | ACC-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-in-member.cpp` | ACC-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/access/private-outside.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-type-named.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/private-type-out-of-line.cpp` | ACC-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/private-type-via-auto.cpp` | ACC-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/protected-base-in-derived.cpp` | ACC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/protected-member-pointer-derived.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/protected-member-pointer.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/protected-outside.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/protected-static-through-base.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/protected-through-base.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/protected-through-derived.cpp` | ACC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/static-member-access.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/struct-base-default-public.cpp` | ACC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/struct-default-public.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/union-default-public.cpp` | ACC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/using-changes-access.cpp` | ACC-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/access/using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/declared-outside-then-defaulted.cpp` | DCMP-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `classes/comparisons/decltype-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/empty-class-compares-equal.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-anonymous-union-member.cpp` | DCMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-array-member.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-bases-first.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-by-value-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-constexpr.cpp` | DCMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/eq-friend-by-value.cpp` | DCMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/eq-friend.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-member-eq-private.cpp` | DCMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-member-not-comparable-unused.cpp` | DCMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/eq-member-not-comparable.cpp` | DCMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-memberwise.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-mixed-params.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-nonconst-member.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-nonmember-nonfriend.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-other-class-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-out-of-class.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-private-members.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-ref-qualified.cpp` | DCMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/eq-reference-member.cpp` | DCMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-rvalue-ref-qualified.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-stops-at-first-false.cpp` | DCMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/eq-union.cpp` | DCMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-wrong-param.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/eq-wrong-return.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/member-eq-returns-int.cpp` | DCMP-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/ne-declared-blocks-reversed.cpp` | DCMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/ne-declared-direct-ok.cpp` | DCMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/ne-declared-not-rewritten.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/ne-needs-bool-eq.cpp` | DCMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/non-member-reversed.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/not-equal-defaulted.cpp` | DCMP-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` | DCMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/out-of-class-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `classes/comparisons/reversed-eq.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/rewritten-ambiguous-const-ok.cpp` | DCMP-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `classes/comparisons/rewritten-ambiguous-warns.cpp` | DCMP-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/comparisons/rewritten-ne.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/rewritten-relational-reversed.cpp` | DCMP-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/secondary-defaulted.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/secondary-without-spaceship.cpp` | DCMP-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-array.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` | DCMP-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-auto-partial.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/spaceship-auto-strong.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/spaceship-auto-weak-member.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/spaceship-bases-first.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-bool-member-ok.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-constexpr.cpp` | DCMP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/spaceship-declares-eq.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-member-returns-non-category.cpp` | DCMP-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-memberwise.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` | DCMP-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-no-header-types.cpp` | DCMP-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-relational-rewrite.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-specified-type-synthesized.cpp` | DCMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/comparisons/spaceship-wrong-return-used.cpp` | DCMP-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/comparisons/spaceship-wrong-return.cpp` | DCMP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/comparisons/template-defaulted.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/base-init-calls-member-early-constant.cpp` | CTOR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/body-after-members.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/const-member-all-default-inits.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/const-object-base-initialized.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/const-object-base-leaves-member.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/const-object-defaulted-in-class.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/const-object-empty.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/const-object-member-init.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/const-object-modified-in-ctor.cpp` | CTOR-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/const-object-no-init.cpp` | CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/const-object-user-ctor.cpp` | CTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/converting-ctor-multi-arg-list.cpp` | CTOR-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/converting-ctor.cpp` | CTOR-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/ctor-address.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-const-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-explicit-object.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-on-const-this-type.cpp` | CTOR-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/ctor-out-of-line.cpp` | CTOR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/ctor-redeclared.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-ref-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-return-type.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-specifiers.cpp` | CTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/ctor-static.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-virtual.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/ctor-volatile.cpp` | CTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/default-ctor-deleted-by-member-dtor.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/defaulted-default-restores.cpp` | CTOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/defaulted-leaves-members.cpp` | CTOR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/delegating-cycle.cpp` | CTOR-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `classes/constructors/delegating-ignores-default-member-init.cpp` | CTOR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/delegating-self.cpp` | CTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/delegating-with-member.cpp` | CTOR-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/delegating.cpp` | CTOR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/delete-array-deleted-dtor.cpp` | DTOR-3 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `classes/constructors/deleted-default-base.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-default-const-aggregate-member.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-default-const-class-member.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/deleted-default-const-member.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-default-member-no-default.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-default-member-private.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-default-only-if-used.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/deleted-default-reference-init.cpp` | CTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/deleted-default-reference.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-dtor-delete.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-dtor-new.cpp` | DTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-address.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-call-via-alias.cpp` | DTOR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-call-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-const.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-explicit-object.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-member-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-on-const-object.cpp` | DTOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-order-array.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/dtor-order-automatic.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/dtor-order-delete-array.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/dtor-order.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/dtor-out-of-line.cpp` | DTOR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/dtor-params.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-ref-qualified.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-return-type.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-specifiers.cpp` | DTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-static.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-two.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-variadic.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-void-param.cpp` | DTOR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/dtor-without-call.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/dtor-wrong-name.cpp` | DTOR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-argument.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-bool-false.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/explicit-bool-not-constant.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-bool-true.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-copy-init.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-copy-list-init.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-default-copy-list.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-direct-init.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/explicit-dtor-call.cpp` | DTOR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/explicit-non-ctor.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-out-of-line.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-return.cpp` | CTOR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/explicit-static-cast.cpp` | CTOR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/explicitly-defaulted-but-deleted.cpp` | CTOR-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/implicit-default.cpp` | CTOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/implicit-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/implicit-dtor-runs-members.cpp` | DTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/implicitly-deleted-dtor-member.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/inherited-ctors-keep-default.cpp` | CTOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/init-order-declaration.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/init-order-reads-later.cpp` | CTOR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/init-order-same-order.cpp` | CTOR-13 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `classes/constructors/init-order-uses-earlier.cpp` | CTOR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/init-order-warns.cpp` | CTOR-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-base-and-member.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/mem-init-braces-narrowing.cpp` | CTOR-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-braces.cpp` | CTOR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/mem-init-duplicate.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-in-declaration-only.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-indirect-base.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-not-member.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-overrides-default.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/mem-init-pack-of-reference.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-static-member.cpp` | CTOR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/mem-init-type-alias-base.cpp` | CTOR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/mem-init-uses-param.cpp` | CTOR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/constructors/nested-default-member-init-before-complete.cpp` | CTOR-18 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/constructors/no-implicit-default-with-copy-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/no-implicit-default-with-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/one-user-conversion-plus-standard.cpp` | CTOR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/one-user-conversion.cpp` | CTOR-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/private-dtor-member.cpp` | DTOR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/private-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/pseudo-dtor-scalar.cpp` | DTOR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/reference-default-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `classes/constructors/reference-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `classes/constructors/trivial-default-base-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-defaulted-later.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-defaulted.cpp` | CTOR-23 JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/trivial-default-implicit.cpp` | CTOR-23 JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/trivial-default-member-initializer.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-member-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-user-provided.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-virtual-base.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-default-virtual-function.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-destructor-defaulted.cpp` | DTOR-9 UNI-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/constructors/trivial-destructor-member-nontrivial.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-destructor-user-provided.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/trivial-destructor-virtual-destructor.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/use-after-delete-sanitizer.cpp` | DTOR-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/alias-same-type-hides.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` | CVF-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/ambiguous-two-functions.cpp` | CVF-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/array-bound-new.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/basic.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/best-match-exact.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/builtin-operator.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/call-by-name.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/call-through-function-reference.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/const-overloads.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/const-qualified-needed.cpp` | CVF-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/constexpr-conversion.cpp` | CVF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/conversion-to-base-not-used.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/conversion-to-base-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/conversion-to-self-not-used.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/conversion-to-self-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/conversion-to-void-explicit-call.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/conversion-to-void-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/conversion-to-void.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/deduced-auto.cpp` | CVF-1 | run | run | reject | accept | run | run | reject | run | pass |
-| `classes/conversion-functions/delete-class-operand.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/different-type-not-hidden.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/explicit-argument.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-arithmetic.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-bool-comparison.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-bool-copy-init.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-bool-if.cpp` | CVF-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/explicit-bool-noexcept.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/explicit-bool-return.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-bool-static-assert.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/explicit-brace-init.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/explicit-condition-constant.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/explicit-copy-init.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-direct-init.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/conversion-functions/explicit-int-in-if.cpp` | CVF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/explicit-object-conversion.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/function-argument.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/function-pointer-without-alias.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/hidden-same-type.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/inherited.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/new-size-two-integral-conversions.cpp` | CVF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/nonmember.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/out-of-line.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/parameters.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/pointer-target.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/redeclared.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/return-statement.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/return-type.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/static.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/switch-condition.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/switch-two-integral-conversions.cpp` | CVF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/then-standard-conversion.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/to-array.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/to-function-pointer.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/to-function.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/to-reference.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/conversion-functions/two-converting-ctors.cpp` | CVF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/two-user-conversions.cpp` | CVF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/variadic.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/conversion-functions/virtual-conversion.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/assign-result-lvalue.cpp` | CPY-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/cast-move-only-accepted.cpp` | CPY-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/const-member-assign.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/const-member-move-assign.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/const-rvalue-picks-copy.cpp` | CPY-9 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/constant-evaluation-no-nrvo.cpp` | CPY-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/copy-assign-forms.cpp` | CPY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/copy-assign-nonmember.cpp` | CPY-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/copy-assign-static.cpp` | CPY-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/copy-ctor-by-value.cpp` | CPY-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/copy-ctor-const-ref.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` | CPY-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/copy-ctor-default-args.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` | CPY-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/copy-ctor-nonconst-ref.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/copy-ctor-volatile.cpp` | CPY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/copy-deleted-by-member-dtor.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-assign-wrong-return-used.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-assign-wrong-return.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-copy-assign-by-value.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-copy-const-mismatch-unused.cpp` | CPY-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` | CPY-26 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-copy-deleted-used.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-copy-nonconst-param.cpp` | CPY-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/defaulted-copy-restores.cpp` | CPY-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/defaulted-move-const-param-used.cpp` | CPY-26 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-move-const-param.cpp` | CPY-14 | accept | accept | accept | accept | reject | accept | accept | accept | pass |
-| `classes/copy-move/defaulted-out-of-line-copy.cpp` | CPY-14 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/defaulted-out-of-line-would-delete.cpp` | CPY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-volatile-param-used.cpp` | CPY-26 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/defaulted-volatile-param.cpp` | CPY-14 | accept | accept | accept | accept | reject | accept | accept | accept | pass |
-| `classes/copy-move/deleted-copy-move-only-member.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/deleted-copy-private-member.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/deleted-move-falls-back-to-copy.cpp` | CPY-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/deprecated-copy-warns.cpp` | CPY-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/copy-move/derived-assign-hides-base.cpp` | CPY-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/explicit-copy-ctor-copy-init.cpp` | CPY-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/explicit-object-copy-assign.cpp` | CPY-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/implicit-copy-assign-nonconst.cpp` | CPY-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/implicit-copy-constexpr.cpp` | CPY-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp` | CPY-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/implicit-copy-nonconst-from-member.cpp` | CPY-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/implicit-copy-of-owner-sanitizer.cpp` | NEW-5 CPY-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `classes/copy-move/implicit-copy.cpp` | CPY-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/implicit-move-assign.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/implicit-move.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/lvalue-move-only-rejected.cpp` | CPY-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/memberwise-array.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/memberwise-assign-order.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/memberwise-order.cpp` | CPY-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/move-assign-deletes-copy-ctor.cpp` | CPY-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/move-ctor-default-args.cpp` | CPY-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/move-ctor-deletes-copy-assign.cpp` | CPY-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/move-ctor-deletes-copy.cpp` | CPY-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/move-ctor.cpp` | CPY-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/move-on-return-no-warning.cpp` | CPY-13 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `classes/copy-move/move-only-member-moves.cpp` | CPY-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/named-return-elision-either.cpp` | CPY-12 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/named-return-needs-move.cpp` | CPY-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/no-implicit-move-assign-user-dtor.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/no-implicit-move-user-copy-assign.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/no-implicit-move-user-copy.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/no-implicit-move-user-dtor.cpp` | CPY-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/parameter-return-moved.cpp` | CPY-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/pessimizing-move-warns.cpp` | CPY-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/copy-move/prvalue-argument-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/prvalue-no-copy-count.cpp` | CPY-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/prvalue-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/reference-member-assign.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/reference-member-copy-ctor.cpp` | CPY-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-converting-move.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-global-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/return-local-as-lvalue-ref.cpp` | CPY-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/return-local-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-local-prefers-move.cpp` | CPY-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/return-lvalue-ref-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/return-member-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/return-param-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-parenthesized-local.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-rvalue-ref-move-only.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/return-rvalue-ref-to-ref.cpp` | CPY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/rvalue-picks-move.cpp` | CPY-9 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/rvalue-ref-member-copy-deleted.cpp` | CPY-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/template-not-copy-ctor.cpp` | CPY-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/trivial-assign-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/trivial-assign-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivial-copy-defaulted.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/trivial-copy-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/trivial-copy-member-initializer.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/trivial-copy-member-nontrivial.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivial-copy-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivial-copy-virtual-base.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivial-copy-virtual-function.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivial-move-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/copy-move/trivially-copyable-bytes.cpp` | CPY-19 | run | run | run | accept | run | run | run | run | pass |
-| `classes/copy-move/user-dtor-keeps-copy.cpp` | CPY-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/copy-move/virtual-base-assigned-count.cpp` | CPY-18 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/abstract-skips-virtual-base-init.cpp` | DER-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/aggregate-with-base.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/ambiguous-base-conversion.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/ambiguous-base-via-path.cpp` | DER-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/ambiguous-member-unused.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/ambiguous-member.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/ambiguous-overloads-different-bases.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/ambiguous-qualified-ok.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/ambiguous-repeated-base-member.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/ambiguous-resolved-by-using.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/base-alias.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/base-duplicate.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-enum.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-final.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-incomplete.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-not-class.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-private-ctor.cpp` | DER-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-protected-ctor.cpp` | DER-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/base-protected-dtor-direct.cpp` | ACC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-protected-dtor.cpp` | DER-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/base-qualified.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/base-self.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-to-derived-implicit.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/base-union.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/constexpr-ctor-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/constexpr-dtor-virtual-base.cpp` | DER-12 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/derived/constexpr-object-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/data-member-hides-function.cpp` | DER-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/derived-hides-base-overloads.cpp` | DER-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/derived-to-base-constant.cpp` | DER-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/derived-to-base-pointer.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/direct-and-indirect-base-use.cpp` | DER-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/direct-and-indirect-base.cpp` | DER-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/dominance-derived-hides.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/dominance-nonvirtual-ambiguous.cpp` | DER-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/final-not-keyword.cpp` | DER-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/hiding-type-by-member.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/inherited-ctor-access.cpp` | DER-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-default-args.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/inherited-ctor-explicit.cpp` | DER-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-hidden-by-derived.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/inherited-ctor-no-default.cpp` | DER-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-not-copy.cpp` | DER-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-not-direct-base.cpp` | DER-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` | DER-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/inherited-ctor-two-bases-unused.cpp` | DER-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/inherited-ctor.cpp` | DER-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/inherits-members.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/most-derived-inits-virtual-base.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/most-derived-must-init-virtual-base.cpp` | DER-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/null-derived-to-base.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/qualified-name-reaches-base.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/repeated-base-static-ok.cpp` | DER-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/repeated-base-two-subobjects.cpp` | DER-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/second-base-address.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/sizeof-at-least-base.cpp` | DER-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/slicing.cpp` | DER-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/static-cast-downcast-wrong-object-constant.cpp` | DER-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp` | DER-17 CAST-14 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `classes/derived/static-cast-downcast.cpp` | DER-16 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/union-as-derived.cpp` | DER-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/using-brings-overloads.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/using-derived-wins.cpp` | DER-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/using-not-a-base.cpp` | DER-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/virtual-and-nonvirtual-base.cpp` | DER-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/virtual-base-constructed-first.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/virtual-base-constructed-once.cpp` | DER-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/virtual-base-conversion-unambiguous.cpp` | DER-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/virtual-base-downcast.cpp` | DER-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/virtual-base-init-indirect.cpp` | DER-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/derived/virtual-base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/derived/virtual-base-shared.cpp` | DER-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/derived/virtual-keyword-order.cpp` | DER-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/initializer-lists/backing-array-copy-elements.cpp` | ILC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/backing-array-lives-with-list.cpp` | ILC-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/constexpr-list-ctor.cpp` | ILC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/initializer-lists/copy-from-single-same-class.cpp` | ILC-3 | run | run | run | accept | run | run-fail | run | run | pass |
-| `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` | ILC-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/deduce-list-element-type.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/designated-non-aggregate.cpp` | ILC-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/elements-const.cpp` | ILC-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/empty-braces-default.cpp` | ILC-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/empty-braces-no-default.cpp` | ILC-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/explicit-best-match-braced.cpp` | ILC-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/explicit-not-candidate-equals.cpp` | ILC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/initializer-lists/function-param-list.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/list-ctor-copy-list.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` | ILC-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/list-ctor-extra-default-params.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/list-ctor-not-viable-fallback.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/list-ctor-preferred-over-better-match.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/list-ctor-preferred.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/move-only-element.cpp` | ILC-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/narrowing-constant-fits.cpp` | ILC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/initializer-lists/narrowing-in-ctor-args.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/narrowing-in-list-elements.cpp` | ILC-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/narrowing-paren-ok.cpp` | ILC-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/initializer-lists/nested-braces-element.cpp` | ILC-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/not-aggregate-with-ctor.cpp` | ILC-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/return-braced-list.cpp` | ILC-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/initializer-lists/return-deduced-from-list.cpp` | ILC-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/initializer-lists/selects-constructor.cpp` | ILC-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/bound-member-function.cpp` | CLS-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/class-name-alias.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/class-name-anon-union-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/class-name-enumerator.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/class-name-function.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/class-name-nested-class.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/complete-in-default-argument.cpp` | CLS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/complete-in-default-member-init.cpp` | CLS-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/complete-in-member-bodies.cpp` | CLS-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/const-member-modifies.cpp` | CLS-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/data-and-function-same-name.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/define-outside-class.cpp` | CLS-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/define-undeclared-member.cpp` | CLS-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/distinct-addresses.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/duplicate-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/empty-base-shares-address.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/empty-class-size-one.cpp` | CLS-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/empty-class-size.cpp` | CLS-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/explicit-object-address-ordinary.cpp` | CLS-17 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/explicit-object-no-this.cpp` | CLS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/explicit-object-parameter.cpp` | CLS-13 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/explicit-object-qualified.cpp` | CLS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/explicit-object-static.cpp` | CLS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/explicit-object-virtual.cpp` | CLS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/extern-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/first-member-same-address.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/incomplete-member.cpp` | CLS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/inline-static-member.cpp` | CLS-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/local-class-const-local.cpp` | CLS-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/local-class-constexpr-double.cpp` | CLS-12 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/local-class-friend-definition.cpp` | CLS-28 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/local-class-member-defined-outside.cpp` | CLS-28 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/local-class-member-template.cpp` | CLS-28 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/local-class-static-member.cpp` | CLS-28 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/local-class-uses-local.cpp` | CLS-28 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/local-class-uses-static-local.cpp` | CLS-12 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/local-class.cpp` | CLS-12 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/member-function-declared-twice.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/member-function-initialized.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/member-function-inline.cpp` | CLS-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/member-named-as-class-with-constructor.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/member-named-as-class.cpp` | CLS-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/member-of-own-type.cpp` | CLS-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/member-order-mixed-access.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/member-order.cpp` | CLS-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/mutable-const.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/mutable-member.cpp` | CLS-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/mutable-reference.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/mutable-static.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/nested-in-unnamed-static-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/nested-types.cpp` | CLS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/noexcept-complete-class.cpp` | CLS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/non-const-on-const-object.cpp` | CLS-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/paren-default-member-init.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/pointer-to-own-type.cpp` | CLS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/ref-qualified-mixed.cpp` | CLS-26 | reject | reject | accept | reject | reject | reject | accept | reject | pass |
-| `classes/members/ref-qualified.cpp` | CLS-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/register-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/sizeof-in-class-incomplete.cpp` | CLS-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/standard-layout-reinterpret.cpp` | CLS-19 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/static-and-nonstatic-same-params.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-call-operator.cpp` | CLS-15 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/static-const-enum.cpp` | CLS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/static-const-init-not-constant.cpp` | CLS-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-const-integral.cpp` | CLS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/static-const-odr-use-no-definition.cpp` | CLS-21 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `classes/members/static-data-member.cpp` | CLS-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/static-member-function-const.cpp` | CLS-27 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-member-function.cpp` | CLS-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/static-member-named-as-class.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-member-not-defined.cpp` | CLS-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `classes/members/static-member-own-type.cpp` | CLS-16 | run | run | run | accept | run | run | run | run | pass |
-| `classes/members/static-non-const-in-class-init.cpp` | CLS-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-ref-qualified.cpp` | CLS-27 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-uses-this.cpp` | CLS-27 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/static-virtual.cpp` | CLS-27 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/thread-local-nonstatic.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/thread-local-static-member.cpp` | CLS-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/members/unnamed-class-static-member.cpp` | CLS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/volatile-object-nonvolatile-call.cpp` | CLS-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/address-of-incomplete-unspecified.cpp` | OPR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/address-of-overload.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/argument-dependent-lookup.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/arrow-chain.cpp` | OPR-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/arrow-circular.cpp` | OPR-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/arrow-declaration-ok.cpp` | OPR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/arrow-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/arrow-returns-int.cpp` | OPR-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/arrow-star-order.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/assign-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/assign-not-from-other.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/assign-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/associativity-kept.cpp` | OPR-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/builtin-candidate-via-conversion.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/call-default-argument-ok.cpp` | OPR-2 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/call-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/call-operator-overloads.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/call-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/comma-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/comma-overload.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/compound-assign-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/compound-not-synthesized.cpp` | OPR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/default-argument.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/enum-builtin-still-used.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/enum-operator.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/explicit-call-syntax.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/left-operand-conversion-nonmember.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/left-operand-no-conversion-member.cpp` | OPR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-bad-params.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-block-scope.cpp` | OPR-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/literal-char.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-constexpr.cpp` | OPR-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/literal-default-arg.cpp` | OPR-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `classes/operators/literal-extern-c.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-float.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-friend.cpp` | OPR-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-in-namespace.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-integer-for-float-missing.cpp` | OPR-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-integer.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-member.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-no-underscore-warns.cpp` | OPR-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/operators/literal-not-found.cpp` | OPR-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-numeric-over-raw.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-raw-float.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-raw.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-string-concat-suffix.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-string-concat-two-suffixes.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/literal-string.cpp` | OPR-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/literal-three-params.cpp` | OPR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/logical-and-order.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/member-and-nonmember-ambiguous.cpp` | OPR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/member-binary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/member-hides-not-nonmember.cpp` | OPR-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/member-unary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/new-operator-token.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/no-candidate.cpp` | OPR-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/no-short-circuit.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/nonmember-binary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/nonmember-no-class-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/nonmember-pointer-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/nonmember-unary.cpp` | OPR-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/not-overloadable-conditional.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/not-overloadable-dot-star.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/not-overloadable-dot.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/not-overloadable-scope.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/operator-template-ok.cpp` | OPR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/postfix-arg-zero.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/postfix-nonmember.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/postfix-not-declared.cpp` | OPR-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/postfix-wrong-param.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/precedence-kept.cpp` | OPR-11 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/prefix-postfix.cpp` | OPR-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/reference-param-nonmember.cpp` | OPR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/shift-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/shift-right-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/static-call-not-other.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/static-call-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/static-member-operator.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/static-subscript.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/subscript-default-arg.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/subscript-multi.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/subscript-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/subscript-operator.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/subscript-order-kept.cpp` | OPR-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/subscript-zero-params.cpp` | OPR-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/operators/unary-or-binary-ok.cpp` | OPR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/operators/variadic-operator.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/wrong-arity-member.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/operators/wrong-arity-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/aggregate-first-member.cpp` | UNI-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/alignment-strictest-not-largest.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/anonymous-union-default-member-init.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/anonymous-union-function.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-init.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/anonymous-union-local.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/anonymous-union-member.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/anonymous-union-name-conflict.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-namespace-nonstatic.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-namespace-static.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/anonymous-union-nested-type.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-nontrivial-default.cpp` | UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-private.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-static-member.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/anonymous-union-unnamed-namespace.cpp` | UNI-9 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `classes/unions/assign-changes-active.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-address.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-aggregate-skips-unnamed.cpp` | BF-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-alignof-type-ok.cpp` | BF-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-assign-too-wide-warns.cpp` | BF-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-auto-type.cpp` | BF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-basic.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-bool-wide.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-bool.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-char-types.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-const-ref-temp.cpp` | BF-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-constant-fits.cpp` | BF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-constant-too-wide.cpp` | BF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-constant-truncation-warns.cpp` | BF-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-constant-width.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-constant-wraps.cpp` | BF-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-enum.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-fits-no-warning.cpp` | BF-8 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-float.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-in-union.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-init-default-member.cpp` | BF-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-layout-lp64.cpp` | BF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-narrowing-init.cpp` | BF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-negative-width.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-nonconst-ref.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-nonconstant-width.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-plain-int-signed.cpp` | BF-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-pointer.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-promotes-to-int.cpp` | BF-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-promotes-unsigned-int.cpp` | BF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-signed-wraps.cpp` | BF-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-sizeof.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-static.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-typedef.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `classes/unions/bitfield-unsigned-wraps.cpp` | BF-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-very-wide.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-wide-unsigned-promotion.cpp` | BF-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/bitfield-wider-than-type.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-wider-warns.cpp` | BF-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-zero-named.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/bitfield-zero-unnamed.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/bitfield-zero-width-splits.cpp` | BF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/common-initial-sequence-constant.cpp` | UNI-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/common-initial-sequence.cpp` | UNI-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/compound-assign-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/default-member-init-active.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/designated-member.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/mem-init-two-members.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/member-addresses-equal.cpp` | UNI-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/narrowing-first-member.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/nontrivial-member-needs-construction.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/read-inactive-after-switch-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/read-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/shared-storage.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/two-default-member-inits.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/two-designators.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/two-initializers.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-array-member.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/union-copy-preserves-active.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/union-default-member-init-enables-ctor.cpp` | UNI-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/union-member-functions.cpp` | UNI-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/union-nontrivial-copy-deleted.cpp` | UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-nontrivial-dtor-only.cpp` | UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-nontrivial-member-deleted-ctor.cpp` | UNI-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-nontrivial-member-user-ctor-dtor.cpp` | UNI-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/union-private-members.cpp` | ACC-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-reference-member.cpp` | UNI-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/union-static-member.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/unions/union-trivial-copy.cpp` | UNI-3 | run | run | run | accept | run | run | run | run | pass |
-| `classes/unions/user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/unions/value-init-zero.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/abstract-array.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-capture-by-reference.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/abstract-capture-by-value.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-cast-temporary.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-function-declaration-ok.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/abstract-member.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-new.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-param-definition.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-pointer-ref-ok.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/abstract-return-definition.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/abstract-sizeof.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/abstract-variable.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/call-during-construction-constant.cpp` | VIRT-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/call-during-construction.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/call-during-destruction.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/call-during-member-init.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/call-returning-abstract.cpp` | VIRT-8 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `classes/virtual/const-qualifier-must-match.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/consteval-overrides-virtual.cpp` | VIRT-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/consteval-virtual-pair.cpp` | VIRT-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/covariant-ambiguous-base.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/covariant-by-value-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/covariant-incomplete.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/covariant-less-cv-ok.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/covariant-more-cv-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/covariant-own-class.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/covariant-pointer.cpp` | VIRT-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/covariant-private-base-other.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/covariant-private-base.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/covariant-reference.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/covariant-through-base-pointer.cpp` | VIRT-4 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/covariant-unrelated.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/default-args-static-type.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/delete-array-through-base-constant.cpp` | VIRT-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/delete-nonvirtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/virtual/derived-concrete.cpp` | VIRT-8 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/derived-still-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/different-params-no-override.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-ambiguous-base.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-ambiguous-target.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-casts-away-const.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-constant.cpp` | VIRT-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/dynamic-cast-cross.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-down.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-during-construction.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-from-nonpointer.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-inaccessible-base.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-incomplete.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-nonpolymorphic.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-not-pointer.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-null.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-private-base.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-reference.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/dynamic-cast-to-nonclass.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp` | VIRT-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/dynamic-cast-void.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/explicit-object-overrides.cpp` | VIRT-19 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `classes/virtual/explicit-object-virtual.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/final-different-params-ok.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/final-function.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/final-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/final-on-override.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/hidden-virtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `classes/virtual/no-unique-final-overrider.cpp` | VIRT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/nonvirtual-base-two-overriders.cpp` | VIRT-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/nonvirtual-dtor-delete-constant.cpp` | VIRT-12 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `classes/virtual/object-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/override-both-deleted.cpp` | VIRT-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/override-deleted-mismatch.cpp` | VIRT-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/override-final-order.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/override-identifier.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/override-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/override-nothing.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/override-of-deleted.cpp` | VIRT-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/override-out-of-class.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/override-through-intermediate.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/override-without-virtual-keyword.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/polymorphic-class.cpp` | VIRT-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/private-override.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/pure-call-in-ctor-constant.cpp` | VIRT-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/pure-defined-out-of-line.cpp` | VIRT-16 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/pure-dtor-defined.cpp` | VIRT-16 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/pure-dtor-needs-definition.cpp` | VIRT-17 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `classes/virtual/pure-friend.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/pure-inline-definition.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/pure-nonvirtual.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/pure-not-zero.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/pure-override-makes-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/qualified-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/ref-qualifier-must-match.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/return-type-mismatch.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/static-overrides-virtual.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/unique-final-overrider-resolved.cpp` | VIRT-5 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/virtual-auto-return.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-data-member.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-dtor-delete-constant.cpp` | VIRT-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/virtual-dtor-delete.cpp` | VIRT-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/virtual-dtor-inherited.cpp` | VIRT-7 | run | run | run | accept | run | run | run | run | pass |
-| `classes/virtual/virtual-in-constexpr.cpp` | VIRT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `classes/virtual/virtual-in-union.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-nonmember.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-not-defined.cpp` | VIRT-20 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `classes/virtual/virtual-out-of-class.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-static.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-template.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `classes/virtual/virtual-trailing-return.cpp` | VIRT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/alignof-variable-type.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/array-of-aligned.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/class-definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/class-forward-alignas.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/class-redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/class.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/different-units-alignas.cpp` | ALN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/alignment/enum.cpp` | ALN-7 | reject | reject | reject | accept | accept | reject | reject | reject | pass |
-| `declarations/alignment/extended-huge.cpp` | ALN-5 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/alignment/extended-new.cpp` | ALN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/alignment/extended-supported.cpp` | ALN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/alignment/max-fundamental.cpp` | ALN-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/member-raises-class.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/member.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/negative.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/alignment/not-constant.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/alignment/not-power-of-two.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/alignment/on-alias-declaration.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/alignment/on-bitfield.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/alignment/on-function.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/alignment/on-parameter.cpp` | ALN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/alignment/on-typedef.cpp` | ALN-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/alignment/redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/redeclare-without.cpp` | ALN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/strictest-wins.cpp` | ALN-1 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `declarations/alignment/type-operand.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/alignment/variable.cpp` | ALN-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/alignment/weaker-on-class-member.cpp` | ALN-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/weaker-than-natural.cpp` | ALN-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/alignment/zero-ignored.cpp` | ALN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/assume-comma.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
-| `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
-| `declarations/attributes/assume-false-sanitizer.cpp` | ATTR-10 | run-fail | run-fail | run-fail | skip | run-fail | run | run-fail | run-fail | pass |
-| `declarations/attributes/assume-not-bool.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
-| `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/attributes/assume-on-declaration.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
-| `declarations/attributes/assume-true-constant.cpp` | ATTR-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/attribute-argument-not-string.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/attribute-too-many-arguments.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/attribute-unexpected-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/carries-dependency-redeclared.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/attributes/carries-dependency.cpp` | ATTR-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/deprecated-added-later.cpp` | ATTR-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/deprecated-declaration-only.cpp` | ATTR-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/deprecated-enumerator-warns.cpp` | ATTR-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/deprecated-use-warns.cpp` | ATTR-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/double-bracket-lambda-subscript.cpp` | ATTR-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/double-bracket-parenthesized-ok.cpp` | ATTR-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/fallthrough-end-of-else-branch.cpp` | ATTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/fallthrough-end-of-if-branch.cpp` | ATTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/fallthrough-end-of-loop.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/fallthrough-misplaced.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/fallthrough-not-before-case.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/fallthrough-on-declaration.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/fallthrough-silences.cpp` | ATTR-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/fallthrough-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/implicit-fallthrough-warns.cpp` | ATTR-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/attributes/likely-unlikely.cpp` | ATTR-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/attributes/likely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/maybe-unused-silences.cpp` | ATTR-6 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/maybe-unused-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/attributes/no-unique-address-same-type.cpp` | ATTR-16 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/attributes/no-unique-address-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/no-unique-address.cpp` | ATTR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/nodiscard-constructor-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/nodiscard-ignored-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/nodiscard-on-variable.cpp` | ATTR-2 | reject | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/attributes/nodiscard-reference-return.cpp` | ATTR-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/nodiscard-type.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/nodiscard-void-cast.cpp` | ATTR-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-main.cpp` | ATTR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-not-first.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/noreturn-returns-sanitizer.cpp` | ATTR-3 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/attributes/using-prefix-ok.cpp` | ATTR-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/attributes/using-prefix-qualified.cpp` | ATTR-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/added-qualifiers.cpp` | AUTO-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/array-of-auto.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/braced-direct-empty.cpp` | AUTO-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/braced-direct-multiple.cpp` | AUTO-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/braced-direct-single.cpp` | AUTO-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/combined-type-specifier.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/const-lvalue-reference-to-rvalue.cpp` | AUTO-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/constexpr-adds-const.cpp` | AUTO-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/constrained-not-satisfied.cpp` | AUTO-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/constrained-satisfied.cpp` | AUTO-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/copy-list-deduces-initializer-list.cpp` | AUTO-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/copy-list-empty.cpp` | AUTO-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/copy-list-mixed-types.cpp` | AUTO-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/copy-list-without-library.cpp` | AUTO-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decays-arrays-and-functions.cpp` | AUTO-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/decltype-auto-array.cpp` | AUTO-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decltype-auto-braced-multiple.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decltype-auto-braced.cpp` | AUTO-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/decltype-auto-copy-list.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decltype-auto-function.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decltype-auto-keeps-cv.cpp` | AUTO-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/decltype-auto-value-category.cpp` | AUTO-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/decltype-auto-with-pointer.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/decltype-auto-with-qualifier.cpp` | AUTO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/drops-references-and-cv.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/forwarding-reference.cpp` | AUTO-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/in-conditions.cpp` | AUTO-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/inline-static-member.cpp` | AUTO-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/keeps-pointee-cv.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/later-declarator-uses-earlier.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/lvalue-reference-to-rvalue.cpp` | AUTO-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/lvalue-reference.cpp` | AUTO-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/no-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/nullptr.cpp` | AUTO-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/overloaded-function.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/own-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/paren-braced.cpp` | AUTO-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/paren-multiple.cpp` | AUTO-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/paren-single.cpp` | AUTO-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/pointer-from-non-pointer.cpp` | AUTO-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/ref-const-xvalue.cpp` | AUTO-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/several-declarators-conflict.cpp` | AUTO-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/static-const-member.cpp` | AUTO-14 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/auto/static-member-no-initializer.cpp` | AUTO-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/string-literal-prefixes.cpp` | AUTO-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/auto/switch-condition-init.cpp` | AUTO-12 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/auto/while-condition.cpp` | AUTO-12 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/constexpr/consteval-address-in-immediate.cpp` | CEV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/consteval-address-taken.cpp` | CEV-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-and-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-call-constant.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/consteval-call-runtime-arg.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-in-consteval.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/consteval-inline.cpp` | CEV-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/constexpr/consteval-redeclare-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-returns-allocation.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-ub-rejected.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-variable.cpp` | CEV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constexpr-class-only.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constexpr-parameter.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` | CX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constexpr-ref-temporary-block.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constexpr-ref-temporary-namespace.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/constinit-added-late.cpp` | CINIT-2 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/constexpr/constinit-automatic.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constinit-block-static.cpp` | CINIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/constinit-dynamic.cpp` | CINIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constinit-extern-declaration.cpp` | CINIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/constinit-nonconstexpr-dtor.cpp` | CINIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/constinit-not-const.cpp` | CINIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/constexpr/constinit-on-function.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/constinit-static.cpp` | CINIT-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/constexpr/constinit-with-constexpr.cpp` | CINIT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/function-compile-and-run.cpp` | CX-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/constexpr/function-goto-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-implicitly-inline.cpp` | CX-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/constexpr/function-loops-and-locals.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-never-constant.cpp` | CX-3 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
-| `declarations/constexpr/function-non-literal-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-non-literal-param.cpp` | CX-3 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
-| `declarations/constexpr/function-not-constant-call.cpp` | CX-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/function-static-constexpr-local.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-static-local-evaluated.cpp` | CX-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/function-static-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/immediate-escalation.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/lambda-escalates-constant.cpp` | CEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/lambda-escalates-runtime.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/non-literal-return.cpp` | CX-3 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
-| `declarations/constexpr/plain-constexpr-no-escalation.cpp` | CEV-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/pointer-one-past-end.cpp` | CX-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/pointer-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/reference-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/reference-to-static.cpp` | CX-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/static-local-to-static-local.cpp` | CX-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/variable-assign.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/variable-const.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/variable-default-constructor.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/variable-default-initialized-no-value.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/variable-implicit-constructor-member-initializers.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` | CX-1 CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/variable-no-initializer.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-4gib-ilp32.cpp` | DCL-10 | reject | reject | reject | skip | reject | reject | skip | reject | pass |
-| `declarations/declarators/array-4gib-lp64.cpp` | DCL-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/array-bound-class-conversion.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/array-bound-constant.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/array-bound-deduced.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/array-bound-floating.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-bound-negative.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-bound-runtime.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-bound-scoped-enum.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-bound-zero.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-incomplete-extern.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/array-incomplete-no-init.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-of-functions.cpp` | DCL-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-of-references.cpp` | DCL-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-of-void.cpp` | DCL-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-too-large.cpp` | DCL-10 | clang: reject, gcc: accept, edg: accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/declarators/array-too-many-initializers.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/assign-through-pointer-to-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/assign-to-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/const-floating-not-constant.cpp` | CV-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/const-integral-constant.cpp` | CV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/const-integral-runtime.cpp` | CV-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/const-requires-initializer.cpp` | CV-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/const-void-return.cpp` | DCL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/const-volatile-not-constant.cpp` | CV-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/cv-duplicate-direct.cpp` | CV-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/cv-duplicate-through-alias.cpp` | CV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/cv-on-array-applies-to-elements.cpp` | CV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/cv-on-function-alias.cpp` | CV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/cv-on-reference-alias-ignored.cpp` | DCL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/cv-position.cpp` | CV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/cv-qualified-reference.cpp` | DCL-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/ellipsis-first.cpp` | DCL-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/extern-const-declaration.cpp` | CV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/extern-reference-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/function-declaration-ambiguity-type.cpp` | DCL-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/function-declaration-ambiguity.cpp` | DCL-13 PFX-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/function-returning-array.cpp` | DCL-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/function-returning-function.cpp` | DCL-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/function-returning-pointers-ok.cpp` | DCL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/increment-const.cpp` | CV-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/modify-const-object-via-cast.cpp` | CV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/modify-nonconst-object-via-cast.cpp` | CV-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/declarators/multidim-inner-bound.cpp` | DCL-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/multidim-outer-omitted.cpp` | DCL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/nested-declarators.cpp` | DCL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/noexcept-in-type.cpp` | DCL-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/noexcept-redeclaration.cpp` | DCL-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/parameter-adjustment.cpp` | DCL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/parameter-array-is-pointer.cpp` | DCL-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/declarators/parameter-cv-same-function.cpp` | DCL-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/declarators/pointer-to-member.cpp` | DCL-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/pointer-to-pointer-and-function.cpp` | DCL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/pointer-to-reference-member.cpp` | DCL-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/pointer-to-reference.cpp` | DCL-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/pointer-to-void-member.cpp` | DCL-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/pointer-to-void-ok.cpp` | DCL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/qualification-conversion-drops-const.cpp` | CV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/qualification-conversion-ok.cpp` | CV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/qualification-conversion-unsafe.cpp` | CV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/qualified-free-function.cpp` | DCL-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/qualified-function-type-member.cpp` | DCL-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/qualified-function-type-parameter.cpp` | DCL-16 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/declarators/qualified-function-type-pointer.cpp` | DCL-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/redundant-parentheses.cpp` | DCL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/ref-qualified-free-function.cpp` | DCL-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/reference-binds-same-object.cpp` | DCL-11 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/declarators/reference-collapsing.cpp` | DCL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/reference-parameter-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/reference-requires-initializer.cpp` | DCL-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/reference-to-reference.cpp` | DCL-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/reference-to-void.cpp` | DCL-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/star-binds-to-declarator.cpp` | DCL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/static-member-unknown-bound.cpp` | DCL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/trailing-return-with-type.cpp` | DCL-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/unknown-bound-empty-braces.cpp` | DCL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/variadic.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/void-parameter-list.cpp` | DCL-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/declarators/void-parameter-named.cpp` | DCL-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/void-parameter-with-others.cpp` | DCL-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/volatile-return-deprecated.cpp` | CV-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/cast-in-range.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/cast-out-of-range-sanitizer.cpp` | ENUM-6 CAST-14 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/enumerations/copy-list-from-integer.cpp` | ENUM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/distinct-types.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/duplicate-enumerator.cpp` | ENUM-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/duplicate-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/empty-enum-range.cpp` | ENUM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-scope-after-value.cpp` | ENUM-12 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/enumerations/enumerator-type-char-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-type-enum-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-type-grows.cpp` | ENUM-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-type-inside-list.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-type-short-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/enumerator-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/fixed-bool.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/fixed-underlying-narrowing.cpp` | ENUM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/fixed-underlying-non-integral.cpp` | ENUM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/fixed-underlying.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/implicit-after-explicit.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/implicit-value-overflow-scoped.cpp` | ENUM-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/implicit-value-overflow-unscoped.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/increment-enum.cpp` | ENUM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/int-to-unscoped-rejected.cpp` | ENUM-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/list-init-fixed.cpp` | ENUM-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/list-init-narrowing.cpp` | ENUM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/list-init-no-fixed.cpp` | ENUM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/mixed-enum-arithmetic.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/opaque-declaration.cpp` | ENUM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/opaque-mismatch.cpp` | ENUM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/opaque-unscoped-without-type.cpp` | ENUM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` | ENUM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-compare-int.cpp` | ENUM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-compare-same-type.cpp` | ENUM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/scoped-default-underlying-int.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/scoped-explicit-bool-ok.cpp` | ENUM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/scoped-explicit-conversion.cpp` | ENUM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/scoped-names-scoped.cpp` | ENUM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-no-arithmetic.cpp` | ENUM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-no-conversion.cpp` | ENUM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-not-condition.cpp` | ENUM-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-not-logical.cpp` | ENUM-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/scoped-value-too-large.cpp` | ENUM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/unscoped-converts-to-int.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/unscoped-name-conflict.cpp` | ENUM-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/unscoped-names-in-enclosing-scope.cpp` | ENUM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/unscoped-size-lp64.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/unscoped-underlying-holds-values.cpp` | ENUM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/unscoped-value-too-large.cpp` | ENUM-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/enumerations/using-declaration-enumerator.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/using-enum-alias.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/enumerations/using-enum-conflict.cpp` | ENUM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/using-enum-not-enum.cpp` | ENUM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/enumerations/using-enum-opaque.cpp` | ENUM-20 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/enumerations/using-enum.cpp` | ENUM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/alias-noexcept-function.cpp` | EXS-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/exception-specifications/call-through-noexcept-pointer.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/class-delete-operator-noexcept.cpp` | EXS-4 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `declarations/exception-specifications/constexpr-not-implied.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/decltype-keeps-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/default-member-init-throwing.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/defaulted-comparison-member-throwing.cpp` | EXS-4 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/defaulted-comparison-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/defaulted-explicit-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/defaulted-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/delete-class-follows-destructor.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/delete-operator-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/forms.cpp` | EXS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/implicit-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/implicit-special-members.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/in-type.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/inheriting-ctor-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/lambda-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/member-function-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/narrowing-operand.cpp` | EXS-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/nested-indirection.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` | EXS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/non-constant.cpp` | EXS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/operand-cycle.cpp` | EXS-6 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/exception-specifications/operand-later-member.cpp` | EXS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/operand-uses-parameters.cpp` | EXS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/overload-on-noexcept.cpp` | EXS-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/override-dtor-noexcept-false.cpp` | EXS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/override-may-add-noexcept.cpp` | EXS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/override-must-be-noexcept.cpp` | EXS-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/parameter-noexcept-overloads.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/pointer-operand.cpp` | EXS-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/throw-empty-removed.cpp` | EXS-5 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/throw-type-removed.cpp` | EXS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/exception-specifications/typedef-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/exception-specifications/user-function-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/default-arguments/added-later.cpp` | DEFARG-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/default-arguments/basic.cpp` | DEFARG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/default-arguments/block-scope-declaration.cpp` | DEFARG-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/default-arguments/default-checked-unused.cpp` | DEFARG-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/evaluated-each-call.cpp` | DEFARG-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/default-arguments/function-pointer-no-default.cpp` | DEFARG-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/inline-defaults-differ.cpp` | DEFARG-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/default-arguments/local-unevaluated.cpp` | DEFARG-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/default-arguments/name-bound-at-declaration.cpp` | DEFARG-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/default-arguments/not-trailing.cpp` | DEFARG-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/operator-default-argument.cpp` | DEFARG-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/parameter-in-sizeof.cpp` | DEFARG-4 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/functions/default-arguments/pointer-declaration-default.cpp` | DEFARG-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/redefined-different.cpp` | DEFARG-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/redefined.cpp` | DEFARG-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/refers-to-local.cpp` | DEFARG-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/refers-to-parameter.cpp` | DEFARG-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/this-in-default.cpp` | DEFARG-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/default-arguments/uses-global-at-call.cpp` | DEFARG-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/default-arguments/using-sees-later-default.cpp` | DEFARG-2 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/functions/default-arguments/variadic-after-default.cpp` | DEFARG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/definitions/argv-zero.cpp` | FN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/c-linkage-main-in-namespace.cpp` | FN-4 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
-| `declarations/functions/definitions/flow-off-end-not-reached.cpp` | FN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/definitions/flow-off-end-sanitizer.cpp` | FN-3 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `declarations/functions/definitions/flow-off-end-value.cpp` | FN-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/flow-off-end-void.cpp` | FN-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/flow-off-end-warns.cpp` | FN-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/func-name-impl.cpp` | FN-11 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `declarations/functions/definitions/func-predefined.cpp` | FN-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/incomplete-param-declaration.cpp` | FN-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/definitions/incomplete-param-definition.cpp` | FN-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-address.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-auto.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-call.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-consteval.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-constexpr.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-four-params.cpp` | FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-global-variable.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-in-namespace.cpp` | FN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/main-inline.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-one-param.cpp` | FN-6 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `declarations/functions/definitions/main-parameters.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/main-return-value.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/main-returns-zero.cpp` | FN-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/main-template.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-three-params.cpp` | FN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/main-wrong-return-type.cpp` | FN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/nested-function-definition.cpp` | FN-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/parameter-destruction-order.cpp` | FN-10 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/parameter-duplicate.cpp` | FN-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/parameter-nested-block.cpp` | FN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/definitions/parameter-scope-redeclare.cpp` | FN-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/redeclaration-ok.cpp` | FN-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/definitions/redefinition.cpp` | FN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/return-type-mismatch.cpp` | FN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/typedef-function-definition.cpp` | FN-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/definitions/unnamed-parameters.cpp` | FN-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/deleted/address-of-deleted.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/call-deleted.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/declare-deleted-unused.cpp` | DEL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/deleted/default-non-member.cpp` | DEL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/defaulted-friend-comparison.cpp` | DEL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/deleted/delete-not-first.cpp` | DEL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/delete-then-define.cpp` | DEL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/deleted-in-two-units.cpp` | DEL-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/deleted/deleted-main.cpp` | DEL-2 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/functions/deleted/deleted-overload-not-selected.cpp` | DEL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/functions/deleted/deleted-overload-selected.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/deleted-unevaluated.cpp` | DEL-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/deleted/deleted-with-message.cpp` | DEL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/auto-ref-no-return.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/auto-ref-return-local.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/auto-strips.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/basic.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/braced-return.cpp` | RET-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/conflicting-returns.cpp` | RET-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/decltype-auto-dangling.cpp` | RET-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp` | RET-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/decltype-auto.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/discarded-return-not-deduced.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/member-calls-later-deduced.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/recursion-after-return.cpp` | RET-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/recursion-before-return.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/redeclare-after-definition.cpp` | RET-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/redeclare-with-auto.cpp` | RET-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/redeclare-with-type.cpp` | RET-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/trailing-auto.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/use-after-definition.cpp` | RET-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/functions/return-deduction/use-before-definition.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/virtual-auto.cpp` | RET-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/void-and-value.cpp` | RET-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/functions/return-deduction/void-call-return.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/array-from-array.cpp` | INIT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp` | INIT-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` | INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/copy-init-converts.cpp` | INIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/copy-init-explicit-rejected.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/copy-init-no-conversion.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/declarators-in-order.cpp` | INIT-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/forms/default-init-array-of-class.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/default-init-base.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/default-init-member-initializer.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/default-init-member-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/default-init-member-not-named.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/default-init-new-class.cpp` | INIT-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/default-init-scalar-no-value.cpp` | INIT-9 INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/direct-init-multiple.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/empty-parens-declares-function.cpp` | INIT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/incomplete-type.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/nullptr-bool-copy.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/nullptr-bool-direct.cpp` | INIT-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/forms/paren-array-unknown-bound.cpp` | INIT-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/forms/paren-init-explicit-conversion.cpp` | INIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/read-uninitialized-array.cpp` | INIT-1 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/read-uninitialized.cpp` | INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/scalar-list-in-parens.cpp` | INIT-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/self-initialization.cpp` | INIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/forms/value-init-forms.cpp` | INIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/forms/write-before-read.cpp` | INIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/aggregate-default-member-initializer.cpp` | LIST-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/aggregate-members-in-order.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/aggregate-missing-members-zero.cpp` | LIST-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/aggregate-paren-init.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/aggregate-too-many.cpp` | LIST-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/aggregate-with-base.cpp` | LIST-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/brace-elision.cpp` | LIST-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/braced-order.cpp` | LIST-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/list/char-array-rest-zero.cpp` | LIST-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/list/designated-array.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/designated-mixed.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/designated-nested-braces.cpp` | LIST-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/designated-nested.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/designated-out-of-order.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/designated-repeated.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/designated.cpp` | LIST-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/designator-on-scalar.cpp` | LIST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/empty-base-braces-ok.cpp` | LIST-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/list/empty-base-no-elision.cpp` | LIST-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/missing-class-member-default.cpp` | LIST-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/missing-reference-member.cpp` | LIST-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-bit-field-fits.cpp` | LIST-2 | accept | accept | accept | reject | reject | reject | accept | accept | pass |
-| `declarations/initialization/list/narrowing-constant-fits.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/narrowing-constant-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-double-to-float-in-range.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-float-to-int-exact.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-float-to-int.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-in-aggregate.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-int-to-float-exact.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-member-pointer-to-bool.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-nonconstant-int.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-not-in-parens.cpp` | LIST-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/narrowing-pointer-to-bool.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/narrowing-unscoped-enum.cpp` | LIST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/no-elision-when-direct.cpp` | LIST-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/list/omitted-member-explicit-default.cpp` | LIST-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/paren-nested-ok.cpp` | LIST-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/paren-no-brace-elision.cpp` | LIST-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/scalar-braces-two-values.cpp` | LIST-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/scalar-braces.cpp` | LIST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/scalar-nested-braces.cpp` | LIST-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/single-same-class-copies.cpp` | LIST-10 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/list/string-literal-array.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/string-literal-plain-to-char8.cpp` | LIST-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/string-literal-too-long.cpp` | LIST-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/string-literal-u8-to-char.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/string-literal-u8-to-char8.cpp` | LIST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` | LIST-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/string-literal-wrong-type.cpp` | LIST-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/list/union-designator.cpp` | LIST-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/references/aggregate-member-extends.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/aggregate-member-paren-not-extended.cpp` | REF-5 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/base-ref-to-derived.cpp` | REF-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/bit-field-const-ref.cpp` | REF-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/bit-field-nonconst-ref.cpp` | REF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/const-ref-xvalue-direct.cpp` | REF-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/const-volatile-ref-rvalue.cpp` | REF-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/dangling-local-return.cpp` | REF-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/extend-through-array-member-subscript.cpp` | REF-4 | run | run | run | reject | run | run | run | run | pass |
-| `declarations/initialization/references/extend-through-static-cast.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/lifetime-extended.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/lifetime-member-extended.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/lifetime-not-through-return.cpp` | REF-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/lifetime-through-parens-and-conditional.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/lvalue-ref-binds-lvalue.cpp` | REF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/references/lvalue-ref-drops-const.cpp` | REF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/lvalue-ref-other-type.cpp` | REF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/null-dereference-bind-constant.cpp` | REF-5 | reject | reject | reject | accept | reject | accept | reject | reject | pass |
-| `declarations/initialization/references/reference-multiple-values.cpp` | REF-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp` | REF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/rvalue-ref-binds-rvalue.cpp` | REF-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/rvalue-ref-drops-const.cpp` | REF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp` | REF-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` | REF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/initialization/references/rvalue-ref-to-function.cpp` | REF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/references/static-reference-to-temporary.cpp` | REF-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/references/unknown-bound-ref.cpp` | REF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/static/across-units-order.cpp` | SINIT-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/before-main-observed.cpp` | SINIT-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/constant-before-dynamic.cpp` | SINIT-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/constexpr-constant-initialized.cpp` | SINIT-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/deferred-initialization.cpp` | SINIT-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/dynamic-in-order.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/dynamic-reads-zero.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/inline-order-unspecified.cpp` | SINIT-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/inline-variables-ordered.cpp` | SINIT-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/maybe-static.cpp` | SINIT-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/initialization/static/thread-local-init-deferred.cpp` | SINIT-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/constexpr-function-inline.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/constexpr-variable-internal.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/deleted-function-inline.cpp` | INL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/inline/function-and-variable.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/implicit-special-members-inline.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-after-definition.cpp` | INL-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/inline/inline-before-definition.cpp` | INL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/inline/inline-block-function-declaration.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-block-variable.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-class.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-different-definitions.cpp` | INL-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-friend-declaration-not-definition.cpp` | INL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/inline/inline-friend-definition.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-in-one-unit-only.cpp` | INL-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-internal-linkage.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-main.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-nonconst-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-nonstatic-member.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-parameter.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-redefinition-same-tu.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-static-local-in-function.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-static-member-incomplete.cpp` | INL-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-static-member.cpp` | INL-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-typedef.cpp` | INL-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-undefined-used.cpp` | INL-6 | link-fail | link-fail | link-fail | reject | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/inline/inline-unused-not-defined.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-variable-const-default-external.cpp` | INL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/inline-variable-undefined-used.cpp` | INL-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/inline/inline-virtual.cpp` | INL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/inline/member-defined-in-class.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/static-constexpr-member-inline.cpp` | INL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/static-local-shared.cpp` | INL-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/inline/static-member-not-inline-needs-definition.cpp` | INL-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/linkage-specifications/block-form-defines.cpp` | LSP-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/block-form-no-scope.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/block-form.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/block-scope.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/c-and-cpp-overload.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/c-cross-unit.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/c-function-pointer-assign.cpp` | LSP-6 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/linkage-specifications/c-linkage-main.cpp` | LSP-2 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
-| `declarations/linkage-specifications/c-linkage-template.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/c-name-across-namespaces.cpp` | LSP-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/c-name-conflict-types.cpp` | LSP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/c-name-conflicts-global.cpp` | LSP-7 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/linkage-specifications/c-overload-rejected.cpp` | LSP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` | LSP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/c-variable-named-main.cpp` | LSP-7 | reject | reject | reject | reject | accept | accept | reject | reject | pass |
-| `declarations/linkage-specifications/class-scope.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/cpp-linkage.cpp` | LSP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/linkage-specifications/function-type-linkage-overload.cpp` | LSP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/linkage-specifications/linkage-in-namespace.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/members-cpp-linkage.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/nested-innermost.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/redeclare-c-then-plain.cpp` | LSP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` | LSP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/single-form-declaration-only.cpp` | LSP-3 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/linkage-specifications/single-form-static.cpp` | LSP-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/linkage-specifications/single-form-with-init-defines.cpp` | LSP-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/single-form.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/static-in-c-block.cpp` | LSP-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/linkage-specifications/unknown-language.cpp` | LSP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/alias-conflict.cpp` | NS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/alias-not-reopen.cpp` | NS-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/alias.cpp` | NS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/block-scope-namespace.cpp` | NS-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/define-and-qualify.cpp` | NS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/definition-in-unrelated-namespace.cpp` | NS-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/directive-in-class.cpp` | NS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/directive-sees-later-members.cpp` | NS-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/namespaces/global-qualifier.cpp` | NS-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/inline-namespace-duplicate.cpp` | NS-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/inline-namespace.cpp` | NS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/inline-on-reopen.cpp` | NS-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/inline-then-reopen-plain.cpp` | NS-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/name-conflict.cpp` | NS-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/nested-definition.cpp` | NS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/nested-first-inline.cpp` | NS-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/nested-inline-definition.cpp` | NS-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/out-of-namespace-definition.cpp` | NS-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/undeclared-qualified-definition.cpp` | NS-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/unnamed-namespace-duplicate.cpp` | NS-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/unnamed-namespace.cpp` | NS-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/unqualified-outside.cpp` | NS-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-class-member-at-namespace.cpp` | NS-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-declaration-conflict.cpp` | NS-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-declaration-namespace.cpp` | NS-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-declaration-overloads.cpp` | NS-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/namespaces/using-declaration-repeat-block.cpp` | NS-7 | accept | accept | accept | reject | reject | accept | accept | accept | pass |
-| `declarations/namespaces/using-declaration-repeat-namespace.cpp` | NS-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-declaration-snapshot.cpp` | NS-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/namespaces/using-declaration-then-conflict.cpp` | NS-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-declaration-unqualified.cpp` | NS-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-declaration.cpp` | NS-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-directive-ambiguous-unused.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-directive-ambiguous-use.cpp` | NS-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-directive-block-scope.cpp` | NS-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-directive-global-ambiguity.cpp` | NS-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-directive-local-hides.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-directive-not-namespace.cpp` | NS-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/namespaces/using-directive-transitive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-directive.cpp` | NS-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/namespaces/using-list.cpp` | NS-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/static-assert/condition-contextual-bool.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/condition-narrowing.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/condition-not-constant.cpp` | SA-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/condition-pointer.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/condition-ub.cpp` | SA-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/constexpr-function-call.cpp` | SA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/discarded-branch-nontemplate.cpp` | SA-5 SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/discarded-branch.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/false-rejected.cpp` | SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/false-with-message.cpp` | SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/in-block-not-statement-position.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/in-block.cpp` | SA-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/static-assert/in-class-incomplete-self.cpp` | SA-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/in-class.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/in-extern-c.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/in-for-init.cpp` | SA-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/in-namespace.cpp` | SA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/message-concatenated.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/message-not-literal.cpp` | SA-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/message-object.cpp` | SA-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/message-optional.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/message-prefixed-string.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/message-shown.cpp` | SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/message-wide-string.cpp` | SA-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/template-dependent-false.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/template-instantiated-false.cpp` | SA-5 SA-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/static-assert/template-nondependent-false.cpp` | SA-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/static-assert/true-accepted.cpp` | SA-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/storage-linkage/anonymous-union-namespace.cpp` | STO-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/anonymous-union-static.cpp` | STO-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp` | STO-11 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-extern-after-local.cpp` | STO-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/block-extern-initializer.cpp` | STO-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/block-extern-internal.cpp` | LNK-9 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-extern-same-unit.cpp` | STO-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-function-declaration.cpp` | LNK-9 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-static-not-reached.cpp` | STO-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-static-once.cpp` | STO-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/block-variables-no-linkage.cpp` | LNK-9 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/const-internal.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/duplicate-function.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/storage-linkage/duplicate-variable.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/storage-linkage/extern-const-external.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/extern-in-block-hidden.cpp` | LNK-9 | run | run | run | reject | run | run | run | run | pass |
-| `declarations/storage-linkage/extern-parameter.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/extern-then-const.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/extern-then-static.cpp` | LNK-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/extern-with-initializer.cpp` | STO-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/external-default.cpp` | LNK-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/function-then-static.cpp` | LNK-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/inline-different-bodies.cpp` | LNK-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/inline-one-entity.cpp` | LNK-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/missing-definition.cpp` | LNK-7 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/storage-linkage/mutable-block.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/mutable-const-member.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/mutable-function.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/mutable-member-ok.cpp` | STO-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/mutable-namespace.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/mutable-reference-member.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/mutable-static-member.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/plain-after-thread-local.cpp` | STO-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/recursive-static-init.cpp` | STO-9 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `declarations/storage-linkage/register.cpp` | STO-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/static-block-function.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/static-destruction-order.cpp` | STO-10 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/static-internal.cpp` | LNK-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/static-main.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/static-not-visible.cpp` | LNK-2 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `declarations/storage-linkage/static-parameter.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/static-then-extern.cpp` | LNK-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/storage-class-on-class.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/storage-class-on-typedef.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/thread-local-after-plain.cpp` | STO-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/thread-local-block.cpp` | STO-8 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/thread-local-combinations.cpp` | STO-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/storage-linkage/thread-local-function.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/two-storage-classes.cpp` | STO-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/storage-linkage/unnamed-namespace-internal.cpp` | LNK-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/unused-missing-definition.cpp` | LNK-7 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/volatile-const-external.cpp` | LNK-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/storage-linkage/zero-initialized.cpp` | STO-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/aggregate-members.cpp` | SB-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/anonymous-union-member.cpp` | SB-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/array-copy.cpp` | SB-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/array-hidden-copy.cpp` | SB-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/array-reference.cpp` | SB-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/as-class-member.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/as-parameter.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/binding-types.cpp` | SB-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/bit-field-address.cpp` | SB-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/bit-field-assign.cpp` | SB-10 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/constexpr-binding.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/constinit-specifier.cpp` | SB-11 | reject | reject | reject | accept | accept | reject | reject | reject | pass |
-| `declarations/structured-bindings/constrained.cpp` | SB-15 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/count-mismatch-array.cpp` | SB-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/count-mismatch-class.cpp` | SB-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/decltype-auto.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/duplicate-names.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/empty-bindings.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/explicit-type.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/extern-specifier.cpp` | SB-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/friend-binds-private.cpp` | SB-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/initializer-braces.cpp` | SB-7 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
-| `declarations/structured-bindings/initializer-equals.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/initializer-parens.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/inline-specifier.cpp` | SB-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/lifetime-extended.cpp` | SB-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/members-in-base.cpp` | SB-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/members-split-across-bases.cpp` | SB-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/mutable-member.cpp` | SB-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/names-are-lvalues.cpp` | SB-12 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/names-in-scope.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/no-initializer.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/own-initializer.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/parenthesized.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/pointer-declarator.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/private-member.cpp` | SB-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/reference-member-binding-type.cpp` | SB-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/scalar-rejected.cpp` | SB-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/static-and-thread-local.cpp` | SB-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/static-thread-local-ok.cpp` | SB-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/template.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/tuple-count-mismatch.cpp` | SB-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/tuple-element-missing.cpp` | SB-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/tuple-get-order.cpp` | SB-5 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/structured-bindings/tuple-protocol.cpp` | SB-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/tuple-size-without-value.cpp` | SB-5 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/structured-bindings/underscore-twice.cpp` | SB-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/union-rejected.cpp` | SB-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/structured-bindings/with-other-declarator.cpp` | SB-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/alias-cv-reference-ignored.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-cv.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-defines-class.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-function-type-definition.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/alias-function-type.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-in-block.cpp` | TYN-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/alias-in-class.cpp` | TYN-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/alias-inner-scope-hides.cpp` | TYN-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/alias-member-redeclared-same.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/alias-of-incomplete.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-overload-same.cpp` | TYN-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/alias-same-name-as-class.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/alias-scope.cpp` | TYN-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `declarations/type-names/class-definition-conflicts-typedef.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/class-redefinition.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/complete-after-definition-in-scope.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/definition-incomplete-return.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/deleted-incomplete-types.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/elaborated-declares-in-block.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-declares-in-namespace.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-declares.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/elaborated-enum-declared.cpp` | TYN-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/elaborated-enum-undeclared.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-hides-function.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/elaborated-in-member-declares-namespace.cpp` | TYN-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/elaborated-in-parameter-scope.cpp` | TYN-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/elaborated-key-class-struct.cpp` | TYN-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/elaborated-key-enum-mismatch.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-key-union-mismatch.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-qualified-declaration-only.cpp` | TYN-7 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `declarations/type-names/elaborated-qualified-undeclared.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/elaborated-scoped-enum-key.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/enum-fixed-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/enum-scoped-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-after-definition.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/forward-class-function-definition-param.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-class-incomplete-use.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-class-object.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-class-reference-param.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/forward-class.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/forward-enum-base-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-enum-no-base.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/forward-enum-opaque.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/forward-enum-scoped-default-base.cpp` | TYN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/forward-nested-class.cpp` | TYN-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/forward-nested-wrong-scope.cpp` | TYN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-initializer.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-multiple.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/typedef-name-in-class-redeclared.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-name-not-class-key.cpp` | TYN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-no-name.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-redeclare-different.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-redeclare-same.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/typedef-same-type.cpp` | TYN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/type-names/typedef-storage-class.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/typedef-unnamed-c-like.cpp` | TYN-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/type-names/typedef-unnamed-class-member-function.cpp` | TYN-9 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `declarations/type-names/typedef-with-unsigned.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/type-names/variable-then-typedef.cpp` | TYN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/access-run.cpp` | VOL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/assign-to-volatile-class.cpp` | VOL-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/assignment-result-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/volatile/compound-no-warning.cpp` | VOL-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/volatile/const-cast-removes.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/const-ref-volatile-no-temporary.cpp` | VOL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/const-volatile-external.cpp` | VOL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/constant-read-rejected.cpp` | VOL-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/copy-volatile-class-rejected.cpp` | VOL-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/copy-volatile-scalar-ok.cpp` | VOL-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/defaulted-comparison-volatile.cpp` | DCMP-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/increment-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/volatile/nonvolatile-access-to-volatile-constant.cpp` | VOL-6 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/nonvolatile-member-on-volatile.cpp` | VOL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/overload-on-volatile.cpp` | VOL-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/overload-param-volatile-ref.cpp` | VOL-3 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/pointer-add-volatile.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/pointer-remove-volatile.cpp` | VOL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/pointer-to-volatile-parameter-ok.cpp` | VOL-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `declarations/volatile/ref-plain-to-volatile.cpp` | VOL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/ref-volatile-to-plain.cpp` | VOL-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/static-const-volatile-in-class.cpp` | VOL-2 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `declarations/volatile/volatile-class-user-copy.cpp` | VOL-4 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/volatile-constructor.cpp` | VOL-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/volatile-destructor.cpp` | VOL-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/volatile/volatile-in-type-traits.cpp` | VOL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/volatile-local-loop.cpp` | VOL-1 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/volatile-member-function.cpp` | VOL-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/volatile-member-of-volatile-object.cpp` | VOL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/volatile-member-on-plain.cpp` | VOL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/volatile/volatile-object-ordinary-ctor.cpp` | VOL-2 | run | run | run | accept | run | run | run | run | pass |
-| `declarations/volatile/volatile-parameter-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/volatile/volatile-return-warns.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `declarations/volatile/volatile-structured-binding.cpp` | VOL-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `exceptions/handlers/basic-catch.cpp` | TRY-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/break-out-of-handler.cpp` | TRY-15 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/case-into-handler.cpp` | TRY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/catch-all-not-last.cpp` | TRY-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/catch-all-only.cpp` | TRY-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/catch-all.cpp` | TRY-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/ctor-try-block-member-named-in-handler.cpp` | TRY-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/ctor-try-block-member-use-warns.cpp` | TRY-13 | reject | reject | accept | skip | accept | reject | accept | reject | pass |
-| `exceptions/handlers/ctor-try-block-members-destroyed-first.cpp` | TRY-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/ctor-try-block-new-throw.cpp` | TRY-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/ctor-try-block-rethrows-at-end.cpp` | TRY-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/ctor-try-block-return-rejected.cpp` | TRY-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/ctor-try-block-sees-member-init-exception.cpp` | TRY-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/distinct-handlers-no-warning.cpp` | TRY-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `exceptions/handlers/dtor-try-block-rethrows.cpp` | TRY-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/duplicate-handler-warns.cpp` | TRY-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `exceptions/handlers/function-try-block-falls-off-end.cpp` | TRY-9 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/function-try-block-main.cpp` | TRY-9 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/function-try-block-non-void-no-return.cpp` | TRY-12 | reject | reject | accept | skip | accept | reject | accept | reject | pass |
-| `exceptions/handlers/function-try-block-sees-parameters.cpp` | TRY-9 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/function-try-block.cpp` | TRY-9 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/goto-into-handler.cpp` | TRY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/goto-into-try.cpp` | TRY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/goto-out-of-handler.cpp` | TRY-15 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/handler-not-active-for-own-throw.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/handler-param-hides-outer.cpp` | TRY-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/handler-param-scope.cpp` | TRY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/handler-redeclares-param.cpp` | TRY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/handlers-in-order.cpp` | TRY-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/handlers-share-param-name.cpp` | TRY-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/match-ambiguous-base-no.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-array-decays.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-base-by-reference.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-base-by-value-slices.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-cv-qualified.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-function-decays.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-no-arithmetic-conversion.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-no-user-conversion.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-nonconst-reference-to-exception-object.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-nullptr-to-pointer.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-pointer-qualification.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-pointer-to-base.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-private-base-no.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/match-void-pointer.cpp` | TRY-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/nested-block-redeclares-param-ok.cpp` | TRY-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/nested-try-in-handler.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/no-match-propagates.cpp` | TRY-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/param-abstract-reference-ok.cpp` | TRY-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/param-abstract.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-array-decays-to-pointer.cpp` | TRY-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/param-auto.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-default-argument.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-function-type.cpp` | TRY-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/param-incomplete-pointer.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-incomplete.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-qualified-name.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-reference-to-unknown-bound-array.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-rvalue-reference.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-storage-class.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/param-unnamed.cpp` | TRY-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/handlers/param-void.cpp` | TRY-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/rethrow-copy-not-modified.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/rethrow-from-called-function.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/rethrow-modified-reference.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/rethrow-outside-handler-terminates.cpp` | TRY-8 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/handlers/rethrow-to-enclosing.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/return-from-handler.cpp` | TRY-15 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/skips-non-matching.cpp` | TRY-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/throw-new-from-handler.cpp` | TRY-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/try-block-completes-normally.cpp` | TRY-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/handlers/try-names-not-after.cpp` | TRY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/try-names-not-in-handler.cpp` | TRY-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/try-without-handler.cpp` | TRY-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/handlers/unreachable-handler-warns.cpp` | TRY-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `exceptions/throw/abstract-operand-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/array-operand-decays.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/catch-by-value-copies.cpp` | THR-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/constant-evaluation-throw-not-taken.cpp` | CE-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/throw/constant-evaluation-throw-rejected.cpp` | CE-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/constexpr-throw-at-runtime.cpp` | THR-10 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/cv-qualifiers-dropped.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/deleted-copy-lvalue-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/deleted-copy-prvalue.cpp` | THR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/throw/function-operand-decays.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/global-lvalue-copied.cpp` | THR-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/incomplete-operand-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/local-variable-moved.cpp` | THR-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/new-throw-in-handler-ends-old.cpp` | THR-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/object-lives-through-handler.cpp` | THR-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/object-lives-through-rethrow.cpp` | THR-8 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/private-copy-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/private-destructor-rejected.cpp` | THR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `exceptions/throw/prvalue-initializes-directly.cpp` | THR-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/rethrow-after-handler-left-terminates.cpp` | THR-7 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/throw/rethrow-in-handler-accepted.cpp` | THR-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/rethrow-keeps-changes.cpp` | THR-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/rethrow-outside-handler-terminates.cpp` | THR-7 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/throw/rethrow-same-object.cpp` | THR-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/static-type-not-dynamic.cpp` | THR-4 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/string-literal-decays.cpp` | THR-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/throw/throw-expression-type-void.cpp` | THR-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/throw/throw-in-noexcept-terminates.cpp` | THR-9 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/throw/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `exceptions/throw/throwing-destructor-accepted.cpp` | THR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `exceptions/unwinding/array-element-throws-built-destroyed.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/base-built-before-member-throws.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/block-objects-end-before-handler.cpp` | UNW-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/call-in-noexcept-no-warning.cpp` | UNW-8 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `exceptions/unwinding/constructor-throws-parts-destroyed.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/delegating-target-completed-destructor-runs.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/delegating-target-throws-no-destructor.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/every-block-between-throw-and-handler.cpp` | UNW-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/handler-block-objects-unaffected.cpp` | UNW-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/leaves-main-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/leaves-noexcept-function-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp` | UNW-2 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/nested-blocks-ended-in-order.cpp` | UNW-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/new-array-constructor-throws-storage-released.cpp` | UNW-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/new-constructor-throws-storage-released.cpp` | UNW-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/new-initializer-throws-global-delete.cpp` | UNW-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/no-handler-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/no-handler-unwinding-unobservable.cpp` | UNW-7 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/noexcept-boundary-is-the-function.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `exceptions/unwinding/noexcept-false-destructor-can-throw.cpp` | UNW-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/noexcept-function-handles-inside.cpp` | UNW-6 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/objects-after-throw-not-created.cpp` | UNW-1 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp` | UNW-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/placement-new-throws-placement-delete.cpp` | UNW-3 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/static-local-init-throws-retry.cpp` | UNW-4 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/static-objects-survive-unwinding.cpp` | UNW-4 | run | run | run | accept | run | run | run | run | pass |
-| `exceptions/unwinding/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/additive/base-pointer-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/additive/deref-one-past-end.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/float-overflow-constant.cpp` | ADD-17 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `expressions/additive/function-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/grouping.cpp` | ADD-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/integer-minus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/mixed-enum-warns.cpp` | ADD-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/additive/null-plus-nonzero-sanitizer.cpp` | ADD-10 | run-fail | run-fail | run | skip | run | run-fail | run | run-fail | pass |
-| `expressions/additive/null-plus-nonzero.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/null-plus-zero.cpp` | ADD-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/nullptr-plus-int.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/operand-order.cpp` | ADD-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/additive/operands-arithmetic.cpp` | ADD-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/operands-class.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/operands-scoped-enum.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/past-end-of-row.cpp` | ADD-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-arith-runtime.cpp` | ADD-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/additive/pointer-before-array.cpp` | ADD-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/additive/pointer-beyond-array.cpp` | ADD-10 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/additive/pointer-difference-different-arrays.cpp` | ADD-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-difference-type-ilp32.cpp` | ADD-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `expressions/additive/pointer-difference-type-lp64.cpp` | ADD-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/pointer-difference.cpp` | ADD-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/pointer-minus-different-types.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-object-as-array.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/pointer-one-past-end.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/pointer-plus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-plus-scoped-enum.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-plus-unscoped-enum.cpp` | ADD-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/pointer-to-incomplete.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/pointer-within-array.cpp` | ADD-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/result-prvalue.cpp` | ADD-4 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/result-types.cpp` | ADD-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/signed-overflow-add-sanitizer.cpp` | ADD-9 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/additive/signed-overflow-add.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/signed-overflow-subtract.cpp` | ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/subtract-base-pointers-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/additive/unsigned-wraps.cpp` | ADD-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/additive/void-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/additive/void-pointer-difference.cpp` | ADD-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/array-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/bitfield-result-address.cpp` | ASN-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/bool-compound.cpp` | ASN-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/braced-compound-class.cpp` | ASN-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/assignment/braced-compound.cpp` | ASN-14 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `expressions/assignment/braced-empty.cpp` | ASN-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/braced-narrowing.cpp` | ASN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/braced-ok.cpp` | ASN-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/class-prvalue-left.cpp` | ASN-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/assignment/compound-converts.cpp` | ASN-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/compound-evaluates-once.cpp` | ASN-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/compound-float-modulo.cpp` | ASN-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/compound-indeterminate-run.cpp` | ASN-11 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/compound-indeterminate-with-call.cpp` | ASN-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/assignment/compound-operators.cpp` | ASN-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/assignment/compound-pointer.cpp` | ASN-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/const-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/converts-right.cpp` | ASN-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/function-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/no-conversion.cpp` | ASN-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/result-lvalue.cpp` | ASN-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/right-before-left.cpp` | ASN-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/right-to-left-grouping.cpp` | ASN-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/rvalue-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/scalar-xvalue-left.cpp` | ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/assignment/self-assignment.cpp` | ASN-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/unsequenced-same-object.cpp` | ASN-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/assignment/volatile-compound.cpp` | ASN-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/assignment/volatile-simple.cpp` | ASN-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/class-operand.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/complement-bool-warns.cpp` | BIT-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/bitwise/complement-bool.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/complement-floating.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/complement-int-silent.cpp` | BIT-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/bitwise/complement-pointer.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/complement-promotes.cpp` | BIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/different-enum-types.cpp` | BIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/member-pointer-operand.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/mixed-enum-warns.cpp` | BIT-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/bitwise/negative-values.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/nullptr-operand.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/operands-arithmetic.cpp` | BIT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/operands-floating.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/operands-pointer.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/operands-scoped-enum.cpp` | BIT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/bitwise/parentheses-silences.cpp` | BIT-6 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/bitwise/parentheses-warns.cpp` | BIT-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/bitwise/precedence.cpp` | BIT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/result-types.cpp` | BIT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/bitwise/values.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/braced-cast-narrowing.cpp` | CAST-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/braced-cast-ok.cpp` | CAST-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/c-style-no-valid-cast.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/c-style-private-base.cpp` | CAST-17 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/c-style-removes-const-and-type.cpp` | CAST-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/c-style-static.cpp` | CAST-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/const-cast-changes-type.cpp` | CAST-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/const-cast-function-pointer.cpp` | CAST-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/const-cast-member-pointer.cpp` | CAST-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/const-cast-pointer.cpp` | CAST-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/const-cast-reference.cpp` | CAST-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/const-cast-value.cpp` | CAST-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/const-cast-write-const-object.cpp` | CAST-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/decay-copy-auto.cpp` | CAST-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/decay-copy-type.cpp` | CAST-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/functional-braced-unknown-bound.cpp` | CAST-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/functional-cast-several-arguments.cpp` | CAST-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/functional-cast-several-scalar.cpp` | CAST-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/functional-empty-parens.cpp` | CAST-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/reinterpret-function-to-object.cpp` | CAST-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/reinterpret-integer-too-small.cpp` | CAST-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/reinterpret-not-constant.cpp` | CAST-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/reinterpret-nullptr-to-integer.cpp` | CAST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/reinterpret-pointer-integer-mapping.cpp` | CAST-16 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/reinterpret-reference.cpp` | CAST-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/reinterpret-removes-const.cpp` | CAST-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/reinterpret-round-trip.cpp` | CAST-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/reinterpret-unrelated-pointer.cpp` | CAST-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-arithmetic.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-downcast-private-base.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-downcast-wrong-object-constant.cpp` | CAST-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-downcast.cpp` | CAST-15 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/casts/static-cast-enum-fixed-in-range.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-enum-out-of-range-constant.cpp` | CAST-14 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `expressions/casts/static-cast-enum.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-explicit-ctor.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-float-to-enum.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-function-to-object-pointer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-integer-to-pointer.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-null-to-pointer.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-pointer-to-integer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-removes-const.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-rvalue-reference.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-to-void.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/casts/static-cast-unrelated-pointer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-unrelated-pointers.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-void-pointer.cpp` | CAST-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/argument-separator.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/array-bound-parenthesized.cpp` | COMMA-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comma/array-bound-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comma/case-label-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comma/constant-expression.cpp` | COMMA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comma/grouping.cpp` | COMMA-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comma/initializer-separator.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/left-before-right.cpp` | COMMA-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/left-side-effects-complete.cpp` | COMMA-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/left-void.cpp` | COMMA-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comma/overloaded-comma-order.cpp` | COMMA-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/result-category.cpp` | COMMA-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/separators.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/subscript-comma.cpp` | COMMA-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comma/subscript-parenthesized.cpp` | COMMA-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comma/unused-left-void-cast.cpp` | COMMA-5 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/comma/unused-left-warns.cpp` | COMMA-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/comparison/arithmetic-conversions.cpp` | CMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/array-comparison-warns.cpp` | CMP-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/comparison/array-comparison.cpp` | CMP-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/chained-comparison-warns.cpp` | CMP-14 | reject | reject | reject | skip | reject | accept | reject | reject | pass |
-| `expressions/comparison/chained-comparison.cpp` | CMP-1 | accept | reject | accept | accept | accept | accept | accept | reject | pass |
-| `expressions/comparison/derived-base-pointer-equality.cpp` | CMP-19 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/different-enums-warns.cpp` | CMP-21 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/comparison/enum-float-comparison-warns.cpp` | CMP-21 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/comparison/function-pointer-order.cpp` | CMP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/function-pointer-void.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/grouping.cpp` | CMP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/member-pointer-two-paths.cpp` | CMP-22 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/multilevel-qualification.cpp` | CMP-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/nan.cpp` | CMP-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/noexcept-function-pointer-equality.cpp` | CMP-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/null-pointer-equality.cpp` | CMP-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/nullptr-equals-zero.cpp` | CMP-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/one-past-end-adjacent-constant.cpp` | CMP-20 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/one-past-end-adjacent.cpp` | CMP-20 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/pointer-array-order.cpp` | CMP-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/pointer-different-types.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/pointer-equality-constant.cpp` | CMP-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/pointer-equality.cpp` | CMP-15 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/pointer-integer.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/pointer-member-order.cpp` | CMP-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/pointer-qualification.cpp` | CMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/pointer-relational-nullptr.cpp` | CMP-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/pointer-relational-zero.cpp` | CMP-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/pointer-unrelated-constant.cpp` | CMP-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/pointer-unrelated-run.cpp` | CMP-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/pointer-void.cpp` | CMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/relational-member-pointers.cpp` | CMP-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/relational-nullptr-values.cpp` | CMP-9 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/result-type.cpp` | CMP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/scoped-enum-different.cpp` | CMP-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/scoped-enum-same.cpp` | CMP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/sign-compare-cast.cpp` | CMP-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/comparison/sign-compare-warns.cpp` | CMP-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/comparison/signed-unsigned.cpp` | CMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/struct-and-first-member-equal.cpp` | CMP-15 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `expressions/comparison/subobject-order-constant.cpp` | CMP-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/subobject-order.cpp` | CMP-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/three-way-arrays.cpp` | CMP-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-bool-int.cpp` | CMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-different-enums.cpp` | CMP-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-enum-float.cpp` | CMP-18 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-enum-int.cpp` | CMP-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-floating.cpp` | CMP-17 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/three-way-function-pointer-nullptr.cpp` | CMP-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-function-pointers.cpp` | CMP-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-int-to-double.cpp` | CMP-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-integers.cpp` | CMP-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-member-pointers.cpp` | CMP-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-narrowing.cpp` | CMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-negative-zero.cpp` | CMP-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-no-library.cpp` | CMP-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-nullptr-values.cpp` | CMP-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-pointer-zero.cpp` | CMP-13 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/comparison/three-way-precedence.cpp` | CMP-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-type.cpp` | CMP-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/three-way-unrelated-pointers-constant.cpp` | CMP-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/comparison/union-member-pointers-constant.cpp` | CMP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/union-member-pointers-relational-either.cpp` | CMP-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/union-members-equal.cpp` | CMP-15 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/unrelated-pointers-either.cpp` | CMP-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/comparison/zero-size-member-pointers-constant.cpp` | CMP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/comparison/zero-size-member-pointers-either.cpp` | CMP-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/arithmetic-prvalue.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/bitfield-address.cpp` | COND-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/bitfield-or-enum.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/class-ambiguous.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/class-converts-to-int.cpp` | COND-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/class-lvalue-prvalue-copy.cpp` | COND-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/class-one-way.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/comma-in-middle.cpp` | COND-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/condition-converted.cpp` | COND-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/condition-first.cpp` | COND-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/condition-not-convertible.cpp` | COND-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/condition-side-effects-first.cpp` | COND-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/const-and-plain-lvalue.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/const-volatile-lvalues-prvalue.cpp` | COND-3 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/constant-selected-fails.cpp` | COND-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/constant-unselected-fails.cpp` | COND-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/cv-lvalues-and-strings.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/derived-base-lvalue.cpp` | COND-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/gnu-omitted-operand.cpp` | COND-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/grouping.cpp` | COND-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/lvalue-result.cpp` | COND-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/member-pointer-nullptr.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/mixed-category-prvalue.cpp` | COND-3 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/mixed-enum-types.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/no-common-type.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/only-selected-evaluated.cpp` | COND-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/pointer-and-int.cpp` | COND-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/pointer-operands.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/precedence-assignment.cpp` | COND-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/prvalue-no-copy.cpp` | COND-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/throw-operand.cpp` | COND-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/two-classes-convert-to-int.cpp` | COND-11 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conditional/two-zeros.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/void-and-value.cpp` | COND-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conditional/void-operands.cpp` | COND-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/xvalue-operands.cpp` | COND-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conditional/zero-and-nullptr.cpp` | COND-3 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `expressions/constant-expressions/active-union-member.cpp` | CE-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/allocation-in-result.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/allocation-not-freed.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/arithmetic-and-calls.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/array-bound-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/array-bound-not-constant.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/case-label-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/case-label-not-constant.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/const-enum-usable.cpp` | CE-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/constant-initializer-usable.cpp` | CE-24 CV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/converted-constant-narrowing.cpp` | CE-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/copy-after-every-part-set.cpp` | CE-22 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/copy-unset-array-element.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/constant-expressions/copy-unset-member.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/constant-expressions/deep-recursion.cpp` | CE-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/delete-mismatch.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/enumerator-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/function-pointer-equality.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/goto-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/goto-reached.cpp` | CE-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/inactive-union-member.cpp` | CE-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/integral-constant-array-bound.cpp` | CE-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/lambda-call.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-base.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/literal-closure.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-constexpr-destructor.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-destructor.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/literal-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/literal-not-reached.cpp` | CE-23 CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-union-all-volatile.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/literal-union-volatile-member.cpp` | CE-23 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-volatile-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/long-loop.cpp` | CE-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/moderate-recursion.cpp` | CE-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/modify-local-object.cpp` | CE-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/modify-outside-object.cpp` | CE-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/new-delete-transient.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/non-constexpr-call.cpp` | CE-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/nonliteral-variable-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/read-const-constant-init.cpp` | CE-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/read-const-runtime-init.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/read-non-const-variable.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/read-parameter-outside.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/reinterpret-cast.cpp` | CE-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/relational-unrelated-pointers.cpp` | CE-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/result-every-part-set.cpp` | CE-21 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/result-points-to-local.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/result-points-to-static.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/result-refers-to-static-temporary.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/result-refers-to-temporary.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `expressions/constant-expressions/result-union-one-active-member.cpp` | CE-21 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/result-unset-array-element.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/result-unset-member.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/static-local-reached.cpp` | CE-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `expressions/constant-expressions/throw-evaluated.cpp` | CE-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/throw-not-evaluated.cpp` | CE-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/try-without-throw.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/undefined-behavior-dangling.cpp` | CE-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/undefined-behavior.cpp` | CE-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/unknown-reference-not-read.cpp` | CE-18 | accept | accept | accept | accept | accept | reject | accept | accept | pass |
-| `expressions/constant-expressions/unset-member-not-copied.cpp` | CE-22 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/volatile-read.cpp` | CE-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/array-function-to-pointer.cpp` | CONV-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/array-pointer-unknown-bound.cpp` | CONV-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/bitfield-promotes.cpp` | CONV-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conversions/bitfield-promotion-by-width.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/char-zero-not-null.cpp` | CONV-8 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/conversions/const-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/deep-const-every-level.cpp` | CONV-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/deep-const-not-at-every-level.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/derived-to-base.cpp` | CONV-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/enum-promotion-no-fixed-type.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/enum-promotion.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/false-not-null-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/floating-narrowing-out-of-range.cpp` | CONV-11 | clang: accept, gcc: accept, edg: reject | accept | accept | reject | accept | accept | accept | accept | pass |
-| `expressions/conversions/floating-to-integral-out-of-range.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/floating-to-integral-sanitizer.cpp` | CONV-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/implicit-conversion-contexts.cpp` | CONV-20 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/integer-variable-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/integral-promotion.cpp` | CONV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/integral-to-floating-exact.cpp` | CONV-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/integral-to-floating-nearest.cpp` | CONV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/integral-to-floating-rounding.cpp` | CONV-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/member-function-noexcept-add.cpp` | CONV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/member-function-noexcept-drop.cpp` | CONV-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/member-pointer-ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/member-pointer-base-to-derived.cpp` | CONV-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/member-pointer-derived-to-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/member-pointer-to-bool.cpp` | CONV-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conversions/member-pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/member-pointer-virtual-base.cpp` | CONV-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/nan-to-bool.cpp` | CONV-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conversions/negative-fraction-to-unsigned.cpp` | CONV-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/noexcept-function-pointer.cpp` | CONV-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/nonzero-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/null-derived-to-second-base.cpp` | CONV-14 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/conversions/null-member-pointer-from-zero.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/null-pointer-constants.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/nullptr-to-bool-copy.cpp` | CONV-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/nullptr-to-bool-direct.cpp` | CONV-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/nullptr-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/parenthesized-zero-null.cpp` | CONV-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/pointer-to-void-pointer.cpp` | CONV-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/potentially-throwing-to-noexcept.cpp` | CONV-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/conversions/to-bool.cpp` | CONV-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/to-signed-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/to-unsigned-modulo.cpp` | CONV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-floating.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-promoted-same.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-same-signedness.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-signed-holds-unsigned-lp64.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-unsigned-of-signed-ilp32.cpp` | CONV-19 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `expressions/conversions/uac-unsigned-of-signed-lp64.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/uac-unsigned-rank-not-lower.cpp` | CONV-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/conversions/void-pointer-to-pointer.cpp` | CONV-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/abstract-prvalue-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/as-type-specifier.cpp` | DTY-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/base-specifier.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/bitfield-declared.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/captured-in-lambda.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/conditional.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/constexpr-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/decltype/decltype-auto-function.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/deleted-destructor-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/deleted-destructor-sizeof.cpp` | UNEV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/deleted-function-in-unevaluated.cpp` | UNEV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/destructor-call.cpp` | DTY-3 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `expressions/decltype/discarded-call-runs.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/discarded-constant.cpp` | UNEV-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/discarded-prvalue-materialized.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/discarded-reference-no-copy.cpp` | UNEV-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/discarded-volatile-operand-read.cpp` | UNEV-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/discarded-volatile-read.cpp` | UNEV-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/discarded-warns.cpp` | UNEV-3 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/decltype/enumerator-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/function-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/incomplete-member-access.cpp` | UNEV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/incomplete-return-prvalue.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/incomplete-return-sizeof.cpp` | UNEV-1 UN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/lambda-in-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/member-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/member-without-object.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/name-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/nested-class-member-evaluated.cpp` | UNEV-1 PRIM-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/nested-class-member-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/nested-name.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/no-definition-needed.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/no-side-effects.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/odr-use-not-counted.cpp` | UNEV-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/decltype/overloaded-name.cpp` | DTY-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/parameter-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/paren-lvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/private-access-still-checked.cpp` | UNEV-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/decltype/prvalue-const-class.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/prvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skip | accept | reject | accept | reject | pass |
-| `expressions/decltype/string-literal.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/structured-binding-name.cpp` | DTY-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/template-instantiation-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/trailing-return.cpp` | DTY-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/ub-not-evaluated.cpp` | UNEV-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/decltype/void-cast-no-warning.cpp` | UNEV-2 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/decltype/xvalue.cpp` | DTY-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/capture-abstract.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-by-copy-at-creation.cpp` | LAM-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/capture-by-reference.cpp` | LAM-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/capture-copy-same-as-default.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-data-member-by-name.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-default-at-namespace.cpp` | LAM-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-global-rejected.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-outlived-sanitizer.cpp` | LAM-19 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/lambdas/capture-repeated.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-same-as-default.cpp` | LAM-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capture-structured-binding.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/capture-this.cpp` | LAM-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/capture-visible-in-trailing-return.cpp` | LAM-18 | accept | reject | accept | accept | reject | reject | accept | reject | pass |
-| `expressions/lambdas/capturing-no-function-pointer.cpp` | LAM-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/capturing-not-default-constructible.cpp` | LAM-26 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/closure-copy-assign-deleted.cpp` | LAM-26 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/closure-size-unspecified.cpp` | LAM-20 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/const-call-operator.cpp` | LAM-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/constant-address-needs-capture.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/constant-needs-no-capture.cpp` | LAM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/constant-value-no-capture.cpp` | LAM-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/constexpr-implicit.cpp` | LAM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/copy-capture-array-and-reference.cpp` | LAM-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/dangling-reference-capture-constant.cpp` | LAM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/default-argument-capture.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/default-arguments.cpp` | LAM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/default-capture-mixed.cpp` | LAM-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/default-captures.cpp` | LAM-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/default-constructible.cpp` | LAM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/default-member-initializer-captures-this.cpp` | LAM-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/explicit-object-mutable.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/explicit-object-recursion.cpp` | LAM-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/function-pointer.cpp` | LAM-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/generic.cpp` | LAM-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/immediately-invoked.cpp` | LAM-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/implicit-this-capture-warns.cpp` | LAM-21 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/lambdas/init-capture-outer-lookup.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/init-capture.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/member-use-without-this.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/modify-through-reference-capture.cpp` | LAM-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/mutable.cpp` | LAM-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/namespace-init-capture.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/nested-capture-ok.cpp` | LAM-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/nested-capture.cpp` | LAM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/noexcept-function-pointer.cpp` | LAM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/parameter-same-as-capture.cpp` | LAM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/reference-default-explicit-this.cpp` | LAM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/return-deduction.cpp` | LAM-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/static-and-global-no-capture.cpp` | LAM-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/lambdas/static-call-operator.cpp` | LAM-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/static-with-capture.cpp` | LAM-27 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/syntax-forms.cpp` | LAM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/this-outside-member.cpp` | LAM-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/uncaptured-variable.cpp` | LAM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/lambdas/unevaluated-operand.cpp` | LAM-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/lambdas/unique-type.cpp` | LAM-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/alternative-tokens.cpp` | LOG-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/constant-evaluated-call.cpp` | LOG-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/logical/constant-unevaluated-call.cpp` | LOG-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/constant-unevaluated-division.cpp` | LOG-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/contextual-conversion.cpp` | LOG-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/left-before-right.cpp` | LOG-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/member-pointer-operand.cpp` | LOG-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/not-on-lhs-silences.cpp` | LOG-9 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/logical/not-on-lhs-warns.cpp` | LOG-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/logical/nullptr-operand.cpp` | LOG-12 | accept | accept | accept | accept | reject | accept | accept | accept | pass |
-| `expressions/logical/operand-not-convertible.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/logical/operand-scoped-enum.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/logical/operand-void.cpp` | LOG-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/logical/overloaded-and-evaluates-both.cpp` | LOG-11 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/parentheses-silences.cpp` | LOG-8 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/logical/parentheses-warns.cpp` | LOG-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/logical/precedence.cpp` | LOG-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/result-type.cpp` | LOG-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/logical/short-circuit-and.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/short-circuit-or.cpp` | LOG-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/logical/values.cpp` | LOG-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/address-of-bound-member.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/ambiguous-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/arrow-star.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/base-member-type.cpp` | MPTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/base-to-derived-implicit.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/call-const-on-nonconst.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/call-drops-const.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/call-needs-parens.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/call-result-only.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/compare-equal.cpp` | MPTR-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/compare-relational.cpp` | MPTR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/compare-three-way.cpp` | MPTR-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/compare-virtual-function-unspecified.cpp` | MPTR-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/constexpr-use.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/declare-alias.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/declare-cv.cpp` | MPTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/declare-data.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/declare-function.cpp` | MPTR-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/declare-incomplete.cpp` | MPTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/declare-non-class.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/declare-pointer-to-reference.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/declare-reference-member.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/declare-void-member.cpp` | MPTR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/derived-object.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/derived-to-base-implicit.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/derived-to-base-static-cast.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` | MPTR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/explicit-object-not-member-pointer.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/explicit-object-ordinary-pointer.cpp` | MPTR-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/form-bitfield.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/form-constructor.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/form-function-without-amp.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/form-needs-qualified.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/form-overloaded-target.cpp` | MPTR-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/form-parenthesized-not-member-pointer.cpp` | MPTR-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/form-private-access.cpp` | MPTR-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/form-static-ordinary-pointer.cpp` | MPTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/form-type.cpp` | MPTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/incomplete-object.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/mutable-direct-ok.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/mutable-through-pointer.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/null-converts.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/null-use-constant.cpp` | MPTR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/precedence.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/private-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/private-base-static-cast.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/qualification-conversion-unsafe.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/qualification-conversion.cpp` | MPTR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/ref-qualified-lvalue-only.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/reinterpret-between.cpp` | MPTR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/reinterpret-data-to-function.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/reinterpret-function-round-trip.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/result-const.cpp` | MPTR-3 ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/result-lvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/result-xvalue.cpp` | MPTR-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/member-pointers/rhs-not-member-pointer.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/static-cast-from-int-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/to-bool.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/union-members-equal.cpp` | MPTR-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/unrelated-object.cpp` | MPTR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/virtual-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/member-pointers/virtual-call.cpp` | MPTR-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/virtual-vs-null.cpp` | MPTR-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/member-pointers/zero-literal-null.cpp` | MPTR-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/multiplicative/cast-rounds-to-type.cpp` | MUL-17 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/multiplicative/divide-by-zero-sanitizer.cpp` | MUL-9 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/enum-float-warns.cpp` | MUL-16 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/excess-precision-either.cpp` | MUL-17 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp` | MUL-11 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | reject | accept | reject | accept | pass |
-| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/member-pointer-operand.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/nullptr-operand.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/operand-order-overloaded.cpp` | MUL-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/multiplicative/operand-order.cpp` | MUL-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/multiplicative/operands-arithmetic.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/operands-class.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/operands-enum-float.cpp` | MUL-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/operands-pointer.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/operands-scoped-enum.cpp` | MUL-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/product-value.cpp` | MUL-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/remainder-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/remainder-floating.cpp` | MUL-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/remainder-integral.cpp` | MUL-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/remainder-sign.cpp` | MUL-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/result-prvalue-address.cpp` | MUL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-divide-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/abstract-type.cpp` | NEW-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/allocation-before-initializer.cpp` | NEW-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/allocation-may-be-omitted.cpp` | NEW-14 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/array-destroy-order.cpp` | NEW-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/array-forms.cpp` | NEW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/array-needs-size.cpp` | NEW-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/array-negative-constant-size.cpp` | NEW-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/array-no-default-ctor.cpp` | NEW-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `expressions/new-delete/array-of-auto.cpp` | NEW-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/array-paren-init.cpp` | NEW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/array-runtime-size.cpp` | NEW-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/array-size-from-initializer.cpp` | NEW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/array-too-many-initializers.cpp` | NEW-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/array-zero.cpp` | NEW-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/class-allocation-function.cpp` | NEW-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/const-scalar-needs-init.cpp` | NEW-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/const-scalar-with-init.cpp` | NEW-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/delete-array-mismatch-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/new-delete/delete-class-converting-to-pointer.cpp` | NEW-15 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/new-delete/delete-incomplete-class.cpp` | NEW-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/delete-mismatch-array.cpp` | NEW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/delete-mismatch-scalar.cpp` | NEW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/delete-non-pointer.cpp` | NEW-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/delete-not-from-new.cpp` | NEW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/delete-null-constant.cpp` | NEW-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/delete-null.cpp` | NEW-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/delete-pointer-to-const.cpp` | NEW-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/delete-twice-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/new-delete/delete-void-pointer.cpp` | NEW-8 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/new-delete/destroys-and-constructs.cpp` | NEW-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/double-delete.cpp` | NEW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/forms.cpp` | NEW-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/function-type.cpp` | NEW-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/incomplete-type.cpp` | NEW-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/later-dimension-runtime.cpp` | NEW-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/leak-in-constant-evaluation.cpp` | NEW-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/multi-dimension-type.cpp` | NEW-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/new-auto-no-initializer.cpp` | NEW-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/new-auto-two-values.cpp` | NEW-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/new-void.cpp` | NEW-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/parenthesized-type.cpp` | NEW-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/placement-arguments.cpp` | NEW-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/new-delete/reference-type.cpp` | NEW-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/uninitialized-read.cpp` | NEW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/new-delete/uninitialized-write-then-read.cpp` | NEW-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/new-delete/zero-length-non-null.cpp` | NEW-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/arrow-on-non-pointer.cpp` | PFX-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-argument-count.cpp` | PFX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-class-converts-to-function-pointer.cpp` | PFX-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/call-class-with-call-operator.cpp` | PFX-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/call-class-without-call-operator.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-copy-initializes.cpp` | PFX-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/call-defaults-and-ellipsis.cpp` | PFX-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/call-explicit-constructor.cpp` | PFX-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-incomplete-parameter.cpp` | PFX-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-incomplete-return.cpp` | PFX-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-non-function.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-null-pointer.cpp` | PFX-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-object-pointer.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/call-result-category.cpp` | PFX-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/call-through-pointer.cpp` | PFX-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/call-too-many-arguments.cpp` | PFX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/dot-on-pointer.cpp` | PFX-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/ellipsis-nontrivial-class.cpp` | PFX-15 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `expressions/postfix/increment-enum.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/increment-function-pointer.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/increment-incomplete-pointer.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/member-access.cpp` | PFX-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/member-function-not-value.cpp` | PFX-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/member-of-prvalue.cpp` | PFX-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/mutable-and-reference-member-of-const.cpp` | PFX-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/no-such-member.cpp` | PFX-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-decrement-bool.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-increment.cpp` | PFX-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/postfix-not-lvalue.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-on-bool.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-on-const.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-on-void-pointer.cpp` | PFX-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/postfix-result-prvalue.cpp` | PFX-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/static-member-object-evaluated.cpp` | PFX-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/postfix/subscript-categories.cpp` | PFX-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/subscript-enum-index.cpp` | PFX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/subscript-floating-index.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/subscript-form-beyond-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/subscript-is-pointer-arithmetic.cpp` | PFX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/postfix/subscript-out-of-range-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/postfix/subscript-out-of-range.cpp` | PFX-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/subscript-past-end-heap-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/postfix/subscript-prvalue-array.cpp` | PFX-3 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `expressions/postfix/subscript-scoped-enum-index.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/subscript-two-integers.cpp` | PFX-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/postfix/subscript-write-past-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/bool-nullptr.cpp` | PRIM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-delimited-empty.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-empty.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-escape-out-of-range.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-escapes.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-hex-no-digits.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-multichar-warns.cpp` | PRIM-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/primary/char-multichar.cpp` | PRIM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-named-escape-unknown.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-named-escape.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-octal-too-large.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-plain-signedness.cpp` | PRIM-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-types.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-u8-not-single-byte.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-ucn-basic.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-ucn-control.cpp` | PRIM-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/char-ucn-surrogate.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-unicode-multichar.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char-unknown-escape.cpp` | PRIM-18 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/primary/char-unprefixed-not-single-unit.cpp` | PRIM-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/char16-not-bmp.cpp` | PRIM-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/float-exponent-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/float-exponent-sign-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | accept | reject | accept | reject | pass |
-| `expressions/primary/float-forms.cpp` | PRIM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/float-hex-needs-exponent.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/float-integer-suffix.cpp` | PRIM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/float-nearest-value.cpp` | PRIM-21 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/float-overflow-warns.cpp` | PRIM-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/primary/float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `expressions/primary/float-types.cpp` | PRIM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-bad-digit-binary.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-bad-digit-octal.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-bad-suffix.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-decimal-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-forms.cpp` | PRIM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-hex-fits-unsigned-ll.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-hex-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-negative-is-unary.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-prefix-no-digits-binary.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-prefix-no-digits-hex.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-separator-leading.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-separator-trailing.cpp` | PRIM-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/int-size-suffix.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-suffix-types.cpp` | PRIM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/int-too-large-signed-decimal.cpp` | PRIM-2 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `expressions/primary/int-too-large.cpp` | PRIM-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/member-const-in-const-function.cpp` | PRIM-12 ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/member-mutable-in-const.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/name-enumerator-prvalue.cpp` | PRIM-12 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/name-function-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/name-member-in-static.cpp` | PRIM-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/name-member-outside-object.cpp` | PRIM-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/name-member-unevaluated.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/name-parameter-in-scope.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/name-qualified-class-static.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/name-qualified-global.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/name-undeclared.cpp` | PRIM-12 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/name-variable-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/nullptr-member-pointer.cpp` | PRIM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/nullptr-to-bool-copy.cpp` | PRIM-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/nullptr-to-int.cpp` | PRIM-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/paren-function-call.cpp` | PRIM-14 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/paren-lvalue.cpp` | PRIM-14 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/paren-same-type.cpp` | PRIM-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-compare-constant.cpp` | PRIM-9 | reject | reject | accept | accept | accept | reject | accept | reject | pass |
-| `expressions/primary/string-concat-mixed.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-concat-u8-u.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-concat.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-escape-in-string.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-index-constant.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-lvalue.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-modify-constant.cpp` | PRIM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-bad-delimiter.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-delimiter-backslash.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-delimiter-paren.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-delimiter-tab.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-delimiter-too-long.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-raw-long-delimiter.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-raw.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/string-same-literal-two-evaluations.cpp` | PRIM-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/string-same-object-either.cpp` | PRIM-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/string-to-nonconst-pointer.cpp` | PRIM-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/string-type.cpp` | PRIM-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/this-const-member-modify.cpp` | PRIM-11 ASN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/this-default-member-init.cpp` | PRIM-11 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/this-explicit-object.cpp` | PRIM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/this-implicit-member.cpp` | PRIM-12 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/primary/this-namespace.cpp` | PRIM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/this-prvalue.cpp` | PRIM-11 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/this-static.cpp` | PRIM-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/primary/this-trailing-return.cpp` | PRIM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/primary/this-type.cpp` | PRIM-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/sequencing/adjacent-bitfields-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/bitwise-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/braced-list-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/default-argument-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/full-expression-for-clauses.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/full-expression-statement.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/init-capture-order.cpp` | LAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/member-operator-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/multiplicative-operand-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/new-placement-and-bound-order.cpp` | NEW-12 NEW-18 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/overloaded-assignment-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/parameter-destruction-order.cpp` | VC-15 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/parenthesized-aggregate-order.cpp` | LIST-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/reversed-comparison-order.cpp` | SEQ-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 SEQ-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/sequencing/volatile-reads-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/class-operand.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/shift/count-floating.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/count-negative-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/shift/count-negative-warns.cpp` | SHF-9 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/shift/count-negative.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/count-too-large-right.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/count-too-large-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/shift/count-too-large.cpp` | SHF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/count-width-of-promoted.cpp` | SHF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/grouping.cpp` | SHF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/left-shift-negative.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/left-shift-overflow-signed.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/left-shift-values.cpp` | SHF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/member-pointer-operand.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/nullptr-operand.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/operand-floating.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/operand-order.cpp` | SHF-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/shift/operand-pointer.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/operand-scoped-enum.cpp` | SHF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/operands-integral.cpp` | SHF-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/result-prvalue.cpp` | SHF-4 VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/shift/result-type.cpp` | SHF-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/right-shift-negative.cpp` | SHF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/shift/right-shift-values.cpp` | SHF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/address-of-qualified-member.cpp` | UN-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/address-of-rvalue.cpp` | UN-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/address-of.cpp` | UN-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/alignof-basic.cpp` | UN-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/alignof-expression.cpp` | UN-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/alignof-function.cpp` | UN-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/alignof-incomplete.cpp` | UN-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/alignof-unknown-bound.cpp` | UN-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/alignof-void.cpp` | UN-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/decrement-bool.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/decrement-overflow-constant.cpp` | UN-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-bool.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-const.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-enum.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-function-pointer.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-incomplete-pointer.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-overflow-constant.cpp` | UN-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/increment-overflow-sanitizer.cpp` | UN-21 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/unary/increment-pointer-past-end-constant.cpp` | UN-21 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `expressions/unary/increment-rvalue.cpp` | UN-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-dangling-constant.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-function.cpp` | UN-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/unary/indirection-incomplete-lvalue.cpp` | UN-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/indirection-incomplete-value.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-lvalue.cpp` | UN-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/unary/indirection-non-pointer.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-null-sanitizer.cpp` | UN-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/unary/indirection-null.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-nullptr-literal.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-past-end-constant.cpp` | UN-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-void-pointer.cpp` | UN-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/minus-bool.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/minus-int-min-sanitizer.cpp` | UN-4 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/unary/minus-int-min.cpp` | UN-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/minus-pointer.cpp` | UN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/minus-values.cpp` | UN-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/noexcept-conversion-false.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/noexcept-dynamic-cast-reference.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/noexcept-new-false.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/noexcept-not-evaluated.cpp` | UN-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/unary/noexcept-operator.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/noexcept-temporary-ctor-false.cpp` | UN-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/plus-function-operand.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/plus-minus-scoped-enum.cpp` | UN-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/plus-minus-types.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/plus-pointer.cpp` | UN-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/prefix-increment-lvalue.cpp` | UN-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/prefix-increment.cpp` | UN-20 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/unary/sizeof-array-parameter-warns.cpp` | UN-19 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `expressions/unary/sizeof-array-reference-silent.cpp` | UN-19 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `expressions/unary/sizeof-at-least-one.cpp` | UN-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/sizeof-basic.cpp` | UN-12 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/sizeof-function.cpp` | UN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/sizeof-incomplete.cpp` | UN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/sizeof-not-evaluated.cpp` | UN-13 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/unary/sizeof-unsigned-ilp32.cpp` | UN-15 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `expressions/unary/sizeof-unsigned-lp64.cpp` | UN-15 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/unary/sizeof-void.cpp` | UN-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/address-of-prvalue.cpp` | VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/address-of-xvalue.cpp` | VC-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/aggregate-element-temporaries.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/argument-lives-to-end.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/array-element-default-argument.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/array-prvalue-argument.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/assign-to-class-prvalue.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/assign-to-prvalue.cpp` | VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/assign-to-scalar-prvalue.cpp` | VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/condition-temporaries.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/cv-prvalue-dropped.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/declarators-separate.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/decltype-call-deleted-destructor.cpp` | VC-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/default-argument-temporary.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/discarded-call-deleted-destructor.cpp` | VC-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/discarded-prvalue-destroyed.cpp` | VC-5 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/guaranteed-elision.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/lvalues.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/materialization-binds.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/materialize-array-decay.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/materialize-array-subscript.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/materialize-member-access.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/materialize-member-call.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/materialize-pointer-to-member.cpp` | VC-8 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/member-access-lvalue.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/member-function-access-not-address.cpp` | VC-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/member-reference-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/more-categories.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/parameter-destruction-point.cpp` | VC-10 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/prvalue-no-object-until-needed.cpp` | VC-4 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/prvalues.cpp` | VC-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/return-temporaries-before-locals.cpp` | VC-9 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/rvalue-ref-to-function-cast.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/rvalue-reference-name-binding.cpp` | VC-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/value-categories/rvalue-reference-name-is-lvalue.cpp` | VC-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/static-member-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/temporaries-reverse-order.cpp` | VC-6 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/temporary-constant-evaluation.cpp` | VC-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/trivial-parameter-address.cpp` | VC-7 | run | run | run | accept | run | run | run | run | pass |
-| `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | accept | accept | accept | accept | pass |
-| `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/adl-plus-ordinary.cpp` | NAM-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/class-member-type-needs-order.cpp` | NAM-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/class-members-any-order.cpp` | NAM-6 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/function-not-later-global.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/hiding-ignores-kind.cpp` | NAM-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/label-and-variable-same-name.cpp` | NAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/label-duplicate.cpp` | NAM-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/label-scope-function.cpp` | NAM-7 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/namespace-member-defined-outside.cpp` | NAM-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/namespace-qualified-use.cpp` | NAM-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/namespace-reopened.cpp` | NAM-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/parameter-hides-global.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/qualified-reaches-hidden-global.cpp` | NAM-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/redeclare-different-kind.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/redeclare-function-ok.cpp` | NAM-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/redeclare-same-scope.cpp` | NAM-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/scope-ends-with-block.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/use-before-declaration.cpp` | NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/names/visible-from-declaration.cpp` | NAM-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/names/visible-in-own-initializer.cpp` | NAM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/objects/address-stable.cpp` | OBJ-7 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/array-elements-order.cpp` | OBJ-6 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/block-reverse-order.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/constant-evaluation-same-order.cpp` | OBJ-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/objects/construction-order.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/deleted-object-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/distinct-objects-distinct-addresses.cpp` | OBJ-7 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/dynamic-not-destroyed-without-delete.cpp` | OBJ-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/dynamic-outlives-scope.cpp` | OBJ-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/early-return-destroys.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/function-static-first-use.cpp` | OBJ-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/lifetime-begins-after-init.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/loop-body-each-iteration.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/nested-block-ends-first.cpp` | OBJ-3 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 UN-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `foundations/objects/read-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/read-before-init-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/reference-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/reference-does-not-extend-named.cpp` | OBJ-8 OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/reference-to-temporary-extends.cpp` | OBJ-8 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/scalar-lifetime-with-storage.cpp` | OBJ-1 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/static-never-reached-not-constructed.cpp` | OBJ-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/static-order.cpp` | OBJ-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/storage-reuse-ends-old-object-constant.cpp` | OBJ-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/objects/temporary-ends-with-full-expression.cpp` | OBJ-9 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/exit-status-kept-optimized.cpp` | TR-7 | run-fail | run-fail | run-fail | skip | run-fail | run-fail | run-fail | run-fail | pass |
-| `foundations/translation/if-consteval-selects.cpp` | TR-5 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 CONV-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/ill-formed-in-unused-function.cpp` | TR-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-address.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-called.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-exit-status.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-falls-off-end.cpp` | TR-2 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-no-definition.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `foundations/translation/main-nonzero-status.cpp` | TR-2 | run-fail | run-fail | run-fail | accept | run-fail | run-fail | run-fail | run-fail | pass |
-| `foundations/translation/main-program-name.cpp` | TR-9 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/main-with-args.cpp` | TR-2 TR-9 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 FN-6 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `foundations/translation/observable-volatile-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
-| `foundations/translation/undefined-at-link.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
-| `foundations/translation/undefined-on-taken-path-only.cpp` | TR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/undefined-taints-whole-evaluation.cpp` | TR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/unit-sees-own-declarations-only.cpp` | TR-4 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/translation/units-translated-separately.cpp` | TR-4 | run | run | run | accept | run | run | run | run | pass |
-| `foundations/translation/volatile-order-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
-| `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `foundations/translation/warning-not-error.cpp` | TR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/align-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/align-lp64.cpp` | TYP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/align-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/bool-values.cpp` | TYP-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/char-signed-ilp32.cpp` | TYP-3 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/char-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/distinct-character-types.cpp` | TYP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/distinct-same-size-ilp32.cpp` | TYP-5 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/distinct-same-size.cpp` | TYP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/float-precision.cpp` | TYP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/int-max-overflow.cpp` | TYP-4 ADD-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/integer-ranges-ilp32.cpp` | TYP-4 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/integer-ranges-lp64.cpp` | TYP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/long-double-precision-ilp32.cpp` | TYP-10 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/long-double-precision.cpp` | TYP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/rank-floating.cpp` | TYP-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/rank-long-unsigned-ilp32.cpp` | TYP-8 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/rank-long-unsigned-lp64.cpp` | TYP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/rank-promotions.cpp` | TYP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/size-characters-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/size-characters-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/size-floating-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/size-floating-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/size-integers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/size-integers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/size-pointers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/size-pointers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/size-result-type-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
-| `foundations/types/size-result-type-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/specifier-int-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-bool.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-double.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/specifier-long-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-long-double.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-long-long.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-long-short.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-short-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-short-double.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-short-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-signed-char32.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-signed-unsigned.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-signed-wchar.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-unsigned-bool.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-unsigned-char16.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-unsigned-char8.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifier-unsigned-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/types/specifiers-equivalent.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 TYP-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/types/wchar-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/block-scope.cpp` | STMT-2 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/blocks/case-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `statements/blocks/declaration-anywhere.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/default-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
-| `statements/blocks/disambiguation-rest-not-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/expression-statement.cpp` | STMT-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/label-at-end-of-block.cpp` | STMT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/blocks/null-statement.cpp` | STMT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/blocks/redeclare-same-block.cpp` | STMT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/blocks/statements-in-order.cpp` | STMT-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/blocks/unused-value-warns.cpp` | STMT-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
-| `statements/blocks/void-cast-silences.cpp` | STMT-4 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
-| `statements/blocks/volatile-name-statement.cpp` | STMT-7 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-assignment.cpp` | IF-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-converted-to-bool.cpp` | IF-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-declaration-array.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-class.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-constexpr.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/condition-declaration-equals-braces.cpp` | IF-5 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-declaration-extern.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-function-pointer.cpp` | IF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/condition-declaration-function.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-inline.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-no-init.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-static.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-thread-local.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-two.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration-typedef.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-declaration.cpp` | IF-5 IF-9 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-evaluated-once.cpp` | IF-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/condition-not-convertible.cpp` | IF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/condition-structured-binding.cpp` | IF-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-branches.cpp` | IF-18 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/consteval-else-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-immediate-context.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/consteval-immediate-outside.cpp` | IF-24 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-in-consteval.cpp` | IF-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/consteval-no-condition.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/consteval-plain-function.cpp` | IF-18 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/consteval-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-case-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-condition-explicit-bool.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-condition-narrowing.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-condition-not-constant.cpp` | IF-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-condition-pointer.cpp` | IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-discard-in-template.cpp` | IF-13 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/constexpr-discard-return-type.cpp` | IF-14 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/constexpr-goto-into.cpp` | IF-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-non-template-checked.cpp` | IF-23 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-non-template-no-definition.cpp` | IF-15 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/constexpr-non-template-return-type.cpp` | IF-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/constexpr-template-nondependent-checked.cpp` | IF-22 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/constexpr-with-init.cpp` | IF-7 IF-16 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/dangling-else.cpp` | IF-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/else-if-scope.cpp` | IF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/goto-into-branch.cpp` | IF-12 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/init-alias.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-declaration-kinds.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-declaration.cpp` | IF-7 IF-9 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/init-empty.cpp` | IF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/init-expression.cpp` | IF-7 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/init-scope-ends.cpp` | IF-9 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/init-static-assert.cpp` | IF-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/init-using-declaration.cpp` | IF-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/init-using-directive.cpp` | IF-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/lifetimes.cpp` | IF-11 | run | run | run | accept | run | run | run | run | pass |
-| `statements/if/not-consteval-else-immediate.cpp` | IF-19 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/not-constexpr.cpp` | IF-20 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-else-statement.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-else.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-in-nested-block.cpp` | IF-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/if/redeclare-init-and-condition.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/break-in-lambda-in-loop.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/break-innermost.cpp` | JMP-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/break-outside.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/constructor-return-void-expression.cpp` | JMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/continue-for.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/continue-in-switch.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/continue-outside.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/continue-while-condition.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/copy-elision-named.cpp` | JMP-11 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/destructor-return-value.cpp` | JMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/destructor-return-void-expression.cpp` | JMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/duplicate-label.cpp` | JMP-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-back-recreates.cpp` | JMP-9 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/goto-forward-backward.cpp` | JMP-8 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/goto-other-function.cpp` | JMP-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-out-destroys.cpp` | JMP-9 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/goto-out-of-lambda.cpp` | JMP-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-past-class-object.cpp` | JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-past-initialization.cpp` | JMP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-past-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `statements/jumps/goto-past-static.cpp` | JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/goto-past-trivial-class.cpp` | JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/goto-past-uninitialized-scalar.cpp` | JMP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/goto-skips-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `statements/jumps/goto-undefined-label.cpp` | JMP-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/label-function-scope.cpp` | JMP-5 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/label-separate-names.cpp` | JMP-5 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/return-braced.cpp` | JMP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/return-converts.cpp` | JMP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/return-destroys-locals.cpp` | JMP-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/return-missing-value.cpp` | JMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/return-move-only-parameter.cpp` | JMP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/return-parameter-always-moves.cpp` | JMP-11 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/return-parameter-as-lvalue-ref.cpp` | JMP-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/return-parenthesized-move-only.cpp` | JMP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp` | JMP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/return-static-local-move-only.cpp` | JMP-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/return-value-in-void.cpp` | JMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/void-function-return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/loops/body-own-scope.cpp` | LOOP-4 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/condition-not-bool.cpp` | LOOP-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/do-basic.cpp` | LOOP-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/do-body-name-not-in-condition.cpp` | LOOP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/do-condition-declaration.cpp` | LOOP-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/for-condition-declaration.cpp` | LOOP-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/for-condition-destroyed-after-step.cpp` | LOOP-3 | run | run | run | accept | run-fail | run | run | run | pass |
-| `statements/loops/for-init-alias.cpp` | LOOP-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/for-init-destroyed-once.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/for-init-redeclare-body.cpp` | LOOP-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/for-init-redeclared-in-condition.cpp` | LOOP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/for-init-scope.cpp` | LOOP-4 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/for-init-static-assert.cpp` | LOOP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/loops/for-order.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/for-parts-optional.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/for-sequence.cpp` | LOOP-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/while-basic.cpp` | LOOP-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/while-condition-declaration.cpp` | LOOP-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/loops/while-condition-redeclared.cpp` | LOOP-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/array.cpp` | RFOR-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/begin-end-not-adl.cpp` | RFOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/braced-list.cpp` | RFOR-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/callable-data-members.cpp` | RFOR-2 | run | run | run | reject | run | run | run | run | pass |
-| `statements/range-for/data-member-begin-counts.cpp` | RFOR-7 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
-| `statements/range-for/data-member-named-begin.cpp` | RFOR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/range-for/end-computed-once.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/equality-only-iterator.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/extern-loop-variable.cpp` | RFOR-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/free-begin-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/incomplete-element.cpp` | RFOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/init-statement.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/loop-name-not-in-range.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/member-begin-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/member-begin-only-uses-free.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/member-begin-only.cpp` | RFOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/not-a-range.cpp` | RFOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/postfix-only-iterator.cpp` | RFOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/range-evaluated-once.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/redeclare-loop-variable.cpp` | RFOR-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/sentinel-end.cpp` | RFOR-2 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/static-thread-local-declaration.cpp` | RFOR-5 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `statements/range-for/storage-class.cpp` | RFOR-5 | reject | reject | reject | reject | accept | reject | reject | reject | pass |
-| `statements/range-for/structured-binding.cpp` | RFOR-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/range-for/temporary-in-range-expression.cpp` | RFOR-4 | run | run | run | accept | run-fail | run-fail | run | run | pass |
-| `statements/range-for/temporary-range-lives.cpp` | RFOR-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/break-exits.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/case-duplicate-after-conversion.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-duplicate.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-in-lambda-body.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-in-local-class.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-inside-loop.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/case-narrowing.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-not-constant.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-out-of-char-range.cpp` | SW-3 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/case-outside-switch.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-skips-nontrivial-destructor.cpp` | SW-5 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
-| `statements/switch/case-skips-trivial-struct.cpp` | SW-5 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/condition-declaration.cpp` | SW-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/condition-explicit-conversion.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/condition-floating.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/condition-name-redeclared.cpp` | SW-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/condition-once.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/condition-pointer.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/condition-two-conversions-same-type.cpp` | SW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/switch/condition-two-conversions.cpp` | SW-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/condition-types.cpp` | SW-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/switch/dispatch.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/fallthrough.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/init-name-redeclared.cpp` | SW-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/init-statement.cpp` | SW-4 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/jump-past-block.cpp` | SW-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
-| `statements/switch/jump-past-initialization.cpp` | SW-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/jump-past-uninitialized.cpp` | SW-5 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/nested-switch-labels.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | run | run | run | run | pass |
-| `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| Test | Rules | Expected | clang-host | gcc-host | edg-7.0 | edg-7.0-ilp32 | gcc-14 | clang-18 | gcc-16 | clang-22 | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `classes/access/access-after-overload-resolution.cpp` | ACC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/access-best-path.cpp` | ACC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/access-label-on-nothing.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/class-default-private.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/default-argument-private.cpp` | ACC-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/enclosing-not-access-nested.cpp` | ACC-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/friend-class.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/friend-function.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/friend-ignores-label.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/friend-member-function-only.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/friend-member-function.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/friend-not-inherited.cpp` | ACC-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/friend-not-transitive.cpp` | ACC-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/friend-plain-type-name.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/friend-private-member-of-other.cpp` | ACC-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend-not-visible.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/hidden-friend.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/injected-name-private-base.cpp` | ACC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/injected-name-qualified.cpp` | ACC-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/labels.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/local-class-member-access.cpp` | ACC-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/nested-accesses-enclosing.cpp` | ACC-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/private-base-conversion.cpp` | ACC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-base-name-in-derived.cpp` | ACC-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-base.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-hides-public-base.cpp` | ACC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-in-member.cpp` | ACC-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/access/private-outside.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-type-named.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/private-type-out-of-line.cpp` | ACC-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/private-type-via-auto.cpp` | ACC-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/protected-base-in-derived.cpp` | ACC-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/protected-member-pointer-derived.cpp` | ACC-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/protected-member-pointer.cpp` | ACC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/protected-outside.cpp` | ACC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/protected-static-through-base.cpp` | ACC-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/protected-through-base.cpp` | ACC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/protected-through-derived.cpp` | ACC-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/static-member-access.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/struct-base-default-public.cpp` | ACC-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/struct-default-public.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/union-default-public.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/using-changes-access.cpp` | ACC-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/access/using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/declared-outside-then-defaulted.cpp` | DCMP-3 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `classes/comparisons/decltype-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/empty-class-compares-equal.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-anonymous-union-member.cpp` | DCMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-array-member.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-auto-return.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-bases-first.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-by-value-param.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-constexpr.cpp` | DCMP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-friend-by-value.cpp` | DCMP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-friend.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-member-eq-private.cpp` | DCMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-member-not-comparable-unused.cpp` | DCMP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-member-not-comparable.cpp` | DCMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-memberwise.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-mixed-params.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-nonconst-member.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-nonmember-nonfriend.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-other-class-param.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-out-of-class.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-private-members.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-ref-qualified.cpp` | DCMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/eq-reference-member.cpp` | DCMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-rvalue-ref-qualified.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-stops-at-first-false.cpp` | DCMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/eq-union.cpp` | DCMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-wrong-param.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/eq-wrong-return.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/member-eq-returns-int.cpp` | DCMP-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/ne-declared-blocks-reversed.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-declared-direct-ok.cpp` | DCMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/ne-declared-not-rewritten.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/ne-needs-bool-eq.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/non-member-reversed.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/not-equal-defaulted.cpp` | DCMP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/out-of-class-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `classes/comparisons/reversed-eq.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/rewritten-ambiguous-const-ok.cpp` | DCMP-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/rewritten-ambiguous-warns.cpp` | DCMP-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/rewritten-ne.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/rewritten-relational-reversed.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/secondary-defaulted.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/secondary-without-spaceship.cpp` | DCMP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-array.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-auto-no-member-spaceship.cpp` | DCMP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-auto-partial.cpp` | DCMP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-auto-strong.cpp` | DCMP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-auto-weak-member.cpp` | DCMP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-bases-first.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-bool-member-ok.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-constexpr.cpp` | DCMP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/spaceship-declares-eq.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-member-returns-non-category.cpp` | DCMP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-memberwise.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp` | DCMP-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-no-header-types.cpp` | DCMP-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-relational-rewrite.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-specified-type-synthesized.cpp` | DCMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/comparisons/spaceship-wrong-return-used.cpp` | DCMP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/comparisons/spaceship-wrong-return.cpp` | DCMP-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/comparisons/template-defaulted.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/base-init-calls-member-early-constant.cpp` | CTOR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/body-after-members.cpp` | CTOR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/const-member-all-default-inits.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-base-initialized.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-base-leaves-member.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-defaulted-in-class.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-empty.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-member-init.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/const-object-modified-in-ctor.cpp` | CTOR-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/const-object-no-init.cpp` | CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/const-object-user-ctor.cpp` | CTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/converting-ctor-multi-arg-list.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/converting-ctor.cpp` | CTOR-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/ctor-address.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-const-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-explicit-object.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-on-const-this-type.cpp` | CTOR-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/ctor-out-of-line.cpp` | CTOR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/ctor-redeclared.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-ref-qualified.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-return-type.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-specifiers.cpp` | CTOR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/ctor-static.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-virtual.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/ctor-volatile.cpp` | CTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/default-ctor-deleted-by-member-dtor.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/defaulted-default-restores.cpp` | CTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/defaulted-leaves-members.cpp` | CTOR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-cycle.cpp` | CTOR-14 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `classes/constructors/delegating-ignores-default-member-init.cpp` | CTOR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/delegating-self.cpp` | CTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-with-member.cpp` | CTOR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating.cpp` | CTOR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/delete-array-deleted-dtor.cpp` | DTOR-3 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `classes/constructors/deleted-default-base.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-const-aggregate-member.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-const-class-member.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-const-member.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-member-no-default.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-member-private.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-default-only-if-used.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-reference-init.cpp` | CTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-default-reference.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-delete.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-new.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-address.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-call-via-alias.cpp` | DTOR-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-call-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-const.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-explicit-object.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-member-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-on-const-object.cpp` | DTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-order-array.cpp` | DTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/dtor-order-automatic.cpp` | DTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/dtor-order-delete-array.cpp` | DTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/dtor-order.cpp` | DTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/dtor-out-of-line.cpp` | DTOR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/dtor-params.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-ref-qualified.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-return-type.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-specifiers.cpp` | DTOR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-static.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-two.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-variadic.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-void-param.cpp` | DTOR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/dtor-without-call.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-wrong-name.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-argument.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-bool-false.cpp` | CTOR-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/explicit-bool-not-constant.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-bool-true.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-copy-init.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-copy-list-init.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-default-copy-list.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-direct-init.cpp` | CTOR-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/explicit-dtor-call.cpp` | DTOR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/explicit-non-ctor.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-out-of-line.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-return.cpp` | CTOR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/explicit-static-cast.cpp` | CTOR-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/explicitly-defaulted-but-deleted.cpp` | CTOR-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/implicit-default.cpp` | CTOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/implicit-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/implicit-dtor-runs-members.cpp` | DTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/implicitly-deleted-dtor-member.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/inherited-ctors-keep-default.cpp` | CTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/init-order-declaration.cpp` | CTOR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/init-order-reads-later.cpp` | CTOR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/init-order-same-order.cpp` | CTOR-13 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/init-order-uses-earlier.cpp` | CTOR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/init-order-warns.cpp` | CTOR-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-base-and-member.cpp` | CTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/mem-init-braces-narrowing.cpp` | CTOR-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-braces.cpp` | CTOR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/mem-init-duplicate.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-in-declaration-only.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-indirect-base.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-not-member.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-overrides-default.cpp` | CTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/mem-init-pack-of-reference.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-static-member.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/mem-init-type-alias-base.cpp` | CTOR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/mem-init-uses-param.cpp` | CTOR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/constructors/nested-default-member-init-before-complete.cpp` | CTOR-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/no-implicit-default-with-copy-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/no-implicit-default-with-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/one-user-conversion-plus-standard.cpp` | CTOR-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/one-user-conversion.cpp` | CTOR-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/private-dtor-member.cpp` | DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/private-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/pseudo-dtor-scalar.cpp` | DTOR-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/reference-default-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `classes/constructors/reference-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `classes/constructors/trivial-default-base-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-defaulted-later.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-defaulted.cpp` | CTOR-23 JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/trivial-default-implicit.cpp` | CTOR-23 JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/trivial-default-member-initializer.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-member-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-user-provided.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-virtual-base.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-default-virtual-function.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-destructor-defaulted.cpp` | DTOR-9 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/constructors/trivial-destructor-member-nontrivial.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-destructor-user-provided.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/trivial-destructor-virtual-destructor.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/use-after-delete-sanitizer.cpp` | DTOR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/alias-same-type-hides.cpp` | CVF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` | CVF-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/ambiguous-two-functions.cpp` | CVF-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/array-bound-new.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/basic.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/best-match-exact.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/builtin-operator.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/call-by-name.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/call-through-function-reference.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/const-overloads.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/const-qualified-needed.cpp` | CVF-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/constexpr-conversion.cpp` | CVF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/conversion-to-base-not-used.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-base-warns.cpp` | CVF-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-self-not-used.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-self-warns.cpp` | CVF-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-void-explicit-call.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-void-warns.cpp` | CVF-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-void.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/deduced-auto.cpp` | CVF-1 | run | run | reject | accept | skip | run | run | reject | run | pass |
+| `classes/conversion-functions/delete-class-operand.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/different-type-not-hidden.cpp` | CVF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/explicit-argument.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-arithmetic.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-comparison.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-copy-init.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-if.cpp` | CVF-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/explicit-bool-noexcept.cpp` | CVF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-bool-return.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-static-assert.cpp` | CVF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-brace-init.cpp` | CVF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-condition-constant.cpp` | CVF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-copy-init.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-direct-init.cpp` | CVF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-int-in-if.cpp` | CVF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-object-conversion.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/function-argument.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/function-pointer-without-alias.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/hidden-same-type.cpp` | CVF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/inherited.cpp` | CVF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/new-size-two-integral-conversions.cpp` | CVF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/nonmember.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/out-of-line.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/parameters.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/pointer-target.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/redeclared.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/return-statement.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/return-type.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/static.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/switch-condition.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/switch-two-integral-conversions.cpp` | CVF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/then-standard-conversion.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/to-array.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/to-function-pointer.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/to-function.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/to-reference.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/conversion-functions/two-converting-ctors.cpp` | CVF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/two-user-conversions.cpp` | CVF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/variadic.cpp` | CVF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/virtual-conversion.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/assign-result-lvalue.cpp` | CPY-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/cast-move-only-accepted.cpp` | CPY-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/const-member-assign.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/const-member-move-assign.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/const-rvalue-picks-copy.cpp` | CPY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/constant-evaluation-no-nrvo.cpp` | CPY-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/copy-assign-forms.cpp` | CPY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/copy-assign-nonmember.cpp` | CPY-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-assign-static.cpp` | CPY-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-by-value.cpp` | CPY-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-const-ref.cpp` | CPY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-default-args-suppresses-implicit.cpp` | CPY-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-default-args.cpp` | CPY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-nonconst-ref-const-source.cpp` | CPY-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/copy-ctor-nonconst-ref.cpp` | CPY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/copy-ctor-volatile.cpp` | CPY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/copy-deleted-by-member-dtor.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-assign-wrong-return-used.cpp` | CPY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-assign-wrong-return.cpp` | CPY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-assign-by-value.cpp` | CPY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-const-mismatch-unused.cpp` | CPY-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-copy-const-mismatch-used.cpp` | CPY-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-deleted-used.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-copy-nonconst-param.cpp` | CPY-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-copy-restores.cpp` | CPY-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-move-const-param-used.cpp` | CPY-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-move-const-param.cpp` | CPY-14 | accept | accept | accept | accept | skip | reject | accept | accept | accept | pass |
+| `classes/copy-move/defaulted-out-of-line-copy.cpp` | CPY-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/defaulted-out-of-line-would-delete.cpp` | CPY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-volatile-param-used.cpp` | CPY-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/defaulted-volatile-param.cpp` | CPY-14 | accept | accept | accept | accept | skip | reject | accept | accept | accept | pass |
+| `classes/copy-move/deleted-copy-move-only-member.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/deleted-copy-private-member.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/deleted-move-falls-back-to-copy.cpp` | CPY-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/deprecated-copy-warns.cpp` | CPY-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/derived-assign-hides-base.cpp` | CPY-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/explicit-copy-ctor-copy-init.cpp` | CPY-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/explicit-object-copy-assign.cpp` | CPY-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/explicitly-deleted-move-not-ignored.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-assign-nonconst.cpp` | CPY-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-constexpr.cpp` | CPY-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp` | CPY-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/implicit-copy-nonconst-from-member.cpp` | CPY-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/implicit-copy-of-owner-sanitizer.cpp` | NEW-5 CPY-4 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `classes/copy-move/implicit-copy.cpp` | CPY-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/implicit-move-assign.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/implicit-move.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/lvalue-move-only-rejected.cpp` | CPY-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/memberwise-array.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/memberwise-assign-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/memberwise-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/move-assign-deletes-copy-ctor.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor-default-args.cpp` | CPY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/move-ctor-deletes-copy-assign.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor-deletes-copy.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-ctor.cpp` | CPY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/move-on-return-no-warning.cpp` | CPY-13 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/move-only-member-moves.cpp` | CPY-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/named-return-elision-either.cpp` | CPY-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/named-return-needs-move.cpp` | CPY-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/no-implicit-move-assign-user-dtor.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-copy-assign.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-copy.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/no-implicit-move-user-dtor.cpp` | CPY-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/parameter-return-moved.cpp` | CPY-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/pessimizing-move-warns.cpp` | CPY-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/prvalue-argument-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/prvalue-no-copy-count.cpp` | CPY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/prvalue-no-copy.cpp` | CPY-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/reference-member-assign.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/reference-member-copy-ctor.cpp` | CPY-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-converting-move.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-global-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-local-as-lvalue-ref.cpp` | CPY-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-local-move-only.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-local-prefers-move.cpp` | CPY-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/return-lvalue-ref-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-member-not-moved.cpp` | CPY-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/return-param-move-only.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-parenthesized-local.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-rvalue-ref-move-only.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/return-rvalue-ref-to-ref.cpp` | CPY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/rvalue-picks-move.cpp` | CPY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/rvalue-ref-member-copy-deleted.cpp` | CPY-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/template-not-copy-ctor.cpp` | CPY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/trivial-assign-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivial-assign-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-copy-defaulted.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivial-copy-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivial-copy-member-initializer.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivial-copy-member-nontrivial.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-copy-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-copy-virtual-base.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-copy-virtual-function.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-move-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivially-copyable-bytes.cpp` | CPY-19 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/copy-move/user-dtor-keeps-copy.cpp` | CPY-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/copy-move/virtual-base-assigned-count.cpp` | CPY-18 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/abstract-skips-virtual-base-init.cpp` | DER-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/aggregate-with-base.cpp` | DER-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/ambiguous-base-conversion.cpp` | DER-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-base-via-path.cpp` | DER-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-member-unused.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-member.cpp` | DER-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-overloads-different-bases.cpp` | DER-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-qualified-ok.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/ambiguous-repeated-base-member.cpp` | DER-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/ambiguous-resolved-by-using.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/base-alias.cpp` | DER-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/base-duplicate.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-enum.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-final.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-incomplete.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-not-class.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-private-ctor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-protected-ctor.cpp` | DER-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/base-protected-dtor-direct.cpp` | ACC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-protected-dtor.cpp` | DER-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/base-qualified.cpp` | DER-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/base-self.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-to-derived-implicit.cpp` | DER-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/base-union.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/constexpr-ctor-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/constexpr-dtor-virtual-base.cpp` | DER-12 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/derived/constexpr-object-virtual-base.cpp` | DER-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/data-member-hides-function.cpp` | DER-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/derived-hides-base-overloads.cpp` | DER-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/derived-to-base-constant.cpp` | DER-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/derived-to-base-pointer.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/direct-and-indirect-base-use.cpp` | DER-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/direct-and-indirect-base.cpp` | DER-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/dominance-derived-hides.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/dominance-nonvirtual-ambiguous.cpp` | DER-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/final-not-keyword.cpp` | DER-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/hiding-type-by-member.cpp` | DER-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-access.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-default-args.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-explicit.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-hidden-by-derived.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-no-default.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-not-copy.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-not-direct-base.cpp` | DER-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` | DER-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/inherited-ctor-two-bases-unused.cpp` | DER-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/inherited-ctor.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/inherits-members.cpp` | DER-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/most-derived-inits-virtual-base.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/most-derived-must-init-virtual-base.cpp` | DER-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/null-derived-to-base.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/qualified-name-reaches-base.cpp` | DER-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/repeated-base-static-ok.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/repeated-base-two-subobjects.cpp` | DER-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/second-base-address.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/sizeof-at-least-base.cpp` | DER-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/slicing.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/static-cast-downcast-wrong-object-constant.cpp` | DER-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp` | DER-17 CAST-14 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `classes/derived/static-cast-downcast.cpp` | DER-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/union-as-derived.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/using-brings-overloads.cpp` | DER-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/using-derived-wins.cpp` | DER-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/using-not-a-base.cpp` | DER-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-and-nonvirtual-base.cpp` | DER-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-constructed-first.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/virtual-base-constructed-once.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/virtual-base-conversion-unambiguous.cpp` | DER-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/virtual-base-downcast.cpp` | DER-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-init-indirect.cpp` | DER-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/derived/virtual-base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/derived/virtual-base-shared.cpp` | DER-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/derived/virtual-keyword-order.cpp` | DER-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/backing-array-copy-elements.cpp` | ILC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/backing-array-lives-with-list.cpp` | ILC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/constexpr-list-ctor.cpp` | ILC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/copy-from-single-same-class.cpp` | ILC-3 | run | run | run | accept | skip | run | run-fail | run | run | pass |
+| `classes/initializer-lists/deduce-list-element-type-mismatch.cpp` | ILC-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/deduce-list-element-type.cpp` | ILC-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/designated-non-aggregate.cpp` | ILC-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/elements-const.cpp` | ILC-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/empty-braces-default.cpp` | ILC-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/empty-braces-no-default.cpp` | ILC-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/explicit-best-match-braced.cpp` | ILC-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/explicit-not-candidate-equals.cpp` | ILC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/function-param-list.cpp` | ILC-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-copy-list.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-explicit-copy-list.cpp` | ILC-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/list-ctor-extra-default-params.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp` | ILC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/list-ctor-not-viable-fallback.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-preferred-over-better-match.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/list-ctor-preferred.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/move-only-element.cpp` | ILC-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-constant-fits.cpp` | ILC-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/narrowing-in-ctor-args.cpp` | ILC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-in-list-elements.cpp` | ILC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/narrowing-paren-ok.cpp` | ILC-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/initializer-lists/nested-braces-element.cpp` | ILC-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/not-aggregate-with-ctor.cpp` | ILC-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/return-braced-list.cpp` | ILC-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/initializer-lists/return-deduced-from-list.cpp` | ILC-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/selects-constructor.cpp` | ILC-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/auto-data-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/bound-member-function.cpp` | CLS-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/class-name-alias.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/class-name-anon-union-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/class-name-enumerator.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/class-name-function.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/class-name-nested-class.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/complete-in-default-argument.cpp` | CLS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/complete-in-default-member-init.cpp` | CLS-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/complete-in-member-bodies.cpp` | CLS-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/const-member-modifies.cpp` | CLS-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/data-and-function-same-name.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/define-outside-class.cpp` | CLS-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/define-undeclared-member.cpp` | CLS-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/distinct-addresses.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/duplicate-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/empty-base-shares-address.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/empty-class-size-one.cpp` | CLS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/empty-class-size.cpp` | CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/explicit-object-address-ordinary.cpp` | CLS-17 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/explicit-object-no-this.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/explicit-object-parameter.cpp` | CLS-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/explicit-object-qualified.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/explicit-object-static.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/explicit-object-virtual.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/extern-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/first-member-same-address.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/incomplete-member.cpp` | CLS-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/inline-static-member.cpp` | CLS-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/local-class-const-local.cpp` | CLS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/local-class-constexpr-double.cpp` | CLS-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/local-class-friend-definition.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/local-class-member-defined-outside.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/local-class-member-template.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/local-class-static-member.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/local-class-uses-local.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/local-class-uses-static-local.cpp` | CLS-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/local-class.cpp` | CLS-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/member-function-declared-twice.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/member-function-initialized.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/member-function-inline.cpp` | CLS-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/member-named-as-class-with-constructor.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/member-named-as-class.cpp` | CLS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/member-of-own-type.cpp` | CLS-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/member-order-mixed-access.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/member-order.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/mutable-const.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/mutable-member.cpp` | CLS-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/mutable-reference.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/mutable-static.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/nested-in-unnamed-static-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/nested-types.cpp` | CLS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/noexcept-complete-class.cpp` | CLS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/non-const-on-const-object.cpp` | CLS-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/paren-default-member-init.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/pointer-to-own-type.cpp` | CLS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/ref-qualified-mixed.cpp` | CLS-26 | reject | reject | accept | reject | skip | reject | reject | accept | reject | pass |
+| `classes/members/ref-qualified.cpp` | CLS-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/register-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/sizeof-in-class-incomplete.cpp` | CLS-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/standard-layout-reinterpret.cpp` | CLS-19 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/static-and-nonstatic-same-params.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-call-operator.cpp` | CLS-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/static-const-enum.cpp` | CLS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/static-const-init-not-constant.cpp` | CLS-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-const-integral.cpp` | CLS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/static-const-odr-use-no-definition.cpp` | CLS-21 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/members/static-data-member.cpp` | CLS-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/static-member-function-const.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-member-function.cpp` | CLS-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/static-member-named-as-class.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-member-not-defined.cpp` | CLS-3 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/members/static-member-own-type.cpp` | CLS-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/members/static-non-const-in-class-init.cpp` | CLS-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-ref-qualified.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-uses-this.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/static-virtual.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/thread-local-nonstatic.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/thread-local-static-member.cpp` | CLS-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/members/unnamed-class-static-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/members/volatile-object-nonvolatile-call.cpp` | CLS-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/address-of-incomplete-unspecified.cpp` | OPR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/address-of-overload.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/argument-dependent-lookup.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/arrow-chain.cpp` | OPR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/arrow-circular.cpp` | OPR-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/arrow-declaration-ok.cpp` | OPR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/arrow-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/arrow-returns-int.cpp` | OPR-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/arrow-star-order.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/assign-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/assign-not-from-other.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/assign-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/associativity-kept.cpp` | OPR-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/builtin-candidate-via-conversion.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/call-default-argument-ok.cpp` | OPR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/call-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/call-operator-overloads.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/call-operator.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/comma-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/comma-overload.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/compound-assign-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/compound-not-synthesized.cpp` | OPR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/default-argument.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/enum-builtin-still-used.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/enum-operator.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/explicit-call-syntax.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/left-operand-conversion-nonmember.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/left-operand-no-conversion-member.cpp` | OPR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-bad-params.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-block-scope.cpp` | OPR-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/literal-char.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-constexpr.cpp` | OPR-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/literal-default-arg.cpp` | OPR-10 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `classes/operators/literal-extern-c.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-float.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-friend.cpp` | OPR-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-in-namespace.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-integer-for-float-missing.cpp` | OPR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-integer.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-member.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-no-underscore-warns.cpp` | OPR-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-not-found.cpp` | OPR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-numeric-over-raw.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-raw-float.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-raw.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-string-concat-suffix.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-string-concat-two-suffixes.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/literal-string.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/literal-three-params.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/logical-and-order.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/member-and-nonmember-ambiguous.cpp` | OPR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/member-binary.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/member-hides-not-nonmember.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/member-unary.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/new-operator-token.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/no-candidate.cpp` | OPR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/no-short-circuit.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/nonmember-binary.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/nonmember-no-class-param.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/nonmember-pointer-param.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/nonmember-unary.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/not-overloadable-conditional.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-dot-star.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-dot.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/not-overloadable-scope.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/operator-template-ok.cpp` | OPR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/postfix-arg-zero.cpp` | OPR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/postfix-nonmember.cpp` | OPR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/postfix-not-declared.cpp` | OPR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/postfix-wrong-param.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/precedence-kept.cpp` | OPR-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/prefix-postfix.cpp` | OPR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/reference-param-nonmember.cpp` | OPR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/shift-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/shift-right-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/static-call-not-other.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/static-call-operator.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/static-member-operator.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/static-subscript.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/subscript-default-arg.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/subscript-multi.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/subscript-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/subscript-operator.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/subscript-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/subscript-zero-params.cpp` | OPR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/operators/unary-or-binary-ok.cpp` | OPR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/operators/variadic-operator.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/wrong-arity-member.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/operators/wrong-arity-nonmember.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/aggregate-first-member.cpp` | UNI-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/alignment-strictest-not-largest.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/anonymous-union-default-member-init.cpp` | UNI-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/anonymous-union-function.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-init.cpp` | UNI-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/anonymous-union-local.cpp` | UNI-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/anonymous-union-member.cpp` | UNI-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/anonymous-union-name-conflict.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-namespace-nonstatic.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-namespace-static.cpp` | UNI-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/anonymous-union-nested-type.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-nontrivial-default.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-private.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-static-member.cpp` | UNI-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-unnamed-namespace.cpp` | UNI-9 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `classes/unions/assign-changes-active.cpp` | UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-address.cpp` | BF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-aggregate-skips-unnamed.cpp` | BF-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-alignof-type-ok.cpp` | BF-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-assign-too-wide-warns.cpp` | BF-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-auto-type.cpp` | BF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-basic.cpp` | BF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-bool-wide.cpp` | BF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-bool.cpp` | BF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-char-types.cpp` | BF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-const-ref-temp.cpp` | BF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-constant-fits.cpp` | BF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-too-wide.cpp` | BF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-truncation-warns.cpp` | BF-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-constant-width.cpp` | BF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-wraps.cpp` | BF-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-enum.cpp` | BF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-fits-no-warning.cpp` | BF-8 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-float.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-in-union.cpp` | BF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-init-default-member.cpp` | BF-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-layout-lp64.cpp` | BF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-narrowing-init.cpp` | BF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-negative-width.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-nonconst-ref.cpp` | BF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-nonconstant-width.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-plain-int-signed.cpp` | BF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-pointer.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-promotes-to-int.cpp` | BF-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-promotes-unsigned-int.cpp` | BF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-signed-wraps.cpp` | BF-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-sizeof.cpp` | BF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-static.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-typedef.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `classes/unions/bitfield-unsigned-wraps.cpp` | BF-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-very-wide.cpp` | BF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-wide-unsigned-promotion.cpp` | BF-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/bitfield-wider-than-type.cpp` | BF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-wider-warns.cpp` | BF-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-zero-named.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-zero-unnamed.cpp` | BF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-zero-width-splits.cpp` | BF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/common-initial-sequence-constant.cpp` | UNI-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/common-initial-sequence.cpp` | UNI-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/compound-assign-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/default-member-init-active.cpp` | UNI-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/designated-member.cpp` | UNI-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/mem-init-two-members.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/member-addresses-equal.cpp` | UNI-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/narrowing-first-member.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/nontrivial-member-needs-construction.cpp` | UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/read-inactive-after-switch-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/read-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/shared-storage.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/two-default-member-inits.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/two-designators.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/two-initializers.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-array-member.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-copy-preserves-active.cpp` | UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-default-member-init-enables-ctor.cpp` | UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-member-functions.cpp` | UNI-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/union-nontrivial-copy-deleted.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-dtor-only.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-member-deleted-ctor.cpp` | UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-member-user-ctor-dtor.cpp` | UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-private-members.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-reference-member.cpp` | UNI-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/union-static-member.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/union-trivial-copy.cpp` | UNI-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/unions/user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/unions/value-init-zero.cpp` | UNI-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-array.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-capture-by-reference.cpp` | VIRT-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-capture-by-value.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-cast-temporary.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-function-declaration-ok.cpp` | VIRT-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-member.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-new.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-param-definition.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-pointer-ref-ok.cpp` | VIRT-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-return-definition.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-sizeof.cpp` | VIRT-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-variable.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/call-during-construction-constant.cpp` | VIRT-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/call-during-construction.cpp` | VIRT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/call-during-destruction.cpp` | VIRT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/call-during-member-init.cpp` | VIRT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/call-returning-abstract.cpp` | VIRT-8 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `classes/virtual/const-qualifier-must-match.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/consteval-overrides-virtual.cpp` | VIRT-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/consteval-virtual-pair.cpp` | VIRT-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-ambiguous-base.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-by-value-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-incomplete.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-less-cv-ok.cpp` | VIRT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-more-cv-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-own-class.cpp` | VIRT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-pointer.cpp` | VIRT-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/covariant-private-base-other.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-private-base.cpp` | VIRT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-reference.cpp` | VIRT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-through-base-pointer.cpp` | VIRT-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/covariant-unrelated.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/default-args-static-type.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/delete-array-through-base-constant.cpp` | VIRT-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/delete-nonvirtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/derived-concrete.cpp` | VIRT-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/derived-still-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/different-params-no-override.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dispatch.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-ambiguous-base.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-ambiguous-target.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-casts-away-const.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-constant.cpp` | VIRT-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/dynamic-cast-cross.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-down.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-during-construction.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-from-nonpointer.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-inaccessible-base.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-incomplete.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-nonpolymorphic.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-not-pointer.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-null.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-private-base.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-reference.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-to-nonclass.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp` | VIRT-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/dynamic-cast-void.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/explicit-object-overrides.cpp` | VIRT-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/explicit-object-virtual.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/final-different-params-ok.cpp` | VIRT-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/final-function.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/final-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/final-on-override.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/hidden-virtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/no-unique-final-overrider.cpp` | VIRT-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/nonvirtual-base-two-overriders.cpp` | VIRT-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/nonvirtual-dtor-delete-constant.cpp` | VIRT-12 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `classes/virtual/object-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/override-both-deleted.cpp` | VIRT-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/override-deleted-mismatch.cpp` | VIRT-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/override-final-order.cpp` | VIRT-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/override-identifier.cpp` | VIRT-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/override-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/override-nothing.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/override-of-deleted.cpp` | VIRT-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/override-out-of-class.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/override-through-intermediate.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/override-without-virtual-keyword.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/polymorphic-class.cpp` | VIRT-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/private-override.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/pure-call-in-ctor-constant.cpp` | VIRT-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-defined-out-of-line.cpp` | VIRT-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/pure-dtor-defined.cpp` | VIRT-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/pure-dtor-needs-definition.cpp` | VIRT-17 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/virtual/pure-friend.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-inline-definition.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-nonvirtual.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-not-zero.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-override-makes-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/qualified-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/ref-qualifier-must-match.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/return-type-mismatch.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/static-overrides-virtual.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/unique-final-overrider-resolved.cpp` | VIRT-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/virtual-auto-return.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-data-member.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-dtor-delete-constant.cpp` | VIRT-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/virtual-dtor-delete.cpp` | VIRT-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/virtual-dtor-inherited.cpp` | VIRT-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `classes/virtual/virtual-in-constexpr.cpp` | VIRT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/virtual/virtual-in-union.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-nonmember.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-not-defined.cpp` | VIRT-20 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/virtual/virtual-out-of-class.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-static.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-template.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-trailing-return.cpp` | VIRT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/alignof-variable-type.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/array-of-aligned.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/class-definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/class-forward-alignas.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/class-redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/class.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/different-units-alignas.cpp` | ALN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/alignment/enum.cpp` | ALN-7 | reject | reject | reject | accept | skip | accept | reject | reject | reject | pass |
+| `declarations/alignment/extended-huge.cpp` | ALN-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/extended-new.cpp` | ALN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/alignment/extended-supported.cpp` | ALN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/alignment/max-fundamental.cpp` | ALN-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/member-raises-class.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/member.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/negative.cpp` | ALN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/alignment/not-constant.cpp` | ALN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/alignment/not-power-of-two.cpp` | ALN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/alignment/on-alias-declaration.cpp` | ALN-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-bitfield.cpp` | ALN-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-function.cpp` | ALN-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/alignment/on-parameter.cpp` | ALN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/alignment/on-typedef.cpp` | ALN-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/alignment/redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/redeclare-without.cpp` | ALN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/strictest-wins.cpp` | ALN-1 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `declarations/alignment/type-operand.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/alignment/variable.cpp` | ALN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/alignment/weaker-on-class-member.cpp` | ALN-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/weaker-than-natural.cpp` | ALN-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/alignment/zero-ignored.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/assume-comma.cpp` | ATTR-13 | reject | reject | reject | reject | skip | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | skip | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-false-sanitizer.cpp` | ATTR-10 | run-fail | run-fail | run-fail | skip | skip | run-fail | run | run-fail | run-fail | pass |
+| `declarations/attributes/assume-not-bool.cpp` | ATTR-13 | reject | reject | reject | reject | skip | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/attributes/assume-on-declaration.cpp` | ATTR-13 | reject | reject | reject | reject | skip | reject | accept | reject | reject | pass |
+| `declarations/attributes/assume-true-constant.cpp` | ATTR-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/attribute-argument-not-string.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/attribute-too-many-arguments.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/attribute-unexpected-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/carries-dependency-redeclared.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/attributes/carries-dependency.cpp` | ATTR-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/deprecated-added-later.cpp` | ATTR-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/deprecated-declaration-only.cpp` | ATTR-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/deprecated-enumerator-warns.cpp` | ATTR-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/deprecated-use-warns.cpp` | ATTR-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/double-bracket-lambda-subscript.cpp` | ATTR-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/double-bracket-parenthesized-ok.cpp` | ATTR-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-end-of-else-branch.cpp` | ATTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-end-of-if-branch.cpp` | ATTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-end-of-loop.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-misplaced.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-not-before-case.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-on-declaration.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/fallthrough-silences.cpp` | ATTR-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/implicit-fallthrough-warns.cpp` | ATTR-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/attributes/likely-unlikely.cpp` | ATTR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/attributes/likely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/maybe-unused-silences.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/maybe-unused-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/attributes/no-unique-address-same-type.cpp` | ATTR-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/attributes/no-unique-address-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/no-unique-address.cpp` | ATTR-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/nodiscard-constructor-warns.cpp` | ATTR-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/nodiscard-ignored-warns.cpp` | ATTR-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/nodiscard-on-variable.cpp` | ATTR-2 | reject | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/nodiscard-reference-return.cpp` | ATTR-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/nodiscard-type.cpp` | ATTR-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/nodiscard-void-cast.cpp` | ATTR-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-main.cpp` | ATTR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-not-first.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-returns-sanitizer.cpp` | ATTR-3 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/attributes/using-prefix-ok.cpp` | ATTR-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/using-prefix-qualified.cpp` | ATTR-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/added-qualifiers.cpp` | AUTO-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/array-of-auto.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-empty.cpp` | AUTO-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-multiple.cpp` | AUTO-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/braced-direct-single.cpp` | AUTO-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/combined-type-specifier.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/const-lvalue-reference-to-rvalue.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/constexpr-adds-const.cpp` | AUTO-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/constrained-not-satisfied.cpp` | AUTO-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/constrained-satisfied.cpp` | AUTO-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/copy-list-deduces-initializer-list.cpp` | AUTO-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/copy-list-empty.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/copy-list-mixed-types.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/copy-list-without-library.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decays-arrays-and-functions.cpp` | AUTO-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-array.cpp` | AUTO-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-braced-multiple.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-braced.cpp` | AUTO-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-copy-list.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-function.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-keeps-cv.cpp` | AUTO-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-value-category.cpp` | AUTO-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-with-pointer.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/decltype-auto-with-qualifier.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/drops-references-and-cv.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/forwarding-reference.cpp` | AUTO-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/in-conditions.cpp` | AUTO-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/inline-static-member.cpp` | AUTO-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/keeps-pointee-cv.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/later-declarator-uses-earlier.cpp` | AUTO-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/lvalue-reference-to-rvalue.cpp` | AUTO-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/lvalue-reference.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/no-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/nullptr.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/overloaded-function.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/own-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-braced.cpp` | AUTO-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-multiple.cpp` | AUTO-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/paren-single.cpp` | AUTO-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/pointer-from-non-pointer.cpp` | AUTO-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/ref-const-xvalue.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/several-declarators-conflict.cpp` | AUTO-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/static-const-member.cpp` | AUTO-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/auto/static-member-no-initializer.cpp` | AUTO-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/string-literal-prefixes.cpp` | AUTO-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/auto/switch-condition-init.cpp` | AUTO-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/auto/while-condition.cpp` | AUTO-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/constexpr/consteval-address-in-immediate.cpp` | CEV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-address-taken.cpp` | CEV-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-and-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-call-constant.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-call-runtime-arg.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-in-consteval.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/consteval-inline.cpp` | CEV-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/constexpr/consteval-redeclare-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-returns-allocation.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-ub-rejected.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-variable.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-class-only.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-parameter.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-ref-temporary-block.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constexpr-ref-temporary-namespace.cpp` | CX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-added-late.cpp` | CINIT-2 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/constexpr/constinit-automatic.cpp` | CINIT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-block-static.cpp` | CINIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-dynamic.cpp` | CINIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-extern-declaration.cpp` | CINIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-nonconstexpr-dtor.cpp` | CINIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-not-const.cpp` | CINIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/constexpr/constinit-on-function.cpp` | CINIT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/constinit-static.cpp` | CINIT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/constexpr/constinit-with-constexpr.cpp` | CINIT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-compile-and-run.cpp` | CX-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/constexpr/function-goto-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-implicitly-inline.cpp` | CX-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/constexpr/function-loops-and-locals.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-never-constant.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | reject | accept | accept | pass |
+| `declarations/constexpr/function-non-literal-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-non-literal-param.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | reject | accept | accept | pass |
+| `declarations/constexpr/function-not-constant-call.cpp` | CX-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-static-constexpr-local.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/function-static-local-evaluated.cpp` | CX-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-static-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/immediate-escalation.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/lambda-escalates-constant.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/lambda-escalates-runtime.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/non-literal-return.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | reject | accept | accept | pass |
+| `declarations/constexpr/plain-constexpr-no-escalation.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/pointer-one-past-end.cpp` | CX-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/pointer-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/reference-to-automatic.cpp` | CX-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/reference-to-static.cpp` | CX-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/static-local-to-static-local.cpp` | CX-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-assign.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-const.cpp` | CX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-default-constructor.cpp` | CX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-default-initialized-no-value.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-implicit-constructor-member-initializers.cpp` | CX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` | CX-1 CTOR-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-no-initializer.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-4gib-ilp32.cpp` | DCL-10 | reject | reject | reject | skip | reject | reject | reject | skip | reject | pass |
+| `declarations/declarators/array-4gib-lp64.cpp` | DCL-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-class-conversion.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-constant.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-deduced.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-bound-floating.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-negative.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-runtime.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-scoped-enum.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-bound-zero.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-incomplete-extern.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-incomplete-no-init.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-functions.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-references.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-of-void.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/array-too-large.cpp` | DCL-10 | clang: reject, gcc: accept, edg: accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/declarators/array-too-many-initializers.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/assign-through-pointer-to-const.cpp` | CV-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/assign-to-const.cpp` | CV-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-floating-not-constant.cpp` | CV-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-integral-constant.cpp` | CV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/const-integral-runtime.cpp` | CV-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-requires-initializer.cpp` | CV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/const-void-return.cpp` | DCL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/const-volatile-not-constant.cpp` | CV-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/cv-duplicate-direct.cpp` | CV-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/cv-duplicate-through-alias.cpp` | CV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-array-applies-to-elements.cpp` | CV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-function-alias.cpp` | CV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-on-reference-alias-ignored.cpp` | DCL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-position.cpp` | CV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-qualified-reference.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/ellipsis-first.cpp` | DCL-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/extern-const-declaration.cpp` | CV-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/extern-reference-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/function-declaration-ambiguity-type.cpp` | DCL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/function-declaration-ambiguity.cpp` | DCL-13 PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/function-returning-array.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/function-returning-function.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/function-returning-pointers-ok.cpp` | DCL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/increment-const.cpp` | CV-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/modify-const-object-via-cast.cpp` | CV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/modify-nonconst-object-via-cast.cpp` | CV-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/declarators/multidim-inner-bound.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/multidim-outer-omitted.cpp` | DCL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/nested-declarators.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/noexcept-in-type.cpp` | DCL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/noexcept-redeclaration.cpp` | DCL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/parameter-adjustment.cpp` | DCL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/parameter-array-is-pointer.cpp` | DCL-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/declarators/parameter-cv-same-function.cpp` | DCL-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/declarators/pointer-to-member.cpp` | DCL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/pointer-to-pointer-and-function.cpp` | DCL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/pointer-to-reference-member.cpp` | DCL-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/pointer-to-reference.cpp` | DCL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/pointer-to-void-member.cpp` | DCL-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/pointer-to-void-ok.cpp` | DCL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualification-conversion-drops-const.cpp` | CV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualification-conversion-ok.cpp` | CV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualification-conversion-unsafe.cpp` | CV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualified-free-function.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualified-function-type-member.cpp` | DCL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualified-function-type-parameter.cpp` | DCL-16 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualified-function-type-pointer.cpp` | DCL-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/redundant-parentheses.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/ref-qualified-free-function.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-binds-same-object.cpp` | DCL-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/declarators/reference-collapsing.cpp` | DCL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/reference-parameter-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/reference-requires-initializer.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-to-reference.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-to-void.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/star-binds-to-declarator.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/static-member-unknown-bound.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/trailing-return-with-type.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/unknown-bound-empty-braces.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/variadic.cpp` | DCL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/void-parameter-list.cpp` | DCL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/declarators/void-parameter-named.cpp` | DCL-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/void-parameter-with-others.cpp` | DCL-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/declarators/volatile-return-deprecated.cpp` | CV-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-in-range.cpp` | ENUM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-out-of-range-sanitizer.cpp` | ENUM-6 CAST-14 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/enumerations/copy-list-from-integer.cpp` | ENUM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/distinct-types.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/duplicate-enumerator.cpp` | ENUM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/duplicate-values.cpp` | ENUM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/empty-enum-range.cpp` | ENUM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-scope-after-value.cpp` | ENUM-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/enumerations/enumerator-type-char-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-enum-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-grows.cpp` | ENUM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-inside-list.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-short-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-values.cpp` | ENUM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/fixed-bool.cpp` | ENUM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/fixed-underlying-narrowing.cpp` | ENUM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/fixed-underlying-non-integral.cpp` | ENUM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/fixed-underlying.cpp` | ENUM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/implicit-after-explicit.cpp` | ENUM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/implicit-value-overflow-scoped.cpp` | ENUM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/implicit-value-overflow-unscoped.cpp` | ENUM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/increment-enum.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/int-to-unscoped-rejected.cpp` | ENUM-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/list-init-fixed.cpp` | ENUM-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/list-init-narrowing.cpp` | ENUM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/list-init-no-fixed.cpp` | ENUM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/mixed-enum-arithmetic.cpp` | ENUM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/opaque-declaration.cpp` | ENUM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/opaque-mismatch.cpp` | ENUM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/opaque-unscoped-without-type.cpp` | ENUM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/redeclare-scoped-as-unscoped.cpp` | ENUM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-compare-int.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-compare-same-type.cpp` | ENUM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-default-underlying-int.cpp` | ENUM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-explicit-bool-ok.cpp` | ENUM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-explicit-conversion.cpp` | ENUM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/scoped-names-scoped.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-no-arithmetic.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-no-conversion.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-not-condition.cpp` | ENUM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-not-logical.cpp` | ENUM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/scoped-value-too-large.cpp` | ENUM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/unscoped-converts-to-int.cpp` | ENUM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-name-conflict.cpp` | ENUM-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/unscoped-names-in-enclosing-scope.cpp` | ENUM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-size-lp64.cpp` | ENUM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-underlying-holds-values.cpp` | ENUM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/unscoped-value-too-large.cpp` | ENUM-5 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/enumerations/using-declaration-enumerator.cpp` | ENUM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/using-enum-alias.cpp` | ENUM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/enumerations/using-enum-conflict.cpp` | ENUM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/using-enum-not-enum.cpp` | ENUM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/using-enum-opaque.cpp` | ENUM-20 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/enumerations/using-enum.cpp` | ENUM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/alias-noexcept-function.cpp` | EXS-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/exception-specifications/call-through-noexcept-pointer.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/class-delete-operator-noexcept.cpp` | EXS-4 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `declarations/exception-specifications/constexpr-not-implied.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/decltype-keeps-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/default-member-init-throwing.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-comparison-member-throwing.cpp` | EXS-4 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-comparison-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-explicit-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/defaulted-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/delete-class-follows-destructor.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/delete-operator-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/forms.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/implicit-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/implicit-special-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/in-type.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/inheriting-ctor-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/lambda-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/member-function-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/narrowing-operand.cpp` | EXS-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/nested-indirection.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` | EXS-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/non-constant.cpp` | EXS-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/operand-cycle.cpp` | EXS-6 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/exception-specifications/operand-later-member.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/operand-uses-parameters.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/overload-on-noexcept.cpp` | EXS-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/override-dtor-noexcept-false.cpp` | EXS-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/override-may-add-noexcept.cpp` | EXS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/override-must-be-noexcept.cpp` | EXS-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/parameter-noexcept-overloads.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/pointer-operand.cpp` | EXS-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/throw-empty-removed.cpp` | EXS-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/throw-type-removed.cpp` | EXS-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/typedef-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/user-function-not-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/added-later.cpp` | DEFARG-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/basic.cpp` | DEFARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/block-scope-declaration.cpp` | DEFARG-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/default-arguments/default-checked-unused.cpp` | DEFARG-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/evaluated-each-call.cpp` | DEFARG-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/default-arguments/function-pointer-no-default.cpp` | DEFARG-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/inline-defaults-differ.cpp` | DEFARG-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/default-arguments/local-unevaluated.cpp` | DEFARG-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/name-bound-at-declaration.cpp` | DEFARG-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/default-arguments/not-trailing.cpp` | DEFARG-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/operator-default-argument.cpp` | DEFARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/parameter-in-sizeof.cpp` | DEFARG-4 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/pointer-declaration-default.cpp` | DEFARG-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/redefined-different.cpp` | DEFARG-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/redefined.cpp` | DEFARG-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/refers-to-local.cpp` | DEFARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/refers-to-parameter.cpp` | DEFARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/this-in-default.cpp` | DEFARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/uses-global-at-call.cpp` | DEFARG-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/default-arguments/using-sees-later-default.cpp` | DEFARG-2 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/functions/default-arguments/variadic-after-default.cpp` | DEFARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/argv-zero.cpp` | FN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/c-linkage-main-in-namespace.cpp` | FN-4 | reject | reject | reject | reject | skip | accept | accept | reject | reject | pass |
+| `declarations/functions/definitions/flow-off-end-not-reached.cpp` | FN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/flow-off-end-sanitizer.cpp` | FN-3 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `declarations/functions/definitions/flow-off-end-value.cpp` | FN-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/flow-off-end-void.cpp` | FN-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/flow-off-end-warns.cpp` | FN-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/func-name-impl.cpp` | FN-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `declarations/functions/definitions/func-predefined.cpp` | FN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/incomplete-param-declaration.cpp` | FN-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/incomplete-param-definition.cpp` | FN-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-address.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-auto.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-call.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-consteval.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-constexpr.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-four-params.cpp` | FN-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-global-variable.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-in-namespace.cpp` | FN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/main-inline.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-one-param.cpp` | FN-6 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `declarations/functions/definitions/main-parameters.cpp` | FN-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/main-return-value.cpp` | FN-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/main-returns-zero.cpp` | FN-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/main-template.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-three-params.cpp` | FN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/main-wrong-return-type.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/nested-function-definition.cpp` | FN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/parameter-destruction-order.cpp` | FN-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/parameter-duplicate.cpp` | FN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/parameter-nested-block.cpp` | FN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/definitions/parameter-scope-redeclare.cpp` | FN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/redeclaration-ok.cpp` | FN-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/definitions/redefinition.cpp` | FN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/return-type-mismatch.cpp` | FN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/typedef-function-definition.cpp` | FN-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/unnamed-parameters.cpp` | FN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/deleted/address-of-deleted.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/call-deleted.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/declare-deleted-unused.cpp` | DEL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/deleted/default-non-member.cpp` | DEL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/defaulted-friend-comparison.cpp` | DEL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/deleted/delete-not-first.cpp` | DEL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/delete-then-define.cpp` | DEL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-in-two-units.cpp` | DEL-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/deleted/deleted-main.cpp` | DEL-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-overload-not-selected.cpp` | DEL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/functions/deleted/deleted-overload-selected.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-unevaluated.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-with-message.cpp` | DEL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/auto-ref-no-return.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/auto-ref-return-local.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/auto-strips.cpp` | RET-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/basic.cpp` | RET-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/braced-return.cpp` | RET-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/conflicting-returns.cpp` | RET-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/decltype-auto-dangling.cpp` | RET-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp` | RET-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/decltype-auto.cpp` | RET-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/discarded-return-not-deduced.cpp` | RET-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/member-calls-later-deduced.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/recursion-after-return.cpp` | RET-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/recursion-before-return.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/redeclare-after-definition.cpp` | RET-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/redeclare-with-auto.cpp` | RET-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/redeclare-with-type.cpp` | RET-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/trailing-auto.cpp` | RET-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/use-after-definition.cpp` | RET-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/use-before-definition.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/virtual-auto.cpp` | RET-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/void-and-value.cpp` | RET-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/void-call-return.cpp` | RET-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/array-from-array.cpp` | INIT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp` | INIT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` | INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/copy-init-converts.cpp` | INIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/copy-init-explicit-rejected.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/copy-init-no-conversion.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/declarators-in-order.cpp` | INIT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/forms/default-init-array-of-class.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-base.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-member-initializer.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-member-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/default-init-member-not-named-no-value.cpp` | INIT-9 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/default-init-member-not-named.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-new-class.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/default-init-scalar-no-value.cpp` | INIT-9 INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/direct-init-multiple.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/empty-parens-declares-function.cpp` | INIT-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/incomplete-type.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/nullptr-bool-copy.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/nullptr-bool-direct.cpp` | INIT-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/forms/paren-array-unknown-bound.cpp` | INIT-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/forms/paren-init-explicit-conversion.cpp` | INIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/read-uninitialized-array.cpp` | INIT-1 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/read-uninitialized.cpp` | INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/scalar-list-in-parens.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/self-initialization.cpp` | INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/value-init-forms.cpp` | INIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/forms/write-before-read.cpp` | INIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-default-member-initializer.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-members-in-order.cpp` | LIST-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-missing-members-zero.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-paren-init.cpp` | LIST-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/aggregate-too-many.cpp` | LIST-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/aggregate-with-base.cpp` | LIST-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/brace-elision.cpp` | LIST-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/braced-order.cpp` | LIST-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/list/char-array-rest-zero.cpp` | LIST-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/list/designated-array.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-mixed.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-nested-braces.cpp` | LIST-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/designated-nested.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-out-of-order.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated-repeated.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/designated.cpp` | LIST-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/designator-on-scalar.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/empty-base-braces-ok.cpp` | LIST-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/list/empty-base-no-elision.cpp` | LIST-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/missing-class-member-default.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/missing-reference-member.cpp` | LIST-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-bit-field-fits.cpp` | LIST-2 | accept | accept | accept | reject | skip | reject | reject | accept | accept | pass |
+| `declarations/initialization/list/narrowing-constant-fits.cpp` | LIST-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-constant-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-double-to-float-in-range.cpp` | LIST-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-float-to-int-exact.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-float-to-int.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-in-aggregate.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-int-to-float-exact.cpp` | LIST-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-int-to-float-inexact.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-member-pointer-to-bool.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-negative-to-unsigned.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-nonconstant-int.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-not-in-parens.cpp` | LIST-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/narrowing-pointer-to-bool.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/narrowing-unscoped-enum.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/no-elision-when-direct.cpp` | LIST-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/list/omitted-member-explicit-default.cpp` | LIST-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/paren-nested-ok.cpp` | LIST-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/paren-no-brace-elision.cpp` | LIST-9 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/scalar-braces-two-values.cpp` | LIST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/scalar-braces.cpp` | LIST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/scalar-nested-braces.cpp` | LIST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/single-same-class-copies.cpp` | LIST-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/list/string-literal-array.cpp` | LIST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-plain-to-char8.cpp` | LIST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-too-long.cpp` | LIST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-u8-to-char.cpp` | LIST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-u8-to-char8.cpp` | LIST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/list/string-literal-u8-to-signed-char.cpp` | LIST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/string-literal-wrong-type.cpp` | LIST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/union-designator.cpp` | LIST-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/aggregate-member-extends.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/aggregate-member-paren-not-extended.cpp` | REF-5 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/base-ref-to-derived.cpp` | REF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/bit-field-const-ref.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/bit-field-nonconst-ref.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/const-ref-xvalue-direct.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/const-volatile-ref-rvalue.cpp` | REF-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/dangling-local-return.cpp` | REF-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/extend-through-array-member-subscript.cpp` | REF-4 | run | run | run | reject | skip | run | run | run | run | pass |
+| `declarations/initialization/references/extend-through-static-cast.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/lifetime-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/lifetime-member-extended.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/lifetime-not-through-return.cpp` | REF-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/lifetime-through-parens-and-conditional.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/lvalue-ref-binds-lvalue.cpp` | REF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/lvalue-ref-drops-const.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/lvalue-ref-other-type.cpp` | REF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/null-dereference-bind-constant.cpp` | REF-5 | reject | reject | reject | accept | skip | reject | accept | reject | reject | pass |
+| `declarations/initialization/references/reference-multiple-values.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp` | REF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/rvalue-ref-binds-rvalue.cpp` | REF-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/rvalue-ref-drops-const.cpp` | REF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/rvalue-ref-other-type-lvalue.cpp` | REF-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp` | REF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/rvalue-ref-to-function.cpp` | REF-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/static-reference-to-temporary.cpp` | REF-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/references/unknown-bound-ref.cpp` | REF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/initialization/static/across-units-order.cpp` | SINIT-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/before-main-observed.cpp` | SINIT-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/constant-before-dynamic.cpp` | SINIT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/constexpr-constant-initialized.cpp` | SINIT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/deferred-initialization.cpp` | SINIT-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/dynamic-in-order.cpp` | SINIT-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/dynamic-reads-zero.cpp` | SINIT-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/inline-order-unspecified.cpp` | SINIT-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/inline-variables-ordered.cpp` | SINIT-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/maybe-static.cpp` | SINIT-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/initialization/static/thread-local-init-deferred.cpp` | SINIT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/constexpr-function-inline.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/constexpr-variable-internal.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/deleted-function-inline.cpp` | INL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/inline/function-and-variable.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/implicit-special-members-inline.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-after-definition.cpp` | INL-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/inline/inline-before-definition.cpp` | INL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/inline/inline-block-function-declaration.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-block-variable.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-class.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-different-definitions.cpp` | INL-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-friend-declaration-not-definition.cpp` | INL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/inline/inline-friend-definition.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-in-one-unit-only.cpp` | INL-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-internal-linkage.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-main.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-nonconst-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-nonstatic-member.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-parameter.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-redefinition-same-tu.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-local-in-function.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-member-incomplete.cpp` | INL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-static-member.cpp` | INL-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-typedef.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-undefined-used.cpp` | INL-6 | link-fail | link-fail | link-fail | reject | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/inline/inline-unused-not-defined.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-variable-const-default-external.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/inline-variable-undefined-used.cpp` | INL-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-virtual.cpp` | INL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/inline/member-defined-in-class.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/static-constexpr-member-inline.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/static-local-shared.cpp` | INL-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/inline/static-member-not-inline-needs-definition.cpp` | INL-4 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/linkage-specifications/block-form-defines.cpp` | LSP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/block-form-no-scope.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/block-form.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/block-scope.cpp` | LSP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-and-cpp-overload.cpp` | LSP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-cross-unit.cpp` | LSP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-function-pointer-assign.cpp` | LSP-6 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/c-linkage-main.cpp` | LSP-2 | reject | reject | reject | reject | skip | accept | accept | reject | reject | pass |
+| `declarations/linkage-specifications/c-linkage-template.cpp` | LSP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-name-across-namespaces.cpp` | LSP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/c-name-conflict-types.cpp` | LSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-name-conflicts-global.cpp` | LSP-7 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/linkage-specifications/c-overload-rejected.cpp` | LSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-variable-and-function-conflict.cpp` | LSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/c-variable-named-main.cpp` | LSP-7 | reject | reject | reject | reject | skip | accept | accept | reject | reject | pass |
+| `declarations/linkage-specifications/class-scope.cpp` | LSP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/cpp-linkage.cpp` | LSP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/function-type-linkage-overload.cpp` | LSP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/linkage-in-namespace.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/members-cpp-linkage.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/nested-innermost.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/redeclare-c-then-plain.cpp` | LSP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/linkage-specifications/redeclare-linkage-mismatch.cpp` | LSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/single-form-declaration-only.cpp` | LSP-3 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/linkage-specifications/single-form-static.cpp` | LSP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/linkage-specifications/single-form-with-init-defines.cpp` | LSP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/single-form.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/static-in-c-block.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/linkage-specifications/unknown-language.cpp` | LSP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/alias-conflict.cpp` | NS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/alias-not-reopen.cpp` | NS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/alias.cpp` | NS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/block-scope-namespace.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/define-and-qualify.cpp` | NS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/definition-in-unrelated-namespace.cpp` | NS-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/directive-in-class.cpp` | NS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/directive-sees-later-members.cpp` | NS-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/namespaces/global-qualifier.cpp` | NS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/inline-namespace-duplicate.cpp` | NS-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/inline-namespace.cpp` | NS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/inline-on-reopen.cpp` | NS-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/inline-then-reopen-plain.cpp` | NS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/name-conflict.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/nested-definition.cpp` | NS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/nested-first-inline.cpp` | NS-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/nested-inline-definition.cpp` | NS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/out-of-namespace-definition.cpp` | NS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/undeclared-qualified-definition.cpp` | NS-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/unnamed-namespace-duplicate.cpp` | NS-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/unnamed-namespace.cpp` | NS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/unqualified-outside.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-class-member-at-namespace.cpp` | NS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-conflict.cpp` | NS-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-namespace.cpp` | NS-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-overloads.cpp` | NS-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/namespaces/using-declaration-repeat-block.cpp` | NS-7 | accept | accept | accept | reject | skip | reject | accept | accept | accept | pass |
+| `declarations/namespaces/using-declaration-repeat-namespace.cpp` | NS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-declaration-snapshot.cpp` | NS-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/namespaces/using-declaration-then-conflict.cpp` | NS-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration-unqualified.cpp` | NS-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-declaration.cpp` | NS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-ambiguous-unused.cpp` | NS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-ambiguous-use.cpp` | NS-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-block-scope.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-global-ambiguity.cpp` | NS-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-local-hides.cpp` | NS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive-not-namespace.cpp` | NS-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/namespaces/using-directive-transitive.cpp` | NS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-directive.cpp` | NS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/namespaces/using-list.cpp` | NS-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/static-assert/condition-contextual-bool.cpp` | SA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-narrowing.cpp` | SA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-not-constant.cpp` | SA-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/condition-pointer.cpp` | SA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/condition-ub.cpp` | SA-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/constexpr-function-call.cpp` | SA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/discarded-branch-nontemplate.cpp` | SA-5 SA-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/discarded-branch.cpp` | SA-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/false-rejected.cpp` | SA-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/false-with-message.cpp` | SA-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-block-not-statement-position.cpp` | SA-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-block.cpp` | SA-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/static-assert/in-class-incomplete-self.cpp` | SA-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-class.cpp` | SA-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-extern-c.cpp` | SA-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/in-for-init.cpp` | SA-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/in-namespace.cpp` | SA-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-concatenated.cpp` | SA-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-not-literal.cpp` | SA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/message-object.cpp` | SA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/message-optional.cpp` | SA-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-prefixed-string.cpp` | SA-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/message-shown.cpp` | SA-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/message-wide-string.cpp` | SA-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/template-dependent-false.cpp` | SA-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/template-instantiated-false.cpp` | SA-5 SA-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/static-assert/template-nondependent-false.cpp` | SA-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/static-assert/true-accepted.cpp` | SA-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/storage-linkage/anonymous-union-namespace.cpp` | STO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/anonymous-union-static.cpp` | STO-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp` | STO-11 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-extern-after-local.cpp` | STO-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/block-extern-initializer.cpp` | STO-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/block-extern-internal.cpp` | LNK-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-extern-same-unit.cpp` | STO-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-function-declaration.cpp` | LNK-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-static-not-reached.cpp` | STO-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-static-once.cpp` | STO-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/block-variables-no-linkage.cpp` | LNK-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/const-internal.cpp` | LNK-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/duplicate-function.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/duplicate-variable.cpp` | LNK-6 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/extern-const-external.cpp` | LNK-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/extern-in-block-hidden.cpp` | LNK-9 | run | run | run | reject | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/extern-parameter.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/extern-then-const.cpp` | LNK-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/extern-then-static.cpp` | LNK-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/extern-with-initializer.cpp` | STO-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/external-default.cpp` | LNK-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/function-then-static.cpp` | LNK-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/inline-different-bodies.cpp` | LNK-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/inline-one-entity.cpp` | LNK-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/missing-definition.cpp` | LNK-7 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/mutable-block.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/mutable-const-member.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/mutable-function.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/mutable-member-ok.cpp` | STO-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/mutable-namespace.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/mutable-reference-member.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/mutable-static-member.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/plain-after-thread-local.cpp` | STO-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/recursive-static-init.cpp` | STO-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `declarations/storage-linkage/register.cpp` | STO-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-block-function.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-destruction-order.cpp` | STO-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/static-internal.cpp` | LNK-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/static-main.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-not-visible.cpp` | LNK-2 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `declarations/storage-linkage/static-parameter.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-then-extern.cpp` | LNK-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/storage-class-on-class.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/storage-class-on-typedef.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-after-plain.cpp` | STO-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-block.cpp` | STO-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/thread-local-combinations.cpp` | STO-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/storage-linkage/thread-local-function.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/two-storage-classes.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/unnamed-namespace-internal.cpp` | LNK-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/unused-missing-definition.cpp` | LNK-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/volatile-const-external.cpp` | LNK-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/storage-linkage/zero-initialized.cpp` | STO-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/aggregate-members.cpp` | SB-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/anonymous-union-member.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/array-copy.cpp` | SB-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/array-hidden-copy.cpp` | SB-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/array-reference.cpp` | SB-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/as-class-member.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/as-parameter.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/binding-types.cpp` | SB-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/bit-field-address.cpp` | SB-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/bit-field-assign.cpp` | SB-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/constexpr-binding.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/constinit-specifier.cpp` | SB-11 | reject | reject | reject | accept | skip | accept | reject | reject | reject | pass |
+| `declarations/structured-bindings/constrained.cpp` | SB-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/count-mismatch-array.cpp` | SB-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/count-mismatch-class.cpp` | SB-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/decltype-auto.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/duplicate-names.cpp` | SB-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/empty-bindings.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/explicit-type.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/extern-specifier.cpp` | SB-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/friend-binds-private.cpp` | SB-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/initializer-braces.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | reject | accept | accept | pass |
+| `declarations/structured-bindings/initializer-equals.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/initializer-parens.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/inline-specifier.cpp` | SB-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/lifetime-extended.cpp` | SB-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/members-in-base.cpp` | SB-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/members-split-across-bases.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/mutable-member.cpp` | SB-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/names-are-lvalues.cpp` | SB-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/names-in-scope.cpp` | SB-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/no-initializer.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/own-initializer.cpp` | SB-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/parenthesized.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/pointer-declarator.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/private-member.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/reference-member-binding-type.cpp` | SB-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/scalar-rejected.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/static-and-thread-local.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/static-thread-local-ok.cpp` | SB-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/template.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-count-mismatch.cpp` | SB-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-element-missing.cpp` | SB-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/tuple-get-order.cpp` | SB-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/structured-bindings/tuple-protocol.cpp` | SB-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/tuple-size-without-value.cpp` | SB-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/underscore-twice.cpp` | SB-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/union-rejected.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/with-other-declarator.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-cv-reference-ignored.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-cv.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-defines-class.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-function-type-definition.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-function-type.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-in-block.cpp` | TYN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/alias-in-class.cpp` | TYN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/alias-inner-scope-hides.cpp` | TYN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/alias-member-redeclared-same.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-of-incomplete.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-overload-same.cpp` | TYN-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-same-name-as-class.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/alias-scope.cpp` | TYN-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `declarations/type-names/class-definition-conflicts-typedef.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/class-redefinition.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/complete-after-definition-in-scope.cpp` | TYN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/definition-incomplete-return.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/deleted-incomplete-types.cpp` | TYN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-declares-in-block.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-declares-in-namespace.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-declares.cpp` | TYN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/elaborated-enum-declared.cpp` | TYN-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-enum-undeclared.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-hides-function.cpp` | TYN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/elaborated-in-member-declares-namespace.cpp` | TYN-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-in-parameter-scope.cpp` | TYN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/elaborated-key-class-struct.cpp` | TYN-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/elaborated-key-enum-mismatch.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-key-union-mismatch.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-qualified-declaration-only.cpp` | TYN-7 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `declarations/type-names/elaborated-qualified-undeclared.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/elaborated-scoped-enum-key.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/enum-fixed-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/enum-scoped-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-after-definition.cpp` | TYN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-class-function-definition-param.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-incomplete-use.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-object.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-class-reference-param.cpp` | TYN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-class.cpp` | TYN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/forward-enum-base-mismatch.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-enum-no-base.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/forward-enum-opaque.cpp` | TYN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/forward-enum-scoped-default-base.cpp` | TYN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/forward-nested-class.cpp` | TYN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/forward-nested-wrong-scope.cpp` | TYN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-initializer.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-multiple.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-name-in-class-redeclared.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-name-not-class-key.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-no-name.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-redeclare-different.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-redeclare-same.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-same-type.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/type-names/typedef-storage-class.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-unnamed-c-like.cpp` | TYN-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/type-names/typedef-unnamed-class-member-function.cpp` | TYN-9 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `declarations/type-names/typedef-with-unsigned.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/type-names/variable-then-typedef.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/access-run.cpp` | VOL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/assign-to-volatile-class.cpp` | VOL-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/assignment-result-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/compound-no-warning.cpp` | VOL-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/const-cast-removes.cpp` | VOL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/const-ref-volatile-no-temporary.cpp` | VOL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/const-volatile-external.cpp` | VOL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/constant-read-rejected.cpp` | VOL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/copy-volatile-class-rejected.cpp` | VOL-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/copy-volatile-scalar-ok.cpp` | VOL-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/defaulted-comparison-volatile.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/increment-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/nonvolatile-access-to-volatile-constant.cpp` | VOL-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/nonvolatile-member-on-volatile.cpp` | VOL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/overload-on-volatile.cpp` | VOL-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/overload-param-volatile-ref.cpp` | VOL-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/pointer-add-volatile.cpp` | VOL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/pointer-remove-volatile.cpp` | VOL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/pointer-to-volatile-parameter-ok.cpp` | VOL-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/ref-plain-to-volatile.cpp` | VOL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/ref-volatile-to-plain.cpp` | VOL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/static-const-volatile-in-class.cpp` | VOL-2 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `declarations/volatile/volatile-class-user-copy.cpp` | VOL-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/volatile-constructor.cpp` | VOL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/volatile-destructor.cpp` | VOL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/volatile-in-type-traits.cpp` | VOL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-local-loop.cpp` | VOL-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/volatile-member-function.cpp` | VOL-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/volatile-member-of-volatile-object.cpp` | VOL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-member-on-plain.cpp` | VOL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/volatile/volatile-object-ordinary-ctor.cpp` | VOL-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `declarations/volatile/volatile-parameter-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/volatile-return-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `declarations/volatile/volatile-structured-binding.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/basic-catch.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/break-out-of-handler.cpp` | TRY-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/case-into-handler.cpp` | TRY-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/catch-all-not-last.cpp` | TRY-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/catch-all-only.cpp` | TRY-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/catch-all.cpp` | TRY-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/ctor-try-block-member-named-in-handler.cpp` | TRY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/ctor-try-block-member-use-warns.cpp` | TRY-13 | reject | reject | accept | skip | skip | accept | reject | accept | reject | pass |
+| `exceptions/handlers/ctor-try-block-members-destroyed-first.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/ctor-try-block-new-throw.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/ctor-try-block-rethrows-at-end.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/ctor-try-block-return-rejected.cpp` | TRY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/ctor-try-block-sees-member-init-exception.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/distinct-handlers-no-warning.cpp` | TRY-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/dtor-try-block-rethrows.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/duplicate-handler-warns.cpp` | TRY-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/function-try-block-falls-off-end.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/function-try-block-main.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/function-try-block-non-void-no-return.cpp` | TRY-12 | reject | reject | accept | skip | skip | accept | reject | accept | reject | pass |
+| `exceptions/handlers/function-try-block-sees-parameters.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/function-try-block.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/goto-into-handler.cpp` | TRY-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/goto-into-try.cpp` | TRY-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/goto-out-of-handler.cpp` | TRY-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/handler-not-active-for-own-throw.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/handler-param-hides-outer.cpp` | TRY-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/handler-param-scope.cpp` | TRY-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/handler-redeclares-param.cpp` | TRY-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/handlers-in-order.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/handlers-share-param-name.cpp` | TRY-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/match-ambiguous-base-no.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-array-decays.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-base-by-reference.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-base-by-value-slices.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-cv-qualified.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-function-decays.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-no-arithmetic-conversion.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-no-user-conversion.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-nonconst-reference-to-exception-object.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-nullptr-to-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-pointer-qualification.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-pointer-to-base.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-private-base-no.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/match-void-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/nested-block-redeclares-param-ok.cpp` | TRY-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/nested-try-in-handler.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/no-match-propagates.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/param-abstract-reference-ok.cpp` | TRY-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/param-abstract.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-array-decays-to-pointer.cpp` | TRY-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/param-auto.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-default-argument.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-function-type.cpp` | TRY-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/param-incomplete-pointer.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-incomplete.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-qualified-name.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-reference-to-unknown-bound-array.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-rvalue-reference.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-storage-class.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/param-unnamed.cpp` | TRY-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/handlers/param-void.cpp` | TRY-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/rethrow-copy-not-modified.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/rethrow-from-called-function.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/rethrow-modified-reference.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/rethrow-outside-handler-terminates.cpp` | TRY-8 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/handlers/rethrow-to-enclosing.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/return-from-handler.cpp` | TRY-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/skips-non-matching.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/throw-new-from-handler.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/try-block-completes-normally.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/handlers/try-names-not-after.cpp` | TRY-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/try-names-not-in-handler.cpp` | TRY-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/try-without-handler.cpp` | TRY-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/handlers/unreachable-handler-warns.cpp` | TRY-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/abstract-operand-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/array-operand-decays.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/catch-by-value-copies.cpp` | THR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/constant-evaluation-throw-not-taken.cpp` | CE-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/throw/constant-evaluation-throw-rejected.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/constexpr-throw-at-runtime.cpp` | THR-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/cv-qualifiers-dropped.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/deleted-copy-lvalue-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/deleted-copy-prvalue.cpp` | THR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/throw/function-operand-decays.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/global-lvalue-copied.cpp` | THR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/incomplete-operand-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/local-variable-moved.cpp` | THR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/new-throw-in-handler-ends-old.cpp` | THR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/object-lives-through-handler.cpp` | THR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/object-lives-through-rethrow.cpp` | THR-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/private-copy-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/private-destructor-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/prvalue-initializes-directly.cpp` | THR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/rethrow-after-handler-left-terminates.cpp` | THR-7 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/throw/rethrow-in-handler-accepted.cpp` | THR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/rethrow-keeps-changes.cpp` | THR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/rethrow-outside-handler-terminates.cpp` | THR-7 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/throw/rethrow-same-object.cpp` | THR-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/static-type-not-dynamic.cpp` | THR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/string-literal-decays.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/throw/throw-expression-type-void.cpp` | THR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/throw/throw-in-noexcept-terminates.cpp` | THR-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/throw/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `exceptions/throw/throwing-destructor-accepted.cpp` | THR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `exceptions/unwinding/array-element-throws-built-destroyed.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/base-built-before-member-throws.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/block-objects-end-before-handler.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/call-in-noexcept-no-warning.cpp` | UNW-8 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `exceptions/unwinding/constructor-throws-parts-destroyed.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/delegating-target-completed-destructor-runs.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/delegating-target-throws-no-destructor.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/every-block-between-throw-and-handler.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/handler-block-objects-unaffected.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/leaves-main-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/leaves-noexcept-function-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/nested-blocks-ended-in-order.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/new-array-constructor-throws-storage-released.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/new-constructor-throws-storage-released.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/new-initializer-throws-global-delete.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/no-handler-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/no-handler-unwinding-unobservable.cpp` | UNW-7 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/noexcept-boundary-is-the-function.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/noexcept-false-destructor-can-throw.cpp` | UNW-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/noexcept-function-handles-inside.cpp` | UNW-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/objects-after-throw-not-created.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/placement-new-throws-placement-delete.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/static-local-init-throws-retry.cpp` | UNW-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/static-objects-survive-unwinding.cpp` | UNW-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `exceptions/unwinding/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/base-pointer-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/additive/deref-one-past-end.cpp` | ADD-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/float-overflow-constant.cpp` | ADD-17 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `expressions/additive/function-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/grouping.cpp` | ADD-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/integer-minus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/mixed-enum-warns.cpp` | ADD-16 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/null-plus-nonzero-sanitizer.cpp` | ADD-10 | run-fail | run-fail | run | skip | skip | run | run-fail | run | run-fail | pass |
+| `expressions/additive/null-plus-nonzero.cpp` | ADD-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/null-plus-zero.cpp` | ADD-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/nullptr-plus-int.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/operand-order.cpp` | ADD-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/additive/operands-arithmetic.cpp` | ADD-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/operands-class.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/operands-scoped-enum.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/past-end-of-row.cpp` | ADD-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-arith-runtime.cpp` | ADD-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/additive/pointer-before-array.cpp` | ADD-10 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/additive/pointer-beyond-array.cpp` | ADD-10 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/additive/pointer-difference-different-arrays.cpp` | ADD-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-difference-type-ilp32.cpp` | ADD-12 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `expressions/additive/pointer-difference-type-lp64.cpp` | ADD-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-difference.cpp` | ADD-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-minus-different-types.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-object-as-array.cpp` | ADD-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-one-past-end.cpp` | ADD-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-plus-pointer.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-plus-scoped-enum.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-plus-unscoped-enum.cpp` | ADD-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/pointer-to-incomplete.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/pointer-within-array.cpp` | ADD-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/result-prvalue.cpp` | ADD-4 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/result-types.cpp` | ADD-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/signed-overflow-add-sanitizer.cpp` | ADD-9 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/additive/signed-overflow-add.cpp` | ADD-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/signed-overflow-subtract.cpp` | ADD-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/subtract-base-pointers-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/additive/unsigned-wraps.cpp` | ADD-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/additive/void-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/additive/void-pointer-difference.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/array-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/bitfield-result-address.cpp` | ASN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/bool-compound.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/braced-compound-class.cpp` | ASN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/assignment/braced-compound.cpp` | ASN-14 | reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `expressions/assignment/braced-empty.cpp` | ASN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/braced-narrowing.cpp` | ASN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/braced-ok.cpp` | ASN-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/class-prvalue-left.cpp` | ASN-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/assignment/compound-converts.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/compound-evaluates-once.cpp` | ASN-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/compound-float-modulo.cpp` | ASN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/compound-indeterminate-run.cpp` | ASN-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/compound-indeterminate-with-call.cpp` | ASN-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/assignment/compound-operators.cpp` | ASN-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/assignment/compound-pointer.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/const-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/converts-right.cpp` | ASN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/function-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/no-conversion.cpp` | ASN-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/result-lvalue.cpp` | ASN-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/right-before-left.cpp` | ASN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/right-to-left-grouping.cpp` | ASN-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/rvalue-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/scalar-xvalue-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/assignment/self-assignment.cpp` | ASN-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/unsequenced-same-object.cpp` | ASN-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/assignment/volatile-compound.cpp` | ASN-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/assignment/volatile-simple.cpp` | ASN-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/class-operand.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-bool-warns.cpp` | BIT-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-bool.cpp` | BIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/complement-floating.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-int-silent.cpp` | BIT-7 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/complement-pointer.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/complement-promotes.cpp` | BIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/different-enum-types.cpp` | BIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/member-pointer-operand.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/mixed-enum-warns.cpp` | BIT-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/negative-values.cpp` | BIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/nullptr-operand.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/operands-arithmetic.cpp` | BIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/operands-floating.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/operands-pointer.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/operands-scoped-enum.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/parentheses-silences.cpp` | BIT-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/parentheses-warns.cpp` | BIT-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/bitwise/precedence.cpp` | BIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/result-types.cpp` | BIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/bitwise/values.cpp` | BIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/braced-cast-narrowing.cpp` | CAST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/braced-cast-ok.cpp` | CAST-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/c-style-no-valid-cast.cpp` | CAST-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/c-style-private-base.cpp` | CAST-17 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/c-style-removes-const-and-type.cpp` | CAST-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/c-style-static.cpp` | CAST-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/const-cast-changes-type.cpp` | CAST-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/const-cast-function-pointer.cpp` | CAST-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/const-cast-member-pointer.cpp` | CAST-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/const-cast-pointer.cpp` | CAST-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/const-cast-reference.cpp` | CAST-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/const-cast-value.cpp` | CAST-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/const-cast-write-const-object.cpp` | CAST-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/decay-copy-auto.cpp` | CAST-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/decay-copy-type.cpp` | CAST-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/functional-braced-unknown-bound.cpp` | CAST-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/functional-cast-several-arguments.cpp` | CAST-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/functional-cast-several-scalar.cpp` | CAST-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/functional-empty-parens.cpp` | CAST-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/reinterpret-function-to-object.cpp` | CAST-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/reinterpret-integer-too-small.cpp` | CAST-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/reinterpret-not-constant.cpp` | CAST-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/reinterpret-nullptr-to-integer.cpp` | CAST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/reinterpret-pointer-integer-mapping.cpp` | CAST-16 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/reinterpret-reference.cpp` | CAST-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/reinterpret-removes-const.cpp` | CAST-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/reinterpret-round-trip.cpp` | CAST-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/reinterpret-unrelated-pointer.cpp` | CAST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-arithmetic.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-downcast-private-base.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-downcast-wrong-object-constant.cpp` | CAST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-downcast.cpp` | CAST-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/casts/static-cast-enum-fixed-in-range.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-enum-out-of-range-constant.cpp` | CAST-14 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/casts/static-cast-enum.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-explicit-ctor.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-float-to-enum.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-function-to-object-pointer.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-integer-to-pointer.cpp` | CAST-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-null-to-pointer.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-pointer-to-integer.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-removes-const.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-rvalue-reference.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-to-void.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/casts/static-cast-unrelated-pointer.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-unrelated-pointers.cpp` | CAST-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-void-pointer.cpp` | CAST-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/argument-separator.cpp` | COMMA-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/array-bound-parenthesized.cpp` | COMMA-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/array-bound-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comma/case-label-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comma/constant-expression.cpp` | COMMA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/grouping.cpp` | COMMA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/initializer-separator.cpp` | COMMA-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/left-before-right.cpp` | COMMA-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/left-side-effects-complete.cpp` | COMMA-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/left-void.cpp` | COMMA-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/overloaded-comma-order.cpp` | COMMA-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/result-category.cpp` | COMMA-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/separators.cpp` | COMMA-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/subscript-comma.cpp` | COMMA-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comma/subscript-parenthesized.cpp` | COMMA-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comma/unused-left-void-cast.cpp` | COMMA-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/comma/unused-left-warns.cpp` | COMMA-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/arithmetic-conversions.cpp` | CMP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/array-comparison-warns.cpp` | CMP-16 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/array-comparison.cpp` | CMP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/chained-comparison-warns.cpp` | CMP-14 | reject | reject | reject | skip | skip | reject | accept | reject | reject | pass |
+| `expressions/comparison/chained-comparison.cpp` | CMP-1 | accept | reject | accept | accept | skip | accept | accept | accept | reject | pass |
+| `expressions/comparison/derived-base-pointer-equality.cpp` | CMP-19 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/different-enums-warns.cpp` | CMP-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/enum-float-comparison-warns.cpp` | CMP-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/function-pointer-order.cpp` | CMP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/function-pointer-void.cpp` | CMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/grouping.cpp` | CMP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/member-pointer-two-paths.cpp` | CMP-22 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/multilevel-qualification.cpp` | CMP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/nan.cpp` | CMP-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/noexcept-function-pointer-equality.cpp` | CMP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/null-pointer-equality.cpp` | CMP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/nullptr-equals-zero.cpp` | CMP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/one-past-end-adjacent-constant.cpp` | CMP-20 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/one-past-end-adjacent.cpp` | CMP-20 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/pointer-array-order.cpp` | CMP-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-different-types.cpp` | CMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-equality-constant.cpp` | CMP-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-equality.cpp` | CMP-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/pointer-integer.cpp` | CMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-member-order.cpp` | CMP-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/pointer-qualification.cpp` | CMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/pointer-relational-nullptr.cpp` | CMP-9 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-relational-zero.cpp` | CMP-9 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-unrelated-constant.cpp` | CMP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/pointer-unrelated-run.cpp` | CMP-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/pointer-void.cpp` | CMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/relational-member-pointers.cpp` | CMP-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/relational-nullptr-values.cpp` | CMP-9 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/result-type.cpp` | CMP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/scoped-enum-different.cpp` | CMP-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/scoped-enum-same.cpp` | CMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/sign-compare-cast.cpp` | CMP-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/sign-compare-warns.cpp` | CMP-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/signed-unsigned.cpp` | CMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/struct-and-first-member-equal.cpp` | CMP-15 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/subobject-order-constant.cpp` | CMP-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/subobject-order.cpp` | CMP-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/three-way-arrays.cpp` | CMP-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-bool-int.cpp` | CMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-different-enums.cpp` | CMP-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-enum-float.cpp` | CMP-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-enum-int.cpp` | CMP-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-floating.cpp` | CMP-17 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/three-way-function-pointer-nullptr.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-function-pointers.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-int-to-double.cpp` | CMP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-integers.cpp` | CMP-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-member-pointers.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-narrowing.cpp` | CMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-negative-zero.cpp` | CMP-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-no-library.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-nullptr-values.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-pointer-zero.cpp` | CMP-13 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/three-way-precedence.cpp` | CMP-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-type.cpp` | CMP-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-unrelated-pointers-constant.cpp` | CMP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/comparison/union-member-pointers-constant.cpp` | CMP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/union-member-pointers-relational-either.cpp` | CMP-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/union-members-equal.cpp` | CMP-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/unrelated-pointers-either.cpp` | CMP-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/comparison/zero-size-member-pointers-constant.cpp` | CMP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/comparison/zero-size-member-pointers-either.cpp` | CMP-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/arithmetic-prvalue.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/bitfield-address.cpp` | COND-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/bitfield-or-enum.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/class-ambiguous.cpp` | COND-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/class-converts-to-int.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/class-lvalue-prvalue-copy.cpp` | COND-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/class-one-way.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/comma-in-middle.cpp` | COND-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/condition-converted.cpp` | COND-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/condition-first.cpp` | COND-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/condition-not-convertible.cpp` | COND-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/condition-side-effects-first.cpp` | COND-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/const-and-plain-lvalue.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/const-volatile-lvalues-prvalue.cpp` | COND-3 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/constant-selected-fails.cpp` | COND-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/constant-unselected-fails.cpp` | COND-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/cv-lvalues-and-strings.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/derived-base-lvalue.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/gnu-omitted-operand.cpp` | COND-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/grouping.cpp` | COND-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/lvalue-result.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/member-pointer-nullptr.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/mixed-category-prvalue.cpp` | COND-3 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/mixed-enum-types.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/no-common-type.cpp` | COND-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/only-selected-evaluated.cpp` | COND-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/pointer-and-int.cpp` | COND-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/pointer-operands.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/precedence-assignment.cpp` | COND-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/prvalue-no-copy.cpp` | COND-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/throw-operand.cpp` | COND-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/two-classes-convert-to-int.cpp` | COND-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conditional/two-zeros.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/void-and-value.cpp` | COND-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conditional/void-operands.cpp` | COND-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/xvalue-operands.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conditional/zero-and-nullptr.cpp` | COND-3 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `expressions/constant-expressions/active-union-member.cpp` | CE-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/allocation-in-result.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/allocation-not-freed.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/arithmetic-and-calls.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/array-bound-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/array-bound-not-constant.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-not-constant.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/const-enum-usable.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-usable.cpp` | CE-24 CV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/converted-constant-narrowing.cpp` | CE-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/copy-after-every-part-set.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/copy-unset-array-element.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/constant-expressions/copy-unset-member.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/constant-expressions/deep-recursion.cpp` | CE-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/delete-mismatch.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/enumerator-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/function-pointer-equality.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/goto-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/goto-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/inactive-union-member.cpp` | CE-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/integral-constant-array-bound.cpp` | CE-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/lambda-call.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-base.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-closure.cpp` | CE-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-constexpr-destructor.cpp` | CE-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-destructor.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-not-reached.cpp` | CE-23 CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-union-all-volatile.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/literal-union-volatile-member.cpp` | CE-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/literal-volatile-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/long-loop.cpp` | CE-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/moderate-recursion.cpp` | CE-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/modify-local-object.cpp` | CE-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/modify-outside-object.cpp` | CE-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/new-delete-transient.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/non-constexpr-call.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/nonliteral-variable-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/read-const-constant-init.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/read-const-runtime-init.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/read-non-const-variable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/read-parameter-outside.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/reinterpret-cast.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/relational-unrelated-pointers.cpp` | CE-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-every-part-set.cpp` | CE-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/result-points-to-local.cpp` | CE-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-points-to-static.cpp` | CE-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/result-refers-to-static-temporary.cpp` | CE-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/result-refers-to-temporary.cpp` | CE-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `expressions/constant-expressions/result-union-one-active-member.cpp` | CE-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/result-unset-array-element.cpp` | CE-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-unset-member.cpp` | CE-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/static-local-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/constant-expressions/throw-evaluated.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/throw-not-evaluated.cpp` | CE-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/try-without-throw.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/undefined-behavior-dangling.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/undefined-behavior.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/unknown-reference-not-read.cpp` | CE-18 | accept | accept | accept | accept | skip | accept | reject | accept | accept | pass |
+| `expressions/constant-expressions/unset-member-not-copied.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/volatile-read.cpp` | CE-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/array-function-to-pointer.cpp` | CONV-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/array-pointer-unknown-bound.cpp` | CONV-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/bitfield-promotes.cpp` | CONV-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conversions/bitfield-promotion-by-width.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/char-zero-not-null.cpp` | CONV-8 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/const-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/deep-const-every-level.cpp` | CONV-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/deep-const-not-at-every-level.cpp` | CONV-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/derived-to-base.cpp` | CONV-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/enum-promotion-no-fixed-type.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/enum-promotion.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/false-not-null-pointer.cpp` | CONV-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-narrowing-out-of-range.cpp` | CONV-11 | clang: accept, gcc: accept, edg: reject | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-to-integral-out-of-range.cpp` | CONV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/floating-to-integral-sanitizer.cpp` | CONV-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/implicit-conversion-contexts.cpp` | CONV-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/integer-variable-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/integral-promotion.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-exact.cpp` | CONV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-nearest.cpp` | CONV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/integral-to-floating-rounding.cpp` | CONV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/member-function-noexcept-add.cpp` | CONV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/member-function-noexcept-drop.cpp` | CONV-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/member-pointer-ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/member-pointer-base-to-derived.cpp` | CONV-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/member-pointer-derived-to-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/member-pointer-to-bool.cpp` | CONV-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conversions/member-pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/member-pointer-virtual-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/nan-to-bool.cpp` | CONV-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conversions/negative-fraction-to-unsigned.cpp` | CONV-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/noexcept-function-pointer.cpp` | CONV-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/nonzero-to-pointer.cpp` | CONV-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/null-derived-to-second-base.cpp` | CONV-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/conversions/null-member-pointer-from-zero.cpp` | CONV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/null-pointer-constants.cpp` | CONV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/nullptr-to-bool-copy.cpp` | CONV-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/nullptr-to-bool-direct.cpp` | CONV-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/nullptr-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/parenthesized-zero-null.cpp` | CONV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/pointer-to-integer.cpp` | CONV-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/pointer-to-void-pointer.cpp` | CONV-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/potentially-throwing-to-noexcept.cpp` | CONV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/conversions/to-bool.cpp` | CONV-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/to-signed-modulo.cpp` | CONV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/to-unsigned-modulo.cpp` | CONV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-floating.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-promoted-same.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-same-signedness.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-signed-holds-unsigned-lp64.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-unsigned-of-signed-ilp32.cpp` | CONV-19 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `expressions/conversions/uac-unsigned-of-signed-lp64.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/uac-unsigned-rank-not-lower.cpp` | CONV-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/conversions/void-pointer-to-pointer.cpp` | CONV-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/abstract-prvalue-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/as-type-specifier.cpp` | DTY-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/base-specifier.cpp` | DTY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/bitfield-declared.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/captured-in-lambda.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/conditional.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/constexpr-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/decltype/decltype-auto-function.cpp` | DTY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/deleted-destructor-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/deleted-destructor-sizeof.cpp` | UNEV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/deleted-function-in-unevaluated.cpp` | UNEV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/destructor-call.cpp` | DTY-3 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `expressions/decltype/discarded-call-runs.cpp` | UNEV-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/discarded-constant.cpp` | UNEV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/discarded-prvalue-materialized.cpp` | UNEV-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/discarded-reference-no-copy.cpp` | UNEV-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/discarded-volatile-operand-read.cpp` | UNEV-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/discarded-volatile-read.cpp` | UNEV-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/discarded-warns.cpp` | UNEV-3 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/enumerator-name.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/function-name.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/incomplete-member-access.cpp` | UNEV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/incomplete-return-prvalue.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/incomplete-return-sizeof.cpp` | UNEV-1 UN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/lambda-in-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/member-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/member-without-object.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/name-declared-type.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/nested-class-member-evaluated.cpp` | UNEV-1 PRIM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/nested-class-member-unevaluated.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/nested-name.cpp` | DTY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/no-definition-needed.cpp` | UNEV-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/no-side-effects.cpp` | UNEV-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/odr-use-not-counted.cpp` | UNEV-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/decltype/overloaded-name.cpp` | DTY-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/parameter-name.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/paren-lvalue.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/private-access-still-checked.cpp` | UNEV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/decltype/prvalue-const-class.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/prvalue.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skip | skip | accept | reject | accept | reject | pass |
+| `expressions/decltype/string-literal.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/structured-binding-name.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/template-instantiation-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/trailing-return.cpp` | DTY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/ub-not-evaluated.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/void-cast-no-warning.cpp` | UNEV-2 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/decltype/xvalue.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/capture-abstract.cpp` | LAM-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-by-copy-at-creation.cpp` | LAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/capture-by-reference.cpp` | LAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/capture-copy-same-as-default.cpp` | LAM-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-data-member-by-name.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-default-at-namespace.cpp` | LAM-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-global-rejected.cpp` | LAM-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-outlived-sanitizer.cpp` | LAM-19 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/lambdas/capture-repeated.cpp` | LAM-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-same-as-default.cpp` | LAM-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capture-structured-binding.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/capture-this.cpp` | LAM-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/capture-visible-in-trailing-return.cpp` | LAM-18 | accept | reject | accept | accept | skip | reject | reject | accept | reject | pass |
+| `expressions/lambdas/capturing-no-function-pointer.cpp` | LAM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/capturing-not-default-constructible.cpp` | LAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/closure-copy-assign-deleted.cpp` | LAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/closure-size-unspecified.cpp` | LAM-20 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/const-call-operator.cpp` | LAM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/constant-address-needs-capture.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/constant-needs-no-capture.cpp` | LAM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/constant-value-no-capture.cpp` | LAM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/constexpr-implicit.cpp` | LAM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/copy-capture-array-and-reference.cpp` | LAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/dangling-reference-capture-constant.cpp` | LAM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/default-argument-capture.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/default-arguments.cpp` | LAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/default-capture-mixed.cpp` | LAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/default-captures.cpp` | LAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/default-constructible.cpp` | LAM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/default-member-initializer-captures-this.cpp` | LAM-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/explicit-object-mutable.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/explicit-object-recursion.cpp` | LAM-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/function-pointer.cpp` | LAM-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/generic.cpp` | LAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/immediately-invoked.cpp` | LAM-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/implicit-this-capture-warns.cpp` | LAM-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/init-capture-outer-lookup.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/init-capture.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/member-use-without-this.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/modify-through-reference-capture.cpp` | LAM-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/mutable.cpp` | LAM-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/namespace-init-capture.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/nested-capture-ok.cpp` | LAM-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/nested-capture.cpp` | LAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/noexcept-function-pointer.cpp` | LAM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/parameter-same-as-capture.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/reference-default-explicit-this.cpp` | LAM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/return-deduction.cpp` | LAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/static-and-global-no-capture.cpp` | LAM-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/lambdas/static-call-operator.cpp` | LAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/static-with-capture.cpp` | LAM-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/syntax-forms.cpp` | LAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/this-outside-member.cpp` | LAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/uncaptured-variable.cpp` | LAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/lambdas/unevaluated-operand.cpp` | LAM-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/lambdas/unique-type.cpp` | LAM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/alternative-tokens.cpp` | LOG-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/constant-evaluated-call.cpp` | LOG-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/constant-unevaluated-call.cpp` | LOG-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/constant-unevaluated-division.cpp` | LOG-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/contextual-conversion.cpp` | LOG-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/left-before-right.cpp` | LOG-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/member-pointer-operand.cpp` | LOG-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/not-on-lhs-silences.cpp` | LOG-9 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/not-on-lhs-warns.cpp` | LOG-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/nullptr-operand.cpp` | LOG-12 | accept | accept | accept | accept | skip | reject | accept | accept | accept | pass |
+| `expressions/logical/operand-not-convertible.cpp` | LOG-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/operand-scoped-enum.cpp` | LOG-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/operand-void.cpp` | LOG-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/overloaded-and-evaluates-both.cpp` | LOG-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/parentheses-silences.cpp` | LOG-8 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/parentheses-warns.cpp` | LOG-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/logical/precedence.cpp` | LOG-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/result-type.cpp` | LOG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/logical/short-circuit-and.cpp` | LOG-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/short-circuit-or.cpp` | LOG-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/logical/values.cpp` | LOG-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/address-of-bound-member.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/ambiguous-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/arrow-star.cpp` | MPTR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/base-member-type.cpp` | MPTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/base-to-derived-implicit.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/call-const-on-nonconst.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/call-drops-const.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/call-needs-parens.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/call-result-only.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-equal.cpp` | MPTR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/compare-relational.cpp` | MPTR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-three-way.cpp` | MPTR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-virtual-function-unspecified.cpp` | MPTR-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/constexpr-use.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-alias.cpp` | MPTR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/declare-cv.cpp` | MPTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-data.cpp` | MPTR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/declare-function.cpp` | MPTR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/declare-incomplete.cpp` | MPTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/declare-non-class.cpp` | MPTR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-pointer-to-reference.cpp` | MPTR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-reference-member.cpp` | MPTR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/declare-void-member.cpp` | MPTR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/derived-object.cpp` | MPTR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/derived-to-base-implicit.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/derived-to-base-static-cast.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/dynamic-type-lacks-member-constant.cpp` | MPTR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/explicit-object-not-member-pointer.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/explicit-object-ordinary-pointer.cpp` | MPTR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/form-bitfield.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-constructor.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-function-without-amp.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-needs-qualified.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-overloaded-target.cpp` | MPTR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/form-parenthesized-not-member-pointer.cpp` | MPTR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/form-private-access.cpp` | MPTR-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/form-static-ordinary-pointer.cpp` | MPTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/form-type.cpp` | MPTR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/incomplete-object.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/mutable-direct-ok.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/mutable-through-pointer.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/null-converts.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/null-use-constant.cpp` | MPTR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/precedence.cpp` | MPTR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/private-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/private-base-static-cast.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/qualification-conversion-unsafe.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/qualification-conversion.cpp` | MPTR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/ref-qualified-lvalue-only.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/reinterpret-between.cpp` | MPTR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/reinterpret-data-to-function.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/reinterpret-function-round-trip.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/result-const.cpp` | MPTR-3 ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/result-lvalue.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/result-xvalue.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/member-pointers/rhs-not-member-pointer.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/rvalue-qualified-on-lvalue.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/static-cast-from-int-pointer.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/to-bool.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/union-members-equal.cpp` | MPTR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/unrelated-object.cpp` | MPTR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/virtual-base-conversion.cpp` | MPTR-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/virtual-call.cpp` | MPTR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/virtual-vs-null.cpp` | MPTR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/member-pointers/zero-literal-null.cpp` | MPTR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/multiplicative/cast-rounds-to-type.cpp` | MUL-17 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/multiplicative/divide-by-zero-sanitizer.cpp` | MUL-9 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/multiplicative/divide-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/enum-float-warns.cpp` | MUL-16 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/excess-precision-either.cpp` | MUL-17 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp` | MUL-11 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | skip | reject | accept | reject | accept | pass |
+| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/member-pointer-operand.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/nullptr-operand.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/operand-order-overloaded.cpp` | MUL-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/multiplicative/operand-order.cpp` | MUL-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/multiplicative/operands-arithmetic.cpp` | MUL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operands-class.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/operands-enum-float.cpp` | MUL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/operands-pointer.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/operands-scoped-enum.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/product-value.cpp` | MUL-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/remainder-by-zero.cpp` | MUL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/remainder-floating.cpp` | MUL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/remainder-integral.cpp` | MUL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/remainder-sign.cpp` | MUL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/result-prvalue-address.cpp` | MUL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/result-prvalue-assign.cpp` | MUL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/result-types.cpp` | MUL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/signed-overflow-after-promotion.cpp` | MUL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-divide-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/multiplicative/signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp` | MUL-10 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/multiplicative/signed-overflow-multiply.cpp` | MUL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/unsequenced-modification.cpp` | MUL-14 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/abstract-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/allocation-before-initializer.cpp` | NEW-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/allocation-may-be-omitted.cpp` | NEW-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/array-destroy-order.cpp` | NEW-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/array-forms.cpp` | NEW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/array-needs-size.cpp` | NEW-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-negative-constant-size.cpp` | NEW-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-no-default-ctor.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `expressions/new-delete/array-of-auto.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-paren-init.cpp` | NEW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/array-runtime-size.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/array-size-from-initializer.cpp` | NEW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/array-too-many-initializers.cpp` | NEW-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-zero.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/class-allocation-function.cpp` | NEW-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/const-scalar-needs-init.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/const-scalar-with-init.cpp` | NEW-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/delete-array-mismatch-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/new-delete/delete-class-converting-to-pointer.cpp` | NEW-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/new-delete/delete-incomplete-class.cpp` | NEW-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/delete-mismatch-array.cpp` | NEW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/delete-mismatch-scalar.cpp` | NEW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/delete-non-pointer.cpp` | NEW-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/delete-not-from-new.cpp` | NEW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/delete-null-constant.cpp` | NEW-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/delete-null.cpp` | NEW-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/delete-pointer-to-const.cpp` | NEW-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/delete-twice-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/new-delete/delete-void-pointer.cpp` | NEW-8 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/new-delete/destroys-and-constructs.cpp` | NEW-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/double-delete.cpp` | NEW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/forms.cpp` | NEW-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/function-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/incomplete-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/later-dimension-runtime.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/leak-in-constant-evaluation.cpp` | NEW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/multi-dimension-type.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/new-auto-no-initializer.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/new-auto-two-values.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/new-void.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/parenthesized-type.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/placement-arguments.cpp` | NEW-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/new-delete/reference-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/uninitialized-read.cpp` | NEW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/new-delete/uninitialized-write-then-read.cpp` | NEW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/new-delete/zero-length-non-null.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/arrow-on-non-pointer.cpp` | PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-argument-count.cpp` | PFX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-class-converts-to-function-pointer.cpp` | PFX-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-class-with-call-operator.cpp` | PFX-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-class-without-call-operator.cpp` | PFX-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-copy-initializes.cpp` | PFX-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/call-defaults-and-ellipsis.cpp` | PFX-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-explicit-constructor.cpp` | PFX-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-incomplete-parameter.cpp` | PFX-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-incomplete-return.cpp` | PFX-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-non-function.cpp` | PFX-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-null-pointer.cpp` | PFX-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-object-pointer.cpp` | PFX-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-result-category.cpp` | PFX-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-through-pointer.cpp` | PFX-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/call-too-many-arguments.cpp` | PFX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/dot-on-pointer.cpp` | PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/ellipsis-nontrivial-class.cpp` | PFX-15 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/postfix/increment-enum.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/increment-function-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/increment-incomplete-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/member-access.cpp` | PFX-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/member-function-not-value.cpp` | PFX-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/member-of-prvalue.cpp` | PFX-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/mutable-and-reference-member-of-const.cpp` | PFX-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/no-such-member.cpp` | PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-decrement-bool.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-increment.cpp` | PFX-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/postfix-not-lvalue.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-on-bool.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-on-const.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-on-void-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/postfix-result-prvalue.cpp` | PFX-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/static-member-object-evaluated.cpp` | PFX-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/postfix/subscript-categories.cpp` | PFX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/subscript-enum-index.cpp` | PFX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/subscript-floating-index.cpp` | PFX-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-form-beyond-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-is-pointer-arithmetic.cpp` | PFX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/subscript-out-of-range-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/postfix/subscript-out-of-range.cpp` | PFX-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-past-end-heap-sanitizer.cpp` | PFX-4 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/postfix/subscript-prvalue-array.cpp` | PFX-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/postfix/subscript-scoped-enum-index.cpp` | PFX-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-two-integers.cpp` | PFX-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/postfix/subscript-write-past-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/bool-nullptr.cpp` | PRIM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-delimited-empty.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-empty.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-escape-out-of-range.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-escapes.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-hex-no-digits.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-multichar-warns.cpp` | PRIM-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-multichar.cpp` | PRIM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-named-escape-unknown.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-named-escape.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-octal-too-large.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-plain-signedness.cpp` | PRIM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-types.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-u8-not-single-byte.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-ucn-basic.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-ucn-control.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/char-ucn-surrogate.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unicode-multichar.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unknown-escape.cpp` | PRIM-18 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unprefixed-not-single-unit.cpp` | PRIM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/char16-not-bmp.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-exponent-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-exponent-sign-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/primary/float-forms.cpp` | PRIM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/float-hex-needs-exponent.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-integer-suffix.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-nearest-value.cpp` | PRIM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/float-overflow-warns.cpp` | PRIM-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/float-types.cpp` | PRIM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-bad-digit-binary.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-bad-digit-octal.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-bad-suffix.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-decimal-types.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-forms.cpp` | PRIM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-hex-fits-unsigned-ll.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-hex-types.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-negative-is-unary.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-prefix-no-digits-binary.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-prefix-no-digits-hex.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-separator-leading.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-separator-trailing.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-size-suffix.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-suffix-types.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/int-too-large-signed-decimal.cpp` | PRIM-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/int-too-large.cpp` | PRIM-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/member-const-in-const-function.cpp` | PRIM-12 ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/member-mutable-in-const.cpp` | PRIM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/name-enumerator-prvalue.cpp` | PRIM-12 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/name-function-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/name-member-in-static.cpp` | PRIM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/name-member-outside-object.cpp` | PRIM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/name-member-unevaluated.cpp` | PRIM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/name-parameter-in-scope.cpp` | PRIM-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/name-qualified-class-static.cpp` | PRIM-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/name-qualified-global.cpp` | PRIM-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/name-undeclared.cpp` | PRIM-12 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/name-variable-lvalue.cpp` | PRIM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/nullptr-member-pointer.cpp` | PRIM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/nullptr-to-bool-copy.cpp` | PRIM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/nullptr-to-int.cpp` | PRIM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/paren-function-call.cpp` | PRIM-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/paren-lvalue.cpp` | PRIM-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/paren-same-type.cpp` | PRIM-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-compare-constant.cpp` | PRIM-9 | reject | reject | accept | accept | skip | accept | reject | accept | reject | pass |
+| `expressions/primary/string-concat-mixed.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-concat-u8-u.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-concat.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-escape-in-string.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-index-constant.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-lvalue.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-modify-constant.cpp` | PRIM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-bad-delimiter.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-backslash.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-paren.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-tab.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-delimiter-too-long.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-raw-long-delimiter.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-raw.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/string-same-literal-two-evaluations.cpp` | PRIM-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/string-same-object-either.cpp` | PRIM-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/string-to-nonconst-pointer.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/string-type.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/this-const-member-modify.cpp` | PRIM-11 ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/this-default-member-init.cpp` | PRIM-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/this-explicit-object.cpp` | PRIM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/this-implicit-member.cpp` | PRIM-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/primary/this-namespace.cpp` | PRIM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/this-prvalue.cpp` | PRIM-11 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/this-static.cpp` | PRIM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/primary/this-trailing-return.cpp` | PRIM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/primary/this-type.cpp` | PRIM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/sequencing/adjacent-bitfields-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/bitwise-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/braced-list-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/default-argument-order.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-for-clauses.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-side-effects.cpp` | SEQ-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-statement.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/init-capture-order.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/member-operator-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/multiplicative-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/new-placement-and-bound-order.cpp` | NEW-12 NEW-18 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/overloaded-assignment-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/parameter-destruction-order.cpp` | VC-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/parenthesized-aggregate-order.cpp` | LIST-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/reversed-comparison-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 SEQ-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/sequencing/volatile-reads-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/class-operand.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-floating.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-negative-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/shift/count-negative-warns.cpp` | SHF-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-negative.cpp` | SHF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-too-large-right.cpp` | SHF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-too-large-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/shift/count-too-large.cpp` | SHF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/count-width-of-promoted.cpp` | SHF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/grouping.cpp` | SHF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-negative.cpp` | SHF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-overflow-signed.cpp` | SHF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/left-shift-values.cpp` | SHF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/member-pointer-operand.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/nullptr-operand.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/operand-floating.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/operand-order.cpp` | SHF-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/shift/operand-pointer.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/operand-scoped-enum.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/operands-integral.cpp` | SHF-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/result-prvalue.cpp` | SHF-4 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/shift/result-type.cpp` | SHF-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/right-shift-negative.cpp` | SHF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/shift/right-shift-values.cpp` | SHF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/address-of-qualified-member.cpp` | UN-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/address-of-rvalue.cpp` | UN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/address-of.cpp` | UN-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/alignof-basic.cpp` | UN-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/alignof-expression.cpp` | UN-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/alignof-function.cpp` | UN-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/alignof-incomplete.cpp` | UN-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/alignof-unknown-bound.cpp` | UN-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/alignof-void.cpp` | UN-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/decrement-bool.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/decrement-overflow-constant.cpp` | UN-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-bool.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-const.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-enum.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-function-pointer.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-incomplete-pointer.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-overflow-constant.cpp` | UN-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/increment-overflow-sanitizer.cpp` | UN-21 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/unary/increment-pointer-past-end-constant.cpp` | UN-21 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `expressions/unary/increment-rvalue.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-dangling-constant.cpp` | UN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-function.cpp` | UN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/indirection-incomplete-lvalue.cpp` | UN-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/indirection-incomplete-value.cpp` | UN-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-lvalue.cpp` | UN-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/indirection-non-pointer.cpp` | UN-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-null-sanitizer.cpp` | UN-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/unary/indirection-null.cpp` | UN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-nullptr-literal.cpp` | UN-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-past-end-constant.cpp` | UN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-void-pointer.cpp` | UN-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/minus-bool.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/minus-int-min-sanitizer.cpp` | UN-4 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/unary/minus-int-min.cpp` | UN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/minus-pointer.cpp` | UN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/minus-values.cpp` | UN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/noexcept-conversion-false.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/noexcept-dynamic-cast-reference.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/noexcept-new-false.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/noexcept-not-evaluated.cpp` | UN-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/noexcept-operator.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/noexcept-temporary-ctor-false.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/plus-function-operand.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/plus-minus-scoped-enum.cpp` | UN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/plus-minus-types.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/plus-pointer.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/prefix-increment-lvalue.cpp` | UN-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/prefix-increment.cpp` | UN-20 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/sizeof-array-parameter-warns.cpp` | UN-19 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/sizeof-array-reference-silent.cpp` | UN-19 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/sizeof-at-least-one.cpp` | UN-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/sizeof-basic.cpp` | UN-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/sizeof-function.cpp` | UN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/sizeof-incomplete.cpp` | UN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/unary/sizeof-not-evaluated.cpp` | UN-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/unary/sizeof-unsigned-ilp32.cpp` | UN-15 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `expressions/unary/sizeof-unsigned-lp64.cpp` | UN-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/unary/sizeof-void.cpp` | UN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/address-of-prvalue.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/address-of-xvalue.cpp` | VC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/aggregate-element-temporaries.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/argument-lives-to-end.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/array-element-default-argument.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/array-prvalue-argument.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/assign-to-class-prvalue.cpp` | VC-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/assign-to-prvalue.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/assign-to-scalar-prvalue.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/condition-temporaries.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/cv-prvalue-dropped.cpp` | VC-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/declarators-separate.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/decltype-call-deleted-destructor.cpp` | VC-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/default-argument-temporary.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/discarded-call-deleted-destructor.cpp` | VC-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/discarded-prvalue-destroyed.cpp` | VC-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/guaranteed-elision.cpp` | VC-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/lvalues.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/materialization-binds.cpp` | VC-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-array-decay.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-array-subscript.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-member-access.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-member-call.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/materialize-pointer-to-member.cpp` | VC-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/member-access-lvalue.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/member-function-access-not-address.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/member-reference-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/more-categories.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/parameter-destruction-point.cpp` | VC-10 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/prvalue-no-object-until-needed.cpp` | VC-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/prvalues.cpp` | VC-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/return-temporaries-before-locals.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/rvalue-ref-to-function-cast.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/rvalue-reference-name-binding.cpp` | VC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `expressions/value-categories/rvalue-reference-name-is-lvalue.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/static-member-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/temporaries-reverse-order.cpp` | VC-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/temporary-constant-evaluation.cpp` | VC-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/trivial-parameter-address.cpp` | VC-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/adl-finds-function.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/adl-not-for-fundamental.cpp` | NAM-5 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/adl-plus-ordinary.cpp` | NAM-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/class-member-type-needs-order.cpp` | NAM-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/class-members-any-order.cpp` | NAM-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/function-not-later-global.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/hiding-ignores-kind.cpp` | NAM-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/label-and-variable-same-name.cpp` | NAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/label-duplicate.cpp` | NAM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/label-scope-function.cpp` | NAM-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/namespace-member-defined-outside.cpp` | NAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/namespace-qualified-use.cpp` | NAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/namespace-reopened.cpp` | NAM-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/parameter-hides-global.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/qualified-reaches-hidden-global.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/redeclare-different-kind.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/redeclare-function-ok.cpp` | NAM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/redeclare-same-scope.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/scope-ends-with-block.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/use-before-declaration.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/names/visible-from-declaration.cpp` | NAM-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/names/visible-in-own-initializer.cpp` | NAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/objects/address-stable.cpp` | OBJ-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/array-elements-order.cpp` | OBJ-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/block-reverse-order.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/constant-evaluation-same-order.cpp` | OBJ-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/objects/construction-order.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/deleted-object-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/distinct-objects-distinct-addresses.cpp` | OBJ-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/dynamic-not-destroyed-without-delete.cpp` | OBJ-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/dynamic-outlives-scope.cpp` | OBJ-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/early-return-destroys.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/function-static-first-use.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/lifetime-begins-after-init.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/loop-body-each-iteration.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/nested-block-ends-first.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 UN-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/objects/read-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/read-before-init-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/reference-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/reference-does-not-extend-named.cpp` | OBJ-8 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/reference-to-temporary-extends.cpp` | OBJ-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/scalar-lifetime-with-storage.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/static-never-reached-not-constructed.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/static-order.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/storage-reuse-ends-old-object-constant.cpp` | OBJ-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/objects/temporary-ends-with-full-expression.cpp` | OBJ-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/exit-status-kept-optimized.cpp` | TR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/translation/if-consteval-selects.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 CONV-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/ill-formed-in-unused-function.cpp` | TR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/main-address.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/main-called.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/main-exit-status.cpp` | TR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/main-falls-off-end.cpp` | TR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/main-no-definition.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/translation/main-nonzero-status.cpp` | TR-2 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/translation/main-program-name.cpp` | TR-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/main-with-args.cpp` | TR-2 TR-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 FN-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/observable-volatile-kept-optimized.cpp` | TR-7 | run | run | run | skip | skip | run | run | run | run | pass |
+| `foundations/translation/undefined-at-link.cpp` | TR-4 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | pass |
+| `foundations/translation/undefined-on-taken-path-only.cpp` | TR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/undefined-taints-whole-evaluation.cpp` | TR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/unit-sees-own-declarations-only.cpp` | TR-4 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/units-translated-separately.cpp` | TR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `foundations/translation/volatile-order-kept-optimized.cpp` | TR-7 | run | run | run | skip | skip | run | run | run | run | pass |
+| `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `foundations/translation/warning-not-error.cpp` | TR-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/align-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | reject | accept | accept | skip | accept | pass |
+| `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/align-lp64.cpp` | TYP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/align-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | reject | accept | accept | skip | accept | pass |
+| `foundations/types/bool-values.cpp` | TYP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/char-signed-ilp32.cpp` | TYP-3 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/char-signed.cpp` | TYP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/distinct-character-types.cpp` | TYP-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/distinct-same-size-ilp32.cpp` | TYP-5 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/distinct-same-size.cpp` | TYP-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/float-precision.cpp` | TYP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/int-max-overflow.cpp` | TYP-4 ADD-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/integer-ranges-ilp32.cpp` | TYP-4 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/integer-ranges-lp64.cpp` | TYP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/long-double-precision-ilp32.cpp` | TYP-10 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/long-double-precision.cpp` | TYP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/rank-floating.cpp` | TYP-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/rank-long-unsigned-ilp32.cpp` | TYP-8 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/rank-long-unsigned-lp64.cpp` | TYP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/rank-promotions.cpp` | TYP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/size-characters-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/size-characters-lp64.cpp` | TYP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/size-floating-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/size-floating-lp64.cpp` | TYP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/size-integers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/size-integers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/size-pointers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/size-pointers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/size-result-type-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | accept | skip | accept | pass |
+| `foundations/types/size-result-type-lp64.cpp` | TYP-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/specifier-int-char.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-bool.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-char.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-double.cpp` | TYP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/specifier-long-float.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-long-double.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-long-long.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-short.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-char.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-double.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-float.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-char32.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-unsigned.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-wchar.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-bool.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-char16.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-char8.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-float.cpp` | TYP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `foundations/types/specifiers-equivalent.cpp` | TYP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 TYP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `foundations/types/wchar-signed.cpp` | TYP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/block-scope.cpp` | STMT-2 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/blocks/case-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `statements/blocks/declaration-anywhere.cpp` | STMT-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/default-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | skip | reject | accept | reject | accept | pass |
+| `statements/blocks/disambiguation-rest-not-declaration.cpp` | STMT-6 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/expression-statement.cpp` | STMT-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/label-at-end-of-block.cpp` | STMT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/blocks/null-statement.cpp` | STMT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/blocks/redeclare-same-block.cpp` | STMT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/blocks/statements-in-order.cpp` | STMT-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/blocks/unused-value-warns.cpp` | STMT-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | pass |
+| `statements/blocks/void-cast-silences.cpp` | STMT-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | pass |
+| `statements/blocks/volatile-name-statement.cpp` | STMT-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-assignment.cpp` | IF-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-converted-to-bool.cpp` | IF-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-declaration-array.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-class.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-constexpr.cpp` | IF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/condition-declaration-equals-braces.cpp` | IF-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-declaration-extern.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-function-pointer.cpp` | IF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/condition-declaration-function.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-inline.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-no-init.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-static.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-thread-local.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-two.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration-typedef.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-declaration.cpp` | IF-5 IF-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-evaluated-once.cpp` | IF-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/condition-not-convertible.cpp` | IF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/condition-structured-binding.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/consteval-branches.cpp` | IF-18 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/consteval-else-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/consteval-goto-into.cpp` | IF-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/consteval-immediate-context.cpp` | IF-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/consteval-immediate-outside.cpp` | IF-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/consteval-in-consteval.cpp` | IF-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/consteval-no-condition.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/consteval-plain-function.cpp` | IF-18 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/consteval-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-case-into.cpp` | IF-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-condition-explicit-bool.cpp` | IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-condition-narrowing.cpp` | IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-condition-not-constant.cpp` | IF-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-condition-pointer.cpp` | IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-discard-in-template.cpp` | IF-13 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/constexpr-discard-return-type.cpp` | IF-14 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/constexpr-goto-into.cpp` | IF-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-non-template-checked.cpp` | IF-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-non-template-no-definition.cpp` | IF-15 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/constexpr-non-template-return-type.cpp` | IF-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-template-nondependent-checked.cpp` | IF-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-with-init.cpp` | IF-7 IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/dangling-else.cpp` | IF-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/else-if-scope.cpp` | IF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/goto-into-branch.cpp` | IF-12 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/init-alias.cpp` | IF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/init-declaration-kinds.cpp` | IF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/init-declaration.cpp` | IF-7 IF-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/init-empty.cpp` | IF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/init-expression.cpp` | IF-7 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/init-scope-ends.cpp` | IF-9 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/init-static-assert.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/init-using-declaration.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/init-using-directive.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/lifetimes.cpp` | IF-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/if/not-consteval-else-immediate.cpp` | IF-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/not-constexpr.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-branch.cpp` | IF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-else-statement.cpp` | IF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-else.cpp` | IF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-in-nested-block.cpp` | IF-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/if/redeclare-init-and-condition.cpp` | IF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/redeclare-init-in-branch.cpp` | IF-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/if/substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/break-in-lambda-in-loop.cpp` | JMP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/break-innermost.cpp` | JMP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/break-outside.cpp` | JMP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/constructor-return-void-expression.cpp` | JMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/continue-for.cpp` | JMP-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/continue-in-switch.cpp` | JMP-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/continue-outside.cpp` | JMP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/continue-while-condition.cpp` | JMP-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/copy-elision-named.cpp` | JMP-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/destructor-return-value.cpp` | JMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/destructor-return-void-expression.cpp` | JMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/duplicate-label.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-back-recreates.cpp` | JMP-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/goto-forward-backward.cpp` | JMP-8 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/goto-other-function.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-out-destroys.cpp` | JMP-9 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/goto-out-of-lambda.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-class-object.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-initialization.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/goto-past-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `statements/jumps/goto-past-static.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/goto-past-trivial-class.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/goto-past-uninitialized-scalar.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/goto-skips-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `statements/jumps/goto-undefined-label.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/label-function-scope.cpp` | JMP-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/label-separate-names.cpp` | JMP-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/return-braced.cpp` | JMP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/return-converts.cpp` | JMP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/return-destroys-locals.cpp` | JMP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/return-missing-value.cpp` | JMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/return-move-only-parameter.cpp` | JMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/return-parameter-always-moves.cpp` | JMP-11 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/jumps/return-parameter-as-lvalue-ref.cpp` | JMP-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/return-parenthesized-move-only.cpp` | JMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp` | JMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/return-static-local-move-only.cpp` | JMP-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/return-value-in-void.cpp` | JMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/jumps/return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/jumps/void-function-return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/loops/body-own-scope.cpp` | LOOP-4 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/condition-not-bool.cpp` | LOOP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/do-basic.cpp` | LOOP-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/do-body-name-not-in-condition.cpp` | LOOP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/do-condition-declaration.cpp` | LOOP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/for-condition-declaration.cpp` | LOOP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/for-condition-destroyed-after-step.cpp` | LOOP-3 | run | run | run | accept | skip | run-fail | run | run | run | pass |
+| `statements/loops/for-init-alias.cpp` | LOOP-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/for-init-destroyed-once.cpp` | LOOP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/for-init-redeclare-body.cpp` | LOOP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/for-init-redeclared-in-condition.cpp` | LOOP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/for-init-scope.cpp` | LOOP-4 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/for-init-static-assert.cpp` | LOOP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/loops/for-order.cpp` | LOOP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/for-parts-optional.cpp` | LOOP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/for-sequence.cpp` | LOOP-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/while-basic.cpp` | LOOP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/while-condition-declaration.cpp` | LOOP-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/loops/while-condition-redeclared.cpp` | LOOP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/array.cpp` | RFOR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/begin-end-not-adl.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/braced-list.cpp` | RFOR-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/callable-data-members.cpp` | RFOR-2 | run | run | run | reject | skip | run | run | run | run | pass |
+| `statements/range-for/data-member-begin-counts.cpp` | RFOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/data-member-named-begin.cpp` | RFOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/range-for/end-computed-once.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/equality-only-iterator.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/extern-loop-variable.cpp` | RFOR-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/free-begin-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/incomplete-element.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/init-statement.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/loop-name-not-in-range.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/member-begin-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/member-begin-only-uses-free.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/member-begin-only.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/not-a-range.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/postfix-only-iterator.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/range-evaluated-once.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/redeclare-loop-variable.cpp` | RFOR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/range-for/sentinel-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/static-thread-local-declaration.cpp` | RFOR-5 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `statements/range-for/storage-class.cpp` | RFOR-5 | reject | reject | reject | reject | skip | accept | reject | reject | reject | pass |
+| `statements/range-for/structured-binding.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/range-for/temporary-in-range-expression.cpp` | RFOR-4 | run | run | run | accept | skip | run-fail | run-fail | run | run | pass |
+| `statements/range-for/temporary-range-lives.cpp` | RFOR-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/break-exits.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/case-duplicate-after-conversion.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-duplicate.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-in-lambda-body.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-in-local-class.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-inside-loop.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/case-narrowing.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-not-constant.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-out-of-char-range.cpp` | SW-3 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/case-outside-switch.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/case-skips-nontrivial-destructor.cpp` | SW-5 | reject | reject | accept | reject | skip | accept | reject | accept | reject | pass |
+| `statements/switch/case-skips-trivial-struct.cpp` | SW-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/condition-declaration.cpp` | SW-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/condition-explicit-conversion.cpp` | SW-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/condition-floating.cpp` | SW-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/condition-name-redeclared.cpp` | SW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/condition-once.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/condition-pointer.cpp` | SW-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/condition-two-conversions-same-type.cpp` | SW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/switch/condition-two-conversions.cpp` | SW-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/condition-types.cpp` | SW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/switch/dispatch.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/fallthrough.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/init-name-redeclared.cpp` | SW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/init-statement.cpp` | SW-4 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/jump-past-block.cpp` | SW-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `statements/switch/jump-past-initialization.cpp` | SW-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/jump-past-uninitialized.cpp` | SW-5 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/nested-switch-labels.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/no-match-no-default.cpp` | SW-1 | run | run | run | accept | skip | run | run | run | run | pass |
+| `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 
 3214/3214 tests pass on baseline compilers.
 
@@ -6786,6 +6787,7 @@ check that the rejection has the intended cause.
 - `declarations/constexpr/variable-not-constant.cpp` (clang-22): error: constexpr variable 'n' must be initialized by a constant expression / note: non-constexpr function 'read' cannot be used in a constant expression
 - `declarations/declarators/array-4gib-ilp32.cpp` (clang-host): error: array is too large (4'294'967'296 elements)
 - `declarations/declarators/array-4gib-ilp32.cpp` (gcc-host): error: narrowing conversion of ‘4294967296’ from ‘long long unsigned int’ to ‘unsigned int’ [-Wnarrowing] / error: size of array ‘big’ is not an integral constant-expression [-Wpedantic] / error: size ‘4294967296’ of array ‘big’ exceeds maximum object size ‘2147483647’
+- `declarations/declarators/array-4gib-ilp32.cpp` (edg-7.0-ilp32): error: invalid narrowing conversion from "unsigned long long" to "unsigned int": constant value does not fit in destination type
 - `declarations/declarators/array-4gib-ilp32.cpp` (gcc-14): error: narrowing conversion of '4294967296' from 'long long unsigned int' to 'unsigned int' [-Wnarrowing] / error: size of array 'big' is not an integral constant-expression [-Wpedantic] / error: size '4294967296' of array 'big' exceeds maximum object size '2147483647'
 - `declarations/declarators/array-4gib-ilp32.cpp` (clang-18): error: array is too large (4294967296 elements)
 - `declarations/declarators/array-4gib-ilp32.cpp` (clang-22): error: array is too large (4'294'967'296 elements)
@@ -12456,6 +12458,8 @@ check that the rejection has the intended cause.
 - `foundations/translation/warning-as-error-with-flag.cpp` (clang-18): error: unused variable 'unused' [-Werror,-Wunused-variable]
 - `foundations/translation/warning-as-error-with-flag.cpp` (gcc-16): error: unused variable 'unused' [-Werror=unused-variable]
 - `foundations/translation/warning-as-error-with-flag.cpp` (clang-22): error: unused variable 'unused' [-Werror,-Wunused-variable]
+- `foundations/types/align-ilp32.cpp` (edg-7.0-ilp32): error: static assertion failed
+- `foundations/types/align-member-ilp32.cpp` (edg-7.0-ilp32): error: static assertion failed
 - `foundations/types/int-max-overflow.cpp` (clang-host): error: constexpr variable 'past' must be initialized by a constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `foundations/types/int-max-overflow.cpp` (gcc-host): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
 - `foundations/types/int-max-overflow.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"

@@ -29,8 +29,9 @@ and 0035):
 
     tools/containers.py build
 
-The command builds EDG 7.0 from its open source release, GCC 14 and 16, and
-Clang 18 and 22. The first build takes several minutes.
+The command builds EDG 7.0 from its open source release twice (for
+x86-64 and, with EDG's i686 configuration, for the `-m32` tests), GCC 14
+and 16, and Clang 18 and 22. The first build takes several minutes.
 
 ## Site
 

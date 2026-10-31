@@ -206,6 +206,8 @@ def outcome(test: Test, c: Compiler) -> tuple[str, str]:
     """Return (outcome, detail): accept, reject, link-fail, run, run-fail, or skip."""
     if any(fnmatch.fnmatchcase(f, u) for f in test.flags for u in c.unsupported_flags):
         return "skip", "unsupported flags"
+    if not all(f in test.flags for f in c.required_flags):
+        return "skip", "needs flags " + " ".join(c.required_flags)
     if test.sources:
         return multi_unit_outcome(test, c)
     src, out, _ = c.paths(test.path)
@@ -232,6 +234,8 @@ def cached_outcome(test: Test, c: Compiler, identity: str, use_cache: bool) -> t
     key = hashlib.sha256(json.dumps([
         [s.read_text() for s in [test.path, *test.sources]],
         c.id, identity, c.check, c.build, sorted(c.unsupported_flags), test.expect(c), OUTCOME_VERSION,
+        # Only compilers that use these fields add them, so other cache keys stay as they were.
+        *([sorted(c.required_flags), sorted(c.drop_flags)] if c.required_flags or c.drop_flags else []),
     ]).encode()).hexdigest()
     entry = CACHE / f"{key}.json"
     if use_cache and entry.exists():

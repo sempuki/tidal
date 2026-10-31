@@ -90,6 +90,43 @@
       ]
     },
     {
+      "id": "edg-7.0-ilp32",
+      "family": "edg",
+      "role": "baseline",
+      "image": {
+        "dockerfile": "edg-i686.Dockerfile",
+        "args": {
+          "EDG_REF": "7.0"
+        }
+      },
+      "check": [
+        "cpfe",
+        "--c++23",
+        "--strict",
+        "--no_code_gen",
+        "--instantiate=used",
+        "{flags}",
+        "{src}"
+      ],
+      "version": [
+        "cpfe",
+        "--version"
+      ],
+      "unsupported_flags": [
+        "-Wall",
+        "-Werror",
+        "-O2",
+        "-fsanitize=*",
+        "-fno-sanitize-recover=*"
+      ],
+      "required_flags": [
+        "-m32"
+      ],
+      "drop_flags": [
+        "-m32"
+      ]
+    },
+    {
       "id": "gcc-14",
       "family": "gcc",
       "role": "baseline",
