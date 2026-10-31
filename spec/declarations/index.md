@@ -16,6 +16,7 @@ namespaces
 linkage-specifications
 attributes
 functions/index
+exception-specifications
 constexpr
 static-assert
 :::
@@ -37,6 +38,7 @@ namespaces
 linkage-specifications
 attributes
 functions/index
+exception-specifications
 constexpr
 static-assert
 :::
