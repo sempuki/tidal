@@ -2,8 +2,9 @@
 
 A type alias gives another name to a type. A program declares one with
 `typedef` or with an alias declaration. An *elaborated type specifier*
-names a class or enumeration with its key, such as `struct S`. It can
-also declare a class before its definition. This page covers:
+names a class or enumeration with its key, such as `struct S`. An
+elaborated type specifier can also declare a class before its
+definition. This page covers:
 
 - type aliases,
 - elaborated type specifiers,
@@ -16,18 +17,17 @@ Depends on: declarators, enumerations, class definitions and members.
 :::{principle} TYN-P1
 :rules: TYN-1 TYN-8 TYN-2 TYN-3 TYN-9
 
-An alias is a second name for a type that already exists. It makes no
-new type, so it makes no new overload, and a qualifier applied to it
-applies to what it names. It is an ordinary name in an ordinary scope
-({principle}`NAM-P1`), so it:
+An alias is a second name for a type that already exists. The alias
+makes no new type, so it makes no new overload. A qualifier applied to
+the alias applies to the named type. An alias is an ordinary name in an
+ordinary scope ({principle}`NAM-P1`), so an alias:
 
 - hides outer names,
 - is declared once per scope,
 - can be declared again only to say the same thing.
 
-An alias can give a type only a name for linkage, and only when the
-type is an unnamed class with nothing in it that needs a name of its
-own.
+An alias can give a type only a name for linkage, and only when the type
+is an unnamed class with nothing in it that needs a name of its own.
 :::
 
 :::{principle} TYN-P2
@@ -37,31 +37,32 @@ A class key before a name restricts lookup to classes and enumerations,
 so a function or a variable with the same spelling does not get in the
 way. If the restricted lookup finds nothing, the name is a new class,
 declared in the nearest namespace or block. The key has to match the
-kind of thing it finds, with `class` and `struct` counting as one kind.
+kind of thing that lookup finds, with `class` and `struct` counting as
+one kind.
 :::
 
 :::{principle} TYN-P3
 :rules: TYN-6 TYN-7
 
-A class exists from its first declaration and is complete only after
-its definition.
+A class exists from its first declaration and is complete only after its
+definition.
 
 | A use that needs | Works after |
 |---|---|
 | Only the existence of the type, such as a pointer, a reference, or a function declaration | A declaration |
 | The size or the members | The definition |
 
-A definition happens once. An enumeration with no body
-needs a fixed underlying type, because its size is all that a use can
-ask of it.
+A definition happens once. An enumeration with no body needs a fixed
+underlying type, because a use can ask only for the size of the
+enumeration.
 :::
 
 :::{principle} TYN-P4
 :rules: TYN-5
 
 A name used in a class body means one thing throughout that body. A
-member that changes its meaning after a use makes the class not valid,
-and an implementation need not notice ({principle}`NAM-P4`).
+member that changes the meaning of the name after a use makes the class
+not valid, and an implementation need not notice ({principle}`NAM-P4`).
 :::
 
 ## Syntax
@@ -87,14 +88,15 @@ body. The class is incomplete until its definition.
 :tests: declarations/type-names/alias-cv.cpp declarations/type-names/alias-defines-class.cpp declarations/type-names/alias-function-type.cpp declarations/type-names/alias-in-block.cpp declarations/type-names/alias-in-class.cpp declarations/type-names/alias-of-incomplete.cpp declarations/type-names/typedef-multiple.cpp declarations/type-names/typedef-redeclare-same.cpp declarations/type-names/typedef-same-type.cpp declarations/type-names/alias-inner-scope-hides.cpp declarations/type-names/alias-same-name-as-class.cpp declarations/type-names/alias-cv-reference-ignored.cpp
 
 A `typedef` or an alias declaration declares a name for a type. The name
-denotes the same type, so it does not make a new type or a new overload.
-These rules apply:
+denotes the same type, so the declaration does not make a new type or a
+new overload. These rules apply:
 
 - `typedef` can declare several names, each with its own declarator.
 - An alias can name a function, array, or cv-qualified type. A
   cv-qualifier applied to an alias of a pointer applies to the pointer.
-  On an alias of an array, it applies to the elements. On an alias of a
-  reference or a function type, it has no effect.
+  On an alias of an array, the cv-qualifier applies to the elements. On
+  an alias of a reference or a function type, the cv-qualifier has no
+  effect.
 - Outside a class, a name can be declared again as an alias of the same
   type, in either form. A `typedef` can give a class its own name.
 - An alias has the scope of its declaration, including a class or a
@@ -114,7 +116,7 @@ These consequences of TYN-1 make a program not valid:
 
 - A program must not use an alias outside its scope.
 - A function declared with an alias and a function declared with its
-  type are one function. A program must not define it twice.
+  type are one function. A program must not define that function twice.
 :::
 
 :::{rule} TYN-2
@@ -144,8 +146,8 @@ name for linkage. TYN-9 states what such a class must be.
 :kind: reject
 :tests: declarations/type-names/typedef-unnamed-class-member-function.cpp
 
-A class that uses a `typedef` name for linkage (TYN-3) must be C-like. It
-has none of these ({question}`Q-0067`):
+A class that uses a `typedef` name for linkage (TYN-3) must be C-like.
+The class has none of these ({question}`Q-0067`):
 
 - member functions,
 - bases,
@@ -156,14 +158,14 @@ has none of these ({question}`Q-0067`):
 :kind: required
 :tests: declarations/type-names/elaborated-declares.cpp declarations/type-names/elaborated-enum-declared.cpp declarations/type-names/elaborated-hides-function.cpp declarations/type-names/elaborated-in-parameter-scope.cpp declarations/type-names/elaborated-key-class-struct.cpp declarations/type-names/elaborated-in-member-declares-namespace.cpp
 
-An elaborated type specifier refers to a class or enumeration that lookup
-finds with that key. Other names with the same spelling, such as
-functions, do not hide it. If lookup finds no class, `struct S` or
-`class S` declares `S`:
+An elaborated type specifier refers to a class or enumeration that
+lookup finds with that key. Other names with the same spelling, such as
+functions, do not hide the class or enumeration. If lookup finds no
+class, `struct S` or `class S` declares `S`:
 
-- in the enclosing namespace, if it occurs in a parameter list, a
-  member declaration of a class, or namespace scope,
-- in the block, if it occurs in a block.
+- in the enclosing namespace, if the specifier occurs in a parameter
+  list, a member declaration of a class, or namespace scope,
+- in the block, if the specifier occurs in a block.
 
 `class` and `struct` can refer to the same class. TYN-10 lists what is
 not valid.
@@ -191,14 +193,15 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 These rules apply to forward declarations and complete types:
 
 - After a forward declaration, a program can declare pointers and
-  references to the class, and functions that take or return it.
+  references to the class, and functions that take or return the class.
 - A class is complete after its definition.
 - A forward declaration after the definition is valid.
-- A nested class can be declared in its class and defined outside it.
+- A nested class can be declared in its class and defined outside the
+  enclosing class.
 - An opaque enumeration declaration has a fixed underlying type, which
   is `int` for a scoped enumeration without one.
-- A deleted function can have parameters and a return type of
-  incomplete class type.
+- A deleted function can have parameters and a return type of incomplete
+  class type.
 :::
 
 :::{rule} TYN-7
@@ -228,7 +231,7 @@ A program must not:
 
 A class must not use a name from an enclosing scope and then declare a
 member with that name and another meaning. An implementation need not
-diagnose it ({question}`Q-0066`).
+diagnose the change of meaning ({question}`Q-0066`).
 :::
 
 ## Examples
@@ -252,15 +255,16 @@ Mode current();
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 57 of
-60 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 57
+of 60 tests.
 
-- TYN-5: GCC rejects the class. Clang and EDG accept it
+- TYN-5: GCC rejects the class. Clang and EDG accept the class
   ({question}`Q-0066`).
 - TYN-7: GCC accepts a declaration of only a class key and a qualified
-  name. Clang and EDG reject it ({question}`Q-0093`).
+  name. Clang and EDG reject the declaration ({question}`Q-0093`).
 - TYN-3: GCC 14 accepts a typedef name for a class with a member
-  function. GCC 16, Clang, and EDG reject it ({question}`Q-0067`).
+  function. GCC 16, Clang, and EDG reject the typedef name
+  ({question}`Q-0067`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls,
 edg-class-decl.

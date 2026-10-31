@@ -2,10 +2,11 @@
 
 These specifiers control when evaluation occurs.
 
-- `constexpr` on a variable makes it a constant. On a function, it lets
-  {term}`constant evaluation` call the function.
-- `consteval` makes a function an *immediate function*. Each call must be
-  a constant expression.
+- `constexpr` on a variable makes the variable a constant. On a
+  function, `constexpr` lets {term}`constant evaluation` call the
+  function.
+- `consteval` makes a function an *immediate function*. Each call must
+  be a constant expression.
 - `constinit` requires that a variable with static or thread
   {term}`storage duration` has a constant initializer.
 
@@ -30,16 +31,15 @@ function must agree on it.
 :::{principle} CX-P2
 :rules: CX-1 CX-2
 
-`constexpr` on a variable makes it a constant:
+`constexpr` on a variable makes the variable a constant:
 
-- it is `const`,
+- the variable is `const`,
 - its initializer is a constant expression,
 - its type can be evaluated at translation time.
 
-A constant that is a pointer or reference must refer to something that
-exists at translation time and still exists at run time, which means a
-function or an object with static storage duration, never an automatic
-variable.
+A constant that is a pointer or reference must refer to a function or
+an object with static storage duration, never an automatic variable.
+The target must exist at translation time and still exist at run time.
 :::
 
 :::{principle} CX-P3
@@ -47,23 +47,24 @@ variable.
 
 `consteval` on a function is a demand. Every call is evaluated at
 translation time, so a call with arguments that are not constant is an
-error unless it sits inside another function that constant evaluation
-is already running. A function that makes such a call becomes
+error unless the call sits inside another function that constant
+evaluation is already running. A function that makes such a call becomes
 `consteval` itself when the language allows, and otherwise the call is
 rejected. The function has no run-time existence, so its address can be
-taken only where constant evaluation is in progress. It is `inline` for
-the same reason as a `constexpr` function.
+taken only where constant evaluation is in progress. A `consteval`
+function is `inline` for the same reason as a `constexpr` function.
 :::
 
 :::{principle} CX-P4
 :rules: CINIT-1 CINIT-2
 
-`constinit` is about initialization only. The variable must live for
-the whole program or the whole thread, and its initializer must be a
-constant, so that it already has its value before any other static
-object can look at it. The specifier does not make the variable `const`
-and asks nothing of the destructor. A variable is either `constinit` or
-`constexpr`, and every declaration of it says which.
+`constinit` is about initialization only. The variable must live for the
+whole program or the whole thread, and its initializer must be a
+constant, so that the variable already has its value before any other
+static object can look at the variable. The specifier does not make the
+variable `const` and asks nothing of the destructor. A variable is
+either `constinit` or `constexpr`, and every declaration of it says
+which.
 :::
 
 ## Constraints
@@ -74,7 +75,7 @@ and asks nothing of the destructor. A variable is either `constinit` or
 
 A `constexpr` variable is `const`, and it must obey these rules:
 
-- It must have an initializer, unless it has class type and a
+- The variable must have an initializer, unless it has class type and a
   `constexpr` default constructor gives every member a value. An
   implicit default constructor does so when CTOR-4 holds for the class.
 - Its initialization must be a constant expression.
@@ -91,10 +92,15 @@ because that temporary has static storage.
 :tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp
 
 A `constexpr` reference, or a `constexpr` pointer that is not null, must
-refer to a function or to an object with static {term}`storage duration`. A
-pointer can also point one past the end of such an object. A static local
-variable can refer to another static local variable. A `constexpr`
-pointer or reference must not refer to an automatic variable.
+refer to one of these:
+
+- a function,
+- an object with static {term}`storage duration`,
+- for a pointer only, the place one past the end of such an object.
+
+A static local variable can refer to another static local variable. A
+`constexpr` pointer or reference must not refer to an automatic
+variable.
 :::
 
 :::{rule} CX-3
@@ -136,8 +142,8 @@ A `constexpr` function is `inline` (LNK-4).
 :tests: declarations/constexpr/constexpr-class-only.cpp declarations/constexpr/constexpr-redeclaration-mismatch.cpp declarations/constexpr/constexpr-parameter.cpp
 
 Only variables and functions can be `constexpr`. A parameter must not be
-`constexpr`, and neither can a declaration that only defines a class. All
-declarations of a function must agree on `constexpr`.
+`constexpr`, and neither can a declaration that only defines a class.
+All declarations of a function must agree on `constexpr`.
 :::
 
 :::{rule} CEV-1
@@ -145,18 +151,19 @@ declarations of a function must agree on `constexpr`.
 :tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp
 
 Each call to a `consteval` function must be a constant expression. This
-does not apply to a call in an {term}`immediate function context`, such
-as the body of another `consteval` function.
+rule does not apply to a call in an {term}`immediate function context`,
+such as the body of another `consteval` function.
 
-Some functions take on `consteval` from their bodies. If such a function
-calls a `consteval` function and the arguments are not constant, the
-calling function is treated as `consteval` too, and its own calls are
-then checked the same way. These functions are:
+These functions take on `consteval` from their bodies:
 
 - a `constexpr` function produced from a template *(templates
   referenced)*,
 - a lambda without `consteval` on it,
 - a special member function that the class defaults.
+
+If such a function calls a `consteval` function and the arguments are
+not constant, the calling function is treated as `consteval` too, and
+its own calls are then checked the same way.
 
 The result of a `consteval` call must be usable in a constant
 expression. A pointer to storage that the call allocated and did not
@@ -186,7 +193,8 @@ on `consteval`.
 
 A `constinit` variable must have a {term}`constant initializer`.
 `constinit` does not make the variable `const`, so the program can
-change it. It does not require a `constexpr` destructor.
+change the variable. `constinit` does not require a `constexpr`
+destructor.
 :::
 
 :::{rule} CINIT-2
@@ -226,14 +234,16 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 49 of 54 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 49
+of 54 tests.
 
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both
   ({question}`Q-0020`).
 - CINIT-2: Clang rejects `constinit` added after the initializing
-  declaration. GCC and EDG accept it. Clang (pedantic) and EDG reject
-  `constinit` that is only on an earlier declaration. GCC accepts it
+  declaration. GCC and EDG accept the late `constinit`. Clang
+  (pedantic) and EDG reject `constinit` that is only on an earlier
+  declaration. GCC accepts the earlier `constinit`
   ({question}`Q-0025`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

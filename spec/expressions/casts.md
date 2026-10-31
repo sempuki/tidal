@@ -14,7 +14,7 @@ Each named cast has one job, so a reader sees what a cast is for.
 | Cast | Job |
 |---|---|
 | `static_cast` | The conversions that an initialization could do. The inverses of implicit conversions that are safe to undo, such as base to derived and `void*` to an object pointer. |
-| `const_cast` | Changes qualifiers and nothing else. Its result is the same object. |
+| `const_cast` | Changes qualifiers and nothing else. The result is the same object. |
 | `reinterpret_cast` | Changes how storage is read and nothing else. |
 
 A cast that would need two jobs, such as a change of qualifiers inside a
@@ -47,7 +47,8 @@ accessible.
 original value. The implementation decides what the bits mean in
 between. So the integer that a pointer becomes, and whether a function
 pointer can become an object pointer at all, are implementation-defined.
-Constant evaluation refuses the cast because it has no bits to show.
+Constant evaluation refuses the cast because constant evaluation has no
+bits to show.
 :::
 
 :::{principle} CAST-P4
@@ -81,7 +82,8 @@ is undefined:
 `static_cast` can do these conversions:
 
 - any conversion that a direct initialization can do, including one
-  through an `explicit` constructor or an `explicit` conversion function,
+  through an `explicit` constructor or an `explicit` conversion
+  function,
 - an enumeration to an integer, and an integer or a floating value to an
   enumeration,
 - a null pointer constant to a pointer type,
@@ -110,15 +112,15 @@ is undefined:
 :kind: reject
 :tests: expressions/casts/const-cast-changes-type.cpp expressions/casts/const-cast-value.cpp expressions/casts/const-cast-member-pointer.cpp expressions/casts/const-cast-function-pointer.cpp
 
-`const_cast` can only add or remove cv-qualifiers. Its target type must
+`const_cast` can only add or remove cv-qualifiers. The target type must
 be one of these:
 
 - a pointer,
 - a pointer to data member,
 - a reference.
 
-It can change each level of a multi-level pointer. It must not change a
-pointer to a function.
+`const_cast` can change each level of a multi-level pointer, but must
+not change a pointer to a function.
 :::
 
 :::{rule} CAST-7
@@ -126,7 +128,7 @@ pointer to a function.
 :tests: expressions/casts/reinterpret-integer-too-small.cpp expressions/casts/reinterpret-removes-const.cpp
 
 `reinterpret_cast` must not convert a pointer to an integer type that is
-too small to hold it. It must not remove a cv-qualifier.
+too small to hold the pointer. The cast must not remove a cv-qualifier.
 :::
 
 :::{rule} CAST-8
@@ -140,7 +142,7 @@ A constant expression must not contain `reinterpret_cast`.
 :kind: required
 :tests: expressions/casts/c-style-removes-const-and-type.cpp expressions/casts/c-style-static.cpp
 
-`(T)e` and `T(e)` with one operand try these casts in order. They use the
+`(T)e` and `T(e)` with one operand try these casts in order and use the
 first cast that is valid:
 
 1. `const_cast`,
@@ -169,9 +171,9 @@ first cast that is valid:
 :kind: required
 :tests: expressions/casts/decay-copy-auto.cpp expressions/casts/decay-copy-type.cpp
 
-`auto(e)` and `auto{e}` give a prvalue copy of `e`. Its type is the type
-of `e` without cv-qualifiers or a reference, and with arrays and
-functions converted to pointers.
+`auto(e)` and `auto{e}` give a prvalue copy of `e`. The type of the copy
+is the type of `e` without cv-qualifiers or a reference, and with arrays
+and functions converted to pointers.
 :::
 
 :::{rule} CAST-15
@@ -187,17 +189,18 @@ unambiguous base of `D` that is not virtual.
 :kind: required
 :tests: expressions/casts/c-style-private-base.cpp
 
-A cast of the form `(T)e` can convert to or from a base class that is not
-accessible. `static_cast` cannot.
+A cast of the form `(T)e` can convert to or from a base class that is
+not accessible. `static_cast` cannot.
 :::
 
 :::{rule} CAST-18
 :kind: required
 :tests: expressions/casts/functional-empty-parens.cpp expressions/casts/functional-braced-unknown-bound.cpp
 
-`T()` value-initializes a prvalue of type `T`. For a scalar type the value
-is zero, and `void()` is a `void` expression. `T{...}` with an array type
-of unknown bound gives an array with one element for each value.
+`T()` value-initializes a prvalue of type `T`. For a scalar type the
+value is zero, and `void()` is a `void` expression. `T{...}` with an
+array type of unknown bound gives an array with one element for each
+value.
 :::
 
 :::{rule} CAST-19
@@ -238,8 +241,8 @@ The result of `const_cast` refers to the same object as its operand.
 :kind: undefined
 :tests: expressions/casts/const-cast-write-const-object.cpp
 
-A write through the result of `const_cast` to an object that is `const` is
-undefined (CV-5).
+A write through the result of `const_cast` to an object that is `const`
+is undefined (CV-5).
 :::
 
 :::{rule} CAST-14
@@ -250,8 +253,8 @@ The behavior is undefined in these cases:
 
 - `static_cast` converts a value outside the range of an enumeration
   without a fixed underlying type ({question}`Q-0017`).
-- A `static_cast` to a derived class `D` applies to an object that is not a
-  base subobject of a `D`.
+- A `static_cast` to a derived class `D` applies to an object that is
+  not a base subobject of a `D`.
 :::
 
 ## Implementation Requirements
@@ -260,8 +263,8 @@ The behavior is undefined in these cases:
 :kind: impl-defined
 :tests: expressions/casts/reinterpret-function-to-object.cpp
 
-It is implementation-defined if `reinterpret_cast` converts between a
-pointer to a function and a pointer to an object type.
+Each implementation chooses whether `reinterpret_cast` can turn a
+pointer to a function into a pointer to an object type, and back.
 :::
 
 :::{rule} CAST-16
@@ -298,8 +301,9 @@ All seven compilers agree on 44 of 45 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during
-  constant evaluation. Clang rejects it ({question}`Q-0017`).
-- CAST-5, CAST-8: all compilers reject these during constant evaluation.
+  constant evaluation. Clang rejects the value ({question}`Q-0017`).
+- CAST-5, CAST-8: all compilers reject these operations during constant
+  evaluation.
 - CAST-12: every compiler in the matrix accepts the conversion and the
   round trip works.
 

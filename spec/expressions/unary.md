@@ -17,8 +17,9 @@ The operators `!` and `~` are on the logical and bitwise pages.
 Unary `+` and `-` are arithmetic, so their operand is promoted and the
 result has the promoted type. Negating an unsigned value wraps, because
 the type is modular. Negating the most negative value of a signed type
-has no result in that type, so it is undefined. A pointer can be the
-operand of `+`, which only converts it, and not of `-`.
+has no result in that type, so the negation is undefined. A pointer
+can be the operand of `+`, which only converts the pointer, and not of
+`-`.
 :::
 
 :::{principle} UN-P2
@@ -51,18 +52,18 @@ pointers include:
 
 Prefix `++` and `--` change their operand in place by one and hand the
 same object back as an lvalue. So the operand has to be something a
-program can change, and its type has to have a notion of "one more".
+program can change, and the type of the operand has to have a notion
+of "one more".
 
 | Operand type | Has "one more" |
 |---|---|
 | A number other than `bool` | Yes |
-| `bool` | No. It has only two values. |
+| `bool` | No. `bool` has only two values. |
 | A pointer to a complete type | Yes. One more means the next element (ADD-P3). |
 | An enumeration | No |
 
-Where the
-step overflows the type or leaves the array, the result is undefined,
-as it is for `+` and `-`.
+Where the step overflows the type or leaves the array, the result is
+undefined, as it is for `+` and `-`.
 :::
 
 :::{principle} UN-P4
@@ -70,8 +71,8 @@ as it is for `+` and `-`.
 
 `sizeof` and `alignof` ask a question about a type and answer it at
 translation time. Their operands are never evaluated, so side effects in
-them do not happen. The question needs a complete object type. These
-have no size or alignment:
+the operands do not happen. The question needs a complete object type.
+These types have no size or alignment:
 
 - a function type,
 - `void`,
@@ -89,7 +90,7 @@ parameter is a pointer.
 
 `noexcept(e)` asks whether anything in `e` can throw, counting the
 implicit calls that `e` makes, and answers with a `bool` constant. Like
-`sizeof`, it never evaluates its operand.
+`sizeof`, `noexcept` never evaluates its operand.
 :::
 
 ## Syntax
@@ -110,9 +111,9 @@ implicit calls that `e` makes, and answers with a `bool` constant. Like
 :tests: expressions/unary/plus-minus-types.cpp expressions/unary/plus-pointer.cpp expressions/unary/minus-bool.cpp expressions/unary/plus-function-operand.cpp
 
 The operand of unary `+` or `-` can have an arithmetic or unscoped
-enumeration type. The operand goes through {term}`integer promotion`, and
-the result has the promoted type. Unary `+` also accepts a pointer. An
-array operand becomes a pointer to its first element, and a function
+enumeration type. The operand goes through {term}`integer promotion`,
+and the result has the promoted type. Unary `+` also accepts a pointer.
+An array operand becomes a pointer to its first element, and a function
 operand becomes a pointer to the function.
 :::
 
@@ -137,16 +138,16 @@ type that `p` points to can be incomplete.
 :tests: expressions/unary/indirection-void-pointer.cpp expressions/unary/indirection-non-pointer.cpp expressions/unary/indirection-nullptr-literal.cpp expressions/unary/indirection-incomplete-value.cpp
 
 The operand of `*` must be a pointer, and must not be a pointer to
-`void`. A program must not read the value of an object of incomplete type
-through the result.
+`void`. A program must not read the value of an object of incomplete
+type through the result.
 :::
 
 :::{rule} UN-8
 :kind: required
 :tests: expressions/unary/address-of.cpp expressions/unary/address-of-qualified-member.cpp
 
-The operand of `&` is an lvalue or a qualified name of a class member. For
-an lvalue of type `T`, the result is a pointer to `T` with the same
+The operand of `&` is an lvalue or a qualified name of a class member.
+For an lvalue of type `T`, the result is a pointer to `T` with the same
 {term}`cv-qualifiers <cv-qualifier>`. For a qualified member name, the
 result is a pointer to member ({rule}`MPTR-2`).
 :::
@@ -176,8 +177,8 @@ For prefix `++` and `--`, these conditions apply:
 
 The operand of prefix `++` or `--` must obey these rules:
 
-- It must not have type `bool` or an enumeration type.
-- It must not be `const` or an rvalue.
+- The operand must not have type `bool` or an enumeration type.
+- The operand must not be `const` or an rvalue.
 - A pointer operand must point to a complete object type, so a pointer
   to a function or to an incomplete class is not valid.
 :::
@@ -226,7 +227,7 @@ apply:
 :tests: expressions/unary/alignof-expression.cpp expressions/unary/alignof-function.cpp expressions/unary/alignof-incomplete.cpp expressions/unary/alignof-void.cpp
 
 The operand of `alignof` must be a complete object type or a reference.
-It must not be one of these:
+The operand must not be one of these:
 
 - a function type,
 - `void`,
@@ -237,17 +238,17 @@ It must not be one of these:
 :kind: required
 :tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp
 
-`noexcept(e)` is a constant of type `bool`. It is `false` if `e`
-contains:
+`noexcept(e)` is a constant of type `bool`. The constant is `false` if
+`e` contains:
 
-- a call to a function that is not `noexcept`, also an implicit call such
-  as the constructor of a temporary or a conversion function,
+- a call to a function that is not `noexcept`, also an implicit call
+  such as the constructor of a temporary or a conversion function,
 - a `new` expression whose allocation function is not `noexcept`, such
   as the default one,
 - a `dynamic_cast` to a reference type that can fail,
 - a throw-expression ({rule}`THR-5`).
 
-Otherwise it is `true`.
+Otherwise the constant is `true`.
 :::
 
 ## Runtime Behavior
@@ -291,7 +292,8 @@ fit in that type, the behavior is undefined.
 :tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp expressions/unary/indirection-null-sanitizer.cpp foundations/objects/read-after-block-ends-sanitizer.cpp
 
 If the operand of `*` does not point to an object or a function, and the
-program uses the result, the behavior is undefined. This includes:
+program uses the result, the behavior is undefined. Such operands
+include:
 
 - a null pointer,
 - a pointer past the end of an array,
@@ -316,7 +318,8 @@ The behavior of prefix `++` and `--` is undefined in these cases:
 :tests: expressions/unary/sizeof-unsigned-lp64.cpp expressions/unary/sizeof-unsigned-ilp32.cpp
 
 The sizes of types other than the character types are
-implementation-defined. This includes the size of the type of `sizeof 0`.
+implementation-defined. These sizes include the size of the type of
+`sizeof 0`.
 :::
 
 ## Recommended Practice
@@ -325,8 +328,8 @@ implementation-defined. This includes the size of the type of `sizeof 0`.
 :kind: recommended
 :tests: expressions/unary/sizeof-array-parameter-warns.cpp expressions/unary/sizeof-array-reference-silent.cpp
 
-An implementation should warn if `sizeof` applies to a parameter declared
-as an array, because the parameter is a pointer (DCL-8).
+An implementation should warn if `sizeof` applies to a parameter
+declared as an array, because the parameter is a pointer (DCL-8).
 :::
 
 ## Examples

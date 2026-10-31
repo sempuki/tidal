@@ -1,7 +1,7 @@
 # Shift operators
 
-The operators `<<` and `>>` shift the bits of an integer value to the left
-or to the right.
+The operators `<<` and `>>` shift the bits of an integer value to the
+left or to the right.
 
 ## Principles
 
@@ -20,7 +20,7 @@ operand alone, as a prvalue ({principle}`VC-P1`).
 
 | Shift by `n` | Effect | So |
 |---|---|---|
-| Left | Multiplies by two to the `n`, modulo the width of the result type | It is defined for every value, including negative ones and ones whose sign changes. |
+| Left | Multiplies by two to the `n`, modulo the width of the result type | The shift is defined for every value, including negative ones and ones whose sign changes. |
 | Right | Divides by two to the `n`, rounding toward negative infinity | A negative value stays negative. |
 :::
 
@@ -41,9 +41,9 @@ An implementation should warn when it can see an undefined count.
 :::{principle} SHF-P4
 :rules: SHF-8
 
-The left operand is evaluated before the right one. This is an
-exception to the usual freedom ({rule}`SEQ-8`), and it holds for the
-overloaded operators too (OPR-7).
+The left operand is evaluated before the right one. This order is an
+exception to the usual freedom ({rule}`SEQ-8`), and the order holds for
+the overloaded operators too (OPR-7).
 :::
 
 ## Syntax
@@ -59,7 +59,7 @@ overloaded operators too (OPR-7).
 :kind: required
 :tests: expressions/shift/grouping.cpp
 
-`<<` and `>>` have the same precedence. They group from left to right.
+`<<` and `>>` have the same precedence and group from left to right.
 They bind less tightly than `+` and `-`, and more tightly than `<`.
 :::
 
@@ -67,8 +67,8 @@ They bind less tightly than `+` and `-`, and more tightly than `<`.
 :kind: required
 :tests: expressions/shift/operands-integral.cpp
 
-Both operands can have integer type or unscoped enumeration type. This
-includes `bool` and the character types.
+Both operands can have integer type or unscoped enumeration type. These
+types include `bool` and the character types.
 :::
 
 :::{rule} SHF-3
@@ -92,8 +92,8 @@ function ({rule}`OPR-6`).
 :tests: expressions/shift/result-type.cpp expressions/shift/result-prvalue.cpp
 
 Each operand goes through {term}`integer promotion` on its own. The
-result has the promoted type of the left operand. The type of the right
-operand has no effect on it. The result is a prvalue.
+result is a prvalue with the promoted type of the left operand. The type
+of the right operand has no effect on the result type.
 :::
 
 ## Runtime Behavior
@@ -103,8 +103,8 @@ operand has no effect on it. The result is a prvalue.
 :tests: expressions/shift/left-shift-values.cpp expressions/shift/left-shift-negative.cpp expressions/shift/left-shift-overflow-signed.cpp
 
 `a << n` is `a` times two to the power `n`, reduced modulo two to the
-power of the width of the result type. This applies also to negative
-values and to results that change the sign.
+power of the width of the result type. The rule applies also to
+negative values and to results that change the sign.
 :::
 
 :::{rule} SHF-6
@@ -138,8 +138,8 @@ equal to or greater than the bit width of the promoted left operand.
 :kind: recommended
 :tests: expressions/shift/count-constant-warns.cpp expressions/shift/count-negative-warns.cpp
 
-An implementation should warn if a constant shift count is negative or is
-at least the width of the promoted left operand.
+An implementation should warn if a constant shift count is negative or
+is at least the width of the promoted left operand.
 :::
 
 ## Examples
@@ -158,14 +158,16 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all 23 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on all
+23 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
-  overflowing left shifts during {term}`constant evaluation`. The results
-  match the rules.
+  overflowing left shifts during {term}`constant evaluation`. The
+  results match the rules.
 - SHF-7: all compilers reject these shift counts during constant
   evaluation.
 - SHF-9: Clang and GCC warn by default (`-Wshift-count-overflow`,
-  `-Wshift-count-negative`). The tests use `-Werror`. EDG skips them.
+  `-Wshift-count-negative`). The tests use `-Werror`. EDG skips these
+  tests.
 
 Inputs: clang-sema-expr, clang-diag-sema.

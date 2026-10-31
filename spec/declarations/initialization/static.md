@@ -49,9 +49,9 @@ wait for its first use.
 :kind: required
 :tests: declarations/initialization/static/constant-before-dynamic.cpp declarations/initialization/static/constexpr-constant-initialized.cpp
 
-A variable with static or thread storage is *constant-initialized* if its
-initializer is a constant expression. It has its value before any code
-runs. This includes the initializers of other variables.
+A variable with static or thread storage is *constant-initialized* if
+its initializer is a constant expression. Such a variable has its value
+before any code runs, including the initializers of other variables.
 :::
 
 :::{rule} SINIT-2
@@ -62,8 +62,9 @@ Other namespace-scope variables are *dynamically initialized*. In one
 {term}`translation unit`, they are initialized in the order of their
 definitions. An `inline` variable is ordered only after an earlier
 `inline` variable that comes first in every translation unit that
-defines both. Its order with other variables is unspecified (SINIT-3). Before its initializer
-runs, a variable holds zero (STO-3).
+defines both. The order of an `inline` variable with other variables is
+unspecified (SINIT-3). Before its initializer runs, a variable holds
+zero (STO-3).
 :::
 
 ## Implementation Requirements
@@ -84,19 +85,19 @@ unit can initialize the `inline` variable first.
 :tests: declarations/initialization/static/maybe-static.cpp
 
 An implementation can do a dynamic initialization before the program
-starts, if the variable gets the same value. It is unspecified if this
-occurs. An earlier initializer that reads the variable gets zero or that
-value.
+starts, if the variable gets the same value. Whether the early
+initialization occurs is unspecified. An earlier initializer that reads
+the variable gets zero or that value.
 :::
 
 :::{rule} SINIT-5
 :kind: impl-defined
 :tests: declarations/initialization/static/before-main-observed.cpp declarations/initialization/static/deferred-initialization.cpp
 
-It is implementation-defined if the dynamic initialization of a
-namespace-scope variable is complete before the first statement of
-`main`. An implementation can defer it until the first use of a function
-or variable of the same translation unit.
+Whether the dynamic initialization of a namespace-scope variable is
+complete before the first statement of `main` is implementation-defined.
+An implementation can defer the initialization until the first use of a
+function or variable of the same translation unit.
 :::
 
 :::{rule} SINIT-6
@@ -105,8 +106,8 @@ or variable of the same translation unit.
 
 A `thread_local` variable at namespace scope with dynamic initialization
 is initialized before the first statement of the thread, or when the
-thread first uses it. The choice is implementation-defined. Clang and GCC
-initialize it at the first use.
+thread first uses the variable. The choice is implementation-defined.
+Clang and GCC initialize the variable at the first use.
 :::
 
 ## Examples
@@ -131,12 +132,12 @@ All seven compilers agree on all 11 tests. The results are in
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
   follows the link order. The initializer in the first unit gets 0 when
-  its unit is linked first. It gets 7 when its unit is linked second.
+  its unit is linked first, and 7 when its unit is linked second.
 - **SINIT-4.** By default, Clang 22 and GCC 16 always initialize
-  `int b = three();` at run time. `three` is an `inline` function that is
-  not `constexpr`. An earlier reader gets 0. With `-fimplicit-constexpr`,
-  GCC initializes `b` before the program starts, and the earlier reader
-  gets 3. See {question}`Q-0014`.
+  `int b = three();` at run time. `three` is an `inline` function that
+  is not `constexpr`. An earlier reader gets 0. With
+  `-fimplicit-constexpr`, GCC initializes `b` before the program starts,
+  and the earlier reader gets 3. See {question}`Q-0014`.
 - **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.

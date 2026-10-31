@@ -1,8 +1,8 @@
 # Static assertions
 
 A static assertion checks a condition during translation. If the
-condition is `false`, the implementation rejects the program and can show
-a message. This page covers:
+condition is `false`, the implementation rejects the program and can
+show a message. This page covers:
 
 - where a static assertion can occur,
 - its condition,
@@ -27,8 +27,9 @@ into the diagnostic.
 
 A static assertion is a declaration, so it can stand wherever a
 declaration can, including in a class body and in a block. Like other
-code in a template, it is checked for each instantiation and not before,
-and a template that is never instantiated is never checked.
+code in a template, a static assertion is checked for each instantiation
+and not before, and a template that is never instantiated is never
+checked.
 :::
 
 ## Syntax
@@ -44,9 +45,9 @@ and a template that is never instantiated is never checked.
 :kind: reject
 :tests: declarations/static-assert/false-rejected.cpp declarations/static-assert/false-with-message.cpp declarations/static-assert/true-accepted.cpp declarations/static-assert/message-shown.cpp declarations/static-assert/discarded-branch-nontemplate.cpp declarations/static-assert/template-instantiated-false.cpp
 
-The condition of a static assertion must be `true`. If it is `false`, the
-implementation rejects the program. Its diagnostic includes the message,
-if there is one.
+The condition of a static assertion must be `true`. If the condition is
+`false`, the implementation rejects the program. The diagnostic
+includes the message, if there is one.
 :::
 
 :::{rule} SA-2
@@ -141,4 +142,5 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on all
 28 tests. Clang, GCC, and EDG each show the message of a failed
 assertion.
 
-Inputs: clang-sema-declcxx, clang-diag-sema, clang-diag-parse, edg-decls.
+Inputs: clang-sema-declcxx, clang-diag-sema, clang-diag-parse,
+edg-decls.

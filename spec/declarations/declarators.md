@@ -16,14 +16,14 @@ A {term}`cv-qualifier` can apply at each level.
 :::{principle} DCL-P1
 :rules: DCL-1 DCL-13 CV-1 CV-2
 
-A declarator builds a type around one name, from the inside out, and it
-reads as an expression does.
+A declarator builds a type around one name, from the inside out, and
+the declarator reads as an expression does.
 
 - Suffixes bind before prefixes, and parentheses regroup.
 - A qualifier attaches to the type on its left, or to the type on its
   right when nothing is on its left.
-- A declaration that can be read as a function declaration is one,
-  because the grammar prefers that reading.
+- A declaration that can be read as a function declaration is a
+  function declaration, because the grammar prefers that reading.
 - Saying the same qualifier twice is a mistake, unless an alias repeats
   it.
 :::
@@ -41,8 +41,8 @@ A pointer holds the address of anything that has one:
 A pointer to member names a member without an object. A reference is
 another name for an existing object or function, so:
 
-- it is bound when it is created,
-- it refers to something,
+- the reference is bound when it is created,
+- the reference refers to something,
 - a reference to a reference collapses into one, because there is
   nothing to refer to in between.
 :::
@@ -54,9 +54,9 @@ An array holds a known, positive number of complete elements, so its
 bound is a constant, or comes from the initializer or from a definition
 elsewhere. Only the first bound of an array of arrays can be left out,
 because the element type must be complete. A function returns a value,
-so it cannot return an array or a function, though it can return a
-pointer or a reference to one. The largest array is a limit of the
-implementation.
+so a function cannot return an array or a function, though it can
+return a pointer or a reference to an array or a function. The largest
+array is a limit of the implementation.
 :::
 
 :::{principle} DCL-P3
@@ -72,9 +72,9 @@ Parameters are passed as values, so an array or a function parameter is
 a pointer, and a top-level qualifier on a parameter is the function
 body's business and not part of the type. `noexcept` is part of the
 type, so all declarations agree on it. A function type with a
-cv-qualifier or a ref-qualifier describes a member function, so it can
-be named and used for member functions and pointers to members, and for
-nothing else.
+cv-qualifier or a ref-qualifier describes a member function, so such a
+type can be named and used for member functions and pointers to
+members, and for nothing else.
 :::
 
 :::{principle} DCL-P4
@@ -117,8 +117,8 @@ deprecated.
 :tests: declarations/declarators/star-binds-to-declarator.cpp declarations/declarators/nested-declarators.cpp declarations/declarators/redundant-parentheses.cpp
 
 A declarator applies to one name. `*`, `&`, and `&&` belong to the
-declarator that contains them. Suffixes (`[]` and `()`) bind more tightly
-than prefixes (`*` and `&`), and parentheses change the binding.
+declarator that contains them. Suffixes (`[]` and `()`) bind more
+tightly than prefixes (`*` and `&`), and parentheses change the binding.
 
 Parentheses around the name in a declarator are permitted and have no
 effect.
@@ -176,10 +176,10 @@ declaration. A program must not declare:
 :kind: required
 :tests: declarations/declarators/reference-collapsing.cpp declarations/declarators/cv-on-reference-alias-ignored.cpp
 
-A reference added to a reference type from an alias or a template argument
-collapses into one reference. The result is an rvalue reference only if
-both references are rvalue references. A cv-qualifier applied to such an
-alias has no effect.
+A reference added to a reference type from an alias or a template
+argument collapses into one reference. The result is an rvalue reference
+only if both references are rvalue references. A cv-qualifier applied to
+such an alias has no effect.
 :::
 
 :::{rule} DCL-5
@@ -199,8 +199,8 @@ The bound can be omitted in these cases:
 - the declaration does not define the array, for example an `extern`
   declaration.
 
-A static data member declared in a class can have an array type without a
-bound. Its definition outside the class gives the bound. DCL-19 lists
+A static data member declared in a class can have an array type without
+a bound. Its definition outside the class gives the bound. DCL-19 lists
 what is not valid.
 :::
 
@@ -217,7 +217,7 @@ An array declaration must obey these rules:
 - The bound can be omitted only in the cases that DCL-5 lists.
 - The initializer must not have more elements than the bound.
 - An array without a bound must not have an empty braced initializer,
-  because it would have zero elements.
+  because the array would have zero elements.
 :::
 
 :::{rule} DCL-6
@@ -241,19 +241,19 @@ element must have a complete object type. An array of functions or of
 :kind: required
 :tests: declarations/declarators/function-returning-pointers-ok.cpp declarations/declarators/const-void-return.cpp
 
-A function can return a pointer or a reference to an array or a function.
-A trailing return type follows `auto` at the start, and gives the return
-type. The return type can be `const void`. DCL-21 lists what is not
-valid.
+A function can return a pointer or a reference to an array or a
+function. A trailing return type follows `auto` at the start, and gives
+the return type. The return type can be `const void`. DCL-21 lists what
+is not valid.
 :::
 
 :::{rule} DCL-21
 :kind: reject
 :tests: declarations/declarators/function-returning-array.cpp declarations/declarators/function-returning-function.cpp declarations/declarators/qualified-free-function.cpp declarations/declarators/trailing-return-with-type.cpp declarations/declarators/ref-qualified-free-function.cpp
 
-A function must not return an array or a function. A trailing return type
-requires `auto` at the start. A function that is not a class member must
-not have a cv-qualifier after its parameter list.
+A function must not return an array or a function. A trailing return
+type requires `auto` at the start. A function that is not a class member
+must not have a cv-qualifier after its parameter list.
 
 A function that is not a member, and a static member function, must not
 have a ref-qualifier.
@@ -291,9 +291,9 @@ that DCL-9 gives. `...` must be the last item in the list.
 :tests: declarations/declarators/cv-position.cpp
 
 A cv-qualifier applies to the type on its left. If there is no type on
-its left, it applies to the type on its right. In a pointer declarator, a
-cv-qualifier before `*` applies to the pointed-to type. A cv-qualifier
-after `*` applies to the pointer.
+its left, the cv-qualifier applies to the type on its right. In a
+pointer declarator, a cv-qualifier before `*` applies to the pointed-to
+type. A cv-qualifier after `*` applies to the pointer.
 :::
 
 :::{rule} CV-2
@@ -323,7 +323,7 @@ A program must not do these to an lvalue of `const` type:
 - increment it,
 - decrement it.
 
-This applies to a `const` variable and to an access through a
+This rule applies to a `const` variable and to an access through a
 pointer or reference to `const`.
 :::
 
@@ -340,8 +340,8 @@ no effect.
 :kind: required
 :tests: declarations/declarators/qualification-conversion-ok.cpp
 
-A pointer converts implicitly to a pointer with more cv-qualifiers on the
-pointed-to type. CV-10 lists what is not valid.
+A pointer converts implicitly to a pointer with more cv-qualifiers on
+the pointed-to type. CV-10 lists what is not valid.
 :::
 
 :::{rule} CV-10
@@ -349,8 +349,8 @@ pointed-to type. CV-10 lists what is not valid.
 :tests: declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp
 
 Across several levels of pointers, `const` added at one level needs
-`const` at each higher level except the outermost. No implicit conversion
-removes a cv-qualifier.
+`const` at each higher level except the outermost. No implicit
+conversion removes a cv-qualifier.
 :::
 
 :::{rule} CV-8
@@ -386,8 +386,8 @@ class `C` ({rule}`MPTR-1`). DCL-23 lists what is not valid.
 :tests: declarations/declarators/pointer-to-reference-member.cpp declarations/declarators/pointer-to-void-member.cpp
 
 A pointer to member can name only a member that an object can hold. So
-a program must not declare one whose member would be a reference or
-would have type `void`.
+a program must not declare a pointer to member whose member would be a
+reference or would have type `void`.
 :::
 
 :::{rule} DCL-13
@@ -395,8 +395,8 @@ would have type `void`.
 :tests: declarations/declarators/function-declaration-ambiguity.cpp declarations/declarators/function-declaration-ambiguity-type.cpp
 
 A declaration that can be read as a function declaration is a function
-declaration. This includes a parenthesized initializer that has the form
-of a parameter list, such as a type name followed by `()`.
+declaration. This rule includes a parenthesized initializer that has the
+form of a parameter list, such as a type name followed by `()`.
 :::
 
 :::{rule} DCL-14
@@ -404,7 +404,7 @@ of a parameter list, such as a type name followed by `()`.
 :tests: declarations/declarators/noexcept-in-type.cpp declarations/declarators/noexcept-redeclaration.cpp
 
 The `noexcept` specification is part of the type of a function. All
-declarations of a function must agree on it.
+declarations of a function must agree on the `noexcept` specification.
 :::
 
 :::{rule} DCL-15
@@ -446,8 +446,9 @@ reference is a use of that object or function.
 :tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp
 
 If a program changes an object that is defined `const`, the behavior is
-undefined. This is also true when a cast removes `const`. A program can
-change an object that is not defined `const` through such a cast.
+undefined. The behavior is also undefined when a cast removes `const`. A
+program can change an object that is not defined `const` through such a
+cast.
 :::
 
 ## Implementation Requirements
@@ -521,19 +522,20 @@ const_cast<int&>(cr) = 2;      // v is 2
 All seven compilers agree on 78 of 80 tests. The results are in
 `tests/RESULTS.md`.
 
-- **DCL-19.** Clang and GCC accept variable-length arrays and arrays of size
-  zero as extensions. They reject them only under `-pedantic-errors`. EDG
-  rejects both in all modes.
-- **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16 and
-  14 and EDG 7.0 accept it. The provisional answer is that the limit is
-  implementation-defined. See {question}`Q-0012`.
+- **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
+  size zero as extensions. Both reject these arrays only under
+  `-pedantic-errors`. EDG rejects both in all modes.
+- **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16
+  and 14 and EDG 7.0 accept it. The provisional answer is that the limit
+  is implementation-defined. See {question}`Q-0012`.
 - **CV-5.** All compilers reject the change during constant evaluation.
   Their notes give the cause ("modification of object of const-qualified
   type", "modifying a const object", "attempt to modify const storage").
   A change to an object that is not `const`, through the same cast, is
   accepted and executes.
 - **DCL-16.** EDG 7.0 accepts a reference parameter to a function type
-  with a ref-qualifier. Clang and GCC reject it ({question}`Q-0106`).
+  with a ref-qualifier. Clang and GCC reject the parameter
+  ({question}`Q-0106`).
 
-Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema (see
-`inputs/MANIFEST.md`).
+Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema
+(see `inputs/MANIFEST.md`).

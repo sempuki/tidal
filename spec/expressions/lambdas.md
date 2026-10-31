@@ -1,18 +1,18 @@
 # Lambda expressions
 
 A lambda expression creates an object of a unique class type, the
-*closure type*. A program can call the object like a function. The object
-can capture variables from the enclosing scope.
+*closure type*. A program can call the object like a function. The
+object can capture variables from the enclosing scope.
 
 ## Principles
 
 :::{principle} LAM-P1
 :rules: LAM-1 LAM-2 LAM-3 LAM-12 LAM-13 LAM-15 LAM-16 LAM-14 LAM-22 LAM-23 LAM-27
 
-A lambda expression is a class written in place. It makes a closure type
-that no other expression shares, with a call operator whose parameters
-and body are the ones written. Everything a class member function can do
-follows:
+A lambda expression is a class written in place. The expression makes a
+closure type that no other expression shares, with a call operator
+whose parameters and body are the ones written. The call operator can
+do everything that a class member function can do:
 
 - a trailing return type or a deduced one,
 - `constexpr` where the body permits it,
@@ -40,8 +40,9 @@ through its captures.
 | `this` | A pointer |
 | `*this` | A copy of the object |
 
-The captures exist before the call operator is declared, so its
-parameter list and return type can see them.
+The captures exist before the call operator is declared, so the
+parameter list and return type of the call operator can see the
+captures.
 :::
 
 :::{principle} LAM-P3
@@ -51,7 +52,7 @@ A closure must capture what its body uses and nothing it cannot. Only a
 variable with automatic storage needs capturing, because statics and
 globals are reachable from anywhere, and a constant read as a value is
 not used as an object. Every such use must be covered, through each
-enclosing lambda in turn. These are rejected:
+enclosing lambda in turn. An implementation rejects the following:
 
 - a capture list that names a variable twice,
 - a capture list that repeats the default,
@@ -63,23 +64,24 @@ enclosing lambda in turn. These are rejected:
 :::{principle} LAM-P4
 :rules: LAM-10 LAM-11 LAM-25 LAM-26
 
-A closure with no captures carries no state, so it is as good as a
-function. A closure with captures is an object with state.
+A closure with no captures carries no state, so the closure is as good
+as a function. A closure with captures is an object with state.
 
 | Closure | Converts to a pointer to function | Type can be default-constructed and assigned |
 |---|---|---|
 | No captures | Yes | Yes |
-| With captures | No | No. It must be made from the lambda expression. |
+| With captures | No | No. The closure must be made from the lambda expression. |
 :::
 
 :::{principle} LAM-P5
 :rules: LAM-19 LAM-20 LAM-21
 
-A reference capture is an alias, so it dangles when the variable ends,
-and using it then is undefined. The layout of a closure is the
-implementation's, since a program names its members only through the
-captures. An implicit capture of `this` through `[=]` hides a pointer
-behind a copy default, so an implementation should warn about it.
+A reference capture is an alias, so the capture dangles when the
+variable ends, and using the capture then is undefined. The layout of a
+closure is the implementation's, since a program names the members of a
+closure only through the captures. An implicit capture of `this` through
+`[=]` hides a pointer behind a copy default, so an implementation should
+warn about the implicit capture.
 :::
 
 ## Syntax
@@ -106,9 +108,9 @@ A lambda can have these:
 - default arguments,
 - a trailing return type.
 
-Without a trailing return type, the return type comes from its `return`
-statements, as for a function with an `auto` return type. A program can
-call a lambda in the expression that creates it.
+Without a trailing return type, the return type comes from the `return`
+statements of the lambda, as for a function with an `auto` return type.
+A program can call a lambda in the expression that creates it.
 :::
 
 :::{rule} LAM-22
@@ -149,8 +151,8 @@ Without `mutable`, the body must not change a variable captured by copy
 :tests: expressions/lambdas/default-capture-mixed.cpp expressions/lambdas/default-captures.cpp
 
 `[=]` captures by copy each local variable that the body uses. `[&]`
-captures them by reference. An explicit capture after a default uses the
-other mode.
+captures the same variables by reference. An explicit capture after a
+default uses the other mode.
 :::
 
 :::{rule} LAM-6
@@ -165,22 +167,24 @@ A capture list must obey these rules:
 - Only a variable with {term}`automatic storage` can be captured.
 - A lambda outside a function must not have a capture default, except in
   a default member initializer.
-- A variable of abstract class type ({rule}`VIRT-8`) cannot be captured by
-  copy.
+- A variable of abstract class type ({rule}`VIRT-8`) cannot be captured
+  by copy.
 :::
 
 :::{rule} LAM-7
 :kind: required
 :tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp
 
-An init capture `[x = e]` declares a new member `x` that `e` initializes,
-and `[&r = v]` declares a reference to `v`. These rules apply:
+An init capture `[x = e]` declares a new member `x` that `e`
+initializes, and `[&r = v]` declares a reference to `v`. These rules
+apply:
 
 - Init captures are initialized in the order they are written.
 - A structured binding can be captured.
 - A lambda at namespace scope can have an init capture.
-- Name lookup for the initializer uses the enclosing scope, so it can
-  use an outer variable with the same name as the capture.
+- Name lookup for the initializer uses the enclosing scope, so the
+  initializer can use an outer variable with the same name as the
+  capture.
 :::
 
 :::{rule} LAM-8
@@ -188,8 +192,8 @@ and `[&r = v]` declares a reference to `v`. These rules apply:
 :tests: expressions/lambdas/capture-this.cpp expressions/lambdas/default-member-initializer-captures-this.cpp
 
 In a member function, `[this]` captures the object by reference, and
-`[*this]` captures a copy of it. A lambda in a default member initializer
-can capture `this` too.
+`[*this]` captures a copy of it. A lambda in a default member
+initializer can capture `this` too.
 :::
 
 :::{rule} LAM-24
@@ -205,9 +209,9 @@ Any other lambda outside a member function must not capture `this`.
 :tests: expressions/lambdas/constant-needs-no-capture.cpp expressions/lambdas/nested-capture-ok.cpp expressions/lambdas/nested-capture.cpp expressions/lambdas/static-and-global-no-capture.cpp expressions/lambdas/uncaptured-variable.cpp expressions/lambdas/constant-value-no-capture.cpp
 
 A lambda must capture each local automatic variable that its body uses.
-For a nested lambda, each enclosing lambda must capture it too. A constant
-that the body only reads as a value needs no capture. Static and global
-variables need no capture.
+For a nested lambda, each enclosing lambda must capture the variable
+too. A constant that the body only reads as a value needs no capture.
+Static and global variables need no capture.
 :::
 
 :::{rule} LAM-10
@@ -247,8 +251,8 @@ or assigned (LAM-11).
 :kind: required
 :tests: expressions/lambdas/constexpr-implicit.cpp
 
-The call operator is `constexpr` when its body permits it. A program can
-call such a lambda during {term}`constant evaluation`.
+The call operator is `constexpr` when the body permits `constexpr`. A
+program can call such a lambda during {term}`constant evaluation`.
 :::
 
 :::{rule} LAM-13
@@ -285,8 +289,8 @@ A parameter of type `auto` makes the call operator a template
 :kind: required
 :tests: expressions/lambdas/explicit-object-recursion.cpp
 
-A lambda can have an explicit object parameter `this auto self`. The body
-can call `self` to call the lambda again.
+A lambda can have an explicit object parameter `this auto self`. The
+body can call `self` to call the lambda again.
 :::
 
 :::{rule} LAM-17
@@ -301,8 +305,8 @@ A lambda must not:
   init capture,
 - use a member of the current object without capturing `this`, directly
   or through a capture default,
-- take the address of a local constant, or bind a reference to it,
-  without capturing it,
+- take the address of a local constant, or bind a reference to the
+  constant, without capturing the constant,
 - be `mutable` and have an explicit object parameter.
 :::
 
@@ -322,9 +326,12 @@ copy capture `x` is a reference to `const`.
 :tests: expressions/lambdas/capture-by-copy-at-creation.cpp expressions/lambdas/capture-by-reference.cpp expressions/lambdas/copy-capture-array-and-reference.cpp
 
 A capture by copy copies the variable when the lambda expression is
-evaluated. A capture by reference refers to the variable itself, so later
-changes to the variable are visible. A capture by copy of an array copies each element.
-A capture by copy of a reference copies the object that it refers to.
+evaluated. A capture by reference refers to the variable itself, so
+later changes to the variable are visible. A capture by copy copies
+these:
+
+- each element, for an array,
+- the object that the reference refers to, for a reference.
 :::
 
 ## Undefined Behavior
@@ -334,7 +341,7 @@ A capture by copy of a reference copies the object that it refers to.
 :tests: expressions/lambdas/dangling-reference-capture-constant.cpp expressions/lambdas/capture-outlived-sanitizer.cpp
 
 If a lambda that captured a variable by reference is called after the
-life of that variable ends, and the body uses the capture, the behavior
+life of the variable ends, and the body uses the capture, the behavior
 is undefined.
 :::
 
@@ -357,8 +364,8 @@ These properties of a closure type are unspecified:
 :kind: recommended
 :tests: expressions/lambdas/implicit-this-capture-warns.cpp
 
-An implementation should warn when `[=]` captures `this` implicitly. That
-use is deprecated.
+An implementation should warn when `[=]` captures `this` implicitly. Such a
+capture is deprecated.
 :::
 
 ## Examples
@@ -380,8 +387,8 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 54 of
-56 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 54
+of 56 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

@@ -9,9 +9,10 @@ argument uses the default argument.
 :rules: DEFARG-3 DEFARG-4
 
 A default argument is an expression that the caller leaves out and the
-call fills in. It is evaluated at each call that uses it, as if written
-at the call, but its names mean what they meant at the declaration. So
-it cannot name these, because they exist only inside a call:
+call fills in. The default argument is evaluated at each call that uses
+it, as if written at the call, but its names mean what they meant at the
+declaration. So a default argument cannot name these entities, which
+exist only inside a call:
 
 - other parameters,
 - `this`,
@@ -25,9 +26,9 @@ Default arguments belong to the declarations of a function, and the
 declarations in one scope add them up. Each later declaration can add
 defaults, and none can repeat one. A call matches arguments to
 parameters from the left, so defaults fill the parameter list from the
-right. A pointer to the function carries none of this, and an operator
-function has no use for it. Across translation units, an `inline`
-function must end up with the same defaults everywhere.
+right. A pointer to the function carries no default arguments, and an
+operator function has no use for them. Across translation units, an
+`inline` function must end up with the same defaults everywhere.
 :::
 
 ## Syntax
@@ -52,9 +53,9 @@ parameters must have one.
 :kind: reject
 :tests: declarations/functions/default-arguments/not-trailing.cpp
 
-After a parameter with a default argument, each later parameter must also
-have one, in this declaration or in an earlier declaration in the same
-scope.
+After a parameter with a default argument, each later parameter must
+also have one, in this declaration or in an earlier declaration in the
+same scope.
 :::
 
 :::{rule} DEFARG-2
@@ -64,26 +65,27 @@ scope.
 A later declaration in the same scope can add default arguments. A
 declaration in a block has its own default arguments. A default argument
 that a later declaration in a namespace adds is also usable through an
-earlier using declaration of the function ({question}`Q-0111`).
-DEFARG-9 lists what is not valid.
+earlier using declaration of the function ({question}`Q-0111`). DEFARG-9
+lists what is not valid.
 :::
 
 :::{rule} DEFARG-9
 :kind: reject
 :tests: declarations/functions/default-arguments/redefined.cpp declarations/functions/default-arguments/redefined-different.cpp
 
-A later declaration (DEFARG-2) must not give a default argument again for
-the same parameter. This applies also when the value is the same.
+A later declaration (DEFARG-2) must not give a default argument again
+for the same parameter. The rule applies also when the value is the
+same.
 :::
 
 :::{rule} DEFARG-4
 :kind: reject
 :tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp
 
-A default argument must not use `this`. It must not use a parameter of the
-function, or a local variable of an enclosing function, except in an
-operand that is not evaluated, such as the operand of `sizeof`
-({question}`Q-0038`).
+A default argument must not use `this`. A default argument can use a
+parameter of the function, or a local variable of an enclosing function,
+only in an operand that is not evaluated, such as the operand of
+`sizeof` ({question}`Q-0038`).
 :::
 
 :::{rule} DEFARG-5
@@ -92,8 +94,8 @@ operand that is not evaluated, such as the operand of `sizeof`
 
 Only the declaration of a function can have default arguments. A pointer
 to a function has none. A call through the pointer must give each
-argument. A default argument must be valid for its parameter type at
-the declaration, also if no call uses it.
+argument. A default argument must be valid for its parameter type at the
+declaration, also if no call uses it.
 :::
 
 :::{rule} DEFARG-6
@@ -110,9 +112,10 @@ have default arguments ({rule}`OPR-2`, {rule}`OPR-3`).
 :kind: required
 :tests: declarations/functions/default-arguments/evaluated-each-call.cpp declarations/functions/default-arguments/uses-global-at-call.cpp declarations/functions/default-arguments/name-bound-at-declaration.cpp
 
-A default argument is evaluated at each call that uses it. It reads the
-current values of the variables that it names. Its names refer to the
-entities that are visible at the function declaration, not at the call.
+A default argument is evaluated at each call that uses it, and reads the
+current values of the variables that it names. The names in a default
+argument refer to the entities that are visible at the function
+declaration, not at the call.
 :::
 
 ## Implementation Requirements
@@ -149,9 +152,9 @@ All seven compilers agree on 19 of 21 tests. The results are in
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
-  GCC and EDG accept it ({question}`Q-0111`).
+  GCC and EDG accept the call ({question}`Q-0111`).
 - DEFARG-7: two units with different defaults compile and link without a
   diagnostic. The test accepts either value.
 
-Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-func-
-def.
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema,
+edg-func-def.

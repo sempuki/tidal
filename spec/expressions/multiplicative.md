@@ -11,8 +11,8 @@ function call ({rule}`OPR-7`).
 
 The multiplicative operators compute on numbers, so their operands are
 the arithmetic types and the unscoped enumerations, which convert to
-integers. Nothing else is a number here.
-These are rejected:
+integers. Nothing else is a number here, so an implementation rejects
+these operands:
 
 - a pointer,
 - a scoped enumeration,
@@ -46,30 +46,31 @@ intermediates, and the matrix targets do not.
 :::{principle} MUL-P3
 :rules: MUL-9 MUL-10 MUL-11 MUL-12
 
-A signed integer type is not modular, so a result it cannot hold has no
-value. The behavior is undefined in these cases:
+A signed integer type is not modular, so a result that the type cannot
+hold has no value. The behavior is undefined in these cases:
 
 - a signed integer result that its type cannot hold,
 - an operation with no mathematical result, such as division by zero,
 - a floating-point result beyond the range of its type.
 
-Constant evaluation rejects each of these ({principle}`TR-P4`).
+Constant evaluation rejects each of these cases ({principle}`TR-P4`).
 :::
 
 :::{principle} MUL-P4
 :rules: MUL-13 MUL-14
 
 The two operands are not ordered with respect to each other
-({rule}`SEQ-8`).
-So a program must not write a scalar in one operand and touch it in the
-other, unless a function call separates the two accesses.
+({rule}`SEQ-8`). So a program must not write a scalar in one operand and
+touch it in the other, unless a function call separates the two
+accesses.
 :::
 
 :::{principle} MUL-P5
 :rules: MUL-16
 
 Mixing an enumeration with a floating-point value, or two different
-enumerations, is deprecated, and an implementation should say so.
+enumerations, is deprecated, and an implementation should warn about
+the mix.
 :::
 
 ## Syntax
@@ -86,7 +87,7 @@ enumerations, is deprecated, and an implementation should say so.
 :kind: required
 :tests: expressions/multiplicative/grouping.cpp
 
-`*`, `/`, and `%` have the same precedence. They group from left to right.
+`*`, `/`, and `%` have the same precedence and group from left to right.
 They bind more tightly than `+` and `-`, and less tightly than unary
 operators.
 :::
@@ -140,7 +141,8 @@ An operand of `%` must not have floating-point type.
 :tests: expressions/multiplicative/result-types.cpp
 
 Both operands go through the {term}`usual arithmetic conversions`. The
-result has the common type and is a prvalue (see {term}`value category`).
+result has the common type and is a prvalue (see
+{term}`value category`).
 :::
 
 :::{rule} MUL-19
@@ -165,7 +167,8 @@ fractional part. The quotient rounds toward zero.
 :tests: expressions/multiplicative/remainder-sign.cpp
 
 For integer operands, `a % b` is the value that makes
-`(a / b) * b + a % b` equal to `a`. A nonzero remainder has the sign of `a`.
+`(a / b) * b + a % b` equal to `a`. A nonzero remainder has the sign of
+`a`.
 :::
 
 :::{rule} MUL-8
@@ -173,8 +176,8 @@ For integer operands, `a % b` is the value that makes
 :tests: expressions/multiplicative/unsigned-wraps.cpp
 
 If the common type is an unsigned integer type, the result wraps around.
-The result differs from the mathematical result by a multiple of one more
-than the largest value of the type.
+The result differs from the mathematical result by a multiple of one
+more than the largest value of the type.
 :::
 
 :::{rule} MUL-18
@@ -248,7 +251,8 @@ The order of evaluation of the two operands is unspecified.
 :tests: expressions/multiplicative/mixed-long-unsigned-lp64.cpp expressions/multiplicative/mixed-long-unsigned-ilp32.cpp
 
 The common type, and so the result type, can depend on the sizes of the
-integer types. The sizes of the integer types are implementation-defined.
+integer types. The sizes of the integer types are
+implementation-defined.
 :::
 
 :::{rule} MUL-17
@@ -256,10 +260,13 @@ integer types. The sizes of the integer types are implementation-defined.
 :tests: expressions/multiplicative/excess-precision-either.cpp expressions/multiplicative/cast-rounds-to-type.cpp
 
 An implementation can evaluate floating-point operations with more range
-and precision than the type of the expression. The type does not change.
-A cast or an assignment rounds the value to its type. This applies to
-the additive operators too. On the x86-64 targets in the matrix, each
-operation rounds to its type.
+and precision than the type of the expression. The extra range and
+precision apply to the additive operators too. These rules apply:
+
+- The type of the expression does not change.
+- A cast or an assignment rounds the value to its type.
+- On the x86-64 targets in the matrix, each operation rounds to its
+  type.
 :::
 
 ## Recommended Practice
@@ -306,15 +313,17 @@ int q = left() / right();   // left() or right() can execute first
 
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
 
-- **MUL-2.** Clang and GCC warn that an enumeration with a floating-point
-  operand is deprecated. They accept it.
+- **MUL-2.** Clang and GCC warn that an enumeration with a
+  floating-point operand is deprecated. Both compilers accept the
+  operand.
 - **MUL-9, MUL-10, MUL-11.** Clang and GCC (all tested versions) reject
   each case during constant evaluation. Their notes name the cause:
-  division by zero, a result too large for `int`, or overflow. Each case is
-  otherwise valid. EDG agrees on integer division by zero and on multiply
-  overflow. EDG differs on the cases below.
-- **MUL-11.** At run time on x86-64, Clang and GCC give IEEE 754 infinity or
-  NaN. Tidal does not require that result ({question}`Q-0004`).
+  division by zero, a result too large for `int`, or overflow. Each case
+  is otherwise valid. EDG agrees on integer division by zero and on
+  multiply overflow. EDG differs on the cases below.
+- **MUL-11.** At run time on x86-64, Clang and GCC give IEEE 754
+  infinity or NaN. Tidal does not require that result
+  ({question}`Q-0004`).
 - **MUL-12.** These are the results for `1e308 * 10.0` in a `constexpr`
   initializer:
 
@@ -324,22 +333,23 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
 
   The provisional answer is that the behavior is undefined, and that
   Clang's acceptance is an extension ({question}`Q-0001`).
-- **MUL-11, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` during
-  constant evaluation. EDG 7.0 accepts both. EDG rejects floating overflow.
-  The provisional answer keeps MUL-11, and EDG's behavior is a possible
-  defect ({question}`Q-0002`).
-- **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and `INT_MIN % -1`
-  during constant evaluation. EDG 7.0 accepts both. EDG rejects
-  `INT_MAX * 2`. The provisional answer keeps MUL-10, and EDG's behavior is
-  a possible defect ({question}`Q-0003`).
-- **MUL-13.** Clang and GCC evaluate the left operand first at `-O0` and at
-  `-O2`. For an overloaded `*`, GCC evaluates the right operand first.
-  This shows that the order for `*` is not fixed. The test
+- **MUL-11, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
+  during constant evaluation. EDG 7.0 accepts both. EDG rejects floating
+  overflow. The provisional answer keeps MUL-11, and EDG's behavior is a
+  possible defect ({question}`Q-0002`).
+- **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and
+  `INT_MIN % -1` during constant evaluation. EDG 7.0 accepts both. EDG
+  rejects `INT_MAX * 2`. The provisional answer keeps MUL-10, and EDG's
+  behavior is a possible defect ({question}`Q-0003`).
+- **MUL-13.** Clang and GCC evaluate the left operand first at `-O0` and
+  at `-O2`. For an overloaded `*`, GCC evaluates the right operand
+  first. This result shows that the order for `*` is not fixed. The test
   accepts either order ({question}`Q-0005`).
-- **MUL-14.** Clang warns "unsequenced modification and access". GCC warns
-  "operation ... may be undefined". The test changes these warnings into
-  errors. EDG does not accept these warning flags and skips the test.
-- **MUL-15.** The result type on x86-64 (LP64) differs from the result type
-  with `-m32` (ILP32). The tests depend on `sizeof(long)`.
+- **MUL-14.** Clang warns "unsequenced modification and access". GCC
+  warns "operation ... may be undefined". The test changes these
+  warnings into errors. EDG does not accept these warning flags and
+  skips the test.
+- **MUL-15.** The result type on x86-64 (LP64) differs from the result
+  type with `-m32` (ILP32). The tests depend on `sizeof(long)`.
 
 Inputs: clang-sema-expr.

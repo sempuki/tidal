@@ -1,23 +1,23 @@
 # Enumerations
 
 An enumeration is a distinct type with named integer values, its
-*enumerators*. A *scoped* enumeration (`enum class` or `enum struct`) keeps
-its enumerators in its own scope. An *unscoped* enumeration (`enum`) puts
-its enumerators in the enclosing scope. The *underlying type* is the
-integer type that holds the values.
+*enumerators*. A *scoped* enumeration (`enum class` or `enum struct`)
+keeps its enumerators in its own scope. An *unscoped* enumeration
+(`enum`) puts its enumerators in the enclosing scope. The *underlying
+type* is the integer type that holds the values.
 
 ## Principles
 
 :::{principle} ENUM-P1
 :rules: ENUM-10 ENUM-1 ENUM-14 ENUM-12 ENUM-13
 
-An enumeration is a type of its own whose values are integers. It is
-different from its underlying type and from every other enumeration,
-and each enumerator has the enumeration type. Enumerators take values in
-sequence, each one more than the last unless the program gives a value,
-and a value can use the enumerators before it. An enumerator's name
-exists only after its value, so the value cannot name it
-({principle}`NAM-P1`).
+An enumeration is a type of its own whose values are integers. The
+enumeration is different from its underlying type and from every other
+enumeration, and each enumerator has the enumeration type. Enumerators
+take values in sequence, each one more than the last unless the program
+gives a value, and a value can use the enumerators before it. An
+enumerator's name exists only after its value, so the value cannot name
+the enumerator ({principle}`NAM-P1`).
 :::
 
 :::{principle} ENUM-P2
@@ -46,7 +46,7 @@ The underlying type holds the values.
 
 When the type is known from the first declaration, the enumeration can
 be declared before its enumerators, and an integer in braces can
-initialize it.
+initialize a variable of the enumeration type.
 :::
 
 ## Syntax
@@ -67,12 +67,16 @@ initialize it.
 :kind: required
 :tests: declarations/enumerations/enumerator-values.cpp declarations/enumerations/enumerator-refers-earlier.cpp declarations/enumerations/duplicate-values.cpp declarations/enumerations/implicit-after-explicit.cpp
 
-An enumerator without a value gets the value of the previous enumerator
-plus one. If the first enumerator of the list has no value, it gets 0.
-A later enumerator without a value gets the previous value plus one,
-also when it is the first one without a value. A value can use earlier
-enumerators, and several enumerators can have the same value. ENUM-14
-lists what is not valid.
+An enumerator without a value gets its value as follows:
+
+- If the first enumerator of the list has no value, the enumerator
+  gets 0.
+- A later enumerator without a value gets the value of the previous
+  enumerator plus one, also when the later enumerator is the first one
+  without a value.
+
+A value can use earlier enumerators, and several enumerators can have
+the same value. ENUM-14 lists what is not valid.
 :::
 
 :::{rule} ENUM-14
@@ -91,9 +95,9 @@ These conditions apply to the enumerators of ENUM-1:
 :tests: declarations/enumerations/unscoped-names-in-enclosing-scope.cpp declarations/enumerations/unscoped-converts-to-int.cpp declarations/enumerations/mixed-enum-arithmetic.cpp
 
 The enumerators of an unscoped enumeration are declared in the enclosing
-scope. They can also be named through the enumeration. A value converts
-implicitly to an integer by {term}`integer promotion`. ENUM-15 lists what
-is not valid.
+scope. The enumerators can also be named through the enumeration. A
+value converts implicitly to an integer by {term}`integer promotion`.
+ENUM-15 lists what is not valid.
 :::
 
 :::{rule} ENUM-15
@@ -119,7 +123,8 @@ lists what is not valid.
 :kind: reject
 :tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp
 
-The forms that ENUM-3 allows are the only ones. A program must not:
+The forms that ENUM-3 allows are the only valid forms. A program must
+not:
 
 - name an enumerator of a scoped enumeration without the enumeration,
 - convert a scoped value to or from an integer without an explicit cast,
@@ -145,8 +150,8 @@ cv-qualifier on the underlying type is ignored.
 :kind: reject
 :tests: declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp
 
-A fixed underlying type (ENUM-4) must be an integer type. Each enumerator
-value must fit in the underlying type without narrowing.
+A fixed underlying type (ENUM-4) must be an integer type. Each
+enumerator value must fit in the underlying type without narrowing.
 :::
 
 :::{rule} ENUM-7
@@ -162,8 +167,9 @@ definition. ENUM-18 lists what such a declaration needs.
 :tests: declarations/enumerations/opaque-unscoped-without-type.cpp declarations/enumerations/opaque-mismatch.cpp declarations/enumerations/redeclare-scoped-as-unscoped.cpp
 
 If an enumeration is declared without its enumerators (ENUM-7), its
-underlying type must be known, so it must be scoped or have `: type`. All
-declarations must agree on scoped or unscoped and on the underlying type.
+underlying type must be known, so the enumeration must be scoped or have
+`: type`. All declarations must agree on scoped or unscoped and on the
+underlying type.
 :::
 
 :::{rule} ENUM-8
@@ -171,7 +177,7 @@ declarations must agree on scoped or unscoped and on the underlying type.
 :tests: declarations/enumerations/list-init-fixed.cpp
 
 A variable of an enumeration type with a fixed underlying type can be
-initialized from an integer in braces. This includes all scoped
+initialized from an integer in braces. This rule includes all scoped
 enumerations. ENUM-19 lists what is not valid.
 :::
 
@@ -183,18 +189,19 @@ In the initialization that ENUM-8 allows, the conversion to the
 underlying type must not narrow. An enumeration without a fixed
 underlying type cannot be initialized from an integer in braces.
 
-This applies only to direct-list-initialization. Initialization with `=`
-and a braced integer is not valid.
+Initialization from an integer in braces is valid only as
+direct-list-initialization. Initialization with `=` and a braced
+integer is not valid.
 :::
 
 :::{rule} ENUM-9
 :kind: required
 :tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp
 
-`using enum E;` declares the enumerators of `E` in the current scope. `E`
-can be a type alias of an enumeration. A using declaration can also name
-one enumerator of a scoped enumeration, such as `using C::R;`. ENUM-20
-lists what is not valid.
+`using enum E;` declares the enumerators of `E` in the current scope.
+`E` can be a type alias of an enumeration. A using declaration can also
+name one enumerator of a scoped enumeration, such as `using C::R;`.
+ENUM-20 lists what is not valid.
 :::
 
 :::{rule} ENUM-20
@@ -212,10 +219,10 @@ opaque declaration is not enough ({question}`Q-0047`).
 :kind: required
 :tests: declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp
 
-Each enumeration is a distinct type. It is different from its underlying
-type and from all other enumerations. After the closing brace, an
-enumerator has the type of its enumeration. Unary `+` on an unscoped
-value gives its promoted integer type.
+Each enumeration is a distinct type. The enumeration is different from
+its underlying type and from all other enumerations. After the closing
+brace, an enumerator has the type of its enumeration. Unary `+` on an
+unscoped value gives its promoted integer type.
 
 Inside the enumerator list, the enumeration is not complete, so an
 enumerator has another type there. Every scoped enumeration has a fixed
@@ -234,8 +241,8 @@ underlying type.
 :tests: declarations/enumerations/scoped-not-condition.cpp declarations/enumerations/scoped-not-logical.cpp declarations/enumerations/scoped-explicit-bool-ok.cpp
 
 A value of a scoped enumeration does not convert to `bool` by
-{term}`contextual conversion`. It must not be a condition or an operand
-of `!`, `&&`, or `||`. An explicit cast to `bool` is valid.
+{term}`contextual conversion`. Such a value must not be a condition or
+an operand of `!`, `&&`, or `||`. An explicit cast to `bool` is valid.
 :::
 
 :::{rule} ENUM-12
@@ -253,9 +260,10 @@ that expression, the name refers to an outer entity with that name.
 :tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp declarations/enumerations/cast-out-of-range-sanitizer.cpp
 
 An enumeration with a fixed underlying type can hold all values of that
-type. An enumeration without one holds the values of the smallest set of
-bits that can represent all its enumerators. If a program converts a
-value outside that range to the enumeration, the behavior is undefined.
+type. An enumeration without a fixed underlying type holds the values of
+the smallest set of bits that can represent all its enumerators. If a
+program converts a value outside that range to the enumeration, the
+behavior is undefined.
 
 An enumeration without enumerators and without a fixed type can hold the
 values 0 and 1.
@@ -278,10 +286,10 @@ value. Which type is unspecified ({question}`Q-0114`).
 :tests: declarations/enumerations/unscoped-underlying-holds-values.cpp declarations/enumerations/unscoped-size-lp64.cpp declarations/enumerations/implicit-value-overflow-unscoped.cpp declarations/enumerations/unscoped-value-too-large.cpp
 
 The underlying type of an unscoped enumeration without `: type` is
-implementation-defined. It is an integer type that can hold all
-enumerator values. It is not wider than `int` unless a value needs more.
-If no standard integer type can hold all values, the implementation can
-use a wider type or reject the enumeration.
+implementation-defined. The underlying type is an integer type that can
+hold all enumerator values, and it is not wider than `int` unless a
+value needs more. If no standard integer type can hold all values, the
+implementation can use a wider type or reject the enumeration.
 :::
 
 ## Examples
@@ -318,16 +326,17 @@ Color k = Red;                 // Red without Color::
 All seven compilers agree on 52 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
-- **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }` an
-  underlying type of 1 byte. By default its size is the size of `int`.
+- **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
+  an underlying type of 1 byte. By default its size is the size of
+  `int`.
 - **ENUM-5, no standard underlying type.** GCC accepts an unscoped
-  enumeration that needs more than 64 bits, and uses a 128-bit type. Clang
-  and EDG reject it. The provisional answer is that this is
-  implementation-defined. See {question}`Q-0018`.
-- **ENUM-6.** Clang rejects `static_cast<E>(8)` during constant evaluation
-  ("outside the valid range of values [0, 7]"). GCC and EDG accept it. The
-  provisional answer is that the behavior is undefined. See
-  {question}`Q-0017`.
+  enumeration that needs more than 64 bits, and uses a 128-bit type.
+  Clang and EDG reject the enumeration. The provisional answer is that
+  the choice is implementation-defined. See {question}`Q-0018`.
+- **ENUM-6.** Clang rejects `static_cast<E>(8)` during constant
+  evaluation ("outside the valid range of values [0, 7]"). GCC and EDG
+  accept the cast. The provisional answer is that the behavior is
+  undefined. See {question}`Q-0017`.
 
 Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

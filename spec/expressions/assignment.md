@@ -1,8 +1,8 @@
 # Assignment operators
 
-The operator `=` stores the value of its right operand in the object of its
-left operand. A compound assignment operator, such as `+=`, combines an
-operation with the assignment.
+The operator `=` stores the value of its right operand in the object of
+its left operand. A compound assignment operator, such as `+=`, combines
+an operation with the assignment.
 
 ## Principles
 
@@ -10,7 +10,7 @@ operation with the assignment.
 :rules: ASN-1 ASN-2 ASN-3 ASN-6 ASN-7 ASN-10 ASN-12 ASN-14
 
 Assignment stores a value into an object. So the left operand must be an
-object that can be changed. It must be:
+object that can be changed. The left operand must be:
 
 - an lvalue,
 - not `const`,
@@ -21,18 +21,18 @@ A `volatile` object can be assigned. The right operand is converted to
 the object's type by an implicit conversion, and a braced list converts
 as list initialization does, without narrowing. The result is the object
 itself, as an lvalue, so assignments chain from the right. A bit-field
-is an object with no address, so the result of assigning to it has none
-either. For a class, assignment is a call to the class's own operator,
-so the class decides what its left operand can be.
+is an object with no address, so the result of assigning to the
+bit-field has none either. For a class, assignment is a call to the
+class's own operator, so the class decides what the left operand can be.
 :::
 
 :::{principle} ASN-P2
 :rules: ASN-5 ASN-9 ASN-11 ASN-13
 
 A compound assignment `E1 op= E2` means `E1 = E1 op E2`, except that
-`E1` is evaluated once. The read, the operation, and the
-write are one evaluation. A function call `f()` that is unordered with
-it runs before the read or after the write:
+`E1` is evaluated once. The read, the operation, and the write are one
+evaluation. A function call `f()` that is unordered with the compound
+assignment runs before the read or after the write:
 
 ```text
    either:  f()  then  [ read E1 --> op --> write E1 ]
@@ -44,9 +44,9 @@ it runs before the read or after the write:
 :::{principle} ASN-P3
 :rules: ASN-4
 
-The right operand is evaluated before the left one, and all its side
-effects complete before the store. This is an exception to the usual
-freedom (SEQ-1).
+The right operand is evaluated before the left one, and all side effects
+of the right operand complete before the store. This order is an
+exception to the usual freedom (SEQ-1).
 :::
 
 ## Syntax
@@ -80,8 +80,8 @@ left operand exists (ASN-1), the expression is not valid.
 :kind: reject
 :tests: expressions/assignment/const-left.cpp expressions/assignment/rvalue-left.cpp expressions/assignment/array-left.cpp expressions/assignment/function-left.cpp expressions/assignment/class-prvalue-left.cpp expressions/assignment/scalar-xvalue-left.cpp expressions/member-pointers/result-const.cpp expressions/primary/this-const-member-modify.cpp expressions/primary/member-const-in-const-function.cpp
 
-The left operand of a built-in assignment must be a modifiable lvalue. It
-must not be:
+The left operand of a built-in assignment must be a modifiable lvalue.
+The left operand must not be:
 
 - `const`,
 - a prvalue or an xvalue,
@@ -139,7 +139,7 @@ operand of a compound assignment to a scalar must not be a braced list
 :tests: expressions/assignment/volatile-simple.cpp expressions/assignment/volatile-compound.cpp
 
 The left operand can be `volatile`. Simple and compound assignment both
-apply to it.
+apply to a `volatile` left operand.
 :::
 
 :::{rule} ASN-10
@@ -156,8 +156,8 @@ program must not take the address of the result.
 :kind: required
 :tests: expressions/assignment/right-before-left.cpp expressions/assignment/unsequenced-same-object.cpp
 
-The right operand is evaluated before the left operand. All side effects of
-the right operand complete before the store.
+The right operand is evaluated before the left operand. All side effects
+of the right operand complete before the store.
 :::
 
 :::{rule} ASN-9
@@ -174,9 +174,10 @@ In `E1 op= E2`, `E1` is evaluated one time.
 :tests: expressions/assignment/compound-indeterminate-with-call.cpp expressions/assignment/compound-indeterminate-run.cpp
 
 A compound assignment is one evaluation with respect to a function call
-whose order with it is not set. The call runs before the read or after
-the write, never between them. Which of the two orders occurs is
-unspecified, and the behavior is not undefined.
+whose order with the compound assignment is not set. The call runs
+before the read or after the write, never between them. The choice
+between the two orders is unspecified, and the behavior is not
+undefined.
 :::
 
 ## Examples
@@ -200,11 +201,12 @@ x += {1};         // rejected: braced list in compound assignment
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 28 of 29 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 28
+of 29 tests.
 
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.
 - ASN-6: Clang 22 and 18 accept `x += {1}` for a scalar `x`. GCC and EDG
-  reject it. This is an open divergence.
+  reject the expression. This divergence is open.
 
 Inputs: clang-sema-expr, clang-diag-sema.

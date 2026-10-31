@@ -5,7 +5,7 @@ function. This page covers:
 
 - which expressions each kind of reference accepts,
 - when a temporary object is created,
-- how long it lives.
+- how long the temporary lives.
 
 ## Principles
 
@@ -13,11 +13,11 @@ function. This page covers:
 :rules: REF-1 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-11
 
 A reference is a name for an existing object or function
-({principle}`OBJ-P3`), and the binding gives it that object. The
-expressions that a reference accepts follow from what it may do with its
-referent.
+({principle}`OBJ-P3`), and the binding gives the reference that object.
+The expressions that a reference accepts follow from what the reference
+may do with its referent.
 
-| Reference | What it may do | Binds to |
+| Reference | What the reference may do | Binds to |
 |---|---|---|
 | One that can change the object | Change the object | Only an lvalue of that type or a derived type |
 | `const` lvalue reference | Nothing | Also rvalues and values of other types, through a temporary object when there is no object to bind to |
@@ -38,9 +38,9 @@ bindings through:
 - a subscript,
 - a plain cast.
 
-It does not reach a function parameter or a returned reference. A
-reference used after its object has ended, or bound through a null
-pointer, has no defined meaning.
+The extension does not reach a function parameter or a returned
+reference. A reference used after its object has ended, or bound through
+a null pointer, has no defined meaning.
 :::
 
 ## Syntax
@@ -58,8 +58,8 @@ pointer, has no defined meaning.
 :kind: required
 :tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp
 
-A non-`const` lvalue reference binds directly to an lvalue. The reference
-and the lvalue are then the same object. The lvalue can have:
+A non-`const` lvalue reference binds directly to an lvalue. The
+reference and the lvalue are then the same object. The lvalue can have:
 
 - the same type,
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
@@ -83,11 +83,11 @@ to a bit-field.
 :tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp
 
 A `const` lvalue reference that is not `volatile` can also bind to an
-rvalue. It can also bind to an expression of a different type that
-converts to its type, and to a bit-field. If the rvalue is an xvalue of the
-same type, or a class rvalue, the reference binds to that object
-directly. In the other cases, the reference binds to a temporary object
-that holds a copy of the value. REF-9 lists what is not valid.
+rvalue, to an expression of a different type that converts to its type,
+and to a bit-field. If the rvalue is an xvalue of the same type, or a
+class rvalue, the reference binds to that object directly. In the other
+cases, the reference binds to a temporary object that holds a copy of
+the value. REF-9 lists what is not valid.
 :::
 
 :::{rule} REF-9
@@ -103,9 +103,9 @@ bind to an rvalue.
 :tests: declarations/initialization/references/rvalue-ref-binds-rvalue.cpp declarations/initialization/references/rvalue-ref-to-function.cpp
 
 An rvalue reference to an object type binds to an rvalue, including an
-xvalue. It can bind to an lvalue of a different type through a temporary
-object, as REF-2 gives. An rvalue reference to a function type binds to
-a function. REF-10 lists what is not valid.
+xvalue. Such a reference can bind to an lvalue of a different type
+through a temporary object, as REF-2 gives. An rvalue reference to a
+function type binds to a function. REF-10 lists what is not valid.
 :::
 
 :::{rule} REF-10
@@ -113,8 +113,8 @@ a function. REF-10 lists what is not valid.
 :tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp
 
 An rvalue reference to an object type must not bind to an lvalue of the
-same type, or of a class derived from that type. It must not drop a
-cv-qualifier of the object.
+same type, or of a class derived from that type. The reference must not
+drop a cv-qualifier of the object.
 :::
 
 :::{rule} REF-6
@@ -140,8 +140,8 @@ braces, a narrowing conversion must not occur (LIST-2).
 :tests: declarations/initialization/references/lifetime-extended.cpp declarations/initialization/references/lifetime-member-extended.cpp declarations/initialization/references/aggregate-member-extends.cpp declarations/initialization/references/lifetime-through-parens-and-conditional.cpp declarations/initialization/references/static-reference-to-temporary.cpp declarations/initialization/references/extend-through-static-cast.cpp declarations/initialization/references/extend-through-array-member-subscript.cpp
 
 If a reference variable binds to a temporary object, or to a member of
-one, the temporary lives as long as the reference. This also applies to
-a reference member of an aggregate initialized with braces, and to a
+one, the temporary lives as long as the reference. The rule also applies
+to a reference member of an aggregate initialized with braces, and to a
 binding through one of these:
 
 - parentheses,
@@ -171,7 +171,7 @@ A later change to the source expression does not change the temporary.
 :tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp
 
 Only the bindings in REF-4 extend the life of a temporary. These
-bindings do not extend it ({question}`Q-0040`):
+bindings do not extend the life of a temporary ({question}`Q-0040`):
 
 - a binding to a function parameter,
 - a binding to a returned reference,
@@ -180,7 +180,7 @@ bindings do not extend it ({question}`Q-0040`):
 
 Use of a reference after the life of its object ends is undefined.
 Binding a reference to `*p` where `p` is a null pointer is undefined,
-and constant evaluation rejects it ({question}`Q-0110`).
+and constant evaluation rejects such a binding ({question}`Q-0110`).
 :::
 
 ## Examples
@@ -217,12 +217,12 @@ All seven compilers agree on 28 of 31 tests. The results are in
   "accessing ... outside its lifetime", "attempt to access expired
   storage"). Clang, GCC, and EDG also warn when a function returns a
   reference to a local variable.
-- **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element of
-  an array member of a temporary. Clang and GCC accept it and extend the
-  temporary ({question}`Q-0109`).
+- **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
+  of an array member of a temporary. Clang and GCC accept the binding
+  and extend the temporary ({question}`Q-0109`).
 - **REF-5.** GCC and Clang 22 reject a reference bound through a null
-  pointer during constant evaluation. EDG 7.0 and Clang 18 accept it
-  ({question}`Q-0110`).
+  pointer during constant evaluation. EDG 7.0 and Clang 18 accept the
+  reference ({question}`Q-0110`).
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

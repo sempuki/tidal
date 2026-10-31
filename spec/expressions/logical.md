@@ -54,9 +54,9 @@ an ordinary function call, so it evaluates both operands, left first.
 :::{principle} LOG-P3
 :rules: LOG-8 LOG-9
 
-An implementation should warn where precedence suggests a mistake: `&&`
-inside `||` without parentheses, and `!` applied to only the left side
-of a comparison.
+An implementation should warn about `&&` inside `||` without
+parentheses, and about `!` applied to only the left side of a
+comparison. In both forms, precedence suggests a mistake.
 :::
 
 ## Syntax
@@ -114,27 +114,28 @@ left to right.
 :kind: required
 :tests: expressions/logical/constant-unevaluated-division.cpp expressions/logical/constant-unevaluated-call.cpp
 
-During {term}`constant evaluation`, a right operand that is not evaluated
-has no effect on the result. It can contain an operation that constant
-evaluation does not permit.
+During {term}`constant evaluation`, a right operand that is not
+evaluated has no effect on the result. The right operand can contain an
+operation that constant evaluation does not permit.
 :::
 
 :::{rule} LOG-14
 :kind: reject
 :tests: expressions/logical/constant-evaluated-call.cpp
 
-During {term}`constant evaluation`, if the right operand is evaluated, an
-operation that constant evaluation does not permit makes the expression
-not constant (LOG-7).
+During {term}`constant evaluation`, if the right operand is evaluated,
+an operation that constant evaluation does not permit makes the
+expression not constant (LOG-7).
 :::
 
 :::{rule} LOG-12
 :kind: required
 :tests: expressions/logical/nullptr-operand.cpp expressions/logical/member-pointer-operand.cpp
 
-An operand of `!`, `&&`, or `||` can be `nullptr` or a pointer to member.
-It converts to `bool` by {term}`contextual conversion`, so `nullptr` and a
-null pointer to member give `false` ({question}`Q-0101`).
+An operand of `!`, `&&`, or `||` can be `nullptr` or a pointer to
+member. The operand converts to `bool` by {term}`contextual conversion`,
+so `nullptr` and a null pointer to member give `false`
+({question}`Q-0101`).
 :::
 
 :::{rule} LOG-13
@@ -204,8 +205,8 @@ parentheses.
 :kind: recommended
 :tests: expressions/logical/not-on-lhs-warns.cpp expressions/logical/not-on-lhs-silences.cpp
 
-An implementation should warn if `!` applies only to the left operand of a
-comparison, as in `!a == b`.
+An implementation should warn if `!` applies only to the left operand of
+a comparison, as in `!a == b`.
 :::
 
 ## Examples
@@ -232,8 +233,8 @@ All seven compilers agree on 20 of 21 tests. The results are in
 - LOG-8: Clang warns under `-Wlogical-op-parentheses` and GCC under
   `-Wparentheses`. The test uses `-Wparentheses`, which includes both.
 - LOG-9: Clang and GCC warn under `-Wlogical-not-parentheses`.
-- EDG doesn't take these warning flags and skips the recommended-practice
-  tests.
+- EDG doesn't take these warning flags and skips the
+  recommended-practice tests.
 - LOG-12: GCC 14 rejects `nullptr` as an operand. GCC 16, Clang, and EDG
   accept it ({question}`Q-0101`).
 

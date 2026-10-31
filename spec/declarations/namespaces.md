@@ -5,7 +5,7 @@ scope. A *using declaration* declares one member of a namespace in the
 current scope. A *using directive* makes all members of a namespace
 visible to unqualified lookup in the current scope.
 
-These are other topics *(lookup referenced)*:
+These topics are on other pages *(lookup referenced)*:
 
 - name lookup in general,
 - argument-dependent lookup,
@@ -36,12 +36,11 @@ the enclosing namespace.
 
 | Namespace | Lends its members | Result |
 |---|---|---|
-| `inline` | By name | A qualified name through the enclosing namespace finds them. |
+| `inline` | By name | A qualified name through the enclosing namespace finds the members. |
 | Unnamed | Without a name | Its members have internal linkage. |
 
-In both cases a name
-declared in both places is ambiguous, because neither declaration hides
-the other.
+In both cases a name declared in both places is ambiguous, because
+neither declaration hides the other.
 :::
 
 :::{principle} NS-P3
@@ -53,9 +52,9 @@ stronger of the two.
 
 | | Using declaration | Using directive |
 |---|---|---|
-| What it is | A declaration in the current scope | Weaker. It only makes the members visible to lookup. |
-| Another declaration in the current scope | Conflicts with it, as any declaration does | Hides the members |
-| Other effects | Carries the overloads it saw | Two directives can make a name ambiguous. |
+| What the form is | A declaration in the current scope | Weaker. The directive only makes the members visible to lookup. |
+| Another declaration in the current scope | Conflicts with the other declaration, as any declaration does | Hides the members |
+| Other effects | Carries the overloads that the using declaration saw | Two directives can make a name ambiguous. |
 
 Neither form belongs in a class.
 :::
@@ -182,7 +181,8 @@ NS-15 lists what is not valid.
 :tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp
 
 For a definition of a member of `N` outside `N`, the member must have a
-declaration in `N` first. The definition must be in a namespace that encloses `N`.
+declaration in `N` first. The definition must be in a namespace that
+encloses `N`.
 :::
 
 :::{rule} NS-7
@@ -190,10 +190,15 @@ declaration in `N` first. The definition must be in a namespace that encloses `N
 :tests: declarations/namespaces/using-declaration.cpp declarations/namespaces/using-declaration-overloads.cpp declarations/namespaces/using-declaration-snapshot.cpp declarations/namespaces/using-declaration-repeat-namespace.cpp declarations/namespaces/using-declaration-repeat-block.cpp declarations/namespaces/using-list.cpp
 
 `using N::name;` declares `name` in the current scope for the member of
-`N`. For a function, it includes the overloads that `N` declares before
-the using declaration. A using declaration can list several names
-separated by commas. It can occur again in the same scope, also in a
-block ({question}`Q-0019`). NS-16 lists what is not valid.
+`N`. A using declaration also follows these rules:
+
+- For a function, the using declaration includes the overloads that
+  `N` declares before the using declaration.
+- A using declaration can list several names separated by commas.
+- The same using declaration can occur again in the same scope, also
+  in a block ({question}`Q-0019`).
+
+NS-16 lists what is not valid.
 :::
 
 :::{rule} NS-16
@@ -204,7 +209,8 @@ A using declaration:
 
 - must have a qualified name,
 - must not name a namespace,
-- must not conflict with another declaration of `name` in the same scope.
+- must not conflict with another declaration of `name` in the same
+  scope.
 :::
 
 :::{rule} NS-8
@@ -212,14 +218,14 @@ A using declaration:
 :tests: declarations/namespaces/using-directive.cpp declarations/namespaces/using-directive-transitive.cpp declarations/namespaces/using-directive-local-hides.cpp declarations/namespaces/using-directive-ambiguous-unused.cpp declarations/namespaces/directive-sees-later-members.cpp
 
 `using namespace N;` makes the members of `N` visible to unqualified
-lookup until the current scope ends. The rules for this are:
+lookup until the current scope ends. These rules apply:
 
 - Members that `N` declares after the directive are visible too.
-- The members of namespaces that using directives in `N` name also become
-  visible.
+- The members of namespaces that using directives in `N` name also
+  become visible.
 - A name that the current scope declares hides these members.
-- If two such namespaces have a member with the same name, an unqualified
-  use of that name is ambiguous.
+- If two such namespaces have a member with the same name, an
+  unqualified use of that name is ambiguous.
 
 Unqualified lookup finds the members at the level of the innermost
 namespace that contains both the directive and the named namespace. So a
@@ -269,11 +275,13 @@ int y = x;               // rejected: x is ambiguous
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 40 of 41 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 40
+of 41 tests.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
-22, Clang 18, and GCC 16 accept it. GCC 14 and EDG 7.0 reject it. The
-provisional answer is that it is valid ({question}`Q-0019`).
+22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and
+EDG 7.0 reject it. The provisional answer is that the repeated
+declaration is valid ({question}`Q-0019`).
 
 Inputs: clang-sema-declcxx, clang-diag-sema, edg-decls (see
 `inputs/MANIFEST.md`).

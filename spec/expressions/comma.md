@@ -1,7 +1,7 @@
 # The comma operator
 
-The comma operator evaluates its left operand and discards the value. Then
-it evaluates its right operand, which gives the result.
+The comma operator evaluates its left operand and discards the value.
+Then the operator evaluates its right operand, which gives the result.
 
 ## Principles
 
@@ -10,10 +10,10 @@ it evaluates its right operand, which gives the result.
 
 The comma operator runs two expressions in order and keeps the second.
 The left operand is evaluated first, with all its side effects, and its
-value is dropped, so it can even be `void`. The right operand gives the
-result, with its own type and value category. The overloaded operator
-keeps the same order. The operator groups to the left and is allowed in
-a constant expression.
+value is dropped, so the left operand can even be `void`. The right
+operand gives the result, with its own type and value category. The
+overloaded operator keeps the same order. The operator groups to the
+left and is allowed in a constant expression.
 :::
 
 :::{principle} COMMA-P2
@@ -27,17 +27,17 @@ A comma also separates the items in lists such as these:
 - enumerators,
 - subscript arguments.
 
-There are others. In such a place the separator wins, and a comma
-operator needs parentheses to be one. The same holds where the syntax
-asks for a single constant expression.
+There are others. In such a place the separator wins, and a comma needs
+parentheses to be a comma operator. A comma operator also needs
+parentheses where the syntax asks for a single constant expression.
 :::
 
 :::{principle} COMMA-P3
 :rules: COMMA-5
 
 A left operand with no effect is almost surely a mistake, and an
-implementation should warn about it. A cast to `void` says it is
-intended.
+implementation should warn about the operand. A cast to `void` says the
+operand is intended.
 :::
 
 ## Syntax
@@ -61,7 +61,7 @@ The left operand can have type `void`.
 :kind: required
 :tests: expressions/comma/grouping.cpp expressions/comma/constant-expression.cpp
 
-The operator groups from left to right. It can occur in a constant
+The operator groups from left to right and can occur in a constant
 expression.
 :::
 
@@ -103,8 +103,9 @@ or a `case` label, a comma operator must be in parentheses.
 :kind: required
 :tests: expressions/comma/left-before-right.cpp expressions/comma/left-side-effects-complete.cpp
 
-The left operand is evaluated first, and its value is discarded. All its
-side effects complete before the right operand is evaluated.
+The left operand is evaluated first, and its value is discarded. All
+side effects of the left operand complete before the right operand is
+evaluated.
 :::
 
 :::{rule} COMMA-7
@@ -121,8 +122,8 @@ before its right operand.
 :kind: recommended
 :tests: expressions/comma/unused-left-warns.cpp expressions/comma/unused-left-void-cast.cpp
 
-An implementation should warn if the left operand has no effect. A cast of
-the left operand to `void` should prevent the warning.
+An implementation should warn if the left operand has no effect. A cast
+of the left operand to `void` should prevent the warning.
 :::
 
 ## Examples
@@ -143,7 +144,7 @@ All seven compilers agree on all 17 tests. The results are in
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no
   effect" under `-Wunused-value`. EDG skips these tests.
-- COMMA-6: GCC says that a top-level comma in a subscript "changed meaning
-  in C++23".
+- COMMA-6: GCC says that a top-level comma in a subscript "changed
+  meaning in C++23".
 
 Inputs: clang-sema-expr, clang-diag-sema, clang-parse-expr.

@@ -1,7 +1,8 @@
 # Structured bindings
 
-A structured binding declaration declares several names at one time. Each
-name refers to one element of an object. An element is one of these:
+A structured binding declaration declares several names at one time.
+Each name refers to one element of an object. An element is one of
+these:
 
 - an array element,
 - a data member of a class,
@@ -26,9 +27,9 @@ hidden variable   (the written auto, cv-qualifiers, reference)
     +-- ...
 ```
 
-Each name refers to one element of the hidden variable. So each name is an lvalue, whatever the initializer was, and a
-temporary that the hidden variable binds to lives as long as the names
-do ({principle}`OBJ-P3`).
+Each name refers to one element of the hidden variable. So each name is
+an lvalue, whatever the initializer was, and a temporary that the hidden
+variable binds to lives as long as the names do ({principle}`OBJ-P3`).
 :::
 
 :::{principle} SB-P2
@@ -43,20 +44,20 @@ fixed order of tests:
 | 2 | A type with a tuple size | The results of `get` |
 | 3 | Any other class | Its data members, in declaration order |
 
-The number of names must equal the number of elements. Each name has
-the declared type of its element, with the qualifiers of the hidden
-variable added, so a binding to a `mutable` member or a bit-field
-behaves as that member does.
+The number of names must equal the number of elements. Each name has the
+declared type of its element, with the qualifiers of the hidden variable
+added, so a binding to a `mutable` member or a bit-field behaves as that
+member does.
 :::
 
 :::{principle} SB-P3
 :rules: SB-7 SB-15 SB-8 SB-11
 
-The declaration is deliberately narrow:
+The declaration is deliberately narrow and has these limits:
 
-- it uses `auto`,
-- it takes a few specifiers,
-- it has one declarator with one list of names.
+- `auto` as its type,
+- a few specifiers,
+- one declarator with one list of names.
 
 Each name is a new declaration in the enclosing scope, so the names must
 be distinct and must not repeat a name of that scope
@@ -91,8 +92,8 @@ of elements is one of these:
 :tests: declarations/structured-bindings/aggregate-members.cpp declarations/structured-bindings/members-in-base.cpp declarations/structured-bindings/friend-binds-private.cpp
 
 If the hidden variable has class type and SB-5 does not apply, the names
-refer to its non-static data members in declaration order. SB-13 lists
-what is not valid.
+refer to the non-static data members of the class in declaration order.
+SB-13 lists what is not valid.
 :::
 
 :::{rule} SB-13
@@ -114,8 +115,8 @@ The type of the hidden variable must not be a union or a scalar type.
 :tests: declarations/structured-bindings/binding-types.cpp declarations/structured-bindings/reference-member-binding-type.cpp
 
 For an array element or a data member, `decltype` of a name gives the
-declared type of the element. The cv-qualifiers of the hidden variable are
-added. If the data member has a reference type, the result is that
+declared type of the element. The cv-qualifiers of the hidden variable
+are added. If the data member has a reference type, the result is that
 reference type.
 :::
 
@@ -124,10 +125,10 @@ reference type.
 :tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
-`E` is the type of the hidden variable. Its `value` gives the number of
-elements. Element `i` comes from a call to `get<i>()` *(lookup
-referenced)*. Its type is `std::tuple_element<i, E>::type` *(library
-referenced)*.
+`E` is the type of the hidden variable. The `value` member of
+`std::tuple_size<E>` gives the number of elements. Element `i` comes
+from a call to `get<i>()` *(lookup referenced)*, and the type of element
+`i` is `std::tuple_element<i, E>::type` *(library referenced)*.
 
 The calls to `get` occur in the order of the elements. If
 `std::tuple_size<E>` is complete but has no `value` member, the names
@@ -147,8 +148,8 @@ exist for each element.
 :kind: required
 :tests: declarations/structured-bindings/initializer-equals.cpp declarations/structured-bindings/initializer-parens.cpp declarations/structured-bindings/initializer-braces.cpp declarations/structured-bindings/static-and-thread-local.cpp
 
-A structured binding declaration uses `auto`. It can add `const`,
-`volatile`, `&`, `&&`, `static`, and `thread_local`. Its initializer
+A structured binding declaration uses `auto` and can add `const`,
+`volatile`, `&`, `&&`, `static`, and `thread_local`. The initializer
 comes after `=`, in parentheses, or in braces. SB-15 lists what is not
 valid.
 :::
@@ -174,9 +175,9 @@ forms that SB-7 gives. The declaration must not:
 :kind: reject
 :tests: declarations/structured-bindings/duplicate-names.cpp declarations/structured-bindings/underscore-twice.cpp declarations/structured-bindings/names-in-scope.cpp declarations/structured-bindings/own-initializer.cpp
 
-The names in one declaration must all be different. This includes two `_`
-names. A name must not be declared already in the same scope. A name must
-not occur in the initializer of its own declaration.
+The names in one declaration must all be different. The rule applies
+also to two `_` names. A name must not be declared already in the same
+scope. A name must not occur in the initializer of its own declaration.
 :::
 
 :::{rule} SB-9
@@ -192,7 +193,7 @@ variable is `const`.
 :tests: declarations/structured-bindings/bit-field-assign.cpp
 
 A binding to a bit-field member refers to the bit-field ({rule}`BF-1`).
-A program can assign to it. SB-16 lists what is not valid.
+A program can assign to the binding. SB-16 lists what is not valid.
 :::
 
 :::{rule} SB-16
@@ -208,15 +209,15 @@ A program must not take the address of a binding to a bit-field member.
 
 The only specifiers that can occur with `auto` in a structured binding
 declaration are `static`, `thread_local`, `const`, and `volatile`.
-`inline`, `extern`, and `constinit` are not valid ({question}`Q-0107` for
-`constinit`).
+`inline`, `extern`, and `constinit` are not valid ({question}`Q-0107`
+for `constinit`).
 :::
 
 :::{rule} SB-12
 :kind: required
 :tests: declarations/structured-bindings/names-are-lvalues.cpp
 
-Each name of a structured binding is an lvalue. This holds also when
+Each name of a structured binding is an lvalue. The rule holds also when
 the hidden variable is an rvalue reference or the initializer is a
 prvalue.
 :::
@@ -228,22 +229,22 @@ prvalue.
 :tests: declarations/structured-bindings/array-copy.cpp declarations/structured-bindings/array-reference.cpp declarations/structured-bindings/array-hidden-copy.cpp
 
 A structured binding declaration creates one hidden variable, and each
-name refers to one element of it. The hidden variable has these
-properties:
+name refers to one element of that variable. The hidden variable has
+these properties:
 
 - It has the written `auto`, cv-qualifiers, and reference.
-- The initializer initializes it.
-- For an array initializer without a reference, it is an array with the
-  same element type and bound, and each element is copied. The
-  initializer does not decay to a pointer.
+- The initializer initializes the hidden variable.
+- For an array initializer without a reference, the hidden variable is
+  an array with the same element type and bound, and each element is
+  copied. The initializer does not decay to a pointer.
 :::
 
 :::{rule} SB-6
 :kind: required
 :tests: declarations/structured-bindings/lifetime-extended.cpp
 
-If the hidden variable is a reference bound to a temporary, the temporary
-exists as long as the names do (REF-4).
+If the hidden variable is a reference bound to a temporary, the
+temporary exists as long as the names do (REF-4).
 :::
 
 ## Examples
@@ -270,18 +271,19 @@ auto [c, d]{a};           // valid: braced initializer
 All seven compilers agree on 45 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
-- **SB-15.** Clang and GCC accept `constexpr` structured bindings and two
-  `_` names as extensions from a later language version. They reject them
-  only under `-pedantic-errors`. Clang reports an empty list of names as a
-  pedantic diagnostic.
-- **SB-7, braced array initializer.** Clang 18.1.3 rejects `auto [r, s]{a};`
-  when `a` is an array. Clang 22, GCC, and EDG accept it. The provisional
-  answer is that it is valid. See {question}`Q-0015`.
+- **SB-15.** Clang and GCC accept `constexpr` structured bindings and
+  two `_` names as extensions from a later language version. The two
+  compilers reject these forms only under `-pedantic-errors`. Clang
+  reports an empty list of names as a pedantic diagnostic.
+- **SB-7, braced array initializer.** Clang 18.1.3 rejects
+  `auto [r, s]{a};` when `a` is an array. Clang 22, GCC, and EDG accept
+  the declaration. The provisional answer is that the declaration is
+  valid. See {question}`Q-0015`.
 - **SB-15, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
-  Clang and GCC reject it. The provisional answer is that it is rejected.
-  See {question}`Q-0016`.
+  Clang and GCC reject the declaration. The provisional answer is that
+  the declaration is rejected. See {question}`Q-0016`.
 - **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured
-  binding. Clang and GCC 16 reject it ({question}`Q-0107`).
+  binding. Clang and GCC 16 reject such a binding ({question}`Q-0107`).
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

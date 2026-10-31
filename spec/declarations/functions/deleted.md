@@ -10,18 +10,19 @@ function ({rule}`CTOR-2`, {rule}`CPY-4`, {rule}`DTOR-2`).
 :rules: DEL-1 DEL-2 DEL-3 DEL-5
 
 A deleted function is declared so that it can be chosen and then
-refused. It takes part in overload resolution like any function, and a
-use of it is an error, even in an operand that is never evaluated. The
-deletion is on the first declaration, so no earlier code could use the
-function, and it is the function's only definition.
+refused. The deleted function takes part in overload resolution like any
+function, and a use of the function is an error, even in an operand that
+is never evaluated. The deletion is on the first declaration, so no
+earlier code could use the function, and the deletion is the function's
+only definition.
 :::
 
 :::{principle} DEL-P2
 :rules: DEL-4
 
 `= default` asks the implementation for its own version of a function.
-Only the special members and the comparison operators can be
-defaulted, because the implementation knows how to write them.
+Only the special members and the comparison operators can be defaulted,
+because the implementation knows how to write them.
 :::
 
 ## Constraints
@@ -30,11 +31,11 @@ defaulted, because the implementation knows how to write them.
 :kind: reject
 :tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp
 
-A program must not refer to a deleted function. This applies also in an
-operand that is not evaluated, such as `decltype` or `sizeof`. A
-deleted function takes part in overload resolution
-*(overload resolution referenced)*. If
-overload resolution selects it, the program is not valid.
+A program must not refer to a deleted function, also in an operand that
+is not evaluated, such as `decltype` or `sizeof`. A deleted function
+takes part in overload resolution *(overload resolution referenced)*.
+If overload resolution selects a deleted function, the program is not
+valid.
 :::
 
 :::{rule} DEL-2
@@ -51,17 +52,17 @@ function must not have another definition. `main` must not be deleted
 :tests: declarations/functions/deleted/deleted-with-message.cpp
 
 `= delete` must not have a reason in parentheses. A later language
-version permits it ({question}`Q-0007`).
+version permits a reason ({question}`Q-0007`).
 :::
 
 :::{rule} DEL-4
 :kind: reject
 :tests: declarations/functions/deleted/default-non-member.cpp declarations/functions/deleted/defaulted-friend-comparison.cpp
 
-`= default` is permitted only on special member functions and
-comparison operators ({rule}`DCMP-3`). A defaulted comparison
-operator can be a friend that the class declares. Other functions that are
-not class members must not use `= default`.
+`= default` is permitted only on special member functions and comparison
+operators ({rule}`DCMP-3`). A defaulted comparison operator can be a
+friend that the class declares. Other functions that are not class
+members must not use `= default`.
 :::
 
 :::{rule} DEL-5
@@ -92,8 +93,8 @@ void h() = delete;         // rejected: not the first declaration
 The results are in `tests/RESULTS.md`.
 
 - DEL-2: GCC 14 accepts a deleted `main`. GCC 16, Clang, and EDG reject
-  it ({question}`Q-0023`).
-- DEL-3: Clang and GCC accept a reason as a newer-standard extension.
-  They reject it under `-pedantic-errors`.
+  a deleted `main` ({question}`Q-0023`).
+- DEL-3: Clang and GCC accept a reason as a newer-standard extension,
+  but reject a reason under `-pedantic-errors`.
 
 Inputs: clang-sema-declcxx, clang-diag-sema, edg-func-def.

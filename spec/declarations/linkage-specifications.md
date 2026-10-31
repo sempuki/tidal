@@ -17,11 +17,11 @@ definitions.
 :rules: LSP-1 LSP-2 LSP-3
 
 A linkage specification labels declarations with the language whose
-calling and naming conventions they use. It does not make a scope, so
-its braces hide nothing, and a declaration inside it means what it
-would mean outside. It labels functions and variables at namespace
-scope, and nothing else. The form without braces behaves as `extern`
-does.
+calling and naming conventions they use. The specification does not
+make a scope, so its braces hide nothing, and a declaration inside the
+braces means what the declaration would mean outside. A linkage
+specification labels functions and variables at namespace scope, and
+nothing else. The form without braces behaves as `extern` does.
 :::
 
 :::{principle} LSP-P2
@@ -37,10 +37,10 @@ the linker would see one symbol.
 :::{principle} LSP-P3
 :rules: LSP-5 LSP-6
 
-The implementation chooses the set of languages beyond C and C++ that
-it can link with. It also chooses whether a function's type records the
-language it is linked as. A program that must work everywhere treats
-a pointer to a C function as a type of its own.
+The implementation chooses the set of languages beyond C and C++ that it
+can link with. The implementation also chooses whether a function's type
+records the language that the function is linked as. A program that must
+work everywhere treats a pointer to a C function as a type of its own.
 :::
 
 ## Syntax
@@ -65,8 +65,9 @@ A linkage specification gives its language linkage to the functions and
 variables that it declares. In nested linkage specifications, the
 innermost applies. These rules apply:
 
-- A linkage specification can occur in a namespace. Its braces do not
-  make a scope, so names declared in them are visible after them.
+- A linkage specification can occur in a namespace. The braces of a
+  linkage specification do not make a scope, so names declared in the
+  braces are visible after the closing brace.
 - A `static` function in an `extern "C"` block has internal linkage.
 - Member functions of a class have C++ language linkage, also in an
   `extern "C"` block, so they can be overloaded.
@@ -89,9 +90,9 @@ occur in a block or a class. These rules also apply:
 :tests: declarations/linkage-specifications/block-form-defines.cpp declarations/linkage-specifications/single-form-declaration-only.cpp declarations/linkage-specifications/single-form-with-init-defines.cpp
 
 The form `extern "C" int x;` declares a variable and does not define it,
-as `extern` does. With an initializer, it defines the variable. A
+as `extern` does. With an initializer, the form defines the variable. A
 declaration in braces, such as `extern "C" { int y; }`, is a definition
-if it would be one without the braces.
+if the declaration would be a definition without the braces.
 :::
 
 :::{rule} LSP-4
@@ -141,9 +142,9 @@ support no others, and they reject an unknown language.
 :tests: declarations/linkage-specifications/c-function-pointer-assign.cpp declarations/linkage-specifications/function-type-linkage-overload.cpp
 
 Each implementation chooses if a function type records its language
-linkage ({question}`Q-0074`). If it does, a pointer to a C function and
-a pointer to a C++ function have different types. The first does not
-convert to the second.
+linkage ({question}`Q-0074`). If the implementation does, a pointer to a
+C function and a pointer to a C++ function have different types. The
+first does not convert to the second.
 :::
 
 ## Examples
@@ -163,8 +164,8 @@ extern "C" int c_add(double, double);  // rejected: C functions cannot overload
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 25 of
-29 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 25
+of 29 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`).

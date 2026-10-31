@@ -1,7 +1,7 @@
 # The conditional operator
 
-The operator `?:` evaluates a condition. Then it evaluates and gives one of
-two other operands, as the condition selects.
+The operator `?:` evaluates a condition. Then the operator evaluates and
+gives one of two other operands, as the condition selects.
 
 ## Principles
 
@@ -33,7 +33,8 @@ parentheses.
 :rules: COND-3 COND-4 COND-5 COND-11 COND-13
 
 Two operands have to give one result, with one type and one value
-category, and that is decided before either is evaluated.
+category, and the result type and category are decided before either
+operand is evaluated.
 
 - If both are lvalues of one type, the result is an lvalue, with the
   union of their cv-qualifiers.
@@ -117,9 +118,9 @@ operand is not valid.
 :kind: reject
 :tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp
 
-The second and third operands must have a common type by COND-3 or COND-4.
-If each of two class types converts to the other, the expression is
-ambiguous and not valid.
+The second and third operands must have a common type by COND-3 or
+COND-4. If each of two class types converts to the other, the expression
+is ambiguous and not valid.
 :::
 
 :::{rule} COND-6
@@ -167,7 +168,7 @@ must be valid, so a class with a deleted copy constructor is rejected.
 :tests: expressions/conditional/bitfield-address.cpp
 
 An lvalue result that refers to a bit-field operand ({rule}`BF-1`) has
-the limits of a bit-field. A program must not apply `&` to it.
+the limits of a bit-field. A program must not apply `&` to the result.
 :::
 
 :::{rule} COND-10
@@ -198,9 +199,9 @@ Two unrelated classes that both convert to `int` give an `int` prvalue.
 :kind: required
 :tests: expressions/conditional/only-selected-evaluated.cpp expressions/conditional/condition-first.cpp expressions/conditional/condition-side-effects-first.cpp
 
-The condition is evaluated first, with all its side effects. Then exactly
-one of the other operands is evaluated. The operand that is not selected
-is not evaluated.
+The condition is evaluated first, with all its side effects. Then
+exactly one of the other operands is evaluated. The operand that is not
+selected is not evaluated.
 :::
 
 :::{rule} COND-12
@@ -229,11 +230,11 @@ auto bad = c ? &x : 1;         // rejected: no common type
 All seven compilers agree on 36 of 37 tests. The results are in
 `tests/RESULTS.md`.
 
-- COND-6: Clang and GCC accept `a ?: b` as an extension. They reject it
-  under `-pedantic-errors`. EDG rejects it in all modes.
+- COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
+  form under `-pedantic-errors`. EDG rejects the form in all modes.
 - COND-3: operands of two different enumeration types give `int`. Clang
   and GCC warn that this use is deprecated.
 - COND-3: GCC rejects a conditional with the literal `0` and `nullptr`.
-  Clang and EDG accept it ({question}`Q-0102`).
+  Clang and EDG accept the conditional ({question}`Q-0102`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

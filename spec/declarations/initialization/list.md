@@ -36,11 +36,11 @@ first.
 
 - Inner braces can be left out where the values fill a member without
   ambiguity.
-- A member with no value in the list gets its default member
-  initializer or an empty list.
+- A member with no value in the list gets its default member initializer
+  or an empty list.
 - A designator names the member that a value goes to, in declaration
   order.
-- A list of one value of the aggregate's own type copies it.
+- A list of one value of the aggregate's own type copies that value.
 - Parentheses give the same initialization with one value per part and
   no elision.
 :::
@@ -48,8 +48,8 @@ first.
 :::{principle} LIST-P3
 :rules: LIST-6 LIST-15
 
-A character array is an aggregate of characters, so a string literal
-of the matching character type initializes it, with the terminating
+A character array is an aggregate of characters, so a string literal of
+the matching character type initializes the array, with the terminating
 null included.
 :::
 
@@ -70,8 +70,8 @@ null included.
 :kind: required
 :tests: declarations/initialization/list/scalar-braces.cpp
 
-A scalar can be initialized from braces that hold one expression, or from
-empty braces (INIT-2). LIST-11 lists what is not valid.
+A scalar can be initialized from braces that hold one expression, or
+from empty braces (INIT-2). LIST-11 lists what is not valid.
 :::
 
 :::{rule} LIST-11
@@ -98,10 +98,10 @@ conversions are narrowing:
 | Integer | An integer type that cannot hold all its values | The value is a constant that fits. |
 | Pointer or pointer to member | `bool` | Never |
 
-An unscoped enumeration without a fixed type counts as an integer source.
-A bit-field counts by its width, so a bit-field whose values all fit in
-the target is not narrowing ({question}`Q-0042`). The same conversions are
-permitted in parentheses (INIT-4).
+An unscoped enumeration without a fixed type counts as an integer
+source. A bit-field counts by its width, so a bit-field whose values all
+fit in the target is not narrowing ({question}`Q-0042`). The same
+conversions are permitted in parentheses (INIT-4).
 :::
 
 :::{rule} LIST-3
@@ -137,8 +137,8 @@ the member's type. LIST-13 lists what is not valid.
 :kind: reject
 :tests: declarations/initialization/list/empty-base-no-elision.cpp
 
-A member that is an empty aggregate, such as an empty base, must have its
-own braces if later values follow.
+A member that is an empty aggregate, such as an empty base, must have
+its own braces if later values follow.
 :::
 
 :::{rule} LIST-5
@@ -146,10 +146,10 @@ own braces if later values follow.
 :tests: declarations/initialization/list/designated.cpp declarations/initialization/list/designated-nested-braces.cpp declarations/initialization/list/union-designator.cpp
 
 A braced list for a class aggregate can name members with `.member =` or
-`.member {...}`. Members without a designator get values as LIST-3 gives.
-For a union, one designator selects the member to initialize. Without a
-designator, the first member of the union is initialized. LIST-14 lists
-what is not valid.
+`.member {...}`. Members without a designator get values as LIST-3
+gives. For a union, one designator selects the member to initialize.
+Without a designator, the first member of the union is initialized.
+LIST-14 lists what is not valid.
 :::
 
 :::{rule} LIST-14
@@ -226,10 +226,10 @@ is evaluated completely before the next value starts.
 :tests: declarations/initialization/list/aggregate-missing-members-zero.cpp declarations/initialization/list/aggregate-default-member-initializer.cpp declarations/initialization/list/missing-class-member-default.cpp
 
 A member without a value in the list is initialized from its default
-member initializer. If it has none, it is initialized from an empty
-braced list. A scalar member becomes zero. A member of class type gets
-its default constructor ({rule}`CTOR-2`). LIST-16 lists what is not
-valid.
+member initializer. If the member has no default member initializer, the
+member is initialized from an empty braced list. A scalar member becomes
+zero. A member of class type gets its default constructor
+({rule}`CTOR-2`). LIST-16 lists what is not valid.
 :::
 
 :::{rule} LIST-10
@@ -276,9 +276,9 @@ char8_t k[] = "x";        // rejected: wrong character type
 All seven compilers agree on 53 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
-- **LIST-14.** Clang accepts array designators, chained designators, and a
-  mix of designated and plain values as C99 extensions. It rejects them
-  only under `-pedantic-errors`. GCC and EDG reject them.
+- **LIST-14.** Clang accepts array designators, chained designators, and
+  a mix of designated and plain values as C99 extensions, and rejects
+  them only under `-pedantic-errors`. GCC and EDG reject them.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

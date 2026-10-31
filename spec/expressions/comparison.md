@@ -24,8 +24,8 @@ three groups, and each group associates to the left:
    binds less tightly
 ```
 
-So `a < b < c` compares a `bool` with `c`. The two operands are not ordered
-with respect to each other ({rule}`SEQ-8`).
+So `a < b < c` compares a `bool` with `c`. The two operands are not
+ordered with respect to each other ({rule}`SEQ-8`).
 :::
 
 :::{principle} CMP-P2
@@ -61,11 +61,11 @@ Pointers have an order only inside one thing:
 Outside one thing there is no order, so a relational comparison of
 pointers to unrelated objects gives an unspecified result, and the two
 directions need not even agree. Two pointers are equal when they hold
-one address, which happens for different objects too, for example an
-object and its first member. A pointer past the end of one object can
-hold the address of the next object in memory, and whether that compares
-equal is unspecified. Two pointers to members are equal when they select
-the same member of the same subobject.
+one address. Pointers to different objects can hold one address too, for
+example an object and its first member. A pointer past the end of one
+object can hold the address of the next object in memory, and whether
+the two pointers compare equal is unspecified. Two pointers to members
+are equal when they select the same member of the same subobject.
 :::
 
 :::{principle} CMP-P4
@@ -87,7 +87,7 @@ greater than anything. So every comparison with a NaN is `false`, except
 | `partial_ordering` | Some values are unordered, or equal values can differ | Floating-point types, with NaN as the unordered case |
 
 Because `<=>` stands in for all six comparisons, its operands must be
-comparable without loss. These are rejected:
+comparable without loss. These operand forms are rejected:
 
 - a narrowing conversion,
 - a `bool` against another type,
@@ -101,8 +101,8 @@ not apply to them.
 :::{principle} CMP-P6
 :rules: CMP-4 CMP-14 CMP-16 CMP-21
 
-An implementation should warn where a comparison is valid and almost
-surely wrong. These cases are:
+An implementation should warn about these comparisons, which are valid
+and almost surely wrong:
 
 - a signed operand converted to unsigned,
 - a chained comparison,
@@ -126,8 +126,9 @@ surely wrong. These cases are:
 :tests: expressions/comparison/grouping.cpp expressions/comparison/chained-comparison.cpp
 
 `<=>` binds more tightly than the relational operators. The relational
-operators bind more tightly than `==` and `!=`. Each group associates from
-left to right. In `a < b < c`, the value of `a < b` is compared with `c`.
+operators bind more tightly than `==` and `!=`. Each group associates
+from left to right. In `a < b < c`, the value of `a < b` is compared
+with `c`.
 :::
 
 :::{rule} CMP-2
@@ -143,9 +144,9 @@ equality operator is a prvalue of type `bool`.
 :kind: required
 :tests: expressions/comparison/pointer-void.cpp expressions/comparison/pointer-qualification.cpp
 
-Two pointers can be compared if one converts to the type of the other. The
-conversion can add {term}`cv-qualifiers <cv-qualifier>` or convert to
-`void*`. A pointer can be compared with `nullptr` for equality.
+Two pointers can be compared if one converts to the type of the other.
+The conversion can add {term}`cv-qualifiers <cv-qualifier>` or convert
+to `void*`. A pointer can be compared with `nullptr` for equality.
 :::
 
 :::{rule} CMP-9
@@ -234,7 +235,8 @@ These operands of `<=>` are not valid:
 
 `<=>` must not compare two different unscoped enumeration types, or an
 unscoped enumeration and a floating-point value. An unscoped enumeration
-and an integer are valid ({question}`Q-0050` for the floating-point case).
+and an integer are valid ({question}`Q-0050` for the floating-point
+case).
 :::
 
 :::{rule} CMP-19
@@ -244,7 +246,7 @@ and an integer are valid ({question}`Q-0050` for the floating-point case).
 Equality comparison is valid for these pointer operands:
 
 - pointers whose types differ in cv-qualifiers at any level. The
-  comparison uses a type that adds `const` where it is needed.
+  comparison uses a type that adds `const` where `const` is needed.
 - a pointer to a derived class and a pointer to its base class, after
   CONV-14,
 - two values of the type of `nullptr`, which compare equal,
@@ -279,9 +281,9 @@ If an operand is a NaN, `<`, `>`, `<=`, `>=`, and `==` give `false`.
 Pointers to elements of the same array compare in the order of their
 indexes. A pointer one past the last element is greater than all element
 pointers. Pointers to data members of one object compare in the order of
-the member declarations (CLS-10). The order also applies to pointers into
-these subobjects, for example into two elements or two members. Constant
-evaluation can do these comparisons.
+the member declarations (CLS-10). The order also applies to pointers
+into these subobjects, for example into two elements or two members.
+Constant evaluation can do these comparisons.
 :::
 
 :::{rule} CMP-15
@@ -323,7 +325,7 @@ pointers to members.
 
 If no rule orders two pointers, each relational operator and `<=>` gives
 an unspecified result. The results of `a < b` and `a > b` need not
-agree. This applies to pointers to these:
+agree. This rule applies to pointers to:
 
 - unrelated objects or functions,
 - members of a union,
@@ -338,9 +340,9 @@ unrelated objects or functions is not a constant expression.
 :tests: expressions/comparison/one-past-end-adjacent-constant.cpp expressions/comparison/one-past-end-adjacent.cpp
 
 A pointer one past the end of one object can compare equal or not equal
-to a pointer to another object that follows it in memory. The result is
-unspecified. During constant evaluation, the comparison is rejected
-({question}`Q-0051`).
+to a pointer to another object that follows the first object in memory.
+The result is unspecified. During constant evaluation, the comparison is
+rejected ({question}`Q-0051`).
 :::
 
 ## Recommended Practice
@@ -350,7 +352,8 @@ unspecified. During constant evaluation, the comparison is rejected
 :tests: expressions/comparison/sign-compare-warns.cpp expressions/comparison/sign-compare-cast.cpp
 
 An implementation should warn when a comparison converts a signed
-operand to an unsigned type. An explicit cast should silence the warning.
+operand to an unsigned type. An explicit cast should silence the
+warning.
 :::
 
 :::{rule} CMP-14
@@ -374,7 +377,7 @@ An implementation should warn when a comparison has two array operands.
 
 An implementation should warn about a comparison between two different
 enumeration types, and between an unscoped enumeration and a
-floating-point value. Both are deprecated.
+floating-point value. Both comparisons are deprecated.
 :::
 
 ## Examples
@@ -397,38 +400,41 @@ int a, b;
 ## Evidence
 
 The results are in `tests/RESULTS.md`. The `<=>` tests declare a minimal
-`std::strong_ordering`, `std::weak_ordering`, and `std::partial_ordering`,
-because tests include no headers. EDG needs `std::weak_ordering` declared
-even for integer operands.
+`std::strong_ordering`, `std::weak_ordering`, and
+`std::partial_ordering`, because tests include no headers. EDG needs
+`std::weak_ordering` declared even for integer operands.
 
 - CMP-8: for pointers to two members of a union, or to an empty member
   and its neighbor, all three implementations give a result during
   constant evaluation. Only the unrelated-object case is rejected there.
 - CMP-1: Clang 22 rejects a chained comparison by default as a
-  `-Wparentheses` error. It accepts the comparison when that warning is
-  off. Clang 18, GCC, and EDG accept it ({question}`Q-0029`).
-- CMP-8: all compilers reject the comparison of unrelated pointers during
-  constant evaluation. A function name followed by `<` starts a template
-  argument list, so the function-pointer test puts each operand in
-  parentheses.
+  `-Wparentheses` error. Clang 22 accepts the comparison when that
+  warning is off. Clang 18, GCC, and EDG accept a chained
+  comparison ({question}`Q-0029`).
+- CMP-8: all compilers reject the comparison of unrelated pointers
+  during constant evaluation. A function name followed by `<` starts a
+  template argument list, so the function-pointer test puts each operand
+  in parentheses.
 - CMP-9 and CMP-13: EDG accepts an ordered comparison or `<=>` between a
   pointer and the literal `0`. Clang and GCC reject both
   ({question}`Q-0030`).
 - CMP-11 and CMP-16: Clang and GCC warn that array comparison is
-  deprecated. In strict C++23 mode they accept it.
+  deprecated. In strict C++23 mode both accept array comparison.
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
-  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives no
-  warning for a chained comparison of variables ({question}`Q-0029`).
-- CMP-9: EDG accepts a relational comparison of a pointer with `nullptr`,
-  as with `0` ({question}`Q-0030`).
+  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives
+  no warning for a chained comparison of variables ({question}`Q-0029`).
+- CMP-9: EDG accepts a relational comparison of a pointer with
+  `nullptr`, as with `0` ({question}`Q-0030`).
 - CMP-18: EDG accepts `<=>` between an unscoped enumeration and a
-  floating-point value. Clang and GCC reject it ({question}`Q-0050`).
-- CMP-20: Clang and GCC reject the comparison during constant evaluation.
-  EDG accepts it ({question}`Q-0051`).
+  floating-point value. Clang and GCC reject the comparison
+  ({question}`Q-0050`).
+- CMP-20: Clang and GCC reject the comparison during constant
+  evaluation. EDG accepts the comparison ({question}`Q-0051`).
 - CMP-15: EDG evaluates the comparison of a class object and its first
   member, after conversion to `void*`, to `false`. Clang and GCC give
   `true` ({question}`Q-0104`).
-- CMP-9: EDG accepts a relational comparison of two values of the type of
-  `nullptr`. Clang and GCC reject it ({question}`Q-0103`).
+- CMP-9: EDG accepts a relational comparison of two values of the type
+  of `nullptr`. Clang and GCC reject the comparison
+  ({question}`Q-0103`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -1,8 +1,8 @@
 # Pointers to members
 
 A pointer to member refers to a non-static member of a class, without an
-object. The operators `.*` and `->*` apply it to an object. This page
-covers:
+object. The operators `.*` and `->*` apply a pointer to member to an
+object. This page covers:
 
 - pointer-to-member declarators,
 - the expressions that form them,
@@ -18,27 +18,28 @@ virtual functions.
 :::{principle} MPTR-P1
 :rules: MPTR-1 MPTR-8 MPTR-2 MPTR-9
 
-A pointer to member names a member without naming an object. Its type
-therefore records the class and the type of the member, and the class
-can be incomplete because nothing is accessed through the type
-alone. Only a non-static member can be named this way. A static member
-is an ordinary object or function, so `&` on it gives an ordinary
-pointer, and so does a member function with an explicit object
-parameter. The form `&C::m` with a qualified name is the only way to
-make one, because only that form says which class the member belongs to
-without supplying an object.
+A pointer to member names a member without naming an object. The type
+of a pointer to member therefore records the class and the type of the
+member, and the class can be incomplete because nothing is accessed
+through the type alone. Only a non-static member can be named this way.
+A static member is an ordinary object or function, so `&` on a static
+member gives an ordinary pointer, and so does a member function with an
+explicit object parameter. The form `&C::m` with a qualified name is the
+only way to make a pointer to member, because only that form says which
+class the member belongs to without supplying an object.
 :::
 
 :::{principle} MPTR-P2
 :rules: MPTR-3 MPTR-10
 
 `.*` and `->*` supply the missing object. The result is the member as if
-it had been accessed on that object: it takes its value category and its
-cv-qualifiers from the object, and a virtual function dispatches on the
-object's dynamic type. The object must be of the member's class or a
-class derived from it, because only those objects have the member. A
-pointer to member function names no object by itself, so its result
-exists only to be called.
+the member had been accessed on that object. The result takes its value
+category and its cv-qualifiers from the object, and a virtual function
+dispatches on the object's dynamic type. The object must be of the
+member's class or a class derived from the member's class, because only
+those objects have the member. A pointer to member function names no
+object by itself, so the result of applying the pointer exists only to
+be called.
 :::
 
 :::{principle} MPTR-P3
@@ -90,9 +91,9 @@ operators.
 :tests: expressions/member-pointers/declare-alias.cpp expressions/member-pointers/declare-cv.cpp expressions/member-pointers/declare-data.cpp expressions/member-pointers/declare-function.cpp expressions/member-pointers/declare-incomplete.cpp
 
 A pointer to member has a class and a member type. The class can be
-incomplete at the declaration. cv-qualifiers can apply to the member type
-and to the pointer itself. A type alias can name a pointer-to-member
-type.
+incomplete at the declaration. cv-qualifiers can apply to the member
+type and to the pointer itself. A type alias can name a
+pointer-to-member type.
 :::
 
 :::{rule} MPTR-8
@@ -108,9 +109,9 @@ must not be a reference or `void`.
 :tests: expressions/member-pointers/form-overloaded-target.cpp expressions/member-pointers/form-parenthesized-not-member-pointer.cpp expressions/member-pointers/form-static-ordinary-pointer.cpp expressions/member-pointers/form-type.cpp expressions/member-pointers/base-member-type.cpp expressions/member-pointers/explicit-object-ordinary-pointer.cpp
 
 `&C::m` gives a pointer to member if `m` is a non-static member of `C`.
-Its type is `T C::*` for a data member of type `T`, or a pointer to
-member function with the parameters and qualifiers of `m`. These cases
-have their own rules:
+The type of the pointer is `T C::*` for a data member of type `T`, or a
+pointer to member function with the parameters and qualifiers of `m`.
+These cases have their own rules:
 
 - For a static member, `&C::m` gives an ordinary pointer.
 - With parentheses, `&(C::m)` gives an ordinary pointer to the member
@@ -139,15 +140,19 @@ are not valid:
 :kind: required
 :tests: expressions/member-pointers/arrow-star.cpp expressions/member-pointers/call-const-on-nonconst.cpp expressions/member-pointers/constexpr-use.cpp expressions/member-pointers/derived-object.cpp expressions/member-pointers/incomplete-object.cpp expressions/member-pointers/precedence.cpp expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp expressions/member-pointers/result-const.cpp expressions/member-pointers/result-lvalue.cpp expressions/member-pointers/result-xvalue.cpp expressions/member-pointers/virtual-call.cpp expressions/member-pointers/mutable-direct-ok.cpp
 
-`o.*p` applies the pointer to member `p` to the object `o`. `q->*p` is
-`(*q).*p`. The class of `o` must be the class of `p` or derived from it,
-and it can be incomplete if it is the same class. For a data member, the
-result has the member type with the cv-qualifiers of `o`, also for a
-`mutable` member. It is an lvalue
-if `o` is an lvalue and an xvalue if not. For a member function, the
-result can only be called, as `(o.*p)(args)`. The call uses the final
-overrider of a virtual function. Constant evaluation can use both
-operators.
+`o.*p` applies the pointer to member `p` to the object `o`, and `q->*p`
+is `(*q).*p`. These rules apply:
+
+- The class of `o` must be the class of `p` or derived from the class of
+  `p`. The class of `o` can be incomplete if the two classes are the
+  same.
+- For a data member, the result has the member type with the
+  cv-qualifiers of `o`, also for a `mutable` member. The result is an
+  lvalue if `o` is an lvalue and an xvalue if not.
+- For a member function, the result can only be called, as
+  `(o.*p)(args)`. The call uses the final overrider of a virtual
+  function.
+- Constant evaluation can use both operators.
 :::
 
 :::{rule} MPTR-10
@@ -163,8 +168,8 @@ These uses of `.*` and `->*` are not valid:
 - a result of a member function pointer that is not called,
 - a call that removes a cv-qualifier of the object,
 - a write through `.*` to a `mutable` member of a `const` object,
-- a call on an rvalue with a function qualified `&`, or on an lvalue with
-  a function qualified `&&`.
+- a call on an rvalue with a function qualified `&`, or on an lvalue
+  with a function qualified `&&`.
 
 A function qualified `const&` can be called on an rvalue.
 :::
@@ -232,8 +237,8 @@ comparisons that are valid.
 The behavior is undefined in these cases:
 
 - `.*` or `->*` with a null pointer to member,
-- `.*` or `->*` with an object that does not have the member, for example
-  after a `static_cast` from a member of a derived class.
+- `.*` or `->*` with an object that does not have the member, for
+  example after a `static_cast` from a member of a derived class.
 :::
 
 ## Implementation Requirements
@@ -244,7 +249,7 @@ The behavior is undefined in these cases:
 
 If both operands point to member functions and either points to a
 virtual function, the result of `==` or `!=` is unspecified. A program
-must not rely on it.
+must not rely on the result.
 :::
 
 ## Examples
@@ -265,6 +270,7 @@ int Point3::* any = &Point::x;     // base to derived: implicit
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on all 66 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on all
+66 tests.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

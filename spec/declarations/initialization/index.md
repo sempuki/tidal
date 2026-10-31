@@ -1,6 +1,7 @@
 # Initialization
 
-Initialization gives an object its first value. These pages give the rules for each form of initialization.
+Initialization gives an object its first value. These pages give the
+rules for each form of initialization.
 
 :::{tidal-pages}
 forms

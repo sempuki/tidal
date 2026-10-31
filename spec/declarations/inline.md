@@ -1,8 +1,8 @@
 # The inline specifier
 
-`inline` lets a program define a function or variable in each translation
-unit that uses it. All these definitions are one entity. This page
-covers:
+`inline` lets a program define a function or variable in each
+translation unit that uses the entity. All these definitions are one
+entity. This page covers:
 
 - where `inline` can occur,
 - which declarations are inline without the keyword,
@@ -21,11 +21,12 @@ definitions and members.
 :rules: INL-1 INL-5 INL-6 INL-7
 
 `inline` means that each translation unit that uses an entity defines
-it, and that all the definitions are one entity ({principle}`STO-P4`).
-These rules follow from that.
+the entity, and that all the definitions are one entity
+({principle}`STO-P4`). These rules follow from the principle.
 
 - A unit that uses the entity must define it, because no other unit's
-  definition is promised. A unit that does not use it need not.
+  definition is promised. A unit that does not use the entity need not
+  define it.
 - Every unit must agree that the entity is `inline`, and the
   definitions must match, because a static local variable inside an
   inline function is still one object for the program.
@@ -37,9 +38,9 @@ These rules follow from that.
 :rules: INL-2
 
 `inline` has a meaning only for a function or a variable with static
-storage, so it belongs nowhere else. It is a promise about definitions,
-so it must come no later than the definition, and a unit defines an
-inline function once.
+storage, so the keyword belongs nowhere else. `inline` is a promise
+about definitions, so the keyword must come no later than the
+definition, and a unit defines an inline function once.
 :::
 
 :::{principle} INL-P3
@@ -52,8 +53,9 @@ that sees the class, so it is inline without the keyword:
 - `constexpr` members,
 - the special members the implementation writes.
 
-A static data member can join them by being declared `inline` in the
-class, and then needs no definition outside it.
+A static data member can join these definitions by being declared
+`inline` in the class. The member then needs no definition outside the
+class.
 :::
 
 ## Syntax
@@ -94,7 +96,8 @@ duration. These rules apply:
 - a declaration of a function after its definition
   ({question}`Q-0068`).
 
-An inline function must not be defined two times in one translation unit.
+An inline function must not be defined two times in one translation
+unit.
 :::
 
 :::{rule} INL-3
@@ -115,10 +118,14 @@ These declarations are inline without the keyword:
 :tests: declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp declarations/inline/inline-nonconst-static-member-out-of-class.cpp
 
 An inline static data member is defined in its class, with its
-initializer. It needs no definition outside the class. A static data
-member declared in its class can also be defined `inline` outside it. A
-static data member that is not inline needs one definition outside its
-class if it is used. INL-8 states what its type must be.
+initializer, and needs no definition outside the class. These rules
+also apply:
+
+- A static data member declared in its class can also be defined
+  `inline` outside the class.
+- A static data member that is not inline needs one definition outside
+  its class if the member is used.
+- INL-8 states what the type of an inline static data member must be.
 :::
 
 :::{rule} INL-8
@@ -137,7 +144,7 @@ definition in the class.
 
 A static local variable of an inline function with external linkage is
 one object in the program. All translation units that call the function
-share it.
+share the object.
 :::
 
 ## Implementation Requirements
@@ -157,7 +164,7 @@ missing definition before linking.
 
 If a function or variable with external linkage is `inline` in one
 translation unit, it must be `inline` in each translation unit that
-declares it. LNK-6 requires its definitions to match. An implementation
+declares it. LNK-6 requires the definitions to match. An implementation
 need not diagnose a violation of either rule.
 :::
 
@@ -177,16 +184,17 @@ struct Config {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 33 of
-34 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 33
+of 34 tests.
 
 - INL-2: GCC accepts `inline` on a declaration after the definition.
-  Clang and EDG reject it ({question}`Q-0068`).
+  Clang and EDG reject the declaration ({question}`Q-0068`).
 - INL-1: all compilers accept an `inline` friend declaration that is
   not a definition.
 - INL-7: the test with two different definitions accepts either body.
 - INL-6: EDG reports a used inline function with no definition during
-  translation. Clang and GCC report it when linking. All three report a
-  used inline variable with no definition during translation.
+  translation. Clang and GCC report the missing definition when linking.
+  All three report a used inline variable with no definition during
+  translation.
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

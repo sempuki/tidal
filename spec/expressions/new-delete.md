@@ -10,9 +10,9 @@ object and frees its storage.
 :rules: NEW-1 NEW-2 NEW-7 NEW-11 NEW-9 NEW-12 NEW-3 NEW-16 NEW-17 NEW-18
 
 `new` creates an object whose life does not depend on any scope
-({principle}`OBJ-P2`). It first obtains storage and then initializes
-the object in it, so the allocation happens before the initializer's
-arguments are evaluated. `delete` reverses the two steps:
+({principle}`OBJ-P2`). `new` first obtains storage and then initializes
+the object in the storage, so the allocation happens before the
+initializer's arguments are evaluated. `delete` reverses the two steps:
 
 ```text
    new      obtain storage --> evaluate the initializer's arguments
@@ -21,11 +21,10 @@ arguments are evaluated. `delete` reverses the two steps:
    delete   destroy the object --> free the storage
 ```
 
-The object
-must have a complete object type, because its size and its constructor
-are needed, and an array can have a size known only at run time. An
-object that `new` leaves without an initializer has no value, as any
-object does before its first write ({principle}`OBJ-P4`).
+The object must have a complete object type, because its size and its
+constructor are needed, and an array can have a size known only at run
+time. An object that `new` leaves without an initializer has no value,
+as any object does before its first write ({principle}`OBJ-P4`).
 :::
 
 :::{principle} NEW-P2
@@ -41,27 +40,29 @@ A `delete` must match its `new` in these ways:
 
 A null pointer has no object, so deleting it does nothing. The operand
 needs a pointer to an object type, or a class object that converts to
-one, so that the implementation knows which destructor to run.
+such a pointer, so that the implementation knows which destructor to
+run.
 :::
 
 :::{principle} NEW-P3
 :rules: NEW-10 NEW-13 NEW-14
 
-The storage comes from an allocation function, and a program can
-supply its own: for one class, through its member `operator new` and
-`operator delete`, or with extra placement arguments. `::new` reaches
-past a class's own functions to the global ones. The implementation
-chooses how often the global functions are called, because a program
-only ever sees the objects. So two `new` expressions may share one
-allocation.
+The storage comes from an allocation function. A program can supply its
+own allocation functions for one class, through the member
+`operator new` and `operator delete` of the class, or with extra
+placement arguments. `::new` reaches past a class's own functions to the
+global ones. The implementation chooses how often the global functions
+are called, because a program only ever sees the objects. So two `new`
+expressions may share one allocation.
 :::
 
 :::{principle} NEW-P4
 :rules: NEW-6
 
-Constant evaluation can use `new`, since it runs the same program
-({principle}`TR-P4`), and nothing can outlive the evaluation, so each
-object made in it must be deleted before it ends.
+Constant evaluation can use `new`, since constant evaluation runs the
+same program ({principle}`TR-P4`). Nothing can outlive the evaluation,
+so each object made during the evaluation must be deleted before the
+evaluation ends.
 :::
 
 ## Syntax
@@ -126,16 +127,16 @@ These conditions apply to `new T[n]` (NEW-2):
 :kind: reject
 :tests: expressions/new-delete/leak-in-constant-evaluation.cpp
 
-During {term}`constant evaluation`, each object that `new` creates must be
-deleted before the evaluation ends.
+During {term}`constant evaluation`, each object that `new` creates must
+be deleted before the evaluation ends.
 :::
 
 :::{rule} NEW-7
 :kind: reject
 :tests: expressions/new-delete/abstract-type.cpp expressions/new-delete/function-type.cpp expressions/new-delete/incomplete-type.cpp expressions/new-delete/new-void.cpp expressions/new-delete/reference-type.cpp
 
-The type in a `new` expression must be a complete object type. It must
-not be one of these:
+The type in a `new` expression must be a complete object type. The type
+must not be one of these:
 
 - `void`,
 - an incomplete type,
@@ -149,8 +150,8 @@ not be one of these:
 :tests: expressions/new-delete/delete-non-pointer.cpp expressions/new-delete/delete-void-pointer.cpp expressions/new-delete/delete-incomplete-class.cpp expressions/new-delete/delete-pointer-to-const.cpp
 
 `delete` needs a pointer to an object type. A `void*` operand is not
-valid ({question}`Q-0035`). A pointer to an incomplete class and a pointer
-to a `const` object are valid.
+valid ({question}`Q-0035`). A pointer to an incomplete class and a
+pointer to a `const` object are valid.
 :::
 
 :::{rule} NEW-10
@@ -158,9 +159,9 @@ to a `const` object are valid.
 :tests: expressions/new-delete/placement-arguments.cpp expressions/new-delete/parenthesized-type.cpp
 
 A `new` expression can pass placement arguments in parentheses before
-the type, as in `new (a) T`. They become extra arguments of the
-allocation function. The type can also be in parentheses, as in
-`new (int)`.
+the type, as in `new (a) T`. The placement arguments become extra
+arguments of the allocation function. The type can also be in
+parentheses, as in `new (int)`.
 :::
 
 :::{rule} NEW-11
@@ -179,9 +180,9 @@ A `new` expression must not:
 :kind: required
 :tests: expressions/new-delete/class-allocation-function.cpp
 
-A class can declare its own `operator new` and `operator delete`. A `new`
-or `delete` for that class uses them. `::new` and `::delete` use the
-global functions.
+A class can declare its own `operator new` and `operator delete`. A
+`new` or `delete` for that class uses those functions. `::new` and
+`::delete` use the global functions.
 :::
 
 :::{rule} NEW-15
@@ -227,7 +228,8 @@ initializer are evaluated.
 :tests: expressions/new-delete/uninitialized-read.cpp expressions/new-delete/uninitialized-write-then-read.cpp
 
 An object that `new T` creates without an initializer has no value. If
-the program reads it before it writes it, the behavior is undefined.
+the program reads the object before writing the object, the behavior is
+undefined.
 :::
 
 :::{rule} NEW-5
@@ -283,19 +285,21 @@ delete n;                       // does nothing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 44 of
-47 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 44
+of 47 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
   NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.
 - NEW-3, NEW-5, NEW-6: all compilers reject these cases during constant
   evaluation and name the cause.
-- NEW-2: Clang and EDG convert a floating size such as `1.5` to `1`. Clang
-  warns. GCC rejects it ({question}`Q-0036`).
-- NEW-5: GCC accepts `delete[]` of a derived array through a base pointer
-  during constant evaluation. Clang and EDG reject it ({question}`Q-0091`).
-- NEW-8: GCC accepts `delete` of a `void*` with a warning that it is
-  undefined. Clang (pedantic) and EDG reject it ({question}`Q-0035`).
+- NEW-2: Clang and EDG convert a floating size such as `1.5` to `1`.
+  Clang warns. GCC rejects such a size ({question}`Q-0036`).
+- NEW-5: GCC accepts `delete[]` of a derived array through a base
+  pointer during constant evaluation. Clang and EDG reject it
+  ({question}`Q-0091`).
+- NEW-8: GCC accepts `delete` of a `void*` with a warning that the
+  deletion is undefined. Clang (pedantic) and EDG reject it
+  ({question}`Q-0035`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

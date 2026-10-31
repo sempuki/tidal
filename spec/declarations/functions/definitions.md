@@ -12,37 +12,37 @@ A function definition gives the body of a function. This page covers:
 :::{principle} FN-P1
 :rules: FN-2 FN-14 FN-9 FN-12
 
-A function can be declared many times and defined once in a
-translation unit ({principle}`TR-P2`). A definition is the whole
-function, so it needs complete types for its parameters and its return
-value, where a declaration can leave them incomplete. A definition
-stands at namespace scope or in a class, never inside another function.
+A function can be declared many times and defined once in a translation
+unit ({principle}`TR-P2`). A definition is the whole function, so the
+definition needs complete types for its parameters and its return value,
+where a declaration can leave them incomplete. A definition stands at
+namespace scope or in a class, never inside another function.
 :::
 
 :::{principle} FN-P2
 :rules: FN-1 FN-13 FN-10
 
 A parameter is a local variable of the outermost block of the body,
-declared by the caller's argument. So the body cannot declare its name
-again at that level ({principle}`NAM-P1`), and a nested block can. The
-implementation chooses whether the parameter object ends when the
-function returns or when the caller's full expression ends.
+declared by the caller's argument. So the body cannot declare the
+parameter's name again at that level ({principle}`NAM-P1`), and a nested
+block can. The implementation chooses whether the parameter object ends
+when the function returns or when the caller's full expression ends.
 :::
 
 :::{principle} FN-P3
 :rules: FN-3 FN-7 FN-8
 
-A function that promises a value must return one. If control reaches
-the end of its body, there is no value, and the behavior is undefined.
-As an exception, reaching the end of `main` returns zero.
+A function that promises a value must return one. If control reaches the
+end of its body, there is no value, and the behavior is undefined. As an
+exception, reaching the end of `main` returns zero.
 :::
 
 :::{principle} FN-P4
 :rules: FN-4 FN-6
 
 `main` is the program's entry point ({principle}`TR-P3`) and nothing
-else, so it keeps a fixed shape and the program cannot treat it as an
-ordinary function. The two parameter lists that every implementation
+else, so `main` keeps a fixed shape and the program cannot treat it as
+an ordinary function. The two parameter lists that every implementation
 accepts carry the program's arguments.
 :::
 
@@ -107,8 +107,8 @@ The function `main` in the global namespace:
 - must not be called or have its address taken by the program.
 
 A global variable must not have the name `main`. A function `main` in
-another namespace is an ordinary function, and it must not have C
-language linkage ({question}`Q-0076`).
+another namespace is an ordinary function, and such a function must not
+have C language linkage ({question}`Q-0076`).
 :::
 
 :::{rule} FN-5
@@ -116,7 +116,7 @@ language linkage ({question}`Q-0076`).
 :tests: declarations/functions/definitions/func-predefined.cpp declarations/functions/definitions/func-outside-function.cpp
 
 In a function body, `__func__` is a static array of `const char`. FN-11
-gives its contents. `__func__` must not occur outside a
+gives the contents of the array. `__func__` must not occur outside a
 function body ({question}`Q-0022`).
 :::
 
@@ -124,7 +124,7 @@ function body ({question}`Q-0022`).
 :kind: reject
 :tests: declarations/functions/definitions/nested-function-definition.cpp
 
-A function definition must be at namespace scope or in a class. It must
+A function definition must be at namespace scope or in a class, and must
 not be inside a function body.
 :::
 
@@ -157,8 +157,8 @@ null pointer.
 :tests: declarations/functions/definitions/flow-off-end-value.cpp declarations/functions/definitions/flow-off-end-not-reached.cpp declarations/functions/definitions/flow-off-end-void.cpp declarations/functions/definitions/flow-off-end-sanitizer.cpp
 
 If control reaches the end of a function that returns a value, the
-behavior is undefined. This does not apply to `main` (FN-8). A function
-that returns `void` returns normally at the end.
+behavior is undefined. The rule does not apply to `main` (FN-8). A
+function that returns `void` returns normally at the end.
 :::
 
 ## Implementation Requirements
@@ -168,10 +168,10 @@ that returns `void` returns normally at the end.
 :tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp foundations/translation/main-wrong-parameter-types.cpp
 
 An implementation accepts `main` with the parameter lists `()` and
-`(int, char**)`. It is implementation-defined if it accepts other
-parameter lists ({question}`Q-0024`). If `argc` is greater than zero,
-`argv[0]` points to the name used to start the program or to an empty
-string.
+`(int, char**)`. Acceptance of other parameter lists is
+implementation-defined ({question}`Q-0024`). If `argc` is greater than
+zero, `argv[0]` points to the name used to start the program or to an
+empty string.
 :::
 
 :::{rule} FN-10
@@ -179,8 +179,8 @@ string.
 :tests: declarations/functions/definitions/parameter-destruction-order.cpp
 
 Each implementation chooses the time at which a parameter object ends:
-either as the called function returns, or later, when the caller finishes
-the statement or expression that holds the call. The choice is
+either as the called function returns, or later, when the caller
+finishes the statement or expression that holds the call. The choice is
 implementation-defined. VC-10 states the same choice from the caller's
 side.
 :::
@@ -190,7 +190,8 @@ side.
 :tests: declarations/functions/definitions/func-name-impl.cpp
 
 The string in `__func__` is implementation-defined. On the
-implementations in the matrix it is the plain name of the function.
+implementations in the matrix the string is the plain name of the
+function.
 :::
 
 ## Recommended Practice
@@ -233,7 +234,7 @@ All seven compilers agree on 33 of 38 tests. The results are in
 - FN-4: Clang and GCC reject calls to `main` and its address only as
   pedantic diagnostics. EDG rejects them in all modes.
 - FN-5: Clang accepts `__func__` outside a function with a warning. GCC
-  and EDG reject it ({question}`Q-0022`).
+  and EDG reject such a use ({question}`Q-0022`).
 - FN-6: GCC rejects `(int)` under `-pedantic-errors`. EDG accepts
   `(double)` and four parameters. All compilers accept three parameters
   ({question}`Q-0024`).
@@ -241,7 +242,8 @@ All seven compilers agree on 33 of 38 tests. The results are in
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-4: GCC 14 and Clang 18 accept `main` with C language linkage in a
-  namespace. GCC 16, Clang 22, and EDG reject it ({question}`Q-0076`).
+  namespace. GCC 16, Clang 22, and EDG reject such a `main`
+  ({question}`Q-0076`).
 
-Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt, clang-diag-
-sema, edg-func-def.
+Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt,
+clang-diag-sema, edg-func-def.

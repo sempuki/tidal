@@ -1,7 +1,7 @@
 # Forms of initialization
 
-An initializer gives a variable its first value. This page covers scalars
-and arrays. Initialization by constructors is on the page on
+An initializer gives a variable its first value. This page covers
+scalars and arrays. Initialization by constructors is on the page on
 {doc}`constructors and destructors </classes/constructors>`.
 
 ## Principles
@@ -14,7 +14,7 @@ initializer to the object's type ({principle}`VC-P2`).
 
 | Initializer | Meaning |
 |---|---|
-| `=` | The conversion. This is copy-initialization, so it does not use an `explicit` constructor. |
+| `=` | The conversion. The `=` form is copy-initialization, so the conversion does not use an `explicit` constructor. |
 | Parentheses | The same conversion as `=` |
 | A list of values, for an array | One value per element |
 | Empty braces, `T()` | The zero of the type |
@@ -34,8 +34,8 @@ until the program assigns one ({principle}`OBJ-P4`).
 :rules: INIT-3 INIT-6
 
 Empty parentheses after a name declare a function, because the grammar
-reads them as a parameter list. Declarators in one
-declaration are initialized from left to right.
+reads them as a parameter list. Declarators in one declaration are
+initialized from left to right.
 :::
 
 ## Syntax
@@ -67,20 +67,19 @@ Objects with static or thread storage are *zero-initialized* first
 :kind: required
 :tests: declarations/initialization/forms/empty-parens-declares-function.cpp
 
-A declaration with empty parentheses after the name declares a function.
-It never declares a variable.
+A declaration with empty parentheses after the name declares a function,
+and never a variable.
 :::
 
 :::{rule} INIT-4
 :kind: required
 :tests: declarations/initialization/forms/copy-init-converts.cpp declarations/initialization/forms/paren-init-explicit-conversion.cpp declarations/initialization/forms/nullptr-bool-direct.cpp
 
-An initializer after `=` or in parentheses is converted to the type of the
-variable by implicit conversion *(conversion sequences
-referenced)*. A conversion that loses
-information is permitted. `nullptr` converts to `bool` in direct
-initialization, with parentheses or braces, and gives `false`. INIT-7
-lists what is not valid.
+An initializer after `=` or in parentheses is converted to the type of
+the variable by implicit conversion *(conversion sequences referenced)*.
+A conversion that loses information is permitted. `nullptr` converts to
+`bool` in direct initialization, with parentheses or braces, and gives
+`false`. INIT-7 lists what is not valid.
 :::
 
 :::{rule} INIT-7
@@ -101,10 +100,10 @@ An initializer after `=` or in parentheses must meet these conditions:
 :kind: required
 :tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
 
-An array is initialized from a list of values in braces or in parentheses.
-In parentheses, a conversion that loses information is permitted. In parentheses, an
-array without a bound gets the number of values as its bound. INIT-8
-lists what is not valid.
+An array is initialized from a list of values in braces or in
+parentheses. In parentheses, a conversion that loses information is
+permitted, and an array without a bound gets the number of values as its
+bound. INIT-8 lists what is not valid.
 :::
 
 :::{rule} INIT-8
@@ -145,17 +144,17 @@ left to right.
 :tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp
 
 *Default initialization* happens to a variable with no initializer, to
-an object that `new` creates with no initializer, and to a member or base
-that a constructor does not initialize. It does this to each kind of
-object:
+an object that `new` creates with no initializer, and to a member or
+base that a constructor does not initialize. The table gives the effect
+on each kind of object:
 
 | Object | Default initialization |
 |---|---|
 | A scalar | Nothing. The object has no value (INIT-1). |
-| A class | Its default constructor runs. |
+| A class | The default constructor of the class runs. |
 | An array | Each element is default-initialized. |
-| A member that a constructor's member initializer list does not name | Its default member initializer, if it has one. If not, it is default-initialized. |
-| A base that a constructor's member initializer list does not name | It is default-initialized. |
+| A member that a constructor's member initializer list does not name | The default member initializer of the member, if there is one. If not, the member is default-initialized. |
+| A base that a constructor's member initializer list does not name | The base is default-initialized. |
 
 An object with static or thread storage is zero-initialized first
 (STO-3).
@@ -203,13 +202,13 @@ int f[2] = d;        // rejected
 All seven compilers agree on 29 of 30 tests. The results are in
 `tests/RESULTS.md`.
 
-- **INIT-1.** All compilers reject a read of an uninitialized scalar during
-  {term}`constant evaluation` ("read of uninitialized object", "access to
-  uninitialized object").
+- **INIT-1.** All compilers reject a read of an uninitialized scalar
+  during {term}`constant evaluation` ("read of uninitialized object",
+  "access to uninitialized object").
 - **INIT-1 divergence.** For an array element, Clang and GCC reject the
-  read during constant evaluation. EDG 7.0 accepts it. The provisional
-  answer is that INIT-1 applies to array elements and that EDG has a
-  possible defect. See {question}`Q-0013`.
+  read during constant evaluation. EDG 7.0 accepts the read. The
+  provisional answer is that INIT-1 applies to array elements and that
+  EDG has a possible defect. See {question}`Q-0013`.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

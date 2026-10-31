@@ -1,9 +1,9 @@
 # Bitwise operators
 
 The operators `&`, `^`, and `|` combine the bits of two integer values.
-The operator `~` inverts the bits of one integer value. These rules apply
-to the built-in operators. An overloaded operator is a function call
-({rule}`OPR-7`).
+The operator `~` inverts the bits of one integer value. The rules on
+this page apply to the built-in operators. An overloaded operator is a
+function call ({rule}`OPR-7`).
 
 ## Principles
 
@@ -26,8 +26,9 @@ than all three:
    binds less tightly
 ```
 
-So `a & b == c` compares before it masks. The two operands of a binary bitwise operator are not ordered with
-respect to each other ({rule}`SEQ-8`).
+So `a & b == c` compares before it masks. The two operands of a binary
+bitwise operator are not ordered with respect to each other
+({rule}`SEQ-8`).
 :::
 
 :::{principle} BIT-P2
@@ -42,8 +43,8 @@ result can overflow.
 :::{principle} BIT-P3
 :rules: BIT-6 BIT-7 BIT-8
 
-An implementation should warn where the precedence or the operand types
-suggest a mistake. These cases suggest one:
+An implementation should warn about these cases, where the precedence
+or the operand types suggest a mistake:
 
 - a comparison as an operand of a bitwise operator without parentheses,
 - `~` on a `bool`,
@@ -176,10 +177,10 @@ All seven compilers agree on all 21 tests. The results are in
 `tests/RESULTS.md`.
 
 - BIT-6: Clang warns "& has lower precedence than ==" and GCC warns
-  "suggest parentheses around comparison in operand of '&'". Both are in
-  `-Wparentheses`.
+  "suggest parentheses around comparison in operand of '&'". Both
+  warnings are in `-Wparentheses`.
 - BIT-7: Clang and GCC warn under `-Wbool-operation`.
-- EDG doesn't take these warning flags and skips the recommended-practice
-  tests.
+- EDG doesn't take these warning flags and skips the
+  recommended-practice tests.
 
 Inputs: clang-sema-expr, clang-diag-sema.

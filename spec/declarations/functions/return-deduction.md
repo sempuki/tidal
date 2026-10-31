@@ -9,15 +9,15 @@ return type from its `return` statements.
 :rules: RET-1 RET-7 RET-2 RET-6
 
 A deduced return type is found as if each `return` statement initialized
-a variable declared with the placeholder, and all statements must
-agree. The rules for variables then carry over:
+a variable declared with the placeholder, and all statements must agree.
+The rules for variables then carry over:
 
 - `auto` drops references and qualifiers,
 - `auto&` keeps them,
 - `decltype(auto)` takes the exact type.
 
-That last form can deduce a reference to a local variable, which is
-already gone when the caller uses it.
+`decltype(auto)` can deduce a reference to a local variable. The
+variable is already gone when the caller uses the reference.
 :::
 
 :::{principle} RET-P2
@@ -61,7 +61,7 @@ The rules for variables apply to the return type:
 | Placeholder | Return type | Rule |
 |---|---|---|
 | `auto` | Removes references and top-level qualifiers | AUTO-1 |
-| `auto&` | Keeps them | AUTO-3 |
+| `auto&` | Keeps references and top-level qualifiers | AUTO-3 |
 | `decltype(auto)` | Uses `decltype` of the returned expression | AUTO-10 |
 :::
 
@@ -69,14 +69,18 @@ The rules for variables apply to the return type:
 :kind: reject
 :tests: declarations/functions/return-deduction/use-before-definition.cpp declarations/functions/return-deduction/use-after-definition.cpp declarations/functions/return-deduction/recursion-after-return.cpp declarations/functions/return-deduction/recursion-before-return.cpp declarations/functions/return-deduction/auto-ref-no-return.cpp declarations/functions/return-deduction/auto-ref-return-local.cpp declarations/functions/return-deduction/member-calls-later-deduced.cpp
 
-A program must not use the function before its return type is known. A
-call before the definition is not valid, also in the body of a member
-function that calls a later member of its class. A recursive call is valid after
-a `return` statement that gives the type. A function with a reference or
-pointer placeholder return type must have a `return` statement with an
-expression. A deduced lvalue reference cannot be initialized from the
-name of a local variable, because a `return` treats that name as an
-xvalue (CPY-11).
+A program must not use the function before its return type is known.
+These rules also apply:
+
+- A call before the definition is not valid, also in the body of a
+  member function that calls a later member of its class.
+- A recursive call is valid after a `return` statement that gives the
+  type.
+- A function with a reference or pointer placeholder return type must
+  have a `return` statement with an expression.
+- A deduced lvalue reference cannot be initialized from the name of a
+  local variable, because a `return` treats that name as an xvalue
+  (CPY-11).
 :::
 
 :::{rule} RET-4
@@ -84,16 +88,15 @@ xvalue (CPY-11).
 :tests: declarations/functions/return-deduction/redeclare-with-type.cpp declarations/functions/return-deduction/redeclare-with-auto.cpp declarations/functions/return-deduction/redeclare-after-definition.cpp
 
 Each declaration of the function must use the same placeholder as its
-return type. A later declaration must not write the deduced type in place
-of the placeholder.
+return type. A later declaration must not write the deduced type in
+place of the placeholder.
 :::
 
 :::{rule} RET-5
 :kind: reject
 :tests: declarations/functions/return-deduction/virtual-auto.cpp
 
-A virtual function must not have a deduced return type
-({rule}`VIRT-2`).
+A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 :::
 
 ## Undefined Behavior
@@ -103,10 +106,11 @@ A virtual function must not have a deduced return type
 :tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp
 
 If a function with `decltype(auto)` returns a parenthesized local
-variable, its return type is an rvalue reference to that variable, because a
-`return` treats the name of a local variable as an xvalue (CPY-11). For
-a global variable, the result is an lvalue reference. A use
-of the result is undefined, because the variable no longer exists.
+variable, the return type of the function is an rvalue reference to that
+variable, because a `return` treats the name of a local variable as an
+xvalue (CPY-11). For a global variable, the result is an lvalue
+reference. A use of the result is undefined, because the variable no
+longer exists.
 :::
 
 ## Examples

@@ -21,29 +21,29 @@ conversions, copy and move.
 each read and each write through a volatile path is performed as
 written. The mark holds only on volatile paths, so an access through a
 path that is not volatile has no defined meaning. The value read from
-such an object is an ordinary value, so arithmetic on it is not
-volatile, and constant evaluation cannot read it, because the read is an
-observable effect.
+such an object is an ordinary value, so arithmetic on the value is not
+volatile. Constant evaluation cannot read a volatile object, because
+the read is an observable effect.
 :::
 
 :::{principle} VOL-P2
 :rules: VOL-2 VOL-9 VOL-3 VOL-10 VOL-4 VOL-11 VOL-7
 
-`volatile` is a qualifier, and it follows the rules that `const`
-follows ({principle}`DCL-P4`). A conversion can add it and cannot
-remove it, so a volatile object is reached only through volatile
-references, pointers, and member functions. The implicit copy functions
-take a `const` reference, which does not bind to a volatile object, so
-a class that wants to be copied while volatile declares functions that
-say so. A constructor and a destructor are never volatile, because the
-object is volatile only once it exists.
+`volatile` is a qualifier, and the qualifier follows the rules that
+`const` follows ({principle}`DCL-P4`). A conversion can add `volatile`
+and cannot remove it, so a volatile object is reached only through
+volatile references, pointers, and member functions. The implicit copy
+functions take a `const` reference, which does not bind to a volatile
+object, so a class that wants to be copied while volatile declares
+functions that say so. A constructor and a destructor are never
+volatile, because the object is volatile only once it exists.
 :::
 
 :::{principle} VOL-P3
 :rules: VOL-5
 
 Some uses of a volatile object are deprecated, and an implementation
-should warn about them.
+should warn about these uses.
 :::
 
 ## Syntax
@@ -82,8 +82,8 @@ volatile object.
 :tests: declarations/volatile/const-cast-removes.cpp declarations/volatile/overload-param-volatile-ref.cpp declarations/volatile/pointer-add-volatile.cpp declarations/volatile/ref-volatile-to-plain.cpp
 
 A conversion can add `volatile` to the target of a pointer or reference.
-`const_cast` can remove it. Overload resolution can choose between `T&`
-and `volatile T&`. VOL-10 lists what is not valid.
+`const_cast` can remove `volatile`. Overload resolution can choose
+between `T&` and `volatile T&`. VOL-10 lists what is not valid.
 :::
 
 :::{rule} VOL-10
@@ -136,11 +136,11 @@ Constant evaluation cannot read a volatile object (VOL-1).
 :tests: declarations/volatile/access-run.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
 
 Each read and each write of an object through a volatile lvalue is an
-observable effect ({rule}`TR-7`). The implementation performs it. The
-type of a volatile variable keeps `volatile`, but the result of an
-arithmetic operation on its value does not. A `const volatile` variable
-at namespace scope has external linkage, so all translation units share
-it.
+observable effect ({rule}`TR-7`), and the implementation performs each
+such access. The type of a volatile variable keeps `volatile`, but the
+result of an arithmetic operation on its value does not. A `const
+volatile` variable at namespace scope has external linkage, so all
+translation units share the variable.
 :::
 
 ## Undefined Behavior
@@ -189,14 +189,15 @@ void send(volatile Uart& u, unsigned c) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 32 of
-33 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 32
+of 33 tests.
 
-- VOL-1: the tests check that programs with volatile accesses compile and
-  run. A test cannot observe if an access was removed.
+- VOL-1: the tests check that programs with volatile accesses compile
+  and run. A test cannot observe if an access was removed.
 - VOL-2: Clang rejects an in-class initializer for a `static const
-  volatile` member. GCC and EDG accept it ({question}`Q-0080`).
-- VOL-5: Clang and GCC warn under `-Wall` for each listed use, and not for
-  compound assignment.
+  volatile` member. GCC and EDG accept the initializer
+  ({question}`Q-0080`).
+- VOL-5: Clang and GCC warn under `-Wall` for each listed use, and not
+  for compound assignment.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

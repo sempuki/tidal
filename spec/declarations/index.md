@@ -1,6 +1,7 @@
 # Declarations
 
-A declaration introduces a name and gives its properties. These pages give the rules for each part of a declaration.
+A declaration introduces a name and gives its properties. These pages
+give the rules for each part of a declaration.
 
 :::{tidal-pages}
 auto
