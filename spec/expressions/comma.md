@@ -91,7 +91,7 @@ Where the syntax asks for a constant expression, such as an array bound
 or a `case` label, a comma operator must be in parentheses.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} COMMA-1
 :kind: required

@@ -85,7 +85,7 @@ An operator function other than `operator()` must not have default
 arguments *(operator overloading referenced)*.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} DEFARG-3
 :kind: required

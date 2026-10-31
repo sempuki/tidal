@@ -89,7 +89,7 @@ must have the same alignment ({question}`Q-0070`). A definition can add `alignas
 the earlier declarations have none.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} ALN-4
 :kind: required

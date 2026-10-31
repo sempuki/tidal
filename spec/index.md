@@ -30,6 +30,7 @@ statements/index
 expressions/index
 declarations/index
 classes/index
+exceptions/index
 glossary
 rules
 :::

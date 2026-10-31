@@ -180,7 +180,7 @@ is zero, and `void()` is a `void` expression. `T{...}` with an array type
 of unknown bound gives an array with one element for each value.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CAST-3
 :kind: required

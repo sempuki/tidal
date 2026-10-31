@@ -29,7 +29,7 @@ first use of something in that unit, and a `thread_local` variable may
 wait for its first use.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} SINIT-1
 :kind: required

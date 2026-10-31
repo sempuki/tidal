@@ -86,7 +86,7 @@ result has the promoted type of the left operand. The type of the right
 operand has no effect on it. The result is a prvalue.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} SHF-5
 :kind: required

@@ -254,7 +254,7 @@ derived class. The declaration is valid. A use of a member of that base
 through the derived class is ambiguous.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} DER-7
 :kind: required

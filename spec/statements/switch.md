@@ -94,7 +94,7 @@ JMP-6 permits: a scalar, a class whose default constructor and destructor
 are both trivial, or an array of these ({question}`Q-0097`).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} SW-1
 :kind: required

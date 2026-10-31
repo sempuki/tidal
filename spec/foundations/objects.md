@@ -65,7 +65,7 @@ object has taken. Constant evaluation tracks every lifetime, so it
 rejects each of these.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} OBJ-1
 :kind: required

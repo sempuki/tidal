@@ -147,7 +147,7 @@ prefix in an attribute specifier applies to every attribute in it, so an
 attribute in that specifier must not have its own namespace.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} ATTR-15
 :kind: required

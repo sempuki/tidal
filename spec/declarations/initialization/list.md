@@ -155,7 +155,7 @@ whole member or base. The values must not be split across the members of
 a nested aggregate ({question}`Q-0043`).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} LIST-7
 :kind: required

@@ -247,7 +247,7 @@ return type. In a lambda that is not `mutable`, `decltype((x))` for a
 copy capture `x` is a reference to `const`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} LAM-4
 :kind: required

@@ -86,7 +86,7 @@ array without a bound gets the number of values as its bound. An array
 must not be initialized from another array.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} INIT-2
 :kind: required

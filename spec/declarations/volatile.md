@@ -91,7 +91,7 @@ functions that the class declares for volatile operands.
 A constructor or a destructor must not be declared `volatile`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} VOL-1
 :kind: required

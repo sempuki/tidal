@@ -223,7 +223,7 @@ braces. Aggregate initialization skips unnamed bit-fields. The test for
 narrowing uses the declared type, not the width.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} UNI-5
 :kind: required

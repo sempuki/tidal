@@ -201,7 +201,7 @@ An anonymous union at namespace scope must be declared `static`. This
 also applies in an unnamed namespace ({question}`Q-0045`).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} STO-1
 :kind: required

@@ -83,7 +83,7 @@ start of a statement has the form of a declaration and the rest cannot
 belong to one, the statement is an expression statement.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} STMT-1
 :kind: required

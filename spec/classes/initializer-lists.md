@@ -114,7 +114,7 @@ initializes a class return type through its constructors. A braced list
 cannot deduce an `auto` return type.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} ILC-5
 :kind: required

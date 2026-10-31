@@ -34,7 +34,7 @@ so two {term}`unsequenced` accesses to one memory location, where at
 least one writes, are undefined.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} SEQ-2
 :kind: required

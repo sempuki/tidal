@@ -300,7 +300,7 @@ enclosing class must not use it, for example with empty braces (question
 pending).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CTOR-6
 :kind: required

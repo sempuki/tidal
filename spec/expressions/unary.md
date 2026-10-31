@@ -209,7 +209,7 @@ contains:
 Otherwise it is `true`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} UN-3
 :kind: required

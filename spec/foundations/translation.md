@@ -90,7 +90,7 @@ parameters or the two parameters `int` and `char**`
 address. A program with no `main` does not link.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} TR-2
 :kind: required

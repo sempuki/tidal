@@ -164,7 +164,7 @@ A pointer to an array with a known bound converts implicitly to a pointer
 to an array of the same element type with no bound.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CONV-2
 :kind: required

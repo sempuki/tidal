@@ -270,7 +270,7 @@ or a member is an lvalue. A parameter is always moved to the return value,
 once.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CPY-8
 :kind: required

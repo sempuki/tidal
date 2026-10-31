@@ -43,7 +43,7 @@ out a part that has no content.
 | `Principles` | Prose that states the model the rules follow from. Each principle lists the rules that are its evidence. | Yes |
 | `Syntax` | A `productionlist` grammar block. | Yes |
 | `Constraints` | Rules that an implementation checks before the program runs. | Yes |
-| `Dynamic Semantics` | What the program does when it runs. | Yes |
+| `Runtime Behavior` | What the program does when it runs. | Yes |
 | `Undefined Behavior` | Conditions that have no requirements. | Yes |
 | `Implementation Requirements` | Implementation-defined and unspecified behavior, and errors that an implementation need not diagnose. | Yes |
 | `Recommended Practice` | Diagnostics and other behavior that an implementation should provide. | Yes, as advice |

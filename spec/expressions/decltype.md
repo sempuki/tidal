@@ -156,7 +156,7 @@ a call needs a complete class. Name lookup, access control, and deleted function
 still checked.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} UNEV-2
 :kind: required

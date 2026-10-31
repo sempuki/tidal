@@ -80,7 +80,7 @@ The name of the loop variable must not be declared again in the
 outermost block of the body.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} RFOR-1
 :kind: required

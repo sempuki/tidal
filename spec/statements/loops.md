@@ -86,7 +86,7 @@ The condition of `while`, `do`, and `for` must be convertible to
 The condition of `do` must be an expression.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} LOOP-1
 :kind: required

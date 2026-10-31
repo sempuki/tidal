@@ -113,7 +113,7 @@ The result has the common type. A pointer and an integer give the type of
 the pointer. The result is a prvalue.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} ADD-5
 :kind: required

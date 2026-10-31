@@ -121,7 +121,7 @@ definition must use a function declarator. A `typedef` name of a
 function type cannot define a function.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} FN-8
 :kind: required

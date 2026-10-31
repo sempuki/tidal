@@ -158,7 +158,7 @@ to an object type by exactly one conversion function that is not
 `explicit`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} NEW-4
 :kind: required

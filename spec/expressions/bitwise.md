@@ -85,7 +85,7 @@ arithmetic conversions`. The operand of `~` goes through {term}`integer
 promotion`. The result has the converted type and is a prvalue.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} BIT-5
 :kind: required

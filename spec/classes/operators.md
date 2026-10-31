@@ -187,7 +187,7 @@ gives, and no default argument ({question}`Q-0060`). Adjacent string
 literals must not have two different suffixes.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} OPR-7
 :kind: required

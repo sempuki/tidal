@@ -220,7 +220,7 @@ must not have the name and parameters of a virtual function of a base
 ({question}`Q-0087`).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} VIRT-1
 :kind: required

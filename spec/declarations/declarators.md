@@ -306,7 +306,7 @@ target of a pointer or a reference, the type of a parameter, or the type
 of a variable ({question}`Q-0106`).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} DCL-11
 :kind: required

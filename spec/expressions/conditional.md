@@ -159,7 +159,7 @@ the built-in operator candidates picks a conversion for each operand.
 Two unrelated classes that both convert to `int` give an `int` prvalue.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} COND-2
 :kind: required

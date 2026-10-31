@@ -122,7 +122,7 @@ needed:
 | `xor_eq` | `^=` | | |
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} LOG-10
 :kind: required

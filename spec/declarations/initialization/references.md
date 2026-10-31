@@ -89,7 +89,7 @@ initializer must hold exactly one expression. In braces, a narrowing
 conversion must not occur (LIST-2).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} REF-4
 :kind: required

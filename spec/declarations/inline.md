@@ -113,7 +113,7 @@ defined `inline` outside it. A static data member that is not inline
 needs one definition outside its class if it is used.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} INL-5
 :kind: required

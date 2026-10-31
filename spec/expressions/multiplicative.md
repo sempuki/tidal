@@ -115,7 +115,7 @@ result has the common type and is a prvalue (see {term}`value category`).
 A program cannot assign to the result or take its address.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} MUL-6
 :kind: required

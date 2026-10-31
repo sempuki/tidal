@@ -158,7 +158,7 @@ A program must not:
   class, except in the operand of `decltype` (UNEV-1).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} PFX-7
 :kind: required

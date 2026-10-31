@@ -256,7 +256,7 @@ In the `if consteval` form:
 `!` after `if` must be followed by `consteval`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} IF-1
 :kind: required

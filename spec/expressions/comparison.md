@@ -198,7 +198,7 @@ Equality comparison is valid for these pointer operands:
 - `nullptr` and the literal `0`, which compare equal.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CMP-3
 :kind: required

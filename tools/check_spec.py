@@ -36,7 +36,7 @@ SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Which classes each segment may hold (docs/style-guide.md, decision 0016).
 SEGMENT_KINDS = {
     "Constraints": {"required", "reject", "withdrawn"},
-    "Dynamic Semantics": {"required", "withdrawn"},
+    "Runtime Behavior": {"required", "withdrawn"},
     "Undefined Behavior": {"undefined", "withdrawn"},
     "Implementation Requirements": {"impl-defined", "unspecified", "no-diagnostic", "withdrawn"},
     "Recommended Practice": {"recommended", "withdrawn"},

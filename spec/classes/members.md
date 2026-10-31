@@ -257,7 +257,7 @@ member. A `reinterpret_cast` from one of these pointers to the other gives
 a usable pointer.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} CLS-10
 :kind: required

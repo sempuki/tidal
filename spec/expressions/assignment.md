@@ -119,7 +119,7 @@ If the left operand is a bit-field, the result is that bit-field. A
 program must not take the address of the result.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} ASN-4
 :kind: required

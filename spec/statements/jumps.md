@@ -132,7 +132,7 @@ In a constructor or a destructor, `return` must have no expression, also
 not an expression of type `void`.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} JMP-1
 :kind: required

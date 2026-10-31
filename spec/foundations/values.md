@@ -125,7 +125,7 @@ must be usable. In the operand of `decltype`, a call makes no temporary,
 and the destructor is not needed (UNEV-1).
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} VC-4
 :kind: required

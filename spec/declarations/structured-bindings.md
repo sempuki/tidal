@@ -168,7 +168,7 @@ the hidden variable is an rvalue reference or the initializer is a
 prvalue.
 :::
 
-## Dynamic Semantics
+## Runtime Behavior
 
 :::{rule} SB-1
 :kind: required
