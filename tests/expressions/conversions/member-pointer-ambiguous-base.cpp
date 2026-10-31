@@ -1,4 +1,4 @@
-// tidal-rules: CONV-15
+// tidal-rules: CONV-17
 // tidal-expect: reject
 // tidal-note: Gap review 2026-10-31 (third).
 struct A { int x; };
