@@ -18,12 +18,12 @@ Depends on: comparison operators, operator overloading, derived classes.
 :rules: DCMP-1 DCMP-2 DCMP-3 DCMP-4 DCMP-5 DCMP-8 DCMP-9 DCMP-10 DCMP-11
 
 A defaulted comparison compares part by part, bases first, in
-declaration order, and stops at the first difference. The
-implementation writes it only when asked and only in a shape it can
-fill in, and when a part cannot be compared that way, it deletes the
-function rather than report it ({principle}`CPY-P3`). The return type of
-a defaulted `<=>` is the weakest ordering among the parts, and a
-defaulted `<=>` brings a defaulted `==` with it.
+declaration order, and stops at the first difference. The implementation
+writes it only when asked and only in a shape it can fill in. When a
+part cannot be compared that way, it deletes the function, so only a use
+is an error ({principle}`CPY-P3`). The return type of a defaulted `<=>`
+is the weakest ordering among the parts, and a defaulted `<=>` brings a
+defaulted `==` with it.
 :::
 
 :::{principle} DCMP-P2

@@ -25,8 +25,8 @@ brace see the class as complete. These parts include:
 - default member initializers,
 - `noexcept` operands.
 
-A static data member can have the class's own type for the same reason:
-its definition comes after the class.
+A static data member can have the class's own type, because its
+definition comes after the class.
 
 The class body is one scope, so each member name has one meaning in it
 ({principle}`NAM-P1`), and code outside the body names a nested type
@@ -60,8 +60,8 @@ parameter. The object is then an ordinary argument, so the function:
 - cannot be static or virtual or qualified,
 - has an ordinary function pointer as its address.
 
-The call and subscript operators can be static for the same reason:
-they need no object at all.
+The call and subscript operators need no object at all, so they can be
+static.
 :::
 
 :::{principle} CLS-P4
@@ -70,8 +70,8 @@ they need no object at all.
 The members of an object lie in it in the order of their declarations,
 and each object has a size, even an empty one, so that two objects never
 share an address ({principle}`OBJ-P1`). A class that keeps its members in
-one access, with no virtual parts, has a layout a program can reason
-about: its address is the address of its first member.
+one access, with no virtual parts, has the address of its first
+member, so a program can reason about its layout.
 :::
 
 ## Syntax

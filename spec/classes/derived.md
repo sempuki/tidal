@@ -72,8 +72,9 @@ a D holds two A subobjects        a D holds one A subobject
 
 Only the most derived class knows the whole object, so its constructor
 initializes the virtual base, first and once, and every constructor of
-that class must be able to. Where the virtual base sits is decided at
-run time, so such a class has no `constexpr` constructor or destructor.
+that class must be able to. The position of the virtual base is
+decided at run time, so such a class has no `constexpr` constructor or
+destructor.
 :::
 
 :::{principle} DER-P5

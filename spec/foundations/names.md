@@ -53,8 +53,9 @@ outermost scope                  searched last
 ```
 
 The search stops at the first scope that declares the name, whatever
-kind of thing the name is. So an inner declaration hides an outer one, and a variable in an inner
-scope hides a function of the same name outside it. A qualified name
+kind of thing the name is. So an inner declaration hides an outer one,
+and a variable in an inner scope hides a function of the same name
+outside it. A qualified name
 skips the search and goes to the scope it names, which is how a program
 reaches a hidden name. A namespace is a scope that a program can reopen
 and add to, and a member declared in it can be defined outside it with
@@ -74,8 +75,8 @@ arguments of fundamental type.
 :::{principle} NAM-P4
 :rules: NAM-6 NAM-7 NAM-10 NAM-11
 
-Two scopes depart from the plain model. In a class body, what a part
-sees depends on the part:
+Class bodies and labels depart from the plain model. Each part of a
+class body sees these members:
 
 | Part of a class body | Members it sees |
 |---|---|

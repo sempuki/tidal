@@ -64,8 +64,8 @@ alive longer (REF-4).
 :::{principle} VC-P4
 :rules: VC-7 VC-10
 
-Passing and returning by value is where the implementation keeps some
-freedom. It can make an extra copy of a trivially copyable argument or
+The implementation keeps some freedom when a program passes or returns
+by value. It can make an extra copy of a trivially copyable argument or
 return value, and it chooses when a parameter object ends. A program
 must not depend on the address of such an object or on the point where
 it is destroyed.
@@ -244,10 +244,10 @@ caller's object have the same address.
 :kind: impl-defined
 :tests: expressions/value-categories/parameter-destruction-point.cpp
 
-Each implementation chooses one of two points to destroy a parameter
-object, and documents it. The first is the return from the function. The
-second is the end of the caller's full expression. On the x86-64 Linux
-targets in the matrix, the caller destroys it at the second point.
+Each implementation chooses where to destroy a parameter object, and
+documents it. The point is either the return from the function or the
+end of the caller's full expression. On the x86-64 Linux targets in the
+matrix, the caller destroys it at the end of its full expression.
 :::
 
 ## Examples

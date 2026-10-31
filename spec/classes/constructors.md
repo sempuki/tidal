@@ -518,10 +518,10 @@ const Counter d{};               // valid
 The results are in `tests/RESULTS.md`. All seven compilers agree on 127
 of 133 tests.
 
-- CTOR-23 and DTOR-9: the tests observe triviality through two rules
-  that depend on it. A jump past a declaration is valid only for a
-  trivial default constructor and destructor (JMP-6), and a union's
-  special member is deleted when a member's is not trivial (UNI-3). The
+- CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
+  UNI-3. A jump past a declaration is valid only for a trivial default
+  constructor and destructor (JMP-6), and a union's special member is
+  deleted when a member's is not trivial (UNI-3). The
   destructor tests use the union, because GCC accepts the jump for any
   destructor ({question}`Q-0041`).
 

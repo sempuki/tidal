@@ -47,9 +47,9 @@ see complete parts:
 :rules: OBJ-3 OBJ-4 OBJ-5 OBJ-6 OBJ-9
 :exceptions: OBJ-11
 
-The storage duration of an object decides who ends it and when. One
-law covers every case. Objects end in the reverse of the order in which
-they began.
+The storage duration of an object decides who ends it and when. In
+every case, objects end in the reverse of the order in which they
+began.
 
 | Objects | Ended by | When |
 |---|---|---|
@@ -65,9 +65,8 @@ they began.
 
 A reference is not an object. Binding a reference to an object gives
 the object no extra life, so a reference can outlive what it refers to.
-The one exception is a reference that binds to a temporary: the
-temporary then lives as long as the reference, because otherwise the
-reference would be dead at birth.
+If a reference binds to a temporary, the temporary lives as long as the
+reference, because otherwise the reference would be dead at birth.
 :::
 
 :::{principle} OBJ-P4

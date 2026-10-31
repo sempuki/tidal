@@ -50,11 +50,12 @@ The table below maps one vocabulary to the other. It is informative.
 :::{principle} TR-P1
 :rules: TR-1 TR-6
 
-A rule in this specification is one of two kinds. A *rule on the
-program* says what a valid program must or must not do. If a program
+A rule in this specification is a *rule on the program* or a *fact
+about the implementation*. A rule on the program says what a valid
+program must or must not do. If a program
 breaks one, the program is not valid, and an implementation that
 translates it must say so with a diagnostic, whether or not the program
-would ever reach the broken part. A *fact about the implementation* says
+would ever reach the broken part. A fact about the implementation says
 what every implementation does with a valid program. The class of each
 rule says which kind it is and how strong it is:
 
@@ -115,18 +116,18 @@ the entry point and nothing else. A program cannot do these things:
 
 This specification describes an *abstract machine*: what each
 construct does, in what order, with what effect on objects. An
-implementation does not have to build that machine. It has to produce
-the same {term}`observable behavior`, which is these:
+implementation need only produce the same {term}`observable behavior`
+as that machine. The observable behavior is these:
 
 - the reads and writes of `volatile` objects in their order,
 - the data the program writes out,
 - the exit status.
 
-Everything else is invisible, so an implementation can
-reorder, merge, or drop work that the observable behavior does not
-depend on. That freedom is where optimization lives, and it is why the
-rules about evaluation order ({principle}`SEQ-P2`) and copies
-({principle}`VC-P4`) leave choices open.
+Everything else is invisible, so an implementation can reorder, merge,
+or drop work that the observable behavior does not depend on.
+Optimization uses that freedom. The rules about evaluation order
+({principle}`SEQ-P2`) and copies ({principle}`VC-P4`) leave choices open
+for the same reason.
 
 Undefined behavior is the point where the abstract machine has no next
 step. From there this specification requires nothing of the execution,
@@ -140,11 +141,15 @@ when the value that the undefined step produced is never used.
 :rules: TR-5 TR-10
 
 Constant evaluation runs the same functions as execution, with the
-same meaning, at translation time. It differs in two ways. It happens
-only where a constant is needed, and nowhere else. And it tracks every
-object and every operation, so an evaluation that would be undefined at
-run time is not a constant, and the program is rejected there. A program
-can ask which mode it is in and act differently in each.
+same meaning, at translation time. It differs from execution in these
+ways:
+
+- It happens only where a constant is needed, and nowhere else.
+- It tracks every object and every operation, so an evaluation that
+  would be undefined at run time is not a constant, and the program is
+  rejected there.
+
+A program can ask which mode it is in and act differently in each.
 :::
 
 ## Constraints

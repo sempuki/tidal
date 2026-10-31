@@ -50,16 +50,14 @@ to skip, so a jump can pass its declaration when it has no initializer.
 :::{principle} JMP-P3
 :rules: JMP-3 JMP-10 JMP-11 JMP-12 JMP-13 JMP-15
 
-`return` hands a value to the caller, and the value must be what the
-function promised. That is:
+`return` hands the caller what the function promised:
 
 - a value in a function that returns one,
 - nothing in a `void` function,
 - nothing in a constructor or destructor.
 
-A local
-variable or a parameter that is returned by name is about to end, so
-the name is treated as an rvalue and the value is moved out
+A local variable or a parameter that is returned by name is about to
+end, so the name is treated as an rvalue and the value is moved out
 ({principle}`CPY-P4`). The implementation may go further and make a
 local variable the result object itself, but never a parameter, whose
 storage belongs to the caller.
@@ -131,9 +129,8 @@ These conditions apply to labels (JMP-5):
 :tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp
 
 A jump must not skip the declaration of a variable with
-{term}`automatic storage` that is in scope at the target. The one
-exception is a declaration with no initializer whose type is one of
-these:
+{term}`automatic storage` that is in scope at the target. This does not
+apply to a declaration with no initializer whose type is one of these:
 
 - a scalar type,
 - a class type whose default constructor and destructor are both
@@ -225,8 +222,8 @@ creates the variable again.
 
 If a `return` statement names a local variable of the return type, it is
 unspecified if a copy or move constructor runs. A returned prvalue of the
-return type never runs one (VC-4). A parameter is not such a variable:
-a `return` of a parameter by name runs the move constructor one time
+return type never runs one (VC-4). A parameter is not such a variable.
+A `return` of a parameter by name runs the move constructor one time
 (CPY-12).
 :::
 

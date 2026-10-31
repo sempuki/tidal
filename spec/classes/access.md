@@ -9,19 +9,19 @@ access as the members of the class.
 :::{principle} ACC-P1
 :rules: ACC-1 ACC-2 ACC-3 ACC-11 ACC-16
 
-Access control is about names, not objects. Each member name carries an
-access, set by the class key or by the last label before it. A use of
-the name is checked where the use occurs, after lookup and overload
-resolution have chosen the declaration, so an accessible overload that
-loses never rescues a call. Only names are checked. These carry no name
-to check:
+Access control applies to names. An object carries no access. Each
+member name carries an access, set by the class key or by the last label
+before it. A use of the name is checked where the use occurs, after
+lookup and overload resolution have chosen the declaration, so an
+accessible overload that loses never rescues a call. Only names are
+checked. These carry no name to check:
 
 - a deduced type,
 - the final overrider of a virtual call,
 - the declarator of a member defined outside its class.
 
 A default argument is checked where the function is declared, because
-that is where its names are written.
+its names are written there.
 :::
 
 :::{principle} ACC-P2

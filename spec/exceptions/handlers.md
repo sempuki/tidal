@@ -43,8 +43,8 @@ and the next enclosing try block gets the same chance
 
 Once a handler runs, the rest are not consulted, so a handler that a
 previous handler always shadows can never run, and an implementation
-should say so. The catch-all handler accepts everything, which is why it
-must come last. A try block with no handler guards nothing, so it is not
+should say so. The catch-all handler accepts everything, so it must
+come last. A try block with no handler guards nothing, so it is not
 valid.
 :::
 
@@ -67,8 +67,7 @@ they take no part. The form of the handler decides what it gets:
 | By value | A copy, which slices a derived exception to the base |
 | By reference | The exception object itself, which it can change before passing it on |
 
-The handler's
-parameter is a declaration of a narrow kind. It has:
+The handler's parameter is a declaration of a narrow kind. It has:
 
 - a type and at most a name,
 - no storage class, no default, and no `auto`,
@@ -95,7 +94,7 @@ While a handler runs, the exception it caught is still the current
 exception. `throw` with no operand passes that same object on to the
 next enclosing try block, from the handler or from any function the
 handler calls, and a change made through a reference parameter goes with
-it. A throw of a new value from a handler also goes outward: the
+it. A throw of a new value from a handler also goes outward. The
 handlers of the same try block are not candidates for an exception that
 one of them throws. Leaving the handler by any route ends the handled
 exception. `throw` with no operand and no current exception has

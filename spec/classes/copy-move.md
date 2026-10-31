@@ -42,7 +42,7 @@ would need itself to copy its argument.
 
 The implementation writes these four functions for a class unless the
 class writes them, because part-by-part copying is right for most
-classes. Their parameter types follow from what the parts permit: the
+classes. Their parameter types follow from what the parts permit. The
 implicit copy constructor takes a `const` reference if every part can be
 copied from a `const` object.
 
@@ -55,19 +55,19 @@ copying is wrong for it. So one declaration removes the others:
 | A copy function or a destructor | The implicit move functions. Rvalues of that class fall back to copying. |
 
 The implicit assignment operator of a derived class hides those of its
-bases for the same reason: a derived class decides for its own parts.
+bases for the same reason. A derived class decides for its own parts.
 
-A user-declared destructor is the exception: it keeps the implicit copy
-functions. So a class that releases a resource in its destructor must
-write or delete its copy functions. Otherwise a copy shares the
-resource, and both objects release it (NEW-5).
+A user-declared destructor removes only the move functions. It keeps the
+implicit copy functions. So a class that releases a resource in its
+destructor must write or delete its copy functions. Otherwise a copy
+shares the resource, and both objects release it (NEW-5).
 :::
 
 :::{principle} CPY-P3
 :rules: CPY-7 CPY-14 CPY-17 CPY-23 CPY-26
 
-When a part cannot be copied or moved part by part, the implicit function
-is not an error. It is deleted, so the problem appears only at a use.
+When a part cannot be copied or moved part by part, the implicit
+function is deleted, so the problem appears only at a use.
 Each of these makes the containing function deleted:
 
 - a reference member,

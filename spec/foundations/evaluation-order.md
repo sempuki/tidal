@@ -38,13 +38,13 @@ replaces, because the program reads the same either way.
 :rules: SEQ-1 SEQ-4 SEQ-7 SEQ-8
 
 Everywhere else, the order is the implementation's choice, and the
-choice can differ from one call to the next. The one promise is that
-each argument of a call is evaluated as a whole, and the called function
-runs as a whole, so two evaluations do not interleave. A program whose
-result depends on an order that the language did not fix has no meaning,
-so two {term}`unsequenced` accesses to one memory location, where at
-least one writes, are undefined. Where the implementation can see such
-a pair, it should say so.
+choice can differ from one call to the next. The language promises only
+that each argument of a call is evaluated as a whole, and that the
+called function runs as a whole, so two evaluations do not interleave. A
+program whose result depends on an order that the language did not fix
+has no meaning, so two {term}`unsequenced` accesses to one memory
+location, where at least one writes, are undefined. Where the
+implementation can see such a pair, it should say so.
 :::
 
 ## Runtime Behavior

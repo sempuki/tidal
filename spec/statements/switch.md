@@ -31,7 +31,7 @@ different function, so a label in it belongs to nothing outside.
 The statement has the scopes of an `if` ({principle}`IF-P2`), with an
 initializer and a condition that can declare a variable. Because its
 body is entered by a jump, the general rule for jumps applies
-({principle}`JMP-P2`): a label must not sit past the initialization of
+({principle}`JMP-P2`). A label must not sit past the initialization of
 a variable that is in scope at the label.
 :::
 

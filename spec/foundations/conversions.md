@@ -18,7 +18,7 @@ sees it:
 
 | Operand | Becomes | Why |
 |---|---|---|
-| An integer narrower than `int` | An `int`. For a bit-field the width decides. | The width is what the value can hold. |
+| An integer narrower than `int` | An `int`. For a bit-field the width decides. | The width limits the values it can hold. |
 | An array used as a value | A pointer to its first element | The operations on values have no use for an array itself. |
 | A function name | A pointer to the function | The operations on values have no use for a function itself. |
 | A `float` | It keeps its type. | Arithmetic on `float` is an operation of its own. |
@@ -31,8 +31,8 @@ sees it:
 A conversion between integer types keeps the value when the target can
 hold it. When it cannot, the target keeps the low bits, so the result is
 the value modulo the target's range, for signed and unsigned targets
-alike. A conversion to `bool` asks one question, zero or not zero, and a
-null pointer counts as zero.
+alike. A conversion to `bool` gives `false` for zero and `true` for any
+other value, and a null pointer counts as zero.
 :::
 
 :::{principle} CONV-P4

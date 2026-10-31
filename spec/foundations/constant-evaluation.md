@@ -18,9 +18,9 @@ Constant evaluation is the same program run at translation time
 - changes to the objects it has made,
 - allocation.
 
-A function is not rejected for containing a construct that constant
-evaluation cannot handle. It is rejected only when an evaluation reaches
-that construct, so a function can serve both modes. A reference whose
+Constant evaluation rejects a construct that it cannot handle only when
+an evaluation reaches that construct. So a function can contain such a
+construct and serve both modes. A reference whose
 object the evaluation does not know is a problem only when the
 evaluation reads through it. The objects that an evaluation makes need a
 {term}`literal type`, one whose objects the evaluation can build and

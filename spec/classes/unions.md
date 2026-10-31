@@ -78,8 +78,9 @@ program cannot point to it or bind a plain reference to it.
 :::{principle} UNI-P5
 :rules: BF-8 BF-9 BF-10
 
-How bit-fields are packed, and what a bit-field holds after a value too
-wide for it is stored, are left to the implementation. An implementation
+The implementation decides how bit-fields are packed. It also decides
+the value that a bit-field holds after a value too wide for it is
+stored. An implementation
 should warn when a width exceeds its type or a constant does not fit.
 :::
 

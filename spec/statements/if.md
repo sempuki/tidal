@@ -14,11 +14,11 @@ condition selects. There are three forms:
 :::{principle} IF-P1
 :rules: IF-1 IF-2 IF-3 IF-4 IF-5 IF-6
 
-An `if` statement asks one question and takes one of two paths. The
-question is a condition converted to `bool` by {term}`contextual
-conversion`, evaluated one time. The condition can also declare one
-variable, whose value is the answer, so that the branches can use what
-the question computed. That variable is a plain variable of the
+An `if` statement evaluates one condition and takes one of two paths.
+The condition is converted to `bool` by {term}`contextual conversion`
+and evaluated one time. The condition can also declare one variable,
+whose value selects the path, so that the branches can use the value
+that the condition computed. That variable is a plain variable of the
 statement, so it has an initializer and no storage class. An `else`
 belongs to the nearest `if` that has none, because that is the reading
 with no ambiguity.
