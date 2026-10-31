@@ -185,7 +185,7 @@ named escape `\N{...}` gives the character with that Unicode name.
 
 :::{rule} PRIM-18
 :kind: reject
-:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp expressions/primary/char-named-escape-unknown.cpp expressions/primary/char-prefixed-not-single-unit.cpp
+:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp expressions/primary/char-named-escape-unknown.cpp
 
 A character literal must contain at least one character. It must not
 have:
@@ -376,7 +376,7 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 90 of 94 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 89 of 93 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
