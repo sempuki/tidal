@@ -2,7 +2,7 @@
 
 An implicit conversion sequence describes how one argument becomes one
 parameter of a function. Overload resolution
-*(overload resolution referenced)* compares the sequences of two
+({rule}`OVL-25`) compares the sequences of two
 functions, argument by argument. This page covers:
 
 - the kinds of sequence and what each holds,

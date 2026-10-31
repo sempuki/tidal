@@ -113,14 +113,15 @@ object of its class.
 
 :::{rule} ACC-3
 :kind: reject
-:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp
+:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp foundations/overload-resolution/chosen-not-accessible.cpp
 
 The implementation checks access after overload resolution
-*(overload resolution referenced)* selects a function. If the selected
+({rule}`OVL-34`) selects a function. If the selected
 function is not accessible, the call is not valid. An accessible
 overload that is a worse match does not make the call valid. Access does
 not change name lookup, so a private member of a derived class hides a
-public member of a base with the same name.
+public member of a base with the same name. The rule is a specific case
+of {rule}`OVL-37`.
 :::
 
 :::{rule} ACC-11
@@ -338,8 +339,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 59 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 60 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base

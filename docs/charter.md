@@ -52,22 +52,22 @@ In scope:
 - Programs of several translation units: the use of a variable or
   function, the one-definition rule, and `#include "file"` with include
   guards (roadmap phase 3, items I and J).
+- Name lookup, implicit conversion sequences, and overload resolution
+  (roadmap phase 3, items H, L, and M).
 
 Referenced but not specified:
 
-The in-scope topics depend on overload resolution and templates. Tidal
-sections refer to those concepts by name and list them in a "Depends
-on" block. Those concepts are not specified yet. The roadmap brings
-them into scope in phases 3 and 4 (decision 0033, Q-0113). Name lookup
-is in scope from phase 3, item H. Use and the one-definition rule are in
-scope from phase 3, items I and J.
+The in-scope topics depend on templates and concepts. Tidal sections
+refer to them by name, mark each use *(templates referenced)* or
+*(concepts referenced)*, and list them in a "Depends on" block. Phase 4
+of the roadmap brings them into scope (decision 0033, Q-0113).
 
 Out of scope:
 
 - The preprocessor other than `#include "file"` and include guards,
   lexical structure, modules.
-- Templates and overload resolution as topics of their own, until
-  phases 3 and 4 of the roadmap bring them in.
+- Templates as a topic of its own, until phase 4 of the roadmap brings
+  it in.
 - The standard library, except the language-support types that the core
   rules name (decision 0041).
 - Coroutines (`co_await`, `co_yield`, `co_return`).

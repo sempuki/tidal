@@ -1,0 +1,21 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\ntemplate <class T> using ptr = T;\n",
+ "template": "{prelude}{col}\n{row}",
+ "rows": {
+  "name at namespace scope": "One r = f(1);",
+  "name in a member function": "struct T : S { void g() { f(1); } };",
+  "name in a static member function": "struct T : S { static void g() { f(1); } };",
+  "qualified name": "void u() { S::f(1); }",
+  "dot call": "S s;\nvoid u() { s.f(1); }",
+  "arrow call": "S* p = nullptr;\nvoid u() { p->f(1); }",
+  "call on the object": "S s;\nvoid u() { s(1); }"
+ },
+ "cols": {
+  "free function": "struct S {};\nOne f(int);",
+  "member": "struct S { One f(int); };",
+  "static member": "struct S { static One f(int); };",
+  "explicit object member": "struct S { One f(this const S&, int); };",
+  "call operator": "struct S { One operator()(int) const; };",
+  "surrogate": "struct S { operator ptr<One (*)(int)>() const; };"
+ }
+}

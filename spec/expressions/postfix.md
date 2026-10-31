@@ -107,7 +107,9 @@ prvalue or xvalue is an xvalue.
 
 A function call must give one argument for each parameter that has no
 default argument. The call must not give more arguments than
-parameters, unless the function has an ellipsis.
+parameters, unless the function has an ellipsis. For an overloaded call,
+{rule}`OVL-22` applies this count to each candidate. The rule is a
+specific case of {rule}`OVL-35`.
 :::
 
 :::{rule} PFX-6

@@ -112,7 +112,8 @@ These cases have their own rules:
 - For a static member, `&C::m` gives an ordinary pointer.
 - With parentheses, `&(C::m)` gives an ordinary pointer to the member
   of `*this`.
-- If `m` is overloaded, the target type selects the function.
+- If `m` is overloaded, the target type selects the function
+  ({rule}`OVL-18`).
 - If `m` is declared in a base `B` of `C`, the type names `B`, as in
   `T B::*`.
 - For a member function with an explicit object parameter, `&C::f`

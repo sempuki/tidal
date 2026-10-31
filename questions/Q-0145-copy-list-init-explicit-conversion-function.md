@@ -1,0 +1,40 @@
+# Q-0145: Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter?
+
+**Status:** provisional
+**Affects:** OVL-14, `tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`
+
+## Context
+
+`Source` has an `explicit` conversion function to `Target`. `Target` has
+a default constructor and the implicit copy and move constructors. The
+program writes `Target t = {s};`.
+
+| Compiler | Result |
+|---|---|
+| Clang 18, Clang 22 | accepts |
+| GCC 14, GCC 16 | rejects |
+| EDG 7.0 | rejects |
+
+In direct-initialization, `Target t(s);` and `Target t{s};`, every
+compiler uses the explicit conversion function (initialization grid).
+
+## Evidence
+
+`tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`,
+and the row "copy list init" of the initialization grid. Item CI-4 of
+the overload resolution inventory names direct-initialization only.
+
+## Options
+
+1. Copy-list-initialization takes only conversion functions that are
+   not `explicit` (GCC, EDG).
+2. The explicit conversion function can make the temporary (Clang).
+
+## Provisional answer
+
+Option 1. Two of three implementations agree, and the inventory names
+direct-initialization only.
+
+## Opinions
+
+<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

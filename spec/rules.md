@@ -69,6 +69,7 @@ Every rule ID starts with the prefix of its page.
 | `OBJ` | `foundations/objects.md` |
 | `ODR` | `foundations/odr.md` |
 | `OPR` | `classes/operators.md` |
+| `OVL` | `foundations/overload-resolution.md` |
 | `PFX` | `expressions/postfix.md` |
 | `PRIM` | `expressions/primary.md` |
 | `REF` | `declarations/initialization/references.md` |

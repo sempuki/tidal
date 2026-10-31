@@ -182,7 +182,7 @@ The second operand can be a comma expression without parentheses.
 :kind: required
 :tests: expressions/conditional/two-classes-convert-to-int.cpp
 
-Overload resolution *(overload resolution referenced)* over the built-in
+Overload resolution ({rule}`OVL-9`) over the built-in
 operator candidates picks a conversion for each operand if all of these
 hold:
 

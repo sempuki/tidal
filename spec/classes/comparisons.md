@@ -179,6 +179,8 @@ candidates:
 `<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
 before a rewritten one. If the scope of an `==` declares a matching
 `!=`, that `==` is not used for reversed or rewritten candidates.
+{rule}`OVL-13` gives what each rewritten candidate evaluates, and
+{rule}`OVL-32` and {rule}`OVL-33` rank the candidates.
 :::
 
 :::{rule} DCMP-12
@@ -207,7 +209,8 @@ would be deleted. An implementation need not diagnose such a comparison
 :tests: classes/comparisons/rewritten-ambiguous-const-ok.cpp classes/comparisons/rewritten-ambiguous-warns.cpp
 
 An implementation should warn if a reversed candidate makes a comparison
-ambiguous, for example an `==` that is not `const`.
+ambiguous, for example an `==` that is not `const`. In strict mode,
+{rule}`OVL-36` rejects such a comparison.
 :::
 
 ## Examples

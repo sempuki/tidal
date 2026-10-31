@@ -1,0 +1,21 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\n",
+ "template": "{prelude}{col}\n{row}",
+ "rows": {
+  "pointer to One(int)": "One (*p)(int) = &f;",
+  "noexcept pointer to One(int)": "One (*p)(int) noexcept = &f;",
+  "reference to One(int)": "One (&r)(int) = f;",
+  "pointer to Two(long)": "Two (*p)(long) = &f;",
+  "pointer to Two(int pointer)": "Two (*p)(int*) = &f;",
+  "pointer to Two(double)": "Two (*p)(double) = &f;",
+  "cast to pointer to One(int)": "auto p = static_cast<One (*)(int)>(&f);",
+  "no target": "auto p = &f;"
+ },
+ "cols": {
+  "one plain": "One f(int);",
+  "two plain": "One f(int);\nTwo f(long);",
+  "noexcept plain": "One f(int) noexcept;\nTwo f(long) noexcept;",
+  "plain and template": "One f(int);\ntemplate <class T> Two f(T);",
+  "two templates": "template <class T> One f(T);\ntemplate <class T> Two f(T*);"
+ }
+}

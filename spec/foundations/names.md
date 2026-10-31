@@ -431,7 +431,7 @@ members act, the use is valid in these cases:
 - All the declarations refer to one entity, also through using
   declarations.
 - All the declarations are functions. The functions form one set of
-  overloads *(overload resolution referenced)*.
+  overloads, and overload resolution chooses among them ({rule}`OVL-1`).
 :::
 
 :::{rule} NAM-26

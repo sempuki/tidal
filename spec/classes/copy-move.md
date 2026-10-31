@@ -12,7 +12,7 @@ program no longer needs. This page covers:
 - when a copy or move does not occur.
 
 Depends on: constructors and destructors, reference binding, overload
-resolution *(overload resolution referenced)*, deleted and defaulted
+resolution ({doc}`/foundations/overload-resolution`), deleted and defaulted
 functions.
 
 ## Principles

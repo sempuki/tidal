@@ -151,7 +151,6 @@ REFERENCED_TOPICS = {
     "extended floating-point types",
     "library",
     "memory model",
-    "overload resolution",
     "templates",
     "threads",
 }

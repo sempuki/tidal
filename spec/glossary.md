@@ -32,6 +32,19 @@ automatic storage
   of the block. A jump past the declaration does not remove the object
   ({rule}`JMP-16`). See {term}`storage duration`.
 
+best viable function
+  The viable function that is better than each other viable function of
+  a use. Overload resolution calls it ({rule}`OVL-34`).
+
+built-in candidate
+  A candidate function that stands for a built-in operator, with fixed
+  parameter types. A class operand reaches it through a conversion
+  function ({rule}`OVL-9`).
+
+candidate function
+  A function that overload resolution considers for a use. The context
+  of the use decides the candidates ({rule}`OVL-1`, {principle}`OVL-P2`).
+
 constant evaluation
   Evaluation of an expression during translation, before the program
   runs. Constant evaluation occurs where translation needs a value, for
@@ -125,6 +138,10 @@ implicit object parameter
   object of a call. Its type is a reference to the class
   ({rule}`ICS-13`).
 
+implied object argument
+  The object that a call passes to the object parameter of a member
+  function, for example `x` in `x.f()` ({rule}`OVL-4`).
+
 include guard
   The `#ifndef`, `#define`, and `#endif` lines around the text of a
   {term}`header`. The lines make every inclusion after the first in a
@@ -193,6 +210,16 @@ placeholder type
   comes from an initializer or from `return` statements. A concept name
   can come before the placeholder to constrain the type.
 
+promoted arithmetic type
+  A floating-point type, or an integer type that
+  {term}`integer promotion` leaves unchanged, such as `int` and `long`
+  ({principle}`OVL-P4`).
+
+rewritten candidate
+  A candidate for a comparison that uses another comparison operator,
+  such as `!(x == y)` for `x != y`, or the same operator with the
+  operands swapped ({rule}`DCMP-6`, {rule}`OVL-13`).
+
 sequence rank
   The rank of a {term}`standard conversion sequence`: exact match,
   promotion, or conversion. The worst conversion in the sequence gives
@@ -211,6 +238,11 @@ storage duration
     for each thread.
   - *Dynamic* storage comes from `new` and goes back with `delete`
     ({rule}`NEW-9`).
+
+surrogate candidate
+  A candidate for a call on a class object that a conversion function to
+  a pointer or reference to function gives. The call converts the object
+  and then calls the result ({rule}`OVL-6`).
 
 temporary object
   An object that the program makes from a prvalue, without a name. A
@@ -258,4 +290,9 @@ value category
     for example the result of `std::move`.
   - A *prvalue* computes a value, for example `a * b` or `42`. A prvalue
     has no identity.
+
+viable function
+  A candidate function whose parameters fit the arguments and whose
+  constraints hold, with a conversion sequence for each argument
+  ({rule}`OVL-22`, {rule}`OVL-23`).
 :::

@@ -1,0 +1,23 @@
+{
+ "prelude": "",
+ "template": "{prelude}{col}\nSrc s;\n{row}",
+ "rows": {
+  "copy init": "T t = s;",
+  "direct init": "T t(s);",
+  "direct list init": "T t{s};",
+  "copy list init": "T t = {s};",
+  "functional cast": "void u() { (void)T(s); }",
+  "static cast": "void u() { (void)static_cast<T>(s); }",
+  "argument": "void take(T);\nvoid u() { take(s); }",
+  "return": "T give() { return s; }"
+ },
+ "cols": {
+  "converting constructor": "struct Src {};\nstruct T { T(const Src&); };",
+  "explicit constructor": "struct Src {};\nstruct T { explicit T(const Src&); };",
+  "conversion function": "struct T { T(); };\nstruct Src { operator T() const; };",
+  "explicit conversion function": "struct T { T(); };\nstruct Src { explicit operator T() const; };",
+  "conversion to derived": "struct T { T(); };\nstruct D : T {};\nstruct Src { operator D() const; };",
+  "constructor and conversion function": "struct Src;\nstruct T { T(const Src&); };\nstruct Src { operator T() const; };",
+  "explicit constructor and conversion function": "struct Src;\nstruct T { explicit T(const Src&); };\nstruct Src { operator T() const; };"
+ }
+}

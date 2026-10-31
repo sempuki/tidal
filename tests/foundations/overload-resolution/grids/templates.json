@@ -1,0 +1,25 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nint n = 0;\nint* p = nullptr;\n",
+ "template": "{prelude}namespace first {{\nusing R = One;\n{a}\n}}\nnamespace second {{\nusing R = Two;\n{b}\n}}\nusing first::f;\nusing second::f;\n{row}",
+ "rows": {
+  "int lvalue → first": "static_assert(same<decltype(f(n)), One>);",
+  "int lvalue → second": "static_assert(same<decltype(f(n)), Two>);",
+  "int prvalue → first": "static_assert(same<decltype(f(1)), One>);",
+  "int prvalue → second": "static_assert(same<decltype(f(1)), Two>);",
+  "long → first": "static_assert(same<decltype(f(1L)), One>);",
+  "long → second": "static_assert(same<decltype(f(1L)), Two>);",
+  "int pointer → first": "static_assert(same<decltype(f(p)), One>);",
+  "int pointer → second": "static_assert(same<decltype(f(p)), Two>);"
+ },
+ "pairs": {
+  "plain int": "R f(int);",
+  "plain const int lref": "R f(const int&);",
+  "plain long": "R f(long);",
+  "template value": "template <class T> R f(T);",
+  "template const lref": "template <class T> R f(const T&);",
+  "template pointer": "template <class T> R f(T*);",
+  "template forwarding": "template <class T> R f(T&&);",
+  "constrained template": "template <class T> requires (sizeof(T) > 1) R f(T);",
+  "ellipsis": "R f(...);"
+ }
+}

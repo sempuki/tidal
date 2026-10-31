@@ -277,6 +277,7 @@ Direct initialization and casts can use an `explicit` constructor.
 `explicit(c)` makes the constructor `explicit` if the constant
 expression `c` is `true`. Only a constructor or conversion function
 ({rule}`CVF-3`) declared in its class can have `explicit`.
+{rule}`OVL-14` lists the candidates of each form of initialization.
 :::
 
 :::{rule} CTOR-10
@@ -306,8 +307,8 @@ An initialization of a class object by a constructor must find a
 constructor that accepts its arguments. A constructor accepts the
 arguments if their number fits its parameters ({rule}`PFX-5`) and each
 argument converts implicitly to its parameter type. If more than one
-constructor accepts them, overload resolution picks one *(overload
-resolution referenced)*.
+constructor accepts them, overload resolution picks one ({rule}`OVL-34`). The rule is a
+specific case of {rule}`OVL-35`.
 
 These rules name specific cases of this rule (decision 0042):
 

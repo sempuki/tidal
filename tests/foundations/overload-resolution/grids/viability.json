@@ -1,0 +1,21 @@
+{
+ "prelude": "",
+ "template": "{prelude}{col}\nvoid use() {{ {row} }}",
+ "rows": {
+  "no argument": "f();",
+  "one argument": "f(1);",
+  "two arguments": "f(1, 2);",
+  "three arguments": "f(1, 2, 3);"
+ },
+ "cols": {
+  "none": "void f();",
+  "one": "void f(int);",
+  "one default": "void f(int = 0);",
+  "two": "void f(int, int);",
+  "one then default": "void f(int, int = 0);",
+  "ellipsis": "void f(...);",
+  "one then ellipsis": "void f(int, ...);",
+  "pack": "template <class... T> void f(T...);",
+  "one then pack": "template <class... T> void f(int, T...);"
+ }
+}

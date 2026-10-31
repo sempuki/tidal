@@ -1,0 +1,21 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\ntemplate <class T> using ptr = T;\n",
+ "template": "{prelude}struct S {{\n#define R One\n{a}\n#undef R\n#define R Two\n{b}\n#undef R\n}};\nS s;\nconst S cs{{}};\n{row}",
+ "rows": {
+  "S lvalue → first": "static_assert(same<decltype(s(1)), One>);",
+  "S lvalue → second": "static_assert(same<decltype(s(1)), Two>);",
+  "const S lvalue → first": "static_assert(same<decltype(cs(1)), One>);",
+  "const S lvalue → second": "static_assert(same<decltype(cs(1)), Two>);",
+  "S prvalue → first": "static_assert(same<decltype(S{}(1)), One>);",
+  "S prvalue → second": "static_assert(same<decltype(S{}(1)), Two>);"
+ },
+ "pairs": {
+  "lref call": "R operator()(int) &;",
+  "const lref call": "R operator()(int) const&;",
+  "rref call": "R operator()(int) &&;",
+  "long call": "R operator()(long) const&;",
+  "surrogate": "operator ptr<R (*)(int)>();",
+  "const surrogate": "operator ptr<R (*)(int)>() const;",
+  "reference surrogate": "operator ptr<R (&)(int)>() const;"
+ }
+}

@@ -148,6 +148,20 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0135](Q-0135-scalar-against-array-reference.md) | Does a braced list prefer a scalar parameter to a reference to an array when both sequences are the identity? | provisional | no, they tie; GCC differs |
 | [Q-0136](Q-0136-list-to-array-reference-edge-cases.md) | Do empty braces or a designated list have a sequence to a reference to an array? | provisional | no; Clang agrees, GCC and EDG differ |
 | [Q-0137](Q-0137-array-argument-pointer-tie-breakers.md) | Do the pointer tie-breakers apply after an array-to-pointer step? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0138](Q-0138-function-reference-kind-tie-breaker.md) | Does the kind of a function reference break a tie between two conversion functions? | provisional | yes; GCC and EDG agree, Clang differs |
+| [Q-0139](Q-0139-surrogates-with-one-parameter-list.md) | Is a call ambiguous when two surrogates differ only in the qualifiers of their conversion functions? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0140](Q-0140-default-argument-from-two-scopes.md) | Is a call valid when it uses a default argument that two scopes give? | provisional | no, if the defaults differ; GCC agrees, Clang and EDG differ |
+| [Q-0141](Q-0141-builtin-candidate-operand-conversion.md) | After a built-in candidate wins, does a class operand convert past its conversion function? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0142](Q-0142-constraints-in-address-of-overload-set.md) | Does the more constrained function win when a target type selects from an overload set? | provisional | yes; Clang 22 and GCC 16 agree, EDG, Clang 18 and GCC 14 differ |
+| [Q-0143](Q-0143-call-through-address-with-static-member.md) | Can a call through the address of an overload set choose a static member? | provisional | yes; Clang 22 agrees, Clang 18 and GCC differ, EDG has an internal error |
+| [Q-0144](Q-0144-const-object-surrogate.md) | Does a const object get a surrogate from a conversion function that is not const? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0145](Q-0145-copy-list-init-explicit-conversion-function.md) | Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter? | provisional | no; GCC and EDG agree, Clang differs |
+| [Q-0146](Q-0146-constraints-between-templates-with-different-parameters.md) | Do constraints decide between two templates whose function parameters differ? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0147](Q-0147-rewritten-candidate-removes-builtin.md) | Does a rewritten candidate remove the built-in candidate with the same parameter list? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0148](Q-0148-reference-kind-against-template.md) | Does the plain-over-template tie-breaker come before the function reference kind? | provisional | yes; EDG and Clang's result agree, GCC differs |
+| [Q-0149](Q-0149-list-for-reference-to-unknown-bound-array.md) | What type does a braced list give a reference to an array of unknown bound? | provisional | the reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces |
+| [Q-0150](Q-0150-explicit-constructor-for-reference-temporary.md) | Can a braced list for a reference use an explicit constructor to make the temporary? | provisional | no; GCC and EDG agree, Clang differs |
+| [Q-0151](Q-0151-parenthesized-list-for-reference.md) | Can a parenthesized list of several values initialize a reference to an aggregate? | provisional | no; Clang and EDG agree, GCC differs |
 
 ## Status values
 

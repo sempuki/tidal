@@ -29,13 +29,13 @@ because the implementation knows how to write them.
 
 :::{rule} DEL-1
 :kind: reject
-:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp
+:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp
 
 A program must not refer to a deleted function, also in an operand that
 is not evaluated, such as `decltype` or `sizeof`. A deleted function
-takes part in overload resolution *(overload resolution referenced)*.
+takes part in overload resolution ({rule}`OVL-25`).
 If overload resolution selects a deleted function, the program is not
-valid.
+valid. This rule is a specific case of {rule}`OVL-37`.
 :::
 
 :::{rule} DEL-2

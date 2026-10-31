@@ -1,0 +1,23 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nstruct Three {};\nstruct Four {};\nstruct Order3 { friend Three operator<(Order3, int); };\nstruct Order4 { friend Four operator<(int, Order4); };\n",
+ "template": "{prelude}{col}\nX x;\n{row}",
+ "rows": {
+  "x < 1 → member": "static_assert(same<decltype(x < 1), One>);",
+  "x < 1 → non-member": "static_assert(same<decltype(x < 1), Two>);",
+  "x < 1 → built-in": "static_assert(same<decltype(x < 1), bool>);",
+  "x < 1 → rewritten": "static_assert(same<decltype(x < 1), Three>);",
+  "x < 1 → swapped": "static_assert(same<decltype(x < 1), Four>);"
+ },
+ "cols": {
+  "member / non-member": "struct X { One operator<(int) const; };\nTwo operator<(const X&, int);",
+  "member / built-in": "struct X { One operator<(int) const; operator int() const; };",
+  "member / rewritten": "struct X { One operator<(int) const; Order3 operator<=>(int) const; };",
+  "member / swapped": "struct X { One operator<(int) const; };\nOrder4 operator<=>(int, const X&);",
+  "non-member / built-in": "struct X { operator int() const; };\nTwo operator<(const X&, int);",
+  "non-member / rewritten": "struct X { Order3 operator<=>(int) const; };\nTwo operator<(const X&, int);",
+  "non-member / swapped": "struct X {  };\nTwo operator<(const X&, int);\nOrder4 operator<=>(int, const X&);",
+  "built-in / rewritten": "struct X { operator int() const; Order3 operator<=>(int) const; };",
+  "built-in / swapped": "struct X { operator int() const; };\nOrder4 operator<=>(int, const X&);",
+  "rewritten / swapped": "struct X { Order3 operator<=>(int) const; };\nOrder4 operator<=>(int, const X&);"
+ }
+}

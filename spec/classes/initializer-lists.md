@@ -13,7 +13,7 @@ List initialization of aggregates and scalars is with initialization.
 
 Depends on: list initialization and aggregates, constructors and
 destructors, overload resolution
-*(overload resolution referenced)*.
+({doc}`/foundations/overload-resolution`).
 
 ## Principles
 
@@ -112,6 +112,8 @@ In copy list initialization, `explicit` constructors are candidates too.
 Copy initialization with `=` and one value is different, because
 `explicit` constructors are not candidates there. {rule}`ICS-19` gives
 the conversion sequence that this choice forms for a parameter.
+{rule}`OVL-14` gives the candidates of the other forms of
+initialization.
 :::
 
 :::{rule} ILC-8

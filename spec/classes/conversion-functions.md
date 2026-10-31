@@ -10,7 +10,7 @@ function, unless the function is `explicit`. This page covers:
   standard conversions.
 
 Depends on: constructors and destructors, standard conversions, overload
-resolution *(overload resolution referenced)*.
+resolution ({doc}`/foundations/overload-resolution`).
 
 ## Principles
 
@@ -119,7 +119,7 @@ An implicit conversion can call a conversion function that is not
 - the operand of `delete`.
 
 A call `s(args)` can use a
-conversion to a pointer or reference to function. A standard conversion
+conversion to a pointer or reference to function ({rule}`OVL-6`). A standard conversion
 can follow the conversion function. {rule}`ICS-4` lists the conversion
 functions that a conversion can use.
 :::
