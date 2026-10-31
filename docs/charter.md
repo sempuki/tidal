@@ -60,7 +60,8 @@ Out of scope:
 
 - The preprocessor, lexical structure, modules.
 - Templates and overload resolution as topics of their own.
-- The standard library.
+- The standard library, except the language-support types that the core
+  rules name (decision 0041).
 - Coroutines (`co_await`, `co_yield`, `co_return`).
 - The memory model and threads.
 

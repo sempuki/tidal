@@ -51,8 +51,9 @@ its features are its own inventions.
 
 Each suite has three to five tasks. A task names what the program must
 do and how it reports success (`static_assert` and `main`'s return
-value, as the tests do). Tasks never use `#include`, because the
-library is out of scope.
+value, as the tests do). Tasks never use `#include`. A program that
+needs a language-support type declares the shape that its page gives
+(decision 0041).
 
 | ID | Theme | Persona | Target pages | Tasks |
 |---|---|---|---|---|
@@ -162,7 +163,8 @@ Fill in the angle brackets.
 
 > You are an experienced <persona> programmer who has never written C++.
 > Write these programs from the spec alone, one .cpp file each, without
-> #include: <tasks from the suite>. Before writing, note the rule and
+> #include (declare a language-support type in `namespace std` as its
+> page gives it): <tasks from the suite>. Before writing, note the rule and
 > principle IDs that tell you how to write each construct. Build each
 > with `g++` and `clang++` using `-std=c++23 -pedantic-errors -Wall
 > -Wextra`, run it, and check that it exits 0. Build once more with
