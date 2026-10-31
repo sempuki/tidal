@@ -28,6 +28,7 @@ See [docs/charter.md](docs/charter.md).
 | `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
 | `docs/spec-format.md` | Rule classes and test directives |
 | `docs/pipeline.md` | The step-by-step process for producing a section |
+| `docs/exercises.md` | Spec-only exercises that check the specification by using it |
 | `docs/decisions/` | One file per design decision, numbered in order |
 | `docs/status.md` | Where the project stands and what comes next |
 | `spec/` | The Tidal specification text; `spec/index.md` is the site front page and table of contents |
