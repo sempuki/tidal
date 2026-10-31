@@ -174,4 +174,5 @@ contradictory, grammar gap, untestable, outside the spec, or needs
 example. The reader may also read `tests/` and `questions/`, and writes
 only in `frontend/` and its report directory. It can use any Rust crate
 that does not encode knowledge of C++, and it covers the pages that are
-new or changed (decision 0035).
+new or changed (decision 0035). `tools/frontend_check.py` compares its
+results on every check with a committed baseline.

@@ -51,5 +51,12 @@ The similarity check needs WG21 document N4950 outside the repository
 
 It runs the spec checks, the full test matrix, the similarity check when
 `TIDAL_REFERENCE` names the corpus (for example
-`TIDAL_REFERENCE=~/tidal-reference/draft/source`), and the site build.
-The first full run fills `build/cache` and takes the longest.
+`TIDAL_REFERENCE=~/tidal-reference/draft/source`), the front-end check
+when cargo is installed, and the site build. The first full run fills
+`build/cache` and takes the longest.
+
+`tools/frontend_check.py` builds the clean-room front end and compares
+its result on each test with
+`reports/clean-room/rust-frontend/conformance.tsv`. It fails when a
+test that passed no longer passes. After a change to the tests or the
+front end, check each change it reports and run it with `--update`.

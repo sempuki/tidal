@@ -119,6 +119,10 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
+- The clean-room front end passes 2331 of 3084 tests.
+  `tools/frontend_check.py` fails when a test that it passed no longer
+  passes (`reports/clean-room/rust-frontend/conformance.tsv`).
+
 - 1451 tests carry `tidal-error` patterns, which check that a compiler
   rejects them, fails to link them, or stops them at run time, for the
   reason their rule gives.
@@ -144,12 +148,17 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-`docs/roadmap.md` orders the work (decision 0033). The current phase is
-phase 1, repair what exists:
+`docs/roadmap.md` orders the work (decision 0033). Phase 1 is done. The
+current phase is phase 2, foundations that later pages need:
 
-1. The remaining process checks of phase 1: nonterminals defined once,
-   stale markers, a "compiler defect" question status, and front-end
-   conformance as a regression signal.
+1. Item E: a page of fundamental types, ranks, and per-target values,
+   with the values in tables (decision 0036).
+2. An EDG entry for the `-m32` target. EDG ships an i686 configuration,
+   which builds EDG itself as a 32-bit program.
+3. Item F: a grammar notation, then one grammar in which every
+   nonterminal is defined. `tools/check_spec.py` then makes an undefined
+   nonterminal an error.
+4. Item K: the language-support types, then the task-level guides.
 
 Waiting on the maintainer:
 
