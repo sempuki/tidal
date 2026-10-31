@@ -162,6 +162,61 @@ compilers affect the Status column.
 | `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/alias-same-type-hides.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` | CVF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/ambiguous-two-functions.cpp` | CVF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/array-bound-new.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/basic.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/best-match-exact.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/builtin-operator.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/call-by-name.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/const-overloads.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/const-qualified-needed.cpp` | CVF-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/constexpr-conversion.cpp` | CVF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/conversion-to-base-not-used.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-base-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-self-not-used.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-self-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-void-explicit-call.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/conversion-to-void-warns.cpp` | CVF-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/conversion-to-void.cpp` | CVF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/deduced-auto.cpp` | CVF-1 | run | run | reject | accept | run | run | reject | run | pass |
+| `classes/conversion-functions/different-type-not-hidden.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/explicit-argument.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-arithmetic.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-comparison.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-copy-init.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-if.cpp` | CVF-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/explicit-bool-noexcept.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-bool-return.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-bool-static-assert.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-brace-init.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-condition-constant.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-copy-init.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/explicit-direct-init.cpp` | CVF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/conversion-functions/explicit-int-in-if.cpp` | CVF-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/function-argument.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/function-pointer-without-alias.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/hidden-same-type.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/inherited.cpp` | CVF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/nonmember.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/out-of-line.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/parameters.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/pointer-target.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/redeclared.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/return-statement.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/return-type.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/static.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/switch-condition.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/then-standard-conversion.cpp` | CVF-2 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/to-array.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/to-function-pointer.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/to-function.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/to-reference.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/conversion-functions/two-converting-ctors.cpp` | CVF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/two-user-conversions.cpp` | CVF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/variadic.cpp` | CVF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/conversion-functions/virtual-conversion.cpp` | CVF-1 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/assign-result-lvalue.cpp` | CPY-6 | run | run | run | accept | run | run | run | run | pass |
 | `classes/copy-move/cast-move-only-accepted.cpp` | CPY-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/const-member-assign.cpp` | CPY-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -367,6 +422,181 @@ compilers affect the Status column.
 | `classes/members/static-uses-this.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-virtual.cpp` | CLS-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/aggregate-first-member.cpp` | UNI-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-default-member-init.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-function.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-init.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-local.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-member.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-name-conflict.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-namespace-nonstatic.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-namespace-static.cpp` | UNI-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/anonymous-union-nested-type.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-private.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-static-member.cpp` | UNI-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/anonymous-union-unnamed-namespace.cpp` | UNI-9 | reject | accept | reject | reject | reject | accept | reject | accept | pass |
+| `classes/unions/assign-changes-active.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-address.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-aggregate-skips-unnamed.cpp` | BF-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-alignof-type-ok.cpp` | BF-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-auto-type.cpp` | BF-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-basic.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-bool-wide.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-bool.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-char-types.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-const-ref-temp.cpp` | BF-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-constant-fits.cpp` | BF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-too-wide.cpp` | BF-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-truncation-warns.cpp` | BF-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-constant-width.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-constant-wraps.cpp` | BF-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-enum.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-fits-no-warning.cpp` | BF-8 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-float.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-in-union.cpp` | BF-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-init-default-member.cpp` | BF-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-layout-lp64.cpp` | BF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-narrowing-init.cpp` | BF-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-negative-width.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-nonconst-ref.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-nonconstant-width.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-plain-int-signed.cpp` | BF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-pointer.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-promotes-to-int.cpp` | BF-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-signed-wraps.cpp` | BF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-sizeof.cpp` | BF-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-static.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-typedef.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `classes/unions/bitfield-unsigned-wraps.cpp` | BF-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-very-wide.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-wide-unsigned-promotion.cpp` | BF-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/bitfield-wider-than-type.cpp` | BF-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-wider-warns.cpp` | BF-8 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-zero-named.cpp` | BF-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-zero-unnamed.cpp` | BF-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-zero-width-splits.cpp` | BF-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/compound-assign-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/default-member-init-active.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/designated-member.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/mem-init-two-members.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/member-addresses-equal.cpp` | UNI-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/narrowing-first-member.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/nontrivial-member-needs-construction.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/read-inactive-after-switch-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/read-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/shared-storage.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/two-default-member-inits.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/two-designators.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/two-initializers.cpp` | UNI-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-array-member.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-copy-preserves-active.cpp` | UNI-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-default-member-init-enables-ctor.cpp` | UNI-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-member-functions.cpp` | UNI-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/union-nontrivial-copy-deleted.cpp` | UNI-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-dtor-only.cpp` | UNI-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-member-deleted-ctor.cpp` | UNI-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-nontrivial-member-user-ctor-dtor.cpp` | UNI-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-private-members.cpp` | UNI-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-reference-member.cpp` | UNI-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-static-member.cpp` | UNI-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-trivial-copy.cpp` | UNI-3 | run | run | run | accept | run | run | run | run | pass |
+| `classes/unions/value-init-zero.cpp` | UNI-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-array.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-capture-by-reference.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-capture-by-value.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-cast-temporary.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-function-declaration-ok.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-member.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-new.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-param-definition.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-pointer-ref-ok.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-return-definition.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/abstract-sizeof.cpp` | VIRT-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/abstract-variable.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/call-during-construction-constant.cpp` | VIRT-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/call-during-construction.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/call-during-destruction.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/call-during-member-init.cpp` | VIRT-6 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/const-qualifier-must-match.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/consteval-overrides-virtual.cpp` | VIRT-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/consteval-virtual-pair.cpp` | VIRT-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-ambiguous-base.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-by-value-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-incomplete.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-less-cv-ok.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-more-cv-rejected.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-pointer.cpp` | VIRT-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/covariant-private-base-other.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/covariant-private-base.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-reference.cpp` | VIRT-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/covariant-through-base-pointer.cpp` | VIRT-4 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/covariant-unrelated.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/default-args-static-type.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/delete-nonvirtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/derived-concrete.cpp` | VIRT-8 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/derived-still-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/different-params-no-override.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-ambiguous-target.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-casts-away-const.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-constant.cpp` | VIRT-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/dynamic-cast-cross.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-down.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-from-nonpointer.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-incomplete.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-nonpolymorphic.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-not-pointer.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-null.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-private-base.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-reference.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-to-nonclass.cpp` | VIRT-18 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp` | VIRT-18 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/dynamic-cast-void.cpp` | VIRT-10 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/final-different-params-ok.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/final-function.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/final-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/final-on-override.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/hidden-virtual-warns.cpp` | VIRT-13 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
+| `classes/virtual/no-unique-final-overrider.cpp` | VIRT-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/nonvirtual-base-two-overriders.cpp` | VIRT-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/nonvirtual-dtor-delete-constant.cpp` | VIRT-12 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
+| `classes/virtual/object-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/override-final-order.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/override-identifier.cpp` | VIRT-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/override-nonvirtual.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/override-nothing.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/override-out-of-class.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/override-through-intermediate.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/override-without-virtual-keyword.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/polymorphic-class.cpp` | VIRT-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/private-override.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/pure-call-in-ctor-constant.cpp` | VIRT-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-defined-out-of-line.cpp` | VIRT-16 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/pure-dtor-defined.cpp` | VIRT-16 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/pure-dtor-needs-definition.cpp` | VIRT-17 | link-fail | link-fail | link-fail | accept | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/virtual/pure-friend.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-inline-definition.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-nonvirtual.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-not-zero.cpp` | VIRT-9 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/pure-override-makes-abstract.cpp` | VIRT-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/qualified-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/ref-qualifier-must-match.cpp` | VIRT-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/return-type-mismatch.cpp` | VIRT-15 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/static-overrides-virtual.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/unique-final-overrider-resolved.cpp` | VIRT-5 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/virtual-auto-return.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-data-member.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-dtor-delete-constant.cpp` | VIRT-7 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/virtual-dtor-delete.cpp` | VIRT-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/virtual-dtor-inherited.cpp` | VIRT-7 | run | run | run | accept | run | run | run | run | pass |
+| `classes/virtual/virtual-in-constexpr.cpp` | VIRT-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/virtual-in-union.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-nonmember.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-out-of-class.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-static.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-template.cpp` | VIRT-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-trailing-return.cpp` | VIRT-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-bool.cpp` | ATTR-13 | reject | reject | reject | reject | reject | accept | reject | reject | pass |
 | `declarations/attributes/assume-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | run | run | run | run | pass |
@@ -1573,7 +1803,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-1558/1558 tests pass on baseline compilers.
+1788/1788 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -2141,6 +2371,173 @@ check that the rejection has the intended cause.
 - `classes/constructors/use-after-dtor-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
 - `classes/constructors/use-after-dtor-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression
 - `classes/constructors/use-after-dtor-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of object outside its lifetime is not allowed in a constant expression
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (clang-host): error: conversion from 'A' to 'B' is ambiguous / note: candidate function
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (gcc-host): error: conversion from ‘A’ to ‘B’ is ambiguous / note: initializing argument 1 of ‘void take(B)’
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (edg-7.0): error: more than one user-defined conversion from "A" to "B" applies:
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (gcc-14): error: conversion from 'A' to 'B' is ambiguous / note: candidate: 'A::operator B() const'
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (clang-18): error: conversion from 'A' to 'B' is ambiguous / note: candidate function
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (gcc-16): error: conversion from 'A' to 'B' is ambiguous / note: initializing argument 1 of 'void take(B)'
+- `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` (clang-22): error: conversion from 'A' to 'B' is ambiguous / note: candidate function
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (clang-host): error: conversion from 'S' to 'double' is ambiguous / note: candidate function
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (gcc-host): error: conversion from ‘S’ to ‘double’ is ambiguous
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (edg-7.0): error: more than one conversion function from "S" to "double" applies:
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (gcc-14): error: conversion from 'S' to 'double' is ambiguous / note: candidate: 'S::operator int() const'
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (clang-18): error: conversion from 'S' to 'double' is ambiguous / note: candidate function
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (gcc-16): error: conversion from 'S' to 'double' is ambiguous
+- `classes/conversion-functions/ambiguous-two-functions.cpp` (clang-22): error: conversion from 'S' to 'double' is ambiguous / note: candidate function
+- `classes/conversion-functions/const-qualified-needed.cpp` (clang-host): error: no viable conversion from returned value of type 'const S' to function return type 'int' / note: candidate function not viable: 'this' argument has type 'const S', but method is not marked const
+- `classes/conversion-functions/const-qualified-needed.cpp` (gcc-host): error: passing ‘const S’ as ‘this’ argument discards qualifiers [-fpermissive]
+- `classes/conversion-functions/const-qualified-needed.cpp` (edg-7.0): error: no suitable conversion function from "const S" to "int" exists
+- `classes/conversion-functions/const-qualified-needed.cpp` (gcc-14): error: passing 'const S' as 'this' argument discards qualifiers [-fpermissive]
+- `classes/conversion-functions/const-qualified-needed.cpp` (clang-18): error: no viable conversion from returned value of type 'const S' to function return type 'int' / note: candidate function not viable: 'this' argument has type 'const S', but method is not marked const
+- `classes/conversion-functions/const-qualified-needed.cpp` (gcc-16): error: passing 'const S' as 'this' argument discards qualifiers [-fpermissive]
+- `classes/conversion-functions/const-qualified-needed.cpp` (clang-22): error: no viable conversion from returned value of type 'const S' to function return type 'int' / note: candidate function not viable: 'this' argument has type 'const S', but method is not marked const
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (clang-host): error: conversion function converting 'D' to its base class 'B' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (gcc-host): error: converting ‘D’ to a base class ‘B’ will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (gcc-14): error: converting 'D' to a base class 'B' will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (clang-18): error: conversion function converting 'D' to its base class 'B' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (gcc-16): error: converting 'D' to a base class 'B' will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-base-warns.cpp` (clang-22): error: conversion function converting 'D' to its base class 'B' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (clang-host): error: conversion function converting 'S' to itself will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (gcc-host): error: converting ‘S’ to the same type will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (gcc-14): error: converting 'S' to the same type will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (clang-18): error: conversion function converting 'S' to itself will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (gcc-16): error: converting 'S' to the same type will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-self-warns.cpp` (clang-22): error: conversion function converting 'S' to itself will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (clang-host): error: conversion function converting 'S' to 'void' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (gcc-host): error: converting ‘S’ to ‘void’ will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (gcc-14): error: converting 'S' to 'void' will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (clang-18): error: conversion function converting 'S' to 'void' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (gcc-16): error: converting 'S' to 'void' will never use a type conversion operator [-Werror=class-conversion]
+- `classes/conversion-functions/conversion-to-void-warns.cpp` (clang-22): error: conversion function converting 'S' to 'void' will never be used [-Werror,-Wclass-conversion]
+- `classes/conversion-functions/deduced-auto.cpp` (gcc-host): error: invalid use of ‘auto’ in conversion operator [-Wpedantic]
+- `classes/conversion-functions/deduced-auto.cpp` (gcc-16): error: invalid use of 'auto' in conversion operator [-Wpedantic]
+- `classes/conversion-functions/explicit-argument.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'S' to 'int' for 1st argument
+- `classes/conversion-functions/explicit-argument.cpp` (gcc-host): error: cannot convert ‘S’ to ‘int’ / note: initializing argument 1 of ‘void take(int)’
+- `classes/conversion-functions/explicit-argument.cpp` (edg-7.0): error: no suitable conversion function from "S" to "int" exists
+- `classes/conversion-functions/explicit-argument.cpp` (gcc-14): error: cannot convert 'S' to 'int' / note:   initializing argument 1 of 'void take(int)'
+- `classes/conversion-functions/explicit-argument.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'S' to 'int' for 1st argument
+- `classes/conversion-functions/explicit-argument.cpp` (gcc-16): error: cannot convert 'S' to 'int' / note: initializing argument 1 of 'void take(int)'
+- `classes/conversion-functions/explicit-argument.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'S' to 'int' for 1st argument
+- `classes/conversion-functions/explicit-arithmetic.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'int')
+- `classes/conversion-functions/explicit-arithmetic.cpp` (gcc-host): error: no match for ‘operator+’ (operand types are ‘S’ and ‘int’)
+- `classes/conversion-functions/explicit-arithmetic.cpp` (edg-7.0): error: no operator "+" matches these operands / note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/conversion-functions/explicit-arithmetic.cpp` (gcc-14): error: no match for 'operator+' (operand types are 'S' and 'int') / note: candidate: 'operator+(int, int)' (built-in)
+- `classes/conversion-functions/explicit-arithmetic.cpp` (clang-18): error: invalid operands to binary expression ('S' and 'int')
+- `classes/conversion-functions/explicit-arithmetic.cpp` (gcc-16): error: no match for 'operator+' (operand types are 'S' and 'int')
+- `classes/conversion-functions/explicit-arithmetic.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'int')
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (clang-host): error: invalid operands to binary expression ('H' and 'bool')
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘H’ and ‘bool’)
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'H' and 'bool') / note: candidate: 'operator==(int, int)' (built-in)
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (clang-18): error: invalid operands to binary expression ('H' and 'bool')
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'H' and 'bool')
+- `classes/conversion-functions/explicit-bool-comparison.cpp` (clang-22): error: invalid operands to binary expression ('H' and 'bool')
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (clang-host): error: no viable conversion from 'H' to 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (gcc-host): error: cannot convert ‘H’ to ‘bool’ in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (edg-7.0): error: no suitable conversion function from "H" to "bool" exists
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (gcc-14): error: cannot convert 'H' to 'bool' in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (clang-18): error: no viable conversion from 'H' to 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (gcc-16): error: cannot convert 'H' to 'bool' in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-copy-init.cpp` (clang-22): error: no viable conversion from 'H' to 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-bool-return.cpp` (clang-host): error: no viable conversion from returned value of type 'H' to function return type 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-bool-return.cpp` (gcc-host): error: cannot convert ‘H’ to ‘bool’ in return / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-return.cpp` (edg-7.0): error: no suitable conversion function from "H" to "bool" exists
+- `classes/conversion-functions/explicit-bool-return.cpp` (gcc-14): error: cannot convert 'H' to 'bool' in return / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-return.cpp` (clang-18): error: no viable conversion from returned value of type 'H' to function return type 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-bool-return.cpp` (gcc-16): error: cannot convert 'H' to 'bool' in return / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-bool-return.cpp` (clang-22): error: no viable conversion from returned value of type 'H' to function return type 'bool' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-copy-init.cpp` (clang-host): error: no viable conversion from 'S' to 'int' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-copy-init.cpp` (gcc-host): error: cannot convert ‘S’ to ‘int’ in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-copy-init.cpp` (edg-7.0): error: no suitable conversion function from "S" to "int" exists
+- `classes/conversion-functions/explicit-copy-init.cpp` (gcc-14): error: cannot convert 'S' to 'int' in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-copy-init.cpp` (clang-18): error: no viable conversion from 'S' to 'int' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-copy-init.cpp` (gcc-16): error: cannot convert 'S' to 'int' in initialization / note: explicit conversion function was not considered
+- `classes/conversion-functions/explicit-copy-init.cpp` (clang-22): error: no viable conversion from 'S' to 'int' / note: explicit conversion function is not a candidate
+- `classes/conversion-functions/explicit-int-in-if.cpp` (clang-host): error: value of type 'S' is not contextually convertible to 'bool'
+- `classes/conversion-functions/explicit-int-in-if.cpp` (gcc-host): error: invalid user-defined conversion from ‘S’ to ‘bool’ [-fpermissive]
+- `classes/conversion-functions/explicit-int-in-if.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `classes/conversion-functions/explicit-int-in-if.cpp` (gcc-14): error: invalid user-defined conversion from 'S' to 'bool' [-fpermissive] / note: candidate is: 'S::operator int() const' (near match)
+- `classes/conversion-functions/explicit-int-in-if.cpp` (clang-18): error: value of type 'S' is not contextually convertible to 'bool'
+- `classes/conversion-functions/explicit-int-in-if.cpp` (gcc-16): error: invalid user-defined conversion from 'S' to 'bool' [-fpermissive]
+- `classes/conversion-functions/explicit-int-in-if.cpp` (clang-22): error: value of type 'S' is not contextually convertible to 'bool'
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (clang-host): error: a type specifier is required for all declarations / error: conversion function cannot have any parameters
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (gcc-host): error: expected identifier before ‘*’ token / error: ‘<invalid operator>’ declared as function returning a function
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (edg-7.0): error: expected a type specifier / error: function returning function is not allowed
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (gcc-14): error: expected identifier before '*' token / error: '<invalid operator>' declared as function returning a function
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (clang-18): error: a type specifier is required for all declarations / error: conversion function cannot have any parameters
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (gcc-16): error: expected identifier before '*' token / error: '<invalid operator>' declared as function returning a function
+- `classes/conversion-functions/function-pointer-without-alias.cpp` (clang-22): error: a type specifier is required for all declarations / error: conversion function cannot have any parameters
+- `classes/conversion-functions/nonmember.cpp` (clang-host): error: conversion function must be a non-static member function
+- `classes/conversion-functions/nonmember.cpp` (gcc-host): error: expected constructor, destructor, or type conversion before ‘;’ token
+- `classes/conversion-functions/nonmember.cpp` (edg-7.0): error: conversion function must be a nonstatic member function
+- `classes/conversion-functions/nonmember.cpp` (gcc-14): error: expected constructor, destructor, or type conversion before ';' token
+- `classes/conversion-functions/nonmember.cpp` (clang-18): error: conversion function must be a non-static member function
+- `classes/conversion-functions/nonmember.cpp` (gcc-16): error: expected constructor, destructor, or type conversion before ';' token
+- `classes/conversion-functions/nonmember.cpp` (clang-22): error: conversion function must be a non-static member function
+- `classes/conversion-functions/parameters.cpp` (clang-host): error: conversion function cannot have any parameters
+- `classes/conversion-functions/parameters.cpp` (gcc-host): error: ‘S::operator int(int)’ must have no arguments
+- `classes/conversion-functions/parameters.cpp` (edg-7.0): error: no arguments allowed on user-defined conversion
+- `classes/conversion-functions/parameters.cpp` (gcc-14): error: 'S::operator int(int)' must have no arguments
+- `classes/conversion-functions/parameters.cpp` (clang-18): error: conversion function cannot have any parameters
+- `classes/conversion-functions/parameters.cpp` (gcc-16): error: 'S::operator int(int)' must have no arguments
+- `classes/conversion-functions/parameters.cpp` (clang-22): error: conversion function cannot have any parameters
+- `classes/conversion-functions/redeclared.cpp` (clang-host): error: conversion function cannot be redeclared / note: previous declaration is here
+- `classes/conversion-functions/redeclared.cpp` (gcc-host): error: ‘S::operator int()’ cannot be overloaded with ‘S::operator int()’ / note: previous declaration ‘S::operator int()’
+- `classes/conversion-functions/redeclared.cpp` (edg-7.0): error: invalid redeclaration of member function "S::operator int()" (declared at line 3)
+- `classes/conversion-functions/redeclared.cpp` (gcc-14): error: 'S::operator int()' cannot be overloaded with 'S::operator int()' / note: previous declaration 'S::operator int()'
+- `classes/conversion-functions/redeclared.cpp` (clang-18): error: conversion function cannot be redeclared / note: previous declaration is here
+- `classes/conversion-functions/redeclared.cpp` (gcc-16): error: 'S::operator int()' cannot be overloaded with 'S::operator int()' / note: previous declaration 'S::operator int()'
+- `classes/conversion-functions/redeclared.cpp` (clang-22): error: conversion function cannot be redeclared / note: previous declaration is here
+- `classes/conversion-functions/return-type.cpp` (clang-host): error: conversion function cannot have a return type
+- `classes/conversion-functions/return-type.cpp` (gcc-host): error: return type specified for ‘operator int’
+- `classes/conversion-functions/return-type.cpp` (edg-7.0): error: return type may not be specified on a conversion function
+- `classes/conversion-functions/return-type.cpp` (gcc-14): error: return type specified for 'operator int'
+- `classes/conversion-functions/return-type.cpp` (clang-18): error: conversion function cannot have a return type
+- `classes/conversion-functions/return-type.cpp` (gcc-16): error: return type specified for 'operator int'
+- `classes/conversion-functions/return-type.cpp` (clang-22): error: conversion function cannot have a return type
+- `classes/conversion-functions/static.cpp` (clang-host): error: conversion function must be a non-static member function
+- `classes/conversion-functions/static.cpp` (gcc-host): error: ‘static S::operator int()’ must be a non-static member function
+- `classes/conversion-functions/static.cpp` (edg-7.0): error: conversion function must be a nonstatic member function
+- `classes/conversion-functions/static.cpp` (gcc-14): error: 'static S::operator int()' must be a non-static member function
+- `classes/conversion-functions/static.cpp` (clang-18): error: conversion function must be a non-static member function
+- `classes/conversion-functions/static.cpp` (gcc-16): error: 'static S::operator int()' must be a non-static member function
+- `classes/conversion-functions/static.cpp` (clang-22): error: conversion function must be a non-static member function
+- `classes/conversion-functions/to-array.cpp` (clang-host): error: 'operator int' cannot be the name of a variable or data member
+- `classes/conversion-functions/to-array.cpp` (gcc-host): error: ‘operator int’ does not name a type
+- `classes/conversion-functions/to-array.cpp` (edg-7.0): error: array of functions is not allowed / error: an operator name must be declared as a function
+- `classes/conversion-functions/to-array.cpp` (gcc-14): error: 'operator int' does not name a type
+- `classes/conversion-functions/to-array.cpp` (clang-18): error: 'operator int' cannot be the name of a variable or data member
+- `classes/conversion-functions/to-array.cpp` (gcc-16): error: 'operator int' does not name a type
+- `classes/conversion-functions/to-array.cpp` (clang-22): error: 'operator int' cannot be the name of a variable or data member
+- `classes/conversion-functions/to-function.cpp` (clang-host): error: conversion function cannot convert to a function type
+- `classes/conversion-functions/to-function.cpp` (gcc-host): error: ‘<invalid operator>’ declared as function returning a function
+- `classes/conversion-functions/to-function.cpp` (edg-7.0): error: function returning function is not allowed
+- `classes/conversion-functions/to-function.cpp` (gcc-14): error: '<invalid operator>' declared as function returning a function
+- `classes/conversion-functions/to-function.cpp` (clang-18): error: conversion function cannot convert to a function type
+- `classes/conversion-functions/to-function.cpp` (gcc-16): error: '<invalid operator>' declared as function returning a function
+- `classes/conversion-functions/to-function.cpp` (clang-22): error: conversion function cannot convert to a function type
+- `classes/conversion-functions/two-converting-ctors.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'D' for 1st argument
+- `classes/conversion-functions/two-converting-ctors.cpp` (gcc-host): error: could not convert ‘3’ from ‘int’ to ‘D’
+- `classes/conversion-functions/two-converting-ctors.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "D"
+- `classes/conversion-functions/two-converting-ctors.cpp` (gcc-14): error: could not convert '3' from 'int' to 'D'
+- `classes/conversion-functions/two-converting-ctors.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'D' for 1st argument
+- `classes/conversion-functions/two-converting-ctors.cpp` (gcc-16): error: could not convert '3' from 'int' to 'D'
+- `classes/conversion-functions/two-converting-ctors.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'D' for 1st argument
+- `classes/conversion-functions/two-user-conversions.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'A' to 'B' for 1st argument
+- `classes/conversion-functions/two-user-conversions.cpp` (gcc-host): error: could not convert ‘A()’ from ‘A’ to ‘B’
+- `classes/conversion-functions/two-user-conversions.cpp` (edg-7.0): error: no suitable user-defined conversion from "A" to "B" exists
+- `classes/conversion-functions/two-user-conversions.cpp` (gcc-14): error: could not convert 'A()' from 'A' to 'B'
+- `classes/conversion-functions/two-user-conversions.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'A' to 'B' for 1st argument
+- `classes/conversion-functions/two-user-conversions.cpp` (gcc-16): error: could not convert 'A()' from 'A' to 'B'
+- `classes/conversion-functions/two-user-conversions.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'A' to 'B' for 1st argument
+- `classes/conversion-functions/variadic.cpp` (clang-host): error: conversion function cannot be variadic
+- `classes/conversion-functions/variadic.cpp` (gcc-host): error: ‘S::operator int(...)’ must not have variable number of arguments
+- `classes/conversion-functions/variadic.cpp` (edg-7.0): error: no arguments allowed on user-defined conversion
+- `classes/conversion-functions/variadic.cpp` (gcc-14): error: 'S::operator int(...)' must not have variable number of arguments
+- `classes/conversion-functions/variadic.cpp` (clang-18): error: conversion function cannot be variadic
+- `classes/conversion-functions/variadic.cpp` (gcc-16): error: 'S::operator int(...)' must not have variable number of arguments
+- `classes/conversion-functions/variadic.cpp` (clang-22): error: conversion function cannot be variadic
 - `classes/copy-move/const-member-assign.cpp` (clang-host): error: object of type 'S' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'S' is implicitly deleted because field 'c' is of const-qualified type 'const int'
 - `classes/copy-move/const-member-assign.cpp` (gcc-host): error: use of deleted function ‘S& S::operator=(const S&)’ / note: ‘S& S::operator=(const S&)’ is implicitly deleted because the default definition would be ill-formed:
 - `classes/copy-move/const-member-assign.cpp` (edg-7.0): error: function "S::operator=(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
@@ -2817,6 +3214,573 @@ check that the rejection has the intended cause.
 - `classes/members/static-virtual.cpp` (clang-18): error: 'virtual' can only appear on non-static member functions
 - `classes/members/static-virtual.cpp` (gcc-16): error: member 'f' cannot be declared both 'virtual' and 'static'
 - `classes/members/static-virtual.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
+- `classes/unions/anonymous-union-function.cpp` (clang-host): error: functions cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-function.cpp` (gcc-host): error: ‘void f()::<unnamed union>::g()’ invalid; an anonymous union may only have public non-static data members [-fpermissive] / error: ‘void f()::<unnamed union>::g()’ invalid; an anonymous union can only have non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-function.cpp` (edg-7.0): error: invalid anonymous union -- member function is not allowed
+- `classes/unions/anonymous-union-function.cpp` (gcc-14): error: 'void f()::<unnamed union>::g()' invalid; an anonymous union may only have public non-static data members [-fpermissive] / error: 'void f()::<unnamed union>::g()' invalid; an anonymous union can only have non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-function.cpp` (clang-18): error: functions cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-function.cpp` (gcc-16): error: 'void f()::<unnamed union>::g()' invalid; an anonymous union may only have public non-static data members [-fpermissive] / error: 'void f()::<unnamed union>::g()' invalid; an anonymous union can only have non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-function.cpp` (clang-22): error: functions cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-name-conflict.cpp` (clang-host): error: member of anonymous union redeclares 'i' / note: previous declaration is here
+- `classes/unions/anonymous-union-name-conflict.cpp` (gcc-host): error: ‘int S::<unnamed union>::i’ conflicts with a previous declaration / note: previous declaration ‘int S::i’
+- `classes/unions/anonymous-union-name-conflict.cpp` (edg-7.0): error: "i" has already been declared in the current scope
+- `classes/unions/anonymous-union-name-conflict.cpp` (gcc-14): error: 'int S::<unnamed union>::i' conflicts with a previous declaration / note: previous declaration 'int S::i'
+- `classes/unions/anonymous-union-name-conflict.cpp` (clang-18): error: member of anonymous union redeclares 'i' / note: previous declaration is here
+- `classes/unions/anonymous-union-name-conflict.cpp` (gcc-16): error: 'int S::<unnamed union>::i' conflicts with a previous declaration / note: previous declaration 'int S::i'
+- `classes/unions/anonymous-union-name-conflict.cpp` (clang-22): error: member of anonymous union redeclares 'i' / note: previous declaration is here
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (clang-host): error: anonymous unions at namespace or global scope must be declared 'static'
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (gcc-host): error: namespace-scope anonymous aggregates must be static
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (edg-7.0): error: anonymous union at global or namespace scope must be declared static
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (gcc-14): error: namespace-scope anonymous aggregates must be static
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (clang-18): error: anonymous unions at namespace or global scope must be declared 'static'
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (gcc-16): error: namespace-scope anonymous aggregates must be static
+- `classes/unions/anonymous-union-namespace-nonstatic.cpp` (clang-22): error: anonymous unions at namespace or global scope must be declared 'static'
+- `classes/unions/anonymous-union-nested-type.cpp` (clang-host): error: types cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-nested-type.cpp` (gcc-host): error: ‘struct S::<unnamed union>::T’ invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-nested-type.cpp` (edg-7.0): error: types cannot be declared in anonymous unions
+- `classes/unions/anonymous-union-nested-type.cpp` (gcc-14): error: 'struct S::<unnamed union>::T' invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-nested-type.cpp` (clang-18): error: types cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-nested-type.cpp` (gcc-16): error: 'struct S::<unnamed union>::T' invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-nested-type.cpp` (clang-22): error: types cannot be declared in an anonymous union
+- `classes/unions/anonymous-union-private.cpp` (clang-host): error: anonymous union cannot contain a private data member
+- `classes/unions/anonymous-union-private.cpp` (gcc-host): error: ‘int S::<unnamed union>::i’ invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-private.cpp` (edg-7.0): error: invalid anonymous union -- nonpublic member is not allowed
+- `classes/unions/anonymous-union-private.cpp` (gcc-14): error: 'int S::<unnamed union>::i' invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-private.cpp` (clang-18): error: anonymous union cannot contain a private data member
+- `classes/unions/anonymous-union-private.cpp` (gcc-16): error: 'int S::<unnamed union>::i' invalid; an anonymous union may only have public non-static data members [-fpermissive]
+- `classes/unions/anonymous-union-private.cpp` (clang-22): error: anonymous union cannot contain a private data member
+- `classes/unions/anonymous-union-static-member.cpp` (clang-host): error: static data member 'n' not allowed in anonymous union
+- `classes/unions/anonymous-union-static-member.cpp` (gcc-host): error: static data member ‘S::<unnamed union>::n’ in unnamed class [-fpermissive] / note: unnamed class defined here
+- `classes/unions/anonymous-union-static-member.cpp` (edg-7.0): error: static data member declaration is not allowed in this class
+- `classes/unions/anonymous-union-static-member.cpp` (gcc-14): error: static data member 'S::<unnamed union>::n' in unnamed class [-fpermissive] / note: unnamed class defined here
+- `classes/unions/anonymous-union-static-member.cpp` (clang-18): error: static data member 'n' not allowed in anonymous union
+- `classes/unions/anonymous-union-static-member.cpp` (gcc-16): error: static data member 'S::<unnamed union>::n' in unnamed class [-fpermissive] / note: unnamed class defined here
+- `classes/unions/anonymous-union-static-member.cpp` (clang-22): error: static data member 'n' not allowed in anonymous union
+- `classes/unions/anonymous-union-unnamed-namespace.cpp` (gcc-host): error: namespace-scope anonymous aggregates must be static / error: ‘i’ was not declared in this scope
+- `classes/unions/anonymous-union-unnamed-namespace.cpp` (edg-7.0): error: anonymous union at global or namespace scope must be declared static
+- `classes/unions/anonymous-union-unnamed-namespace.cpp` (gcc-14): error: namespace-scope anonymous aggregates must be static / error: 'i' was not declared in this scope
+- `classes/unions/anonymous-union-unnamed-namespace.cpp` (gcc-16): error: namespace-scope anonymous aggregates must be static / error: 'i' was not declared in this scope
+- `classes/unions/bitfield-address.cpp` (clang-host): error: address of bit-field requested
+- `classes/unions/bitfield-address.cpp` (gcc-host): error: attempt to take address of bit-field
+- `classes/unions/bitfield-address.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `classes/unions/bitfield-address.cpp` (gcc-14): error: attempt to take address of bit-field
+- `classes/unions/bitfield-address.cpp` (clang-18): error: address of bit-field requested
+- `classes/unions/bitfield-address.cpp` (gcc-16): error: attempt to take address of bit-field
+- `classes/unions/bitfield-address.cpp` (clang-22): error: address of bit-field requested
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (clang-host): error: implicit truncation from 'int' to bit-field changes value from 9 to 1 [-Werror,-Wbitfield-constant-conversion]
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (gcc-host): error: conversion from ‘unsigned int’ to ‘unsigned char:3’ changes value from ‘9’ to ‘1’ [-Werror=overflow]
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (gcc-14): error: conversion from 'unsigned int' to 'unsigned char:3' changes value from '9' to '1' [-Werror=overflow]
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (clang-18): error: implicit truncation from 'int' to bit-field changes value from 9 to 1 [-Werror,-Wbitfield-constant-conversion]
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (gcc-16): error: conversion from 'unsigned int' to 'unsigned char:3' changes value from '9' to '1' [-Werror=overflow]
+- `classes/unions/bitfield-constant-truncation-warns.cpp` (clang-22): error: implicit truncation from 'int' to bit-field changes value from 9 to 1 [-Werror,-Wbitfield-constant-conversion]
+- `classes/unions/bitfield-float.cpp` (clang-host): error: bit-field 'f' has non-integral type 'float'
+- `classes/unions/bitfield-float.cpp` (gcc-host): error: bit-field ‘f’ with non-integral type ‘float’
+- `classes/unions/bitfield-float.cpp` (edg-7.0): error: invalid type for a bit field
+- `classes/unions/bitfield-float.cpp` (gcc-14): error: bit-field 'f' with non-integral type 'float'
+- `classes/unions/bitfield-float.cpp` (clang-18): error: bit-field 'f' has non-integral type 'float'
+- `classes/unions/bitfield-float.cpp` (gcc-16): error: bit-field 'f' with non-integral type 'float'
+- `classes/unions/bitfield-float.cpp` (clang-22): error: bit-field 'f' has non-integral type 'float'
+- `classes/unions/bitfield-narrowing-init.cpp` (clang-host): error: non-constant-expression cannot be narrowed from type 'int' to 'unsigned int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-narrowing-init.cpp` (gcc-host): error: narrowing conversion of ‘v’ from ‘int’ to ‘unsigned int’ [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-init.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned int"
+- `classes/unions/bitfield-narrowing-init.cpp` (gcc-14): error: narrowing conversion of 'v' from 'int' to 'unsigned int' [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-init.cpp` (clang-18): error: non-constant-expression cannot be narrowed from type 'int' to 'unsigned int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-narrowing-init.cpp` (gcc-16): error: narrowing conversion of 'v' from 'int' to 'unsigned int' [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-init.cpp` (clang-22): error: non-constant-expression cannot be narrowed from type 'int' to 'unsigned int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-negative-width.cpp` (clang-host): error: bit-field 'x' has negative width (-1)
+- `classes/unions/bitfield-negative-width.cpp` (gcc-host): error: negative width in bit-field ‘S::x’
+- `classes/unions/bitfield-negative-width.cpp` (edg-7.0): error: invalid size for bit field
+- `classes/unions/bitfield-negative-width.cpp` (gcc-14): error: negative width in bit-field 'S::x'
+- `classes/unions/bitfield-negative-width.cpp` (clang-18): error: bit-field 'x' has negative width (-1)
+- `classes/unions/bitfield-negative-width.cpp` (gcc-16): error: negative width in bit-field 'S::x'
+- `classes/unions/bitfield-negative-width.cpp` (clang-22): error: bit-field 'x' has negative width (-1)
+- `classes/unions/bitfield-nonconst-ref.cpp` (clang-host): error: non-const reference cannot bind to bit-field 'x'
+- `classes/unions/bitfield-nonconst-ref.cpp` (gcc-host): error: cannot bind bit-field ‘s.S::x’ to ‘int&’
+- `classes/unions/bitfield-nonconst-ref.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `classes/unions/bitfield-nonconst-ref.cpp` (gcc-14): error: cannot bind bit-field 's.S::x' to 'int&'
+- `classes/unions/bitfield-nonconst-ref.cpp` (clang-18): error: non-const reference cannot bind to bit-field 'x'
+- `classes/unions/bitfield-nonconst-ref.cpp` (gcc-16): error: cannot bind bit-field 's.S::x' to 'int&'
+- `classes/unions/bitfield-nonconst-ref.cpp` (clang-22): error: non-const reference cannot bind to bit-field 'x'
+- `classes/unions/bitfield-nonconstant-width.cpp` (clang-host): error: expression is not an integral constant expression / note: read of non-const variable 'w' is not allowed in a constant expression
+- `classes/unions/bitfield-nonconstant-width.cpp` (gcc-host): error: the value of ‘w’ is not usable in a constant expression / note: ‘int w’ is not const
+- `classes/unions/bitfield-nonconstant-width.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "w" (declared at line 3) cannot be used as a constant
+- `classes/unions/bitfield-nonconstant-width.cpp` (gcc-14): error: the value of 'w' is not usable in a constant expression / note: 'int w' is not const
+- `classes/unions/bitfield-nonconstant-width.cpp` (clang-18): error: expression is not an integral constant expression / note: read of non-const variable 'w' is not allowed in a constant expression
+- `classes/unions/bitfield-nonconstant-width.cpp` (gcc-16): error: the value of 'w' is not usable in a constant expression / note: 'int w' is not const
+- `classes/unions/bitfield-nonconstant-width.cpp` (clang-22): error: expression is not an integral constant expression / note: read of non-const variable 'w' is not allowed in a constant expression
+- `classes/unions/bitfield-pointer.cpp` (clang-host): error: bit-field 'p' has non-integral type 'int *'
+- `classes/unions/bitfield-pointer.cpp` (gcc-host): error: bit-field ‘p’ has non-integral type ‘int*’
+- `classes/unions/bitfield-pointer.cpp` (edg-7.0): error: invalid type for a bit field
+- `classes/unions/bitfield-pointer.cpp` (gcc-14): error: bit-field 'p' has non-integral type 'int*'
+- `classes/unions/bitfield-pointer.cpp` (clang-18): error: bit-field 'p' has non-integral type 'int *'
+- `classes/unions/bitfield-pointer.cpp` (gcc-16): error: bit-field 'p' has non-integral type 'int*'
+- `classes/unions/bitfield-pointer.cpp` (clang-22): error: bit-field 'p' has non-integral type 'int *'
+- `classes/unions/bitfield-sizeof.cpp` (clang-host): error: invalid application of 'sizeof' to bit-field
+- `classes/unions/bitfield-sizeof.cpp` (gcc-host): error: invalid application of ‘sizeof’ to a bit-field
+- `classes/unions/bitfield-sizeof.cpp` (edg-7.0): error: operand of sizeof may not be a bit field
+- `classes/unions/bitfield-sizeof.cpp` (gcc-14): error: invalid application of 'sizeof' to a bit-field
+- `classes/unions/bitfield-sizeof.cpp` (clang-18): error: invalid application of 'sizeof' to bit-field
+- `classes/unions/bitfield-sizeof.cpp` (gcc-16): error: invalid application of 'sizeof' to a bit-field
+- `classes/unions/bitfield-sizeof.cpp` (clang-22): error: invalid application of 'sizeof' to bit-field
+- `classes/unions/bitfield-static.cpp` (clang-host): error: static member 'n' cannot be a bit-field
+- `classes/unions/bitfield-static.cpp` (gcc-host): error: static member ‘n’ cannot be a bit-field
+- `classes/unions/bitfield-static.cpp` (edg-7.0): error: expected a ";"
+- `classes/unions/bitfield-static.cpp` (gcc-14): error: static member 'n' cannot be a bit-field
+- `classes/unions/bitfield-static.cpp` (clang-18): error: static member 'n' cannot be a bit-field
+- `classes/unions/bitfield-static.cpp` (gcc-16): error: static member 'n' cannot be a bit-field
+- `classes/unions/bitfield-static.cpp` (clang-22): error: static member 'n' cannot be a bit-field
+- `classes/unions/bitfield-typedef.cpp` (clang-host): error: typedef member 'T' cannot be a bit-field
+- `classes/unions/bitfield-typedef.cpp` (gcc-host): error: cannot declare ‘T’ to be a bit-field type
+- `classes/unions/bitfield-typedef.cpp` (edg-7.0): error: expected a ";"
+- `classes/unions/bitfield-typedef.cpp` (gcc-14): error: cannot declare 'T' to be a bit-field type
+- `classes/unions/bitfield-typedef.cpp` (clang-18): error: typedef member 'T' cannot be a bit-field
+- `classes/unions/bitfield-typedef.cpp` (gcc-16): error: cannot declare 'T' to be a bit-field type
+- `classes/unions/bitfield-typedef.cpp` (clang-22): error: typedef member 'T' cannot be a bit-field
+- `classes/unions/bitfield-unnamed-cv.cpp` (clang-host): error: anonymous bit-field cannot have qualifiers
+- `classes/unions/bitfield-unnamed-cv.cpp` (edg-7.0): error: a qualified type is nonstandard for anonymous bit fields
+- `classes/unions/bitfield-unnamed-cv.cpp` (clang-18): error: anonymous bit-field cannot have qualifiers
+- `classes/unions/bitfield-unnamed-cv.cpp` (clang-22): error: anonymous bit-field cannot have qualifiers
+- `classes/unions/bitfield-wider-warns.cpp` (clang-host): error: width of bit-field 'c' (12 bits) exceeds the width of its type; value will be truncated to 8 bits [-Werror,-Wbitfield-width]
+- `classes/unions/bitfield-wider-warns.cpp` (gcc-host): error: width of ‘S::c’ exceeds its type [-Werror]
+- `classes/unions/bitfield-wider-warns.cpp` (gcc-14): error: width of 'S::c' exceeds its type [-Werror]
+- `classes/unions/bitfield-wider-warns.cpp` (clang-18): error: width of bit-field 'c' (12 bits) exceeds the width of its type; value will be truncated to 8 bits [-Werror,-Wbitfield-width]
+- `classes/unions/bitfield-wider-warns.cpp` (gcc-16): error: width of 'S::c' exceeds its type [-Werror]
+- `classes/unions/bitfield-wider-warns.cpp` (clang-22): error: width of bit-field 'c' (12 bits) exceeds the width of its type; value will be truncated to 8 bits [-Werror,-Wbitfield-width]
+- `classes/unions/bitfield-zero-named.cpp` (clang-host): error: named bit-field 'x' has zero width
+- `classes/unions/bitfield-zero-named.cpp` (gcc-host): error: zero width for bit-field ‘S::x’
+- `classes/unions/bitfield-zero-named.cpp` (edg-7.0): error: zero-length bit field must be unnamed
+- `classes/unions/bitfield-zero-named.cpp` (gcc-14): error: zero width for bit-field 'S::x'
+- `classes/unions/bitfield-zero-named.cpp` (clang-18): error: named bit-field 'x' has zero width
+- `classes/unions/bitfield-zero-named.cpp` (gcc-16): error: zero width for bit-field 'S::x'
+- `classes/unions/bitfield-zero-named.cpp` (clang-22): error: named bit-field 'x' has zero width
+- `classes/unions/compound-assign-inactive-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assignment to member 'l' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/compound-assign-inactive-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::l’ member instead of active ‘U::i’ member in constant expression
+- `classes/unions/compound-assign-inactive-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::l" of union (member "U::i" is active)
+- `classes/unions/compound-assign-inactive-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'U::l' member instead of initialized 'U::i' member in constant expression
+- `classes/unions/compound-assign-inactive-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: assignment to member 'l' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/compound-assign-inactive-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'U::l' member instead of active 'U::i' member in constant expression
+- `classes/unions/compound-assign-inactive-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: assignment to member 'l' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/mem-init-two-members.cpp` (clang-host): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/mem-init-two-members.cpp` (gcc-host): error: initializations for multiple members of ‘U’
+- `classes/unions/mem-init-two-members.cpp` (edg-7.0): error: only one member of a union may be specified in a constructor initializer list
+- `classes/unions/mem-init-two-members.cpp` (gcc-14): error: initializations for multiple members of 'U'
+- `classes/unions/mem-init-two-members.cpp` (clang-18): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/mem-init-two-members.cpp` (gcc-16): error: initializations for multiple members of 'U'
+- `classes/unions/mem-init-two-members.cpp` (clang-22): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/narrowing-first-member.cpp` (clang-host): error: constant expression evaluates to 1000 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/narrowing-first-member.cpp` (gcc-host): error: narrowing conversion of ‘1000’ from ‘int’ to ‘char’ [-Wnarrowing]
+- `classes/unions/narrowing-first-member.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "char": constant value does not fit in destination type
+- `classes/unions/narrowing-first-member.cpp` (gcc-14): error: narrowing conversion of '1000' from 'int' to 'char' [-Wnarrowing]
+- `classes/unions/narrowing-first-member.cpp` (clang-18): error: constant expression evaluates to 1000 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/narrowing-first-member.cpp` (gcc-16): error: narrowing conversion of '1000' from 'int' to 'char' [-Wnarrowing]
+- `classes/unions/narrowing-first-member.cpp` (clang-22): error: constant expression evaluates to 1000 which cannot be narrowed to type 'char' [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/read-inactive-after-switch-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
+- `classes/unions/read-inactive-after-switch-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::i’ member instead of active ‘U::f’ member in constant expression
+- `classes/unions/read-inactive-after-switch-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::i" of union (member "U::f" is active)
+- `classes/unions/read-inactive-after-switch-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'U::i' member instead of initialized 'U::f' member in constant expression
+- `classes/unions/read-inactive-after-switch-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
+- `classes/unions/read-inactive-after-switch-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'U::i' member instead of active 'U::f' member in constant expression
+- `classes/unions/read-inactive-after-switch-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
+- `classes/unions/read-inactive-constant.cpp` (clang-host): error: constexpr variable 'x' must be initialized by a constant expression / note: read of member 'f' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/read-inactive-constant.cpp` (gcc-host): error: accessing ‘U::f’ member instead of active ‘U::i’ member in constant expression
+- `classes/unions/read-inactive-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::f" of union (member "U::i" is active)
+- `classes/unions/read-inactive-constant.cpp` (gcc-14): error: accessing 'U::f' member instead of initialized 'U::i' member in constant expression
+- `classes/unions/read-inactive-constant.cpp` (clang-18): error: constexpr variable 'x' must be initialized by a constant expression / note: read of member 'f' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/read-inactive-constant.cpp` (gcc-16): error: accessing 'U::f' member instead of active 'U::i' member in constant expression
+- `classes/unions/read-inactive-constant.cpp` (clang-22): error: constexpr variable 'x' must be initialized by a constant expression / note: read of member 'f' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/two-default-member-inits.cpp` (clang-host): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/two-default-member-inits.cpp` (gcc-host): error: multiple fields in union ‘U’ initialized
+- `classes/unions/two-default-member-inits.cpp` (edg-7.0): error: a union can have at most one field initializer -- member "U::i" (declared at line 3) also has an initializer
+- `classes/unions/two-default-member-inits.cpp` (gcc-14): error: multiple fields in union 'U' initialized
+- `classes/unions/two-default-member-inits.cpp` (clang-18): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/two-default-member-inits.cpp` (gcc-16): error: multiple fields in union 'U' initialized
+- `classes/unions/two-default-member-inits.cpp` (clang-22): error: initializing multiple members of union / note: previous initialization is here
+- `classes/unions/two-designators.cpp` (clang-host): error: initializer partially overrides prior initialization of this subobject [-Winitializer-overrides] / note: previous initialization is here
+- `classes/unions/two-designators.cpp` (gcc-host): error: too many initializers for ‘U’
+- `classes/unions/two-designators.cpp` (edg-7.0): error: multiple designators into the same union are not permitted
+- `classes/unions/two-designators.cpp` (gcc-14): error: too many initializers for 'U'
+- `classes/unions/two-designators.cpp` (clang-18): error: initializer partially overrides prior initialization of this subobject [-Winitializer-overrides] / note: previous initialization is here
+- `classes/unions/two-designators.cpp` (gcc-16): error: too many initializers for 'U'
+- `classes/unions/two-designators.cpp` (clang-22): error: initializer partially overrides prior initialization of this subobject [-Winitializer-overrides] / note: previous initialization is here
+- `classes/unions/two-initializers.cpp` (clang-host): error: excess elements in union initializer
+- `classes/unions/two-initializers.cpp` (gcc-host): error: too many initializers for ‘U’
+- `classes/unions/two-initializers.cpp` (edg-7.0): error: too many initializer values
+- `classes/unions/two-initializers.cpp` (gcc-14): error: too many initializers for 'U'
+- `classes/unions/two-initializers.cpp` (clang-18): error: excess elements in union initializer
+- `classes/unions/two-initializers.cpp` (gcc-16): error: too many initializers for 'U'
+- `classes/unions/two-initializers.cpp` (clang-22): error: excess elements in union initializer
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'U' / note: copy constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial copy constructor
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (gcc-host): error: use of deleted function ‘U::U(const U&)’ / note: ‘U::U(const U&)’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (edg-7.0): error: function "U::U(const U &)" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (gcc-14): error: use of deleted function 'U::U(const U&)' / note: 'U::U(const U&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'U' / note: copy constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial copy constructor
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (gcc-16): error: use of deleted function 'U::U(const U&)' / note: 'U::U(const U&)' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-copy-deleted.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'U' / note: copy constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial copy constructor
+- `classes/unions/union-nontrivial-dtor-only.cpp` (clang-host): error: attempt to use a deleted function / note: destructor of 'U' is implicitly deleted because variant field 's' has a non-trivial destructor
+- `classes/unions/union-nontrivial-dtor-only.cpp` (gcc-host): error: use of deleted function ‘U::~U()’ / note: ‘U::~U()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-dtor-only.cpp` (edg-7.0): error: function "U::~U() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/unions/union-nontrivial-dtor-only.cpp` (gcc-14): error: use of deleted function 'U::~U()' / note: 'U::~U()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-dtor-only.cpp` (clang-18): error: attempt to use a deleted function / note: destructor of 'U' is implicitly deleted because variant field 's' has a non-trivial destructor
+- `classes/unions/union-nontrivial-dtor-only.cpp` (gcc-16): error: use of deleted function 'U::~U()' / note: 'U::~U()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-dtor-only.cpp` (clang-22): error: attempt to use a deleted function / note: destructor of 'U' is implicitly deleted because variant field 's' has a non-trivial destructor
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (clang-host): error: call to implicitly-deleted default constructor of 'U' / note: default constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial default constructor
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (gcc-host): error: use of deleted function ‘U::U()’ / note: ‘U::U()’ is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (edg-7.0): error: the default constructor of "U" cannot be referenced -- it is a deleted function / error: function "U::~U() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (gcc-14): error: use of deleted function 'U::U()' / note: 'U::U()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (clang-18): error: call to implicitly-deleted default constructor of 'U' / note: default constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial default constructor
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (gcc-16): error: use of deleted function 'U::U()' / note: 'U::U()' is implicitly deleted because the default definition would be ill-formed:
+- `classes/unions/union-nontrivial-member-deleted-ctor.cpp` (clang-22): error: call to implicitly-deleted default constructor of 'U' / note: default constructor of 'U' is implicitly deleted because variant field 's' has a non-trivial default constructor
+- `classes/unions/union-private-members.cpp` (clang-host): error: 'i' is a private member of 'U' / note: declared private here
+- `classes/unions/union-private-members.cpp` (gcc-host): error: ‘int U::i’ is private within this context / note: declared private here
+- `classes/unions/union-private-members.cpp` (edg-7.0): error: member "U::i" (declared at line 3) is inaccessible
+- `classes/unions/union-private-members.cpp` (gcc-14): error: 'int U::i' is private within this context / note: declared private here
+- `classes/unions/union-private-members.cpp` (clang-18): error: 'i' is a private member of 'U' / note: declared private here
+- `classes/unions/union-private-members.cpp` (gcc-16): error: 'int U::i' is private within this context / note: declared private here
+- `classes/unions/union-private-members.cpp` (clang-22): error: 'i' is a private member of 'U' / note: declared private here
+- `classes/unions/union-reference-member.cpp` (clang-host): error: union member 'r' has reference type 'int &'
+- `classes/unions/union-reference-member.cpp` (gcc-host): error: non-static data member ‘U::r’ in a union may not have reference type ‘int&’
+- `classes/unions/union-reference-member.cpp` (edg-7.0): error: a member with reference type is not allowed in a union
+- `classes/unions/union-reference-member.cpp` (gcc-14): error: non-static data member 'U::r' in a union may not have reference type 'int&'
+- `classes/unions/union-reference-member.cpp` (clang-18): error: union member 'r' has reference type 'int &'
+- `classes/unions/union-reference-member.cpp` (gcc-16): error: non-static data member 'U::r' in a union may not have reference type 'int&'
+- `classes/unions/union-reference-member.cpp` (clang-22): error: union member 'r' has reference type 'int &'
+- `classes/virtual/abstract-array.cpp` (clang-host): error: array of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-array.cpp` (gcc-host): error: creating array of ‘A’, which is an abstract class type / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-array.cpp` (edg-7.0): error: array of abstract class "A" is not allowed:
+- `classes/virtual/abstract-array.cpp` (gcc-14): error: creating array of 'A', which is an abstract class type / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-array.cpp` (clang-18): error: array of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-array.cpp` (gcc-16): error: creating array of 'A', which is an abstract class type / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-array.cpp` (clang-22): error: array of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-capture-by-value.cpp` (clang-host): error: by-copy capture of value of abstract type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-capture-by-value.cpp` (gcc-host): error: cannot declare field ‘g(A&)::<lambda()>::<a capture>’ to be of abstract type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-capture-by-value.cpp` (edg-7.0): error: object of abstract class type "A" is not allowed:
+- `classes/virtual/abstract-capture-by-value.cpp` (gcc-14): error: cannot declare field 'g(A&)::<lambda()>::<a capture>' to be of abstract type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-capture-by-value.cpp` (clang-18): error: by-copy capture of value of abstract type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-capture-by-value.cpp` (gcc-16): error: cannot declare field 'g(A&)::<lambda()>::<a capture>' to be of abstract type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-capture-by-value.cpp` (clang-22): error: by-copy capture of value of abstract type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-cast-temporary.cpp` (clang-host): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-cast-temporary.cpp` (gcc-host): error: invalid cast to abstract class type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-cast-temporary.cpp` (edg-7.0): error: a cast to abstract class "A" is not allowed:
+- `classes/virtual/abstract-cast-temporary.cpp` (gcc-14): error: invalid cast to abstract class type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-cast-temporary.cpp` (clang-18): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-cast-temporary.cpp` (gcc-16): error: invalid cast to abstract class type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-cast-temporary.cpp` (clang-22): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-member.cpp` (clang-host): error: field type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-member.cpp` (gcc-host): error: cannot declare field ‘S::a’ to be of abstract type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-member.cpp` (edg-7.0): error: object of abstract class type "A" is not allowed:
+- `classes/virtual/abstract-member.cpp` (gcc-14): error: cannot declare field 'S::a' to be of abstract type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-member.cpp` (clang-18): error: field type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-member.cpp` (gcc-16): error: cannot declare field 'S::a' to be of abstract type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-member.cpp` (clang-22): error: field type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-new.cpp` (clang-host): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-new.cpp` (gcc-host): error: invalid new-expression of abstract class type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-new.cpp` (edg-7.0): error: object of abstract class type "A" is not allowed:
+- `classes/virtual/abstract-new.cpp` (gcc-14): error: invalid new-expression of abstract class type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-new.cpp` (clang-18): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-new.cpp` (gcc-16): error: invalid new-expression of abstract class type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-new.cpp` (clang-22): error: allocating an object of abstract class type 'A' / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-param-definition.cpp` (clang-host): error: parameter type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-param-definition.cpp` (gcc-host): error: cannot declare parameter ‘a’ to be of abstract type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-param-definition.cpp` (edg-7.0): error: parameter of abstract class type "A" is not allowed:
+- `classes/virtual/abstract-param-definition.cpp` (gcc-14): error: cannot declare parameter 'a' to be of abstract type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-param-definition.cpp` (clang-18): error: parameter type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-param-definition.cpp` (gcc-16): error: cannot declare parameter 'a' to be of abstract type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-param-definition.cpp` (clang-22): error: parameter type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-return-definition.cpp` (clang-host): error: return type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-return-definition.cpp` (gcc-host): error: invalid abstract return type for function ‘A make()’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-return-definition.cpp` (edg-7.0): error: function returning abstract class "A" is not allowed:
+- `classes/virtual/abstract-return-definition.cpp` (gcc-14): error: invalid abstract return type for function 'A make()' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-return-definition.cpp` (clang-18): error: return type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-return-definition.cpp` (gcc-16): error: invalid abstract return type for function 'A make()' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-return-definition.cpp` (clang-22): error: return type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-variable.cpp` (clang-host): error: variable type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-variable.cpp` (gcc-host): error: cannot declare variable ‘a’ to be of abstract type ‘A’ / note: because the following virtual functions are pure within ‘A’:
+- `classes/virtual/abstract-variable.cpp` (edg-7.0): error: object of abstract class type "A" is not allowed:
+- `classes/virtual/abstract-variable.cpp` (gcc-14): error: cannot declare variable 'a' to be of abstract type 'A' / note:   because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-variable.cpp` (clang-18): error: variable type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/abstract-variable.cpp` (gcc-16): error: cannot declare variable 'a' to be of abstract type 'A' / note: because the following virtual functions are pure within 'A':
+- `classes/virtual/abstract-variable.cpp` (clang-22): error: variable type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
+- `classes/virtual/consteval-overrides-virtual.cpp` (clang-host): error: consteval function 'f' cannot override a non-consteval function / note: overridden virtual function is here
+- `classes/virtual/consteval-overrides-virtual.cpp` (gcc-host): error: ‘consteval’ function ‘virtual consteval int D::f() const’ overriding non-‘consteval’ function / note: overridden function is ‘virtual int B::f() const’
+- `classes/virtual/consteval-overrides-virtual.cpp` (edg-7.0): error: consteval member cannot override non-consteval function "B::f"
+- `classes/virtual/consteval-overrides-virtual.cpp` (gcc-14): error: 'consteval' function 'virtual consteval int D::f() const' overriding non-'consteval' function / note: overridden function is 'virtual int B::f() const'
+- `classes/virtual/consteval-overrides-virtual.cpp` (clang-18): error: consteval function 'f' cannot override a non-consteval function / note: overridden virtual function is here
+- `classes/virtual/consteval-overrides-virtual.cpp` (gcc-16): error: 'consteval' function 'virtual consteval int D::f() const' overriding non-'consteval' function / note: overridden function is 'virtual int B::f() const'
+- `classes/virtual/consteval-overrides-virtual.cpp` (clang-22): error: consteval function 'f' cannot override a non-consteval function / note: overridden virtual function is here
+- `classes/virtual/covariant-ambiguous-base.cpp` (clang-host): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (ambiguous conversion from derived class 'R' to base class 'A': / note: overridden virtual function is here
+- `classes/virtual/covariant-ambiguous-base.cpp` (gcc-host): error: invalid covariant return type for ‘virtual R* D::get()’ / note: overridden function is ‘virtual A* Base::get()’
+- `classes/virtual/covariant-ambiguous-base.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "A *" of overridden virtual function "Base::get"
+- `classes/virtual/covariant-ambiguous-base.cpp` (gcc-14): error: invalid covariant return type for 'virtual R* D::get()' / note: overridden function is 'virtual A* Base::get()'
+- `classes/virtual/covariant-ambiguous-base.cpp` (clang-18): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (ambiguous conversion from derived class 'R' to base class 'A': / note: overridden virtual function is here
+- `classes/virtual/covariant-ambiguous-base.cpp` (gcc-16): error: invalid covariant return type for 'virtual R* D::get()' / note: overridden function is 'virtual A* Base::get()'
+- `classes/virtual/covariant-ambiguous-base.cpp` (clang-22): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (ambiguous conversion from derived class 'R' to base class 'A': / note: overridden virtual function is here
+- `classes/virtual/covariant-by-value-rejected.cpp` (clang-host): error: virtual function 'make' has a different return type ('D') than the function it overrides (which has return type 'B') / note: overridden virtual function is here
+- `classes/virtual/covariant-by-value-rejected.cpp` (gcc-host): error: invalid covariant return type for ‘virtual D D::make()’ / note: overridden function is ‘virtual B B::make()’
+- `classes/virtual/covariant-by-value-rejected.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "B" of overridden virtual function "B::make"
+- `classes/virtual/covariant-by-value-rejected.cpp` (gcc-14): error: invalid covariant return type for 'virtual D D::make()' / note: overridden function is 'virtual B B::make()'
+- `classes/virtual/covariant-by-value-rejected.cpp` (clang-18): error: virtual function 'make' has a different return type ('D') than the function it overrides (which has return type 'B') / note: overridden virtual function is here
+- `classes/virtual/covariant-by-value-rejected.cpp` (gcc-16): error: invalid covariant return type for 'virtual D D::make()' / note: overridden function is 'virtual B B::make()'
+- `classes/virtual/covariant-by-value-rejected.cpp` (clang-22): error: virtual function 'make' has a different return type ('D') than the function it overrides (which has return type 'B') / note: overridden virtual function is here
+- `classes/virtual/covariant-incomplete.cpp` (clang-host): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('D' is incomplete) / note: forward declaration of 'D'
+- `classes/virtual/covariant-incomplete.cpp` (gcc-host): error: invalid covariant return type for ‘virtual D* E::get()’ / note: overridden function is ‘virtual B* B::get()’
+- `classes/virtual/covariant-incomplete.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "B *" of overridden virtual function "B::get"
+- `classes/virtual/covariant-incomplete.cpp` (gcc-14): error: invalid covariant return type for 'virtual D* E::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-incomplete.cpp` (clang-18): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('D' is incomplete) / note: forward declaration of 'D'
+- `classes/virtual/covariant-incomplete.cpp` (gcc-16): error: invalid covariant return type for 'virtual D* E::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-incomplete.cpp` (clang-22): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('D' is incomplete) / note: forward declaration of 'D'
+- `classes/virtual/covariant-more-cv-rejected.cpp` (clang-host): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (class type 'const D *' does not have the same cv-qualification as or less cv-qualification than class type 'B *') / note: overridden virtual function is here
+- `classes/virtual/covariant-more-cv-rejected.cpp` (gcc-host): error: invalid covariant return type for ‘virtual const D* D::get()’ / note: overridden function is ‘virtual B* B::get()’
+- `classes/virtual/covariant-more-cv-rejected.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "B *" of overridden virtual function "B::get" / error: member function declared with "override" does not override a base class member
+- `classes/virtual/covariant-more-cv-rejected.cpp` (gcc-14): error: invalid covariant return type for 'virtual const D* D::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-more-cv-rejected.cpp` (clang-18): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (class type 'const D *' is more qualified than class type 'B *' / note: overridden virtual function is here
+- `classes/virtual/covariant-more-cv-rejected.cpp` (gcc-16): error: invalid covariant return type for 'virtual const D* D::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-more-cv-rejected.cpp` (clang-22): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides (class type 'const D *' does not have the same cv-qualification as or less cv-qualification than class type 'B *') / note: overridden virtual function is here
+- `classes/virtual/covariant-private-base-other.cpp` (clang-host): error: invalid covariant return for virtual function: 'B' is a private base class of 'X' / note: declared private here
+- `classes/virtual/covariant-private-base-other.cpp` (gcc-host): error: invalid covariant return type for ‘virtual X* D::get()’ / note: overridden function is ‘virtual B* B::get()’
+- `classes/virtual/covariant-private-base-other.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "B *" of overridden virtual function "B::get"
+- `classes/virtual/covariant-private-base-other.cpp` (gcc-14): error: invalid covariant return type for 'virtual X* D::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-private-base-other.cpp` (clang-18): error: invalid covariant return for virtual function: 'B' is a private base class of 'X' / note: declared private here
+- `classes/virtual/covariant-private-base-other.cpp` (gcc-16): error: invalid covariant return type for 'virtual X* D::get()' / note: overridden function is 'virtual B* B::get()'
+- `classes/virtual/covariant-private-base-other.cpp` (clang-22): error: invalid covariant return for virtual function: 'B' is a private base class of 'X' / note: declared private here
+- `classes/virtual/covariant-unrelated.cpp` (clang-host): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('Y *' is not derived from 'X *') / note: overridden virtual function is here
+- `classes/virtual/covariant-unrelated.cpp` (gcc-host): error: invalid covariant return type for ‘virtual Y* D::get()’ / note: overridden function is ‘virtual X* B::get()’
+- `classes/virtual/covariant-unrelated.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "X *" of overridden virtual function "B::get"
+- `classes/virtual/covariant-unrelated.cpp` (gcc-14): error: invalid covariant return type for 'virtual Y* D::get()' / note: overridden function is 'virtual X* B::get()'
+- `classes/virtual/covariant-unrelated.cpp` (clang-18): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('Y *' is not derived from 'X *') / note: overridden virtual function is here
+- `classes/virtual/covariant-unrelated.cpp` (gcc-16): error: invalid covariant return type for 'virtual Y* D::get()' / note: overridden function is 'virtual X* B::get()'
+- `classes/virtual/covariant-unrelated.cpp` (clang-22): error: return type of virtual function 'get' is not covariant with the return type of the function it overrides ('Y *' is not derived from 'X *') / note: overridden virtual function is here
+- `classes/virtual/delete-nonvirtual-warns.cpp` (clang-host): error: delete called on non-final 'B' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+- `classes/virtual/delete-nonvirtual-warns.cpp` (gcc-host): error: deleting object of polymorphic class type ‘B’ which has non-virtual destructor might cause undefined behavior [-Werror=delete-non-virtual-dtor]
+- `classes/virtual/delete-nonvirtual-warns.cpp` (gcc-14): error: deleting object of polymorphic class type 'B' which has non-virtual destructor might cause undefined behavior [-Werror=delete-non-virtual-dtor]
+- `classes/virtual/delete-nonvirtual-warns.cpp` (clang-18): error: delete called on non-final 'B' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+- `classes/virtual/delete-nonvirtual-warns.cpp` (gcc-16): error: deleting object of polymorphic class type 'B' which has non-virtual destructor might cause undefined behavior [-Werror=delete-non-virtual-dtor]
+- `classes/virtual/delete-nonvirtual-warns.cpp` (clang-22): error: delete called on non-final 'B' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+- `classes/virtual/derived-still-abstract.cpp` (clang-host): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'g' in 'B'
+- `classes/virtual/derived-still-abstract.cpp` (gcc-host): error: cannot declare variable ‘b’ to be of abstract type ‘B’ / note: because the following virtual functions are pure within ‘B’:
+- `classes/virtual/derived-still-abstract.cpp` (edg-7.0): error: object of abstract class type "B" is not allowed:
+- `classes/virtual/derived-still-abstract.cpp` (gcc-14): error: cannot declare variable 'b' to be of abstract type 'B' / note:   because the following virtual functions are pure within 'B':
+- `classes/virtual/derived-still-abstract.cpp` (clang-18): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'g' in 'B'
+- `classes/virtual/derived-still-abstract.cpp` (gcc-16): error: cannot declare variable 'b' to be of abstract type 'B' / note: because the following virtual functions are pure within 'B':
+- `classes/virtual/derived-still-abstract.cpp` (clang-22): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'g' in 'B'
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (clang-host): error: dynamic_cast from 'const B *' to 'D *' casts away qualifiers
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘p’ (of type ‘const struct B*’) to type ‘struct D*’ (conversion casts away constness)
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (edg-7.0): error: dynamic_cast cannot cast away const or other type qualifiers
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (gcc-14): error: cannot 'dynamic_cast' 'p' (of type 'const struct B*') to type 'struct D*' (conversion casts away constness)
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (clang-18): error: dynamic_cast from 'const B *' to 'D *' casts away qualifiers
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (gcc-16): error: cannot 'dynamic_cast' 'p' (of type 'const struct B*') to type 'struct D*' (conversion casts away constness)
+- `classes/virtual/dynamic-cast-casts-away-const.cpp` (clang-22): error: dynamic_cast from 'const B *' to 'D *' casts away qualifiers
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (clang-host): error: cannot use dynamic_cast to convert from 'B' to 'D *'
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘b’ (of type ‘struct B’) to type ‘struct D*’ (source is not a pointer)
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (edg-7.0): error: the operand of a pointer dynamic_cast must be a pointer to a complete class type
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (gcc-14): error: cannot 'dynamic_cast' 'b' (of type 'struct B') to type 'struct D*' (source is not a pointer)
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (clang-18): error: cannot use dynamic_cast to convert from 'B' to 'D *'
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (gcc-16): error: cannot 'dynamic_cast' 'b' (of type 'struct B') to type 'struct D*' (source is not a pointer)
+- `classes/virtual/dynamic-cast-from-nonpointer.cpp` (clang-22): error: cannot use dynamic_cast to convert from 'B' to 'D *'
+- `classes/virtual/dynamic-cast-incomplete.cpp` (clang-host): error: 'D' is an incomplete type / note: forward declaration of 'D'
+- `classes/virtual/dynamic-cast-incomplete.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘p’ (of type ‘struct B*’) to type ‘struct D*’ (target is not pointer or reference to complete type)
+- `classes/virtual/dynamic-cast-incomplete.cpp` (edg-7.0): error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+- `classes/virtual/dynamic-cast-incomplete.cpp` (gcc-14): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'struct D*' (target is not pointer or reference to complete type)
+- `classes/virtual/dynamic-cast-incomplete.cpp` (clang-18): error: 'D' is an incomplete type / note: forward declaration of 'D'
+- `classes/virtual/dynamic-cast-incomplete.cpp` (gcc-16): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'struct D*' (target is not pointer or reference to complete type)
+- `classes/virtual/dynamic-cast-incomplete.cpp` (clang-22): error: 'D' is an incomplete type / note: forward declaration of 'D'
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (clang-host): error: 'B' is not polymorphic
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘p’ (of type ‘struct B*’) to type ‘struct D*’ (source type is not polymorphic)
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (edg-7.0): error: the operand of a runtime dynamic_cast must have a polymorphic class type
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (gcc-14): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'struct D*' (source type is not polymorphic)
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (clang-18): error: 'B' is not polymorphic
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (gcc-16): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'struct D*' (source type is not polymorphic)
+- `classes/virtual/dynamic-cast-nonpolymorphic.cpp` (clang-22): error: 'B' is not polymorphic
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (clang-host): error: invalid target type 'D' for dynamic_cast; target type must be a reference or pointer type to a defined class
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘b’ (of type ‘struct B’) to type ‘struct D’ (target is not pointer or reference)
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (edg-7.0): error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (gcc-14): error: cannot 'dynamic_cast' 'b' (of type 'struct B') to type 'struct D' (target is not pointer or reference)
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (clang-18): error: invalid target type 'D' for dynamic_cast; target type must be a reference or pointer type to a defined class
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (gcc-16): error: cannot 'dynamic_cast' 'b' (of type 'struct B') to type 'struct D' (target is not pointer or reference)
+- `classes/virtual/dynamic-cast-not-pointer.cpp` (clang-22): error: invalid target type 'D' for dynamic_cast; target type must be a reference or pointer type to a defined class
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (clang-host): error: 'int' is not a class type
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘p’ (of type ‘struct B*’) to type ‘int*’ (target is not pointer or reference to class)
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (edg-7.0): error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (gcc-14): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'int*' (target is not pointer or reference to class)
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (clang-18): error: 'int' is not a class type
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (gcc-16): error: cannot 'dynamic_cast' 'p' (of type 'struct B*') to type 'int*' (target is not pointer or reference to class)
+- `classes/virtual/dynamic-cast-to-nonclass.cpp` (clang-22): error: 'int' is not a class type
+- `classes/virtual/final-function.cpp` (clang-host): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/final-function.cpp` (gcc-host): error: virtual function ‘virtual void D::f()’ overriding final function / note: overridden function is ‘virtual void B::f()’
+- `classes/virtual/final-function.cpp` (edg-7.0): error: cannot override "final" function "B::f" (declared at line 3)
+- `classes/virtual/final-function.cpp` (gcc-14): error: virtual function 'virtual void D::f()' overriding final function / note: overridden function is 'virtual void B::f()'
+- `classes/virtual/final-function.cpp` (clang-18): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/final-function.cpp` (gcc-16): error: virtual function 'virtual void D::f()' overriding final function / note: overridden function is 'virtual void B::f()'
+- `classes/virtual/final-function.cpp` (clang-22): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/final-nonvirtual.cpp` (clang-host): error: only virtual member functions can be marked 'final'
+- `classes/virtual/final-nonvirtual.cpp` (gcc-host): error: ‘void S::f()’ marked ‘final’, but is not virtual
+- `classes/virtual/final-nonvirtual.cpp` (edg-7.0): error: nonvirtual function cannot be declared with "final" modifier
+- `classes/virtual/final-nonvirtual.cpp` (gcc-14): error: 'void S::f()' marked 'final', but is not virtual
+- `classes/virtual/final-nonvirtual.cpp` (clang-18): error: only virtual member functions can be marked 'final'
+- `classes/virtual/final-nonvirtual.cpp` (gcc-16): error: 'void S::f()' marked 'final', but is not virtual
+- `classes/virtual/final-nonvirtual.cpp` (clang-22): error: only virtual member functions can be marked 'final'
+- `classes/virtual/final-on-override.cpp` (clang-host): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/final-on-override.cpp` (gcc-host): error: virtual function ‘virtual void C::f()’ overriding final function / note: overridden function is ‘virtual void B::f()’
+- `classes/virtual/final-on-override.cpp` (edg-7.0): error: cannot override "final" function "B::f" (declared at line 4)
+- `classes/virtual/final-on-override.cpp` (gcc-14): error: virtual function 'virtual void C::f()' overriding final function / note: overridden function is 'virtual void B::f()'
+- `classes/virtual/final-on-override.cpp` (clang-18): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/final-on-override.cpp` (gcc-16): error: virtual function 'virtual void C::f()' overriding final function / note: overridden function is 'virtual void B::f()'
+- `classes/virtual/final-on-override.cpp` (clang-22): error: declaration of 'f' overrides a 'final' function / note: overridden virtual function is here
+- `classes/virtual/hidden-virtual-warns.cpp` (clang-host): error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+- `classes/virtual/hidden-virtual-warns.cpp` (gcc-host): error: ‘virtual void B::f(int)’ was hidden [-Werror=overloaded-virtual=] / note:   by ‘void D::f(const char*)’
+- `classes/virtual/hidden-virtual-warns.cpp` (gcc-14): error: 'virtual void B::f(int)' was hidden [-Werror=overloaded-virtual=] / note:   by 'void D::f(const char*)'
+- `classes/virtual/hidden-virtual-warns.cpp` (clang-18): error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+- `classes/virtual/hidden-virtual-warns.cpp` (gcc-16): error: 'virtual void B::f(int)' was hidden [-Werror=overloaded-virtual=] / note:   by 'void D::f(const char*)'
+- `classes/virtual/hidden-virtual-warns.cpp` (clang-22): error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+- `classes/virtual/no-unique-final-overrider.cpp` (clang-host): error: virtual function 'A::f' has more than one final overrider in 'D' / note: overridden virtual function is here
+- `classes/virtual/no-unique-final-overrider.cpp` (gcc-host): error: no unique final overrider for ‘virtual void A::f()’ in ‘D’
+- `classes/virtual/no-unique-final-overrider.cpp` (edg-7.0): error: override of virtual function "A::f" is ambiguous
+- `classes/virtual/no-unique-final-overrider.cpp` (gcc-14): error: no unique final overrider for 'virtual void A::f()' in 'D'
+- `classes/virtual/no-unique-final-overrider.cpp` (clang-18): error: virtual function 'A::f' has more than one final overrider in 'D' / note: overridden virtual function is here
+- `classes/virtual/no-unique-final-overrider.cpp` (gcc-16): error: no unique final overrider for 'virtual void A::f()' in 'D'
+- `classes/virtual/no-unique-final-overrider.cpp` (clang-22): error: virtual function 'A::f' has more than one final overrider in 'D' / note: overridden virtual function is here
+- `classes/virtual/nonvirtual-dtor-delete-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: delete of object with dynamic type 'D' through pointer to base class type 'B' with non-virtual destructor
+- `classes/virtual/nonvirtual-dtor-delete-constant.cpp` (edg-7.0): error: expression must have a constant value / note: deleting through a subobject pointer requires a virtual destructor
+- `classes/virtual/nonvirtual-dtor-delete-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: delete of object with dynamic type 'D' through pointer to base class type 'B' with non-virtual destructor
+- `classes/virtual/nonvirtual-dtor-delete-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: delete of object with dynamic type 'D' through pointer to base class type 'B' with non-virtual destructor
+- `classes/virtual/override-nonvirtual.cpp` (clang-host): error: only virtual member functions can be marked 'override'
+- `classes/virtual/override-nonvirtual.cpp` (gcc-host): error: ‘void D::f()’ marked ‘override’, but does not override
+- `classes/virtual/override-nonvirtual.cpp` (edg-7.0): error: member function declared with "override" does not override a base class member
+- `classes/virtual/override-nonvirtual.cpp` (gcc-14): error: 'void D::f()' marked 'override', but does not override
+- `classes/virtual/override-nonvirtual.cpp` (clang-18): error: only virtual member functions can be marked 'override'
+- `classes/virtual/override-nonvirtual.cpp` (gcc-16): error: 'void D::f()' marked 'override', but does not override
+- `classes/virtual/override-nonvirtual.cpp` (clang-22): error: only virtual member functions can be marked 'override'
+- `classes/virtual/override-nothing.cpp` (clang-host): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/override-nothing.cpp` (gcc-host): error: ‘void D::f(long int)’ marked ‘override’, but does not override
+- `classes/virtual/override-nothing.cpp` (edg-7.0): error: member function declared with "override" does not override a base class member
+- `classes/virtual/override-nothing.cpp` (gcc-14): error: 'void D::f(long int)' marked 'override', but does not override
+- `classes/virtual/override-nothing.cpp` (clang-18): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/override-nothing.cpp` (gcc-16): error: 'void D::f(long int)' marked 'override', but does not override
+- `classes/virtual/override-nothing.cpp` (clang-22): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/override-out-of-class.cpp` (clang-host): error: 'override' specifier is not allowed outside a class definition
+- `classes/virtual/override-out-of-class.cpp` (gcc-host): error: virt-specifiers in ‘f’ not allowed outside a class definition
+- `classes/virtual/override-out-of-class.cpp` (edg-7.0): error: expected a "{"
+- `classes/virtual/override-out-of-class.cpp` (gcc-14): error: virt-specifiers in 'f' not allowed outside a class definition
+- `classes/virtual/override-out-of-class.cpp` (clang-18): error: 'override' specifier is not allowed outside a class definition
+- `classes/virtual/override-out-of-class.cpp` (gcc-16): error: virt-specifiers in 'f' not allowed outside a class definition
+- `classes/virtual/override-out-of-class.cpp` (clang-22): error: 'override' specifier is not allowed outside a class definition
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-host): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-host): error: call to non-‘constexpr’ function ‘void __cxa_pure_virtual()’
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (edg-7.0): error: initialization is not constant / note: constexpr function "B::f" (declared at line 7) is not defined
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-14): error: call to non-'constexpr' function 'void __cxa_pure_virtual()'
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-18): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-16): error: call to non-'constexpr' function 'void __cxa_pure_virtual()'
+- `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-22): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
+- `classes/virtual/pure-dtor-needs-definition.cpp` (clang-host): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition.cpp` (gcc-host): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition.cpp` (gcc-14): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition.cpp` (clang-18): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition.cpp` (gcc-16): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition.cpp` (clang-22): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-friend.cpp` (clang-host): error: friend declaration cannot have a pure-specifier
+- `classes/virtual/pure-friend.cpp` (gcc-host): error: initializer specified for friend function ‘void f()’
+- `classes/virtual/pure-friend.cpp` (edg-7.0): error: pure specifier ("= 0") allowed only on virtual functions
+- `classes/virtual/pure-friend.cpp` (gcc-14): error: initializer specified for friend function 'void f()'
+- `classes/virtual/pure-friend.cpp` (clang-18): error: friend declaration cannot have a pure-specifier
+- `classes/virtual/pure-friend.cpp` (gcc-16): error: initializer specified for friend function 'void f()'
+- `classes/virtual/pure-friend.cpp` (clang-22): error: friend declaration cannot have a pure-specifier
+- `classes/virtual/pure-inline-definition.cpp` (clang-host): error: initializer on function does not look like a pure-specifier / error: expected ';' at end of declaration list
+- `classes/virtual/pure-inline-definition.cpp` (gcc-host): error: pure-specifier on function-definition
+- `classes/virtual/pure-inline-definition.cpp` (edg-7.0): error: a pure specifier ("= 0") followed by a definition is nonstandard
+- `classes/virtual/pure-inline-definition.cpp` (gcc-14): error: pure-specifier on function-definition
+- `classes/virtual/pure-inline-definition.cpp` (clang-18): error: initializer on function does not look like a pure-specifier / error: expected ';' at end of declaration list
+- `classes/virtual/pure-inline-definition.cpp` (gcc-16): error: pure-specifier on function-definition
+- `classes/virtual/pure-inline-definition.cpp` (clang-22): error: initializer on function does not look like a pure-specifier / error: expected ';' at end of declaration list
+- `classes/virtual/pure-nonvirtual.cpp` (clang-host): error: 'f' is not virtual and cannot be declared pure
+- `classes/virtual/pure-nonvirtual.cpp` (gcc-host): error: initializer specified for non-virtual method ‘void S::f()’
+- `classes/virtual/pure-nonvirtual.cpp` (edg-7.0): error: pure specifier ("= 0") allowed only on virtual functions
+- `classes/virtual/pure-nonvirtual.cpp` (gcc-14): error: initializer specified for non-virtual method 'void S::f()'
+- `classes/virtual/pure-nonvirtual.cpp` (clang-18): error: 'f' is not virtual and cannot be declared pure
+- `classes/virtual/pure-nonvirtual.cpp` (gcc-16): error: initializer specified for non-virtual method 'void S::f()'
+- `classes/virtual/pure-nonvirtual.cpp` (clang-22): error: 'f' is not virtual and cannot be declared pure
+- `classes/virtual/pure-not-zero.cpp` (clang-host): error: initializer on function does not look like a pure-specifier
+- `classes/virtual/pure-not-zero.cpp` (gcc-host): error: invalid pure specifier (only ‘= 0’ is allowed) before ‘;’ token
+- `classes/virtual/pure-not-zero.cpp` (edg-7.0): error: badly-formed pure specifier (only "= 0" is allowed)
+- `classes/virtual/pure-not-zero.cpp` (gcc-14): error: invalid pure specifier (only '= 0' is allowed) before ';' token
+- `classes/virtual/pure-not-zero.cpp` (clang-18): error: initializer on function does not look like a pure-specifier
+- `classes/virtual/pure-not-zero.cpp` (gcc-16): error: invalid pure specifier (only '= 0' is allowed) before ';' token
+- `classes/virtual/pure-not-zero.cpp` (clang-22): error: initializer on function does not look like a pure-specifier
+- `classes/virtual/pure-override-makes-abstract.cpp` (clang-host): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'f' in 'B'
+- `classes/virtual/pure-override-makes-abstract.cpp` (gcc-host): error: cannot declare variable ‘b’ to be of abstract type ‘B’ / note: because the following virtual functions are pure within ‘B’:
+- `classes/virtual/pure-override-makes-abstract.cpp` (edg-7.0): error: object of abstract class type "B" is not allowed:
+- `classes/virtual/pure-override-makes-abstract.cpp` (gcc-14): error: cannot declare variable 'b' to be of abstract type 'B' / note:   because the following virtual functions are pure within 'B':
+- `classes/virtual/pure-override-makes-abstract.cpp` (clang-18): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'f' in 'B'
+- `classes/virtual/pure-override-makes-abstract.cpp` (gcc-16): error: cannot declare variable 'b' to be of abstract type 'B' / note: because the following virtual functions are pure within 'B':
+- `classes/virtual/pure-override-makes-abstract.cpp` (clang-22): error: variable type 'B' is an abstract class / note: unimplemented pure virtual method 'f' in 'B'
+- `classes/virtual/ref-qualifier-must-match.cpp` (clang-host): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/ref-qualifier-must-match.cpp` (gcc-host): error: ‘int D::f() &&’ marked ‘override’, but does not override
+- `classes/virtual/ref-qualifier-must-match.cpp` (edg-7.0): error: member function declared with "override" does not override a base class member
+- `classes/virtual/ref-qualifier-must-match.cpp` (gcc-14): error: 'int D::f() &&' marked 'override', but does not override
+- `classes/virtual/ref-qualifier-must-match.cpp` (clang-18): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/ref-qualifier-must-match.cpp` (gcc-16): error: 'int D::f() &&' marked 'override', but does not override
+- `classes/virtual/ref-qualifier-must-match.cpp` (clang-22): error: non-virtual member function marked 'override' hides virtual member function
+- `classes/virtual/return-type-mismatch.cpp` (clang-host): error: virtual function 'f' has a different return type ('long') than the function it overrides (which has return type 'int') / note: overridden virtual function is here
+- `classes/virtual/return-type-mismatch.cpp` (gcc-host): error: conflicting return type specified for ‘virtual long int D::f()’ / note: overridden function is ‘virtual int B::f()’
+- `classes/virtual/return-type-mismatch.cpp` (edg-7.0): error: return type is not identical to nor covariant with return type "int" of overridden virtual function "B::f"
+- `classes/virtual/return-type-mismatch.cpp` (gcc-14): error: conflicting return type specified for 'virtual long int D::f()' / note: overridden function is 'virtual int B::f()'
+- `classes/virtual/return-type-mismatch.cpp` (clang-18): error: virtual function 'f' has a different return type ('long') than the function it overrides (which has return type 'int') / note: overridden virtual function is here
+- `classes/virtual/return-type-mismatch.cpp` (gcc-16): error: conflicting return type specified for 'virtual long int D::f()' / note: overridden function is 'virtual int B::f()'
+- `classes/virtual/return-type-mismatch.cpp` (clang-22): error: virtual function 'f' has a different return type ('long') than the function it overrides (which has return type 'int') / note: overridden virtual function is here
+- `classes/virtual/static-overrides-virtual.cpp` (clang-host): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/static-overrides-virtual.cpp` (gcc-host): error: ‘static void D::f()’ cannot be declared / error:   since ‘virtual void B::f()’ declared in base class
+- `classes/virtual/static-overrides-virtual.cpp` (edg-7.0): error: only nonstatic member functions may be virtual
+- `classes/virtual/static-overrides-virtual.cpp` (gcc-14): error: 'static void D::f()' cannot be declared / error:   since 'virtual void B::f()' declared in base class
+- `classes/virtual/static-overrides-virtual.cpp` (clang-18): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/static-overrides-virtual.cpp` (gcc-16): error: 'static void D::f()' cannot be declared / error:   since 'virtual void B::f()' declared in base class
+- `classes/virtual/static-overrides-virtual.cpp` (clang-22): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/virtual-auto-return.cpp` (clang-host): error: function with deduced return type cannot be virtual
+- `classes/virtual/virtual-auto-return.cpp` (gcc-host): error: virtual function cannot have deduced return type
+- `classes/virtual/virtual-auto-return.cpp` (edg-7.0): error: a virtual function cannot have a deduced return type
+- `classes/virtual/virtual-auto-return.cpp` (gcc-14): error: virtual function cannot have deduced return type
+- `classes/virtual/virtual-auto-return.cpp` (clang-18): error: function with deduced return type cannot be virtual
+- `classes/virtual/virtual-auto-return.cpp` (gcc-16): error: virtual function cannot have deduced return type
+- `classes/virtual/virtual-auto-return.cpp` (clang-22): error: function with deduced return type cannot be virtual
+- `classes/virtual/virtual-data-member.cpp` (clang-host): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-data-member.cpp` (gcc-host): error: ‘x’ declared as a ‘virtual’ field
+- `classes/virtual/virtual-data-member.cpp` (edg-7.0): error: "virtual" is not allowed
+- `classes/virtual/virtual-data-member.cpp` (gcc-14): error: 'x' declared as a 'virtual' field
+- `classes/virtual/virtual-data-member.cpp` (clang-18): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-data-member.cpp` (gcc-16): error: 'x' declared as a 'virtual' field
+- `classes/virtual/virtual-data-member.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-in-union.cpp` (clang-host): error: unions cannot have virtual functions
+- `classes/virtual/virtual-in-union.cpp` (gcc-host): error: function ‘f’ declared ‘virtual’ inside a union
+- `classes/virtual/virtual-in-union.cpp` (edg-7.0): error: "virtual" is not allowed
+- `classes/virtual/virtual-in-union.cpp` (gcc-14): error: function 'f' declared 'virtual' inside a union
+- `classes/virtual/virtual-in-union.cpp` (clang-18): error: unions cannot have virtual functions
+- `classes/virtual/virtual-in-union.cpp` (gcc-16): error: function 'f' declared 'virtual' inside a union
+- `classes/virtual/virtual-in-union.cpp` (clang-22): error: unions cannot have virtual functions
+- `classes/virtual/virtual-nonmember.cpp` (clang-host): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-nonmember.cpp` (gcc-host): error: ‘virtual’ outside class declaration
+- `classes/virtual/virtual-nonmember.cpp` (edg-7.0): error: invalid specifier outside a class declaration
+- `classes/virtual/virtual-nonmember.cpp` (gcc-14): error: 'virtual' outside class declaration
+- `classes/virtual/virtual-nonmember.cpp` (clang-18): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-nonmember.cpp` (gcc-16): error: 'virtual' outside class declaration
+- `classes/virtual/virtual-nonmember.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-out-of-class.cpp` (clang-host): error: 'virtual' can only be specified inside the class definition
+- `classes/virtual/virtual-out-of-class.cpp` (gcc-host): error: ‘virtual’ outside class declaration
+- `classes/virtual/virtual-out-of-class.cpp` (edg-7.0): error: invalid specifier outside a class declaration
+- `classes/virtual/virtual-out-of-class.cpp` (gcc-14): error: 'virtual' outside class declaration
+- `classes/virtual/virtual-out-of-class.cpp` (clang-18): error: 'virtual' can only be specified inside the class definition
+- `classes/virtual/virtual-out-of-class.cpp` (gcc-16): error: 'virtual' outside class declaration
+- `classes/virtual/virtual-out-of-class.cpp` (clang-22): error: 'virtual' can only be specified inside the class definition
+- `classes/virtual/virtual-static.cpp` (clang-host): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-static.cpp` (gcc-host): error: member ‘f’ cannot be declared both ‘virtual’ and ‘static’
+- `classes/virtual/virtual-static.cpp` (edg-7.0): error: only nonstatic member functions may be virtual
+- `classes/virtual/virtual-static.cpp` (gcc-14): error: member 'f' cannot be declared both 'virtual' and 'static'
+- `classes/virtual/virtual-static.cpp` (clang-18): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-static.cpp` (gcc-16): error: member 'f' cannot be declared both 'virtual' and 'static'
+- `classes/virtual/virtual-static.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-template.cpp` (clang-host): error: 'virtual' cannot be specified on member function templates
+- `classes/virtual/virtual-template.cpp` (gcc-host): error: templates may not be ‘virtual’
+- `classes/virtual/virtual-template.cpp` (edg-7.0): error: "virtual" is not allowed in a function template declaration
+- `classes/virtual/virtual-template.cpp` (gcc-14): error: templates may not be 'virtual'
+- `classes/virtual/virtual-template.cpp` (clang-18): error: 'virtual' cannot be specified on member function templates
+- `classes/virtual/virtual-template.cpp` (gcc-16): error: templates may not be 'virtual'
+- `classes/virtual/virtual-template.cpp` (clang-22): error: 'virtual' cannot be specified on member function templates
 - `declarations/attributes/assume-false-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assumption evaluated to false
 - `declarations/attributes/assume-false-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: failed ‘assume’ attribute assumption
 - `declarations/attributes/assume-false-constant.cpp` (edg-7.0): error: expression must have a constant value / note: assumption failed

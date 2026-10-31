@@ -52,6 +52,9 @@ current state only. The history of how it got here is in `git log`.
 | [Constructors and destructors](../spec/classes/constructors.md) | 24 | 11 required, 9 reject, 2 undefined, 1 no-diagnostic, 1 recommended | 110 | Q-0053, Q-0054 | 0 flagged |
 | [Copy and move](../spec/classes/copy-move.md) | 17 | 12 required, 3 reject, 1 unspecified, 1 recommended | 79 | Q-0055 | 0 flagged |
 | [Derived classes](../spec/classes/derived.md) | 15 | 7 required, 8 reject | 67 |  | 0 flagged |
+| [Virtual functions and abstract classes](../spec/classes/virtual.md) | 18 | 7 required, 8 reject, 1 undefined, 1 no-diagnostic, 1 recommended | 95 | Q-0056 | 0 flagged |
+| [Unions and bit-fields](../spec/classes/unions.md) | 18 | 10 required, 5 reject, 1 undefined, 1 impl-defined, 1 recommended | 80 | Q-0057, Q-0058 | 0 flagged |
+| [Conversion functions](../spec/classes/conversion-functions.md) | 7 | 5 required, 1 reject, 1 recommended | 55 | Q-0059 | 0 flagged |
 | [Glossary](../spec/glossary.md) | 15 terms | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
@@ -59,12 +62,12 @@ current state only. The history of how it got here is in `git log`.
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. All pages are
 converted. The latest similarity report, covering every page, is
-`reports/similarity/2026-10-30-derived.txt`. The table above comes from
+`reports/similarity/2026-10-30-conversion-functions-rewrite.txt`. The table above comes from
 `tools/status_table.py`.
 
 ## Test matrix
 
-All compilers are baseline. 1558/1558 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 1788/1788 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -80,7 +83,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Fifty-four questions are open for opinions, each with a provisional answer the
+Fifty-eight questions are open for opinions, each with a provisional answer the
 spec follows. Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
@@ -130,8 +133,8 @@ needs a page through the full pipeline.
 4. Add sanitizer-based tests that run in the container images.
 5. Add EDG's 32-bit configuration as a second EDG matrix entry.
 6. Read EDG's sanitized source for the `if` section.
-7. Continue classes in the order set by decision 0017. Next: virtual
-   functions and abstract classes. Statements, expressions, and declarations in the
+7. Continue classes in the order set by decision 0017. Next: operator
+   overloading. Statements, expressions, and declarations in the
    charter's scope all have pages.
 
 ## Size estimate
