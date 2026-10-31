@@ -221,8 +221,8 @@ Shared nonterminals have these names and defining pages:
 
 The specification is reference material only. A tutorial, a how-to
 guide, or an explanation is not part of it (decision 0045). Guides live
-in `guides/`, outside `spec/`, and the site's front page links them in
-a Diátaxis table. A guide has no rules. It walks through one task in
+in `guides/`, outside `spec/`, and the site does not publish them
+(decision 0046). A guide has no rules. It walks through one task in
 these parts:
 
 - the task, in one or two sentences,

@@ -2,7 +2,7 @@
 
 Date: 2026-10-31
 Status: Accepted. Changes the place of the guides from the roadmap's
-phase 2.
+phase 2. The site part is superseded by 0046.
 
 ## Context
 

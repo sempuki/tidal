@@ -136,7 +136,7 @@ catalog counts as done.
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
 | Front end | round 5 done: 3161/3776 pass (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
-| Guides | done: one tutorial and four how-to guides | `guides/` |
+| Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
 | X1, X2, X3, X4 | done: 30, 20, 22, and 17 rule changes; findings X1-1 to X4-16 | `reports/clean-room/X1/` to `X4/` |
