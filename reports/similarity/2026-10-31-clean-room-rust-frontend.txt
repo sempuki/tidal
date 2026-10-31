@@ -1,0 +1,18 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   README.md:tidal-fe               longest=0   overlap=0.00
+ok   README.md:Build                  longest=0   overlap=0.00
+ok   README.md:Check one file         longest=0   overlap=0.00
+ok   README.md:Run the conformance tests longest=0   overlap=0.00
+ok   README.md:Layout                 longest=0   overlap=0.00
+ok   report.md:A C++ front end built from the Tidal spe longest=0   overlap=0.00
+ok   report.md:What the front end does longest=0   overlap=0.02
+ok   report.md:Conformance            longest=0   overlap=0.00
+ok   report.md:The three biggest problems for an implem longest=0   overlap=0.00
+ok   report.md:Grammar                longest=0   overlap=0.00
+ok   report.md:Outside the specification longest=0   overlap=0.01
+ok   report.md:Rule classes and contradictions longest=0   overlap=0.00
+ok   report.md:Ambiguities and smaller gaps longest=0   overlap=0.00
+ok   report.md:3. What worked well    longest=0   overlap=0.00
+
+0 flagged

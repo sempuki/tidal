@@ -107,7 +107,7 @@ catalog counts as done.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | running | `reports/clean-room/rust-frontend/` |
+| Front end | done: 2291/3058 pass, 0 false rejects, 717 of 1350 rejections caught | `reports/clean-room/rust-frontend/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | All others | planned | |
 
