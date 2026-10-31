@@ -14,6 +14,7 @@ virtual
 unions
 conversion-functions
 operators
+comparisons
 :::
 
 :::{toctree}
@@ -29,4 +30,5 @@ virtual
 unions
 conversion-functions
 operators
+comparisons
 :::
