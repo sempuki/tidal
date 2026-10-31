@@ -80,6 +80,11 @@ is a finding against that rule. A Diagnose batch uses only tests that
 carry a `tidal-error` pattern, and shows the reader the matching
 compiler message.
 
+`tools/exercises.py predict PAGE build/exercises/R-<name>` builds a
+Predict batch in a shuffled order and keeps its key in
+`build/exercise-keys/`. `tools/exercises.py score build/exercises/R-<name>
+ANSWERS` scores the reader's answers and lists the wrong ones.
+
 ## 5. Order
 
 1. Predict batches for the Foundations pages, then the expressions
@@ -103,4 +108,5 @@ catalog counts as done.
 |---|---|---|
 | W0 | done | `reports/spec-only/java-programmer/` |
 | Front end | running | `reports/spec-only/rust-frontend/` |
+| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | running | |
 | All others | planned | |
