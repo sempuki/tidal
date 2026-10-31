@@ -85,6 +85,37 @@ reference can make the life longer (REF-4). The temporaries of one full
 expression go away in the reverse order of their creation.
 :::
 
+:::{rule} VC-8
+:kind: required
+:tests: expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp
+
+A prvalue becomes a temporary object in these cases, in addition to
+VC-4 and VC-5:
+
+- a member function call or member access on a class prvalue,
+- a subscript of an array prvalue,
+- the conversion of an array prvalue to a pointer.
+
+Constant evaluation creates temporaries in the same cases.
+:::
+
+:::{rule} VC-9
+:kind: required
+:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp
+
+Each of these is a separate full expression, so its temporaries end with
+it:
+
+- the initializer of one declarator, in a declaration with several,
+- a condition,
+- the expression of a `return` statement. Its temporaries end before the
+  local variables of the function.
+
+A temporary in a function argument or a default argument lives until
+the end of the full expression that contains the call. All initializers
+of one aggregate are one full expression.
+:::
+
 ## Implementation Requirements
 
 :::{rule} VC-7
@@ -95,6 +126,16 @@ An implementation can make an extra temporary copy of a trivially
 copyable class object for a function argument or a return value
 *(classes referenced)*. It is unspecified if a parameter and the
 caller's object have the same address.
+:::
+
+:::{rule} VC-10
+:kind: impl-defined
+:tests: expressions/value-categories/parameter-destruction-point.cpp
+
+It is implementation-defined if a parameter object is destroyed when its
+function returns or at the end of the full expression that contains the
+call. On the x86-64 Linux targets in the matrix, it is destroyed at the
+end of the full expression.
 :::
 
 ## Examples
