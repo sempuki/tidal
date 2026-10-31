@@ -1,0 +1,25 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   designer.md:Roadmap: what to specify next, from a la longest=0   overlap=0.00
+ok   designer.md:1. Portfolio         longest=0   overlap=0.00
+ok   designer.md:P1. Width-named integer literal suffixes longest=0   overlap=0.00
+ok   designer.md:P2. Narrowing is an error in every impli longest=0   overlap=0.01
+ok   designer.md:P3. Left-to-right evaluation everywhere longest=0   overlap=0.00
+ok   designer.md:P4. Chained comparisons with their mathe longest=0   overlap=0.00
+ok   designer.md:P5. Automatic objects start at zero longest=0   overlap=0.00
+ok   designer.md:P6. Named arguments  longest=0   overlap=0.00
+ok   designer.md:P7. Temporaries live through reference-r longest=0   overlap=0.01
+ok   designer.md:P8. Relocation: a move that ends its sou longest=0   overlap=0.01
+ok   designer.md:P9. Overload sets as values longest=0   overlap=0.01
+ok   designer.md:P10. Expansion over the elements of an o longest=0   overlap=0.00
+ok   designer.md:P11. Exceptions that stay inside a const longest=0   overlap=0.00
+ok   designer.md:P12. Constant parameters longest=0   overlap=0.00
+ok   designer.md:P13. Checked `noexcept` longest=0   overlap=0.00
+ok   designer.md:P14. Scope-exit blocks longest=0   overlap=0.00
+ok   designer.md:P15. Declared initialization order acros longest=0   overlap=0.00
+ok   designer.md:P16. Member call syntax for free functio longest=0   overlap=0.01
+ok   designer.md:2. Cross-cutting needs longest=0   overlap=0.00
+ok   designer.md:3. Ranked topics     longest=0   overlap=0.00
+ok   designer.md:4. Propose exercises longest=0   overlap=0.00
+
+0 flagged
