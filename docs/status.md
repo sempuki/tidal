@@ -14,7 +14,7 @@ current state only. The history of how it got here is in `git log`.
 | [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 23 | Q-0028, Q-0100 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 12 | 6 required, 6 reject | 32 | 4 | 0 | 13 |  | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 7 | 4 required, 1 undefined, 1 unspecified, 1 recommended | 18 | 1 | 0 | 10 |  | 0 flagged |
-| [Constant expressions](../spec/foundations/constant-evaluation.md) | 24 | 6 required, 17 reject, 1 impl-defined | 67 | 7 | 6 | 72 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 72 | 7 | 6 | 72 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 8 | 6 required, 1 reject, 1 recommended | 15 | 3 | 2 | 2 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 65 | 9 | 0 | 12 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 6 | 2 required, 4 reject | 32 | 0 | 1 | 9 | Q-0097 | 0 flagged |
@@ -34,8 +34,8 @@ current state only. The history of how it got here is in `git log`.
 | [The comma operator](../spec/expressions/comma.md) | 8 | 5 required, 2 reject, 1 recommended | 17 | 1 | 0 | 1 |  | 0 flagged |
 | [Unary operators](../spec/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 60 | 4 | 1 | 10 | Q-0031 | 0 flagged |
 | [Pointers to members](../spec/expressions/member-pointers.md) | 12 | 5 required, 5 reject, 1 undefined, 1 unspecified | 67 | 1 | 0 | 4 |  | 0 flagged |
-| [Postfix expressions](../spec/expressions/postfix.md) | 16 | 7 required, 6 reject, 2 undefined, 1 conditionally-supported | 42 | 7 | 2 | 10 | Q-0034 | 0 flagged |
-| [Casts](../spec/expressions/casts.md) | 18 | 8 required, 6 reject, 2 undefined, 2 impl-defined | 47 | 6 | 1 | 5 | Q-0017 | 0 flagged |
+| [Postfix expressions](../spec/expressions/postfix.md) | 17 | 7 required, 7 reject, 2 undefined, 1 conditionally-supported | 47 | 7 | 2 | 10 | Q-0034 | 0 flagged |
+| [Casts](../spec/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 49 | 6 | 1 | 5 | Q-0017 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 17 | 8 required, 6 reject, 2 undefined, 1 unspecified | 49 | 5 | 3 | 10 | Q-0035, Q-0036, Q-0091 | 0 flagged |
 | [Lambda expressions](../spec/expressions/lambdas.md) | 27 | 15 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 56 | 15 | 2 | 8 | Q-0037, Q-0092 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 22 | 12 required, 10 reject | 49 | 9 | 0 | 5 | Q-0010 | 0 flagged |
@@ -88,7 +88,7 @@ holds the models that the other pages cite. The latest similarity report, coveri
 
 ## Test matrix
 
-All compilers are baseline. 3150/3150 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
+All compilers are baseline. 3162/3162 tests pass on each. Tests may span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
 
 | Compiler | Where | Notes |
@@ -120,7 +120,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2557 of 3150 tests, with no false
+- The clean-room front end passes 2567 of 3162 tests, with no false
   rejects.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
@@ -158,8 +158,6 @@ current phase is phase 2, foundations that later pages need:
    `reports/clean-room/roadmap/designer.md`):
    - G7: a convention for which rules a test of a failed constant cites,
      the rule that needs the constant or the rule the evaluation broke.
-   - G8: `reject` rules for the prohibitions left in CE-11, CAST-1,
-     CAST-9, and PFX-7.
    - D2: PRIM-16 and the literal grammar allow only built-in suffixes,
      and OPR-8 accepts user-defined ones.
    - D7, D8: ADD-P4 and MUL-P4 cite SEQ-1 for operand order, and the

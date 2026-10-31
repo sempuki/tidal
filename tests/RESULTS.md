@@ -1996,6 +1996,7 @@ compilers affect the Status column.
 | `expressions/bitwise/values.cpp` | BIT-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/braced-cast-narrowing.cpp` | CAST-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/braced-cast-ok.cpp` | CAST-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/casts/c-style-no-valid-cast.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/c-style-private-base.cpp` | CAST-17 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/casts/c-style-removes-const-and-type.cpp` | CAST-9 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/casts/c-style-static.cpp` | CAST-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2031,13 +2032,14 @@ compilers affect the Status column.
 | `expressions/casts/static-cast-explicit-ctor.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-float-to-enum.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-function-to-object-pointer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/casts/static-cast-integer-to-pointer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-integer-to-pointer.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/static-cast-null-to-pointer.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-pointer-to-integer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/static-cast-removes-const.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/static-cast-rvalue-reference.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-to-void.cpp` | CAST-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-unrelated-pointer.cpp` | CAST-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-unrelated-pointers.cpp` | CAST-19 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/static-cast-void-pointer.cpp` | CAST-1 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/comma/argument-separator.cpp` | COMMA-4 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/comma/array-bound-parenthesized.cpp` | COMMA-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2164,7 +2166,11 @@ compilers affect the Status column.
 | `expressions/constant-expressions/allocation-in-result.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/allocation-not-freed.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/arithmetic-and-calls.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/array-bound-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/array-bound-not-constant.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-not-constant.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/const-enum-usable.cpp` | CE-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2176,6 +2182,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/deep-recursion.cpp` | CE-10 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/delete-mismatch.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/enumerator-floating.cpp` | CE-25 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/function-pointer-equality.cpp` | CE-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/goto-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2559,12 +2566,17 @@ compilers affect the Status column.
 | `expressions/new-delete/zero-length-non-null.cpp` | NEW-2 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/postfix/arrow-on-non-pointer.cpp` | PFX-11 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-argument-count.cpp` | PFX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-class-converts-to-function-pointer.cpp` | PFX-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-class-with-call-operator.cpp` | PFX-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-class-without-call-operator.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-copy-initializes.cpp` | PFX-6 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/postfix/call-defaults-and-ellipsis.cpp` | PFX-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/postfix/call-explicit-constructor.cpp` | PFX-16 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-incomplete-parameter.cpp` | PFX-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-incomplete-return.cpp` | PFX-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-non-function.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-null-pointer.cpp` | PFX-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-object-pointer.cpp` | PFX-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-result-category.cpp` | PFX-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/postfix/call-through-pointer.cpp` | PFX-7 | run | run | run | accept | run | run | run | run | pass |
 | `expressions/postfix/call-too-many-arguments.cpp` | PFX-5 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -3165,7 +3177,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3150/3150 tests pass on baseline compilers.
+3162/3162 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -9517,6 +9529,13 @@ check that the rejection has the intended cause.
 - `expressions/casts/braced-cast-narrowing.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `expressions/casts/braced-cast-narrowing.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing] / error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
 - `expressions/casts/braced-cast-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `expressions/casts/c-style-no-valid-cast.cpp` (clang-host): error: cannot convert 'Point' to 'int' without a conversion operator
+- `expressions/casts/c-style-no-valid-cast.cpp` (gcc-host): error: invalid cast from type ‘Point’ to type ‘int’
+- `expressions/casts/c-style-no-valid-cast.cpp` (edg-7.0): error: no suitable conversion function from "Point" to "int" exists
+- `expressions/casts/c-style-no-valid-cast.cpp` (gcc-14): error: invalid cast from type 'Point' to type 'int'
+- `expressions/casts/c-style-no-valid-cast.cpp` (clang-18): error: cannot convert 'Point' to 'int' without a conversion operator
+- `expressions/casts/c-style-no-valid-cast.cpp` (gcc-16): error: invalid cast from type 'Point' to type 'int'
+- `expressions/casts/c-style-no-valid-cast.cpp` (clang-22): error: cannot convert 'Point' to 'int' without a conversion operator
 - `expressions/casts/const-cast-changes-type.cpp` (clang-host): error: const_cast from 'const int *' to 'long *' is not allowed
 - `expressions/casts/const-cast-changes-type.cpp` (gcc-host): error: invalid ‘const_cast’ from type ‘const int*’ to type ‘long int*’
 - `expressions/casts/const-cast-changes-type.cpp` (edg-7.0): error: a const_cast can only adjust type qualifiers; it cannot change the underlying type
@@ -9625,6 +9644,13 @@ check that the rejection has the intended cause.
 - `expressions/casts/static-cast-unrelated-pointer.cpp` (clang-18): error: static_cast from 'int *' to 'long *' is not allowed
 - `expressions/casts/static-cast-unrelated-pointer.cpp` (gcc-16): error: invalid 'static_cast' from type 'int*' to type 'long int*'
 - `expressions/casts/static-cast-unrelated-pointer.cpp` (clang-22): error: static_cast from 'int *' to 'long *' is not allowed
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (clang-host): error: static_cast from 'double *' to 'int *' is not allowed
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (gcc-host): error: invalid ‘static_cast’ from type ‘double*’ to type ‘int*’
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (edg-7.0): error: invalid type conversion
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (gcc-14): error: invalid 'static_cast' from type 'double*' to type 'int*'
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (clang-18): error: static_cast from 'double *' to 'int *' is not allowed
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (gcc-16): error: invalid 'static_cast' from type 'double*' to type 'int*'
+- `expressions/casts/static-cast-unrelated-pointers.cpp` (clang-22): error: static_cast from 'double *' to 'int *' is not allowed
 - `expressions/comma/array-bound-unparenthesized.cpp` (clang-host): error: expected ']' / note: to match this '['
 - `expressions/comma/array-bound-unparenthesized.cpp` (gcc-host): error: expected ‘]’ before ‘,’ token / error: expected unqualified-id before numeric constant
 - `expressions/comma/array-bound-unparenthesized.cpp` (edg-7.0): error: expected a "]" / error: expected an identifier
@@ -9926,6 +9952,20 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/allocation-not-freed.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
 - `expressions/constant-expressions/allocation-not-freed.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(f() == 5)' is not a constant expression because allocated storage has not been deallocated / note: allocated here
 - `expressions/constant-expressions/allocation-not-freed.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
+- `expressions/constant-expressions/array-bound-floating.cpp` (clang-host): error: conversion from 'double' to '__size_t' (aka 'unsigned long') is not allowed in a converted constant expression
+- `expressions/constant-expressions/array-bound-floating.cpp` (gcc-host): error: conversion from ‘double’ to ‘long unsigned int’ in a converted constant expression / error: could not convert ‘2.0e+0’ from ‘double’ to ‘long unsigned int’ / error: size of array ‘table’ has non-integral type ‘double’
+- `expressions/constant-expressions/array-bound-floating.cpp` (edg-7.0): error: this constant expression has type "double" instead of the required "unsigned long" type
+- `expressions/constant-expressions/array-bound-floating.cpp` (gcc-14): error: conversion from 'double' to 'long unsigned int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'long unsigned int' / error: size of array 'table' has non-integral type 'double'
+- `expressions/constant-expressions/array-bound-floating.cpp` (clang-18): error: conversion from 'double' to 'unsigned long' is not allowed in a converted constant expression
+- `expressions/constant-expressions/array-bound-floating.cpp` (gcc-16): error: conversion from 'double' to 'long unsigned int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'long unsigned int' / error: size of array 'table' has non-integral type 'double'
+- `expressions/constant-expressions/array-bound-floating.cpp` (clang-22): error: conversion from 'double' to '__size_t' (aka 'unsigned long') is not allowed in a converted constant expression
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (clang-host): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'count' with unknown value cannot be used in a constant expression
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (gcc-host): error: ISO C++ forbids variable length array ‘table’ [-Wvla]
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "count" (declared at line 6) cannot be used as a constant
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (gcc-14): error: ISO C++ forbids variable length array 'table' [-Wvla]
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (clang-18): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'count' with unknown value cannot be used in a constant expression
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (gcc-16): error: ISO C++ forbids variable length array 'table' [-Wvla]
+- `expressions/constant-expressions/array-bound-not-constant.cpp` (clang-22): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: function parameter 'count' with unknown value cannot be used in a constant expression
 - `expressions/constant-expressions/call-before-definition.cpp` (clang-host): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'later' cannot be used in a constant expression
 - `expressions/constant-expressions/call-before-definition.cpp` (gcc-host): error: ‘constexpr int later()’ used before its definition
 - `expressions/constant-expressions/call-before-definition.cpp` (edg-7.0): error: expression must have a constant value / note: constexpr function "later" (declared at line 7) is not defined
@@ -9933,6 +9973,20 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/call-before-definition.cpp` (clang-18): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'later' cannot be used in a constant expression
 - `expressions/constant-expressions/call-before-definition.cpp` (gcc-16): error: 'constexpr int later()' used before its definition
 - `expressions/constant-expressions/call-before-definition.cpp` (clang-22): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'later' cannot be used in a constant expression
+- `expressions/constant-expressions/case-label-floating.cpp` (clang-host): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `expressions/constant-expressions/case-label-floating.cpp` (gcc-host): error: conversion from ‘double’ to ‘int’ in a converted constant expression / error: could not convert ‘1.5e+0’ from ‘double’ to ‘int’
+- `expressions/constant-expressions/case-label-floating.cpp` (edg-7.0): error: this constant expression has type "double" instead of the required "int" type
+- `expressions/constant-expressions/case-label-floating.cpp` (gcc-14): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '1.5e+0' from 'double' to 'int'
+- `expressions/constant-expressions/case-label-floating.cpp` (clang-18): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `expressions/constant-expressions/case-label-floating.cpp` (gcc-16): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '1.5e+0' from 'double' to 'int'
+- `expressions/constant-expressions/case-label-floating.cpp` (clang-22): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (clang-host): error: case value is not a constant expression / note: function parameter 'key' with unknown value cannot be used in a constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (gcc-host): error: ‘key’ is not a constant expression / error: ‘key’ is not a constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of parameter "key" (declared at line 6) cannot be used as a constant
+- `expressions/constant-expressions/case-label-not-constant.cpp` (gcc-14): error: 'key' is not a constant expression / error: 'key' is not a constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (clang-18): error: case value is not a constant expression / note: function parameter 'key' with unknown value cannot be used in a constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (gcc-16): error: 'key' is not a constant expression / error: 'key' is not a constant expression
+- `expressions/constant-expressions/case-label-not-constant.cpp` (clang-22): error: case value is not a constant expression / note: function parameter 'key' with unknown value cannot be used in a constant expression
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (clang-host): error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension] / note: read of volatile-qualified type 'const volatile int' is not allowed in a constant expression / error: variable length array declaration not allowed at file scope
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (gcc-host): error: size of array ‘arr’ is not an integral constant-expression
 - `expressions/constant-expressions/const-volatile-not-usable.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to read from volatile storage
@@ -9983,6 +10037,13 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/double-delete.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: delete of pointer that has already been deleted / error: static assertion expression is not an integral constant expression / note: delete of pointer that has already been deleted
 - `expressions/constant-expressions/double-delete.cpp` (gcc-16): error: non-constant condition for static assertion / error: deallocation of already deallocated storage
 - `expressions/constant-expressions/double-delete.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: delete of pointer that has already been deleted
+- `expressions/constant-expressions/enumerator-floating.cpp` (clang-host): error: integral constant expression must have integral or unscoped enumeration type, not 'double'
+- `expressions/constant-expressions/enumerator-floating.cpp` (gcc-host): error: enumerator value for ‘half’ must have integral or unscoped enumeration type
+- `expressions/constant-expressions/enumerator-floating.cpp` (edg-7.0): error: this constant expression has type "double" instead of the required integral or enum type
+- `expressions/constant-expressions/enumerator-floating.cpp` (gcc-14): error: enumerator value for 'half' must have integral or unscoped enumeration type
+- `expressions/constant-expressions/enumerator-floating.cpp` (clang-18): error: integral constant expression must have integral or unscoped enumeration type, not 'double'
+- `expressions/constant-expressions/enumerator-floating.cpp` (gcc-16): error: enumerator value for 'half' must have integral or unscoped enumeration type
+- `expressions/constant-expressions/enumerator-floating.cpp` (clang-22): error: integral constant expression must have integral or unscoped enumeration type, not 'double'
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (clang-host): error: explicit specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘2’ from ‘int’ to ‘bool’ [-Wnarrowing]
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (gcc-14): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
@@ -11121,6 +11182,13 @@ check that the rejection has the intended cause.
 - `expressions/postfix/call-argument-count.cpp` (clang-18): error: no matching function for call to 'f' / note: candidate function not viable: requires 2 arguments, but 1 was provided
 - `expressions/postfix/call-argument-count.cpp` (gcc-16): error: too few arguments to function 'int f(int, int)'
 - `expressions/postfix/call-argument-count.cpp` (clang-22): error: no matching function for call to 'f' / note: candidate function not viable: requires 2 arguments, but 1 was provided
+- `expressions/postfix/call-class-without-call-operator.cpp` (clang-host): error: type 'Box' does not provide a call operator
+- `expressions/postfix/call-class-without-call-operator.cpp` (gcc-host): error: no match for call to ‘(Box) ()’
+- `expressions/postfix/call-class-without-call-operator.cpp` (edg-7.0): error: call of an object of a class type without appropriate operator() or conversion functions to pointer-to-function type
+- `expressions/postfix/call-class-without-call-operator.cpp` (gcc-14): error: no match for call to '(Box) ()'
+- `expressions/postfix/call-class-without-call-operator.cpp` (clang-18): error: type 'Box' does not provide a call operator
+- `expressions/postfix/call-class-without-call-operator.cpp` (gcc-16): error: no match for call to '(Box) ()'
+- `expressions/postfix/call-class-without-call-operator.cpp` (clang-22): error: type 'Box' does not provide a call operator
 - `expressions/postfix/call-explicit-constructor.cpp` (clang-host): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'int' to 'S' for 1st argument
 - `expressions/postfix/call-explicit-constructor.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘S’ / note: explicit conversion function was not considered
 - `expressions/postfix/call-explicit-constructor.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
@@ -11142,6 +11210,13 @@ check that the rejection has the intended cause.
 - `expressions/postfix/call-incomplete-return.cpp` (clang-18): error: calling 'make' with incomplete return type 'Inc' / note: forward declaration of 'Inc'
 - `expressions/postfix/call-incomplete-return.cpp` (gcc-16): error: invalid use of incomplete type 'struct Inc' / note: forward declaration of 'struct Inc'
 - `expressions/postfix/call-incomplete-return.cpp` (clang-22): error: calling 'make' with incomplete return type 'Inc' / note: forward declaration of 'Inc'
+- `expressions/postfix/call-non-function.cpp` (clang-host): error: called object type 'int' is not a function or function pointer
+- `expressions/postfix/call-non-function.cpp` (gcc-host): error: ‘count’ cannot be used as a function
+- `expressions/postfix/call-non-function.cpp` (edg-7.0): error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+- `expressions/postfix/call-non-function.cpp` (gcc-14): error: 'count' cannot be used as a function
+- `expressions/postfix/call-non-function.cpp` (clang-18): error: called object type 'int' is not a function or function pointer
+- `expressions/postfix/call-non-function.cpp` (gcc-16): error: 'count' cannot be used as a function
+- `expressions/postfix/call-non-function.cpp` (clang-22): error: called object type 'int' is not a function or function pointer
 - `expressions/postfix/call-null-pointer.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: 'p' evaluates to a null function pointer
 - `expressions/postfix/call-null-pointer.cpp` (gcc-host): error: non-constant condition for static assertion / error: expression ‘0’ does not designate a ‘constexpr’ function
 - `expressions/postfix/call-null-pointer.cpp` (edg-7.0): error: expression must have a constant value / note: callee is null
@@ -11149,6 +11224,13 @@ check that the rejection has the intended cause.
 - `expressions/postfix/call-null-pointer.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: 'p' evaluates to a null function pointer / error: static assertion expression is not an integral constant expression / note: 'p' evaluates to a null function pointer
 - `expressions/postfix/call-null-pointer.cpp` (gcc-16): error: non-constant condition for static assertion / error: expression '0' does not designate a 'constexpr' function
 - `expressions/postfix/call-null-pointer.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: 'p' evaluates to a null function pointer
+- `expressions/postfix/call-object-pointer.cpp` (clang-host): error: called object type 'int *' is not a function or function pointer
+- `expressions/postfix/call-object-pointer.cpp` (gcc-host): error: ‘p’ cannot be used as a function
+- `expressions/postfix/call-object-pointer.cpp` (edg-7.0): error: expression preceding parentheses of apparent call must have (pointer-to-) function type
+- `expressions/postfix/call-object-pointer.cpp` (gcc-14): error: 'p' cannot be used as a function
+- `expressions/postfix/call-object-pointer.cpp` (clang-18): error: called object type 'int *' is not a function or function pointer
+- `expressions/postfix/call-object-pointer.cpp` (gcc-16): error: 'p' cannot be used as a function
+- `expressions/postfix/call-object-pointer.cpp` (clang-22): error: called object type 'int *' is not a function or function pointer
 - `expressions/postfix/call-too-many-arguments.cpp` (clang-host): error: no matching function for call to 'f' / note: candidate function not viable: requires single argument 'a', but 2 arguments were provided
 - `expressions/postfix/call-too-many-arguments.cpp` (gcc-host): error: too many arguments to function ‘int f(int)’
 - `expressions/postfix/call-too-many-arguments.cpp` (edg-7.0): error: too many arguments in function call

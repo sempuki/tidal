@@ -1982,6 +1982,7 @@ pass	expressions/bitwise/result-types.cpp
 pass	expressions/bitwise/values.cpp
 pass	expressions/casts/braced-cast-narrowing.cpp
 pass	expressions/casts/braced-cast-ok.cpp
+pass	expressions/casts/c-style-no-valid-cast.cpp
 pass	expressions/casts/c-style-private-base.cpp
 pass	expressions/casts/c-style-removes-const-and-type.cpp
 pass	expressions/casts/c-style-static.cpp
@@ -2024,6 +2025,7 @@ pass	expressions/casts/static-cast-removes-const.cpp
 pass	expressions/casts/static-cast-rvalue-reference.cpp
 pass	expressions/casts/static-cast-to-void.cpp
 pass	expressions/casts/static-cast-unrelated-pointer.cpp
+pass	expressions/casts/static-cast-unrelated-pointers.cpp
 pass	expressions/casts/static-cast-void-pointer.cpp
 pass	expressions/comma/argument-separator.cpp
 pass	expressions/comma/array-bound-parenthesized.cpp
@@ -2150,7 +2152,11 @@ unsupported	expressions/constant-expressions/active-union-member.cpp
 unsupported	expressions/constant-expressions/allocation-in-result.cpp
 unsupported	expressions/constant-expressions/allocation-not-freed.cpp
 pass	expressions/constant-expressions/arithmetic-and-calls.cpp
+pass	expressions/constant-expressions/array-bound-floating.cpp
+pass	expressions/constant-expressions/array-bound-not-constant.cpp
 pass	expressions/constant-expressions/call-before-definition.cpp
+pass	expressions/constant-expressions/case-label-floating.cpp
+pass	expressions/constant-expressions/case-label-not-constant.cpp
 pass	expressions/constant-expressions/const-enum-usable.cpp
 pass	expressions/constant-expressions/const-volatile-not-usable.cpp
 pass	expressions/constant-expressions/constant-initializer-not-constant.cpp
@@ -2162,6 +2168,7 @@ pass	expressions/constant-expressions/copy-unset-member.cpp
 pass	expressions/constant-expressions/deep-recursion.cpp
 unsupported	expressions/constant-expressions/delete-mismatch.cpp
 unsupported	expressions/constant-expressions/double-delete.cpp
+pass	expressions/constant-expressions/enumerator-floating.cpp
 pass	expressions/constant-expressions/explicit-condition-narrowing.cpp
 pass	expressions/constant-expressions/function-pointer-equality.cpp
 pass	expressions/constant-expressions/goto-not-reached.cpp
@@ -2545,12 +2552,17 @@ unsupported	expressions/new-delete/uninitialized-write-then-read.cpp
 pass	expressions/new-delete/zero-length-non-null.cpp
 MISSED-REJECT	expressions/postfix/arrow-on-non-pointer.cpp
 pass	expressions/postfix/call-argument-count.cpp
+pass	expressions/postfix/call-class-converts-to-function-pointer.cpp
+unsupported	expressions/postfix/call-class-with-call-operator.cpp
+MISSED-REJECT	expressions/postfix/call-class-without-call-operator.cpp
 pass	expressions/postfix/call-copy-initializes.cpp
 pass	expressions/postfix/call-defaults-and-ellipsis.cpp
 MISSED-REJECT	expressions/postfix/call-explicit-constructor.cpp
 MISSED-REJECT	expressions/postfix/call-incomplete-parameter.cpp
 MISSED-REJECT	expressions/postfix/call-incomplete-return.cpp
+pass	expressions/postfix/call-non-function.cpp
 pass	expressions/postfix/call-null-pointer.cpp
+pass	expressions/postfix/call-object-pointer.cpp
 pass	expressions/postfix/call-result-category.cpp
 pass	expressions/postfix/call-through-pointer.cpp
 pass	expressions/postfix/call-too-many-arguments.cpp

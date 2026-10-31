@@ -65,7 +65,7 @@ at translation time, so a `throw` that the evaluation reaches ends it.
 :::
 
 :::{principle} CE-P4
-:rules: CE-11 CE-19
+:rules: CE-11 CE-19 CE-25
 
 Where the language needs a constant to build the program, it needs the
 exact value. These places need one:
@@ -201,6 +201,15 @@ exception (IF-16). This also applies to:
 - the condition of `explicit(...)`,
 - the operand of a `noexcept` specifier (EXS-1),
 - a non-type template argument *(templates referenced)*.
+:::
+
+:::{rule} CE-25
+:kind: reject
+:tests: expressions/constant-expressions/array-bound-floating.cpp expressions/constant-expressions/array-bound-not-constant.cpp expressions/constant-expressions/enumerator-floating.cpp expressions/constant-expressions/case-label-floating.cpp expressions/constant-expressions/case-label-not-constant.cpp
+
+An array bound, an enumerator value, and a case label must be constant
+expressions (CE-11). A value of floating-point type, or a value that is
+not known during translation, is not valid there.
 :::
 
 :::{rule} CE-12

@@ -22,7 +22,7 @@ dereferences a pointer to nothing, which is undefined (ADD-P3).
 :::
 
 :::{principle} PFX-P2
-:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16
+:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16 PFX-17
 
 A call passes one argument to each parameter, so the counts must match,
 with default arguments filling in and an ellipsis taking any extra.
@@ -166,6 +166,18 @@ A program must not:
   access, other than to call it,
 - call a function whose return type or parameter type is an incomplete
   class, except in the operand of `decltype` (UNEV-1).
+:::
+
+:::{rule} PFX-17
+:kind: reject
+:tests: expressions/postfix/call-non-function.cpp expressions/postfix/call-object-pointer.cpp expressions/postfix/call-class-without-call-operator.cpp expressions/postfix/call-class-with-call-operator.cpp expressions/postfix/call-class-converts-to-function-pointer.cpp
+
+The operand before the parentheses of a call must be one of these:
+
+- a function, or a pointer or reference to one,
+- an object of a class that has an `operator()`,
+- an object of a class with a conversion function to a pointer to a
+  function.
 :::
 
 ## Runtime Behavior

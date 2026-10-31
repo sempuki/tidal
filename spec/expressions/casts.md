@@ -7,7 +7,7 @@ and `T{e}`. `dynamic_cast` applies to classes ({rule}`VIRT-10`).
 ## Principles
 
 :::{principle} CAST-P1
-:rules: CAST-1 CAST-2 CAST-4 CAST-7 CAST-15 CAST-3
+:rules: CAST-1 CAST-2 CAST-4 CAST-7 CAST-15 CAST-3 CAST-19
 
 Each named cast has one job, so a reader sees what a cast is for.
 
@@ -199,6 +199,15 @@ accessible. `static_cast` cannot.
 `T()` value-initializes a prvalue of type `T`. For a scalar type the value
 is zero, and `void()` is a `void` expression. `T{...}` with an array type
 of unknown bound gives an array with one element for each value.
+:::
+
+:::{rule} CAST-19
+:kind: reject
+:tests: expressions/casts/static-cast-unrelated-pointers.cpp expressions/casts/static-cast-integer-to-pointer.cpp expressions/casts/c-style-no-valid-cast.cpp
+
+A `static_cast` must do one of the conversions that CAST-1 lists. A
+cast `(T)e` or `T(e)` with one operand must match one of the steps of
+CAST-9.
 :::
 
 ## Runtime Behavior
