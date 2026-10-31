@@ -132,10 +132,10 @@ caller's object have the same address.
 :kind: impl-defined
 :tests: expressions/value-categories/parameter-destruction-point.cpp
 
-It is implementation-defined if a parameter object is destroyed when its
-function returns or at the end of the full expression that contains the
-call. On the x86-64 Linux targets in the matrix, it is destroyed at the
-end of the full expression.
+Each implementation chooses one of two points to destroy a parameter
+object, and documents it. The first is the return from the function. The
+second is the end of the caller's full expression. On the x86-64 Linux
+targets in the matrix, the caller destroys it at the second point.
 :::
 
 ## Examples
@@ -158,8 +158,10 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All seven compilers agree on all 11 tests. The results are in
+All seven compilers agree on all 31 tests. The results are in
 `tests/RESULTS.md`.
 - VC-7: the test accepts either result.
+- VC-10: the test accepts either point. Clang and GCC destroy the
+  parameter at the end of the full expression.
 
 Inputs: clang-sema-expr, clang-diag-sema.
