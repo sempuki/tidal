@@ -92,6 +92,9 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0079](Q-0079-noexcept-operand-cycle.md) | Must an implementation diagnose a noexcept operand that depends on itself? | provisional | option 1 |
 | [Q-0080](Q-0080-static-const-volatile-initializer.md) | Can a static const volatile member have an initializer in its class? | provisional | option 1 |
 | [Q-0081](Q-0081-single-element-same-class-list.md) | Does a braced list with one object of the same class use the initializer-list constructor? | provisional | option 1 |
+| [Q-0082](Q-0082-array-new-deleted-destructor.md) | Can new create an array of a class whose destructor is deleted? | provisional | option 1 |
+| [Q-0083](Q-0083-nested-default-member-init-early.md) | Can a default member initializer of a nested class be used before the enclosing class is complete? | provisional | option 1 |
+| [Q-0084](Q-0084-reference-member-temporary.md) | Must an implementation reject a constructor that binds a reference member to a temporary? | provisional | option 1 |
 
 ## Status values
 
