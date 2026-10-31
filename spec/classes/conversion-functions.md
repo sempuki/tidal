@@ -98,9 +98,10 @@ used by a conversion. A call by name still calls it.
 :kind: required
 :tests: classes/conversion-functions/alias-same-type-hides.cpp classes/conversion-functions/different-type-not-hidden.cpp classes/conversion-functions/hidden-same-type.cpp classes/conversion-functions/inherited.cpp
 
-A derived class inherits conversion functions. A conversion function in a
-derived class hides one in a base only if it has the same target type,
-including through a type alias.
+Conversion functions of a base are members of the derived class too.
+Two conversion functions with the same target type have the same name, so
+the one in the derived class hides the one in the base. A type alias for
+the target type counts as the same type. Other targets are not hidden.
 :::
 
 ## Recommended Practice
