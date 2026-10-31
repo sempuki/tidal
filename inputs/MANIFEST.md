@@ -17,13 +17,13 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-parse-stmt | llvm | `clang/lib/Parse/ParseStmt.cpp` | sanitized | `2924c7fd490855f3b63d1c4abdca050a7599d6382a1b2bc9f2735eef05217ec5` |
 | clang-parse-expr | llvm | `clang/lib/Parse/ParseExpr.cpp` | sanitized | `be659823e85cf4401510fed6b6f3a9a2d266499c6714165e7d8ab17f7a3936e7` |
 | clang-sema-stmt | llvm | `clang/lib/Sema/SemaStmt.cpp` | sanitized | `(not fetched)` |
-| clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `(not fetched)` |
-| clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `(not fetched)` |
+| clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `a644acb7cbeadf71a57c6061348168eec9a8b9c0459eb26d6877787cffa631c1` |
+| clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `e57a3ba7476665663ffc3d3961540a06bb062dcbecca92a1a293d74bf9baa5a6` |
 | clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `(not fetched)` |
 | clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `(not fetched)` |
-| clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `(not fetched)` |
+| clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
 | edg-overload | edg | `src/overload.c` | sanitized | `(not fetched)` |
-| edg-decls | edg | `src/decls.c` | sanitized | `(not fetched)` |
+| edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |
 | clang-sema-type | llvm | `clang/lib/Sema/SemaType.cpp` | sanitized | `(not fetched)` |
 | clang-sema-init | llvm | `clang/lib/Sema/SemaInit.cpp` | sanitized | `(not fetched)` |
 | edg-decl-inits | edg | `src/decl_inits.c` | sanitized | `(not fetched)` |
