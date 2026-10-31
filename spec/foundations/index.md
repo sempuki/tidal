@@ -8,6 +8,7 @@ model is checked in its simplest setting.
 
 :::{tidal-pages}
 translation
+types
 objects
 values
 conversions
@@ -21,6 +22,7 @@ constant-evaluation
 :maxdepth: 2
 
 translation
+types
 objects
 values
 conversions

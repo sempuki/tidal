@@ -8,6 +8,7 @@ current state only. The history of how it got here is in `git log`.
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../spec/foundations/translation.md) | 10 | 4 required, 3 reject, 1 undefined, 1 impl-defined, 1 recommended | 27 | 1 | 1 | 20 | Q-0112 | 0 flagged |
+| [Fundamental types](../spec/foundations/types.md) | 0 |  | 0 | 0 | 0 | 0 |  | 0 flagged |
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 31 | 4 | 2 | 10 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 14 | 8 required, 4 reject, 1 unspecified, 1 impl-defined | 48 | 6 | 1 | 8 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 18 | 9 required, 6 reject, 1 undefined, 2 impl-defined | 52 | 5 | 2 | 13 | Q-0028, Q-0100 | 0 flagged |
