@@ -318,7 +318,7 @@ new (&x) int(3);                // rejected without a declared placement form
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 50
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
 of 53 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the

@@ -36,6 +36,17 @@ contextual conversion
   functions are used. {rule}`CONV-3` gives the values that convert to
   `false`.
 
+converting constructor
+  A constructor that is not `explicit`. An implicit conversion can use a
+  converting constructor to make an object of its class from the
+  constructor's arguments ({rule}`CTOR-10`).
+
+copy-initialization
+  The initialization of an object from an initializer after `=`
+  ({doc}`/declarations/initialization/forms`). Passing an argument and
+  returning a value are also copy-initialization. An `explicit`
+  constructor is not used in copy-initialization ({rule}`CTOR-9`).
+
 cv-qualifier
   `const` or `volatile` applied to a type. A program cannot change a
   `const` object after its initialization. Each access to a `volatile`
@@ -120,6 +131,11 @@ observable behavior
 
   An implementation can change anything else (TR-P5).
 
+operator function
+  A function whose name is `operator` followed by an operator, such as
+  `operator+`. An expression that uses the operator can call the
+  operator function ({rule}`OPR-1`).
+
 placeholder type
   `auto` or `decltype(auto)` in the position of a type. The actual type
   comes from an initializer or from `return` statements. A concept name
@@ -134,6 +150,11 @@ storage duration
     for each thread.
   - *Dynamic* storage comes from `new` and goes back with `delete`
     ({rule}`NEW-9`).
+
+temporary object
+  An object that the program makes from a prvalue, without a name. A
+  temporary object ends with its full expression unless a rule makes
+  its life longer ({rule}`VC-5`, {rule}`VC-8`, {rule}`VC-6`).
 
 trivial
   A special member function that is not user-provided and does only

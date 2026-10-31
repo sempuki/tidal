@@ -130,7 +130,7 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp
 
 If a variant member has one of these non-trivial functions (CTOR-23,
 DTOR-9, CPY-27), the matching special member of the union is deleted:
@@ -399,8 +399,8 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 100 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 101 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0057`).

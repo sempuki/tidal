@@ -299,4 +299,60 @@ the run and link tests say only that the programs are valid.
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
   and GCC reject it ({question}`Q-0112`).
 
+The table below gives, for each `recommended` rule that asks for a
+warning, the flag that turns the warning on in Clang 22 and GCC 16. The
+results come from the rule's tests, compiled with no flag, with
+`-Wall`, and with `-Wextra`. A cell has these forms:
+
+- "on" means that the warning is on with no flag.
+- "`-Wall`" or "`-Wextra`" names the group that turns the warning on.
+- The flag after the colon is the warning's own flag. The compiler
+  prints this flag with the warning, and the flag alone also turns the
+  warning on.
+
+`-Werror` makes each warning an error. Older versions can differ. For
+example, Clang 18 gives no warning for CMP-14 ({question}`Q-0029`).
+
+| Rule | Clang | GCC |
+|---|---|---|
+| {rule}`ADD-16` | on: `-Wdeprecated-enum-enum-conversion` | on: `-Wdeprecated-enum-enum-conversion` |
+| {rule}`ATTR-4` | on: `-Wdeprecated-declarations` | on: `-Wdeprecated-declarations` |
+| {rule}`ATTR-5` | on: `-Wunused-result`, `-Wunused-value` | on: `-Wunused-result` |
+| {rule}`ATTR-6` | `-Wall`: `-Wunused-variable`, `-Wunused-but-set-variable` | `-Wall`: `-Wunused-variable`, `-Wunused-but-set-variable` |
+| {rule}`ATTR-7` | `-Wimplicit-fallthrough` only | `-Wextra`: `-Wimplicit-fallthrough` |
+| {rule}`ATTR-14` | on: `-Winvalid-noreturn` | on, with no flag name |
+| {rule}`BF-8` | on: `-Wbitfield-constant-conversion`, `-Wbitfield-width` | on: `-Woverflow`; the width warning has no flag name |
+| {rule}`BIT-6` | on: `-Wparentheses` | `-Wall`: `-Wparentheses` |
+| {rule}`BIT-7` | `-Wall`: `-Wbool-operation` | `-Wall`: `-Wbool-operation` |
+| {rule}`BIT-8` | on: `-Wdeprecated-enum-enum-conversion` | on: `-Wdeprecated-enum-enum-conversion` |
+| {rule}`CMP-4` | `-Wextra`: `-Wsign-compare` | `-Wall`: `-Wsign-compare` |
+| {rule}`CMP-14` | on: `-Wparentheses`, as an error | `-Wall`: `-Wparentheses` |
+| {rule}`CMP-16` | on: `-Wdeprecated-array-compare` | on: `-Warray-compare` |
+| {rule}`CMP-21` | on: `-Wdeprecated-enum-compare`, `-Wdeprecated-enum-float-conversion` | on: `-Wenum-compare`, `-Wdeprecated-enum-float-conversion` |
+| {rule}`COMMA-5` | on: `-Wunused-value` | `-Wall`: `-Wunused-value` |
+| {rule}`CPY-13` | `-Wextra`: `-Wdeprecated-copy-with-user-provided-copy`; `-Wall`: `-Wpessimizing-move` | `-Wextra`: `-Wdeprecated-copy`; `-Wall`: `-Wpessimizing-move` |
+| {rule}`CTOR-13` | `-Wall`: `-Wreorder-ctor` | `-Wall`: `-Wreorder` |
+| {rule}`CV-9` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
+| {rule}`CVF-6` | on: `-Wclass-conversion` | on: `-Wclass-conversion` |
+| {rule}`DCMP-7` | on: `-Wambiguous-reversed-operator`, an error under `-pedantic-errors` | on, with no flag name, an error under `-pedantic-errors` |
+| {rule}`FN-7` | on: `-Wreturn-type` | on: `-Wreturn-type` |
+| {rule}`LAM-21` | on: `-Wdeprecated-this-capture` | on: `-Wdeprecated` |
+| {rule}`LOG-8` | `-Wall`: `-Wlogical-op-parentheses` | `-Wall`: `-Wparentheses` |
+| {rule}`LOG-9` | on: `-Wlogical-not-parentheses` | `-Wall`: `-Wlogical-not-parentheses` |
+| {rule}`MUL-16` | on: `-Wdeprecated-enum-float-conversion` | on: `-Wdeprecated-enum-float-conversion` |
+| {rule}`OPR-9` | on: `-Wuser-defined-literals` | on: `-Wliteral-suffix` |
+| {rule}`PRIM-13` | on: `-Wmultichar`, `-Wliteral-range` | on: `-Wmultichar`, `-Woverflow` |
+| {rule}`SEQ-7` | on: `-Wunsequenced` | `-Wall`: `-Wsequence-point` |
+| {rule}`SHF-9` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` |
+| {rule}`STMT-4` | on: `-Wunused-value` | `-Wall`: `-Wunused-value` |
+| {rule}`TRY-4` | on: `-Wexceptions` | on: `-Wexceptions` |
+| {rule}`TRY-12` | on: `-Wreturn-type` | no warning |
+| {rule}`TRY-13` | on: `-Wexceptions` | no warning |
+| {rule}`UN-19` | on: `-Wsizeof-array-argument` | on: `-Wsizeof-array-argument` |
+| {rule}`UNEV-3` | on: `-Wunused-comparison` | `-Wall`: `-Wunused-value` |
+| {rule}`UNEV-4` | on: `-Wunevaluated-expression` | no warning |
+| {rule}`UNW-8` | on: `-Wexceptions` | on: `-Wterminate` |
+| {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Woverloaded-virtual` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual` |
+| {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
+
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

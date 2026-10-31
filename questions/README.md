@@ -136,6 +136,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0123](Q-0123-attribute-position-in-pointer-declarator.md) | Does an attribute in a pointer declarator come before or after the cv-qualifiers? | provisional | after; Clang differs |
 | [Q-0124](Q-0124-increment-narrow-signed-out-of-range.md) | Is `++` or `--` on a signed operand narrower than `int` defined when the new value does not fit the operand's type? | provisional | the step is defined and the value converts back; EDG differs |
 | [Q-0125](Q-0125-clang18-sized-deallocation.md) | Does Clang 18 omitting the sized deallocation functions change NEW-19? | compiler defect | no; Clang 22 declares them |
+| [Q-0126](Q-0126-const-object-union-member-value.md) | When does a union or an anonymous union give its members a value for a `const` object without an initializer? | provisional | a union gives a value when one variant member has a default member initializer; a class of only anonymous unions is valid; the compilers split |
 
 ## Status values
 

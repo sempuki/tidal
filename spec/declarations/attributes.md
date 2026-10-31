@@ -265,27 +265,38 @@ creates and the program discards.
 
 :::{rule} ATTR-6
 :kind: recommended
-:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp
+:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp declarations/attributes/unused-plain-class-warns.cpp declarations/attributes/unused-set-not-read-warns.cpp declarations/attributes/unused-structured-binding-warns.cpp declarations/attributes/unused-class-object-no-warning.cpp
 
-An implementation should warn about a local variable that the program
-never uses. `[[maybe_unused]]` can apply to:
+An implementation should warn about a variable in a block that the
+program never reads, including:
 
-- a variable,
-- a parameter,
-- a function,
-- a type.
+- a variable that the program only assigns,
+- a structured binding declaration,
+- a variable of a class type without a user-provided constructor or
+  destructor.
 
-An implementation should not warn that such an entity is unused.
+An implementation should not warn about a variable of a class type with
+a user-provided constructor or destructor. An implementation should not
+warn that a variable, parameter, function, or type with
+`[[maybe_unused]]` is unused.
 :::
 
 :::{rule} ATTR-7
 :kind: recommended
-:tests: declarations/attributes/fallthrough-silences.cpp declarations/attributes/implicit-fallthrough-warns.cpp
+:tests: declarations/attributes/fallthrough-silences.cpp declarations/attributes/implicit-fallthrough-warns.cpp declarations/attributes/fallthrough-consecutive-labels.cpp declarations/attributes/fallthrough-if-else-both-break.cpp declarations/attributes/fallthrough-if-without-else-warns.cpp declarations/attributes/fallthrough-after-noreturn.cpp declarations/attributes/fallthrough-after-jump.cpp
 
-Control can go from one `case` of a `switch` into the next. If
-`[[fallthrough]];` is immediately before the next label, an
-implementation should not warn. If the attribute is not there, an
-implementation can warn.
+Control *falls through* when the statements after one label of a
+`switch` can reach the next label. If `[[fallthrough]];` is immediately
+before the next label, an implementation should not warn, and otherwise
+an implementation can warn when control falls through. Control does not
+fall through in these cases:
+
+- The label is directly followed by the next label.
+- The statements end with `break`, `continue`, `return`, `goto`, or
+  `throw`.
+- The statements end with a call of a `noreturn` function.
+- The statements end with an `if` and an `else` whose branches each end
+  in one of these ways.
 :::
 
 :::{rule} ATTR-14
@@ -323,8 +334,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 45
-of 57 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 54
+of 66 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -332,6 +343,16 @@ of 57 tests. EDG skips the tests that use `-Werror`.
 - For ATTR-4 to ATTR-7, Clang and GCC give the warnings ("is
   deprecated", "ignoring return value", "unused variable", "may fall
   through"). The tests change the warnings to errors with `-Werror`.
+  {doc}`/foundations/translation` gives the flag for each warning.
+- ATTR-6: Clang, GCC, and EDG give no warning for an unused variable of
+  a class type with a user-provided constructor or destructor. For a
+  class whose only special feature is a default member initializer,
+  Clang and EDG warn and GCC does not. Clang and GCC warn for an unused
+  condition variable and an unused range-based `for` variable. EDG does
+  not.
+- ATTR-7: Clang warns for a missing `[[fallthrough]];` only under
+  `-Wimplicit-fallthrough`. GCC also warns under `-Wextra`. Both agree
+  on the cases where control falls through.
 - For ATTR-10, all compilers reject a false assumption during
   {term}`constant evaluation` ("assumption evaluated to false", "failed
   'assume' attribute assumption", "assumption failed"). Clang 18 does

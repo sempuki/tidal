@@ -34,6 +34,23 @@ Classifying behavior is the hardest step. Each rule in the last four classes
 needs a sentence in the section's "Evidence" notes explaining why the
 rule was put in that class.
 
+## Evidence
+
+The `Evidence` segment ends a page and is informative
+(`docs/style-guide.md`, section 7). The segment has these parts:
+
+- the agreement sentence, which `tools/status_table.py` keeps current,
+- one bullet for each divergence or classification note. A divergence
+  bullet names the compilers on each side and links the question that
+  holds the provisional answer, for example ``({question}`Q-0053`)``.
+- an `Inputs:` line, last.
+
+The `Inputs:` line lists the sanitized implementation sources that the
+clean-room writer read for the page. Each entry is an input ID from
+`tools/inputs.json`, such as `clang-sema-declcxx`, and
+`inputs/MANIFEST.md` gives the file and revision for each ID. A page
+written without such sources has no `Inputs:` line.
+
 ## Tests
 
 Tests are single C++ files under `tests/`, mirroring the `spec/` layout. A
@@ -46,7 +63,7 @@ header of `//` directives at the top of the file controls the runner:
 
 | Directive | Values | Meaning |
 |---|---|---|
-| `tidal-rules` | rule IDs | Rules this test supports. Required. A test of a failed constant cites the rule that the evaluation broke, and can also cite the rule that needs the constant (decision 0038). |
+| `tidal-rules` | rule IDs | Rules this test supports. Required. A test of a failed constant cites the rule that the evaluation broke, and can also cite the rule that needs the constant (decision 0038). A test whose program breaks a general `reject` rule and a specific one cites the specific rule, and can also cite the general one. The general rule names the specific rules (decision 0042). |
 | `tidal-expect` | `accept`, `reject`, `link-fail`, `run`, `run-fail` | `accept`: compiles. `reject`: fails to compile. `link-fail`: every translation unit compiles, but linking them fails. `run`: compiles, links, runs, and exits 0. `run-fail`: compiles and links, but the run exits nonzero, for example because a sanitizer stops it (decision 0028). |
 | `tidal-expect-<x>` | same | Override for a compiler family (`clang`, `gcc`, `edg`) or a compiler id from `tools/compilers.json`. Use only with a `tidal-note` naming the question in `questions/`. |
 | `tidal-error` | regular expression | For a `reject`, `link-fail`, or `run-fail` test: one of the compiler's error or note messages, the linker's message, or a line of the program's output must match it, case-insensitive. A failure for another reason fails the test. |

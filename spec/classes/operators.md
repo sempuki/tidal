@@ -177,7 +177,7 @@ operator function from these candidates:
 
 - member operator functions of the class of the left operand,
 - non-member operator functions found by ordinary and argument-dependent
-  lookup *(lookup referenced)*,
+  lookup ({rule}`NAM-5`, {rule}`NAM-27`),
 - built-in operators, after conversion of the operands.
 
 Implicit conversions apply to every operand of a non-member and to no

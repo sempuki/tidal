@@ -182,7 +182,7 @@ access.
 
 A friend function that is first declared in a class is a member of the
 enclosing namespace. Only argument-dependent lookup
-*(lookup referenced)* finds the function, unless the namespace also
+({rule}`NAM-29`) finds the function, unless the namespace also
 declares the function.
 :::
 

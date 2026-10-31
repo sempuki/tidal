@@ -31,7 +31,7 @@ the object is gone.
 :::
 
 :::{principle} CTOR-P2
-:rules: CTOR-2 CTOR-3 CTOR-4 DTOR-2 DTOR-3 DTOR-4 CTOR-19 CTOR-20 CTOR-23 DTOR-9
+:rules: CTOR-2 CTOR-3 CTOR-4 CTOR-24 DTOR-2 DTOR-3 DTOR-4 CTOR-19 CTOR-20 CTOR-23 DTOR-9
 
 The implementation writes a default constructor and a destructor for a
 class that writes none, because building and ending the parts is right
@@ -199,6 +199,18 @@ A default constructor defaulted on its first declaration is not
 user-provided.
 :::
 
+:::{rule} CTOR-24
+:kind: reject
+:tests: classes/constructors/const-object-union-no-init.cpp classes/constructors/const-object-union-member-init.cpp classes/constructors/const-object-anonymous-union-init.cpp classes/constructors/const-object-anonymous-union-no-init.cpp classes/constructors/const-object-only-anonymous-unions.cpp
+
+For CTOR-4, a union gives its members a value if the union declares a
+default member initializer for at least one of its members. An
+anonymous union member of a class meets the condition of CTOR-4 in the
+same way. A class whose data members are
+all in anonymous unions without default member initializers also meets
+the condition ({question}`Q-0126`).
+:::
+
 :::{rule} CTOR-5
 :kind: required
 :tests: classes/constructors/mem-init-base-and-member.cpp classes/constructors/mem-init-braces.cpp classes/constructors/mem-init-overrides-default.cpp classes/constructors/mem-init-type-alias-base.cpp classes/constructors/mem-init-uses-param.cpp
@@ -311,14 +323,15 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp
 
 If the destructor of a class is deleted or not accessible, a program
 must not:
 
 - declare a variable of the class with automatic, static, or thread
   storage duration,
-- create a temporary of the class,
+- write a prvalue of the class outside the operand of `decltype`, also
+  where the prvalue initializes an object directly, as in `return S{};`,
 - apply `delete` to an object of the class.
 
 A `new` expression for the class is valid, also for an array
@@ -351,7 +364,7 @@ denote the type of the object, also for a scalar type.
 A default member initializer of a nested class can only be used after
 the enclosing class is complete. A default argument of a constructor of
 the enclosing class must not use that initializer, for example with
-empty braces (question pending).
+empty braces ({question}`Q-0083`).
 :::
 
 :::{rule} CTOR-23
@@ -480,7 +493,7 @@ to itself ({question}`Q-0053`).
 A constructor must not bind a reference member to a temporary object,
 through a `mem_init` or a default member initializer. The temporary ends
 with the constructor. An implementation need not diagnose such a
-binding (question pending).
+binding ({question}`Q-0084`).
 :::
 
 ## Recommended Practice
@@ -520,8 +533,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 135 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 134
+of 144 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -540,6 +553,20 @@ of 135 tests.
   GCC reject it ({question}`Q-0083`).
 - CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
   EDG accepts it ({question}`Q-0084`).
+- CTOR-24: the compilers differ for unions and anonymous unions
+  ({question}`Q-0126`):
+
+  | Case | Clang 22 | Clang 18 | GCC | EDG |
+  |---|---|---|---|---|
+  | Union, one variant member with a default member initializer | accepts | rejects | rejects | accepts |
+  | Anonymous union with such a member, beside another member | accepts | rejects | accepts | accepts |
+  | Anonymous union without one, beside another member | rejects | rejects | accepts | rejects |
+  | Only anonymous unions, none with a default member initializer | rejects | rejects | accepts | accepts |
+
+  Each row follows the majority.
+- DTOR-3: all compilers reject each prvalue of the class, also where no
+  temporary is made, as in `return S{};`. All accept the operand of
+  `decltype`.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.

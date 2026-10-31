@@ -93,11 +93,13 @@ Writing guidance:
 ## 7. Questions
 
 For every compiler disagreement or unclear classification, the
-clean-room writer adds a file to `questions/` from `questions/TEMPLATE.md`: the facts, the
-evidence, the options, and a provisional answer. The spec follows the
-provisional answer, and the section's "Divergences" heading links to the
-question. Work continues without waiting for anyone. Contributors change
-answers through pull requests (`questions/README.md`).
+clean-room writer adds a file to `questions/` from
+`questions/TEMPLATE.md`: the facts, the evidence, the options, and a
+provisional answer. The spec follows the provisional answer. The page's
+`Evidence` segment has one bullet for each divergence, which names the
+compilers on each side and links the question (`docs/spec-format.md`).
+Work continues without waiting for anyone. Contributors change answers
+through pull requests (`questions/README.md`).
 
 ## 8. Similarity check
 

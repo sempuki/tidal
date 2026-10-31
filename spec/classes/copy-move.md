@@ -74,6 +74,10 @@ Each of these makes the containing function deleted:
 - a `const` member,
 - a part whose own function is deleted or hidden.
 
+A part whose destructor is deleted or hidden makes only the copy and
+move constructors deleted. A constructor makes a new object that must
+end some day, and an assignment makes no new object.
+
 The same holds for a function that the class defaults in its definition,
 also when the signature of that function differs from the implicit one.
 A deleted move function that the implementation produced steps aside, so
@@ -262,7 +266,7 @@ assignment operator that CPY-6 hides.
 
 :::{rule} CPY-7
 :kind: required
-:tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp
+:tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp classes/copy-move/member-dtor-keeps-assignment.cpp classes/unions/union-deleted-move-uses-copy.cpp
 
 An implicit or defaulted copy or move function is deleted if one of
 these conditions is true:
@@ -270,15 +274,17 @@ these conditions is true:
 - A base or member cannot be copied or moved in the same way, for
   example because the function for that base or member is deleted or
   not accessible.
-- A base or member has a destructor that is deleted or not accessible.
+- The function is a copy or move constructor, and a base or member has
+  a destructor that is deleted or not accessible.
 - The function is the copy constructor, and the class has an rvalue
   reference member.
 - The function is a copy or move assignment operator, and the class has
   a reference member or a `const` member.
 
-A defaulted move function that is deleted takes no part in overload
-resolution, so an rvalue uses the copy function. A move function that
-the program deletes explicitly takes part.
+A deleted defaulted move function, or a move function that
+{rule}`UNI-3` deletes, takes no part in overload resolution, so an
+rvalue uses the copy function. A move function that the program deletes
+explicitly takes part.
 :::
 
 :::{rule} CPY-23
@@ -333,7 +339,12 @@ Overload resolution chooses between the copy and move functions:
 
 An lvalue of a class with no usable copy constructor cannot initialize a
 new object. An `explicit` copy constructor is not used in
-copy-initialization.
+copy-initialization. Two rules name specific cases of this rule
+(decision 0042):
+
+- {rule}`CPY-21`, a class whose move function deletes its copy,
+- {rule}`JMP-15`, a `return` of a `static` local variable of a move-only
+  type.
 :::
 
 :::{rule} CPY-10
@@ -453,14 +464,18 @@ assigns the virtual base subobject.
 
 :::{rule} CPY-13
 :kind: recommended
-:tests: classes/copy-move/deprecated-copy-warns.cpp classes/copy-move/move-on-return-no-warning.cpp classes/copy-move/pessimizing-move-warns.cpp
+:tests: classes/copy-move/deprecated-copy-warns.cpp classes/copy-move/move-on-return-no-warning.cpp classes/copy-move/pessimizing-move-warns.cpp classes/copy-move/pessimizing-move-nontemplate.cpp classes/copy-move/cast-on-return-no-warning.cpp
 
 An implementation should warn about these:
 
 - a use of an implicit copy function in a class that has a user-provided
   copy constructor or copy assignment operator,
-- a cast to an rvalue in a `return` statement that prevents the variable
-  from being the return value.
+- a call of `std::move` *(library referenced)* on a local variable in a
+  `return` statement, because the call prevents the variable from being
+  the return value.
+
+An implementation need not warn about a cast that the program writes,
+such as `static_cast`.
 :::
 
 ## Examples
@@ -492,8 +507,9 @@ struct Owner {                     // owns an array, so it writes its copies
     for (int i = 0; i < n; ++i) items[i] = o.items[i];
   }
   Owner& operator=(const Owner& o) {
-    if (this != &o) {              // without the test, o = o frees o.items
-      delete[] items;              // and then copies from it
+    if (this != &o) {              // without the test, o = o copies from
+      delete[] items;              // the new array, whose elements have
+                                   // no value (NEW-3)
       n = o.n;
       items = new int[n];
       for (int i = 0; i < n; ++i) items[i] = o.items[i];
@@ -506,8 +522,8 @@ struct Owner {                     // owns an array, so it writes its copies
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 98 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 102 tests.
 
 - CPY-14: GCC 14 rejects a defaulted constructor whose parameter type
   differs from the implicit one. GCC 16, Clang, and EDG accept it and
@@ -515,7 +531,13 @@ of 98 tests.
 - CPY-12: Clang and GCC use the variable as the return value at `-O0`
   and `-O2`. EDG runs no programs. The test accepts a move too.
 - CPY-13: Clang and GCC give the first warning under `-Wextra` and the
-  second under `-Wall`.
+  second under `-Wall`. Both warn for a call of a function named
+  `std::move`, also when the function is not a template. Neither warns
+  for `static_cast` or for a call of a function with another name.
+- CPY-7: all compilers accept an assignment of a class whose member has a
+  deleted or private destructor, and reject a copy or move construction.
+  All compilers move a union whose move constructor UNI-3 deletes by its
+  copy constructor.
 - CPY-18: Clang and GCC assign the virtual base two times. The test
   accepts one or two.
 - CPY-19: the test checks the consequence for a simple class and does
