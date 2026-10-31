@@ -21,7 +21,7 @@
 
 ## Provisional answer
 
-Option 1. It is the one rule that explains both rejections, and it matches
-Clang for both programs and EDG for the second.
+Option 1. This option is the one rule that explains both rejections, and
+it matches Clang for both programs and EDG for the second.
 
 ## Opinions

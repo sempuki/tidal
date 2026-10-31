@@ -5,8 +5,8 @@ Status: Accepted. Extends 0005.
 
 ## Context
 
-Most `undefined` rules had only constant-evaluation tests. Those show
-that a compiler treats a construct as undefined inside a constant
+Most `undefined` rules had only constant-evaluation tests. Those tests
+show that a compiler treats a construct as undefined inside a constant
 expression. They say nothing about a running program, and some rules
 (an out-of-range enumeration value read later, a call through
 `[[noreturn]]` that returns) have no useful constant form.

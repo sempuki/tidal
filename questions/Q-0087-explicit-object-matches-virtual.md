@@ -5,12 +5,12 @@
 
 ## Context
 
-A derived class declares a member function with an explicit object parameter. Its name and other parameters match a virtual function of a base. Clang and GCC reject it. EDG 7.0 accepts it.
+A derived class declares a member function with an explicit object parameter. The name and other parameters of that function match a virtual function of a base. Clang and GCC reject the declaration. EDG 7.0 accepts it.
 
 ## Options
 
 1. Not valid.
-2. Valid, and it does not override.
+2. Valid, and the function does not override.
 
 ## Provisional answer
 

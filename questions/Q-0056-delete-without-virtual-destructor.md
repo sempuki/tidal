@@ -7,7 +7,7 @@
 
 A program creates a derived object with `new` and deletes it through a
 pointer to a base whose destructor is not virtual. During constant
-evaluation, Clang and EDG reject this. GCC 14 and 16 accept it.
+evaluation, Clang and EDG reject the deletion. GCC 14 and 16 accept it.
 
 ## Options
 

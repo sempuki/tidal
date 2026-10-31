@@ -14,8 +14,8 @@ GCC 16 and 14 and EDG 7.0 accept it and give a value.
 ## Options
 
 1. Rejected during constant evaluation, because the result depends on
-   storage that the implementation chooses. This matches the treatment of
-   other unspecified pointer comparisons (CMP-8).
+   storage that the implementation chooses. This rule matches the
+   treatment of other unspecified pointer comparisons (CMP-8).
 2. Accepted, with an implementation-defined result.
 
 ## Provisional answer

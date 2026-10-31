@@ -5,7 +5,7 @@
 
 ## Context
 
-A declaration such as `alignas(1) int x;` asks for an alignment weaker than the alignment of `int`. Clang and EDG reject it. GCC accepts it.
+A declaration such as `alignas(1) int x;` asks for an alignment weaker than the alignment of `int`. Clang and EDG reject the declaration. GCC accepts it.
 
 ## Options
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-Clang 22 and 18 and EDG 7.0 reject `likely` and `unlikely` on the same statement. GCC 16 and 14 accept it and ignore the second attribute with a warning.
+Clang 22 and 18 and EDG 7.0 reject `likely` and `unlikely` on the same statement. GCC 16 and 14 accept the pair and ignore the second attribute with a warning.
 
 ## Options
 
@@ -14,6 +14,6 @@ Clang 22 and 18 and EDG 7.0 reject `likely` and `unlikely` on the same statement
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it.
+Option 1. Two of three implementations reject the pair.
 
 ## Opinions

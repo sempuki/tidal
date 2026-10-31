@@ -14,12 +14,12 @@ accepts with a warning. EDG accepts.
 
 1. The program is not valid, and an implementation need not diagnose it
    (no-diagnostic).
-2. Implementations must reject it.
-3. It is valid, and a later use of the reference is undefined.
+2. Implementations must reject the program.
+3. The program is valid, and a later use of the reference is undefined.
 
 ## Provisional answer
 
-Option 1. Clang diagnoses it and GCC warns. All three
+Option 1. Clang diagnoses the program and GCC warns. All three
 still conform.
 
 ## Opinions

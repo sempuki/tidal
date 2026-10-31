@@ -5,9 +5,10 @@
 
 ## Context
 
-In `for (init; T c = cond(); step) body`, the condition declares a variable
-on each iteration. Clang 22 and 18, GCC 16, and EDG 7.0 destroy it after the
-iteration expression `step`. GCC 14 destroys it before `step`.
+In `for (init; T c = cond(); step) body`, the condition declares a
+variable on each iteration. Clang 22 and 18, GCC 16, and EDG 7.0 destroy
+the variable after the iteration expression `step`. GCC 14 destroys it
+before `step`.
 
 ## Options
 

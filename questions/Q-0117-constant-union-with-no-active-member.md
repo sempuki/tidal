@@ -22,15 +22,15 @@ value.
 
 ## Options
 
-1. A union with no active member has no parts that need a value, so it
-   is a valid constant. GCC differs.
+1. A union with no active member has no parts that need a value, so such
+   a union is a valid constant. GCC differs.
 2. A constant union must have an active member with a value. Clang and
    EDG differ.
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept it, and it follows from
-CE-21 counting only the active member. The status is not "compiler
-defect", because option 2 is a consistent reading too.
+Option 1. Two of three implementations accept the variable, and option 1
+follows from CE-21 counting only the active member. The status is not
+"compiler defect", because option 2 is a consistent reading too.
 
 ## Opinions

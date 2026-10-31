@@ -5,7 +5,7 @@
 
 ## Context
 
-`!nullptr` and `nullptr && b` convert `nullptr` to `bool` by contextual conversion, which gives `false`. GCC 16, Clang 18 and 22, and EDG 7.0 accept it. GCC 14 rejects it.
+`!nullptr` and `nullptr && b` convert `nullptr` to `bool` by contextual conversion, which gives `false`. GCC 16, Clang 18 and 22, and EDG 7.0 accept both expressions. GCC 14 rejects both.
 
 ## Options
 

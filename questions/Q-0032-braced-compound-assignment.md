@@ -18,6 +18,6 @@ accept a braced list on the right of simple `=`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it.
+Option 1. Two of three implementations reject a braced list with `+=`.
 
 ## Opinions

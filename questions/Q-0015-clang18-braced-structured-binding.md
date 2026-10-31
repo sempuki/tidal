@@ -24,6 +24,6 @@ compilers accept the `=` and parenthesized forms.
 ## Provisional answer
 
 Option 1. The newer version of the same implementation and both other
-implementations accept it.
+implementations accept the braced form.
 
 ## Opinions

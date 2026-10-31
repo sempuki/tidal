@@ -11,18 +11,19 @@ infinity. EDG 7.0 rejects it.
 
 ## Options
 
-1. The value is implementation-defined. An implementation can reject it.
+1. The value is implementation-defined. An implementation can reject the
+   literal.
 2. The program is not valid, and implementations must reject it.
 
 ## Provisional answer
 
-Option 1. Two of the three implementations accept it in their strictest
-mode.
+Option 1. Two of the three implementations accept the literal in their
+strictest mode.
 
 ## Opinions
 
-- The second gap review (`reports/review/2026-10-31-gap-review-expr-decl.md`,
-  a summary by a source reader) holds that such a literal is not valid,
-  which is option 2. Clang and GCC still accept it in their strictest
-  mode, so the provisional answer stays option 1 until more opinions
-  arrive.
+- The second gap review
+  (`reports/review/2026-10-31-gap-review-expr-decl.md`, a summary by a
+  source reader) holds that such a literal is not valid (option 2).
+  Clang and GCC still accept the literal in their strictest mode, so the
+  provisional answer stays option 1 until more opinions arrive.

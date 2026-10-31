@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept it.
+Option 1. Two of three implementations accept the floating-point size.
 
 ## Opinions

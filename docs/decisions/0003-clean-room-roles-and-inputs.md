@@ -24,8 +24,8 @@ Adopt the protocol in `docs/clean-room.md`:
 
 ## Consequences
 
-- Writers lose the best-organized test suites, because those are organized by
-  ISO section. Tidal has to build its own tests from scratch.
+- Writers lose the best-organized test suites, because those suites are
+  organized by ISO section. Tidal has to build its own tests from scratch.
 - Comment stripping discards real explanations of intent in compiler code.
   Writers must infer intent from code and behavior.
 - Staffing for the proof of concept is described in `docs/clean-room.md`.

@@ -7,7 +7,7 @@ Status: Accepted. Extends 0019. Amended by 0035.
 
 The pipeline recovers the language from implementations (probes, source
 reading, sanitizers) and finds missing behavior through gap reviews.
-None of these shows whether the text is enough on its own: whether a
+None of these techniques shows whether the text is enough on its own: whether a
 reader can write correct programs from it, or an implementer can build
 a checker from it. A specification that every reviewer reads alongside
 other material can lean on knowledge it never states.

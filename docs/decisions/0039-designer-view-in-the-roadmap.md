@@ -12,12 +12,12 @@ resolution as the topic of highest value. It differs in four places:
 
 - It adds cross-page inventories on the Foundations pages. Proposals
   need to cite each step of the usual arithmetic conversions, the
-  contexts of implicit conversion, and the full expression. These exist
-  only as a glossary entry or across many pages.
+  contexts of implicit conversion, and the full expression. These items
+  exist only as a glossary entry or across many pages.
 - It wants "trivial" defined now. JMP-6, SW-5, and UNI-5 use the word,
   and a definition needs no library type.
 - It wants a narrow lexical slice now: keywords, reserved names, and the
-  literal suffix grammar. Every proposal that adds a word needs it.
+  literal suffix grammar. Every proposal that adds a word needs the slice.
 - It would specify instantiation (N2) before deduction (O).
 
 ## Decision

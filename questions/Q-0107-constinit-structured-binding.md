@@ -5,7 +5,7 @@
 
 ## Context
 
-A structured binding declaration at namespace scope has `constinit`. Clang and GCC 16 reject it. EDG 7.0 and GCC 14 accept it.
+A structured binding declaration at namespace scope has `constinit`. Clang and GCC 16 reject the declaration. EDG 7.0 and GCC 14 accept it.
 
 ## Options
 

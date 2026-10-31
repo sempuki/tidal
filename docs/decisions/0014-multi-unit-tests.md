@@ -6,7 +6,7 @@ Status: Accepted
 ## Context
 
 Linkage decides whether a name in one translation unit refers to the same
-entity as a name in another. Single-file tests can't observe that. Some
+entity as a name in another. Single-file tests can't observe linkage. Some
 errors also only show up when units are linked, and implementations are
 not required to catch all of them.
 

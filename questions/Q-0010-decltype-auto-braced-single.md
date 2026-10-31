@@ -8,9 +8,9 @@
 `decltype(auto)` is rejected with `= { ... }` (AUTO-11), and `auto` with a
 single-element braced initializer deduces from the element (AUTO-6). For
 `decltype(auto)` with a single-element braced initializer and no `=`,
-rejection is an easy wrong prediction. All seven compilers accept it and deduce from
-the element, including its value category: `decltype(auto) b{(i)};` gives
-`int&`.
+rejection is an easy wrong prediction. All seven compilers accept it and
+deduce from the element, including its value category: `decltype(auto)
+b{(i)};` gives `int&`.
 
 ## Evidence
 

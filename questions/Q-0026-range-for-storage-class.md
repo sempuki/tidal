@@ -18,6 +18,6 @@ both.
 ## Provisional answer
 
 Option 1. The newest version of every implementation in the matrix
-rejects it.
+rejects both forms.
 
 ## Opinions

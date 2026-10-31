@@ -5,12 +5,13 @@
 
 ## Context
 
-`enum Huge { A = 1ULL << 63, B = -1 };` needs a signed type with at least 65
-bits. Clang and EDG reject it. GCC accepts it with a 16-byte underlying type,
-even under `-pedantic-errors`. Clang's rejection is a pedantic diagnostic
-(`-Wenum-too-large`), so Clang also treats it as an extension outside strict
-mode. With `-fshort-enums`, Clang and GCC give a small enumeration a 1-byte
-underlying type, which shows the choice of type is the implementation's.
+`enum Huge { A = 1ULL << 63, B = -1 };` needs a signed type with at least
+65 bits. Clang and EDG reject it. GCC accepts it with a 16-byte underlying
+type, even under `-pedantic-errors`. Clang's rejection is a pedantic
+diagnostic (`-Wenum-too-large`), so Clang also treats such an enumeration
+as an extension outside strict mode. With `-fshort-enums`, Clang and GCC
+give a small enumeration a 1-byte underlying type. This behavior shows
+that the choice of type is the implementation's.
 
 ## Evidence
 

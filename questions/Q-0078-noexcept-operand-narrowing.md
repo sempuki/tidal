@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree. `static_assert` and `if constexpr` permit narrowing, so this differs from them.
+Option 1. Clang and GCC agree. `static_assert` and `if constexpr` permit narrowing, so the rule for `noexcept` differs from the rules for those two.
 
 ## Opinions

@@ -5,12 +5,13 @@
 
 ## Context
 
-`enum alignas(8) E { a };` puts `alignas` on an enumeration. Clang and GCC 16 reject it. EDG 7.0 and GCC 14 accept it.
+`enum alignas(8) E { a };` puts `alignas` on an enumeration. Clang and GCC 16 reject the declaration. EDG 7.0 and GCC 14 accept it.
 
 ## Options
 
 1. `alignas` must not apply to an enumeration.
-2. It is valid and sets the alignment of the enumeration.
+2. `alignas` on an enumeration is valid and sets the alignment of the
+   enumeration.
 
 ## Provisional answer
 

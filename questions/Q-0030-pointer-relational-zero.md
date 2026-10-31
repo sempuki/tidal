@@ -17,6 +17,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject it.
+Option 1. Clang and GCC, in both versions, reject both comparisons.
 
 ## Opinions

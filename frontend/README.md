@@ -1,9 +1,9 @@
 # tidal-fe
 
 A C++ front end written in Rust from the Tidal specification, to exercise
-the specification. It
-checks programs and does not generate code. It can use any crate that does
-not encode knowledge of C++ (decision 0035).
+the specification. The front end checks programs and does not generate
+code. The front end can use any crate that does not encode knowledge of
+C++ (decision 0035).
 
 ## Build
 
@@ -49,8 +49,8 @@ evaluation broke. The conformance count of matching rules accepts either.
 target/release/tidal-fe conform ../tests [-v] [--out FILE]
 ```
 
-The harness reads the `// tidal-` directives at the top of each test. It
-uses the `tidal-expect-edg` override when a test has one, and treats
+The harness reads the `// tidal-` directives at the top of each test. The
+harness uses the `tidal-expect-edg` override when a test has one, and treats
 `run`, `run-fail`, and `link-fail` as accept. `-Werror` in `tidal-flags`
 passes `--werror`, and `-m32` passes `--m32`. A test with
 `tidal-sources` checks each translation unit on its own.
@@ -65,7 +65,7 @@ columns:
 - **Differs from EDG only**: the answer differs from the EDG override
   but matches the test's base `tidal-expect` line.
 
-It then lists the unsupported constructs, with the number of tests each
+The output then lists the unsupported constructs, with the number of tests each
 one affects. `-v` also lists every test that did not pass. `--out FILE`
 writes the table and one line per test to FILE.
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-A derived class with a public base can redeclare a base member with a using-declaration under a `private` label. Clang and GCC then reject a use of that member through the derived class from outside. EDG 7.0 accepts it, which suggests that EDG keeps the access that the member has through the base.
+A derived class with a public base can redeclare a base member with a using-declaration under a `private` label. Clang and GCC then reject a use of that member through the derived class from outside. EDG 7.0 accepts the use. This result suggests that EDG keeps the access that the member has through the base.
 
 ## Options
 

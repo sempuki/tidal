@@ -8,15 +8,16 @@ Produce a specification for expressions, statements, and declarations that
    Tidal matches its meaning under ISO C++, and
 2. contains no text, examples, or organization copied from the ISO standard.
 
-This is a proof of concept. It tests whether an LLM-assisted pipeline can
-produce usable specification text from implementations, and it measures how
-close that text ends up to the ISO wording.
+Tidal is a proof of concept. The project tests whether an LLM-assisted
+pipeline can produce usable specification text from implementations,
+and the project measures how close that text ends up to the ISO
+wording.
 
 ## Baseline
 
 - Language level: C++23, as implemented by `-std=c++23`.
 - Reference implementations: Clang, GCC, and EDG. Tidal reads the sanitized
-  source of Clang and EDG. It uses GCC through its behavior (decision 0021).
+  source of Clang and EDG. Tidal uses GCC through GCC's behavior (decision 0021).
   MSVC may be added later as a black-box oracle.
 - Versions used for this proof of concept are recorded in `inputs/MANIFEST.md`.
 
@@ -53,7 +54,7 @@ Referenced but not specified:
 
 The in-scope topics depend on name lookup, overload resolution, and
 templates. Tidal sections refer to those concepts by name and list them
-in a "Depends on" block. They are not specified here.
+in a "Depends on" block. Those concepts are not specified here.
 
 Out of scope:
 

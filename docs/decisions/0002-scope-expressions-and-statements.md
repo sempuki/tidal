@@ -21,7 +21,7 @@ The baseline is C++23 as implemented by Clang and GCC with `-std=c++23`.
 ## Consequences
 
 - Sections will contain "Depends on" lists that point at concepts Tidal does
-  not yet define. That is expected for now.
+  not yet define. These lists are expected for now.
 - C++26 features (contracts, reflection, `#embed`) are excluded, partly
   because implementations are incomplete and partly because the inputs that
   describe them are WG21 papers, which quote ISO text.

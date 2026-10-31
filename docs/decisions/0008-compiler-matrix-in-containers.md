@@ -29,10 +29,10 @@ toolchains for many compilers costs more than it saves at this size.
   promoted to `baseline` after its results have been reviewed once.
 - **Images.** `docker/apt.Dockerfile` installs a distribution compiler
   package (versioned GCC and Clang). `docker/edg.Dockerfile` builds EDG's
-  front end from a release tag. `tools/containers.py` builds them with
-  Docker or Podman, whichever is installed.
+  front end from a release tag. `tools/containers.py` builds the images
+  with Docker or Podman, whichever is installed.
 - **Execution.** The runner starts one container per compiler for the whole
-  run and executes each compile inside it. The tests directory is mounted
+  run and executes each compile inside that container. The tests directory is mounted
   read-only.
 - **Caching.** Results are cached by a hash of the test text, the
   compiler's version output and image ID, and its command templates. Only

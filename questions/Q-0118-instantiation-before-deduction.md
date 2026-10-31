@@ -6,10 +6,10 @@
 ## Context
 
 The roadmap orders phase 4 as template declarations (N1), deduction and
-function templates (O), dependent names and instantiation (N2),
-concepts (P), and packs (R). The designer's roadmap would put N2 before
-O. Some of its proposals are instantiations with no deduction, such as
-an expansion over the elements of an object or a constant parameter.
+function templates (O), dependent names and instantiation (N2), concepts
+(P), and packs (R). The designer's roadmap would put N2 before O. Some
+of the designer's proposals are instantiations with no deduction, such
+as an expansion over the elements of an object or a constant parameter.
 
 ## Evidence
 

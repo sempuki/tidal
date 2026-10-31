@@ -12,8 +12,8 @@ accepts it.
 
 ## Options
 
-1. The behavior is undefined, so constant evaluation rejects it.
-2. Constant evaluation accepts it.
+1. The behavior is undefined, so constant evaluation rejects the deletion.
+2. Constant evaluation accepts the deletion.
 
 ## Provisional answer
 

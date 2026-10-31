@@ -23,7 +23,7 @@ Clang 22 and GCC 16 at `-O0` and `-O2` give 0. GCC 16 with
 
 ## Provisional answer
 
-Option 1. The default behavior of every compiler fits it, and it doesn't
-rule out an implementation choice that already exists.
+Option 1. The default behavior of every compiler fits option 1, and
+option 1 doesn't rule out an implementation choice that already exists.
 
 ## Opinions

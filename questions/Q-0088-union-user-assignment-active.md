@@ -5,7 +5,7 @@
 
 ## Context
 
-A union member has a class type with a user-provided assignment operator. Constant evaluation assigns to that member while another member is active. Clang and GCC reject it. EDG 7.0 accepts it.
+A union member has a class type with a user-provided assignment operator. Constant evaluation assigns to that member while another member is active. Clang and GCC reject the evaluation. EDG 7.0 accepts it.
 
 ## Options
 

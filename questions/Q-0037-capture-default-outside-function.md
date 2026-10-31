@@ -5,7 +5,7 @@
 
 ## Context
 
-`auto g = [=] { return 1; };` at namespace scope has a capture default but nothing to capture. Clang 22 and 18 and GCC 16 and 14 reject it ("non-local lambda expression cannot have a capture-default"). EDG 7.0 accepts it.
+`auto g = [=] { return 1; };` at namespace scope has a capture default but nothing to capture. Clang 22 and 18 and GCC 16 and 14 reject the lambda ("non-local lambda expression cannot have a capture-default"). EDG 7.0 accepts it.
 
 ## Options
 
@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject it.
+Option 1. Clang and GCC, in both versions, reject the lambda.
 
 ## Opinions

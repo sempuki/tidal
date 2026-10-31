@@ -97,16 +97,18 @@ A principle is a `principle` directive:
     :::
 
 - The ID is the page prefix, `P`, and a number.
-- A principle is one to three paragraphs in plain prose. It says what the
-  construct is for and what model the rules follow from. It can say why.
-  Where it names three or more items, cases, or steps, it uses a list,
-  as everywhere else (section 1).
-- Prefer a table or a diagram to prose wherever it says the same thing
-  in less text. A principle that compares cases, kinds, or operators
-  gives the comparison as a table. One that describes an order, a flow,
-  a hierarchy, or an object layout draws it as a plain-text diagram in a
-  `text` code block. The prose that remains says why.
-- `:rules:` lists the rules on the same page that are its evidence. Every
+- A principle is one to three paragraphs in plain prose. The principle
+  says what the construct is for and what model the rules follow from,
+  and can say why. Where a principle names three or more items, cases,
+  or steps, the principle uses a list, as everywhere else (section 1).
+- Prefer a table or a diagram to prose wherever the table or diagram
+  says the same thing in less text. A principle that compares cases,
+  kinds, or operators gives the comparison as a table. A principle that
+  describes an order, a flow, a hierarchy, or an object layout draws
+  that structure as a plain-text diagram in a `text` code block. The
+  prose that remains says why.
+- `:rules:` lists the rules on the same page that are the principle's
+  evidence. Every
   rule on a page with principles must appear in one `:rules:` or
   `:exceptions:` list.
 - `:exceptions:` lists the rules that depart from the principle. State
@@ -129,8 +131,8 @@ Write each rule in a `rule` directive:
     :::
 
 - The ID is the section prefix and a number. Do not reuse an ID.
-- `:kind:` is one of the classes in `docs/spec-format.md`. It must agree
-  with the segment that contains the rule.
+- `:kind:` is one of the classes in `docs/spec-format.md`. The kind must
+  agree with the segment that contains the rule.
 - `:tests:` lists one or more test files, relative to `tests/`, separated
   by spaces.
 - A rule contains one to three sentences. Use a list for conditions.
@@ -151,15 +153,15 @@ Use these words with these meanings only.
 
 | Word | Meaning |
 |---|---|
-| must | A requirement on a program. If the program breaks it, the program is not valid. |
+| must | A requirement on a program. If the program breaks the requirement, the program is not valid. |
 | must not | A prohibition on a program. |
 | rejects | The implementation issues a diagnostic and does not translate the program. |
 | accepts | The implementation translates the program. |
 | can | The language permits it. |
 | is undefined | Tidal sets no requirements on the behavior. |
 | is implementation-defined | Each implementation chooses the behavior and documents its choice. |
-| is unspecified | Each implementation chooses the behavior from a set that the rule gives. It need not document the choice. |
-| is conditionally supported | An implementation can reject the construct. If it accepts it, it documents the behavior. |
+| is unspecified | Each implementation chooses the behavior from a set that the rule gives. The implementation need not document the choice. |
+| is conditionally supported | An implementation can reject the construct. If the implementation accepts the construct, the implementation documents the behavior. |
 | should | Recommended practice only. |
 
 Do not use `shall`, `may`, `might`, or `will` in rules.
@@ -174,6 +176,6 @@ Do not use `shall`, `may`, `might`, or `will` in rules.
 
 ## 7. Evidence
 
-The `Evidence` segment is informative. It records compiler results, links
+The `Evidence` segment is informative. The segment records compiler results, links
 to questions in `questions/`, and notes divergences. Each divergence names
 the compilers and the question that holds the provisional answer.

@@ -14,6 +14,6 @@ Whether a pointer one past the end of an object equals a pointer to an object th
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and it matches Q-0033.
+Option 1. Clang and GCC agree, and option 1 matches Q-0033.
 
 ## Opinions

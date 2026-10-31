@@ -5,7 +5,7 @@
 
 ## Context
 
-`Out o(1, 2, 3);`, where `Out` holds an inner aggregate of two `int` members and then an `int`, needs brace elision to fill the inner member. Clang 22 and 18 and GCC 16 and 14 reject it. EDG 7.0 accepts it and fills the inner aggregate from the first two values.
+`Out o(1, 2, 3);`, where `Out` holds an inner aggregate of two `int` members and then an `int`, needs brace elision to fill the inner member. Clang 22 and 18 and GCC 16 and 14 reject the initialization. EDG 7.0 accepts it and fills the inner aggregate from the first two values.
 
 ## Options
 
@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject it.
+Option 1. Clang and GCC, in both versions, reject the initialization.
 
 ## Opinions

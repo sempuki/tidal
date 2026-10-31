@@ -5,7 +5,7 @@
 
 ## Context
 
-A namespace-scope `static` variable is hidden by a local variable of the same name. An inner block declares the name `extern`. Clang and GCC accept the declaration and read the namespace-scope variable. EDG 7.0 rejects it.
+A namespace-scope `static` variable is hidden by a local variable of the same name. An inner block declares the name `extern`. Clang and GCC accept the declaration and read the namespace-scope variable. EDG 7.0 rejects the declaration.
 
 ## Options
 

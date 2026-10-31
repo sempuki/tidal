@@ -5,7 +5,7 @@
 
 ## Context
 
-`enum class E : int; using enum E;` names an enumeration whose enumerators are not yet known. Clang and GCC reject it. EDG 7.0 accepts it.
+`enum class E : int; using enum E;` names an enumeration whose enumerators are not yet known. Clang and GCC reject the `using enum`. EDG 7.0 accepts it.
 
 ## Options
 
@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject it.
+Option 1. Clang and GCC, in both versions, reject the `using enum`.
 
 ## Opinions

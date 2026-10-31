@@ -17,7 +17,7 @@ variable, so the type is `int&` and the body's return is not valid.
 
 ## Provisional answer
 
-Option 1. GCC 16 and EDG agree, and it matches the
+Option 1. GCC 16 and EDG agree, and option 1 matches the
 lookup inside the body.
 
 ## Opinions

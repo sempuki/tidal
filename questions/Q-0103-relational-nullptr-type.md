@@ -5,7 +5,7 @@
 
 ## Context
 
-`a < b` where both operands have the type of `nullptr`. Clang and GCC reject it. EDG 7.0 accepts it.
+`a < b` where both operands have the type of `nullptr`. Clang and GCC reject the comparison. EDG 7.0 accepts it.
 
 ## Options
 

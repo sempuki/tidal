@@ -18,6 +18,6 @@ gives `int&`, an lvalue.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and it is consistent with VC-3.
+Option 1. Clang and GCC agree, and option 1 is consistent with VC-3.
 
 ## Opinions

@@ -5,7 +5,7 @@
 
 ## Context
 
-A function is declared without `carries_dependency` and redeclared with it. Clang and EDG reject the redeclaration, as for `noreturn`. GCC accepts it, because it ignores the attribute.
+A function is declared without `carries_dependency` and redeclared with it. Clang and EDG reject the redeclaration, as for `noreturn`. GCC accepts the redeclaration, because GCC ignores the attribute.
 
 ## Options
 

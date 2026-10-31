@@ -12,7 +12,8 @@ use the same license as Tidal. GCC uses GPL-3.0-or-later.
 ## Decision
 
 - The writer reads sanitized source from permissively licensed
-  implementations only. These are Clang and EDG.
+  implementations only. These implementations are Clang and
+  EDG.
 - GCC stays in the compiler matrix. Tidal uses its behavior, diagnostics,
   and output.
 - GCC source, and other sources that are not under a permissive license,

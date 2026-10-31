@@ -5,7 +5,7 @@
 
 ## Context
 
-`int f(int a, int b = sizeof(a));` names the parameter `a` inside `sizeof`, which doesn't evaluate it. Clang 22 and 18 and GCC 16 and 14 accept it. EDG 7.0 rejects it ("a parameter is not allowed"). A gap review summary also says it is valid.
+`int f(int a, int b = sizeof(a));` names the parameter `a` inside `sizeof`, which doesn't evaluate `a`. Clang 22 and 18 and GCC 16 and 14 accept the declaration. EDG 7.0 rejects it ("a parameter is not allowed"). A gap review summary also says the declaration is valid.
 
 ## Options
 
@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept it, and the review summary agrees.
+Option 1. Two of three implementations accept the declaration, and the review summary agrees.
 
 ## Opinions

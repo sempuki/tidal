@@ -7,7 +7,7 @@
 
 A repository needs a license before anyone may copy, modify, or
 redistribute it, and before contributions have stated terms. The
-repository owner chooses it.
+repository owner chooses the license.
 
 The project mixes three kinds of material:
 

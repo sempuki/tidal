@@ -28,6 +28,6 @@ an unused declaration needs no definition).
 
 Option 1. Whether a use needs a definition can depend on what the
 optimizer removes, so a link failure is likely but not guaranteed. A test
-that shows an unreported case would settle it.
+that shows an unreported case would settle the question.
 
 ## Opinions

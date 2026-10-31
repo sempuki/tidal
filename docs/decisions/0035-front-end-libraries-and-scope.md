@@ -23,7 +23,7 @@ Such a library is also an input that AGENTS.md rule 5 does not allow.
   of C++. Examples are parser generators, lexer generators, exact
   integer and IEEE floating-point arithmetic, diagnostic rendering,
   command-line parsing, test harnesses, and general data structures.
-- The front end must not use a crate that encodes C++ knowledge. This
+- The front end must not use a crate that encodes C++ knowledge. The ban
   includes C++ grammars (such as tree-sitter's C++ grammar), bindings
   to a compiler (such as libclang), and crates that model C++ types,
   lookup, or overloads.

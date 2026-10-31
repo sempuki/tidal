@@ -1,7 +1,8 @@
 # Rules for agents
 
-These rules apply to every agent, human or AI, that works on Tidal. They
-keep text from protected sources out of Tidal. Decision 0020 records why.
+These rules apply to every agent, human or AI, that works on Tidal. The
+rules keep text from protected sources out of Tidal. Decision 0020
+records why.
 
 ## Agents and the clean room
 
@@ -23,20 +24,25 @@ read such material. Two kinds of agent work in it.
 A **clean-room writer** writes the specification text, the tests, the
 tools, and the documentation.
 
-A **clean-room reader** reads only Tidal's own files. It uses the
-specification the way its audience would: it writes programs from it,
-predicts test outcomes, builds the front end in `frontend/`, or plans
-what to specify next. It reports findings to the clean-room writers and
-writes only in its own exercise directories (decisions 0029 to 0032).
+A **clean-room reader** reads only Tidal's own files and writes only in
+its own exercise directories (decisions 0029 to 0032). A reader uses
+the specification as its audience would, in one of these ways:
+
+- writing programs from the specification,
+- predicting test outcomes,
+- building the front end in `frontend/`,
+- planning what to specify next.
+
+Its findings go to the clean-room writers.
 
 An agent that reads such material becomes a source reader for the rest of
-its session or context. It cannot enter the clean room again in that
-session.
+its session or context. That agent cannot enter the clean room again
+in that session.
 
 ## Rules
 
 1. A source reader must not write or change any file in this repository.
-   This includes specification text, tests, examples, the glossary,
+   The rule covers specification text, tests, examples, the glossary,
    questions, tools, and documentation.
 2. A source reader gives information to a clean-room writer only as a summary.
 3. A summary contains only descriptions of language behavior, gaps, and
@@ -46,8 +52,8 @@ session.
    - quoted or paraphrased text from a source,
    - proposed wording for Tidal rules,
    - section numbers or stable names from a source.
-5. A clean-room writer makes all wording and all code itself. It uses only these
-   inputs:
+5. A clean-room writer makes all wording and all code itself. The
+   writer uses only these inputs:
    - summaries from source readers,
    - the behavior and diagnostics of implementations,
    - sanitized, permissively licensed implementation sources in
@@ -57,7 +63,7 @@ session.
    summary against the reference corpus. A summary with a flagged passage
    goes back to the source reader.
 7. Summaries that a clean-room writer uses are committed under `reports/review/`.
-   Each one names the role of the agent that wrote it.
+   Each summary names the role of the agent that wrote it.
 
 ## What a clean-room writer can do
 
@@ -85,12 +91,13 @@ These practices apply to every agent that changes the repository.
   how a change came about goes in its commit message. Name roles
   (maintainer, clean-room writer, source reader, contributor), not people.
 - **Describe the process plainly.** Documents and commit messages record
-  inputs, tools, roles, and steps as facts. They do not evaluate them.
+  inputs, tools, roles, and steps as facts. Documents and commit
+  messages do not evaluate these facts.
 - **One integrator.** When several agents work at once, each writes only
   in its own files and does not commit. One integrator numbers questions
   and decisions and makes the commits (decision 0018). A subagent that
-  cannot write its report returns it as text, and the integrator saves
-  it.
+  cannot write its report returns the report as text, and the
+  integrator saves the report.
 - **Check reports before use.** A review summary or a clean-room report
   passes `tools/similarity.py` before a clean-room writer acts on it (decisions
   0019, 0029).
@@ -116,13 +123,14 @@ Each of these habits prevents a commit that claims more than it did.
 Each of these habits keeps a running check from failing or caching a
 wrong result.
 
-- Do not edit `tools/check_all.sh` or any other shell script while it
-  runs. `sh` reads a script as it executes, so it resumes at its old
-  byte offset in the new text and can run a fragment of a line.
+- Do not edit `tools/check_all.sh` or any other shell script while the
+  script runs. `sh` reads a script during execution. After an edit,
+  `sh` resumes at the old byte offset in the new text and can run a
+  fragment of a line.
 - Mount `tests/` or `build/` into a container with `:z`, never `:Z`.
   `:Z` labels the directory private to that one container, the
-  matrix containers then cannot read it, and the runner caches the
-  failures. If it happens, delete the cache entries that report
-  "Permission denied" or "no such file" for `/tidal/tests`.
+  matrix containers then cannot read the directory, and the runner
+  caches the failures. If a run used `:Z`, delete the cache entries
+  that report "Permission denied" or "no such file" for `/tidal/tests`.
 - Do not run `git stash` or `git checkout` on tracked files while a
   check reads them.

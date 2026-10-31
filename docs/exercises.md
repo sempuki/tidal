@@ -1,7 +1,7 @@
 # Clean-room exercises
 
 Clean-room readers (decision 0029) check the specification by using it.
-This page lists the exercises they run. Decision 0030 sets the scheme.
+This page lists the exercises the readers run. Decision 0030 sets the scheme.
 
 Every exercise has three properties: a **kind**, a **persona**, and the
 **pages** it targets. The reader reads only Tidal's own files, writes
@@ -44,8 +44,8 @@ to C++.
 
 Propose uses a language designer (decision 0037). The designer knows
 what a proposal must settle and takes all of its C++ knowledge from
-Tidal. It does not recall WG21 papers or the ISO text, and its features
-are its own inventions.
+Tidal. The designer does not recall WG21 papers or the ISO text, and
+its features are its own inventions.
 
 ## 3. Write suites
 
@@ -73,14 +73,15 @@ library is out of scope.
 | W14 | Program structure | Ada | storage-linkage, namespaces, inline, static initialization, names, type-names, translation | a program in three translation units; a namespace with internal helpers; a shared constant across units; a counter whose initialization order matters |
 
 Port suites (P1 to P8) follow one per persona after the Write suites.
-Each gives three short programs in the persona's language that use its
-typical idioms, and asks for a C++ program with the same behavior.
+Each suite gives three short programs in the persona's language that
+use the language's typical idioms, and asks for a C++ program with the same behavior.
 
 ## 4. Propose exercises
 
 Each exercise takes one proposal from the designer's portfolio
-(`reports/clean-room/roadmap/designer.md`). The reader writes its
-design and impact sections, cites the rules it changes, and lists each
+(`reports/clean-room/roadmap/designer.md`). The reader writes the
+proposal's design and impact sections, cites the rules the proposal
+changes, and lists each
 change in a table: rule ID, kind of change, old class, new class, and
 the tests affected. Together the four reach 47 of the 68 pages.
 
@@ -111,7 +112,7 @@ ANSWERS` scores the reader's answers and lists the wrong ones.
 ## 6. Order
 
 1. Predict batches for the Foundations pages, then the expressions
-   pages. They are cheap and scored without reading.
+   pages. These batches are cheap and scored without reading.
 2. W8 and W1, which target the areas where the pilot found the most
    problems.
 3. The other Write suites in table order.
@@ -194,7 +195,8 @@ parser from the Syntax segments, `reject` checks, constant evaluation
 for `static_assert`) and asks for findings of kind missing, ambiguous,
 contradictory, grammar gap, untestable, outside the spec, or needs
 example. The reader may also read `tests/` and `questions/`, and writes
-only in `frontend/` and its report directory. It can use any Rust crate
-that does not encode knowledge of C++, and it covers the pages that are
-new or changed (decision 0035). `tools/frontend_check.py` compares its
-results on every check with a committed baseline.
+only in `frontend/` and its report directory. The reader can use any
+Rust crate that does not encode knowledge of C++, and covers the pages
+that are new or changed (decision 0035). `tools/frontend_check.py`
+compares the front end's results on every check with a committed
+baseline.

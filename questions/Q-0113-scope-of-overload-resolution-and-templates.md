@@ -18,14 +18,14 @@ informative subsets of overload resolution and templates.
    chapters, in the order of the roadmap.
 2. Write informative notes that cover only what the in-scope rules and
    the tests rely on, and keep the topics referenced.
-3. Keep the topics referenced, and state for each affected rule that it
-   cannot be decided without them.
+3. Keep the topics referenced, and state for each affected rule that the
+   rule cannot be decided without these topics.
 
 ## Provisional answer
 
 Option 1, after phase 1 repairs the existing pages and phase 2 lays the
 foundations, with the method controls on the roadmap page. Three of the
-four views ask for it, and the front end's largest groups of missed
-rejections are there.
+four views ask for option 1, and the front end's largest groups of
+missed rejections are in these topics.
 
 ## Opinions

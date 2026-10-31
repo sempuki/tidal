@@ -13,7 +13,7 @@ through an extension.
 ## Evidence
 
 The site builds with Sphinx and the packages in
-`tools/requirements-site.txt`. CI builds it on every change.
+`tools/requirements-site.txt`. CI builds the site on every change.
 
 ## Options
 
@@ -26,7 +26,8 @@ The site builds with Sphinx and the packages in
 
 ## Provisional answer
 
-Option 1. It needs nothing new and reads the same in every place. The
-question comes back if a diagram needs more than plain text can show.
+Option 1. Plain text needs nothing new and reads the same in every
+place. The question comes back if a diagram needs more than plain text
+can show.
 
 ## Opinions

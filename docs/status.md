@@ -1,7 +1,8 @@
 # Status
 
 Where the project stands and what comes next. This page describes the
-current state only. The history of how it got here is in `git log`.
+current state only. The history of how the project got here is in
+`git log`.
 
 ## Specification
 
@@ -78,7 +79,7 @@ current state only. The history of how it got here is in `git log`.
 | [Glossary](../spec/glossary.md) | 21 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
-(decision 0016). CI builds it on every change and publishes it to
+(decision 0016). CI builds the site on every change and publishes it to
 https://sempuki.github.io/tidal/ after each push to `main`. Pages use
 the structure and writing rules in `docs/style-guide.md`. Every page
 opens with its principles (decision 0024), and the Foundations chapter
@@ -122,14 +123,14 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 2601 of 3214 tests. It rejects one
-  valid test, `new-placement-and-bound-order.cpp`.
+- The clean-room front end passes 2601 of 3214 tests. The front end
+  rejects one valid test, `new-placement-and-bound-order.cpp`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 1451 tests carry `tidal-error` patterns, which check that a compiler
-  rejects them, fails to link them, or stops them at run time, for the
-  reason their rule gives.
+- 1451 tests carry `tidal-error` patterns. A pattern checks that a
+  compiler rejects the test, fails to link the test, or stops the test
+  at run time, for the reason the test's rule gives.
   About 50 tests have no pattern for some compiler family, because that
   family reports only a generic parse or constant-evaluation error.
 - Undefined-behavior evidence comes from constant evaluation, warnings,
@@ -140,7 +141,7 @@ Q-0044, Q-0115). Q-0009 (license) is settled. See `questions/README.md`.
 - EDG runs with its x86-64 Linux configuration only.
 - MSVC is not in the matrix.
 - The `if` section draws on Clang's source only. EDG's parser is unread
-  for it.
+  for that section.
 - CI caches test results between runs (`actions/cache`). A full rebuild
   of the cache happens when the cache key format changes
   (`OUTCOME_VERSION` in `tools/run_tests.py`) or a compiler image changes.
@@ -189,7 +190,7 @@ typical of a simple operator family.
   lambdas, casts, `new` and `delete`, function calls) at roughly four times
   that size each.
 
-That totals about 66 section-units. Drafting one unit takes one working
+These counts total about 66 section-units. Drafting one unit takes one working
 session for the clean-room writer. The estimate excludes review and
 adjudication, which are expected to dominate once reviewers are
 involved.

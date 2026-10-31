@@ -18,8 +18,8 @@ directly to itself.
 
 ## Provisional answer
 
-Option 1. GCC accepts it, so a `reject` rule would make a current
-implementation non-conforming. A cycle through constructors in other
-translation units cannot be found during translation.
+Option 1. GCC accepts such a program, so a `reject` rule would make a
+current implementation non-conforming. A cycle through constructors in
+other translation units cannot be found during translation.
 
 ## Opinions

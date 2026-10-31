@@ -7,7 +7,8 @@
 
 Tidal's baseline is C++23. Compilers already implement some newer features
 and accept them in C++23 mode with a warning (for example, a structured
-binding as an `if` condition). Under `-pedantic-errors` they reject them.
+binding as an `if` condition). Under `-pedantic-errors` the compilers
+reject these features.
 
 ## Options
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-A type alias names a function type with a ref-qualifier. A parameter is declared as a reference to that type. Clang and GCC reject it. EDG 7.0 accepts it.
+A type alias names a function type with a ref-qualifier. A parameter is declared as a reference to that type. Clang and GCC reject the declaration. EDG 7.0 accepts it.
 
 ## Options
 

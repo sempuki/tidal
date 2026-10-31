@@ -36,7 +36,7 @@ alone, which every compiler in the matrix supports.
 - Classes, templates, overload resolution, and name lookup stay
   referenced. Declaration rules that need them say so.
 - `std::initializer_list` comes from the library, which is out of scope.
-  Rules that involve it reference the library and their tests declare the
-  minimum they need, or they are deferred.
+  Rules that involve `std::initializer_list` reference the library, and
+  their tests declare the minimum they need, or the rules are deferred.
 - Glossary entries currently marked *(referenced)* for declaration topics
   are replaced as those sections are written.

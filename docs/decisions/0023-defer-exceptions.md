@@ -8,8 +8,8 @@ Status: Accepted. Amends the charter.
 The gap review lists `throw` expressions as a missing expression topic.
 A `throw` expression depends on try blocks, handlers, stack unwinding,
 function try blocks, and the behavior of `noexcept` when an exception
-leaves a function. These are statements and run-time rules as much as
-expressions. The charter's scope lists none of them.
+leaves a function. These topics are statements and run-time rules as
+much as expressions. The charter's scope lists none of them.
 
 ## Decision
 

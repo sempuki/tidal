@@ -12,7 +12,7 @@ it. GCC accepts it.
 ## Options
 
 1. The declaration is not valid.
-2. It is valid and has no effect.
+2. The declaration is valid and has no effect.
 
 ## Provisional answer
 

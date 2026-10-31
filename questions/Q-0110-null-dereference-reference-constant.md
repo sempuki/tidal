@@ -5,7 +5,7 @@
 
 ## Context
 
-A constexpr function binds a reference to `*p` where `p` is a null pointer, and does not read through it. GCC and Clang 22 reject the evaluation. EDG 7.0 and Clang 18 accept it.
+A constexpr function binds a reference to `*p` where `p` is a null pointer, and does not read through the reference. GCC and Clang 22 reject the evaluation. EDG 7.0 and Clang 18 accept it.
 
 ## Options
 

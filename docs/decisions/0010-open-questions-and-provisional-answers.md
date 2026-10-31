@@ -30,5 +30,6 @@ disagree that leaves a record.
 
 - The adjudicator role in decision 0003 is replaced by provisional answers
   plus pull requests.
-- Every provisional answer can change. Rules that depend on one link to it.
+- Every provisional answer can change. Rules that depend on a
+  provisional answer link to that answer.
 - Git history and pull request discussion record why each answer changed.

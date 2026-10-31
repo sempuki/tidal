@@ -18,14 +18,15 @@ Tidal's own files.
 ## Options
 
 1. Run only the clean-room designer. Every gap it meets is a finding.
-2. Also run a source-reader designer. It can say which kinds of design
-   questions proposals usually raise that Tidal cannot answer. Its
-   report is a summary under rules 2 to 4, checked for similarity, with
-   no code, no wording, and no paper names.
+2. Also run a source-reader designer. The source-reader designer can say
+   which kinds of design questions proposals usually raise that Tidal
+   cannot answer. Its report is a summary under rules 2 to 4, checked
+   for similarity, with no code, no wording, and no paper names.
 
 ## Provisional answer
 
 Option 1. The clean-room designer finds gaps without a protected input.
-Option 2 can follow if its roadmap misses whole areas.
+Option 2 can follow if the roadmap of the clean-room designer misses
+whole areas.
 
 ## Opinions

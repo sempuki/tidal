@@ -9,7 +9,7 @@ Status: Accepted.
 state a prohibition ("must not", "is not valid") inside a rule whose
 class says nothing about diagnosing it. The clean-room front end could
 not tell from a rule's class what to reject (F15), and the editor's
-roadmap ranks this second (`docs/roadmap.md`, item C).
+roadmap ranks this problem second (`docs/roadmap.md`, item C).
 
 ## Decision
 
@@ -29,6 +29,6 @@ roadmap ranks this second (`docs/roadmap.md`, item C).
 
 - 175 rules were split or reclassed, and the rule count grew from 823
   to 983. A few reject tests moved to an existing reject rule instead,
-  where the rejection already followed from it.
+  where the rejection already followed from that rule.
 - Diagnose batches and the front end can read what to reject from the
   class of the rules a test cites.

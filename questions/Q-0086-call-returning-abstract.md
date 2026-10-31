@@ -9,7 +9,7 @@ A function is declared to return an abstract class, and a program calls it. GCC 
 
 ## Options
 
-1. The call is not valid, because it creates an object of the abstract class.
+1. The call is not valid, because the call creates an object of the abstract class.
 2. The call is valid.
 
 ## Provisional answer

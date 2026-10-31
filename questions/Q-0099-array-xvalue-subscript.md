@@ -15,6 +15,6 @@ An array xvalue (a cast to an rvalue reference to an array) or an array prvalue 
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and it matches member access on an xvalue.
+Option 1. Clang and GCC agree, and option 1 matches member access on an xvalue.
 
 ## Opinions

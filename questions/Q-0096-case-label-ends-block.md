@@ -5,7 +5,7 @@
 
 ## Context
 
-A switch body ends with a case label or a default label, with no statement after it. Clang and EDG accept it. GCC 14 and 16 reject it, though they accept an identifier label in that place.
+A switch body ends with a case label or a default label, with no statement after it. Clang and EDG accept the program. GCC 14 and 16 reject it, though they accept an identifier label in that place.
 
 ## Options
 
@@ -15,6 +15,6 @@ A switch body ends with a case label or a default label, with no statement after
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and it matches the rule for identifier labels.
+Option 1. Clang and EDG agree, and option 1 matches the rule for identifier labels.
 
 ## Opinions

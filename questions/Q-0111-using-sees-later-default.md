@@ -5,7 +5,7 @@
 
 ## Context
 
-A namespace declares a function with one parameter. A using declaration brings it into the global scope. A later declaration in the namespace adds a default argument. An unqualified call with no arguments follows. GCC and EDG accept the call. Clang rejects it.
+A namespace declares a function with one parameter. A using declaration brings the function into the global scope. A later declaration in the namespace adds a default argument. An unqualified call with no arguments follows. GCC and EDG accept the call. Clang rejects it.
 
 ## Options
 

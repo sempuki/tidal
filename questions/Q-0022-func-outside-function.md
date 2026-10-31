@@ -6,10 +6,10 @@
 ## Context
 
 `__func__` names a string holding the enclosing function's name. At
-namespace scope there is no enclosing function. GCC 16 and 14 ("not defined
-outside of function scope") and EDG 7.0 reject it. Clang 22 and 18 accept it
-with a warning ("predefined identifier is only valid inside function"), even
-under `-pedantic-errors`.
+namespace scope there is no enclosing function. GCC 16 and 14 ("not
+defined outside of function scope") and EDG 7.0 reject such a use. Clang
+22 and 18 accept the use with a warning ("predefined identifier is only
+valid inside function"), even under `-pedantic-errors`.
 
 ## Evidence
 
@@ -22,7 +22,7 @@ under `-pedantic-errors`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it, and Clang's own warning
-says it is only valid inside a function.
+Option 1. Two of three implementations reject the use, and Clang's own
+warning says `__func__` is only valid inside a function.
 
 ## Opinions

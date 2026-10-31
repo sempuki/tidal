@@ -20,6 +20,7 @@ it.
 
 ## Provisional answer
 
-Option 1. Every implementation's newest version in the matrix rejects it.
+Option 1. Every implementation's newest version in the matrix rejects a
+deleted `main`.
 
 ## Opinions

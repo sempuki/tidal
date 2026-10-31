@@ -7,8 +7,8 @@
 
 The literal `9223372036854775808` has no suffix and does not fit in
 `long long`. It fits in `unsigned long long`. Clang and GCC reject it
-under `-pedantic-errors`. Without that option they warn and give it an
-unsigned type. EDG 7.0 accepts it in strict mode.
+under `-pedantic-errors`. Without that option they warn and give the
+literal an unsigned type. EDG 7.0 accepts the literal in strict mode.
 
 ## Options
 

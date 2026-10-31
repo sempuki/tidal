@@ -20,7 +20,8 @@ warning "'noreturn' attribute ignored", even under `-pedantic-errors`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it, and other misplacements
+Option 1. Two of three implementations reject the declaration, and other
+misplacements
 (`[[fallthrough]]` outside a switch, arguments to `noreturn`) are rejected
 by all three.
 

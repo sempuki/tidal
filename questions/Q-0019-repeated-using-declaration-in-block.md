@@ -23,8 +23,8 @@ the current scope"). GCC changed its behavior between versions 14 and 16.
 
 ## Provisional answer
 
-Option 1. Both Clang versions and the newer GCC accept it, and GCC moved
-from rejecting to accepting, which suggests the implementations are
-converging on it.
+Option 1. Both Clang versions and the newer GCC accept the repeated
+declaration. GCC's move from rejecting to accepting suggests that the
+implementations are converging on acceptance.
 
 ## Opinions

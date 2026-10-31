@@ -10,7 +10,7 @@ GCC 14 accepts `alignas` on a function, a `typedef`, an alias declaration, and a
 ## Options
 
 1. `alignas` must not occur in these positions.
-2. It is valid there.
+2. `alignas` is valid there.
 
 ## Provisional answer
 

@@ -1,13 +1,14 @@
 # Roadmap
 
-This page orders the work ahead. Five clean-room roadmaps are its
-evidence, each from one view: a programmer, an implementer, an editor,
-a clean-room writer, and a language designer
-(`reports/clean-room/roadmap/`). Decisions 0033 and 0039 adopt it.
+This page orders the work ahead. Five clean-room roadmaps are the
+page's evidence, each from one view: a programmer, an implementer, an
+editor, a clean-room writer, and a language designer
+(`reports/clean-room/roadmap/`). Decisions 0033 and 0039 adopt the
+roadmap.
 Item letters refer to the writer's table, which gives evidence, probe counts, similarity risk, and size for each item.
 
 The order follows dependencies that Tidal's own pages show and the
-findings of the clean-room exercises. It does not follow any other
+findings of the clean-room exercises. The order does not follow any other
 specification's organization.
 
 ## Where the views agree
@@ -51,7 +52,8 @@ specification's organization.
 
 ## Phase 3: lookup and overload resolution
 
-These move topics the charter lists as referenced into scope. Decision
+The phase 3 items move topics the charter lists as referenced into
+scope. Decision
 0033 adopts the move provisionally (Q-0113); the charter changes when
 each item starts.
 
@@ -74,7 +76,7 @@ each item starts.
 
 ## Parallel lanes
 
-These run beside the phases when a phase waits for review.
+These lanes run beside the phases when a phase waits for review.
 
 - U: deepen multiplicative, additive, and comparison, and settle their
   questions.

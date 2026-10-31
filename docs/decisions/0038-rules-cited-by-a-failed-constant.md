@@ -15,13 +15,13 @@ rules apply:
 
 Tests cite them inconsistently. A checker that names one rule then
 matches some tests and not others. The clean-room front end found this
-(finding G7).
+inconsistency (finding G7).
 
 ## Decision
 
 - A test of a failed constant cites the cause rule.
-- It can also cite the context rule. It must cite it when the test is
-  about the context rule.
+- The test can also cite the context rule. A test about the context
+  rule must cite it.
 - A checker that names the cause rule, or both rules, matches the test.
 
 ## Consequences

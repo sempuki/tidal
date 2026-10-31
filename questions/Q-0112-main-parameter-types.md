@@ -15,7 +15,7 @@ A program defines `main` with a first parameter of type `long` instead of
 
 ## Provisional answer
 
-Option 2, as FN-6 states it: an implementation accepts `()` and
+Option 2, as FN-6 states the rule. An implementation accepts `()` and
 `(int, char**)`, and decides about other parameter lists. Clang and GCC
 reject a first parameter of type `long`, and EDG accepts it. TR-3
 agrees with FN-6 (`reports/clean-room/rust-frontend/`, F16).

@@ -7,7 +7,7 @@
 
 A program calls a destructor explicitly and writes the class
 name as `decltype` of the object, as in `t.~decltype(t)()`. Clang and EDG
-accept it. GCC rejects it and expects a class name after `~`.
+accept the call. GCC rejects it and expects a class name after `~`.
 
 ## Options
 

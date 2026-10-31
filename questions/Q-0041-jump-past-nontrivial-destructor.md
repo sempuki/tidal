@@ -14,6 +14,6 @@ A `goto` that skips `Tidy t;`, where `Tidy` has a trivial default constructor bu
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it, and the review summary describes the same limit.
+Option 1. Two of three implementations reject the jump, and the review summary describes the same limit.
 
 ## Opinions

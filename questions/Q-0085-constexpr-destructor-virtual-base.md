@@ -5,7 +5,7 @@
 
 ## Context
 
-A class with a virtual base declares a constexpr destructor. Clang and GCC reject it. EDG 7.0 accepts it.
+A class with a virtual base declares a constexpr destructor. Clang and GCC reject the declaration. EDG 7.0 accepts it.
 
 ## Options
 
@@ -14,6 +14,6 @@ A class with a virtual base declares a constexpr destructor. Clang and GCC rejec
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and it matches the rule for constructors.
+Option 1. Clang and GCC agree, and option 1 matches the rule for constructors.
 
 ## Opinions

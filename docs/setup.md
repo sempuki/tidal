@@ -29,7 +29,7 @@ and 0035):
 
     tools/containers.py build
 
-This builds EDG 7.0 from its open source release, GCC 14 and 16, and
+The command builds EDG 7.0 from its open source release, GCC 14 and 16, and
 Clang 18 and 22. The first build takes several minutes.
 
 ## Site
@@ -41,7 +41,7 @@ Clang 18 and 22. The first build takes several minutes.
 ## Reference corpus
 
 The similarity check needs WG21 document N4950 outside the repository
-(`reports/README.md`). Only `tools/similarity.py` reads it.
+(`reports/README.md`). Only `tools/similarity.py` reads the corpus.
 
     git clone --depth 1 --branch n4950 https://github.com/cplusplus/draft ~/tidal-reference/draft
 
@@ -49,7 +49,7 @@ The similarity check needs WG21 document N4950 outside the repository
 
     tools/check_all.sh
 
-It runs the spec checks, the full test matrix, the similarity check when
+The script runs the spec checks, the full test matrix, the similarity check when
 `TIDAL_REFERENCE` names the corpus (for example
 `TIDAL_REFERENCE=~/tidal-reference/draft/source`), the front-end check
 when cargo is installed, and the site build. The first full run fills
@@ -57,6 +57,7 @@ when cargo is installed, and the site build. The first full run fills
 
 `tools/frontend_check.py` builds the clean-room front end and compares
 its result on each test with
-`reports/clean-room/rust-frontend/conformance.tsv`. It fails when a
+`reports/clean-room/rust-frontend/conformance.tsv`. The tool fails when a
 test that passed no longer passes. After a change to the tests or the
-front end, check each change it reports and run it with `--update`.
+front end, check each change that the tool reports and run the tool
+with `--update`.

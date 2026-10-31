@@ -5,11 +5,11 @@
 
 ## Context
 
-A class declares `operator==` and defaults it after the class definition.
-A member of the class has no `==`, so the defaulted function would be
-deleted. Clang rejects the definition. GCC and EDG accept it while no
-code uses the function. For copy and move constructors, all compilers in
-the matrix reject the same pattern (CPY-17).
+A class declares `operator==` and defaults it after the class
+definition. A member of the class has no `==`, so the defaulted function
+would be deleted. Clang rejects the definition. GCC and EDG accept it
+while no code uses the function. For copy and move constructors, all
+compilers in the matrix reject the same pattern (CPY-17).
 
 ## Options
 
@@ -20,7 +20,7 @@ the matrix reject the same pattern (CPY-17).
 
 ## Provisional answer
 
-Option 1. Clang rejects it, and the rule matches CPY-17. GCC and EDG
-still conform.
+Option 1. Clang rejects the definition, and the rule matches CPY-17. GCC
+and EDG still conform.
 
 ## Opinions

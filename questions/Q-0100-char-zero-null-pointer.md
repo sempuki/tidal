@@ -5,7 +5,7 @@
 
 ## Context
 
-A pointer is initialized from a character literal whose value is zero. Clang and GCC reject it. EDG 7.0 accepts it as a null pointer.
+A pointer is initialized from a character literal whose value is zero. Clang and GCC reject the initialization. EDG 7.0 accepts it as a null pointer.
 
 ## Options
 

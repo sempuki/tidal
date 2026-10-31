@@ -5,7 +5,7 @@
 
 ## Context
 
-`char c{s.bits};`, where `bits` is an `unsigned` bit-field of width 4, converts a value that always fits in `char`. Clang 22 and GCC 16 accept it in braces. Clang 18, GCC 14, and EDG 7.0 reject it as narrowing.
+`char c{s.bits};`, where `bits` is an `unsigned` bit-field of width 4, converts a value that always fits in `char`. Clang 22 and GCC 16 accept the initialization in braces. Clang 18, GCC 14, and EDG 7.0 reject it as narrowing.
 
 ## Options
 
@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. The newest versions of two implementations accept it, and both changed in the same direction.
+Option 1. The newest versions of two implementations accept the initialization, and both changed in the same direction.
 
 ## Opinions

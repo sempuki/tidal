@@ -5,9 +5,9 @@
 
 ## Context
 
-At run time on x86-64, Clang and GCC produce IEEE 754 results for
-floating division by zero: infinity for a nonzero dividend, NaN for zero
-divided by zero. Numeric code relies on this. During constant evaluation,
+At run time on x86-64, Clang and GCC produce IEEE 754 results for floating
+division by zero: infinity for a nonzero dividend, NaN for zero divided by
+zero. Numeric code relies on these results. During constant evaluation,
 Clang and GCC reject the same operations (EDG accepts them, see Q-0002).
 
 ## Evidence

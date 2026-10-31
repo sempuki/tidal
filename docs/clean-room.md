@@ -6,7 +6,7 @@ This document says who may read which material and how the output is checked.
 ## Roles
 
 **Clean-room writer.** Drafts rules and tests. In the target setup this
-is an LLM pipeline plus human reviewers who have not studied the ISO
+role is an LLM pipeline plus human reviewers who have not studied the ISO
 text.
 
 **Checker.** Compares Tidal text with the reference corpus. This role is
@@ -33,7 +33,7 @@ input is recorded in `inputs/MANIFEST.md`.
 
 ### Clean
 
-The clean-room writer may use these directly.
+The clean-room writer may use these inputs directly.
 
 - Behavior of an implementation: whether a program compiles, its diagnostics,
   its output, and the result of constant evaluation.
@@ -42,9 +42,10 @@ The clean-room writer may use these directly.
 
 ### Sanitized
 
-The clean-room writer may use these only after they pass through
-`tools/sanitize.py`, which removes every comment and every string that cites the standard. Only
-permissively licensed sources are inputs (decision 0021).
+The clean-room writer may use these inputs only after the inputs pass
+through `tools/sanitize.py`. The tool removes every comment and every
+string that cites the standard. Only permissively licensed sources are
+inputs (decision 0021).
 
 - Implementation source code: Clang `lib/Parse`, `lib/Sema`, `lib/AST`, and
   the EDG front end. Both are under Apache-2.0 WITH LLVM-exception, the
@@ -57,18 +58,19 @@ echo standard terms (`isLValue`, `CheckConditionalOperands`).
 
 ### Forbidden
 
-The clean-room writer must not read these.
+The clean-room writer must not read these inputs.
 
 - The ISO standard, its working drafts, and any rendering of them
   (eel.is/c++draft, timsong-cpp.github.io, the `cplusplus/draft` sources).
 - WG21 papers. Their wording sections are diffs against the ISO text.
-- cppreference.com. It paraphrases the standard closely and is licensed
+- cppreference.com. The site paraphrases the standard closely and is licensed
   CC-BY-SA, which would force that license on Tidal.
 - Clang's `clang/test/CXX/` and `clang/test/CXX/drs/` directories, and
-  libc++'s `libcxx/test/std/`. They are organized by ISO section and quote it.
+  libc++'s `libcxx/test/std/`. These directories are organized by ISO
+  section and quote the standard.
 - Language-lawyer answers on Q&A sites, which usually quote the standard.
 - Implementation sources that are not under a permissive license, such as
-  GCC. Tidal uses GCC through its behavior. A source reader can read GCC
+  GCC. Tidal uses GCC through GCC's behavior. A source reader can read GCC
   source and give the clean-room writer a summary under `AGENTS.md`.
 
 ## Similarity check

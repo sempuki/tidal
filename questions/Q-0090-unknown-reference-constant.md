@@ -8,7 +8,7 @@
 A function that is not `constexpr` takes a reference parameter
 and uses it to call a `constexpr` member function that does not read the
 object, in the initializer of a `constexpr` variable. Clang 22, GCC 14
-and 16, and EDG accept it. Clang 18 rejects it.
+and 16, and EDG accept the program. Clang 18 rejects it.
 
 ## Options
 

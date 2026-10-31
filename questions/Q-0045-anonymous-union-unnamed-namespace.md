@@ -5,7 +5,7 @@
 
 ## Context
 
-A namespace-scope anonymous union must be declared `static`. Inside an unnamed namespace, Clang 22 and 18 accept one without `static`. GCC 16 and 14 and EDG 7.0 reject it. The gap review summary says the unnamed namespace form is valid.
+A namespace-scope anonymous union must be declared `static`. Inside an unnamed namespace, Clang 22 and 18 accept one without `static`. GCC 16 and 14 and EDG 7.0 reject the union. The gap review summary says the unnamed namespace form is valid.
 
 ## Options
 
@@ -14,6 +14,6 @@ A namespace-scope anonymous union must be declared `static`. Inside an unnamed n
 
 ## Provisional answer
 
-Option 1, the majority of implementations. The review summary's reading is a strong reason to revisit it.
+Option 1, the majority of implementations. The review summary's reading is a strong reason to revisit the answer.
 
 ## Opinions

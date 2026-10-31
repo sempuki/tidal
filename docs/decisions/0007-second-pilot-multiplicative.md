@@ -12,9 +12,9 @@ The logical operators (`&&`, `||`, `!`) are mostly `required` and would not.
 
 ## Decision
 
-The second pilot covers `*`, `/`, and `%` on built-in types. They involve
-division by zero, signed overflow, result types that depend on the target,
-and operands with no fixed evaluation order.
+The second pilot covers `*`, `/`, and `%` on built-in types. These
+operators involve division by zero, signed overflow, result types that
+depend on the target, and operands with no fixed evaluation order.
 
 ## Consequences
 

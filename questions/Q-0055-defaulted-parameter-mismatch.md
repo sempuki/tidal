@@ -9,7 +9,7 @@ A class can default a copy constructor with a `const volatile` reference
 parameter, or a move constructor with a `const` rvalue reference
 parameter. These types differ from the types of the implicit functions.
 GCC 16, Clang 18 and 22, and EDG 7.0 accept the declaration and define the
-function as deleted. A use of it is rejected. GCC 14 rejects the
+function as deleted. A use of the function is rejected. GCC 14 rejects the
 declaration itself.
 
 ## Options

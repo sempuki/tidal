@@ -5,8 +5,8 @@
 
 ## Context
 
-Clang 18 doesn't implement `[[assume]]`. It treats it as an unknown
-attribute and ignores it, so tests that expect a rejection get an
+Clang 18 doesn't implement `[[assume]]`. Clang 18 treats the attribute as
+an unknown attribute and ignores it, so tests that expect a rejection get an
 acceptance. The compiler predates the feature, so the difference says
 nothing about the language.
 
@@ -20,7 +20,7 @@ nothing about the language.
 
 ## Provisional answer
 
-Option 1. It needs no new tooling, and the note makes the reason visible in
-the test.
+Option 1. This option needs no new tooling, and the note makes the reason
+visible in the test.
 
 ## Opinions

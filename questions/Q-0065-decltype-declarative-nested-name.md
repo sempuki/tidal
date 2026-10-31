@@ -5,18 +5,19 @@
 
 ## Context
 
-A member function can be defined outside its class with a qualified name.
-A program can write the class part of that name with `decltype`, as in
-`void decltype(s)::f() {}`. Clang and EDG reject it. GCC accepts it.
+A member function can be defined outside its class with a qualified
+name. A program can write the class part of that name with `decltype`,
+as in `void decltype(s)::f() {}`. Clang and EDG reject the definition.
+GCC accepts it.
 
 ## Options
 
 1. `decltype` must not occur in the qualified name of a declaration.
-2. It is valid there.
+2. `decltype` is valid there.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree. `decltype` stays valid in a qualified name
-in an expression.
+Option 1. Clang and EDG agree. `decltype` stays valid in a qualified
+name in an expression.
 
 ## Opinions

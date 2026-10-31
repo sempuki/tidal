@@ -13,11 +13,11 @@ with a different meaning. GCC rejects the class. Clang and EDG accept it.
 
 1. The class is not valid, and an implementation need not diagnose it
    (`no-diagnostic`).
-2. Implementations must reject it.
+2. Implementations must reject the class.
 3. The class is valid.
 
 ## Provisional answer
 
-Option 1. GCC diagnoses it. Clang and EDG still conform.
+Option 1. GCC diagnoses the class. Clang and EDG still conform.
 
 ## Opinions

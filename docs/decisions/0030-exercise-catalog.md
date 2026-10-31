@@ -26,8 +26,8 @@ their findings compared.
   and Swift.
 - `docs/exercises.md` lists every planned exercise: fourteen Write
   suites that together reach every spec page, eight Port suites, and a
-  Predict and a Diagnose batch for each page. It also gives their order
-  and status.
+  Predict and a Diagnose batch for each page. The list also gives the
+  order and status of the exercises.
 - Reports go under `reports/spec-only/<exercise-id>/` and cite rule
   IDs, so a coverage table can count the exercises and findings for
   each page.

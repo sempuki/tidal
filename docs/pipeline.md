@@ -19,7 +19,7 @@ constructs covered, and the "Depends on" list. No rules yet.
 ## 2. Inputs
 
 Fetch the permissively licensed implementation sources (Clang and EDG)
-that the section needs with `tools/fetch_inputs.py`. It downloads
+that the section needs with `tools/fetch_inputs.py`. The tool downloads
 pinned files into `inputs/raw/`, writes sanitized copies to
 `inputs/clean/`, and updates `inputs/MANIFEST.md` with the upstream
 commit, path, license, class, and SHA-256 of each file. The clean-room
@@ -48,7 +48,7 @@ is compiler output, so it counts as a clean input.
 
 When compilers show no variation, source can show whether a behavior is
 fixed by design or only by current implementation choice. Behavior
-alone cannot show this. For example, source can show that an option
+alone cannot show this difference. For example, source can show that an option
 for strict evaluation order applies to some operators and not others.
 
 Every condition found in source becomes a new probe (back to step 3).
@@ -102,8 +102,9 @@ answers through pull requests (`questions/README.md`).
 ## 8. Similarity check
 
 Run `tools/similarity.py` against the reference corpus and commit the report
-to `reports/similarity/` (`reports/README.md`). Anyone may run it, including
-the clean-room writer, because it prints only Tidal text.
+to `reports/similarity/` (`reports/README.md`). Anyone may run the tool,
+including the clean-room writer, because the tool prints only Tidal
+text.
 
 ## 9. Rewrite
 
@@ -119,7 +120,7 @@ record.
 
 ## Checks on finished pages
 
-These run across pages, outside the per-section steps.
+These checks run across pages, outside the per-section steps.
 
 - **Gap review.** A source reader compares Tidal with the reference
   material and reports gaps in prose (decision 0019). Each gap becomes a

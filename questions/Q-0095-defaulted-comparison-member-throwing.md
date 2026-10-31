@@ -13,7 +13,7 @@ throwing. EDG 7.0 treats it as non-throwing.
 
 1. The defaulted comparison is potentially throwing, as for defaulted
    special members.
-2. It is non-throwing.
+2. The defaulted comparison is non-throwing.
 
 ## Provisional answer
 

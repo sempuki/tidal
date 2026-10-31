@@ -5,7 +5,7 @@
 
 ## Context
 
-GCC 16 and 14 accept `delete p;` where `p` is a `void*`, with a warning that it is undefined. Clang 22 and 18 reject it under `-pedantic-errors` (`-Wdelete-incomplete`). EDG 7.0 rejects it.
+GCC 16 and 14 accept `delete p;` where `p` is a `void*`, with a warning that the deletion is undefined. Clang 22 and 18 reject the deletion under `-pedantic-errors` (`-Wdelete-incomplete`). EDG 7.0 rejects it.
 
 ## Options
 
@@ -14,6 +14,6 @@ GCC 16 and 14 accept `delete p;` where `p` is a `void*`, with a warning that it 
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject it, and GCC's own warning says it can't work.
+Option 1. Two of three implementations reject the deletion, and GCC's own warning says the deletion can't work.
 
 ## Opinions

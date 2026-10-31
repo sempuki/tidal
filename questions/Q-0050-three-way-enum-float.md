@@ -14,6 +14,6 @@ Clang and GCC reject `<=>` between an unscoped enumeration value and a floating-
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject it.
+Option 1. Clang and GCC, in both versions, reject the comparison.
 
 ## Opinions
