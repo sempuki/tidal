@@ -46,6 +46,8 @@ In scope:
   unions and bit-fields, conversion functions, operator overloading,
   defaulted comparisons (decision 0017), and list initialization of
   classes.
+- Exceptions: `throw` expressions and the exception object, try blocks
+  and handlers, unwinding and termination (decision 0025).
 
 Referenced but not specified:
 
@@ -59,8 +61,6 @@ Out of scope:
 - Templates and overload resolution as topics of their own.
 - The standard library.
 - Coroutines (`co_await`, `co_yield`, `co_return`).
-- Exception handling (`throw`, try blocks, handlers). It is a later
-  chapter of its own (decision 0023).
 - The memory model and threads.
 
 ## Non-goals
