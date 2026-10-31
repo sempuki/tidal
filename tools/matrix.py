@@ -3,12 +3,21 @@
 Host compilers run directly. Containerized compilers run inside one
 long-lived container each, started with the tests directory mounted
 read-only and a per-compiler build directory mounted read-write.
+
+A `podman exec` costs about a second or more, and podman runs the execs
+for one container one at a time. So each container keeps a pool of shells
+open, and a command is a line written to one of them. The command's output
+goes to files in the build mount, and a marker line returns its status.
 """
 
+import itertools
 import json
 import os
+import queue
+import shlex
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -18,6 +27,9 @@ BUILD = ROOT / "build"
 CONFIG = ROOT / "tools" / "compilers.json"
 IMAGE_PREFIX = "tidal-cxx-"
 MOUNT = "/tidal"
+# Shells per container. Each runs one command at a time.
+SHELLS = int(os.environ.get("TIDAL_CONTAINER_SHELLS", min(8, os.cpu_count() or 1)))
+_job_ids = itertools.count()
 
 
 def engine() -> str:
@@ -41,6 +53,7 @@ class Compiler:
     image: dict | None = None
     unsupported_flags: list[str] = field(default_factory=list)  # glob patterns; a test using one is skipped
     container: str | None = None
+    shells: queue.Queue | None = None
 
     @property
     def image_tag(self) -> str:
@@ -74,9 +87,42 @@ class Compiler:
         return args
 
     def run(self, argv: list[str], timeout: float | None = None) -> subprocess.CompletedProcess:
+        if self.shells:
+            return self._run_in_shell(argv, timeout)
         if self.container:
             argv = [engine(), "exec", self.container, *argv]
         return subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
+
+    def _run_in_shell(self, argv: list[str], timeout: float | None) -> subprocess.CompletedProcess:
+        job = f"{os.getpid()}-{next(_job_ids)}"
+        io = BUILD / self.id / ".io"
+        cmd = shlex.join(argv)
+        if timeout:
+            cmd = f"timeout -k 5 {int(timeout)} {cmd}"
+        line = (f"{cmd} >{MOUNT}/build/.io/{job}.out 2>{MOUNT}/build/.io/{job}.err </dev/null; "
+                f"echo \"done {job} $?\"\n")
+        shell = self.shells.get()
+        try:
+            start = time.monotonic()
+            shell.stdin.write(line)
+            shell.stdin.flush()
+            while True:
+                reply = shell.stdout.readline()
+                if not reply:
+                    raise RuntimeError(f"{self.id}: container shell exited")
+                if reply.startswith(f"done {job} "):
+                    code = int(reply.split()[2])
+                    break
+        finally:
+            self.shells.put(shell)
+        out, err = io / f"{job}.out", io / f"{job}.err"
+        stdout = out.read_text(errors="replace")
+        stderr = err.read_text(errors="replace")
+        out.unlink()
+        err.unlink()
+        if timeout and code in (124, 137) and time.monotonic() - start >= timeout:
+            raise subprocess.TimeoutExpired(argv, timeout, stdout, stderr)
+        return subprocess.CompletedProcess(argv, code, stdout, stderr)
 
     def identity(self) -> str:
         """A string that changes whenever the compiler does, for result caching."""
@@ -109,8 +155,21 @@ class Compiler:
              "-w", MOUNT, self.image_tag, "sleep", "infinity"],
             check=True, capture_output=True,
         )
+        (build / ".io").mkdir(exist_ok=True)
+        self.shells = queue.Queue()
+        for _ in range(SHELLS):
+            self.shells.put(subprocess.Popen(
+                [e, "exec", "-i", "-w", MOUNT, self.container, "sh"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                text=True, errors="replace"))
 
     def stop(self) -> None:
+        if self.shells:
+            while not self.shells.empty():
+                shell = self.shells.get()
+                shell.stdin.close()
+                shell.wait()
+            self.shells = None
         if self.container:
             subprocess.run([engine(), "rm", "-f", self.container], capture_output=True)
             self.container = None
