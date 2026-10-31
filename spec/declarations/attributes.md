@@ -88,7 +88,7 @@ that it does not recognize.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -96,9 +96,13 @@ correct entity:
 - `deprecated` and `nodiscard` have no argument or one string literal.
 - `noreturn` has no argument and applies only to functions
   ({question}`Q-0021`).
-- `fallthrough` is a statement on its own in a `switch`. It is
-  immediately before a `case` or `default` label. A `fallthrough` at
-  the end of a loop body inside the `switch` is not.
+- `fallthrough`, `likely`, `unlikely`, `maybe_unused`, and
+  `no_unique_address` have no argument.
+- `fallthrough` is a statement on its own in a `switch`. The next
+  statement that can run after it must have a `case` or `default`
+  label, so it can end a branch of an `if` before such a label. A
+  `fallthrough` at the end of a loop body inside the `switch` is not
+  valid.
 
 These uses are also not valid:
 
@@ -296,7 +300,7 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 37 of 46 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 44 of 53 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return. Clang
   and GCC give this warning ("function declared 'noreturn' should not

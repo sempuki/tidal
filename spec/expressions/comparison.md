@@ -11,7 +11,7 @@ three-way comparison operator `<=>` gives an ordering value.
 
 A comparison compares two values and gives a `bool` prvalue
 ({principle}`VC-P1`). Arithmetic operands are first brought to one
-common type by the usual arithmetic conversions (CONV-3), and the
+common type by the {term}`usual arithmetic conversions`, and the
 comparison sees the converted values, so a negative `int` compared with
 an `unsigned` has become a large unsigned value. The relational
 operators bind more tightly than the equality operators, and `<=>` more

@@ -12,7 +12,7 @@ to the built-in operators. An overloaded operator is a function call
 
 The bitwise operators work on the bits of integers, so their operands
 are integers and unscoped enumerations and nothing else. Two operands
-become one common type by the usual arithmetic conversions (CONV-3),
+become one common type by the {term}`usual arithmetic conversions`,
 and the operand of `~` is promoted. The result has that type and is a
 prvalue ({principle}`VC-P1`). `&` binds more tightly than `^`, which
 binds more tightly than `|`, and all three bind less tightly than the

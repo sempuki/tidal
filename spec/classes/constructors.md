@@ -169,7 +169,7 @@ A program must not use a default constructor that CTOR-3 deletes.
 
 :::{rule} CTOR-4
 :kind: reject
-:tests: classes/constructors/const-object-defaulted-in-class.cpp classes/constructors/const-object-empty.cpp classes/constructors/const-object-member-init.cpp classes/constructors/const-object-no-init.cpp classes/constructors/const-object-user-ctor.cpp classes/constructors/const-object-base-leaves-member.cpp classes/constructors/const-object-base-initialized.cpp
+:tests: classes/constructors/const-object-defaulted-in-class.cpp classes/constructors/const-object-empty.cpp classes/constructors/const-object-member-init.cpp classes/constructors/const-object-no-init.cpp classes/constructors/const-object-user-ctor.cpp classes/constructors/const-object-base-leaves-member.cpp classes/constructors/const-object-base-initialized.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp
 
 A `const` object without an initializer must have a class type that
 gives each member a value. One of these must be true:

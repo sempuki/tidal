@@ -70,12 +70,13 @@ and asks nothing of the destructor. A variable is either `constinit` or
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp declarations/constexpr/variable-implicit-constructor-member-initializers.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp
 
 A `constexpr` variable is `const`, and it must obey these rules:
 
 - It must have an initializer, unless it has class type and a
-  `constexpr` default constructor gives every member a value.
+  `constexpr` default constructor gives every member a value. An
+  implicit default constructor does so when CTOR-4 holds for the class.
 - Its initialization must be a constant expression.
 - Its type must be a {term}`literal type` (CE-23).
 - A `constexpr` reference in a block, without `static`, must not bind
@@ -225,7 +226,7 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 47 of 52 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 49 of 54 tests.
 
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both

@@ -20,7 +20,7 @@ These are rejected:
 - a class, unless it supplies its own operator.
 
 Before the operation, the two operands become one common type through
-the usual arithmetic conversions (CONV-3), and the result is a prvalue
+the {term}`usual arithmetic conversions`, and the result is a prvalue
 of that type ({principle}`VC-P1`). Which type is common can depend on
 the sizes of the integer types, which each implementation chooses. `%`
 works on whole numbers only, because a remainder of a floating-point

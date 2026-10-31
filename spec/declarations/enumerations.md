@@ -211,7 +211,7 @@ opaque declaration is not enough ({question}`Q-0047`).
 
 :::{rule} ENUM-10
 :kind: required
-:tests: declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp
+:tests: declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp
 
 Each enumeration is a distinct type. It is different from its underlying
 type and from all other enumerations. After the closing brace, an
@@ -224,7 +224,8 @@ enumerator has another type there:
 - With a fixed underlying type, which every scoped enumeration has, it
   has that type.
 - Without one, an enumerator with an initializer has the type of the
-  initializer.
+  initializer, without promotion. An initializer of enumeration type
+  gives that enumeration type.
 - Without one, an enumerator without an initializer has the type of the
   enumerator before it, if that type can hold its value (ENUM-13).
 :::
@@ -315,7 +316,7 @@ Color k = Red;                 // Red without Color::
 
 ## Evidence
 
-All seven compilers agree on 49 of 52 tests. The results are in
+All seven compilers agree on 52 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }` an

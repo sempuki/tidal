@@ -66,10 +66,11 @@ The rules for variables apply to the return type:
 
 :::{rule} RET-3
 :kind: reject
-:tests: declarations/functions/return-deduction/use-before-definition.cpp declarations/functions/return-deduction/use-after-definition.cpp declarations/functions/return-deduction/recursion-after-return.cpp declarations/functions/return-deduction/recursion-before-return.cpp declarations/functions/return-deduction/auto-ref-no-return.cpp declarations/functions/return-deduction/auto-ref-return-local.cpp
+:tests: declarations/functions/return-deduction/use-before-definition.cpp declarations/functions/return-deduction/use-after-definition.cpp declarations/functions/return-deduction/recursion-after-return.cpp declarations/functions/return-deduction/recursion-before-return.cpp declarations/functions/return-deduction/auto-ref-no-return.cpp declarations/functions/return-deduction/auto-ref-return-local.cpp declarations/functions/return-deduction/member-calls-later-deduced.cpp
 
 A program must not use the function before its return type is known. A
-call before the definition is not valid. A recursive call is valid after
+call before the definition is not valid, also in the body of a member
+function that calls a later member of its class. A recursive call is valid after
 a `return` statement that gives the type. A function with a reference or
 pointer placeholder return type must have a `return` statement with an
 expression. A deduced lvalue reference cannot be initialized from the
@@ -127,7 +128,7 @@ constexpr auto fact(int n) {
 
 ## Evidence
 
-All seven compilers agree on all 20 tests. The results are in
+All seven compilers agree on all 21 tests. The results are in
 `tests/RESULTS.md`.
 
 Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, edg-func-def.

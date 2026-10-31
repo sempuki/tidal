@@ -273,12 +273,16 @@ Constant evaluation must not reach any of these (CE-17):
 
 :::{rule} CE-21
 :kind: reject
-:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp
+:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp
 
 The value of a constant expression of class or array type must give a
-value to each of its scalar parts, including each element of an array
-member. The result of a {term}`constant initializer` must meet the same
-condition.
+value to each of its scalar parts. These conditions apply:
+
+- Each element of an array member is a part.
+- In a union, only the active member is a part. A union with no active
+  member is valid ({question}`Q-0117`).
+- The result of a {term}`constant initializer` must meet the same
+  condition.
 :::
 
 :::{rule} CE-22
@@ -378,7 +382,7 @@ void use() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 60 of 65 tests.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 61 of 67 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000 and
   a loop of 100000000 steps by default. All accept a depth of 400.
@@ -398,6 +402,8 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 60 of 65 tes
   EDG accept it ({question}`Q-0090`).
 - CE-21: every compiler rejects a constant whose value has a scalar part
   with no value, for `constexpr` and `constinit` alike.
+- CE-21: a union with no active member is a valid constant for Clang
+  and EDG. GCC rejects it ({question}`Q-0117`).
 - CE-22: Clang and EDG reject a copy of an object that has a part with
   no value, and name the part in a note. GCC 14 and 16 accept the copy
   ({question}`Q-0115`).

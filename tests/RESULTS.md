@@ -911,17 +911,23 @@ compilers affect the Status column.
 | `declarations/attributes/deprecated-use-warns.cpp` | ATTR-4 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/double-bracket-lambda-subscript.cpp` | ATTR-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/double-bracket-parenthesized-ok.cpp` | ATTR-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-end-of-else-branch.cpp` | ATTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-end-of-if-branch.cpp` | ATTR-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/fallthrough-end-of-loop.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-misplaced.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-not-before-case.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-on-declaration.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/fallthrough-silences.cpp` | ATTR-7 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/fallthrough-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/implicit-fallthrough-warns.cpp` | ATTR-7 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `declarations/attributes/likely-unlikely.cpp` | ATTR-8 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/attributes/likely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/maybe-unused-silences.cpp` | ATTR-6 | accept | accept | accept | skip | accept | accept | accept | accept | pass |
+| `declarations/attributes/maybe-unused-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | accept | reject | accept | reject | pass |
 | `declarations/attributes/no-unique-address-same-type.cpp` | ATTR-16 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/attributes/no-unique-address-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/no-unique-address.cpp` | ATTR-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/nodiscard-constructor-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/nodiscard-ignored-warns.cpp` | ATTR-5 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
@@ -938,6 +944,7 @@ compilers affect the Status column.
 | `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/unused-warns.cpp` | ATTR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `declarations/attributes/using-prefix-ok.cpp` | ATTR-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/using-prefix-qualified.cpp` | ATTR-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1042,6 +1049,8 @@ compilers affect the Status column.
 | `declarations/constexpr/variable-const.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/variable-default-constructor.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/variable-default-initialized-no-value.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/variable-implicit-constructor-member-initializers.cpp` | CX-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` | CX-1 CTOR-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-no-initializer.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1138,8 +1147,11 @@ compilers affect the Status column.
 | `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-scope-after-value.cpp` | ENUM-12 | run | run | run | accept | run | run | run | run | pass |
+| `declarations/enumerations/enumerator-type-char-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-enum-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-grows.cpp` | ENUM-13 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-inside-list.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-short-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-values.cpp` | ENUM-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/fixed-bool.cpp` | ENUM-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/fixed-underlying-narrowing.cpp` | ENUM-17 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -1300,6 +1312,7 @@ compilers affect the Status column.
 | `declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp` | RET-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/return-deduction/decltype-auto.cpp` | RET-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/return-deduction/discarded-return-not-deduced.cpp` | RET-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/return-deduction/member-calls-later-deduced.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/recursion-after-return.cpp` | RET-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/return-deduction/recursion-before-return.cpp` | RET-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/redeclare-after-definition.cpp` | RET-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2197,6 +2210,8 @@ compilers affect the Status column.
 | `expressions/constant-expressions/result-points-to-static.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-refers-to-static-temporary.cpp` | CE-14 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-refers-to-temporary.cpp` | CE-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | reject | accept | reject | accept | pass |
+| `expressions/constant-expressions/result-union-one-active-member.cpp` | CE-21 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-unset-array-element.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-unset-member.cpp` | CE-21 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
@@ -2901,6 +2916,52 @@ compilers affect the Status column.
 | `foundations/translation/volatile-order-kept-optimized.cpp` | TR-7 | run | run | run | skip | run | run | run | run | pass |
 | `foundations/translation/warning-as-error-with-flag.cpp` | TR-6 | reject | reject | reject | skip | reject | reject | reject | reject | pass |
 | `foundations/translation/warning-not-error.cpp` | TR-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/align-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/align-lp64.cpp` | TYP-2 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/align-member-ilp32.cpp` | TYP-2 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/bool-values.cpp` | TYP-11 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/char-signed-ilp32.cpp` | TYP-3 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/char-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/distinct-character-types.cpp` | TYP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/distinct-same-size-ilp32.cpp` | TYP-5 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/distinct-same-size.cpp` | TYP-5 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/float-precision.cpp` | TYP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/int-max-overflow.cpp` | TYP-4 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/integer-ranges-ilp32.cpp` | TYP-4 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/integer-ranges-lp64.cpp` | TYP-4 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/long-double-precision-ilp32.cpp` | TYP-10 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/long-double-precision.cpp` | TYP-10 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/rank-floating.cpp` | TYP-9 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/rank-long-unsigned-ilp32.cpp` | TYP-8 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/rank-long-unsigned-lp64.cpp` | TYP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/rank-promotions.cpp` | TYP-8 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/size-characters-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/size-characters-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/size-floating-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/size-floating-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/size-integers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/size-integers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/size-pointers-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/size-pointers-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/size-result-type-ilp32.cpp` | TYP-1 | accept | accept | accept | skip | accept | accept | skip | accept | pass |
+| `foundations/types/size-result-type-lp64.cpp` | TYP-1 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/specifier-int-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-double.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/specifier-long-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-long-long.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-long-short.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-char.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-short-double.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-unsigned.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-signed-wchar.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-bool.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-char8.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifier-unsigned-float.cpp` | TYP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/types/specifiers-equivalent.cpp` | TYP-6 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/wchar-signed.cpp` | TYP-3 | accept | accept | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | run | run | run | run | pass |
 | `statements/blocks/block-scope.cpp` | STMT-2 NAM-8 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
@@ -2990,7 +3051,7 @@ compilers affect the Status column.
 | `statements/jumps/continue-outside.cpp` | JMP-7 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/continue-while-condition.cpp` | JMP-2 | run | run | run | accept | run | run | run | run | pass |
 | `statements/jumps/copy-elision-named.cpp` | JMP-11 | run | run | run | accept | run | run | run | run | pass |
-| `statements/jumps/destructor-return-value.cpp` | JMP-13 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/destructor-return-value.cpp` | JMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/destructor-return-void-expression.cpp` | JMP-12 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/duplicate-label.cpp` | JMP-14 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/goto-back-recreates.cpp` | JMP-9 | run | run | run | accept | run | run | run | run | pass |
@@ -3099,7 +3160,7 @@ compilers affect the Status column.
 | `statements/switch/scoped-enum-int-case.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | reject | reject | reject | reject | pass |
 
-3084/3084 tests pass on baseline compilers.
+3145/3145 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -6077,6 +6138,13 @@ check that the rejection has the intended cause.
 - `declarations/attributes/fallthrough-on-declaration.cpp` (clang-18): error: 'fallthrough' attribute cannot be applied to a declaration
 - `declarations/attributes/fallthrough-on-declaration.cpp` (gcc-16): error: 'fallthrough' attribute ignored [-Wattributes]
 - `declarations/attributes/fallthrough-on-declaration.cpp` (clang-22): error: 'fallthrough' attribute cannot be applied to a declaration
+- `declarations/attributes/fallthrough-with-argument.cpp` (clang-host): error: attribute 'fallthrough' cannot have an argument list
+- `declarations/attributes/fallthrough-with-argument.cpp` (gcc-host): error: ‘fallthrough’ attribute does not take any arguments
+- `declarations/attributes/fallthrough-with-argument.cpp` (edg-7.0): error: attribute "fallthrough" does not take arguments
+- `declarations/attributes/fallthrough-with-argument.cpp` (gcc-14): error: 'fallthrough' attribute does not take any arguments
+- `declarations/attributes/fallthrough-with-argument.cpp` (clang-18): error: attribute 'fallthrough' cannot have an argument list
+- `declarations/attributes/fallthrough-with-argument.cpp` (gcc-16): error: 'fallthrough' attribute does not take any arguments
+- `declarations/attributes/fallthrough-with-argument.cpp` (clang-22): error: attribute 'fallthrough' cannot have an argument list
 - `declarations/attributes/implicit-fallthrough-warns.cpp` (clang-host): error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough] / note: insert '[[fallthrough]];' to silence this warning / note: insert 'break;' to avoid fall-through
 - `declarations/attributes/implicit-fallthrough-warns.cpp` (gcc-host): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
 - `declarations/attributes/implicit-fallthrough-warns.cpp` (gcc-14): error: this statement may fall through [-Werror=implicit-fallthrough=] / note: here
@@ -6087,10 +6155,31 @@ check that the rejection has the intended cause.
 - `declarations/attributes/likely-and-unlikely.cpp` (edg-7.0): error: attribute conflicts with previous likely/unlikely attribute
 - `declarations/attributes/likely-and-unlikely.cpp` (clang-18): error: 'unlikely' and 'likely' attributes are not compatible / note: conflicting attribute is here
 - `declarations/attributes/likely-and-unlikely.cpp` (clang-22): error: 'unlikely' and 'likely' attributes are not compatible / note: conflicting attribute is here
+- `declarations/attributes/likely-with-argument.cpp` (clang-host): error: attribute 'likely' cannot have an argument list
+- `declarations/attributes/likely-with-argument.cpp` (gcc-host): error: ‘likely’ attribute does not take any arguments
+- `declarations/attributes/likely-with-argument.cpp` (edg-7.0): error: attribute "likely" does not take arguments
+- `declarations/attributes/likely-with-argument.cpp` (gcc-14): error: 'likely' attribute does not take any arguments
+- `declarations/attributes/likely-with-argument.cpp` (clang-18): error: attribute 'likely' cannot have an argument list
+- `declarations/attributes/likely-with-argument.cpp` (gcc-16): error: 'likely' attribute does not take any arguments
+- `declarations/attributes/likely-with-argument.cpp` (clang-22): error: attribute 'likely' cannot have an argument list
+- `declarations/attributes/maybe-unused-with-argument.cpp` (clang-host): error: attribute 'maybe_unused' cannot have an argument list
+- `declarations/attributes/maybe-unused-with-argument.cpp` (gcc-host): error: ‘maybe_unused’ attribute does not take any arguments
+- `declarations/attributes/maybe-unused-with-argument.cpp` (edg-7.0): error: attribute "maybe_unused" does not take arguments
+- `declarations/attributes/maybe-unused-with-argument.cpp` (gcc-14): error: 'maybe_unused' attribute does not take any arguments
+- `declarations/attributes/maybe-unused-with-argument.cpp` (clang-18): error: attribute 'maybe_unused' cannot have an argument list
+- `declarations/attributes/maybe-unused-with-argument.cpp` (gcc-16): error: 'maybe_unused' attribute does not take any arguments
+- `declarations/attributes/maybe-unused-with-argument.cpp` (clang-22): error: attribute 'maybe_unused' cannot have an argument list
 - `declarations/attributes/no-unique-address-bitfield.cpp` (clang-host): error: 'no_unique_address' attribute only applies to non-bit-field non-static data members
 - `declarations/attributes/no-unique-address-bitfield.cpp` (edg-7.0): error: attribute "no_unique_address" does not apply to bit fields
 - `declarations/attributes/no-unique-address-bitfield.cpp` (clang-18): error: 'no_unique_address' attribute only applies to non-bit-field non-static data members
 - `declarations/attributes/no-unique-address-bitfield.cpp` (clang-22): error: 'no_unique_address' attribute only applies to non-bit-field non-static data members
+- `declarations/attributes/no-unique-address-with-argument.cpp` (clang-host): error: attribute 'no_unique_address' cannot have an argument list
+- `declarations/attributes/no-unique-address-with-argument.cpp` (gcc-host): error: ‘no_unique_address’ attribute does not take any arguments
+- `declarations/attributes/no-unique-address-with-argument.cpp` (edg-7.0): error: attribute "no_unique_address" does not take arguments
+- `declarations/attributes/no-unique-address-with-argument.cpp` (gcc-14): error: 'no_unique_address' attribute does not take any arguments
+- `declarations/attributes/no-unique-address-with-argument.cpp` (clang-18): error: attribute 'no_unique_address' cannot have an argument list
+- `declarations/attributes/no-unique-address-with-argument.cpp` (gcc-16): error: 'no_unique_address' attribute does not take any arguments
+- `declarations/attributes/no-unique-address-with-argument.cpp` (clang-22): error: attribute 'no_unique_address' cannot have an argument list
 - `declarations/attributes/nodiscard-constructor-warns.cpp` (clang-host): error: ignoring temporary created by a constructor declared with 'nodiscard' attribute [-Werror,-Wunused-value]
 - `declarations/attributes/nodiscard-constructor-warns.cpp` (gcc-host): error: ignoring return value of ‘S::S(int)’, declared with attribute ‘nodiscard’ [-Werror=unused-result]
 - `declarations/attributes/nodiscard-constructor-warns.cpp` (gcc-14): error: ignoring return value of 'S::S(int)', declared with attribute 'nodiscard' [-Werror=unused-result]
@@ -6127,6 +6216,13 @@ check that the rejection has the intended cause.
 - `declarations/attributes/noreturn-returns.cpp` (clang-18): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
 - `declarations/attributes/noreturn-returns.cpp` (gcc-16): error: 'noreturn' function does return [-Werror]
 - `declarations/attributes/noreturn-returns.cpp` (clang-22): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/unlikely-with-argument.cpp` (clang-host): error: attribute 'unlikely' cannot have an argument list
+- `declarations/attributes/unlikely-with-argument.cpp` (gcc-host): error: ‘unlikely’ attribute does not take any arguments
+- `declarations/attributes/unlikely-with-argument.cpp` (edg-7.0): error: attribute "unlikely" does not take arguments
+- `declarations/attributes/unlikely-with-argument.cpp` (gcc-14): error: 'unlikely' attribute does not take any arguments
+- `declarations/attributes/unlikely-with-argument.cpp` (clang-18): error: attribute 'unlikely' cannot have an argument list
+- `declarations/attributes/unlikely-with-argument.cpp` (gcc-16): error: 'unlikely' attribute does not take any arguments
+- `declarations/attributes/unlikely-with-argument.cpp` (clang-22): error: attribute 'unlikely' cannot have an argument list
 - `declarations/attributes/unused-warns.cpp` (clang-host): error: unused variable 'local' [-Werror,-Wunused-variable]
 - `declarations/attributes/unused-warns.cpp` (gcc-host): error: unused variable ‘local’ [-Werror=unused-variable]
 - `declarations/attributes/unused-warns.cpp` (gcc-14): error: unused variable 'local' [-Werror=unused-variable]
@@ -6479,6 +6575,13 @@ check that the rejection has the intended cause.
 - `declarations/constexpr/variable-default-initialized-no-value.cpp` (clang-18): error: default initialization of an object of const type 'const Point' without a user-provided default constructor
 - `declarations/constexpr/variable-default-initialized-no-value.cpp` (gcc-16): error: uninitialized 'const p' [-fpermissive] / note: 'const struct Point' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Point::x'
 - `declarations/constexpr/variable-default-initialized-no-value.cpp` (clang-22): error: default initialization of an object of const type 'const Point' without a user-provided default constructor
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (clang-host): error: default initialization of an object of const type 'const Settings' without a user-provided default constructor
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (gcc-host): error: uninitialized ‘const settings’ [-fpermissive] / note: ‘const struct Settings’ has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize ‘int Settings::height’ / error: ‘Settings{80}’ is not a constant expression / error: ‘((Settings*)(& settings))->Settings::Settings()’ is not a constant expression because it refers to an incompletely initialized variable
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (edg-7.0): error: const variable "settings" requires an initializer -- class "Settings" has no user-provided default constructor / error: initialization is not constant / note: access to uninitialized subobject (member "Settings::height")
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (gcc-14): error: uninitialized 'const settings' [-fpermissive] / note: 'const struct Settings' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Settings::height' / error: 'Settings{80}' is not a constant expression / error: 'Settings()' is not a constant expression because it refers to an incompletely initialized variable
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (clang-18): error: default initialization of an object of const type 'const Settings' without a user-provided default constructor
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (gcc-16): error: uninitialized 'const settings' [-fpermissive] / note: 'const struct Settings' has no user-provided default constructor / note: and the implicitly-defined constructor does not initialize 'int Settings::height' / error: 'Settings{80}' is not a constant expression / error: '((Settings*)(& settings))->Settings::Settings()' is not a constant expression because it refers to an incompletely initialized variable
+- `declarations/constexpr/variable-implicit-constructor-member-unset.cpp` (clang-22): error: default initialization of an object of const type 'const Settings' without a user-provided default constructor
 - `declarations/constexpr/variable-no-initializer.cpp` (clang-host): error: constexpr variable 'n' must be initialized by a constant expression
 - `declarations/constexpr/variable-no-initializer.cpp` (gcc-host): error: uninitialized ‘const n’ [-fpermissive]
 - `declarations/constexpr/variable-no-initializer.cpp` (edg-7.0): error: missing initializer for constexpr variable
@@ -7363,6 +7466,13 @@ check that the rejection has the intended cause.
 - `declarations/functions/return-deduction/decltype-auto-dangling.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of variable whose lifetime has ended
 - `declarations/functions/return-deduction/decltype-auto-dangling.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'x' outside its lifetime
 - `declarations/functions/return-deduction/decltype-auto-dangling.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of variable whose lifetime has ended
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (clang-host): error: function 'step' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (gcc-host): error: use of ‘auto Counter::step()’ before deduction of ‘auto’
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (edg-7.0): error: cannot deduce the return type of function "Counter::step" (declared at line 8); it has not been defined
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (gcc-14): error: use of 'auto Counter::step()' before deduction of 'auto'
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (clang-18): error: function 'step' with deduced return type cannot be used before it is defined
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (gcc-16): error: use of 'auto Counter::step()' before deduction of 'auto'
+- `declarations/functions/return-deduction/member-calls-later-deduced.cpp` (clang-22): error: function 'step' with deduced return type cannot be used before it is defined
 - `declarations/functions/return-deduction/recursion-before-return.cpp` (clang-host): error: function 'f' with deduced return type cannot be used before it is defined
 - `declarations/functions/return-deduction/recursion-before-return.cpp` (gcc-host): error: use of ‘auto f(int)’ before deduction of ‘auto’
 - `declarations/functions/return-deduction/recursion-before-return.cpp` (edg-7.0): error: cannot deduce the return type of function "f" (declared at line 6); it has not been defined
@@ -9993,6 +10103,9 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (clang-18): error: constexpr variable 't' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (gcc-16): error: '<anonymous>' is not a constant expression
 - `expressions/constant-expressions/result-refers-to-temporary.cpp` (clang-22): error: constexpr variable 't' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
+- `expressions/constant-expressions/result-union-no-active-member.cpp` (gcc-host): error: ‘Slot()’ is not a constant expression / error: ‘((Slot*)(& slot))->Slot::Slot()’ is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-union-no-active-member.cpp` (gcc-14): error: 'Slot()' is not a constant expression / error: 'Slot()' is not a constant expression because it refers to an incompletely initialized variable
+- `expressions/constant-expressions/result-union-no-active-member.cpp` (gcc-16): error: 'Slot()' is not a constant expression / error: '((Slot*)(& slot))->Slot::Slot()' is not a constant expression because it refers to an incompletely initialized variable
 - `expressions/constant-expressions/result-unset-array-element.cpp` (clang-host): error: constexpr variable 'table' must be initialized by a constant expression / note: subobject 'slots' is not initialized
 - `expressions/constant-expressions/result-unset-array-element.cpp` (gcc-host): error: ‘Table{int [2]{1}}’ is not a constant expression / error: ‘((Table*)(& table))->Table::Table()’ is not a constant expression because it refers to an incompletely initialized variable
 - `expressions/constant-expressions/result-unset-array-element.cpp` (edg-7.0): error: initialization is not constant / note: access to uninitialized subobject at index 1
@@ -12071,6 +12184,97 @@ check that the rejection has the intended cause.
 - `foundations/translation/warning-as-error-with-flag.cpp` (clang-18): error: unused variable 'unused' [-Werror,-Wunused-variable]
 - `foundations/translation/warning-as-error-with-flag.cpp` (gcc-16): error: unused variable 'unused' [-Werror=unused-variable]
 - `foundations/translation/warning-as-error-with-flag.cpp` (clang-22): error: unused variable 'unused' [-Werror,-Wunused-variable]
+- `foundations/types/int-max-overflow.cpp` (clang-host): error: constexpr variable 'past' must be initialized by a constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/types/int-max-overflow.cpp` (gcc-host): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `foundations/types/int-max-overflow.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `foundations/types/int-max-overflow.cpp` (gcc-14): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `foundations/types/int-max-overflow.cpp` (clang-18): error: constexpr variable 'past' must be initialized by a constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/types/int-max-overflow.cpp` (gcc-16): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `foundations/types/int-max-overflow.cpp` (clang-22): error: constexpr variable 'past' must be initialized by a constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/types/specifier-int-char.cpp` (clang-host): error: cannot combine with previous 'int' declaration specifier
+- `foundations/types/specifier-int-char.cpp` (gcc-host): error: two or more data types in declaration of ‘a’
+- `foundations/types/specifier-int-char.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-int-char.cpp` (gcc-14): error: two or more data types in declaration of 'a'
+- `foundations/types/specifier-int-char.cpp` (clang-18): error: cannot combine with previous 'int' declaration specifier
+- `foundations/types/specifier-int-char.cpp` (gcc-16): error: two or more data types in declaration of 'a'
+- `foundations/types/specifier-int-char.cpp` (clang-22): error: cannot combine with previous 'int' declaration specifier
+- `foundations/types/specifier-long-char.cpp` (clang-host): error: 'long char' is invalid
+- `foundations/types/specifier-long-char.cpp` (gcc-host): error: ‘long’ specified with ‘char’
+- `foundations/types/specifier-long-char.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-char.cpp` (gcc-14): error: 'long' specified with 'char'
+- `foundations/types/specifier-long-char.cpp` (clang-18): error: 'long char' is invalid
+- `foundations/types/specifier-long-char.cpp` (gcc-16): error: 'long' specified with 'char'
+- `foundations/types/specifier-long-char.cpp` (clang-22): error: 'long char' is invalid
+- `foundations/types/specifier-long-float.cpp` (clang-host): error: 'long float' is invalid
+- `foundations/types/specifier-long-float.cpp` (gcc-host): error: ‘long’ specified with ‘float’
+- `foundations/types/specifier-long-float.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-float.cpp` (gcc-14): error: 'long' specified with 'float'
+- `foundations/types/specifier-long-float.cpp` (clang-18): error: 'long float' is invalid
+- `foundations/types/specifier-long-float.cpp` (gcc-16): error: 'long' specified with 'float'
+- `foundations/types/specifier-long-float.cpp` (clang-22): error: 'long float' is invalid
+- `foundations/types/specifier-long-long-long.cpp` (clang-host): error: cannot combine with previous 'long long' declaration specifier
+- `foundations/types/specifier-long-long-long.cpp` (gcc-host): error: ‘long long long’ is too long for GCC
+- `foundations/types/specifier-long-long-long.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-long-long.cpp` (gcc-14): error: 'long long long' is too long for GCC
+- `foundations/types/specifier-long-long-long.cpp` (clang-18): error: cannot combine with previous 'long long' declaration specifier
+- `foundations/types/specifier-long-long-long.cpp` (gcc-16): error: 'long long long' is too long for GCC
+- `foundations/types/specifier-long-long-long.cpp` (clang-22): error: cannot combine with previous 'long long' declaration specifier
+- `foundations/types/specifier-long-short.cpp` (clang-host): error: cannot combine with previous 'long' declaration specifier
+- `foundations/types/specifier-long-short.cpp` (gcc-host): error: ‘long’ and ‘short’ specified together
+- `foundations/types/specifier-long-short.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-long-short.cpp` (gcc-14): error: 'long' and 'short' specified together
+- `foundations/types/specifier-long-short.cpp` (clang-18): error: cannot combine with previous 'long' declaration specifier
+- `foundations/types/specifier-long-short.cpp` (gcc-16): error: 'long' and 'short' specified together
+- `foundations/types/specifier-long-short.cpp` (clang-22): error: cannot combine with previous 'long' declaration specifier
+- `foundations/types/specifier-short-char.cpp` (clang-host): error: 'short char' is invalid
+- `foundations/types/specifier-short-char.cpp` (gcc-host): error: ‘short’ specified with ‘char’
+- `foundations/types/specifier-short-char.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-short-char.cpp` (gcc-14): error: 'short' specified with 'char'
+- `foundations/types/specifier-short-char.cpp` (clang-18): error: 'short char' is invalid
+- `foundations/types/specifier-short-char.cpp` (gcc-16): error: 'short' specified with 'char'
+- `foundations/types/specifier-short-char.cpp` (clang-22): error: 'short char' is invalid
+- `foundations/types/specifier-short-double.cpp` (clang-host): error: 'short double' is invalid
+- `foundations/types/specifier-short-double.cpp` (gcc-host): error: ‘short’ specified with ‘double’
+- `foundations/types/specifier-short-double.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-short-double.cpp` (gcc-14): error: 'short' specified with 'double'
+- `foundations/types/specifier-short-double.cpp` (clang-18): error: 'short double' is invalid
+- `foundations/types/specifier-short-double.cpp` (gcc-16): error: 'short' specified with 'double'
+- `foundations/types/specifier-short-double.cpp` (clang-22): error: 'short double' is invalid
+- `foundations/types/specifier-signed-unsigned.cpp` (clang-host): error: cannot combine with previous 'signed' declaration specifier
+- `foundations/types/specifier-signed-unsigned.cpp` (gcc-host): error: ‘signed’ and ‘unsigned’ specified together
+- `foundations/types/specifier-signed-unsigned.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-signed-unsigned.cpp` (gcc-14): error: 'signed' and 'unsigned' specified together
+- `foundations/types/specifier-signed-unsigned.cpp` (clang-18): error: cannot combine with previous 'signed' declaration specifier
+- `foundations/types/specifier-signed-unsigned.cpp` (gcc-16): error: 'signed' and 'unsigned' specified together
+- `foundations/types/specifier-signed-unsigned.cpp` (clang-22): error: cannot combine with previous 'signed' declaration specifier
+- `foundations/types/specifier-signed-wchar.cpp` (clang-host): error: 'wchar_t' cannot be signed or unsigned [-Wsigned-unsigned-wchar]
+- `foundations/types/specifier-signed-wchar.cpp` (gcc-host): error: ‘signed’ specified with ‘typeof’
+- `foundations/types/specifier-signed-wchar.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-signed-wchar.cpp` (gcc-14): error: 'signed' specified with 'typeof'
+- `foundations/types/specifier-signed-wchar.cpp` (clang-18): error: 'wchar_t' cannot be signed or unsigned [-Wsigned-unsigned-wchar]
+- `foundations/types/specifier-signed-wchar.cpp` (gcc-16): error: 'signed' specified with 'typeof'
+- `foundations/types/specifier-signed-wchar.cpp` (clang-22): error: 'wchar_t' cannot be signed or unsigned [-Wsigned-unsigned-wchar]
+- `foundations/types/specifier-unsigned-bool.cpp` (clang-host): error: 'bool' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-bool.cpp` (gcc-host): error: ‘unsigned’ specified with ‘bool’
+- `foundations/types/specifier-unsigned-bool.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-unsigned-bool.cpp` (gcc-14): error: 'unsigned' specified with 'bool'
+- `foundations/types/specifier-unsigned-bool.cpp` (clang-18): error: 'bool' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-bool.cpp` (gcc-16): error: 'unsigned' specified with 'bool'
+- `foundations/types/specifier-unsigned-bool.cpp` (clang-22): error: 'bool' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char8.cpp` (clang-host): error: 'char8_t' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char8.cpp` (gcc-host): error: ‘unsigned’ specified with ‘char8_t’
+- `foundations/types/specifier-unsigned-char8.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-unsigned-char8.cpp` (gcc-14): error: 'unsigned' specified with 'char8_t'
+- `foundations/types/specifier-unsigned-char8.cpp` (clang-18): error: 'char8_t' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-char8.cpp` (gcc-16): error: 'unsigned' specified with 'char8_t'
+- `foundations/types/specifier-unsigned-char8.cpp` (clang-22): error: 'char8_t' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-float.cpp` (clang-host): error: 'float' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-float.cpp` (gcc-host): error: ‘unsigned’ specified with ‘float’
+- `foundations/types/specifier-unsigned-float.cpp` (edg-7.0): error: invalid combination of type specifiers
+- `foundations/types/specifier-unsigned-float.cpp` (gcc-14): error: 'unsigned' specified with 'float'
+- `foundations/types/specifier-unsigned-float.cpp` (clang-18): error: 'float' cannot be signed or unsigned
+- `foundations/types/specifier-unsigned-float.cpp` (gcc-16): error: 'unsigned' specified with 'float'
+- `foundations/types/specifier-unsigned-float.cpp` (clang-22): error: 'float' cannot be signed or unsigned
 - `statements/blocks/block-scope.cpp` (clang-host): error: use of undeclared identifier 'inner'
 - `statements/blocks/block-scope.cpp` (gcc-host): error: ‘inner’ was not declared in this scope
 - `statements/blocks/block-scope.cpp` (edg-7.0): error: identifier "inner" is undefined
