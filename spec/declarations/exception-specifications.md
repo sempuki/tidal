@@ -11,3 +11,119 @@ for redeclarations and pointer conversions.
 
 Depends on: declarators, standard conversions, virtual functions,
 constructors and destructors, constant expressions.
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: exs
+   noexcept_specifier: "noexcept" ["(" `constant_expression` ")"]
+```
+
+The specifier follows the parameter list and the qualifiers of a function
+declarator. `noexcept` alone means `noexcept(true)`. A function with
+`noexcept(true)` is a *non-throwing* function.
+
+## Constraints
+
+:::{rule} EXS-1
+:kind: required
+:tests: declarations/exception-specifications/forms.cpp declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/operand-later-member.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp
+
+The operand of `noexcept` is a constant expression that converts to
+`bool` without narrowing ({question}`Q-0078`). In a member function, the
+operand can name members declared later in the class. A list of types in
+the form `throw(T)` is not valid.
+:::
+
+:::{rule} EXS-2
+:kind: required
+:tests: declarations/exception-specifications/alias-noexcept-function.cpp declarations/exception-specifications/call-through-noexcept-pointer.cpp declarations/exception-specifications/decltype-keeps-noexcept.cpp declarations/exception-specifications/in-type.cpp declarations/exception-specifications/member-function-noexcept.cpp declarations/exception-specifications/nested-indirection.cpp declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp declarations/exception-specifications/overload-on-noexcept.cpp declarations/exception-specifications/parameter-noexcept-overloads.cpp declarations/exception-specifications/typedef-noexcept.cpp
+
+The `noexcept` specifier is part of a function type. It is kept in:
+
+- type aliases and `typedef` names,
+- pointers to functions, at any depth, and pointers to member functions,
+- the type that `decltype` gives.
+
+A call through a pointer to a non-throwing function is non-throwing. Two
+declarations that differ only in `noexcept` are not overloads, and the
+second one is not valid. Parameter types that differ in `noexcept` are
+different types, so functions with them overload.
+:::
+
+:::{rule} EXS-3
+:kind: reject
+:tests: declarations/exception-specifications/override-dtor-noexcept-false.cpp declarations/exception-specifications/override-may-add-noexcept.cpp declarations/exception-specifications/override-must-be-noexcept.cpp
+
+A function that overrides a non-throwing virtual function must be
+non-throwing. This includes destructors. An override can be non-throwing
+when the overridden function is not.
+:::
+
+:::{rule} EXS-4
+:kind: required
+:tests: declarations/exception-specifications/constexpr-not-implied.cpp declarations/exception-specifications/defaulted-explicit-noexcept.cpp declarations/exception-specifications/defaulted-follows-members.cpp declarations/exception-specifications/delete-operator-noexcept.cpp declarations/exception-specifications/implicit-follows-members.cpp declarations/exception-specifications/implicit-special-members.cpp declarations/exception-specifications/inheriting-ctor-noexcept.cpp declarations/exception-specifications/lambda-not-noexcept.cpp declarations/exception-specifications/user-function-not-noexcept.cpp declarations/exception-specifications/delete-class-follows-destructor.cpp
+
+A function without a `noexcept` specifier is not non-throwing, with these
+exceptions:
+
+- An implicit or defaulted special member function is non-throwing if
+  each function that it calls for bases and members is non-throwing.
+- A destructor follows DTOR-4.
+- An inherited constructor has the specifier of the base constructor.
+- A `delete` expression is non-throwing if the destructor that it calls
+  is non-throwing.
+
+A defaulted function can state its own specifier. `constexpr` does not
+make a function non-throwing, and a lambda is non-throwing only with
+`noexcept`.
+:::
+
+## Implementation Requirements
+
+:::{rule} EXS-5
+:kind: impl-defined
+:tests: declarations/exception-specifications/throw-empty-removed.cpp
+
+It is implementation-defined if `throw()` with an empty list is accepted
+({question}`Q-0077`). If it is, it means `noexcept`.
+:::
+
+:::{rule} EXS-6
+:kind: no-diagnostic
+:tests: declarations/exception-specifications/operand-cycle.cpp
+
+The operand of a `noexcept` specifier must not depend on the specifier
+itself. An implementation need not diagnose it ({question}`Q-0079`).
+:::
+
+## Examples
+
+```cpp
+void log(const char*) noexcept;
+void (*safe)(const char*) noexcept = log;   // valid
+void (*any)(const char*) = log;             // valid: noexcept dropped
+safe = any;                                  // rejected (CONV-10)
+
+struct Buffer {
+  Buffer(Buffer&&) noexcept;                 // moves without throwing
+  Buffer& operator=(Buffer&&) noexcept(sizeof(int) == 4);
+};
+
+struct Base { virtual void close() noexcept; };
+struct File : Base { void close() override; };  // rejected: throwing override
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
+31 tests.
+
+- EXS-1: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
+  reject them ({question}`Q-0078`).
+- EXS-5: Clang and GCC accept `throw()`. EDG rejects it
+  ({question}`Q-0077`).
+- EXS-6: Clang rejects an operand that depends on the function itself.
+  GCC and EDG accept it ({question}`Q-0079`).
+
+Inputs: clang-sema-declcxx, clang-sema-type, clang-diag-sema, edg-decls.
