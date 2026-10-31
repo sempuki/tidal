@@ -11,6 +11,7 @@ constructors
 copy-move
 derived
 virtual
+unions
 :::
 
 :::{toctree}
@@ -23,4 +24,5 @@ constructors
 copy-move
 derived
 virtual
+unions
 :::
