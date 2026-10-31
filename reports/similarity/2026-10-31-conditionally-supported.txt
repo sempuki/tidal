@@ -1,0 +1,75 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   postfix.md:Postfix expressions   longest=0   overlap=0.00
+ok   PFX-P1                           longest=0   overlap=0.03
+ok   PFX-P2                           longest=0   overlap=0.01
+ok   PFX-P3                           longest=0   overlap=0.01
+ok   PFX-P4                           longest=0   overlap=0.00
+ok   postfix.md:Syntax                longest=0   overlap=0.00
+ok   PFX-1                            longest=0   overlap=0.03
+ok   PFX-2                            longest=0   overlap=0.08
+ok   PFX-3                            longest=0   overlap=0.00
+ok   PFX-5                            longest=0   overlap=0.00
+ok   PFX-6                            longest=0   overlap=0.00
+ok   PFX-9                            longest=0   overlap=0.05
+ok   PFX-10                           longest=0   overlap=0.00
+ok   PFX-11                           longest=0   overlap=0.10
+ok   PFX-13                           longest=0   overlap=0.13
+ok   PFX-14                           longest=0   overlap=0.10
+ok   PFX-7                            longest=0   overlap=0.12
+ok   PFX-12                           longest=0   overlap=0.05
+ok   PFX-4                            longest=0   overlap=0.00
+ok   PFX-8                            longest=0   overlap=0.00
+ok   PFX-15                           longest=0   overlap=0.04
+ok   postfix.md:Examples              longest=0   overlap=0.04
+ok   postfix.md:Evidence              longest=0   overlap=0.00
+ok   primary.md:Primary expressions   longest=0   overlap=0.00
+ok   PRIM-P1                          longest=0   overlap=0.00
+ok   PRIM-P5                          longest=0   overlap=0.00
+ok   PRIM-P2                          longest=0   overlap=0.00
+ok   PRIM-P3                          longest=0   overlap=0.01
+ok   PRIM-P4                          longest=0   overlap=0.01
+ok   primary.md:Syntax                longest=0   overlap=0.00
+ok   PRIM-1                           longest=0   overlap=0.01
+ok   PRIM-2                           longest=0   overlap=0.00
+ok   PRIM-3                           longest=0   overlap=0.00
+ok   PRIM-16                          longest=0   overlap=0.03
+ok   PRIM-4                           longest=0   overlap=0.00
+ok   PRIM-17                          longest=0   overlap=0.00
+ok   PRIM-5                           longest=0   overlap=0.00
+ok   PRIM-18                          longest=0   overlap=0.00
+ok   PRIM-7                           longest=0   overlap=0.04
+ok   PRIM-19                          longest=0   overlap=0.00
+ok   PRIM-10                          longest=0   overlap=0.00
+ok   PRIM-11                          longest=0   overlap=0.13
+ok   PRIM-20                          longest=0   overlap=0.20
+ok   PRIM-12                          longest=0   overlap=0.05
+ok   PRIM-14                          longest=0   overlap=0.18
+ok   PRIM-8                           longest=0   overlap=0.00
+ok   PRIM-6                           longest=0   overlap=0.05
+ok   PRIM-9                           longest=0   overlap=0.00
+ok   PRIM-15                          longest=0   overlap=0.00
+ok   PRIM-21                          longest=0   overlap=0.06
+ok   PRIM-22                          longest=0   overlap=0.15
+ok   PRIM-23                          longest=0   overlap=0.00
+ok   PRIM-13                          longest=0   overlap=0.00
+ok   primary.md:Examples              longest=0   overlap=0.00
+ok   primary.md:Evidence              longest=0   overlap=0.00
+ok   translation.md:Translation, execution, and behavior cla longest=0   overlap=0.01
+ok   TR-P1                            longest=0   overlap=0.00
+ok   TR-P2                            longest=0   overlap=0.03
+ok   TR-P3                            longest=0   overlap=0.00
+ok   TR-P5                            longest=0   overlap=0.00
+ok   TR-P4                            longest=0   overlap=0.00
+ok   TR-1                             longest=0   overlap=0.00
+ok   TR-3                             longest=0   overlap=0.00
+ok   TR-2                             longest=0   overlap=0.05
+ok   TR-4                             longest=0   overlap=0.00
+ok   TR-5                             longest=0   overlap=0.00
+ok   TR-7                             longest=0   overlap=0.08
+ok   TR-8                             longest=0   overlap=0.08
+ok   TR-6                             longest=0   overlap=0.00
+ok   translation.md:Examples          longest=0   overlap=0.00
+ok   translation.md:Evidence          longest=0   overlap=0.01
+
+0 flagged

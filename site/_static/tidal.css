@@ -35,7 +35,8 @@ article div.tidal-rule {
 .tidal-kind-undefined { border-left-color: #b91c1c; }
 .tidal-kind-impl-defined,
 .tidal-kind-unspecified,
-.tidal-kind-no-diagnostic { border-left-color: #7c3aed; }
+.tidal-kind-no-diagnostic,
+.tidal-kind-conditionally-supported { border-left-color: #7c3aed; }
 .tidal-kind-recommended { border-left-color: #0f766e; }
 .tidal-kind-required { border-left-color: #2563eb; }
 

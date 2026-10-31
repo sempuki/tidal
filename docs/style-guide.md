@@ -114,6 +114,7 @@ Use these words with these meanings only.
 | is undefined | Tidal sets no requirements on the behavior. |
 | is implementation-defined | Each implementation chooses the behavior and documents its choice. |
 | is unspecified | Each implementation chooses the behavior from a set that the rule gives. It need not document the choice. |
+| is conditionally supported | An implementation can reject the construct. If it accepts it, it documents the behavior. |
 | should | Recommended practice only. |
 
 Do not use `shall`, `may`, `might`, or `will` in rules.

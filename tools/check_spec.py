@@ -24,7 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec"
 CLASSES = {
     "required", "reject", "no-diagnostic", "impl-defined",
-    "unspecified", "undefined", "recommended", "withdrawn",
+    "unspecified", "undefined", "recommended", "conditionally-supported",
+    "withdrawn",
 }
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
 TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
@@ -38,7 +39,7 @@ SEGMENT_KINDS = {
     "Constraints": {"required", "reject", "withdrawn"},
     "Runtime Behavior": {"required", "withdrawn"},
     "Undefined Behavior": {"undefined", "withdrawn"},
-    "Implementation Requirements": {"impl-defined", "unspecified", "no-diagnostic", "withdrawn"},
+    "Implementation Requirements": {"impl-defined", "unspecified", "no-diagnostic", "conditionally-supported", "withdrawn"},
     "Recommended Practice": {"recommended", "withdrawn"},
 }
 

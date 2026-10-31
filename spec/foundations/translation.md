@@ -10,6 +10,35 @@ these classes without explaining them again.
 Depends on: storage duration and linkage, constant expressions, function
 definitions.
 
+Readers who know the vocabulary of the ISO standard will find that this
+specification says the same things in different words. The difference
+is deliberate, for three reasons. The writing follows Simplified
+Technical English, which is meant for readers who are not specialists
+in the text, and *shall* and *may* are the two words that such readers
+misread most often. The strength of each rule is carried by its class,
+printed in the rule's header and checked against the implementations by
+tests, so the verb in the sentence does not have to carry it. And
+*ill-formed* and its relatives describe a program from the standard's
+side, while this specification describes what an implementation does
+with the program, which is what its tests observe. The table below maps
+one vocabulary to the other. It is informative.
+
+| ISO term | Tidal word or class |
+|---|---|
+| well-formed | valid |
+| ill-formed | not valid; a `reject` rule |
+| ill-formed, no diagnostic required | a `no-diagnostic` rule |
+| undefined behavior | `undefined`; "the behavior is undefined" |
+| unspecified behavior | `unspecified`; "it is unspecified if" |
+| implementation-defined behavior | `impl-defined`; "is implementation-defined" |
+| conditionally-supported | `conditionally-supported` |
+| deprecated | a `recommended` rule that asks for a warning |
+| shall, shall not | must, must not |
+| may | can |
+| should | should, in `Recommended Practice` only |
+| diagnostic | diagnostic; "rejects" when it stops translation |
+| potentially evaluated, odr-use | evaluated operand, use *(referenced)* |
+
 ## Principles
 
 :::{principle} TR-P1
@@ -31,6 +60,7 @@ rule says which kind it is and how strong it is:
 | `undefined` | rule on the program | This specification sets no requirement on what happens. |
 | `impl-defined` | fact | Each implementation chooses and documents its behavior. |
 | `unspecified` | fact | Each implementation chooses from the given set, and need not document or be consistent. |
+| `conditionally-supported` | fact | An implementation can reject the construct. If it accepts it, it documents the behavior. |
 | `recommended` | advice | An implementation should do this, usually by warning. |
 
 A diagnostic for a `recommended` rule is a warning. It does not make

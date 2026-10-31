@@ -198,7 +198,7 @@ A call through a null function pointer is undefined.
 ## Implementation Requirements
 
 :::{rule} PFX-15
-:kind: impl-defined
+:kind: conditionally-supported
 :tests: expressions/postfix/ellipsis-nontrivial-class.cpp
 
 Passing an object of a class with a non-trivial copy constructor, move

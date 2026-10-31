@@ -19,7 +19,7 @@ SPEC = ROOT / "spec"
 TESTS = ROOT / "tests"
 STATUS = ROOT / "docs" / "status.md"
 KINDS = ["required", "reject", "undefined", "unspecified", "impl-defined",
-         "no-diagnostic", "recommended"]
+         "no-diagnostic", "conditionally-supported", "recommended"]
 HEADER = "| Section | Rules | Classes | Tests | Questions | Similarity |"
 
 

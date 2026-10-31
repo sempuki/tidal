@@ -308,11 +308,11 @@ literal. Constant evaluation rejects a comparison of their addresses.
 :::
 
 :::{rule} PRIM-15
-:kind: impl-defined
+:kind: conditionally-supported
 :tests: expressions/primary/float-overflow.cpp
 
-The value of a floating literal outside the range of its type is
-implementation-defined. An implementation can reject it
+A floating literal outside the range of its type is conditionally
+supported. An implementation that accepts it documents the value
 ({question}`Q-0063`).
 :::
 
@@ -327,7 +327,7 @@ x86-64 Linux targets in the matrix, it is the nearer value.
 :::
 
 :::{rule} PRIM-22
-:kind: impl-defined
+:kind: conditionally-supported
 :tests: expressions/primary/float-extended-suffix.cpp
 
 The suffixes `f16`, `f32`, `f64`, `f128`, and `bf16`, in either case,
@@ -336,7 +336,7 @@ conditional. GCC and EDG accept them. Clang rejects them.
 :::
 
 :::{rule} PRIM-23
-:kind: impl-defined
+:kind: conditionally-supported
 :tests: expressions/primary/char-unprefixed-not-single-unit.cpp
 
 A character literal without a prefix that contains one character with

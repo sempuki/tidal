@@ -28,6 +28,7 @@ such a page is cited. The rules keep their IDs, classes, and tests.
 | `unspecified` | The implementation picks from a listed set of outcomes, and need not document or be consistent. | Results vary with optimization level or context. |
 | `undefined` | Tidal places no requirements on the program. | Constant evaluation rejects it, UBSan reports it, or the optimizer assumes it doesn't happen. |
 | `recommended` | Implementations should behave this way, usually by warning, but a program that triggers it is still valid. | Compilers warn by default or under a common flag; the test makes the warning an error. |
+| `conditionally-supported` | An implementation can reject the construct. If it accepts it, it documents the behavior. | Some compilers in the matrix reject under `-pedantic-errors` and others accept, each consistently. |
 
 Classifying behavior is the hardest step. Each rule in the last four classes
 needs a sentence in the section's "Evidence" notes explaining why it was put

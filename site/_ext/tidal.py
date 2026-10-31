@@ -19,7 +19,7 @@ from sphinx.util.docutils import SphinxDirective
 
 KINDS = {
     "required", "reject", "no-diagnostic", "impl-defined", "unspecified",
-    "undefined", "recommended", "withdrawn",
+    "undefined", "recommended", "conditionally-supported", "withdrawn",
 }
 
 
