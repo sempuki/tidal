@@ -29,7 +29,7 @@ constructor.
 :rules: ILC-3 ILC-4 ILC-8
 
 A class that accepts a `std::initializer_list` means the braces as a
-list of values, so that constructor is tried first:
+list of values, so the initializer-list constructor is tried first:
 
 ```text
 braced list
@@ -59,9 +59,9 @@ elements that the braces create.
 ## Syntax
 
 An *initializer-list constructor* is a constructor whose first parameter
-is `std::initializer_list<E>`, or a reference to it, and whose other
-parameters have default arguments. `std::initializer_list` comes from the
-standard library *(library referenced)*.
+is `std::initializer_list<E>` or a reference to that type, and whose
+other parameters have default arguments. `std::initializer_list` comes
+from the standard library *(library referenced)*.
 
 ## Constraints
 
@@ -70,9 +70,9 @@ standard library *(library referenced)*.
 :tests: classes/initializer-lists/selects-constructor.cpp
 
 A braced list for a class that is not an aggregate selects a
-constructor. The elements of the list are the arguments. This applies to
-direct list initialization, as in `T x{a, b}`, and to copy list
-initialization, as in `T x = {a, b}`. A class with a user-declared
+constructor. The elements of the list are the arguments. This rule
+applies to direct list initialization, as in `T x{a, b}`, and to copy
+list initialization, as in `T x = {a, b}`. A class with a user-declared
 constructor is not an aggregate.
 :::
 
@@ -80,8 +80,8 @@ constructor is not an aggregate.
 :kind: reject
 :tests: classes/initializer-lists/designated-non-aggregate.cpp classes/initializer-lists/not-aggregate-with-ctor.cpp
 
-A braced list for a class that is not an aggregate cannot initialize its
-members directly or use designators.
+A braced list for a class that is not an aggregate cannot initialize the
+members of the class directly or use designators.
 :::
 
 :::{rule} ILC-2
@@ -127,9 +127,9 @@ program is not valid. A worse match is not used.
 
 A narrowing conversion of an element to its parameter or element type is
 not valid. If the first phase selects an initializer-list constructor,
-the narrowing makes the program not valid. It does not select another
-constructor. A constant that fits the target type does not narrow.
-Parentheses do not check narrowing.
+the narrowing makes the program not valid. The selection does not move
+to another constructor. A constant that fits the target type does not
+narrow. Parentheses do not check narrowing.
 :::
 
 :::{rule} ILC-6
@@ -165,10 +165,10 @@ describes, so an element type that cannot be copied is not valid.
 :tests: classes/initializer-lists/backing-array-copy-elements.cpp classes/initializer-lists/backing-array-lives-with-list.cpp
 
 A braced list for `std::initializer_list<E>` creates an array of
-`const E` and copies each element into it. The `std::initializer_list`
-refers to that array. The array lives as long as the `std::initializer_list`
-object that the list initializes, as for a reference that binds to a
-temporary.
+`const E` and copies each element into the array. The
+`std::initializer_list` refers to that array. The array lives as long as
+the `std::initializer_list` object that the list initializes, as for a
+reference that binds to a temporary.
 :::
 
 ## Examples

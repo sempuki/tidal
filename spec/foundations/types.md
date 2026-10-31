@@ -9,11 +9,11 @@ fundamental types and the type specifiers that name them:
 - the signed and unsigned integer types,
 - the floating-point types.
 
-It gives the integer and floating-point conversion ranks, and the size,
-alignment, and range of each type on the matrix targets.
+The page also gives the integer and floating-point conversion ranks, and
+the size, alignment, and range of each type on the matrix targets.
 
-Depends on: translation, execution, and behavior classes; declarators and
-cv-qualifiers.
+Depends on: translation, execution, and behavior classes; declarators
+and cv-qualifiers.
 
 ## Principles
 
@@ -59,8 +59,8 @@ targets differ in these choices:
 - the size of `long double`,
 - the alignment of 8-byte types.
 
-A program that depends on a size can check it with `static_assert` on
-`sizeof`.
+A program that depends on a size can check the size with `static_assert`
+on `sizeof`.
 :::
 
 ## Constraints
@@ -89,8 +89,8 @@ the type:
   size of `int`.
 - `unsigned` gives the unsigned type. `signed` or no sign gives the
   signed type.
-- `int` can be added to any of these and changes nothing. `signed` or
-  `unsigned` alone means `int` of that sign.
+- `int` can be added to any of these specifiers and changes nothing.
+  `signed` or `unsigned` alone means `int` of that sign.
 
 `signed char` and `unsigned char` name those types. `long double` names
 the widest floating-point type, with the specifiers in either order.
@@ -145,7 +145,7 @@ rank.
 :tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp
 
 Every integer type uses two's complement. For a type whose size in
-TYP-1 is `B` bytes, let `N` be `8 * B`. Then the bounds are these:
+TYP-1 is `B` bytes, let `N` be `8 * B`. The table gives the bounds:
 
 | Kind | Lowest | Highest |
 |---|---|---|
@@ -178,8 +178,8 @@ gives `false` for zero and `true` for any other value. In arithmetic,
 
 The size of each fundamental type is implementation-defined, except
 that `char`, `signed char`, `unsigned char`, and `char8_t` have size 1.
-The sizes do not decrease along the order of TYP-8. These are the sizes
-in bytes on the matrix targets:
+The sizes do not decrease along the order of TYP-8. The table gives the
+sizes in bytes on the matrix targets:
 
 | Type | x86-64 Linux | `-m32` |
 |---|---|---|
@@ -217,9 +217,9 @@ in this table have a smaller alignment, also as a member of a class:
 :kind: impl-defined
 :tests: foundations/types/char-signed.cpp foundations/types/char-signed-ilp32.cpp foundations/types/wchar-signed.cpp foundations/types/unicode-characters-unsigned.cpp
 
-Whether `char` is signed is implementation-defined. The underlying
-types of `wchar_t`, `char16_t`, and `char32_t` are implementation-defined.
-These are the choices on both matrix targets:
+Whether `char` is signed is implementation-defined. The underlying types
+of `wchar_t`, `char16_t`, and `char32_t` are implementation-defined. The
+table gives the choices on both matrix targets:
 
 | Type | Signed | Underlying type |
 |---|---|---|
@@ -234,7 +234,7 @@ These are the choices on both matrix targets:
 :tests: foundations/types/float-precision.cpp foundations/types/long-double-precision.cpp foundations/types/long-double-precision-ilp32.cpp
 
 The formats of the floating-point types are implementation-defined. On
-both matrix targets, these are the bits of precision:
+both matrix targets, the table gives the bits of precision:
 
 | Type | Bits of precision |
 |---|---|
@@ -279,7 +279,7 @@ every test. EDG skips the `-m32` tests.
   target. `char8_t` always takes the rank of `unsigned char` (TYP-13).
 - TYP-7: Clang reports a sign on `wchar_t` through an error that a
   warning flag controls (`-Wsigned-unsigned-wchar`). GCC's message for
-  it names `typeof`.
+  the same error names `typeof`.
 - TYP-8: Clang gives each character type the rank of its underlying
   type. A program sees these ranks only through promotion (CONV-1).
 

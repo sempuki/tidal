@@ -18,10 +18,10 @@ sees it:
 
 | Operand | Becomes | Why |
 |---|---|---|
-| An integer narrower than `int` | An `int`. For a bit-field the width decides. | The width limits the values it can hold. |
+| An integer narrower than `int` | An `int`. For a bit-field the width decides. | The width limits the values that the integer can hold. |
 | An array used as a value | A pointer to its first element | The operations on values have no use for an array itself. |
 | A function name | A pointer to the function | The operations on values have no use for a function itself. |
-| A `float` | It keeps its type. | Arithmetic on `float` is an operation of its own. |
+| A `float` | A `float`, unchanged | Arithmetic on `float` is an operation of its own. |
 :::
 
 :::{principle} CONV-P2
@@ -29,17 +29,17 @@ sees it:
 :exceptions: CONV-12
 
 A conversion between integer types keeps the value when the target can
-hold it. When it cannot, the target keeps the low bits, so the result is
-the value modulo the target's range, for signed and unsigned targets
-alike. A conversion to `bool` gives `false` for zero and `true` for any
-other value, and a null pointer counts as zero.
+hold it. When the target cannot, the target keeps the low bits, so the
+result is the value modulo the target's range, for signed and unsigned
+targets alike. A conversion to `bool` gives `false` for zero and `true`
+for any other value, and a null pointer counts as zero.
 :::
 
 :::{principle} CONV-P4
 :rules: CONV-4 CONV-5 CONV-6 CONV-7 CONV-11
 
 A conversion to or from a floating-point type keeps the value when the
-target can hold it exactly. The results are these:
+target can hold it exactly. The table gives the results:
 
 | Target | Value | Result |
 |---|---|---|
@@ -63,12 +63,12 @@ safety:
 - from an array of known bound to one of unknown bound.
 
 Each reverse direction would claim something the pointer cannot promise,
-so none of them is implicit. A null pointer comes only from `nullptr` or
-a literal zero, because any other value with the value zero is a number,
-and a number is not a pointer. For the same reason a pointer is not a
-number, so no pointer converts implicitly to an integer. Through a base
-that is virtual, ambiguous, or not accessible, there is no single path,
-so no implicit conversion.
+so no reverse direction is implicit. A null pointer comes only from
+`nullptr` or a literal zero, because any other value with the value zero
+is a number, and a number is not a pointer. For the same reason a
+pointer is not a number, so no pointer converts implicitly to an
+integer. A base that is virtual, ambiguous, or not accessible gives no
+single path, so a conversion through such a base is not implicit.
 :::
 
 ## Constraints
@@ -77,17 +77,19 @@ so no implicit conversion.
 :kind: required
 :tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp expressions/conversions/enum-promotion-no-fixed-type.cpp
 
-These operands go through {term}`integer promotion` in arithmetic:
+The following operands go through {term}`integer promotion` in
+arithmetic:
 
 - `bool`, the character types, `short`, and `unsigned short`,
 - a bit-field, by its width and not by its declared type (BF-6). A
-  bit-field of width 3 declared `long long` promotes to `int`; one of
-  width 40 keeps `long long`,
+  bit-field of width 3 declared `long long` promotes to `int`; a
+  bit-field of width 40 keeps `long long`,
 - an unscoped enumeration. With a fixed underlying type, the value
   converts to that type first and then promotes as that type does.
-  Without one, the candidates are tried by rank from `int` upward, the
-  signed type of each rank before the unsigned one, and the first that
-  can hold all the values of the enumeration (ENUM-6) is the result.
+  Without a fixed underlying type, the candidates are tried by rank from
+  `int` upward, the signed type of each rank before the unsigned one,
+  and the first that can hold all the values of the enumeration (ENUM-6)
+  is the result.
 
 A `float` operand does not change to `double` in arithmetic.
 :::
@@ -98,15 +100,15 @@ A `float` operand does not change to `double` in arithmetic.
 
 The {term}`usual arithmetic conversions` give the two operands of a
 binary arithmetic operator one common type. The first step that applies
-decides it:
+decides the common type:
 
 1. If either operand has a floating-point type, the common type is the
    floating-point type of higher rank ({rule}`TYP-9`). Extended
    floating-point types have their own ranks
    *(extended floating-point types referenced)*. If neither rank is
    higher, the operation is not valid.
-2. Otherwise both operands are promoted (CONV-1). If they now have the
-   same type, that is the common type.
+2. Otherwise both operands are promoted (CONV-1). If the promoted
+   operands have the same type, that type is the common type.
 3. If both types are signed, or both are unsigned, the common type is
    the one of higher rank ({rule}`TYP-8`).
 4. If the unsigned type's rank is not lower than the signed type's, the
@@ -121,8 +123,8 @@ decides it:
 :kind: required
 :tests: expressions/conversions/implicit-conversion-contexts.cpp
 
-An implicit conversion happens in each of these contexts. The rule that
-each one names gives the target type:
+An implicit conversion happens in each of these contexts. The rule named
+for each context gives the target type:
 
 - the initializer of a variable ({rule}`INIT-4`),
 - a function argument ({rule}`PFX-6`),
@@ -143,8 +145,8 @@ pointer of any pointer type and to a null pointer to member of any
 member type. A zero literal in parentheses counts. A character literal
 with the value zero is not an integer literal, so it does not count
 ({question}`Q-0100`). Other values must not convert to a pointer
-type implicitly. This includes an integer variable with the value zero and
-the literal `false`.
+type implicitly. This rule applies to an integer variable with the value
+zero and to the literal `false`.
 :::
 
 :::{rule} CONV-9
@@ -167,8 +169,8 @@ conversions must not occur implicitly:
 :tests: expressions/conversions/noexcept-function-pointer.cpp expressions/conversions/potentially-throwing-to-noexcept.cpp expressions/conversions/member-function-noexcept-drop.cpp expressions/conversions/member-function-noexcept-add.cpp
 
 A pointer to a `noexcept` function converts to a pointer to a function
-without `noexcept`. The opposite conversion must not occur implicitly. The same applies to
-pointers to member functions.
+without `noexcept`. The opposite conversion must not occur implicitly.
+The same rules apply to pointers to member functions.
 :::
 
 :::{rule} CONV-12
@@ -176,7 +178,7 @@ pointers to member functions.
 :tests: expressions/conversions/nullptr-to-bool-copy.cpp expressions/conversions/nullptr-to-bool-direct.cpp
 
 `nullptr` converts to `bool` only in direct initialization, with
-parentheses or braces. It gives `false`.
+parentheses or braces. The conversion gives `false`.
 :::
 
 :::{rule} CONV-13
@@ -191,10 +193,10 @@ A function name can be used as a pointer that calls that function.
 :kind: required
 :tests: expressions/conversions/derived-to-base.cpp expressions/conversions/null-derived-to-second-base.cpp
 
-A pointer or reference to a derived class converts implicitly to a pointer
-or reference to a base class (DER-5). A null pointer converts to a
-null pointer, also when the base subobject is at a nonzero offset.
-CONV-17 lists the bases that do not allow it.
+A pointer or reference to a derived class converts implicitly to a
+pointer or reference to a base class (DER-5). A null pointer converts to
+a null pointer, also when the base subobject is at a nonzero offset.
+CONV-17 lists the bases that do not allow the conversion.
 :::
 
 :::{rule} CONV-15
@@ -202,8 +204,8 @@ CONV-17 lists the bases that do not allow it.
 :tests: expressions/conversions/member-pointer-base-to-derived.cpp
 
 A member pointer that names a member of a base class can be used as a
-member pointer of a derived class without a cast. It still names the
-member that the base declares.
+member pointer of a derived class without a cast. The member pointer
+still names the member that the base declares.
 :::
 
 :::{rule} CONV-17
@@ -224,24 +226,24 @@ These conversions must not occur implicitly:
 :kind: reject
 :tests: expressions/conversions/pointer-to-integer.cpp expressions/conversions/nullptr-to-integer.cpp expressions/conversions/member-pointer-to-integer.cpp foundations/translation/ill-formed-diagnosed.cpp
 
-These must not convert implicitly to an integer type:
+These values must not convert implicitly to an integer type:
 
 - a pointer,
 - a pointer to member,
 - `nullptr`.
 
-An array, such as a string literal, becomes a pointer first, so it does
-not convert either. The conversion to `bool` is the exception (CONV-3,
-CONV-12), and `reinterpret_cast` can convert a pointer explicitly
-(CAST-6).
+An array, such as a string literal, becomes a pointer first, so the
+array does not convert either. The conversion to `bool` is the exception
+(CONV-3, CONV-12), and `reinterpret_cast` can convert a pointer
+explicitly (CAST-6).
 :::
 
 :::{rule} CONV-16
 :kind: required
 :tests: expressions/conversions/array-pointer-unknown-bound.cpp
 
-A pointer to an array with a known bound converts implicitly to a pointer
-to an array of the same element type with no bound.
+A pointer to an array with a known bound converts implicitly to a
+pointer to an array of the same element type with no bound.
 :::
 
 ## Runtime Behavior
@@ -265,7 +267,7 @@ A conversion to `bool` gives `false` for these values:
 - a null pointer,
 - a null pointer to member.
 
-It gives `true` for other values, including a NaN.
+The conversion gives `true` for other values, including a NaN.
 :::
 
 :::{rule} CONV-4
@@ -304,17 +306,18 @@ undefined.
 :tests: expressions/conversions/integral-to-floating-rounding.cpp expressions/conversions/integral-to-floating-nearest.cpp
 
 If a value is between two adjacent values of the target floating-point
-type, the result is one of the two. The implementation defines which one.
+type, the result is one of the two. The implementation defines which
+one.
 :::
 
 :::{rule} CONV-11
 :kind: impl-defined
 :tests: expressions/conversions/floating-narrowing-out-of-range.cpp
 
-If the target floating-point type has infinities, a value above its
-largest finite value converts to the largest finite value or to infinity.
-The implementation defines which one ({question}`Q-0028`). The
-conversion is not undefined, so it can occur in constant evaluation.
+If the target floating-point type has infinities, a value above the
+largest finite value of the type converts to the largest finite value or
+to infinity. The implementation defines which one ({question}`Q-0028`).
+The conversion is not undefined, so it can occur in constant evaluation.
 :::
 
 ## Examples
@@ -339,14 +342,15 @@ bool c(nullptr);           // false
 
 The results are in `tests/RESULTS.md`.
 
-- CONV-5: all compilers reject the conversion during constant evaluation.
-  At run time, the sanitizer (`-fsanitize=float-cast-overflow`) stops
-  the program with a nonzero status on Clang and GCC.
+- CONV-5: all compilers reject the conversion during constant
+  evaluation. At run time, the sanitizer
+  (`-fsanitize=float-cast-overflow`) stops the program with a nonzero
+  status on Clang and GCC.
 - CONV-8: EDG accepts a character literal with the value zero as a null
   pointer constant. Clang and GCC reject it ({question}`Q-0100`).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
   to the even value at a tie.
-- CONV-11: Clang and GCC give infinity. EDG rejects the conversion during
-  constant evaluation ({question}`Q-0028`).
+- CONV-11: Clang and GCC give infinity. EDG rejects the conversion
+  during constant evaluation ({question}`Q-0028`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -1,8 +1,8 @@
 # Value categories and temporaries
 
 Each expression has a type and a {term}`value category`. The category is
-lvalue, xvalue, or prvalue. It controls what a program can do with the
-result, and when a temporary object exists.
+lvalue, xvalue, or prvalue. The category controls what a program can do
+with the result, and when a temporary object exists.
 
 ## Principles
 
@@ -10,7 +10,7 @@ result, and when a temporary object exists.
 :rules: VC-1 VC-2 VC-3 VC-12 VC-13 VC-14
 
 Every expression denotes an object, a function, or a value. The
-categories are these:
+table lists the categories:
 
 | Category | Identity | What it is |
 |---|---|---|
@@ -34,7 +34,7 @@ copy and no move takes place. There is no object to copy from. The
 language makes a temporary object from a prvalue only where an object
 is unavoidable:
 
-- a reference binds to it,
+- a reference binds to the prvalue,
 - a member or element is accessed,
 - an array becomes a pointer,
 - a class value is discarded.
@@ -48,8 +48,8 @@ Constant evaluation follows the same model.
 A temporary object lives to the end of the full expression that made it,
 and temporaries of one full expression end in the reverse of their
 order of creation. The lifetime of every temporary therefore follows
-from where full expressions begin and end. These are separate full
-expressions:
+from where full expressions begin and end. Each of the following is a
+separate full expression:
 
 - the initializer of a declarator,
 - a condition,
@@ -65,10 +65,10 @@ alive longer (REF-4).
 :rules: VC-7 VC-10 VC-15
 
 The implementation keeps some freedom when a program passes or returns
-by value. It can make an extra copy of a trivially copyable argument or
-return value, and it chooses when a parameter object ends. A program
-must not depend on the address of such an object or on the point where
-it is destroyed.
+by value. The implementation can make an extra copy of a trivially
+copyable argument or return value, and it chooses when a parameter
+object ends. A program must not depend on the address of such an object
+or on the point where the object is destroyed.
 :::
 
 ## Constraints
@@ -83,8 +83,8 @@ These expressions are lvalues:
   reference type,
 - a string literal,
 - `*p`, `++x`, `--x`, and the result of an assignment,
-- a call to a function that returns an lvalue reference, and a cast to an
-  lvalue reference type,
+- a call to a function that returns an lvalue reference, and a cast to
+  an lvalue reference type,
 - a subscript of an array lvalue,
 - a data member of an lvalue, with `.` or `->`,
 - a comma expression whose right operand is an lvalue (COMMA-2).
@@ -95,7 +95,7 @@ These expressions are lvalues:
 :tests: expressions/value-categories/rvalue-reference-name-binding.cpp
 
 The name of a variable of rvalue reference type is an lvalue (VC-1). An
-rvalue reference must not bind to it directly.
+rvalue reference must not bind to that name directly.
 :::
 
 :::{rule} VC-2
@@ -106,17 +106,17 @@ These expressions are prvalues:
 
 - a literal other than a string literal, including `nullptr`,
 - `this` and an enumerator,
-- a call to a function that returns a type that is not a reference, and a
-  cast to a type that is not a reference,
+- a call to a function that returns a type that is not a reference, and
+  a cast to a type that is not a reference,
 - `x++`, `x--`, `&x`, and the result of an arithmetic operator,
-- a member access that names a non-static member function. It can only
-  be called.
+- a member access that names a non-static member function. Such an
+  expression can only be called.
 
 A prvalue of a type that is not a class type has no cv-qualifiers. So a
 function can declare a return type such as `const int`, and a call to
-it still gives a plain `int`. A class prvalue can be assigned to,
-because the assignment is a call of a member function. ASN-6 covers a
-braced list as the right operand.
+the function still gives a plain `int`. A class prvalue can be assigned
+to, because the assignment is a call of a member function. ASN-6 covers
+a braced list as the right operand.
 :::
 
 :::{rule} VC-12
@@ -169,8 +169,8 @@ and the destructor is not needed (UNEV-1).
 
 A prvalue that initializes an object of the same type initializes that
 object directly. No temporary object exists, and no copy or move
-constructor is called. A temporary object comes into existence in the cases
-that VC-5 and VC-8 list, and not before.
+constructor is called. A temporary object comes into existence in the
+cases that VC-5 and VC-8 list, and not before.
 :::
 
 :::{rule} VC-5
@@ -178,8 +178,8 @@ that VC-5 and VC-8 list, and not before.
 :tests: expressions/value-categories/discarded-prvalue-destroyed.cpp
 
 If an expression statement is only a class prvalue, the program makes a
-temporary object from it. The program calls its destructor when that
-statement ends.
+temporary object from the prvalue. The program calls the destructor of
+the temporary when the statement ends.
 :::
 
 :::{rule} VC-6
@@ -187,9 +187,10 @@ statement ends.
 :tests: expressions/value-categories/temporaries-reverse-order.cpp
 
 The life of a temporary object ends when its full expression ends. A
-reference bound to the temporary or to a member of it (REF-4), or a
-range-based `for` (RFOR-4), can make the life longer. The temporaries of one full
-expression go away in the reverse order of their creation.
+reference bound to the temporary or to a member of the temporary
+(REF-4), or a range-based `for` (RFOR-4), can make the life longer. The
+temporaries of one full expression go away in the reverse order of their
+creation.
 :::
 
 :::{rule} VC-8
@@ -212,14 +213,15 @@ Constant evaluation creates temporaries in the same cases.
 :tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp expressions/sequencing/full-expression-statement.cpp expressions/sequencing/full-expression-for-clauses.cpp expressions/sequencing/full-expression-subexpression-not.cpp
 
 A *full expression* is an expression that is not part of a larger
-expression. Its temporaries end with it. These are full expressions:
+expression. The temporaries of a full expression end with the full
+expression. The following are full expressions:
 
 - the expression of an expression statement,
 - the initializer of one declarator, in a declaration with several,
 - a condition,
 - each of the three clauses of a `for` statement,
-- the expression of a `return` statement. Its temporaries end before the
-  local variables of the function.
+- the expression of a `return` statement. The temporaries of this
+  expression end before the local variables of the function.
 
 A temporary in a function argument or a default argument lives until
 the end of the full expression that contains the call. All initializers
@@ -236,8 +238,8 @@ of one element end before the next element is initialized.
 
 An implementation can make an extra temporary copy of a trivially
 copyable class object for a function argument or a return value
-({rule}`CPY-19`). It is unspecified if a parameter and the
-caller's object have the same address.
+({rule}`CPY-19`). Whether a parameter and the caller's object have the
+same address is unspecified.
 :::
 
 :::{rule} VC-10
@@ -245,9 +247,10 @@ caller's object have the same address.
 :tests: expressions/value-categories/parameter-destruction-point.cpp
 
 Each implementation chooses where to destroy a parameter object, and
-documents it. The point is either the return from the function or the
-end of the caller's full expression. On the x86-64 Linux targets in the
-matrix, the caller destroys it at the end of its full expression.
+documents the choice. The point is either the return from the function
+or the end of the caller's full expression. On the x86-64 Linux targets
+in the matrix, the caller destroys the parameter object at the end of
+the caller's full expression.
 :::
 
 :::{rule} VC-15

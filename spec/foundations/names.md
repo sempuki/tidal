@@ -2,7 +2,7 @@
 
 A declaration introduces a name into a scope. A use of a name finds a
 declaration by lookup, which searches the scopes that enclose the use.
-These follow from this model:
+Several rules follow from this model:
 
 - hiding,
 - redeclaration,
@@ -10,8 +10,8 @@ These follow from this model:
   scope,
 - the scopes that statements and classes introduce.
 
-This page states it once; the pages on statements, namespaces, and
-classes cite it.
+This page states the model once; the pages on statements, namespaces,
+and classes cite this page.
 
 Depends on: namespaces and using, class definitions and members, access
 control.
@@ -22,8 +22,8 @@ control.
 :rules: NAM-1 NAM-3 NAM-8
 :exceptions: NAM-6
 
-A scope is a region of the program where names can be declared. It is
-one of these:
+A scope is a region of the program where names can be declared. Each
+scope is one of these:
 
 - a block,
 - a function's parameter list,
@@ -35,15 +35,15 @@ A declaration puts its name into the scope that contains it, and the
 name is visible from that point to the end of the scope. Before that
 point the name does not exist, and after the scope ends it is gone. A
 scope holds one declaration for each name, unless the language says that
-two declarations of the name describe one entity, as it does for a
-function declared twice.
+two declarations of the name describe one entity, as the language does
+for a function declared twice.
 :::
 
 :::{principle} NAM-P2
 :rules: NAM-2 NAM-4 NAM-12 NAM-9
 
 A use of a name searches the scope that contains the use, then the
-scope that contains that one, and so on outward:
+scope that contains that scope, and so on outward:
 
 ```text
 outermost scope                  searched last
@@ -55,11 +55,11 @@ outermost scope                  searched last
 The search stops at the first scope that declares the name, whatever
 kind of thing the name is. So an inner declaration hides an outer one,
 and a variable in an inner scope hides a function of the same name
-outside it. A qualified name
-skips the search and goes to the scope it names, which is how a program
-reaches a hidden name. A namespace is a scope that a program can reopen
-and add to, and a member declared in it can be defined outside it with
-a qualified name.
+outside the inner scope. A qualified name skips the search and goes to
+the scope that it names. A program uses a qualified name
+to reach a hidden name. A namespace is a scope that a program can reopen
+and add to. A member declared in a namespace can be defined outside the
+namespace with a qualified name.
 :::
 
 :::{principle} NAM-P3
@@ -67,9 +67,9 @@ a qualified name.
 
 A function call with an unqualified name also searches the namespaces
 of the argument types. A function that takes a class is usually declared
-beside the class, and this search finds it from any scope. It adds to
-the ordinary search and does not replace it, and it does nothing for
-arguments of fundamental type.
+beside the class, and this search finds the function from any scope.
+The search adds to the ordinary search without replacing it, and does
+nothing for arguments of fundamental type.
 :::
 
 :::{principle} NAM-P4
@@ -78,7 +78,7 @@ arguments of fundamental type.
 Class bodies and labels depart from the plain model. Each part of a
 class body sees these members:
 
-| Part of a class body | Members it sees |
+| Part of a class body | Members that the part sees |
 |---|---|
 | Member function bodies and default member initializers | Every member of the class, also those declared later, because the class is complete there |
 | The other parts | Only earlier members |
@@ -95,10 +95,9 @@ space, so a label and a variable can share a name.
 
 A name is visible from its point of declaration to the end of its scope.
 The point of declaration comes before the initializer, so a variable is
-in scope in its own initializer. Reading the variable there reads an
-object that has no value yet, which is undefined (OBJ-2). A function
-body sees the names declared before the function in its translation
-unit.
+in scope in its own initializer. Reading the variable there is
+undefined, because the object has no value yet (OBJ-2). A function body
+sees the names declared before the function in its translation unit.
 :::
 
 :::{rule} NAM-8
@@ -132,7 +131,7 @@ a name outside the function. The qualified name `::x` finds the global
 
 An unqualified use of a hidden name finds only the inner declaration
 (NAM-2). If that declaration does not fit the use, the use is not
-valid, even when the hidden declaration fits it.
+valid, even when the hidden declaration fits the use.
 :::
 
 :::{rule} NAM-3
@@ -151,14 +150,15 @@ variable and a function with one name in one scope are not valid.
 
 A namespace can be reopened, and a later part sees the names of an
 earlier part. A function declared in a namespace can be defined outside
-it with a qualified name.
+the namespace with a qualified name.
 :::
 
 :::{rule} NAM-9
 :kind: reject
 :tests: foundations/names/namespace-qualified-use.cpp
 
-From outside a namespace, a name in it needs qualification (NAM-4).
+From outside a namespace, a name declared in the namespace needs
+qualification (NAM-4).
 :::
 
 :::{rule} NAM-5
@@ -166,19 +166,19 @@ From outside a namespace, a name in it needs qualification (NAM-4).
 :tests: foundations/names/adl-finds-function.cpp foundations/names/adl-not-for-fundamental.cpp foundations/names/adl-plus-ordinary.cpp
 
 An unqualified function call also looks in the namespaces of its
-argument types for the function name. This finds a function declared in
-the same namespace as a class argument from any scope. Arguments of
-fundamental type add no namespaces. The functions found this way join
-the functions that ordinary lookup finds.
+argument types for the function name. This lookup finds a function
+declared in the same namespace as a class argument from any scope.
+Arguments of fundamental type add no namespaces. The functions found
+this way join the functions that ordinary lookup finds.
 :::
 
 :::{rule} NAM-6
 :kind: required
 :tests: foundations/names/class-members-any-order.cpp
 
-A member function body sees all members of its class, including those
-declared after it (CLS-2). A member declaration sees only the members
-declared before it.
+A member function body sees all members of its class, including the
+members declared after the member function (CLS-2). A member declaration
+sees only the members declared before that declaration.
 :::
 
 :::{rule} NAM-10

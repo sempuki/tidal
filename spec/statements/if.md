@@ -4,8 +4,8 @@ An `if` statement executes one of two branches, or no branch, as a
 condition selects. There are three forms:
 
 - The *ordinary form* tests a condition at run time.
-- The *`if constexpr` form* tests a condition during translation. It
-  discards the branch that it does not select.
+- The *`if constexpr` form* tests a condition during translation. The
+  form discards the branch that the condition does not select.
 - The *`if consteval` form* tests if the statement executes during
   {term}`constant evaluation`.
 
@@ -18,10 +18,10 @@ An `if` statement evaluates one condition and takes one of two paths.
 The condition is converted to `bool` by {term}`contextual conversion`
 and evaluated one time. The condition can also declare one variable,
 whose value selects the path, so that the branches can use the value
-that the condition computed. That variable is a plain variable of the
-statement, so it has an initializer and no storage class. An `else`
-belongs to the nearest `if` that has none, because that is the reading
-with no ambiguity.
+that the condition computed. The condition variable is a plain variable
+of the statement, so the variable has an initializer and no storage
+class. An `else` belongs to the nearest `if` that has none, because that
+reading has no ambiguity.
 :::
 
 :::{principle} IF-P2
@@ -41,9 +41,10 @@ else
 ```
 
 A branch is a scope with or without braces. A branch that redeclares one
-of those names at its top level would make the name mean two things in
-one place, so it is rejected, while a block inside the branch can hide
-it. The initializer can be any declaration that a block can hold, which
+of the statement's names at its top level would make the name mean two
+things in one place, so the redeclaration is rejected, while a block
+inside the branch can hide the name. The initializer can be any
+declaration that a block can hold, which
 excludes the kinds that declare no variable.
 :::
 
@@ -62,18 +63,19 @@ any statement.
 
 `if constexpr` moves the decision to translation. The condition is a
 constant, so the implementation knows which branch is dead and discards
-it. For a discarded branch:
+that branch. For a discarded branch:
 
-- It is still parsed and, outside a template, still checked, because it
-  is still part of the program.
-- In a template it is not instantiated, so it can hold code that is
-  wrong for the template arguments.
-- Its `return` statements do not deduce the return type, and nothing it
-  names needs a definition, because it never runs.
+- The branch is still parsed and, outside a template, still checked,
+  because the branch is still part of the program.
+- In a template the branch is not instantiated, so the branch can hold
+  code that is wrong for the template arguments.
+- The `return` statements of the branch do not deduce the return type,
+  and nothing that the branch names needs a definition, because the
+  branch never runs.
 
 A `goto`, `case` label, or `default` label outside the statement cannot
-jump into either branch, whether it is selected or discarded. The same
-holds for `if consteval`.
+jump into either branch, whether the branch is selected or discarded.
+The same holds for `if consteval`.
 :::
 
 :::{principle} IF-P4
@@ -90,8 +92,8 @@ holds for `if consteval`.
 The branch that runs in constant evaluation is a place where a
 `consteval` call needs no constant arguments, because the whole branch
 is already a constant evaluation. The form has no condition, because the
-mode is the condition, and its branches are blocks, so that the form is
-never mistaken for the ordinary one.
+mode is the condition. The branches of the form are blocks, so that the
+form is never mistaken for the ordinary one.
 :::
 
 ## Syntax
@@ -162,9 +164,9 @@ initializer. The initializer can be:
 - an expression statement,
 - an empty statement,
 - an alias declaration,
-- a simple declaration. This includes several variables, a `static`
-  variable, a class or enumeration definition, and a function
-  declaration.
+- a simple declaration, including a declaration of several variables or
+  of a `static` variable, a class or enumeration definition, and a
+  function declaration.
 :::
 
 :::{rule} IF-21
@@ -182,9 +184,8 @@ The initializer must not be a declaration of another kind, such as:
 :kind: reject
 :tests: statements/if/substatement-scope.cpp
 
-Each branch has its own scope. This is also true for a branch without
-braces. A name that a branch declares is not visible after the `if`
-statement.
+Each branch has its own scope, also when the branch has no braces. A
+name that a branch declares is not visible after the `if` statement.
 :::
 
 :::{rule} IF-9
@@ -192,8 +193,8 @@ statement.
 :tests: statements/if/condition-declaration.cpp statements/if/init-declaration.cpp statements/if/init-scope-ends.cpp statements/if/else-if-scope.cpp
 
 A name that the initializer or the condition declares is visible from its
-declaration to the end of the `if` statement. This includes the else
-branch. An `else if` is a new `if` statement in the else branch.
+declaration to the end of the `if` statement, including the else branch.
+An `else if` is a new `if` statement in the else branch.
 :::
 
 :::{rule} IF-10
@@ -207,8 +208,8 @@ again in these places:
 - the outermost block of a branch,
 - a branch that is one declaration without braces.
 
-A block inside a branch can declare the name again. That declaration hides
-the first one.
+A block inside a branch can declare the name again. The inner
+declaration hides the first one.
 :::
 
 :::{rule} IF-13
@@ -217,8 +218,8 @@ the first one.
 
 In the `if constexpr` form, the branch that the condition does not select
 is a {term}`discarded statement`. In a template, a discarded statement is
-not instantiated. It can contain code that is not valid for the template
-arguments.
+not instantiated. The discarded statement can contain code that is not
+valid for the template arguments.
 :::
 
 :::{rule} IF-22
@@ -227,7 +228,7 @@ arguments.
 
 In a template, the parts of a {term}`discarded statement` that are the
 same for every template argument must be valid (IF-13). The
-implementation checks them.
+implementation checks these parts.
 :::
 
 :::{rule} IF-14
@@ -235,7 +236,8 @@ implementation checks them.
 :tests: statements/if/constexpr-discard-return-type.cpp statements/if/constexpr-non-template-return-type.cpp
 
 A `return` statement in a discarded statement does not take part in
-return type deduction. This applies in templates and in other functions.
+return type deduction. This rule applies in templates and in other
+functions.
 :::
 
 :::{rule} IF-15
@@ -266,8 +268,8 @@ information is permitted.
 :kind: reject
 :tests: statements/if/constexpr-goto-into.cpp statements/if/constexpr-case-into.cpp statements/if/consteval-goto-into.cpp
 
-These must not transfer control from outside an `if constexpr` or
-`if consteval` statement into one of its branches:
+The following must not transfer control from outside an `if constexpr`
+or `if consteval` statement into a branch of the statement:
 
 - a `goto`,
 - a `case` label,
@@ -278,9 +280,9 @@ These must not transfer control from outside an `if constexpr` or
 :kind: required
 :tests: statements/if/consteval-immediate-context.cpp statements/if/not-consteval-else-immediate.cpp
 
-The branch that executes during constant evaluation is an
-{term}`immediate function context`. This is the then branch of
-`if consteval` and the else branch of `if !consteval`.
+The branch that executes during constant evaluation is the then branch
+of `if consteval` and the else branch of `if !consteval`. That branch is
+an {term}`immediate function context`.
 :::
 
 :::{rule} IF-24
@@ -311,7 +313,7 @@ In the `if consteval` form:
 
 The ordinary form evaluates the condition one time. If the value is
 `true`, the then branch executes. If not, the else branch executes, if
-there is one.
+the statement has one.
 :::
 
 :::{rule} IF-5
@@ -342,7 +344,7 @@ last is destroyed first.
 :kind: required
 :tests: statements/if/goto-into-branch.cpp statements/if/case-into-branch.cpp
 
-In the ordinary form, these can transfer control into a branch:
+In the ordinary form, the following can transfer control into a branch:
 
 - a `goto`,
 - a `case` label of an enclosing `switch`,

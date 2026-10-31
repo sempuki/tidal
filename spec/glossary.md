@@ -6,12 +6,13 @@ topic that Tidal does not specify yet.
 
 :::{glossary}
 automatic storage
-  Storage that exists from the declaration of an object to the end of its
-  block. See {term}`storage duration`.
+  Storage that exists from the declaration of an object to the end of
+  its block. See {term}`storage duration`.
 
 constant evaluation
   Evaluation of an expression during translation, before the program
-  runs. It occurs where translation needs a value. Examples are these:
+  runs. Constant evaluation occurs where translation needs a value, for
+  example in these places:
 
   - an array bound,
   - a `static_assert`,
@@ -23,15 +24,16 @@ constant evaluation
   {doc}`/foundations/constant-evaluation` gives the rules.
 
 constant initializer
-  An initializer whose whole initialization of the variable is a constant
-  expression. Such a variable's value is known during translation
-  (CE-24).
+  An initializer whose whole initialization of the variable is a
+  constant expression. Such a variable's value is known during
+  translation (CE-24).
 
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
-  necessary, for example in an `if` condition. The value `e` is converted
-  as `bool t(e);` converts it, so `explicit` conversion functions are
-  used. {rule}`CONV-3` gives the values that convert to `false`.
+  necessary, for example in an `if` condition. The value `e` is
+  converted as `bool t(e);` converts `e`, so `explicit` conversion
+  functions are used. {rule}`CONV-3` gives the values that convert to
+  `false`.
 
 cv-qualifier
   `const` or `volatile` applied to a type. A program cannot change a
@@ -44,8 +46,9 @@ declarator
   to the base type.
 
 default initialization
-  What happens to an object that nothing initializes: a scalar keeps no
-  value, and a class object runs its default constructor ({rule}`INIT-9`).
+  The initialization of an object that nothing initializes. A scalar
+  keeps no value, and a class object runs its default constructor
+  ({rule}`INIT-9`).
 
 discarded statement
   The branch of an `if constexpr` statement that the condition does not
@@ -59,28 +62,28 @@ discarded statement
 
 full expression
   An expression that is not part of a larger expression, such as the
-  expression of an expression statement or a condition. Its temporaries
-  end with it ({rule}`VC-9`).
+  expression of an expression statement or a condition. The temporaries
+  of a full expression end with the full expression ({rule}`VC-9`).
 
 immediate function context
-  A part of a program where a call to a `consteval` function need not be a
-  constant expression by itself. Examples are the body of a `consteval`
-  function and the branch of `if consteval` that executes during
-  {term}`constant evaluation`.
+  A part of a program where a call to a `consteval` function need not be
+  a constant expression by itself. Examples are the body of a
+  `consteval` function and the branch of `if consteval` that executes
+  during {term}`constant evaluation`.
 
 integer promotion
   The conversion of an integer operand that is narrower than `int`.
-  These types are:
+  The types narrower than `int` are the following:
 
   - `bool`,
   - `char`, `signed char`, and `unsigned char`,
   - `short` and `unsigned short`.
 
-  If `int` can hold all values of the type, the result is
-  `int`. If not, the result is `unsigned int`. The types `wchar_t`,
-  `char8_t`, `char16_t`, and `char32_t` promote to the narrowest standard
-  integer type that can hold all their values. The candidates are tried by
-  rank from `int` upward, the signed type of each rank before the unsigned
+  If `int` can hold all values of the type, the result is `int`. If not,
+  the result is `unsigned int`. The types `wchar_t`, `char8_t`,
+  `char16_t`, and `char32_t` promote to the narrowest standard integer
+  type that can hold all their values. The candidates are tried by rank
+  from `int` upward, the signed type of each rank before the unsigned
   type. Unscoped enumerations and bit-fields also promote (CONV-1).
 
 linkage
@@ -96,7 +99,7 @@ linkage
 
 literal type
   A type whose objects constant evaluation can create and destroy.
-  These types are literal types:
+  The following types are literal types:
 
   - scalar and reference types,
   - arrays of literal types,
@@ -118,8 +121,8 @@ observable behavior
 
 placeholder type
   `auto` or `decltype(auto)` in the position of a type. The actual type
-  comes from an initializer or from `return` statements. A concept name can
-  come before the placeholder to constrain the type.
+  comes from an initializer or from `return` statements. A concept name
+  can come before the placeholder to constrain the type.
 
 storage duration
   The time for which the storage of an object exists.
@@ -146,20 +149,20 @@ unsequenced
   The relation between two evaluations when the language does not set an
   order and the evaluations can overlap. The operands of most binary
   operators are unsequenced. A function call in one operand does not
-  overlap with work in the other operand. The two can still occur in
-  either order.
+  overlap with work in the other operand. The call and the other work
+  can still occur in either order.
 
 usual arithmetic conversions
   The conversions that give the two operands of a binary arithmetic
   operator one common type. The steps are in {rule}`CONV-19`.
 
 value category
-  The kind of an expression. There are three kinds:
+  The kind of an expression. Each expression has one of these kinds:
 
   - An *lvalue* refers to an object or function that has an identity. A
-    program can take its address.
+    program can take the address of an lvalue.
   - An *xvalue* refers to an object whose resources a program can reuse,
     for example the result of `std::move`.
-  - A *prvalue* computes a value, for example `a * b` or `42`. It has no
-    identity.
+  - A *prvalue* computes a value, for example `a * b` or `42`. A prvalue
+    has no identity.
 :::

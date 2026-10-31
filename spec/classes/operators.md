@@ -28,7 +28,7 @@ in operator syntax. The function is chosen by overload resolution among:
 - the non-member operators that lookup finds,
 - the built-in operators after conversion.
 
-The syntax does not change: precedence and associativity stay, and the
+The syntax does not change. Precedence and associativity stay, and the
 operands become ordinary arguments, evaluated in the built-in order only
 where the language promises that order.
 :::
@@ -43,15 +43,15 @@ has:
 - no default arguments,
 - no new tokens.
 
-The operators that reach into the object must be members. These are:
+These operators reach into the object, so they must be members:
 
 - assignment,
 - call,
 - subscript,
 - arrow.
 
-The postfix increment takes a dummy `int` to tell it from the prefix
-form, and `operator->` chains until a pointer appears.
+The postfix increment takes a dummy `int` to tell the postfix form from
+the prefix form, and `operator->` chains until a pointer appears.
 :::
 
 :::{principle} OPR-P3
@@ -61,7 +61,7 @@ A literal with a suffix is a call to the literal operator for that
 suffix, and the form of the literal picks the parameter list. Literal
 operators live at namespace scope, where lookup by suffix finds them.
 Suffixes without a leading underscore belong to the language, so an
-implementation should warn about them.
+implementation should warn about such suffixes.
 :::
 
 ## Syntax
@@ -155,8 +155,9 @@ declares.
 :tests: classes/operators/arrow-chain.cpp classes/operators/arrow-declaration-ok.cpp
 
 For `x->m`, if `x` has class type, `x.operator->()` is called. If the
-result has class type, `->` applies to it again, until the result is a
-pointer. A declaration of `operator->` can have any return type.
+result has class type, `->` applies to the result again, until the
+result is a pointer. A declaration of `operator->` can have any return
+type.
 :::
 
 :::{rule} OPR-14
@@ -171,8 +172,8 @@ end in a pointer.
 :kind: required
 :tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp
 
-An expression with an operand of class or enumeration type selects its
-function from these candidates:
+An expression with an operand of class or enumeration type selects the
+operator function from these candidates:
 
 - member operator functions of the class of the left operand,
 - non-member operator functions found by ordinary and argument-dependent
@@ -180,7 +181,7 @@ function from these candidates:
 - built-in operators, after conversion of the operands.
 
 Implicit conversions apply to every operand of a non-member and to no
-left operand of a member. `a @= b` uses only `operator@=`. It is never
+left operand of a member. `a @= b` uses only `operator@=` and is never
 rewritten as `a = a @ b`.
 :::
 
@@ -230,9 +231,9 @@ A literal operator must:
 - have one of the parameter lists that OPR-8 gives,
 - have no default argument ({question}`Q-0060`).
 
-It can be declared at namespace scope or as a friend in a class, also
-with a definition there. Adjacent string literals must not have two
-different suffixes.
+A literal operator can be declared at namespace scope or as a friend in
+a class, also with a definition there. Adjacent string literals must not
+have two different suffixes.
 :::
 
 ## Runtime Behavior
@@ -241,10 +242,10 @@ different suffixes.
 :kind: required
 :tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp
 
-An expression that selects an operator function calls it with the
-operands as arguments. Both operands of an overloaded `&&` or `||` are
-evaluated, the left one first. For these operators, the operands are
-evaluated in the order of the built-in operator:
+An expression that selects an operator function calls the operator
+function with the operands as arguments. Both operands of an overloaded
+`&&` or `||` are evaluated, the left one first. For these operators, the
+operands are evaluated in the order of the built-in operator:
 
 - `<<` and `>>`,
 - `=` and compound assignment,
@@ -299,8 +300,8 @@ Meters len = 2.5_m;
 The results are in `tests/RESULTS.md`. All seven compilers agree on 88 of
 89 tests.
 
-- OPR-10: GCC accepts a default argument on a literal operator. Clang and
-  EDG reject it ({question}`Q-0060`).
+- OPR-10: GCC accepts a default argument on a literal operator. Clang
+  and EDG reject the default argument ({question}`Q-0060`).
 - OPR-9: Clang and GCC warn without extra flags.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,

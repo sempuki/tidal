@@ -1,7 +1,7 @@
 # Iteration statements
 
-These statements execute a statement again and again while a condition
-is true:
+The following statements execute a statement again and again while a
+condition is true:
 
 - `while`,
 - `do`,
@@ -32,13 +32,14 @@ an absent condition means `true`.
 
 The scopes and lifetimes of a loop follow the general rules
 ({principle}`NAM-P1`, {principle}`OBJ-P2`). The body is a scope, and
-each iteration enters it afresh, so a variable the condition declares
-is created and destroyed in each iteration. The initializer of a `for`
-runs once, so its variable lives for the whole statement. Names from
-the initializer and condition are visible to the end of the statement
-and must not be redeclared at the top level of the body, as in an `if`
-({principle}`IF-P2`). The body of a `do` ends before its condition, so
-the condition cannot use the body's names.
+each iteration enters the body afresh, so a variable the condition
+declares is created and destroyed in each iteration. The initializer of
+a `for` runs once, so a variable that the initializer declares lives for
+the whole statement. Names from the initializer and condition are
+visible to the end of the statement and must not be redeclared at the
+top level of the body, as in an `if` ({principle}`IF-P2`). The body of a
+`do` ends before its condition, so the condition cannot use the body's
+names.
 :::
 
 ## Syntax
@@ -130,12 +131,11 @@ executes at least one time.
 :kind: required
 :tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp
 
-`for` executes its initializer one time. Each iteration does these
-steps:
+`for` executes its initializer one time. In each iteration, `for`:
 
-1. It evaluates the condition.
-2. It executes the body.
-3. It evaluates the iteration expression.
+1. evaluates the condition,
+2. executes the body,
+3. evaluates the iteration expression.
 
 A variable that the condition declares is destroyed after the
 iteration expression. Each part can be absent, and an absent condition is
@@ -166,7 +166,8 @@ do {} while (int x = 0);      // rejected: do needs an expression
 The results are in `tests/RESULTS.md`.
 
 - LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
-  expression. GCC 16, Clang, and EDG destroy it after ({question}`Q-0044`).
+  expression. GCC 16, Clang, and EDG destroy the variable after
+  ({question}`Q-0044`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

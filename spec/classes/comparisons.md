@@ -19,19 +19,21 @@ Depends on: comparison operators, operator overloading, derived classes.
 
 A defaulted comparison compares part by part, bases first, in
 declaration order, and stops at the first difference. The implementation
-writes it only when asked and only in a shape it can fill in. When a
-part cannot be compared that way, it deletes the function, so only a use
-is an error ({principle}`CPY-P3`). The return type of a defaulted `<=>`
-is the weakest ordering among the parts, and a defaulted `<=>` brings a
+writes the function only when asked and only in a shape that the
+implementation can fill in. When a part cannot be compared that way, the
+implementation deletes the function, so only a use is an error
+({principle}`CPY-P3`). The return type of a defaulted `<=>` is the
+weakest ordering among the parts, and a defaulted `<=>` brings a
 defaulted `==` with it.
 :::
 
 :::{principle} DCMP-P2
 :rules: DCMP-6 DCMP-7 DCMP-12
 
-The other comparison operators are spelled from these two. An
+The other comparison operators are spelled from `==` and `<=>`. An
 expression with `!=` or a relational operator also tries `==` or `<=>`,
-with the operands in either order, so a class need write only the two.
+with the operands in either order, so a class need write only `==` and
+`<=>`.
 A declared operator wins over a rewritten one, and an implementation
 should warn when the rewrites make a comparison ambiguous.
 :::
@@ -52,9 +54,8 @@ The *comparison category types* are:
 - `std::weak_ordering`,
 - `std::partial_ordering`.
 
-A program that uses a
-defaulted `<=>` must declare them, usually through the standard library
-*(library referenced)*.
+A program that uses a defaulted `<=>` must declare these types, usually
+through the standard library *(library referenced)*.
 
 ## Constraints
 
@@ -67,7 +68,7 @@ A defaulted comparison of class `C` must be one of these:
 - a `const` member function with one parameter of type `const C&`,
 - a friend of `C` with two parameters, both `const C&` or both `C`.
 
-It must not be:
+A defaulted comparison must not be:
 
 - a template,
 - a non-member that is not a friend,
@@ -88,7 +89,7 @@ A defaulted `==` compares the direct bases in the order of the base list,
 then the non-static data members in the order of their declarations. An
 array member is compared element by element. The first comparison that
 gives `false` ends the comparison. The defaulted `==` can be used in
-constant evaluation, and it has access to private members.
+constant evaluation and has access to private members.
 :::
 
 :::{rule} DCMP-2
@@ -97,12 +98,12 @@ constant evaluation, and it has access to private members.
 
 A defaulted `==` is deleted if one of these is true:
 
-- a base or member has no usable `==`, or its result does not convert to
-  `bool` as a condition does,
+- a base or member has no usable `==`, or the result of that `==` does
+  not convert to `bool` as a condition does,
 - the class has a reference member,
 - the class is a union, or has an anonymous union member.
 
-A deleted defaulted `==` makes only its use invalid.
+A deleted defaulted `==` makes only a use of the operator invalid.
 :::
 
 :::{rule} DCMP-9
@@ -136,8 +137,8 @@ rules apply:
 :tests: classes/comparisons/spaceship-no-eq-if-not-defaulted.cpp classes/comparisons/spaceship-no-header-types.cpp
 
 If a class has a `<=>` that is not defaulted and declares no `==`, a
-program must not compare its objects with `==`. A program that uses a
-defaulted `<=>` must declare the comparison category types.
+program must not compare objects of the class with `==`. A program that
+uses a defaulted `<=>` must declare the comparison category types.
 :::
 
 :::{rule} DCMP-5
@@ -146,9 +147,9 @@ defaulted `<=>` must declare the comparison category types.
 
 A defaulted `<=>` is deleted in these cases:
 
-- Its return type is not `auto` or a comparison category type.
-- The return type is `auto`, and a member has no `<=>`, or its `<=>`
-  does not return a comparison category type.
+- The return type is not `auto` or a comparison category type.
+- The return type is `auto`, and a member has no `<=>`, or the member's
+  `<=>` does not return a comparison category type.
 
 A defaulted secondary operator is deleted if the class has no usable
 `<=>`.
@@ -172,8 +173,8 @@ candidates:
 - for `x != y`, the candidate `!(x == y)`,
 - for `x < y` and the other relational operators, `(x <=> y) < 0` and
   similar,
-- each of these with the operands reversed, such as `y == x` for
-  `x == y`.
+- each of these candidates with the operands reversed, such as `y == x`
+  for `x == y`.
 
 `<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
 before a rewritten one. If the scope of an `==` declares a matching
@@ -195,7 +196,7 @@ a candidate that DCMP-6 excludes is not valid.
 :tests: classes/comparisons/out-of-class-would-delete.cpp
 
 A comparison defaulted after the class definition must not be one that
-would be deleted. An implementation need not diagnose it
+would be deleted. An implementation need not diagnose such a comparison
 ({question}`Q-0062`).
 :::
 

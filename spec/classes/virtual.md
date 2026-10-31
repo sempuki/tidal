@@ -3,7 +3,8 @@
 A virtual function is a member function that a derived class can
 override. A call through a pointer or reference to a base calls the
 override for the class that the object was created as. An abstract class
-has a pure virtual function, and a program cannot create an object of it.
+has a pure virtual function, and a program cannot create an object of an
+abstract class.
 This page covers:
 
 - declaring and overriding virtual functions,
@@ -33,8 +34,8 @@ run time, so every virtual function needs a definition, called or not.
 :::{principle} VIRT-P2
 :rules: VIRT-2 VIRT-3 VIRT-4 VIRT-14 VIRT-15 VIRT-19
 
-An override replaces a function, so it must fit where the original
-stood:
+An override replaces a function, so the override must fit where the
+original stood:
 
 - declared as a member in a class,
 - with the same return type or a pointer or reference to a more derived
@@ -42,7 +43,7 @@ stood:
 - with the same `consteval` and deleted status.
 
 `override` and `final` let a class say what it means, and the
-implementation holds it to that.
+implementation holds the class to the stated meaning.
 :::
 
 :::{principle} VIRT-P3
@@ -61,27 +62,27 @@ D destructor runs      the object is a D   calls reach D's overriders
 B destructor runs      the object is a B   calls reach B's overriders
 ```
 
-A virtual destructor lets `delete` through a base pointer find the
-whole object; without one, that `delete` is undefined.
+A virtual destructor lets `delete` through a base pointer find the whole
+object. Without a virtual destructor, such a `delete` is undefined.
 :::
 
 :::{principle} VIRT-P4
 :rules: VIRT-8 VIRT-9 VIRT-16 VIRT-17
 
 A pure virtual function declares an obligation for derived classes. A
-class with one is abstract and cannot be an object on its own, only a
-base of a class that meets the obligation. A pure function can still
-have a definition, and a pure virtual destructor needs one, because
-derived destructors call it.
+class with a pure virtual function is abstract and cannot be an object
+on its own, only a base of a class that meets the obligation. A pure
+function can still have a definition, and a pure virtual destructor
+needs a definition, because derived destructors call the pure virtual
+destructor.
 :::
 
 :::{principle} VIRT-P5
 :rules: VIRT-10 VIRT-18
 
-`dynamic_cast` asks the object at run time whether it is the requested
-class, and answers with a null pointer when it is not. The question needs
-a polymorphic class to ask, except for the harmless direction toward a
-base.
+`dynamic_cast` checks at run time whether the object is of the requested
+class, and gives a null pointer when the object is not. The check needs
+a polymorphic class, except for the harmless direction toward a base.
 :::
 
 ## Syntax
@@ -126,8 +127,8 @@ virtual function in a base. A trailing return type is valid.
 
 A function marked `override` must override a virtual function of a base.
 A function marked `final` must be virtual, and a derived class must not
-override it. `override` and `final` can occur in either order. They occur
-only on the declaration in the class.
+override it. `override` and `final` can occur in either order. The two
+specifiers occur only on the declaration in the class.
 :::
 
 :::{rule} VIRT-14
@@ -162,8 +163,7 @@ overridden function.
 An override must not have a return type that is different and not
 covariant. A return by value of a derived class is not covariant. The
 class in a covariant pointer or reference must be complete at the
-declaration of the override, unless it is the class that declares the
-override.
+declaration of the override, unless that class declares the override.
 :::
 
 :::{rule} VIRT-5
@@ -172,9 +172,10 @@ override.
 
 Each virtual function of a class must have one *final overrider*, the
 override that a call selects. If two classes override the same function
-of a shared virtual base, and neither overrides the other, the class that
-derives from both must override it too. With a non-virtual base on two
-paths, each subobject has its own final overrider.
+of a shared virtual base, and neither overrides the other, the class
+that derives from both must override the function too. With a
+non-virtual base on two paths, each subobject has its own final
+overrider.
 :::
 
 :::{rule} VIRT-8
@@ -183,7 +184,7 @@ paths, each subobject has its own final overrider.
 
 A class with at least one pure virtual function, declared or inherited
 without a final overrider, is *abstract*. A program must not create an
-object of an abstract class. This includes:
+object of an abstract class. This rule covers:
 
 - a variable, an array, a temporary, or a member,
 - a `new` expression,
@@ -200,7 +201,8 @@ return type. An override can make a function pure again.
 :kind: reject
 :tests: classes/virtual/pure-friend.cpp classes/virtual/pure-inline-definition.cpp classes/virtual/pure-nonvirtual.cpp classes/virtual/pure-not-zero.cpp
 
-A pure specifier is `= 0` on a virtual function. It must not occur on:
+A pure specifier is `= 0` on a virtual function. A pure specifier must
+not occur on:
 
 - a function that is not virtual,
 - a friend,
@@ -249,17 +251,17 @@ must not have the name and parameters of a virtual function of a base
 :kind: required
 :tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp
 
-A member function overrides a virtual function of a base if it has the
-same:
+A member function overrides a virtual function of a base if the member
+function has the same:
 
 - name,
 - parameter types,
 - cv-qualifiers,
 - ref-qualifier.
 
-It is then virtual, with or without the keyword. A call through a
-pointer or reference calls the final overrider for the class of the
-object. These calls do not use the final overrider:
+The member function is then virtual, with or without the keyword. A call
+through a pointer or reference calls the final overrider for the class
+of the object. These calls do not use the final overrider:
 
 - a qualified call such as `p->B::f()`,
 - a call on an object, not a pointer or reference.
@@ -300,9 +302,9 @@ the destructor of the most derived class.
 
 `dynamic_cast` converts with a check at run time:
 
-- To a pointer or reference to a derived class, the result refers to that
-  object if the most derived object contains one unambiguous public
-  subobject of the target class.
+- To a pointer or reference to a derived class, the cast succeeds if the
+  most derived object contains one unambiguous public subobject of the
+  target class. The result then refers to that subobject.
 - To a pointer to another base of the same object, a *cross cast*, the
   same check applies.
 - To `void*`, the result points to the most derived object.
@@ -336,8 +338,8 @@ The behavior is undefined in these cases:
 :tests: classes/virtual/pure-dtor-needs-definition.cpp
 
 A pure virtual destructor that a derived class uses must have a
-definition. An implementation need not diagnose a missing one before
-linking.
+definition. An implementation need not diagnose a missing definition
+before linking.
 :::
 
 :::{rule} VIRT-20
@@ -345,8 +347,8 @@ linking.
 :tests: classes/virtual/virtual-not-defined.cpp
 
 A virtual function that is not pure must have a definition, even if no
-code calls it. An implementation need not diagnose a missing one before
-linking.
+code calls it. An implementation need not diagnose a missing definition
+before linking.
 :::
 
 ## Recommended Practice
@@ -355,7 +357,7 @@ linking.
 :kind: recommended
 :tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/hidden-virtual-warns.cpp
 
-An implementation should warn about these:
+An implementation should warn about these cases:
 
 - `delete` through a pointer to a polymorphic class whose destructor is
   not virtual,
@@ -390,15 +392,15 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 104 of
 107 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
-  destructor during constant evaluation. Clang and EDG reject it
-  ({question}`Q-0056`).
+  destructor during constant evaluation. Clang and EDG reject the
+  `delete` ({question}`Q-0056`).
 - VIRT-17: Clang and GCC report the missing destructor at link time. EDG
   does not link.
 - VIRT-8: Clang accepts a call to a function that returns an abstract
-  class. GCC and EDG reject it ({question}`Q-0086`).
+  class. GCC and EDG reject the call ({question}`Q-0086`).
 - VIRT-19: EDG accepts an explicit object member function with the name
-  and parameters of a base virtual function. Clang and GCC reject it
-  ({question}`Q-0087`).
+  and parameters of a base virtual function. Clang and GCC reject the
+  function ({question}`Q-0087`).
 - VIRT-20: Clang and GCC report the missing definition at link time.
 - VIRT-13: Clang and GCC give both warnings under `-Wall`.
 

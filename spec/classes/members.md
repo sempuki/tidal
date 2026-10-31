@@ -25,13 +25,13 @@ brace see the class as complete. These parts include:
 - default member initializers,
 - `noexcept` operands.
 
-A static data member can have the class's own type, because its
-definition comes after the class.
+A static data member can have the class's own type, because the
+definition of the static data member comes after the class.
 
-The class body is one scope, so each member name has one meaning in it
-({principle}`NAM-P1`), and code outside the body names a nested type
-through the class. A class defined inside a function is a scope that can
-own nothing that would need a definition elsewhere.
+The class body is one scope, so each member name has one meaning in the
+body ({principle}`NAM-P1`), and code outside the body names a nested
+type through the class. A class defined inside a function is a scope
+that can own nothing that would need a definition elsewhere.
 :::
 
 :::{principle} CLS-P2
@@ -39,20 +39,22 @@ own nothing that would need a definition elsewhere.
 
 A member belongs to each object of the class or to the class as a whole.
 A static data member is one object for the whole program, so it needs
-one definition, and a static member function has no object to act on.
-A member function defined in the class is `inline`, because every unit
-that includes the class sees its body. A `const` static member of
-integer type with an initializer in the class is a constant the class
+one definition, and a static member function has no object to act on. A
+member function defined in the class is `inline`, because every unit
+that includes the class sees the function body. A `const` static member
+of integer type with an initializer in the class is a constant the class
 can use directly, so the initializer must be a constant expression, and
-the member still needs a definition if the program uses it as an object.
+the member still needs a definition if the program uses the member as an
+object.
 :::
 
 :::{principle} CLS-P3
 :rules: CLS-5 CLS-6 CLS-13 CLS-14 CLS-15 CLS-17 CLS-25 CLS-26
 
-A non-static member function acts on an object. Its `this` has the type
-of that object with the function's own cv-qualifiers, and its
-ref-qualifier selects the function by the value category of the object.
+A non-static member function acts on an object. In the function, `this`
+has the type of that object with the function's own cv-qualifiers. The
+ref-qualifier of the function selects the function by the value
+category of the object.
 A member function can instead write that object out as its first
 parameter. The object is then an ordinary argument, so the function:
 
@@ -67,11 +69,12 @@ static.
 :::{principle} CLS-P4
 :rules: CLS-10 CLS-11 CLS-19
 
-The members of an object lie in it in the order of their declarations,
-and each object has a size, even an empty one, so that two objects never
-share an address ({principle}`OBJ-P1`). A class that keeps its members in
-one access, with no virtual parts, has the address of its first
-member, so a program can reason about its layout.
+The members of an object lie in the object in the order of their
+declarations, and each object has a size, even an empty one, so that two
+objects never share an address ({principle}`OBJ-P1`). An object of a
+class that keeps its members in one access, with no virtual parts, has
+the address of its first member. A program can therefore reason about
+the layout of such a class.
 :::
 
 ## Syntax
@@ -90,8 +93,8 @@ member, so a program can reason about its layout.
 :tests: classes/members/member-of-own-type.cpp classes/members/pointer-to-own-type.cpp classes/members/incomplete-member.cpp
 
 A non-static data member must have a complete type. A class is not
-complete inside its own definition, so it cannot contain a member of its
-own type. A pointer to its own type is valid.
+complete inside its own definition, so the class cannot contain a member
+of its own type. A pointer to the class type is valid.
 :::
 
 :::{rule} CLS-2
@@ -105,16 +108,16 @@ The class is complete inside:
 - default member initializers,
 - the operands of `noexcept` specifiers.
 
-These can use members that are declared later. At other places inside
-the definition, the class is not complete.
+These places can use members that are declared later. At other places
+inside the definition, the class is not complete.
 :::
 
 :::{rule} CLS-22
 :kind: reject
 :tests: classes/members/sizeof-in-class-incomplete.cpp
 
-At the places inside its definition where CLS-2 says a class is not
-complete, a use that needs a complete class type is not valid.
+At the places inside a class definition where CLS-2 says the class is
+not complete, a use that needs a complete class type is not valid.
 :::
 
 :::{rule} CLS-3
@@ -171,8 +174,8 @@ function can change a `mutable` data member.
 
 A `const` member function must not change a data member, unless the
 member is `mutable`. A program must not call a member function that is
-not `const` on a `const` object, or one that is not `volatile` on a
-`volatile` object.
+not `const` on a `const` object, or a member function that is not
+`volatile` on a `volatile` object.
 :::
 
 :::{rule} CLS-6
@@ -221,7 +224,7 @@ A class can declare these members:
 - enumerations,
 - type aliases.
 
-Code outside the class names them as `S::name`.
+Code outside the class names these members as `S::name`.
 :::
 
 :::{rule} CLS-9
@@ -255,24 +258,24 @@ A class must not declare:
 
 A function can define a class inside its body. In an evaluated operand,
 a member function of that local class can name the static variables of
-the function. It can also read the value of a `constexpr` variable of
-any literal type, or another constant variable, when it does not take
-the address.
+the function. The member function can also read the value of a
+`constexpr` variable of any literal type, or of another constant
+variable, without taking the address of the variable.
 :::
 
 :::{rule} CLS-28
 :kind: reject
 :tests: classes/members/local-class-static-member.cpp classes/members/local-class-uses-local.cpp classes/members/local-class-member-defined-outside.cpp classes/members/local-class-member-template.cpp classes/members/local-class-friend-definition.cpp
 
-Three things are not valid in a local class (CLS-12):
+A local class (CLS-12) must not have:
 
 - a static data member,
 - a member template,
-- a friend function defined in it.
+- a friend function defined in the local class.
 
 Each member function of a local class is defined inside the class. In an
-evaluated operand, it must not name the automatic variables of the
-function, except as CLS-12 allows.
+evaluated operand, such a member function must not name the automatic
+variables of the function, except as CLS-12 allows.
 :::
 
 :::{rule} CLS-13
@@ -309,8 +312,8 @@ can have any number of parameters ({rule}`OPR-3`).
 :tests: classes/members/static-member-own-type.cpp classes/members/thread-local-static-member.cpp
 
 A static data member can have the type of its own class, which is still
-incomplete at the declaration. Its definition comes after the class. A
-static data member can be `thread_local`.
+incomplete at the declaration. The definition of the static data member
+comes after the class. A static data member can be `thread_local`.
 :::
 
 :::{rule} CLS-17
@@ -318,8 +321,8 @@ static data member can be `thread_local`.
 :tests: classes/members/explicit-object-address-ordinary.cpp
 
 The address of a member function with an explicit object parameter is an
-ordinary pointer to function. It is not a pointer to member. A call
-through it passes the object as the first argument.
+ordinary pointer to function. The address is not a pointer to member. A
+call through the pointer passes the object as the first argument.
 :::
 
 :::{rule} CLS-20
@@ -342,8 +345,8 @@ page does not list yet *(class properties referenced)*:
 - Each base and each member is also standard-layout.
 
 The address of such an object equals the address of its first data
-member. A `reinterpret_cast` from one of these pointers to the other gives
-a usable pointer.
+member. A `reinterpret_cast` between a pointer to the object and a
+pointer to its first data member gives a usable pointer.
 :::
 
 ## Runtime Behavior
@@ -375,8 +378,9 @@ The size of an empty class is implementation-defined.
 
 A `const` static data member with an initializer in its class, and not
 `constexpr` or `inline`, needs a definition outside the class if the
-program uses its address, for example by binding a reference to it. An
-implementation need not diagnose a missing definition before linking.
+program uses the address of the member, for example by binding a
+reference to the member. An implementation need not diagnose a missing
+definition before linking.
 :::
 
 ## Examples
@@ -408,11 +412,11 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 83
 of 84 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
-  translation unit. The linker reports it.
+  translation unit. The linker reports the missing definition.
 - CLS-26: GCC 16 accepts mixed ref-qualified overloads and reports
   ambiguity only at a call ({question}`Q-0027`).
 - CLS-9: Clang and GCC accept an anonymous struct member as an
-  extension, and reject it only under `-pedantic-errors`.
+  extension, and reject the member only under `-pedantic-errors`.
 - CLS-11: the size is 1 on every compiler in the matrix.
 - CLS-19: the tests check the consequence for a simple standard-layout
   class. They do not check each condition of the definition.

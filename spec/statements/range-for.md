@@ -15,14 +15,14 @@ a range. A range is one of these:
 A range-based `for` is an ordinary loop that the language writes for
 you.
 
-1. It evaluates the range one time and keeps it, so a temporary in the
-   range expression lives as long as the loop.
-2. It finds `begin` and `end` one time. It finds them as members, if
-   the class has both names as members of any kind, and otherwise as
-   free functions found through the argument's namespace
+1. The loop evaluates the range one time and keeps the result, so a
+   temporary in the range expression lives as long as the loop.
+2. The loop finds `begin` and `end` one time, as members if the class
+   has both names as members of any kind, and otherwise as free
+   functions found through the argument's namespace
    ({principle}`NAM-P3`).
-3. It then advances with `++`, stops when the iterator compares equal
-   to `end`, and initializes the loop variable from each element.
+3. The loop then advances with `++`, stops when the iterator compares
+   equal to `end`, and initializes the loop variable from each element.
 
 The loop variable is not yet declared when
 the range expression is evaluated, so a name there means the outer
@@ -34,8 +34,8 @@ entity.
 
 The loop variable is a fresh automatic variable of the body's scope in
 each iteration ({principle}`LOOP-P2`). A storage class would contradict
-that, and a redeclaration at the top level of the body would give the
-name two meanings, so both are rejected.
+this automatic storage, and a redeclaration at the top level of the body
+would give the name two meanings, so both are rejected.
 :::
 
 ## Syntax
@@ -67,8 +67,8 @@ For a range of class type, `begin` and `end` are found as follows:
   *(lookup referenced)*.
 
 `begin` and `end` can return different types. The loop advances the
-iterator with prefix `++`. It compares the iterator with `end` by `!=`,
-which can come from `==`.
+iterator with prefix `++`. The loop compares the iterator with `end` by
+`!=`, which can come from `==`.
 :::
 
 :::{rule} RFOR-7
@@ -77,8 +77,8 @@ which can come from `==`.
 
 These conditions apply to the loop of RFOR-2:
 
-- The range must have a complete type, and it must have both `begin`
-  and `end`.
+- The range must have a complete type, and the range must have both
+  `begin` and `end`.
 - A data member `begin` or `end` of type `int` makes the loop not valid
   ({question}`Q-0098`).
 - Free functions that argument-dependent lookup does not find are not
@@ -167,9 +167,9 @@ The results are in `tests/RESULTS.md`.
 - RFOR-2: a data member named `begin` with no member `end` does not stop
   the use of free `begin` and `end` on any compiler. With members of both
   names, Clang and GCC use the member form for data members too. EDG
-  uses it only for member functions ({question}`Q-0098`).
+  uses the member form only for member functions ({question}`Q-0098`).
 - RFOR-5: GCC 14 accepts a storage class on the loop variable. GCC 16,
-  Clang, and EDG reject it ({question}`Q-0026`).
+  Clang, and EDG reject the storage class ({question}`Q-0026`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

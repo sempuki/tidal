@@ -9,27 +9,29 @@ body. The value of its condition selects the label.
 :rules: SW-1 SW-2 SW-3
 
 A `switch` is a computed jump. Its condition is an integer or an
-enumeration, or a class that converts to exactly one of these,
-evaluated one time. Control jumps to one of these places, and then runs
-on through the later labels until a `break` stops it:
+enumeration, or a class that converts to exactly one of these types,
+evaluated one time. Control jumps to one of the following places:
 
 - the `case` label with that value,
 - `default`,
 - past the statement.
 
+Control then runs on through the later labels until a `break`.
+
 A case value is a constant of the
 condition's promoted type, because the jump table is built at
 translation time. Two equal case values or two `default` labels would
-give the jump two targets, so they are rejected. A label belongs to the
-innermost `switch` around it, and a lambda or local class body is a
-different function, so a label in it belongs to nothing outside.
+give the jump two targets, so such labels are rejected. A label belongs
+to the innermost `switch` around it, and a lambda or local class body is
+a different function, so a label in such a body belongs to nothing
+outside.
 :::
 
 :::{principle} SW-P2
 :rules: SW-4 SW-5 SW-6
 
 The statement has the scopes of an `if` ({principle}`IF-P2`), with an
-initializer and a condition that can declare a variable. Because its
+initializer and a condition that can declare a variable. Because the
 body is entered by a jump, the general rule for jumps applies
 ({principle}`JMP-P2`). A label must not sit past the initialization of
 a variable that is in scope at the label.
@@ -74,14 +76,14 @@ matches. In one `switch`:
 
 A `case` or `default` label must be inside a `switch`. The body of a
 lambda or of a member function of a local class is a separate function,
-so a label in it belongs to no enclosing `switch`.
+so a label in such a body belongs to no enclosing `switch`.
 :::
 
 :::{rule} SW-4
 :kind: required
 :tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp
 
-A `switch` can have an initializer statement, as in IF-7. Its condition
+A `switch` can have an initializer statement, as in IF-7. The condition
 can be a declaration, as in IF-5. The scope rules of IF-9 and IF-10
 apply. A name that the initializer or the condition declares is visible
 to the end of the statement.
@@ -100,14 +102,14 @@ must not be declared again in the outermost block of the body (SW-4).
 :tests: statements/switch/jump-past-initialization.cpp statements/switch/jump-past-block.cpp statements/switch/jump-past-uninitialized.cpp statements/switch/case-skips-trivial-struct.cpp statements/switch/case-skips-nontrivial-destructor.cpp
 
 A transfer to a `case` or `default` label must not skip the
-initialization of a variable that is in scope at the label. A transfer can
-skip a whole block. It can also skip a declaration without an
-initializer whose type JMP-6 permits ({question}`Q-0097`):
+initialization of a variable that is in scope at the label. A transfer
+can skip a whole block, or a declaration without an initializer whose
+type JMP-6 permits ({question}`Q-0097`):
 
 - a scalar,
 - a class whose default constructor and destructor are both trivial
   ({rule}`CTOR-23`, {rule}`DTOR-9`),
-- an array of these.
+- an array of these types.
 :::
 
 ## Runtime Behavior
@@ -162,7 +164,7 @@ All seven compilers agree on all tests in this page, except where a
 question is noted. The results are in `tests/RESULTS.md`.
 
 - SW-5: GCC accepts a `case` label that skips a variable whose destructor
-  is not trivial. Clang and EDG reject it ({question}`Q-0097`).
+  is not trivial. Clang and EDG reject the label ({question}`Q-0097`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

@@ -19,16 +19,16 @@ For other operands the order is not fixed.
 
 The language fixes the order of evaluation only where meaning needs it.
 A full expression finishes, with all its side effects, before the next
-one starts, so a program is a sequence of steps at that level. Within a
-full expression, these orders are fixed:
+full expression starts, so a program is a sequence of steps at that
+level. Within a full expression, these orders are fixed:
 
 | Construct | Evaluated first | Evaluated after |
 |---|---|---|
 | Call | The function | Its arguments |
 | Assignment | The right side, complete | The left side |
 | Subscript | The array | Its index |
-| Member pointer | The object | The member pointer applied to it |
-| Braced list | Each element | The elements after it, in the order written |
+| Member pointer | The object | The member pointer applied to the object |
+| Braced list | Each element | The elements after that element, in the order written |
 
 An overloaded operator keeps the order of the built-in operator it
 replaces, because the program reads the same either way.
@@ -44,7 +44,8 @@ called function runs as a whole, so two evaluations do not interleave. A
 program whose result depends on an order that the language did not fix
 has no meaning, so two {term}`unsequenced` accesses to one memory
 location, where at least one writes, are undefined. Where the
-implementation can see such a pair, it should say so.
+implementation can see such a pair, the implementation should report
+the pair.
 :::
 
 ## Runtime Behavior
@@ -54,9 +55,9 @@ implementation can see such a pair, it should say so.
 :tests: expressions/sequencing/callee-before-arguments.cpp expressions/sequencing/object-before-member-call-arguments.cpp
 
 In a function call, the expression that gives the function is evaluated
-before the arguments. For a member function call, this includes the object
-expression. In operator syntax the object is an operand, and SEQ-8 gives
-its order.
+before the arguments. For a member function call, the expression that
+gives the function includes the object expression. In operator syntax
+the object is an operand, and SEQ-8 gives the order of the object.
 :::
 
 :::{rule} SEQ-3
@@ -119,10 +120,9 @@ same volatile object are undefined too.
 :tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp
 
 The arguments of a function call, including its default arguments, are
-evaluated in an unspecified order.
-Each argument is evaluated completely before the evaluation of another
-argument starts. The body of a called function also does not overlap with
-other evaluations in the caller.
+evaluated in an unspecified order. Each argument is evaluated completely
+before the evaluation of another argument starts. The body of a called
+function also does not overlap with other evaluations in the caller.
 :::
 
 :::{rule} SEQ-8
@@ -130,10 +130,10 @@ other evaluations in the caller.
 :tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp expressions/sequencing/member-operator-order.cpp expressions/sequencing/reversed-comparison-order.cpp
 
 The operands of an operator are evaluated in an unspecified order,
-unless one of the rules below fixes it. This holds for a built-in
-operator, whose operands are {term}`unsequenced`, and for an overloaded
-operator, including a member operator and a reversed comparison
-({rule}`DCMP-6`). These rules fix an order:
+unless one of the rules below fixes the order. The order is unspecified
+for a built-in operator, whose operands are {term}`unsequenced`, and for
+an overloaded operator, including a member operator and a reversed
+comparison ({rule}`DCMP-6`). These rules fix an order:
 
 - SEQ-3: subscripts, assignments, member pointers, and braced lists,
 - {rule}`SHF-8`: shifts,
@@ -153,8 +153,8 @@ operand (SEQ-1).
 :tests: expressions/sequencing/unsequenced-increments.cpp
 
 An implementation should warn when it can see two unsequenced
-evaluations in one expression that modify the same object, or that
-modify it and read it.
+evaluations in one expression where both modify the same object, or
+where one modifies the object and the other reads the object.
 :::
 
 ## Examples
@@ -175,15 +175,17 @@ pair(i++, i++);       // fine: the order is unspecified
 All seven compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
-- SEQ-1: Clang 22 evaluates function arguments from left to right and GCC
-  16 from right to left, at `-O0` and `-O2`. Clang evaluates an explicit
-  argument before a default argument, and GCC the default first.
+- SEQ-1: Clang 22 evaluates function arguments from left to right and
+  GCC 16 from right to left, at `-O0` and `-O2`. Clang evaluates an
+  explicit argument before a default argument, and GCC the default
+  first.
 - SEQ-8: for a member `operator-`, Clang 22 evaluates the left operand
   first and GCC 16 the right. For a reversed `==` candidate, Clang
   evaluates the right operand first and GCC the left.
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
-  "operation may be undefined". The test makes these warnings errors.
-  No compiler warns about two bit-fields of one memory location or two
-  reads of a volatile object; those tests only show the programs compile.
+  "operation may be undefined". The test makes these warnings errors. No
+  compiler warns about two bit-fields of one memory location or two
+  reads of a volatile object; those tests only show the programs
+  compile.
 
 Inputs: clang-sema-expr, clang-diag-sema.

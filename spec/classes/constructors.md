@@ -3,7 +3,7 @@
 A constructor initializes an object of a class. A destructor ends the
 life of an object of a class. This page covers:
 
-- how to declare them,
+- how to declare constructors and destructors,
 - the default constructor and destructor that a class gets implicitly,
 - member initializer lists,
 - delegating and `explicit` constructors,
@@ -36,14 +36,15 @@ the object is gone.
 The implementation writes a default constructor and a destructor for a
 class that writes none, because building and ending the parts is right
 for most classes. Declaring any constructor says that default
-construction needs thought, so it removes the implicit default
-constructor. When a part cannot be default-constructed or destroyed, the
-synthesized function is deleted and only a use fails. A `const` object
-with no initializer needs a class that gives every part a value, because
-nothing can give it one later. The `noexcept` of a destructor follows
-from its parts. A synthesized function that does nothing beyond the
-parts' own trivial work is *trivial*, and some rules permit more for
-it, such as a jump past a declaration (JMP-6).
+construction needs thought, so the declaration removes the implicit
+default constructor. When a part cannot be default-constructed or
+destroyed, the synthesized function is deleted and only a use fails. A
+`const` object with no initializer needs a class that gives every part a
+value, because nothing can give the object a value later. The `noexcept`
+of a destructor follows from the parts of the class. A synthesized
+function that does nothing beyond the parts' own trivial work is
+*trivial*, and some rules permit more for a trivial function, such as a
+jump past a declaration (JMP-6).
 :::
 
 :::{principle} CTOR-P3
@@ -54,20 +55,22 @@ are built in declaration order, bases before members, whatever order the
 member initializer list has, because the destructor must undo them in
 one fixed order. An implementation should warn when the list suggests
 another order. Until the constructor completes, the object is not yet
-`const`, and a part has no value until its turn, so reading it earlier
-is undefined. A nested class's default member initializer is part of
-the enclosing class, so it is usable only once that class is complete.
+`const`, and a part has no value until its turn, so reading the part
+earlier is undefined. A nested class's default member initializer is
+part of the enclosing class, so the initializer is usable only once the
+enclosing class is complete.
 :::
 
 :::{principle} CTOR-P6
 :rules: CTOR-7 CTOR-8 CTOR-14 CTOR-15 CTOR-16 CTOR-17
 
-A member initializer names one part of the object and gives it its
-value. It cannot name anything else, and a reference member that it
-binds to a temporary is dead before the body runs. A delegating
-constructor hands the whole job to one other constructor and adds only
-its own body, so its list names that constructor and nothing else. It
-cannot hand the job back to itself, directly or through a cycle, and an
+A member initializer names one part of the object and gives that part
+its value. A member initializer cannot name anything else, and a
+reference member that the initializer binds to a temporary is dead
+before the body runs. A delegating constructor hands the whole job to
+one other constructor and adds only its own body, so its list names the
+target constructor and nothing else. A delegating constructor cannot
+hand the job back to itself, directly or through a cycle, and an
 implementation need not find a cycle that runs through several
 constructors.
 :::
@@ -85,17 +88,17 @@ constructor                         destructor
   3. constructor body                 3. bases, last first
 ```
 
-After it runs, the object is gone, and using it or destroying it again
-is undefined ({principle}`OBJ-P4`).
+After the destructor runs, the object is gone, and using or destroying
+the object again is undefined ({principle}`OBJ-P4`).
 :::
 
 :::{principle} CTOR-P5
 :rules: CTOR-9 CTOR-10 CTOR-22
 
 A constructor that takes one argument is a conversion from that argument
-type, and an implicit conversion can use it. `explicit` withdraws that
-offer, so the constructor then runs only where the program names the
-type.
+type, and an implicit conversion can use the constructor. `explicit`
+withdraws that offer, so the constructor then runs only where the
+program names the type.
 :::
 
 ## Syntax
@@ -139,9 +142,9 @@ A program cannot take the address of a constructor.
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
-constructor, removes the implicit one. `= default` declares it again. A
-using-declaration that inherits constructors does not declare a
-constructor, so the implicit default constructor stays.
+constructor, removes the implicit one. `= default` declares the default
+constructor again. A using-declaration that inherits constructors does
+not declare a constructor, so the implicit default constructor stays.
 :::
 
 :::{rule} CTOR-19
@@ -164,10 +167,10 @@ has no default member initializer:
 - a `const` member of a class that has no user-provided default
   constructor and leaves a member without a value.
 
-It is also deleted if a base or member has no default constructor that
-is accessible and not deleted, or has a destructor that is deleted or
-not accessible. A deleted default constructor makes only its use
-invalid.
+The default constructor is also deleted if a base or member has no
+default constructor that is accessible and not deleted, or has a
+destructor that is deleted or not accessible. A deleted default
+constructor makes only a use of the constructor invalid.
 :::
 
 :::{rule} CTOR-20
@@ -201,8 +204,8 @@ user-provided.
 
 A member initializer list initializes direct bases and non-static data
 members. Each initializer uses parentheses or braces. Braces use the
-rules of list initialization. An initializer for a member replaces its
-default member initializer.
+rules of list initialization. An initializer for a member replaces the
+default member initializer of that member.
 :::
 
 :::{rule} CTOR-21
@@ -248,17 +251,17 @@ list.
 :kind: reject
 :tests: classes/constructors/explicit-argument.cpp classes/constructors/explicit-bool-false.cpp classes/constructors/explicit-bool-not-constant.cpp classes/constructors/explicit-bool-true.cpp classes/constructors/explicit-copy-init.cpp classes/constructors/explicit-copy-list-init.cpp classes/constructors/explicit-default-copy-list.cpp classes/constructors/explicit-direct-init.cpp classes/constructors/explicit-non-ctor.cpp classes/constructors/explicit-out-of-line.cpp classes/constructors/explicit-return.cpp classes/constructors/explicit-static-cast.cpp
 
-An `explicit` constructor is not used in copy-initialization. This
-includes:
+An `explicit` constructor is not used in copy-initialization.
+Copy-initialization includes:
 
 - `T x = v;` and `T x = {v};`,
 - passing an argument,
 - returning a value, including `return {};`.
 
-Direct initialization and casts can use it. `explicit(c)` makes the
-constructor `explicit` if the constant expression `c` is `true`. Only a
-constructor or conversion function ({rule}`CVF-3`) declared in its class
-can have `explicit`.
+Direct initialization and casts can use an `explicit` constructor.
+`explicit(c)` makes the constructor `explicit` if the constant
+expression `c` is `true`. Only a constructor or conversion function
+({rule}`CVF-3`) declared in its class can have `explicit`.
 :::
 
 :::{rule} CTOR-10
@@ -266,8 +269,9 @@ can have `explicit`.
 :tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp
 
 A constructor that is not `explicit` is a *converting constructor*. An
-implicit conversion can use it to make an object from its arguments,
-including from a braced list. Standard conversions can come before it.
+implicit conversion can use a converting constructor to make an object
+from the constructor's arguments, including from a braced list. Standard
+conversions can come before the converting constructor.
 :::
 
 :::{rule} CTOR-22
@@ -326,7 +330,7 @@ member has a destructor that is deleted or not accessible.
 :tests: classes/constructors/dtor-member-noexcept-false.cpp classes/constructors/dtor-noexcept-false.cpp classes/constructors/implicit-dtor-noexcept.cpp classes/constructors/user-dtor-noexcept.cpp
 
 A destructor without a `noexcept` specifier is `noexcept` if the
-destructors of all bases and members are `noexcept`. This applies to
+destructors of all bases and members are `noexcept`. The rule applies to
 implicit and user-declared destructors.
 :::
 
@@ -334,19 +338,19 @@ implicit and user-declared destructors.
 :kind: reject
 :tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp
 
-A program must call a destructor with `()`. It cannot take the address of
-a destructor. In an explicit destructor call, the name after `~` must
-denote the type of the object. This also applies to a scalar type.
+A program must call a destructor with `()` and cannot take the address
+of a destructor. In an explicit destructor call, the name after `~` must
+denote the type of the object, also for a scalar type.
 :::
 
 :::{rule} CTOR-18
 :kind: reject
 :tests: classes/constructors/nested-default-member-init-before-complete.cpp
 
-A default member initializer of a nested class can only be used after the
-enclosing class is complete. A default argument of a constructor of the
-enclosing class must not use it, for example with empty braces (question
-pending).
+A default member initializer of a nested class can only be used after
+the enclosing class is complete. A default argument of a constructor of
+the enclosing class must not use that initializer, for example with
+empty braces (question pending).
 :::
 
 :::{rule} CTOR-23
@@ -361,7 +365,7 @@ Each of these makes a default constructor non-trivial:
 - A member gets its value from a default member initializer.
 - A base or a member of class type is built by a non-trivial one.
 
-With none of them, the default constructor is *trivial*.
+With none of these conditions, the default constructor is *trivial*.
 :::
 
 :::{rule} DTOR-9
@@ -372,10 +376,10 @@ Each of these makes a destructor non-trivial:
 
 - The program provides its body. A function defaulted after its first
   declaration counts.
-- It is virtual.
+- The destructor is virtual.
 - A base or a member of class type is ended by a non-trivial one.
 
-With none of them, the destructor is *trivial*.
+With none of these conditions, the destructor is *trivial*.
 :::
 
 ## Runtime Behavior
@@ -398,8 +402,8 @@ The order of the member initializer list has no effect.
 :tests: classes/constructors/delegating-ignores-default-member-init.cpp classes/constructors/delegating.cpp
 
 A delegating constructor first executes the constructor that it names.
-Then its own body executes. Default member initializers apply only
-through the target constructor.
+Then the body of the delegating constructor executes. Default member
+initializers apply only through the target constructor.
 :::
 
 :::{rule} CTOR-11
@@ -416,13 +420,13 @@ A constructor can change the members of a `const` object. The object is
 
 A destructor works in the opposite order to a constructor:
 
-1. its body executes,
+1. the destructor body executes,
 2. the data members are destroyed, last declared first,
 3. the direct bases are destroyed, last listed first.
 
 In a block, the variable constructed last is destroyed first. Array
-elements are destroyed from the last element to the first. This applies
-to `delete[]` too.
+elements are destroyed from the last element to the first, also for
+`delete[]`.
 :::
 
 :::{rule} DTOR-6
@@ -430,9 +434,9 @@ to `delete[]` too.
 :tests: classes/constructors/dtor-call-via-alias.cpp classes/constructors/explicit-dtor-call.cpp classes/constructors/pseudo-dtor-scalar.cpp
 
 An explicit destructor call runs the destructor and ends the life of the
-object. Its storage is not released. The name after `~` can be a type
-alias. A program can also call a destructor on an object of scalar type
-through a type name.
+object. The storage of the object is not released. The name after `~`
+can be a type alias. A program can also call a destructor on an object
+of scalar type through a type name.
 :::
 
 ## Undefined Behavior
@@ -474,8 +478,8 @@ to itself ({question}`Q-0053`).
 
 A constructor must not bind a reference member to a temporary object,
 through a `mem_init` or a default member initializer. The temporary ends
-with the constructor. An implementation need not diagnose it (question
-pending).
+with the constructor. An implementation need not diagnose such a
+binding (question pending).
 :::
 
 ## Recommended Practice

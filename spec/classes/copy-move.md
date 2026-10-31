@@ -2,10 +2,10 @@
 
 A copy constructor and a copy assignment operator make an object equal to
 another object of its class. A move constructor and a move assignment
-operator do the same, and they can take resources from an object that a
+operator do the same and can take resources from an object that a
 program no longer needs. This page covers:
 
-- how to declare them,
+- how to declare the copy and move functions,
 - when a class gets them implicitly,
 - when they are deleted,
 - what the implicit ones do,
@@ -22,9 +22,9 @@ functions.
 
 A class object is copied or moved part by part: the bases in the order
 of the base list, then the members in the order of their declarations,
-and an array member element by element. The functions that do this are
-the copy and move constructors and the copy and move assignment
-operators. The language recognizes them by their signatures:
+and an array member element by element. The copy and move constructors
+and the copy and move assignment operators do this copying. The language
+recognizes these functions by their signatures:
 
 | Function | Parameter |
 |---|---|
@@ -33,8 +33,8 @@ operators. The language recognizes them by their signatures:
 
 The assignment operators are members of the class.
 
-A constructor that takes the class by value cannot exist, because it
-would need itself to copy its argument.
+A constructor that takes the class by value cannot exist, because such
+a constructor would need itself to copy its argument.
 :::
 
 :::{principle} CPY-P2
@@ -42,12 +42,12 @@ would need itself to copy its argument.
 
 The implementation writes these four functions for a class unless the
 class writes them, because part-by-part copying is right for most
-classes. Their parameter types follow from what the parts permit. The
-implicit copy constructor takes a `const` reference if every part can be
-copied from a `const` object.
+classes. The parameter types of the implicit functions follow from what
+the parts permit. The implicit copy constructor takes a `const`
+reference if every part can be copied from a `const` object.
 
 A class that declares one of these functions says that part-by-part
-copying is wrong for it. So one declaration removes the others:
+copying is wrong for the class. So one declaration removes the others:
 
 | User-declared function | Removes |
 |---|---|
@@ -57,7 +57,7 @@ copying is wrong for it. So one declaration removes the others:
 The implicit assignment operator of a derived class hides those of its
 bases for the same reason. A derived class decides for its own parts.
 
-A user-declared destructor removes only the move functions. It keeps the
+A user-declared destructor removes only the move functions and keeps the
 implicit copy functions. So a class that releases a resource in its
 destructor must write or delete its copy functions. Otherwise a copy
 shares the resource, and both objects release it (NEW-5).
@@ -75,11 +75,12 @@ Each of these makes the containing function deleted:
 - a part whose own function is deleted or hidden.
 
 The same holds for a function that the class defaults in its definition,
-also when its signature differs from the implicit one. A deleted move
-function that the implementation produced steps aside, so an rvalue
-copies instead. A move function that the class deletes by name does not
-step aside. A function defaulted after the class definition must be one
-that works, because by then the class has promised it.
+also when the signature of that function differs from the implicit one.
+A deleted move function that the implementation produced steps aside, so
+an rvalue copies instead. A move function that the class deletes by name
+does not step aside. A function defaulted after the class definition
+must be one that works, because by then the class has promised the
+function.
 :::
 
 :::{principle} CPY-P4
@@ -91,9 +92,9 @@ source:
 | Source | Result |
 |---|---|
 | An lvalue | A copy |
-| An rvalue | A move if it can, and a copy if it cannot |
-| A `const` rvalue | A copy, because a move would change it |
-| A prvalue | Neither. It initializes its target directly, so a class with no usable copy or move function can still be returned and passed as a prvalue. |
+| An rvalue | A move if a move is possible, and a copy if not |
+| A `const` rvalue | A copy, because a move would change the source |
+| A prvalue | Neither. The prvalue initializes its target directly, so a class with no usable copy or move function can still be returned and passed as a prvalue. |
 
 A `return` of a local variable or a parameter treats the name as an
 rvalue, because the object is about to end.
@@ -102,15 +103,17 @@ rvalue, because the object is about to end.
 :::{principle} CPY-P5
 :rules: CPY-12 CPY-18 CPY-13
 
-The implementation has two choices and two recommended warnings:
+The implementation can:
 
-- It can make a named local variable the return object instead of
-  moving it, except for a parameter and except in constant evaluation.
-- It can assign a shared virtual base more than once.
-- It should warn when a program relies on the implicit copy of a class
-  that manages its own copying.
-- It should warn when a cast in a `return` statement defeats the
-  freedom to elide.
+- make a named local variable the return object instead of moving the
+  variable, except for a parameter and except in constant evaluation,
+- assign a shared virtual base more than once.
+
+The implementation should warn when:
+
+- a program relies on the implicit copy of a class that manages its own
+  copying,
+- a cast in a `return` statement defeats the freedom to elide.
 :::
 
 :::{principle} CPY-P6
@@ -118,8 +121,8 @@ The implementation has two choices and two recommended warnings:
 
 A copy or move function that copies part by part, with nothing virtual
 and nothing user-provided, is *trivial*. A class whose copying is
-trivial all the way down is *trivially copyable*. Copying its
-bytes copies its value.
+trivial all the way down is *trivially copyable*. Copying the bytes of
+an object of such a class copies the value of the object.
 :::
 
 ## Syntax
@@ -191,7 +194,7 @@ cv-qualifiers. A *move assignment operator* has one parameter of type
 `T&&` with any cv-qualifiers. The return type can be any type. An
 assignment operator with an explicit object parameter and one more
 parameter of reference to `T` is also a copy or move assignment operator.
-It is user-declared, so the class gets no implicit one.
+Such an operator is user-declared, so the class gets no implicit one.
 :::
 
 :::{rule} CPY-16
@@ -207,11 +210,12 @@ valid.
 :kind: required
 :tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp
 
-If a class has no user-declared copy constructor, it has an implicit one.
-If it has no user-declared copy assignment operator, it has an implicit
-one. Each implicit copy function is deleted if the class has a
-user-declared move constructor or move assignment operator. A
-user-declared destructor does not remove them.
+A class has an implicit copy constructor if it has no user-declared copy
+constructor, and an implicit copy assignment operator if it has no
+user-declared copy assignment operator. Each implicit copy function is
+deleted if the class has a user-declared move constructor or move
+assignment operator. A user-declared destructor does not remove the
+implicit copy functions.
 :::
 
 :::{rule} CPY-21
@@ -240,11 +244,11 @@ If a class has no move function, an rvalue uses the copy function.
 :tests: classes/copy-move/assign-result-lvalue.cpp classes/copy-move/implicit-copy-nonconst-from-member-ok.cpp
 
 The implicit copy constructor takes `const T&` if each base and member
-can be copied from a `const` object. If not, it takes `T&`. The same
-applies to the implicit copy assignment operator. Each implicit
-assignment operator returns `T&`, which refers to `*this`. The implicit
-copy assignment operator of a derived class hides all assignment
-operators of its bases.
+can be copied from a `const` object. Otherwise, the implicit copy
+constructor takes `T&`. The same choice applies to the implicit copy
+assignment operator. Each implicit assignment operator returns `T&`,
+which refers to `*this`. The implicit copy assignment operator of a
+derived class hides all assignment operators of its bases.
 :::
 
 :::{rule} CPY-22
@@ -264,7 +268,8 @@ An implicit or defaulted copy or move function is deleted if one of
 these conditions is true:
 
 - A base or member cannot be copied or moved in the same way, for
-  example because the function for it is deleted or not accessible.
+  example because the function for that base or member is deleted or
+  not accessible.
 - A base or member has a destructor that is deleted or not accessible.
 - The function is the copy constructor, and the class has an rvalue
   reference member.
@@ -280,8 +285,8 @@ the program deletes explicitly takes part.
 :kind: reject
 :tests: classes/copy-move/const-member-assign.cpp classes/copy-move/const-member-move-assign.cpp classes/copy-move/defaulted-copy-deleted-used.cpp classes/copy-move/deleted-copy-move-only-member.cpp classes/copy-move/deleted-copy-private-member.cpp classes/copy-move/explicitly-deleted-move-not-ignored.cpp classes/copy-move/reference-member-assign.cpp classes/copy-move/rvalue-ref-member-copy-deleted.cpp classes/copy-move/copy-deleted-by-member-dtor.cpp
 
-A program must not use a copy or move function that CPY-7 deletes. It
-must not use a move function that the program deletes explicitly.
+A program must not use a copy or move function that CPY-7 deletes, or a
+move function that the program deletes explicitly.
 :::
 
 :::{rule} CPY-14
@@ -289,7 +294,7 @@ must not use a move function that the program deletes explicitly.
 :tests: classes/copy-move/defaulted-copy-const-mismatch-unused.cpp classes/copy-move/defaulted-copy-nonconst-param.cpp classes/copy-move/defaulted-move-const-param.cpp classes/copy-move/defaulted-out-of-line-copy.cpp classes/copy-move/defaulted-volatile-param.cpp
 
 A copy or move constructor defaulted in its class can have a parameter
-type different from the implicit one. Then it is deleted
+type different from the implicit one. Such a constructor is deleted
 ({question}`Q-0055`). A defaulted copy constructor can take `T&`. A
 function defaulted after its class definition is not deleted by this
 rule.
@@ -337,7 +342,7 @@ copy-initialization.
 
 A prvalue of class type initializes the target object directly. No copy
 or move constructor is called, and none needs to be accessible or not
-deleted. This applies to:
+deleted. The rule applies to:
 
 - nested prvalues,
 - return values,
@@ -354,9 +359,9 @@ In a `return` statement, a name of one of these is an xvalue:
 - a parameter of the function,
 - a variable of rvalue reference type that the function declares.
 
-Parentheses around the name do not change this. The return value is then
-initialized by a move, or by a converting constructor that takes an
-rvalue. A name of one of these is an lvalue:
+Parentheses around the name do not change the classification. The return
+value is then initialized by a move, or by a converting constructor that
+takes an rvalue. A name of one of these is an lvalue:
 
 - a variable of lvalue reference type,
 - a global variable,
@@ -387,7 +392,7 @@ assignment operators. Each of these makes such a function non-trivial:
 - A base or a member of class type is copied or moved by a non-trivial
   one.
 
-With none of them, the function is *trivial*. Default member
+With none of these conditions, the function is *trivial*. Default member
 initializers play no part.
 :::
 
@@ -416,7 +421,7 @@ this page does not list yet *(class properties referenced)*:
 
 - Its copy and move functions and its destructor are implicit or
   defaulted, and at least one copy or move function is not deleted.
-- It has no virtual function and no virtual base.
+- The class has no virtual function and no virtual base.
 - Each base and each member is also trivially copyable.
 
 If a program copies the bytes of such an object into another object of
@@ -512,7 +517,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 95 of 97 tes
   second under `-Wall`.
 - CPY-18: Clang and GCC assign the virtual base two times. The test
   accepts one or two.
-- CPY-19: the test checks the consequence for a simple class. It does
+- CPY-19: the test checks the consequence for a simple class and does
   not check each condition of the definition.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,

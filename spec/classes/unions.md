@@ -18,8 +18,9 @@ copy and move, list initialization and aggregates, standard conversions.
 :rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8
 :exceptions: UNI-10 UNI-12
 
-A union is one piece of storage with several views. All its members start
-at its first byte, and at most one of them is an object at a time:
+A union is one piece of storage with several views. All members of the
+union start at its first byte, and at most one member is an object at a
+time:
 
 ```text
 first byte
@@ -34,28 +35,30 @@ first byte
 ```
 
 The initializer picks the first active member, and a plain assignment to
-another member makes that one active instead. Reading a member that is
-not active reads an object that is not there, which is undefined
-({principle}`OBJ-P4`). A reference is not an object with storage of its
-own, so a union cannot hold one.
+another member makes that member active instead. Reading a member that
+is not active reads an object that is not there, so the behavior is
+undefined ({principle}`OBJ-P4`). A reference is not an object with
+storage of its own, so a union cannot hold a reference.
 :::
 
 :::{principle} UNI-P2
 :rules: UNI-3 UNI-11
 
-The union does not know which member is active, so it cannot build,
-copy, or destroy its members on its own. When a member would need that,
-the implementation deletes the union's special member functions and
-leaves the job to the union's own code ({principle}`CPY-P3`).
+The union does not know which member is active, so the union cannot
+build, copy, or destroy its members on its own. When a member would need
+such an operation, the implementation deletes the union's special member
+functions and leaves the job to the union's own code
+({principle}`CPY-P3`).
 :::
 
 :::{principle} UNI-P3
 :rules: UNI-7 UNI-9
 
 An anonymous union adds its members to the scope around it, as if the
-scope held them, while they still share one storage. So it can only hold
-plain public data members, and at namespace scope it needs `static`
-because its members have no name to link by.
+scope held the members, while the members still share one storage. An
+anonymous union can therefore hold only plain public data members. At
+namespace scope an anonymous union needs `static` because its members
+have no name to link by.
 :::
 
 :::{principle} UNI-P4
@@ -66,22 +69,22 @@ declared type each decide part of its behavior:
 
 | Property | Decided by |
 |---|---|
-| The range of values it holds | The width |
+| The range of values the bit-field holds | The width |
 | The way it promotes | The width |
 | Its signedness | The declared type |
 | Its treatment in initialization | The declared type |
 
-Because it need not start on a byte, a bit-field has no address, so a
-program cannot point to it or bind a plain reference to it.
+A bit-field need not start on a byte, so a bit-field has no address. A
+program cannot point to a bit-field or bind a plain reference to it.
 :::
 
 :::{principle} UNI-P5
 :rules: BF-8 BF-9 BF-10
 
 The implementation decides how bit-fields are packed. It also decides
-the value that a bit-field holds after a value too wide for it is
-stored. An implementation
-should warn when a width exceeds its type or a constant does not fit.
+the value that a bit-field holds after a value too wide for the
+bit-field is stored. An implementation should warn when a width exceeds
+the declared type or a constant does not fit.
 :::
 
 ## Syntax
@@ -114,7 +117,7 @@ least as aligned as its most strictly aligned member. A union can have:
 - static data members,
 - array members.
 
-Its members are public unless an access label says otherwise.
+The members of a union are public unless an access label says otherwise.
 :::
 
 :::{rule} UNI-2
@@ -130,16 +133,15 @@ give the limits on bases and virtual functions.
 :tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp
 
 If a variant member has one of these non-trivial functions (CTOR-23,
-DTOR-9, CPY-27), the matching
-special member of the union is deleted:
+DTOR-9, CPY-27), the matching special member of the union is deleted:
 
 - a default constructor,
 - a copy or move function,
 - a destructor.
 
-The same applies to a class with an anonymous union member. A default
-member initializer on a variant member gives the union a usable default
-constructor.
+The same rule applies to a class with an anonymous union member. A
+default member initializer on a variant member gives the union a usable
+default constructor.
 :::
 
 :::{rule} UNI-11
@@ -163,7 +165,7 @@ A union is initialized as one of its members:
 - Value initialization `{}` initializes the first member to zero, if no
   member has a default member initializer.
 
-That member is then active.
+The initialized member is then active.
 :::
 
 :::{rule} UNI-8
@@ -185,7 +187,7 @@ A braced initializer for the first member must not narrow.
 :tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp
 
 The members of an anonymous union are members of the enclosing scope. In
-a class, they are variant members of the class. A braced list
+a class, these members are variant members of the class. A braced list
 initializes an anonymous union member with its own braces. An anonymous
 union can be:
 
@@ -199,8 +201,9 @@ union can be:
 :tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp
 
 Outside a function or class, an anonymous union needs `static`, even in
-an unnamed namespace ({question}`Q-0057`). Its members must all be public
-data members that are not static. These are not valid in it:
+an unnamed namespace ({question}`Q-0057`). The members of the anonymous
+union must all be public data members that are not static. An anonymous
+union must not have:
 
 - member functions,
 - static data members,
@@ -260,11 +263,12 @@ A `const` reference binds to a temporary that holds a copy of the value.
 
 A bit-field promotes as follows:
 
-1. If `int` can hold all values of its width, it promotes to `int`.
-2. If not, it promotes to `unsigned int` if `unsigned int` can hold
-   them.
-3. If neither can, the promotion uses its declared type as other
-   integers do.
+1. If `int` can hold all values of the bit-field's width, the bit-field
+   promotes to `int`.
+2. If not, the bit-field promotes to `unsigned int` if `unsigned int`
+   can hold those values.
+3. If neither can, the promotion uses the declared type of the
+   bit-field, as for other integers.
 
 The type of the bit-field for `auto` deduction is the declared type.
 :::
@@ -332,9 +336,9 @@ through the other struct. The read gives the stored value.
 
 If a program reads a union member that is not active, the behavior is
 undefined. A compound assignment to a member that is not active reads
-it. An assignment to a member that is not active, through an assignment
-operator that is user-provided, uses an object that does not exist yet
-({question}`Q-0088`).
+that member. An assignment to a member that is not active, through an
+assignment operator that is user-provided, uses an object that does not
+exist yet ({question}`Q-0088`).
 :::
 
 ## Implementation Requirements
@@ -364,8 +368,9 @@ evaluation.
 :kind: recommended
 :tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp classes/unions/bitfield-assign-too-wide-warns.cpp
 
-An implementation should warn if a bit-field width is larger than its
-type, or if a constant assignment changes value because of the width.
+An implementation should warn if a bit-field width is larger than the
+declared type, or if a constant assignment changes value because of the
+width.
 :::
 
 ## Examples
@@ -397,13 +402,13 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 The results are in `tests/RESULTS.md`. All seven compilers agree on 98 of 101 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
-  namespace. GCC and EDG reject it ({question}`Q-0057`).
-- BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and EDG
-  reject it ({question}`Q-0058`).
+  namespace. GCC and EDG reject the declaration ({question}`Q-0057`).
+- BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and
+  EDG reject the cv-qualifier ({question}`Q-0058`).
 - BF-8: Clang and GCC warn under `-Wall` for both cases.
 - UNI-6: EDG accepts the assignment through a user-provided operator to
   a member that is not active during constant evaluation. Clang and GCC
-  reject it ({question}`Q-0088`).
+  reject the assignment ({question}`Q-0088`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

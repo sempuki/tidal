@@ -1,7 +1,8 @@
 # Translation, execution, and behavior classes
 
 A program is a set of translation units that an implementation
-translates and links into one executable. This page states these things:
+translates and links into one executable. This page states the
+following:
 
 - what an implementation must do with a program that breaks a rule,
 - where execution begins,
@@ -14,20 +15,22 @@ Depends on: storage duration and linkage, constant expressions, function
 definitions.
 
 Readers who know the vocabulary of the ISO standard will find that this
-specification says the same things in different words. The difference
-is deliberate, for three reasons:
+specification says the same things in different words. The words
+differ on purpose, for the following reasons:
 
 - The writing follows Simplified Technical English, which is meant for
   readers who are not specialists in the text, and *shall* and *may*
   are the two words that such readers misread most often.
 - The strength of each rule is carried by its class, printed in the
   rule's header and checked against the implementations by tests, so
-  the verb in the sentence does not have to carry it.
+  the verb in the sentence does not have to carry the strength.
 - *Ill-formed* and its relatives describe a program from the standard's
   side, while this specification describes what an implementation does
-  with the program, which is what its tests observe.
+  with the program. The tests of this specification observe what the
+  implementation does.
 
-The table below maps one vocabulary to the other. It is informative.
+The table below maps one vocabulary to the other. The table is
+informative.
 
 | ISO term | Tidal word or class |
 |---|---|
@@ -50,29 +53,29 @@ The table below maps one vocabulary to the other. It is informative.
 :::{principle} TR-P1
 :rules: TR-1 TR-6
 
-A rule in this specification is a *rule on the program* or a *fact
-about the implementation*. A rule on the program says what a valid
-program must or must not do. If a program
-breaks one, the program is not valid, and an implementation that
-translates it must say so with a diagnostic, whether or not the program
-would ever reach the broken part. A fact about the implementation says
-what every implementation does with a valid program. The class of each
-rule says which kind it is and how strong it is:
+A rule in this specification is a *rule on the program* or a *fact about
+the implementation*. A rule on the program says what a valid program
+must or must not do. If a program breaks such a rule, the program is not
+valid, and an implementation that translates the program must say so
+with a diagnostic, whether or not the program would ever reach the
+broken part. A fact about the implementation says what every
+implementation does with a valid program. The class of each rule says
+which kind it is and how strong it is:
 
 | Class | Kind | Meaning |
 |---|---|---|
-| `reject` | rule on the program | The implementation must diagnose a program that breaks it. |
+| `reject` | rule on the program | The implementation must diagnose a program that breaks the rule. |
 | `no-diagnostic` | rule on the program | The program is not valid, and an implementation need not notice. |
 | `required` | fact | Every implementation behaves this way. |
 | `undefined` | rule on the program | This specification sets no requirement on what happens. |
 | `impl-defined` | fact | Each implementation chooses and documents its behavior. |
 | `unspecified` | fact | Each implementation chooses from the given set, and need not document or be consistent. |
-| `conditionally-supported` | fact | An implementation can reject the construct. If it accepts it, it documents the behavior. |
-| `recommended` | advice | An implementation should do this, usually by warning. |
+| `conditionally-supported` | fact | An implementation can reject the construct. If the implementation accepts the construct, it documents the behavior. |
+| `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
-A diagnostic for a `recommended` rule is a warning. It does not make
-the program invalid, and a program can ask the implementation to treat
-it as an error.
+A diagnostic for a `recommended` rule is a warning. The warning does
+not make the program invalid, and a program can ask the implementation
+to treat the warning as an error.
 :::
 
 :::{principle} TR-P2
@@ -90,7 +93,7 @@ unit 2 --> translated with its own declarations --+--> linked into
 unit 3 --> translated with its own declarations --+
 ```
 
-So these hold:
+So the following facts hold:
 
 - A name that one unit uses and another defines needs a declaration in
   the first unit.
@@ -104,11 +107,12 @@ So these hold:
 
 Execution begins at `main`. The program's exit status is the value that
 `main` returns, and reaching the end of `main` returns zero. `main` is
-the entry point and nothing else. A program cannot do these things:
+the entry point and nothing else. A program cannot do the following:
 
-- call it,
-- take its address,
-- give it a form other than the two that the runtime knows how to call.
+- call `main`,
+- take the address of `main`,
+- give `main` a form other than the two that the runtime knows how to
+  call.
 :::
 
 :::{principle} TR-P5
@@ -117,7 +121,7 @@ the entry point and nothing else. A program cannot do these things:
 This specification describes an *abstract machine*: what each
 construct does, in what order, with what effect on objects. An
 implementation need only produce the same {term}`observable behavior`
-as that machine. The observable behavior is these:
+as that machine. The observable behavior consists of the following:
 
 - the reads and writes of `volatile` objects in their order,
 - the data the program writes out,
@@ -133,16 +137,17 @@ Undefined behavior is the point where the abstract machine has no next
 step. From there this specification requires nothing of the execution,
 including the parts that came before, because the implementation was
 free to reorder them. Constant evaluation runs the abstract machine
-exactly, so it stops at that point and the program is rejected, even
-when the value that the undefined step produced is never used.
+exactly, so constant evaluation stops at that point and the program is
+rejected, even when the value that the undefined step produced is never
+used.
 :::
 
 :::{principle} TR-P4
 :rules: TR-5 TR-10
 
 Constant evaluation runs the same functions as execution, with the
-same meaning, at translation time. It differs from execution in these
-ways:
+same meaning, at translation time. Constant evaluation differs from
+execution in the following ways:
 
 - It happens only where a constant is needed, and nowhere else.
 - It tracks every object and every operation, so an evaluation that
@@ -168,9 +173,10 @@ when the broken code is in a function that the program never calls.
 
 These rules apply to `main`:
 
-- It must return `int`.
-- It must not be a template.
-- Its parameter list must be one that the implementation accepts (FN-6).
+- `main` must return `int`.
+- `main` must not be a template.
+- The parameter list of `main` must be one that the implementation
+  accepts (FN-6).
 - A program must not call `main` or take its address.
 :::
 
@@ -203,8 +209,8 @@ many strings followed by a null pointer.
 Each translation unit sees only its own declarations. A function with
 internal linkage is a separate function in each unit that defines it. A
 function that is declared and used but defined in no unit makes the
-program fail to link. This includes `main`, which the program's start
-uses, so a program with no `main` fails to link. A name that only
+program fail to link. This rule includes `main`, which the program's
+start uses, so a program with no `main` fails to link. A name that only
 another unit declares cannot be used (NAM-8).
 :::
 
@@ -213,13 +219,13 @@ another unit declares cannot be used (NAM-8).
 :tests: foundations/translation/constant-evaluation-same-function.cpp foundations/translation/constant-evaluation-only-where-needed.cpp foundations/translation/if-consteval-selects.cpp
 
 A `constexpr` function gives the same result in constant evaluation and
-at run time. Constant evaluation occurs only where a constant is
-needed, such as a `static_assert`. A call that TR-10 rejects in
-constant evaluation is valid at run time if it reaches no undefined
-operation. `if consteval` selects its first branch in constant evaluation
-and its second at run time. A `constexpr` function that never gives a
-constant is still valid (CX-3), as long as no constant evaluation
-reaches it.
+at run time. Constant evaluation occurs only where a constant is needed,
+such as a `static_assert`. A call that TR-10 rejects in constant
+evaluation is valid at run time if it reaches no undefined operation.
+`if consteval` selects its first branch in constant evaluation and its
+second at run time. A `constexpr` function that never gives a constant
+is still valid (CX-3), as long as no constant evaluation reaches the
+function.
 :::
 
 :::{rule} TR-7
@@ -243,7 +249,7 @@ If an execution reaches an operation that has undefined behavior, this
 specification sets no requirement on the whole execution, before or
 after that point. Constant evaluation rejects such an evaluation, also
 when the result of the operation is not used. An operation on a path
-that the evaluation does not take has no effect on it.
+that the evaluation does not take has no effect on the evaluation.
 :::
 
 ## Implementation Requirements
@@ -253,8 +259,8 @@ that the evaluation does not take has no effect on it.
 :tests: foundations/translation/main-with-args.cpp foundations/translation/main-program-name.cpp
 
 The environment that starts a program supplies the values of `main`'s
-two parameters. On the matrix targets, the first is at least 1, and the
-first string holds the name by which the program was started.
+two parameters. On the matrix targets, the first parameter is at least
+1, and the first string holds the name by which the program was started.
 :::
 
 ## Recommended Practice
@@ -263,9 +269,9 @@ first string holds the name by which the program was started.
 :kind: recommended
 :tests: foundations/translation/warning-not-error.cpp foundations/translation/warning-as-error-with-flag.cpp
 
-A diagnostic for a `recommended` rule is a warning. It does not stop
-translation. An implementation should give a way to turn warnings into
-errors.
+A diagnostic for a `recommended` rule is a warning. The warning does not
+stop translation. An implementation should give a way to turn warnings
+into errors.
 :::
 
 ## Examples
@@ -285,10 +291,10 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All seven compilers agree on 25 of
-26 tests. EDG takes no optimization flag, so the three `-O2` tests are
-skipped there. EDG runs and links no programs, so its results for the run and
-link tests say only that the programs are valid.
+The results are in `tests/RESULTS.md`. All seven compilers agree on 25
+of 26 tests. EDG takes no optimization flag, so the three `-O2` tests
+are skipped there. EDG runs and links no programs, so its results for
+the run and link tests say only that the programs are valid.
 
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
   and GCC reject it ({question}`Q-0112`).

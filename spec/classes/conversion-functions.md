@@ -1,13 +1,13 @@
 # Conversion functions
 
 A conversion function is a member function that converts an object of its
-class to another type. An implicit conversion can use it, unless it is
-`explicit`. This page covers:
+class to another type. An implicit conversion can use a conversion
+function, unless the function is `explicit`. This page covers:
 
 - how to declare conversion functions,
-- where implicit and explicit conversions use them,
-- how they combine with converting constructors and standard
-  conversions.
+- where implicit and explicit conversions use conversion functions,
+- how conversion functions combine with converting constructors and
+  standard conversions.
 
 Depends on: constructors and destructors, standard conversions, overload
 resolution *(overload resolution referenced)*.
@@ -17,12 +17,12 @@ resolution *(overload resolution referenced)*.
 :::{principle} CVF-P1
 :rules: CVF-1 CVF-5 CVF-7 CVF-9
 
-A conversion function is a member whose name is a type, and it says how
-an object of the class becomes a value of that type. It takes no
-parameters and declares no return type, because the name already says
-both. A derived class inherits them, and a conversion function with the
-same target type hides the base's, as any member with the same name
-would.
+A conversion function is a member whose name is a type, and the function
+says how an object of the class becomes a value of that type. The
+function takes no parameters and declares no return type, because the
+name already says both. A derived class inherits the conversion
+functions of its base, and a conversion function with the same target
+type hides the base's, as any member with the same name would.
 :::
 
 :::{principle} CVF-P2
@@ -39,7 +39,8 @@ user-defined steps, wherever a value of the target type is needed.
 Overload resolution chooses among conversion functions as among
 other functions, and a context that needs one integral value cannot pick
 between two. A conversion to the class itself, a base, or `void` can
-never be chosen, so an implementation should warn about one.
+never be chosen, so an implementation should warn about such a
+function.
 :::
 
 ## Syntax
@@ -67,7 +68,7 @@ can be:
 - a reference type, which makes the result an lvalue or xvalue,
 - `auto`, deduced from the `return` statements ({question}`Q-0059`).
 
-It can:
+A conversion function can:
 
 - be `const`, `virtual`, or `constexpr`,
 - have an explicit object parameter,
@@ -106,7 +107,7 @@ function needs a type alias.
 :tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/call-through-function-reference.cpp classes/conversion-functions/delete-class-operand.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp
 
 An implicit conversion can call a conversion function that is not
-`explicit`. This applies in:
+`explicit`. Such implicit conversions occur in:
 
 - initialization,
 - function arguments,
@@ -154,7 +155,7 @@ Contextual conversion occurs in:
 :tests: classes/conversion-functions/explicit-argument.cpp classes/conversion-functions/explicit-arithmetic.cpp classes/conversion-functions/explicit-bool-comparison.cpp classes/conversion-functions/explicit-bool-copy-init.cpp classes/conversion-functions/explicit-bool-return.cpp classes/conversion-functions/explicit-copy-init.cpp classes/conversion-functions/explicit-int-in-if.cpp
 
 The uses that CVF-3 lists are the only uses of an `explicit` conversion
-function. Other conversions must not use it.
+function. Other conversions must not use the function.
 :::
 
 :::{rule} CVF-4
@@ -164,8 +165,8 @@ function. Other conversions must not use it.
 Overload resolution chooses between conversion functions as it does for
 other functions. The object is the implied argument, so cv-qualifiers
 and ref-qualifiers select between overloads. A conversion function to
-its own class, a base of it, or `void` is never used by a conversion. A
-call by name still calls it.
+its own class, a base of that class, or `void` is never used by a
+conversion. A call by name still calls such a function.
 :::
 
 :::{rule} CVF-12
@@ -202,8 +203,8 @@ to different integral types makes these uses ambiguous.
 :tests: classes/conversion-functions/conversion-to-base-warns.cpp classes/conversion-functions/conversion-to-self-warns.cpp classes/conversion-functions/conversion-to-void-warns.cpp
 
 An implementation should warn about a conversion function that a
-conversion never uses. This is a conversion to its own class, a base, or
-`void`.
+conversion never uses. Such a function converts to its own class, a
+base, or `void`.
 :::
 
 ## Examples

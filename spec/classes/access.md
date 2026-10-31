@@ -14,40 +14,40 @@ member name carries an access, set by the class key or by the last label
 before it. A use of the name is checked where the use occurs, after
 lookup and overload resolution have chosen the declaration, so an
 accessible overload that loses never rescues a call. Only names are
-checked. These carry no name to check:
+checked. The following carry no name to check:
 
 - a deduced type,
 - the final overrider of a virtual call,
 - the declarator of a member defined outside its class.
 
 A default argument is checked where the function is declared, because
-its names are written there.
+the names in the default argument are written there.
 :::
 
 :::{principle} ACC-P2
 :rules: ACC-4
 
 A protected member is part of the interface that a class offers to its
-derived classes, and to nothing else. A derived class can use it only
-through its own type, so that one derived class cannot reach into the
-protected parts of another.
+derived classes, and to nothing else. A derived class can use a
+protected member only through the derived class type, so that one
+derived class cannot reach into the protected parts of another.
 :::
 
 :::{principle} ACC-P3
 :rules: ACC-5 ACC-6 ACC-7 ACC-15 ACC-17
 
-Friendship is granted by the class and belongs to the one it names. It
-does not pass on to the friends of a friend or to the classes derived
-from a friend. A class can befriend:
+Friendship is granted by the class and belongs to the friend that the
+class names. Friendship does not pass on to the friends of a friend or
+to the classes derived from a friend. A class can befriend:
 
 - a function,
 - one member function of another class,
 - a whole class.
 
-The class needs access to a member function before it can name it. A
-friend function first declared in the class lives in the enclosing
-namespace but is found only through its arguments, so it stays with the
-class it serves.
+The class needs access to a member function before the class can name
+that function. A friend function first declared in the class lives in
+the enclosing namespace. The friend function is found only through its
+arguments, so the function stays with the class that it serves.
 :::
 
 :::{principle} ACC-P4
@@ -56,10 +56,10 @@ class it serves.
 A derived class sees its base's public and protected members, and the
 access of the base caps what the derived class passes on. A conversion
 to a base needs access to that base. A using-declaration can raise or
-lower the access of a base member it can reach. The injected name of a
-private base is private too. A nested class is a member, with a member's
-access to the enclosing class, while the enclosing class gets no special
-access in return.
+lower the access of a base member that the derived class can reach. The
+injected name of a private base is private too. A nested class is a
+member, with a member's access to the enclosing class, while the
+enclosing class gets no special access in return.
 :::
 
 ## Syntax
@@ -99,7 +99,7 @@ label. A class can have any number of labels, in any order.
 :tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
 
 Only the members and friends of a class can use the name of a private
-member. This applies to:
+member. The rule applies to:
 
 - data members,
 - member functions,
@@ -126,14 +126,15 @@ public member of a base with the same name.
 :kind: required
 :tests: classes/access/private-type-via-auto.cpp classes/access/private-type-out-of-line.cpp classes/access/virtual-access-static-type.cpp
 
-Access control applies to names. It does not apply in these cases:
+Access control applies to names. Access control does not apply in these
+cases:
 
 - A type that comes from deduction, for example with `auto`, and is not
   named.
 - The final overrider of a virtual function call. The access of the
   function that the call names applies.
 - The return type and declarator of a member definition outside its
-  class. They have the access of a member.
+  class. The return type and declarator have the access of a member.
 :::
 
 :::{rule} ACC-4
@@ -141,8 +142,8 @@ Access control applies to names. It does not apply in these cases:
 :tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp classes/derived/base-protected-dtor-direct.cpp
 
 A protected member has the access of a private member. Members and
-friends of a derived class `D` also have access to it, with these
-limits:
+friends of a derived class `D` also have access to the protected member,
+with these limits:
 
 - For a non-static member used through an object, the class of the
   object must be `D` or a class derived from `D`.
@@ -172,8 +173,8 @@ An access label has no effect on a friend declaration.
 :kind: reject
 :tests: classes/access/friend-not-transitive.cpp classes/access/friend-not-inherited.cpp
 
-A friend of a friend does not get access. A class derived from a friend
-does not get access.
+Neither a friend of a friend nor a class derived from a friend gets
+access.
 :::
 
 :::{rule} ACC-7
@@ -182,7 +183,8 @@ does not get access.
 
 A friend function that is first declared in a class is a member of the
 enclosing namespace. Only argument-dependent lookup
-*(lookup referenced)* finds it, unless the namespace also declares it.
+*(lookup referenced)* finds the function, unless the namespace also
+declares the function.
 :::
 
 :::{rule} ACC-17
@@ -190,7 +192,8 @@ enclosing namespace. Only argument-dependent lookup
 :tests: classes/access/hidden-friend-not-visible.cpp
 
 Ordinary name lookup does not find a friend function that ACC-7
-describes. A use of its name that needs ordinary lookup is not valid.
+describes. A use of the function's name that needs ordinary lookup is
+not valid.
 :::
 
 :::{rule} ACC-8
@@ -224,7 +227,7 @@ ACC-8 gives the access of the other members.
 :tests: classes/access/private-base-conversion.cpp
 
 A conversion from a derived class to one of its bases needs access to
-that base. This applies to:
+that base. The rule applies to:
 
 - pointers,
 - references,
@@ -239,8 +242,8 @@ is not valid.
 :tests: classes/access/using-changes-access.cpp
 
 A using-declaration ({rule}`DER-9`) in a derived class gives a base member
-the access of the label where the declaration occurs. This can increase
-or decrease the access.
+the access of the label where the declaration occurs. The
+using-declaration can increase or decrease the access.
 :::
 
 :::{rule} ACC-13
@@ -255,9 +258,9 @@ derived class.
 :kind: required
 :tests: classes/access/nested-accesses-enclosing.cpp classes/access/local-class-member-access.cpp
 
-A nested class is a member of its enclosing class. It has access to the
-private and protected members of the enclosing class. A local class in a
-member function has the access of that member function.
+A nested class is a member of its enclosing class. The nested class has
+access to the private and protected members of the enclosing class. A
+local class in a member function has the access of that member function.
 :::
 
 :::{rule} ACC-19
@@ -274,7 +277,7 @@ the members of the nested class.
 
 The name of a class is also a member of the class. In a class derived
 from a class with a private base, the unqualified name of that base
-refers to that member, which is private. A qualified name, such as
+refers to that private member. A qualified name, such as
 `::A`, names the class through its namespace and is accessible.
 :::
 

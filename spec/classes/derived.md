@@ -22,10 +22,11 @@ and destructors, copy and move.
 :rules: DER-1 DER-2 DER-18 DER-22
 
 A derived object contains one subobject for each base in its base list,
-and the base's members become its members ({principle}`OBJ-P1`). A base
-must therefore be a complete class that allows derivation. The same
-class reached by two non-virtual paths gives two separate subobjects,
-which is valid, and a member reached through both is ambiguous.
+and the members of each base become members of the derived class
+({principle}`OBJ-P1`). A base must therefore be a complete class that
+allows derivation. The same class reached by two non-virtual paths gives
+two separate subobjects. The two subobjects are valid, and a member
+reached through both is ambiguous.
 :::
 
 :::{principle} DER-P2
@@ -42,9 +43,9 @@ subobjects is ambiguous until the program picks a path.
 :rules: DER-5 DER-10 DER-11 DER-16 DER-17
 
 A derived object is a base object with more parts, so a pointer or
-reference to it converts to the base implicitly and lands on the base
-subobject. The other direction is a claim about what the object really
-is, so the conversion:
+reference to the derived object converts to the base implicitly and
+lands on the base subobject. The other direction is a claim about what
+the object really is, so the conversion:
 
 - needs `static_cast`,
 - is undefined when the claim is false,
@@ -55,8 +56,9 @@ is, so the conversion:
 :::{principle} DER-P4
 :rules: DER-6 DER-7 DER-12 DER-13
 
-A virtual base is shared by every path, so an object has one of it.
-Compare a base `A` that `D` reaches through `B` and through `C`:
+A virtual base is shared by every path, so an object has one subobject
+of that base. Compare a base `A` that `D` reaches through `B` and
+through `C`:
 
 ```text
 A is a non-virtual base           A is a virtual base
@@ -71,20 +73,20 @@ a D holds two A subobjects        a D holds one A subobject
 ```
 
 Only the most derived class knows the whole object, so its constructor
-initializes the virtual base, first and once, and every constructor of
-that class must be able to. The position of the virtual base is
-decided at run time, so such a class has no `constexpr` constructor or
-destructor.
+initializes the virtual base, first and once. Every constructor of that
+class must be able to initialize the virtual base. The position of the
+virtual base is decided at run time, so such a class has no `constexpr`
+constructor or destructor.
 :::
 
 :::{principle} DER-P5
 :rules: DER-8 DER-14 DER-15 DER-20 DER-21
 
 Constructing a derived object constructs its bases, so the derived class
-needs access to their constructors and destructors. A derived class can
-inherit the constructors of a direct base, which then build the base
-subobject and leave the rest to default initialization, and a signature
-two bases both offer is ambiguous.
+needs access to the constructors and destructors of the bases. A derived
+class can inherit the constructors of a direct base. An inherited
+constructor builds the base subobject and leaves the rest to default
+initialization. A signature that two bases both offer is ambiguous.
 :::
 
 ## Syntax
@@ -126,7 +128,7 @@ base list. `final` after the class name is a marker only in that position.
 An object of a derived class contains one subobject of each non-virtual
 direct base. The members of a base are members of the derived class. If
 the same class is a non-virtual base on two paths, the object contains two
-separate subobjects of it. An aggregate can have bases, and its
+separate subobjects of that class. An aggregate can have bases, and its
 initializer list gives the bases first.
 :::
 
@@ -135,16 +137,16 @@ initializer list gives the bases first.
 :tests: classes/derived/hiding-type-by-member.cpp classes/derived/qualified-name-reaches-base.cpp classes/derived/using-brings-overloads.cpp classes/derived/using-derived-wins.cpp
 
 A name declared in a derived class hides every member with that name in
-its bases. This includes:
+its bases. The hidden members include:
 
 - all overloads of a function,
 - data members,
 - types.
 
 A qualified name such as `d.B::f()` finds the base member. A
-using-declaration of a base member makes its overloads visible in the
-derived class. A derived member with the same parameters hides the one
-that the using-declaration brings.
+using-declaration of a base member makes the overloads of that member
+visible in the derived class. A derived member with the same parameters
+hides the base function that the using-declaration brings.
 :::
 
 :::{rule} DER-19
@@ -168,13 +170,13 @@ using-declaration that inherits constructors must name a direct base.
 :tests: classes/derived/ambiguous-member-unused.cpp classes/derived/ambiguous-member.cpp classes/derived/ambiguous-overloads-different-bases.cpp classes/derived/ambiguous-qualified-ok.cpp classes/derived/ambiguous-repeated-base-member.cpp classes/derived/ambiguous-resolved-by-using.cpp classes/derived/dominance-derived-hides.cpp classes/derived/dominance-nonvirtual-ambiguous.cpp classes/derived/repeated-base-static-ok.cpp
 
 If a name lookup in a derived class finds the name in more than one base
-subobject, the use of the name is ambiguous. This applies to overloads
-from different bases too. These exceptions apply:
+subobject, the use of the name is ambiguous. This rule also applies to
+overloads from different bases. These exceptions apply:
 
 - A static member, a type, or an enumerator found through two paths to
   the same class is not ambiguous.
-- A declaration in a class hides a declaration with the same name in its
-  virtual bases, on every path.
+- A declaration in a class hides a declaration with the same name in the
+  virtual bases of that class, on every path.
 
 A qualified name or a using-declaration can remove the ambiguity. A name
 that is ambiguous but not used is valid.
@@ -187,9 +189,9 @@ that is ambiguous but not used is valid.
 A pointer or reference to a derived class converts implicitly to a
 pointer or reference to an unambiguous base. The result refers to the
 base subobject, which can have a different address. A null pointer
-converts to a null pointer. An object of the derived class can initialize
-a base object, which copies only the base part. Constant evaluation can
-do this conversion.
+converts to a null pointer. An object of the derived class can
+initialize a base object. The initialization copies only the base part.
+Constant evaluation can do this conversion.
 :::
 
 :::{rule} DER-10
@@ -198,7 +200,8 @@ do this conversion.
 
 A pointer or reference to a base does not convert implicitly to a derived
 class. A conversion to a base that occurs as more than one subobject is
-not valid. A path through one direct base can select one of them.
+not valid. A path through one direct base can select one of the
+subobjects.
 :::
 
 :::{rule} DER-6
@@ -243,7 +246,7 @@ constructors need not initialize its virtual bases.
 :tests: classes/derived/base-protected-ctor.cpp classes/derived/base-protected-dtor.cpp
 
 A protected constructor or destructor of a base gives a derived class
-access to it.
+access to that constructor or destructor.
 :::
 
 :::{rule} DER-21
@@ -251,9 +254,10 @@ access to it.
 :tests: classes/derived/base-private-ctor.cpp classes/derived/base-private-dtor.cpp classes/derived/virtual-base-private-dtor.cpp
 
 A derived class needs access to the constructor and destructor of each
-base that it uses. This includes virtual bases that are not direct
-bases. A private constructor or destructor does not give this access, so
-the special member of the derived class is deleted.
+base that the derived class uses. This requirement includes virtual
+bases that are not direct bases. A private constructor or destructor
+does not give this access, so the special member of the derived class is
+deleted.
 :::
 
 :::{rule} DER-8
@@ -268,7 +272,8 @@ default-initialized. These rules apply:
 - Default, copy, and move constructors are not inherited.
 - An inherited constructor keeps its access, its `explicit`, and its
   default arguments.
-- A constructor of `D` with the same parameters hides the inherited one.
+- A constructor of `D` with the same parameters hides the inherited
+  constructor.
 :::
 
 :::{rule} DER-20
@@ -316,8 +321,8 @@ derived class. The declaration is valid.
 :kind: reject
 :tests: classes/derived/direct-and-indirect-base-use.cpp
 
-If a class is both a direct and an indirect base (DER-18), a use of its
-member through the derived class is ambiguous.
+If a class is both a direct and an indirect base (DER-18), a use of a
+member of that base through the derived class is ambiguous.
 :::
 
 ## Runtime Behavior
@@ -372,7 +377,7 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on 72 of
 73 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
-  base. Clang and GCC reject it ({question}`Q-0085`).
+  base. Clang and GCC reject the destructor ({question}`Q-0085`).
 
 Inputs: clang-sema-declcxx, clang-sema-access, clang-diag-sema,
 edg-class-decl.

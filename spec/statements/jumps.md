@@ -1,6 +1,6 @@
 # Jump statements and labels
 
-These statements transfer control:
+The following statements transfer control:
 
 - `break`,
 - `continue`,
@@ -26,25 +26,26 @@ in the same function.
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,
 and a label can share a name with a variable. A lambda body is a
-different function, so a jump cannot cross its boundary in either
-direction.
+different function, so a jump cannot cross the boundary of a lambda body
+in either direction.
 :::
 
 :::{principle} JMP-P2
 :rules: JMP-4 JMP-6 JMP-9
 
 Control that leaves a scope ends the scope's objects, and control that
-enters a scope must not skip the creation of an object it will find
-there ({principle}`OBJ-P2`). So these cases follow:
+enters a scope must not skip the creation of an object at the target
+({principle}`OBJ-P2`). The following cases result:
 
 | Jump | Result |
 |---|---|
-| Out of a block | The block's variables are destroyed, in reverse order. `return` does the same after it has taken its value. |
-| Backward past a declaration | The variable is destroyed, and the declaration makes it again. |
+| Out of a block | The block's variables are destroyed, in reverse order. `return` also destroys the variables, after `return` has taken its value. |
+| Backward past a declaration | The variable is destroyed, and the declaration makes the variable again. |
 | Forward past an initialization | Rejected, because the variable would exist without a value |
 
-A type that needs no construction and no destruction has nothing
-to skip, so a jump can pass its declaration when it has no initializer.
+A type that needs no construction and no destruction has nothing to
+skip, so a jump can pass a declaration of such a type when the
+declaration has no initializer.
 :::
 
 :::{principle} JMP-P3
@@ -109,7 +110,8 @@ other than `void` (JMP-3).
 :tests: statements/jumps/label-function-scope.cpp statements/jumps/label-separate-names.cpp
 
 A label is visible in all of its function. A `goto` can name a label
-before it or after it. A label name does not conflict with the names of
+that comes before or after the `goto`. A label name does not conflict
+with the names of
 variables or types.
 :::
 
@@ -129,8 +131,9 @@ These conditions apply to labels (JMP-5):
 :tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp
 
 A jump must not skip the declaration of a variable with
-{term}`automatic storage` that is in scope at the target. This does not
-apply to a declaration with no initializer whose type is one of these:
+{term}`automatic storage` that is in scope at the target. This rule does
+not apply to a declaration with no initializer whose type is one of
+these:
 
 - a scalar type,
 - a class type whose default constructor and destructor are both
@@ -147,10 +150,10 @@ A jump can skip the declaration of a `static` local variable.
 If the expression of a `return` statement is the name of a local
 variable or a parameter of the function, the name is an xvalue (see
 {term}`value category`). A move-only object can be returned this way.
-These rules apply:
+These details apply:
 
 - A variable or parameter of rvalue reference type counts.
-- Parentheses around the name do not change this.
+- Parentheses around the name do not change the result.
 - A `static` local variable does not count.
 :::
 
@@ -160,15 +163,15 @@ These rules apply:
 
 A name that JMP-10 makes an xvalue does not bind to an lvalue reference
 return type. A `static` local variable of a move-only type cannot be
-returned, because JMP-10 does not count it.
+returned, because JMP-10 does not count such a variable.
 :::
 
 :::{rule} JMP-12
 :kind: reject
 :tests: statements/jumps/constructor-return-void-expression.cpp statements/jumps/destructor-return-void-expression.cpp statements/jumps/destructor-return-value.cpp
 
-In a constructor or a destructor, `return` must have no expression.
-This includes an expression of type `void`.
+In a constructor or a destructor, `return` must have no expression,
+including an expression of type `void`.
 :::
 
 ## Runtime Behavior
@@ -187,15 +190,16 @@ This includes an expression of type `void`.
 `continue` goes to the end of the body of the innermost loop that contains
 it. The loop then evaluates its iteration expression, if any, and its
 condition. A `switch` between the `continue` and the loop does not
-change this.
+change this rule.
 :::
 
 :::{rule} JMP-4
 :kind: required
 :tests: statements/jumps/return-destroys-locals.cpp
 
-`return` first evaluates the returned value. Then it destroys the local
-variables in scope. The variable that was created last is destroyed first.
+`return` first evaluates the returned value. Then `return` destroys the
+local variables in scope. The variable that was created last is
+destroyed first.
 :::
 
 :::{rule} JMP-8
@@ -221,10 +225,10 @@ creates the variable again.
 :tests: statements/jumps/copy-elision-named.cpp statements/jumps/return-parameter-always-moves.cpp
 
 If a `return` statement names a local variable of the return type, it is
-unspecified if a copy or move constructor runs. A returned prvalue of the
-return type never runs one (VC-4). A parameter is not such a variable.
-A `return` of a parameter by name runs the move constructor one time
-(CPY-12).
+unspecified if a copy or move constructor runs. A returned prvalue of
+the return type never runs such a constructor (VC-4). A parameter is not
+such a variable. A `return` of a parameter by name runs the move
+constructor one time (CPY-12).
 :::
 
 ## Examples
@@ -258,8 +262,8 @@ All seven compilers agree on every test, except where a question is
 noted. The results are in `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
-  whose destructor is not trivial. Clang and EDG reject it, so a class
-  type whose destructor is not trivial is not an exception
+  whose destructor is not trivial. Clang and EDG reject the `goto`, so a
+  class type whose destructor is not trivial is not an exception
   ({question}`Q-0041`, {question}`Q-0097`).
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test

@@ -4,12 +4,12 @@ When an exception leaves a block, the objects of that block end in the
 reverse of the order in which they began, as they would on any other
 exit. This page covers:
 
-- that unwinding,
+- unwinding,
 - the parts of an object that exist when a constructor throws,
 - the storage that a `new` expression obtained,
 - the cases in which the program ends instead of unwinding.
 
-These cases are:
+The cases in which the program ends are:
 
 - an exception that leaves a `noexcept` function,
 - an exception that leaves a destructor during unwinding,
@@ -67,10 +67,11 @@ the parts that exist can be ended ({principle}`OBJ-P1`).
 :rules: UNW-5 UNW-6 UNW-8
 :exceptions: UNW-7
 
-An exception has to end in a handler. Where it cannot, the program ends
-instead. A `noexcept` function promises that no exception leaves it, so
-an exception that reaches its boundary ends the program, and the same
-holds for a destructor, which is `noexcept` unless it says otherwise. A
+An exception has to end in a handler. Where an exception cannot end in a
+handler, the program ends instead. A `noexcept` function promises that
+no exception leaves the function, so an exception that reaches the
+function's boundary ends the program, and the same holds for a
+destructor, which is `noexcept` unless the destructor says otherwise. A
 destructor that runs during unwinding cannot throw either, because two
 exceptions cannot be in flight at once. An exception that leaves `main`
 or finds no handler at all has nowhere to go. A function can still
@@ -87,9 +88,10 @@ with no handler.
 :tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp
 
 When an exception leaves a block, the automatic objects of that block
-are destroyed in the reverse of their construction order. This repeats
-for every block from the throw to the handler, innermost first, and all
-of it completes before the handler runs. Objects declared after the
+are destroyed in the reverse of their construction order. The
+destruction repeats for every block from the throw to the handler,
+innermost first, and all of the destruction completes before the handler
+runs. Objects declared after the
 throw are not created. Objects of the handler's own block and of blocks
 that enclose the try block are not affected.
 :::
@@ -104,7 +106,7 @@ These rules apply:
   the bases and members that it completed are destroyed in reverse
   order, and the destructor of the object itself does not run.
 - If an element of an array throws during construction, the elements
-  built before it are destroyed in reverse order.
+  built before that element are destroyed in reverse order.
 - If the target of a delegating constructor completed, the object is
   complete, and its destructor runs when the delegating constructor
   throws.
@@ -116,7 +118,7 @@ These rules apply:
 
 If the initialization in a `new` expression throws, the storage is
 released by the deallocation function that matches the allocation
-function that obtained it. The matching function is:
+function that obtained the storage. The matching function is:
 
 - the class-specific one if the allocation was class-specific,
 - the array form for an array,
@@ -145,7 +147,7 @@ initialization runs again.
 The program ends, without returning from `main`, when an exception:
 
 - leaves a function declared `noexcept`, also when the throw is in a
-  function that it calls,
+  function that the `noexcept` function calls,
 - leaves a destructor that is not declared `noexcept(false)`,
 - leaves a destructor that runs during the unwinding of another
   exception,
@@ -159,8 +161,8 @@ The program ends, without returning from `main`, when an exception:
 
 A `noexcept` function can throw and catch exceptions inside itself. A
 destructor declared `noexcept(false)` can throw when no other exception
-is being unwound, and a handler outside it catches the exception after
-the destructor's object has ended.
+is being unwound, and a handler outside the destructor catches the
+exception after the destructor's object has ended.
 :::
 
 ## Implementation Requirements
@@ -182,7 +184,8 @@ destroyed before the program ends.
 
 An implementation should warn about a `throw` expression written
 directly in a `noexcept` function outside any try block that can catch
-it. A call to a function that might throw does not need a warning.
+the exception. A call to a function that might throw does not need a
+warning.
 :::
 
 ## Examples
@@ -218,10 +221,10 @@ The results are in `tests/RESULTS.md`. All seven compilers agree on all
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
-  nonzero status or a signal. It cannot see why, and it cannot see what
-  the implementation did before ending. The test for UNW-7 shows the
-  program ends; the choice it documents is not observable through the
-  harness.
+  nonzero status or a signal. The harness cannot see why the program
+  ended or what the implementation did before ending. The test for UNW-7
+  shows the program ends; the choice that the test documents is not
+  observable through the harness.
 - UNW-3: the global deallocation test replaces both the sized and the
   unsized `operator delete`. Clang 18 calls the unsized form after a
   failed `new`, and the other compilers call the sized form.

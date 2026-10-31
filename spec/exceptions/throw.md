@@ -5,8 +5,8 @@ The value becomes the exception object, which lives until the last
 handler for it finishes. This page covers:
 
 - the operand of `throw`,
-- how the exception object is made from it,
-- its type and lifetime,
+- how the exception object is made from the operand,
+- the type and lifetime of the exception object,
 - `throw` with no operand,
 - `throw` during constant evaluation.
 
@@ -23,7 +23,7 @@ declaration makes a variable from an initializer.
 
 | Operand | Exception object |
 |---|---|
-| A prvalue | The operand becomes it directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
+| A prvalue | The operand becomes the exception object directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
 | A local variable | Moved from the operand, because the variable is about to end |
 | Any other lvalue | Copied from the operand |
 
@@ -38,35 +38,36 @@ exception object.
 :rules: THR-4 THR-6 THR-8
 
 The exception object belongs to no scope ({principle}`OBJ-P2` does not
-apply to it). The object:
+apply to the exception object). The object:
 
 - begins at the `throw`,
 - outlives every block that the exception leaves,
 - ends when the last handler for it ends.
 
-Its type is fixed at the `throw` as the static type of the operand, so a
-derived object thrown through a base reference is sliced. A rethrow
-passes the same object on, with any changes a handler made to it, and a
-handler that takes it by value works on a copy.
+The type of the exception object is fixed at the `throw` as the static
+type of the operand, so a derived object thrown through a base reference
+is sliced. A rethrow passes the same object on, with any changes a
+handler made to the object, and a handler that takes the object by value
+works on a copy.
 :::
 
 :::{principle} THR-P3
 :rules: THR-5
 
 A `throw` is an expression that never produces a value, so its type is
-`void`. It can stand wherever no value is needed, including as an
-operand of the conditional operator, where it takes no part in the
-result type (COND-4).
+`void`. A `throw` can stand wherever no value is needed, including as an
+operand of the conditional operator, where the `throw` takes no part in
+the result type (COND-4).
 :::
 
 :::{principle} THR-P4
 :rules: THR-7 THR-9
 
 A `throw` with no operand passes on the exception that a handler is
-handling. When there is no such exception, or when an exception leaves
+handling. When no such exception exists, or when an exception leaves
 a function that promised not to throw, no handler can take over, and the
 program terminates instead of continuing in an unknown state. An
-implementation should warn where it can see that happen.
+implementation should warn where it can see such a termination happen.
 :::
 
 :::{principle} THR-P5
@@ -95,18 +96,18 @@ A `throw` with no operand is a *rethrow*.
 :tests: exceptions/throw/deleted-copy-lvalue-rejected.cpp exceptions/throw/private-copy-rejected.cpp exceptions/throw/abstract-operand-rejected.cpp exceptions/throw/incomplete-operand-rejected.cpp exceptions/throw/private-destructor-rejected.cpp exceptions/throw/throwing-destructor-accepted.cpp
 
 The operand of `throw` must have a complete type that is not abstract.
-If the exception object is copied or moved from the operand, that
-constructor must be usable and accessible, and so must the destructor
-of the exception object. A destructor that is potentially throwing is
-permitted.
+If the exception object is copied or moved from the operand, the copy or
+move constructor must be usable and accessible, and so must the
+destructor of the exception object. A destructor that is potentially
+throwing is permitted.
 :::
 
 :::{rule} THR-5
 :kind: required
 :tests: exceptions/throw/throw-expression-type-void.cpp
 
-A `throw` expression is a prvalue of type `void`. It can be an operand
-of the conditional operator (COND-4).
+A `throw` expression is a prvalue of type `void`. A `throw` expression
+can be an operand of the conditional operator (COND-4).
 :::
 
 :::{rule} THR-10
@@ -114,8 +115,8 @@ of the conditional operator (COND-4).
 :tests: exceptions/throw/constexpr-throw-at-runtime.cpp
 
 A `constexpr` function that contains a `throw` can be called at run
-time, and it throws then. Constant evaluation of the `throw` follows
-{rule}`CE-8`.
+time, and the call throws then. Constant evaluation of the `throw`
+follows {rule}`CE-8`.
 :::
 
 ## Runtime Behavior
@@ -126,7 +127,8 @@ time, and it throws then. Constant evaluation of the `throw` follows
 
 A `throw` initializes the exception object from its operand:
 
-- A prvalue operand initializes it directly, with no copy or move.
+- A prvalue operand initializes the exception object directly, with no
+  copy or move.
 - A local variable operand is moved.
 - Any other lvalue operand is copied.
 :::
@@ -148,7 +150,7 @@ object thrown from a `const` operand.
 The type of the exception object is the static type of the operand. An
 object of a derived class thrown through a reference to its base gives
 an exception object of the base type, and a handler for the derived
-type does not match it.
+type does not match the exception object.
 :::
 
 :::{rule} THR-6
@@ -156,17 +158,17 @@ type does not match it.
 :tests: exceptions/throw/rethrow-same-object.cpp exceptions/throw/rethrow-keeps-changes.cpp exceptions/throw/rethrow-in-handler-accepted.cpp
 
 A rethrow in a handler passes on the exception object that the handler
-is handling. It is the same object, with any changes that the handler
-made to it.
+is handling. The rethrown object is the same object, with any changes
+that the handler made to it.
 :::
 
 :::{rule} THR-7
 :kind: required
 :tests: exceptions/throw/rethrow-outside-handler-terminates.cpp exceptions/throw/rethrow-after-handler-left-terminates.cpp
 
-A rethrow when no exception is being handled terminates the program.
-This includes a rethrow after the handler that was handling the
-exception has ended.
+A rethrow when no exception is being handled terminates the program,
+including a rethrow after the handler that was handling the exception
+has ended.
 :::
 
 :::{rule} THR-8
@@ -185,7 +187,7 @@ object.
 :tests: exceptions/throw/throw-in-noexcept-terminates.cpp
 
 If an exception leaves a function declared `noexcept`, the program
-terminates. No handler in a caller catches it.
+terminates. No handler in a caller catches the exception.
 :::
 
 ## Recommended Practice

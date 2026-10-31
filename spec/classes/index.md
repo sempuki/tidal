@@ -1,7 +1,7 @@
 # Classes
 
-A class is a type that groups data members and member functions. These
-pages give the rules for:
+A class is a type that groups data members and member functions. The
+pages in this section give the rules for:
 
 - class definitions,
 - access,
