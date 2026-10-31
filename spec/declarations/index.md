@@ -4,6 +4,7 @@ A declaration introduces a name and gives its properties. These pages give the r
 
 :::{tidal-pages}
 auto
+type-names
 storage-linkage
 declarators
 initialization/index
@@ -20,6 +21,7 @@ constexpr
 :maxdepth: 2
 
 auto
+type-names
 storage-linkage
 declarators
 initialization/index
