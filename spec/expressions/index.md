@@ -17,6 +17,7 @@ conditional
 assignment
 comma
 unary
+member-pointers
 postfix
 casts
 constant-expressions
@@ -42,6 +43,7 @@ conditional
 assignment
 comma
 unary
+member-pointers
 postfix
 casts
 constant-expressions
