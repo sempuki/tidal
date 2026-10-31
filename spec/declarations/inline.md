@@ -11,3 +11,113 @@ entity with one address.
 
 Depends on: storage duration and linkage, function definitions, class
 definitions and members.
+
+## Syntax
+
+`inline` is a declaration specifier. It occurs with other specifiers
+before the declarator.
+
+## Constraints
+
+:::{rule} INL-1
+:kind: required
+:tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp
+
+`inline` applies to functions and to variables with static storage
+duration. These rules apply:
+
+- A function can be declared `inline` before its definition.
+- An inline function that no code uses needs no definition.
+- An inline entity with internal linkage is a separate entity in each
+  translation unit.
+- An inline `const` variable at namespace scope has external linkage.
+- A virtual function can be `inline`.
+:::
+
+:::{rule} INL-2
+:kind: reject
+:tests: declarations/inline/inline-after-definition.cpp declarations/inline/inline-block-function-declaration.cpp declarations/inline/inline-block-variable.cpp declarations/inline/inline-class.cpp declarations/inline/inline-main.cpp declarations/inline/inline-nonstatic-member.cpp declarations/inline/inline-parameter.cpp declarations/inline/inline-redefinition-same-tu.cpp declarations/inline/inline-static-local-in-function.cpp declarations/inline/inline-typedef.cpp
+
+`inline` must not occur on:
+
+- a parameter, a block-scope variable, or a block-scope function
+  declaration,
+- a type alias, a class definition, or `main`,
+- a non-static data member,
+- a declaration of a function after its definition
+  ({question}`Q-0068`).
+
+An inline function must not be defined two times in one translation unit.
+:::
+
+:::{rule} INL-3
+:kind: required
+:tests: declarations/inline/constexpr-function-inline.cpp declarations/inline/deleted-function-inline.cpp declarations/inline/inline-friend-definition.cpp declarations/inline/member-defined-in-class.cpp declarations/inline/static-constexpr-member-inline.cpp
+
+These declarations are inline without the keyword:
+
+- a member function or friend function defined in its class,
+- a `constexpr` or `consteval` function,
+- a `static constexpr` data member,
+- a deleted function.
+:::
+
+:::{rule} INL-4
+:kind: required
+:tests: declarations/inline/inline-static-member-incomplete.cpp declarations/inline/inline-static-member-out-of-class.cpp declarations/inline/inline-static-member.cpp declarations/inline/static-member-not-inline-needs-definition.cpp
+
+An inline static data member is defined in its class, with its
+initializer. It needs no definition outside the class. Its type must be
+complete there. A `const` static data member can also be defined
+`inline` outside its class. A static data member that is not inline
+needs one definition outside its class if it is used.
+:::
+
+## Dynamic Semantics
+
+:::{rule} INL-5
+:kind: required
+:tests: declarations/inline/static-local-shared.cpp
+
+A static local variable of an inline function with external linkage is
+one object in the program. All translation units that call the function
+share it.
+:::
+
+## Implementation Requirements
+
+:::{rule} INL-6
+:kind: no-diagnostic
+:tests: declarations/inline/inline-undefined-used.cpp declarations/inline/inline-variable-undefined-used.cpp
+
+An inline function or variable that a translation unit uses must be
+defined in that translation unit. An implementation need not diagnose a
+missing definition before linking.
+:::
+
+## Examples
+
+```cpp
+// counter.h, included by several source files
+inline int next_id() {
+  static int last = 0;   // one object for the whole program
+  return ++last;
+}
+struct Config {
+  static inline int retries = 3;    // defined here, no .cpp needed
+  int limit() const { return 10; }  // inline: defined in the class
+};
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All seven compilers agree on 27 of
+28 tests.
+
+- INL-2: GCC accepts `inline` on a declaration after the definition.
+  Clang and EDG reject it ({question}`Q-0068`).
+- INL-6: EDG reports a used inline function with no definition during
+  translation. Clang and GCC report it when linking. All three report a
+  used inline variable with no definition during translation.
+
+Inputs: clang-sema-decl, clang-diag-sema, edg-decls.
