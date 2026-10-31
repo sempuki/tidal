@@ -9,6 +9,7 @@ members
 access
 constructors
 copy-move
+derived
 :::
 
 :::{toctree}
@@ -19,4 +20,5 @@ members
 access
 constructors
 copy-move
+derived
 :::
