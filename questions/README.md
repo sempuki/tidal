@@ -78,6 +78,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0065](Q-0065-decltype-declarative-nested-name.md) | Can decltype name the class in a member definition outside the class? | provisional | option 1 |
 | [Q-0066](Q-0066-member-changes-meaning.md) | Must an implementation diagnose a class member that changes the meaning of a name? | provisional | option 1 |
 | [Q-0067](Q-0067-typedef-name-non-c-class.md) | Can a typedef name an unnamed class that is not C-like? | provisional | option 1 |
+| [Q-0068](Q-0068-inline-after-definition.md) | Can a function be declared inline after its definition? | provisional | option 1 |
 
 ## Status values
 
