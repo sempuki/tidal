@@ -224,6 +224,12 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0211](Q-0211-swapped-candidate-ordering.md) | Are the parameters of a swapped candidate reversed for partial ordering? | provisional | yes; Clang and EDG agree, GCC differs |
 | [Q-0212](Q-0212-edg-dynamic-cast-private-base-constant.md) | Does EDG letting a `dynamic_cast` from a private base succeed during constant evaluation change VIRT-10? | compiler defect | no; Clang and GCC give a null pointer, likely EDG defect |
 | [Q-0213](Q-0213-edg-union-chain-assignment-nontrivial.md) | Does EDG accepting an assignment into a union member that has a default constructor that is not trivial change UNI-13? | compiler defect | no; Clang and GCC reject, likely EDG defect |
+| [Q-0214](Q-0214-member-object-parameter-rvalue.md) | Is the object parameter of a member with no ref-qualifier an rvalue reference in partial ordering against an rvalue reference? | provisional | yes; Clang 22 and GCC agree, Clang 18 and EDG differ |
+| [Q-0215](Q-0215-default-arguments-before-parameter-check.md) | Are default template arguments substituted before the check of parameters with no template parameter? | provisional | yes; Clang and GCC agree, EDG checks first |
+| [Q-0216](Q-0216-default-parameter-against-pack.md) | Does a parameter with a default argument count against a trailing pack in partial ordering? | provisional | yes; Clang, GCC and EDG differ |
+| [Q-0217](Q-0217-qualifiers-on-references-of-two-kinds.md) | Does the qualifier tie-breaker of partial ordering apply to an lvalue reference against an rvalue reference? | provisional | yes; Clang, GCC and EDG differ |
+| [Q-0218](Q-0218-object-parameter-before-reversal.md) | Is the object parameter of a swapped member candidate added before its parameters are reversed? | provisional | yes; Clang, GCC and EDG differ |
+| [Q-0219](Q-0219-placement-deallocation-templates-ordered.md) | Does partial ordering choose among placement deallocation function templates? | provisional | yes; GCC and EDG agree, Clang calls none |
 
 ## Status values
 

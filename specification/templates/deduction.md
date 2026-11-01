@@ -27,7 +27,7 @@ conversion sequences, overload resolution, placeholder types.
 ## Principles
 
 :::{principle} DED-P1
-:rules: DED-1 DED-30 DED-31 DED-32 DED-33 DED-34
+:rules: DED-1 DED-30 DED-31 DED-32 DED-33 DED-34 DED-39
 
 Deduction compares a type that holds template parameters with a type
 that holds none. The context decides the two types:
@@ -38,6 +38,7 @@ that holds none. The context decides the two types:
 | a function template name with a target type | the function type of the template | the function type of the target | DED-30, {rule}`OVL-18` |
 | a conversion function template | its result type | the type that the initialization needs | DED-31 |
 | an explicit specialization, explicit instantiation, or friend | the function type of each template with the name | the declared function type | DED-32, DED-33 |
+| a placement deallocation function template | its parameter types after the first | the parameter types of the placement allocation function after the first | DED-39 |
 | a partial specialization | its argument list | the argument list of the use | {rule}`TSP-14` |
 | partial ordering | the types of one template | the invented types of the other | {principle}`ORD-P2` |
 | a variable with a placeholder type | the placeholder, as an invented type parameter | the type of the initializer | {rule}`AUTO-1` to {rule}`AUTO-4` |
@@ -64,14 +65,18 @@ a call, with explicit template arguments or without
 2. pairs        each argument and its function parameter       DED-6 to DED-9,
    |            make a pair; both types are adjusted           DED-16 to DED-20
    v
-3. match        each pair alone gives values to the template   DED-10 to DED-15
-   |            parameters in its deducible positions
+3. match        each pair alone gives values to the template   DED-10 to DED-15,
+   |            parameters in its deducible positions          DED-36, DED-37
    v
 4. combine      the values from all pairs must agree;          DED-21 to DED-23
    |            defaults fill the rest
    v
-5. substitute   the values replace the template parameters     DED-24 to DED-29
-   |            in the function type
+5. substitute   the values replace the template parameters,    DED-24 to DED-29,
+   |            in this order:                                 DED-38
+   |            a. the defaults of the template parameters
+   |            b. the check of each parameter that holds no
+   |               template parameter against its argument
+   |            c. the function type
    v
 a specialization, which is a candidate of the call ({rule}`OVL-1`)
 ```
@@ -84,7 +89,7 @@ candidates. A call is not valid only when no candidate remains
 :::
 
 :::{principle} DED-P3
-:rules: DED-10 DED-11 DED-12 DED-13
+:rules: DED-10 DED-11 DED-12 DED-13 DED-36 DED-37
 
 Matching takes a type apart along its structure. Where the parameter
 type has a template parameter, the template parameter takes the part of
@@ -99,13 +104,16 @@ the argument type at that place:
 | `void() noexcept(B)` | `B` |
 | `Box<T, N>`, with `Box` a class template | `T` and `N`, from the arguments of the specialization |
 | `TT<T>`, with `TT` a template template parameter | `TT` and `T` |
+| `TT<int>`, with `TT` a template template parameter | `TT` |
+| `Hold<TT>`, with `Hold` a class template and `TT` a template template parameter | `TT` |
+| `void (*)(A...)` and `List<H, A...>`, with `A` a pack | each element of `A`, from the remaining parameters or arguments |
 
 The forms nest, so `Box<T*>&` gives `T` from `const Box<int*>`. Some
 positions give no value, because no single argument determines them:
 
 | Position | Example | Why |
 |---|---|---|
-| before `::` in a qualified name | `typename Id<T>::type` | many `T` can give one member type |
+| a qualified name with a template parameter before `::`, in every part of the name | `typename Id<T>::type`, `typename Outer<T>::template In<U>` | many `T` can give one member, and the member depends on `T` |
 | the operand of `decltype` | `decltype(T{})` | many `T` can give one type |
 | an expression of a constant parameter | `Fixed<N + 1>` | the value of `N` would need to be solved |
 | the first bound of an array parameter | `int values[N]` | the parameter is a pointer ({rule}`DCL-8`) |
@@ -135,7 +143,7 @@ arguments for a pack (DED-20).
 :::
 
 :::{principle} DED-P5
-:rules: DED-24 DED-25 DED-26 DED-27 DED-28
+:rules: DED-24 DED-25 DED-26 DED-27 DED-28 DED-38
 :exceptions: DED-29
 
 Substitution puts the values into the function type. If the result is
@@ -147,13 +155,18 @@ type itself and nothing that the function type causes elsewhere:
 | An error in | Effect | Rule |
 |---|---|---|
 | a parameter type, the result type, or a template parameter's type or default | the template is removed | DED-24 |
+| the operand of a conditional `explicit` | the template is removed | DED-24 |
 | access to a name in those places | the template is removed | DED-26 |
+| a call in those places with no viable function, also a call of a lambda | the template is removed | DED-24, DED-29 |
 | the body of a class that substitution instantiates | the program is not valid | DED-29 |
-| the body of a lambda expression in the function type | the program is not valid | DED-29 |
+| the body of a function template that substitution instantiates | the program is not valid | DED-29 |
+| the body of a lambda expression in the function type or in a template parameter | the program is not valid | DED-29 |
 | the `noexcept` operand of the chosen specialization | the program is not valid | DED-27, DED-29 |
 
 Substitution goes through the function type in source order and stops
 at the first failure (DED-25), so a later part never causes an error.
+The defaults of the template parameters come before the function type
+(DED-28).
 :::
 
 ## Constraints
@@ -235,13 +248,16 @@ Except under DED-8, the value category of the argument takes no part.
 
 :::{rule} DED-8
 :kind: required
-:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp
+:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/forwarding-nested-rvalue.cpp
 
-A {term}`forwarding reference` is a parameter of type `T&&`. `T` is a
-type parameter of the function template itself, with no qualifiers.
-For an lvalue argument of type `A`, `T` is `A&`, and the parameter is
-an lvalue reference ({rule}`DCL-4`). For any other argument, `T` is
-`A`.
+A {term}`forwarding reference` is a function parameter of type `T&&`,
+with `T` an unqualified type parameter of the template itself. `T&&`
+inside another type, such as a function pointer type,
+is no forwarding reference. For an argument of type `A`:
+
+- if the argument is an lvalue, `T` is `A&`, and the parameter is an
+  lvalue reference ({rule}`DCL-4`),
+- otherwise, `T` is `A`.
 :::
 
 :::{rule} DED-9
@@ -282,21 +298,36 @@ parameter, that type parameter takes the type of the value.
 
 :::{rule} DED-12
 :kind: required
-:tests: templates/deduction/match-constant-type-same.cpp templates/deduction/match-constant-type-differs.cpp
+:tests: templates/deduction/match-constant-type-same.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/match-constant-placeholder-type.cpp
 
 A constant parameter can take its value from an argument of a class
-template specialization. The two parameters must then have the same
-type, apart from top-level `const`. Otherwise the pair fails.
+template specialization. If its type has a placeholder, the parameter
+takes the type of the class template's parameter. Otherwise the two
+parameters must have the same type, apart from top-level `const`, or
+the pair fails.
 :::
 
 :::{rule} DED-13
 :kind: required
-:tests: templates/deduction/nondeduced-qualified-name.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/nondeduced-explicit.cpp
+:tests: templates/deduction/nondeduced-qualified-name.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/nondeduced-explicit.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/nondeduced-member-template-explicit.cpp
 
 A template parameter in a {term}`non-deduced position` takes no value
-from the pair. The table in {principle}`DED-P3` lists these positions.
-The parameter's type is checked after substitution, with the values
-from other positions.
+from the pair. The table in {principle}`DED-P3` lists these positions,
+and a qualified name with a template parameter before `::` is one in
+all its parts. The parameter's type is checked after substitution,
+with the values from other positions.
+:::
+
+:::{rule} DED-36
+:kind: required
+:tests: templates/deduction/match-template-template.cpp templates/deduction/difference-derived-template-template.cpp
+
+A template template parameter takes its value from these positions:
+
+- the template of a class template specialization, as in `TT<T>` or
+  `TT<int>`,
+- a template argument of a class template specialization, as in
+  `Hold<TT>`.
 :::
 
 ### Allowed differences
@@ -318,12 +349,14 @@ substituted type can differ in these ways:
 
 :::{rule} DED-15
 :kind: required
-:tests: templates/deduction/difference-derived.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/difference-derived-nearest.cpp
+:tests: templates/deduction/difference-derived.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/difference-derived-nearest.cpp templates/deduction/difference-derived-exact-first.cpp templates/deduction/difference-derived-template-template.cpp
 
-A parameter type can be a class template specialization, or a pointer
-to one. Such a parameter also matches a class derived from a matching
-specialization. If two bases match with different values, the pair
-fails. A base derived from another matching base wins over that base.
+A parameter type can be a template name with arguments, such as
+`Base<T>` or `TT<T>`, or a pointer to one. If the argument does not
+match such a parameter exactly, a class derived from a matching
+specialization matches. If two bases match with different values, the
+pair fails, and a base derived from another matching base wins over
+that base.
 :::
 
 ### Braced lists, overload sets, and packs
@@ -370,13 +403,24 @@ the pair gives no value, and the set resolves after substitution
 
 :::{rule} DED-20
 :kind: required
-:tests: templates/deduction/pack-trailing.cpp templates/deduction/pack-not-last.cpp templates/deduction/pack-not-last-call.cpp
+:tests: templates/deduction/pack-trailing.cpp templates/deduction/pack-not-last.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/pack-not-last-other-position.cpp
 
 A function parameter pack at the end of the parameters takes the
 remaining arguments. Each of them makes a pair with the pattern of the
 pack, as for one parameter. A pack before the end is a non-deduced
 position. Such a pack is empty unless explicit arguments give it
-elements.
+elements, even when a later parameter type names the same pack.
+:::
+
+:::{rule} DED-37
+:kind: required
+:tests: templates/deduction/pack-function-type.cpp templates/deduction/pack-class-arguments.cpp
+
+A pack expansion at the end of a list in a parameter type takes the
+remaining elements of the matching list in the argument type, one by
+one. Such a list is the parameter list of a function type, or the
+template argument list of a class template specialization. The
+expansion can take no element.
 :::
 
 ### Combining the pairs
@@ -401,25 +445,31 @@ does. The bound then converts to that type.
 
 :::{rule} DED-23
 :kind: required
-:tests: templates/deduction/combine-defaults.cpp templates/deduction/combine-missing.cpp
+:tests: templates/deduction/combine-defaults.cpp templates/deduction/combine-missing.cpp templates/deduction/combine-leading-pack-empty.cpp
 
 A template parameter that has no value from a pair or an explicit
 argument takes its default template argument ({rule}`TARG-9`). A
-trailing pack with no value is empty. Any other template parameter
-without a value makes deduction fail.
+template parameter pack with no value is empty, wherever the pack is in
+the template head. Any other template parameter without a value makes
+deduction fail.
 :::
 
 ### Substitution
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp
 
-The values replace the template parameters in the function type, and in
-the types and defaults of the template parameters. The function type
-is then adjusted as a declared one is ({rule}`DCL-8`). If substitution
-makes a type or expression that is not valid, the template adds no
-candidate.
+The values replace the template parameters in these places, and the
+function type is then adjusted as a declared one is ({rule}`DCL-8`):
+
+- the function type,
+- the types and defaults of the template parameters,
+- the operand of a conditional `explicit` of a constructor or
+  conversion function.
+
+If substitution makes a type or expression that is not valid, the
+template adds no candidate.
 :::
 
 :::{rule} DED-25
@@ -449,27 +499,43 @@ substitution. The operand is substituted after the specialization is
 chosen, and DED-29 applies to an error there.
 :::
 
+:::{rule} DED-38
+:kind: required
+:tests: templates/deduction/specialization-distinct-functions.cpp
+
+Each list of template arguments gives its own specialization. Two
+specializations are different functions, even when adjustment gives
+them the same function type.
+:::
+
 :::{rule} DED-28
 :kind: required
-:tests: templates/deduction/substitution-nondependent-first.cpp
+:tests: templates/deduction/substitution-nondependent-first.cpp templates/deduction/substitution-default-before-check.cpp
 
-Before substitution, each function parameter whose declared type holds
-no template parameter is checked against its argument. If the argument
-has no implicit conversion sequence, the template adds no candidate,
-and the function type is not substituted.
+After the defaults of the template parameters are substituted, each
+function parameter whose declared type holds no template parameter is
+checked against its argument ({question}`Q-0215`). If the argument has
+no implicit conversion sequence, the template adds no candidate, and
+the function type is not substituted.
 :::
 
 :::{rule} DED-29
 :kind: reject
-:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp
+:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-deduced-result-body.cpp templates/deduction/substitution-lambda-default.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/substitution-default-before-check.cpp
 
 An error in one of these places makes the program not valid, even
 during deduction:
 
 - the body of a class template specialization that substitution
   instantiates,
-- the body of a lambda expression in the function type,
+- the body of a function template specialization that substitution
+  instantiates, for example to find its deduced result type,
+- the body of a lambda expression in the function type or in a
+  template parameter declaration,
 - the `noexcept` operand of the chosen specialization (DED-27).
+
+A call with no viable function in the function type is a failure of
+substitution (DED-24), also when the called function is a lambda.
 :::
 
 ### Other contexts
@@ -486,7 +552,7 @@ matched with an lvalue reference type `A&` gives `T` the type `A&`.
 
 :::{rule} DED-31
 :kind: required
-:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp
+:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp
 
 A conversion function template takes its template arguments from the
 type that the initialization needs ({rule}`ICS-4`). Before the match:
@@ -496,7 +562,8 @@ type that the initialization needs ({rule}`ICS-4`). Before the match:
   result becomes a pointer,
 - top-level `const` and `volatile` are removed from both.
 
-DED-14 then allows a qualification adjustment and a dropped `noexcept`.
+If no exact match exists, the result type can reach the needed type by
+a qualification adjustment or by dropping `noexcept`.
 :::
 
 :::{rule} DED-32
@@ -533,11 +600,23 @@ parameter after those of the template head, in order. Explicit template
 arguments can give the invented parameters.
 :::
 
+:::{rule} DED-39
+:kind: required
+:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp
+
+A `new` expression with placement arguments can need a placement
+deallocation function ({doc}`/expressions/new-delete`). A deallocation
+function template matches if deduction makes its parameter types after
+the first the same as those of the allocation function. If several
+templates match, partial ordering ({rule}`ORD-9`) chooses one
+({question}`Q-0219`).
+:::
+
 ### No candidate
 
 :::{rule} DED-35
 :kind: reject
-:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp
+:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp
 
 A use of a function template name must have a function after
 deduction. These uses are not valid:
@@ -579,8 +658,8 @@ size(1);                        // int::size_type is not valid; size(...)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 85
+of 89 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight baseline compilers. The compilers agree on every
@@ -606,6 +685,27 @@ cell of the grids below.
   type is an error on every compiler.
 - DED-27: every compiler substitutes the `noexcept` operand of the
   chosen specialization, also in an operand of `decltype`.
+- DED-28: Clang and GCC substitute the default of a template parameter
+  before they check a parameter with no template parameter. EDG checks
+  the parameter first and removes the template with no error
+  ({question}`Q-0215`).
+- DED-39: GCC calls the more specialized of two matching placement
+  deallocation templates. EDG instantiates the same template, which a
+  probe with a failing `static_assert` in each body shows. Clang warns
+  that two functions match and calls neither ({question}`Q-0219`).
+- DED-20: the gap review (item E3) predicted that a later parameter
+  `List<A...>` gives elements to a pack before the end. Every compiler
+  keeps the pack empty and rejects the call
+  (`pack-not-last-other-position.cpp`), and DED-20 follows them.
+- DED-31: the gap review (item E5) predicted `T = int` for a conversion
+  to `const int*` from `operator T*`, and to `const int&` from
+  `operator T&`. Every compiler finds the exact match `T = const int`
+  (`context-conversion-exact.cpp`). The differences of DED-31 apply
+  only when no exact match exists (`context-conversion-differences.cpp`).
+- DED-13: with an explicit argument for `T`, the parameter
+  `typename Outer<T>::template In<U>` becomes `Outer<int>::In<U>`, and
+  every compiler deduces `U`. The test gives `T` its value by deduction
+  instead, so the whole qualified name stays non-deduced.
 
 Call types (DED-6 to DED-8, DED-10, DED-14). Each column declares one template
 `f` that returns `Tag<T>`. Each row calls `f` with one argument and
@@ -658,7 +758,9 @@ parameter `T` with the default argument `0`, which gives `T` no value
 
 The probe grids are in `tests/templates/deduction/grids/`. This table
 gives the source of each rule. Inventory items have the numbers of
-`reports/review/2026-10-31-inventory-deduction.md`:
+`reports/review/2026-10-31-inventory-deduction.md`, and gap review
+items those of
+`reports/review/2026-10-31-gap-review-deduction-and-ordering.md`:
 
 | Rule | Source |
 |---|---|
@@ -666,26 +768,30 @@ gives the source of each rule. Inventory items have the numbers of
 | DED-2, DED-3 | probes; clang-sema-deduction (explicit arguments substituted first); inventory F1, F5, F6, Q4 |
 | DED-4, DED-5 | probes; inventory F3, F4, Q8 |
 | DED-6, DED-7 | grid call-types; clang-sema-deduction (the adjustment of a call argument); inventory A1 to A6 |
-| DED-8 | grid call-types; diagnostics; inventory G1 to G4 |
+| DED-8 | grid call-types; diagnostics; inventory G1 to G4; gap review O4 |
 | DED-10 | grid call-types; probes; inventory E3, E6, E8, E9, E11 |
-| DED-11, DED-12 | probes; diagnostics; inventory E1, E2, E4, E5, E10 |
-| DED-13 | diagnostics; inventory E7, H1, H2, H4, H7, H8 |
+| DED-11, DED-12 | probes; diagnostics; inventory E1, E2, E4, E5, E10; gap review M9 |
+| DED-13 | diagnostics; inventory E7, H1, H2, H4, H7, H8; gap review M1 |
 | DED-9 | diagnostics; inventory D4, H3 |
 | DED-14 | grid call-types; clang-sema-deduction (the check of each deduced argument against its original); inventory B3 to B5 |
-| DED-15 | probes; clang-sema-deduction (the search of the bases); inventory B1, B2, B6 |
+| DED-15 | probes; clang-sema-deduction (the search of the bases); inventory B1, B2, B6; gap review E4, O3 |
 | DED-16 to DED-18 | grid braced; clang-sema-deduction (the deduction from a braced list); inventory C1 to C8 |
-| DED-21 to DED-23 | probes; diagnostics; inventory D1 to D3, D5, D6, F8 |
+| DED-21 to DED-23 | probes; diagnostics; inventory D1 to D3, D5, D6, F8; gap review E2 |
 | DED-19 | probes; clang-sema-deduction (the resolution of an overload set for deduction); inventory I1 to I4 |
-| DED-20 | probes; inventory H5, J1, J2, J4, J5 |
-| DED-24, DED-25 | probes; inventory F7, Q4, Q7, Q10 to Q12 |
-| DED-29 | diagnostics; inventory Q5, Q6 |
+| DED-20 | probes; inventory H5, J1, J2, J4, J5; gap review E3 |
+| DED-36 | probes; gap review M2, O3 |
+| DED-37 | probes; gap review M3, M4 |
+| DED-24, DED-25 | probes; inventory F7, Q4, Q7, Q10 to Q12; gap review M5 |
+| DED-38 | probe; gap review M8 |
+| DED-29 | diagnostics; inventory Q5, Q6; gap review M6, E1, O1 |
 | DED-26 | probes; inventory Q1 |
 | DED-27 | diagnostics; inventory Q9 |
-| DED-28 | probes; inventory Q3 |
+| DED-28 | probes; inventory Q3; gap review O2 |
 | DED-30 | probes; diagnostics; inventory G5, K1, K2 |
-| DED-31 | probes; inventory K3 to K5 |
+| DED-31 | probes; inventory K3 to K5; gap review E5 |
 | DED-32, DED-33 | probes; diagnostics; inventory K6, K8 |
 | DED-34 | probes; inventory P3 |
+| DED-39 | probes; gap review M7, M10 |
 | DED-35 | diagnostics in the `tidal-error` lines of its tests |
 
 Inventory items left out of this page:
