@@ -116,6 +116,9 @@ Each of these habits prevents a commit that claims more than it did.
   lets a failed step through.
 - Do not pipe a check into `tail` or `grep` before `&&` unless
   `set -o pipefail` is on, because a pipe hides the check's exit code.
+- Run `tools/similarity.py` with `--fail-on-flag` when a commit
+  follows it. Without the option, the tool exits 0 even when it flags
+  a passage.
 - Write commit messages to a file and use `git commit -F FILE`. Two
   heredocs on one command line feed their bodies to the wrong commands.
 - Never run two `tools/run_tests.py` processes at once. They share
