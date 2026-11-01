@@ -1,0 +1,27 @@
+{
+ "prelude": "namespace std {\ntemplate <class E> class initializer_list {\n  const E* b_;\n  decltype(sizeof 0) n_;\n  constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {}\npublic:\n  constexpr initializer_list() : b_(nullptr), n_(0) {}\n};\n}\ntemplate <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\n",
+ "template": "{prelude}{col}\n{row}",
+ "rows": {
+  "parentheses": "C x(1);\nstatic_assert(same<decltype(x), Want>);",
+  "braces": "C x{1};\nstatic_assert(same<decltype(x), Want>);",
+  "copy": "C x = 1;\nstatic_assert(same<decltype(x), Want>);",
+  "copy-list": "C x = {1};\nstatic_assert(same<decltype(x), Want>);",
+  "functional cast": "static_assert(same<decltype(C(1)), Want>);",
+  "braced cast": "static_assert(same<decltype(C{1}), Want>);",
+  "new": "auto p = new C(1);\nstatic_assert(same<decltype(p), Want*>);",
+  "copy, parentheses": "constexpr Want w{1};\nC x(w);\nstatic_assert(same<decltype(x), Want>);",
+  "copy, braces": "constexpr Want w{1};\nC x{w};\nstatic_assert(same<decltype(x), Want>);",
+  "copy, equals": "constexpr Want w{1};\nC x = w;\nstatic_assert(same<decltype(x), Want>);"
+ },
+ "cols": {
+  "constructor": "template <class T> struct C { constexpr C(T) {} };\nusing Want = C<int>;",
+  "constructor template": "template <class T> struct C { template <class U = int> constexpr C(T, U = U()) {} };\nusing Want = C<int>;",
+  "explicit constructor": "template <class T> struct C { explicit constexpr C(T) {} };\nusing Want = C<int>;",
+  "initializer-list constructor": "template <class T> struct C { constexpr C(std::initializer_list<T>) {} };\nusing Want = C<int>;",
+  "aggregate": "template <class T> struct C { T v; };\nusing Want = C<int>;",
+  "user guide": "template <class T> struct C { template <class U> constexpr C(U) {} };\ntemplate <class U> C(U) -> C<U>;\nusing Want = C<int>;",
+  "explicit user guide": "template <class T> struct C { template <class U> constexpr C(U) {} };\ntemplate <class U> explicit C(U) -> C<U>;\nusing Want = C<int>;",
+  "alias template": "template <class T> struct D { constexpr D(T) {} };\ntemplate <class T> using C = D<T>;\nusing Want = D<int>;",
+  "inherited constructor": "template <class T> struct B { constexpr B(T) {} };\ntemplate <class T> struct C : B<T> { using B<T>::B; };\nusing Want = C<int>;"
+ }
+}

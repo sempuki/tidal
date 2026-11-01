@@ -1,0 +1,455 @@
+# Packs
+
+A {term}`pack` is a name that stands for a list of zero or more
+elements. A {term}`pack expansion` writes a pattern once and gets one
+copy of the pattern for each element. This page covers:
+
+- the kinds of pack, and function parameter packs,
+- how an expansion makes its list, and when an expansion is not valid,
+- the places where an expansion can stand,
+- the pack-size operator `sizeof...`,
+- packs in lambda captures and in using-declarations,
+- forwarding references, and the collapse of references.
+
+Template parameter packs are declared on {doc}`declarations`
+({rule}`TPL-30`, {rule}`TPL-36`). Deduction of a pack is on
+{doc}`deduction` ({rule}`DED-20`, {rule}`DED-37`). Fold expressions are
+on {doc}`/expressions/primary` ({rule}`PRIM-27` to {rule}`PRIM-29`).
+
+Depends on: template declarations, template arguments, deduction,
+lambda expressions, derived classes.
+
+## Principles
+
+:::{principle} PACK-P1
+:rules: PACK-1 PACK-3 PACK-5 PACK-7 PACK-9 PACK-10 PACK-12
+:exceptions: PACK-2 PACK-4 PACK-6 PACK-8 PACK-11
+
+A pack is a list that a template or a lambda gets as a unit. Code
+cannot name one element of a pack. Code writes a pattern with the pack
+in it, and `...` after the pattern. The pattern is then copied once for
+each element:
+
+```text
+template <class... T> void f(T*... p)       T is a pack of types, p a pack of parameters
+
+f<int, char>(...)     T = {int, char}
+   T*...              int*, char*          one copy of the pattern for each element
+   g(p...)            g(p1, p2)            each copy names its own element
+   g(p + 1 ...)       g(p1 + 1, p2 + 1)
+```
+
+The pack kinds are these:
+
+| Kind | Declared as | An element is | Rule |
+|---|---|---|---|
+| type pack | `class... T` | a type | {rule}`TPL-30` |
+| constant pack | `int... N` | a constant value | {rule}`TPL-36` |
+| template pack | `template <class> class... W` | a template | {rule}`TPL-12` |
+| function parameter pack | `T... p`, `auto... p` | a function parameter | PACK-1 |
+| init capture pack | `[...c = e]` | a member of the closure | PACK-18 |
+
+An expansion keeps the meaning of the text around it. The list replaces
+the expansion in place, and a list of no elements leaves the construct
+in its form with nothing in that place (PACK-9). The lengths of the
+packs in one pattern must agree, because each copy takes one element of
+each pack (PACK-6). A name of a pack outside any pattern has no meaning,
+so it is an error (PACK-8).
+:::
+
+:::{principle} PACK-P2
+:rules: PACK-13 PACK-14 PACK-16 PACK-17 PACK-18 PACK-19 PACK-21
+:exceptions: PACK-15 PACK-20 PACK-25
+
+An expansion can stand only where the grammar has a list. Each place
+puts `...` after one item of its list, and the copies become items of
+that list:
+
+| Place | Written as | Each copy is | Rule |
+|---|---|---|---|
+| call arguments | `f(p...)` | an argument | PACK-13 |
+| braced list | `{p...}` | an element of the list | PACK-13 |
+| template arguments | `List<T...>` | a template argument | PACK-10, {rule}`TSP-9` |
+| function parameters | `void f(T... p)` | a parameter | PACK-1 |
+| template parameters | `template <T... N>` | a template parameter | {rule}`TPL-36` |
+| base list | `struct D : B...` | a base class | PACK-14 |
+| member initializers | `D() : B(0)...` | a member initializer of a base | PACK-14 |
+| `alignas` | `alignas(T...)` | an alignment | PACK-16 |
+| lambda captures | `[p...]`, `[&p...]`, `[...c = p]` | a capture | PACK-17, PACK-18 |
+| using-declaration | `using B::f...;` | a using-declarator | PACK-21 |
+| fold expression | `(p + ...)` | an operand | {rule}`PRIM-27` |
+
+`sizeof...(p)` counts the elements and needs no expansion (PACK-19).
+:::
+
+:::{principle} PACK-P3
+:rules: PACK-22 PACK-23 PACK-24
+
+A function template often passes its arguments on to another
+function. A {term}`forwarding reference` `T&&` keeps the value category
+of its argument in the deduced `T`. A reference added to a reference
+type then collapses into one reference ({rule}`DCL-4`):
+
+| Argument | `T` ({rule}`DED-8`) | Parameter `T&&` | `static_cast<T&&>(x)` |
+|---|---|---|---|
+| lvalue of type `A` | `A&` | `A&` | lvalue |
+| xvalue or prvalue of type `A` | `A` | `A&&` | xvalue |
+
+The cast gives the argument back with its value category (PACK-23). A
+pack `T&&... x` does the same for each element on its own (PACK-22).
+`auto&&` follows the same table ({rule}`AUTO-4`).
+:::
+
+## Constraints
+
+### Function parameter packs
+
+:::{rule} PACK-1
+:kind: required
+:tests: templates/packs/function-pack-forms.cpp
+
+A function parameter whose declarator has `...` before its name, or at
+the end with no name, is a {term}`function parameter pack`. The type of
+the parameter is a pattern ({term}`pack expansion`). The pattern can be
+any declarator, and it names a template parameter pack or holds `auto`.
+:::
+
+:::{rule} PACK-2
+:kind: reject
+:tests: templates/packs/declarator-not-parameter.cpp templates/packs/function-pack-names-no-pack.cpp
+
+Only a function parameter or a template parameter can have `...` in its
+declarator. The type of a function parameter pack must name a template
+parameter pack or hold `auto`.
+:::
+
+:::{rule} PACK-3
+:kind: required
+:tests: templates/packs/ellipsis-after-parameter.cpp
+
+A parameter can have `...` after it with no comma before the `...`. If
+the parameter's type names a pack that is not expanded, or holds `auto`,
+the parameter is a function parameter pack. Otherwise the `...` is the
+variable argument part of the parameter list ({rule}`DCL-9`).
+:::
+
+:::{rule} PACK-4
+:kind: reject
+:tests: templates/packs/function-pack-default.cpp
+
+A function parameter pack must not have a default argument. Parameters
+before the pack can have default arguments.
+:::
+
+### Expansion
+
+:::{rule} PACK-5
+:kind: required
+:tests: templates/packs/expansion-elements.cpp
+
+A {term}`pack expansion` is a pattern followed by `...`. The expansion
+stands for a list with one copy of the pattern for each element, in the
+order of the pack. In copy number i, each pack in the pattern stands for
+its element number i.
+:::
+
+:::{rule} PACK-6
+:kind: reject
+:tests: templates/packs/lengths-differ.cpp
+
+All packs that one expansion expands must have the same number of
+elements.
+:::
+
+:::{rule} PACK-7
+:kind: required
+:tests: templates/packs/nested-expansion.cpp
+
+A pattern can hold another expansion. A pack belongs to the innermost
+expansion whose pattern contains it. The outer expansion expands the
+packs that no inner expansion takes, and one pack can be expanded in
+both.
+:::
+
+:::{rule} PACK-8
+:kind: reject
+:tests: templates/packs/unexpanded-pack.cpp templates/packs/pattern-without-pack.cpp templates/packs/init-capture-unexpanded.cpp
+
+A use of a pack must be in the pattern of an expansion, or be the
+operand of `sizeof...` (PACK-19). The pattern of an expansion must hold
+a pack that no inner expansion expands.
+:::
+
+:::{rule} PACK-9
+:kind: required
+:tests: templates/packs/empty-expansion.cpp
+
+An expansion of a pack with no elements gives an empty list. The
+construct around the expansion keeps its kind. For example, `T(p...)`
+with no elements is `T()`, which gives a value of zero to a scalar
+({rule}`INIT-2`).
+:::
+
+:::{rule} PACK-10
+:kind: required
+:tests: templates/packs/expansion-to-fixed-parameters.cpp
+
+An expansion in the argument list of a class template can give
+arguments to parameters that are not packs. The arguments are matched
+with the parameters after substitution, and {rule}`TARG-6` then
+applies.
+:::
+
+:::{rule} PACK-11
+:kind: reject
+:tests: templates/packs/expansion-to-alias-parameters.cpp
+
+An expansion in the argument list of an alias template must not give
+an argument to a parameter that is not a pack.
+:::
+
+:::{rule} PACK-12
+:kind: required
+:tests: templates/packs/nondeduced-before-end.cpp templates/packs/nondeduced-before-end-call.cpp
+
+In a function parameter type, a template argument list can have an
+expansion before its last argument. That argument list is a
+{term}`non-deduced position` ({rule}`DED-13`). An expansion at the end
+of the list deduces as {rule}`DED-37` gives.
+:::
+
+### Places of an expansion
+
+:::{rule} PACK-13
+:kind: required
+:tests: templates/packs/call-and-braced-list.cpp
+
+In the arguments of a call, each copy of the pattern is one argument.
+In a braced list, each copy is one element, and the elements are
+evaluated from left to right ({rule}`LIST-7`).
+:::
+
+:::{rule} PACK-14
+:kind: required
+:tests: templates/packs/base-list-and-initializers.cpp
+
+An expansion in a base list gives one base for each element, in order.
+In a member initializer list, an expansion of a `mem_init` that names a
+pack of bases gives one member initializer for each base.
+:::
+
+:::{rule} PACK-15
+:kind: reject
+:tests: templates/packs/member-initializer-data-member.cpp
+
+A `mem_init` that names a data member must not be expanded.
+:::
+
+:::{rule} PACK-16
+:kind: required
+:tests: templates/packs/alignment-specifier.cpp templates/packs/alignment-specifier-class.cpp
+
+`alignas` can hold an expansion of types or of constants. The result is
+the strictest alignment of the elements ({rule}`ALN-1`). An expansion
+with no elements adds no alignment requirement.
+:::
+
+### Lambda captures
+
+:::{rule} PACK-17
+:kind: required
+:tests: templates/packs/capture-pack.cpp templates/packs/capture-pack-same-mode.cpp
+
+A capture `p...` captures each element of the function parameter pack
+`p` by copy, and `&p...` captures each element by reference.
+:::
+
+:::{rule} PACK-25
+:kind: reject
+:tests: templates/packs/capture-pack-same-mode.cpp
+
+A pack capture after a capture default must use the other mode, as a
+capture of one name must ({rule}`LAM-6`). So `[=, p...]` and
+`[&, &p...]` are not valid.
+:::
+
+:::{rule} PACK-18
+:kind: required
+:tests: templates/packs/init-capture-pack.cpp templates/packs/init-capture-unexpanded.cpp
+
+An init capture `...c = e`, or `&...c = e`, declares one capture for
+each element that the initializer `e` expands to. The name `c` is a
+pack in the body. With no elements, the capture declares nothing.
+:::
+
+### The pack-size operator
+
+:::{rule} PACK-19
+:kind: required
+:tests: templates/packs/size-operator.cpp
+
+`sizeof...(p)` gives the number of elements of the pack `p`. The pack
+can be of any kind. The result is a constant of the type of `sizeof`
+({rule}`UN-12`), and the pack in the operand needs no `...`.
+:::
+
+:::{rule} PACK-20
+:kind: reject
+:tests: templates/packs/size-operator-pattern.cpp templates/packs/size-operator-not-pack.cpp templates/packs/size-operator-parentheses.cpp
+
+The operand of `sizeof...` must be the name of a pack in parentheses. A
+pattern, such as `T*`, is not valid there.
+:::
+
+### Using-declarations
+
+:::{rule} PACK-21
+:kind: required
+:tests: templates/packs/using-declaration-pack.cpp templates/packs/using-declaration-empty-pack.cpp
+
+A using-declarator in a class can be expanded over a pack of bases. The
+declaration then names the member of each base. For a pack with no
+elements, the declaration declares nothing ({rule}`DER-9`,
+{rule}`DER-8`).
+:::
+
+### Forwarding
+
+:::{rule} PACK-22
+:kind: required
+:tests: templates/packs/forwarding-pack.cpp
+
+A function parameter pack `T&&... p`, with `T` a type pack of the
+function template, is a pack of forwarding references. Each element
+deduces on its own as {rule}`DED-8` gives.
+:::
+
+:::{rule} PACK-23
+:kind: required
+:tests: templates/packs/forwarding-cast.cpp
+
+For a forwarding reference `x` of type `T&&`, `static_cast<T&&>(x)` is
+an lvalue if the argument was an lvalue. Otherwise the cast is an
+xvalue.
+:::
+
+:::{rule} PACK-24
+:kind: required
+:tests: templates/packs/collapse-paths.cpp
+
+A reference added to a reference type collapses as {rule}`DCL-4` gives.
+The rule applies to a type from an alias, a template argument, or
+`decltype`. A cv-qualifier on such a reference type has no effect.
+:::
+
+## Examples
+
+```cpp
+template <class... T> struct List {};
+template <class... T> using Pointers = List<T*...>;
+Pointers<int, char>                        // List<int*, char*>
+
+template <class... T> int count(T... x) { return sizeof...(x); }
+count();                                   // 0
+count(1, 'c');                             // 2
+
+template <class... B> struct Mix : B... {  // one base per element
+  using B::run...;                         // each base's run
+};
+
+template <class... T> void relay(T&&... x) {
+  sink(static_cast<T&&>(x)...);            // each argument keeps its value category
+}
+
+template <class... T> auto keep(T... x) {
+  return [...c = x] { return (c + ...); }; // one member per element
+}
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All eight compilers agree on 32
+of 33 tests.
+
+The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
+7.0, and checked the tests and the grid on the eight baseline
+compilers.
+
+- PACK-16: on a class declaration, GCC takes the alignment of the last
+  element of `alignas(T...)`. Clang and EDG take the strictest. On a
+  member, all compilers take the strictest ({question}`Q-0238`).
+- PACK-3: every compiler reads `T...` after a parameter of a type that
+  names no pack as the variable argument part.
+- PACK-11: every compiler rejects an expansion for a parameter of an
+  alias template that is not a pack. A class template accepts it
+  (PACK-10).
+- PACK-21: a probe calls `f` of a class whose `using Bs::f...;`
+  expands an empty pack, with no other `f`. Every compiler rejects the
+  call. Clang names the using-declaration that expands to nothing, and
+  GCC and EDG report that the class has no member `f`.
+- Inventory item L2: no standard attribute accepts an expansion. Clang
+  says the attribute cannot be a pack, and GCC and EDG say the pattern
+  has no pack. The page does not specify attribute expansions.
+
+Expansion places (PACK-P2). Each row is a function template `probe`
+over a type pack `T` that expands `T` in one place and checks the
+result. Each column gives `T` a number of elements:
+
+| | no element | one element | three elements |
+|---|---|---|---|
+| call arguments | accept | accept | accept |
+| braced list | accept | accept | accept |
+| template arguments | accept | accept | accept |
+| function parameters | accept | accept | accept |
+| base list | accept | accept | accept |
+| member initializers | accept | accept | accept |
+| alignment specifier | accept | accept | accept |
+| capture | accept | accept | accept |
+| init capture | accept | accept | accept |
+| using-declaration | accept | accept | accept |
+| pack-size operator | accept | accept | accept |
+| fold | accept | accept | accept |
+
+The grid is in `tests/templates/packs/grids/`. This table gives the
+source of each rule. Inventory items have the numbers of
+`reports/review/2026-10-31-inventory-packs-forwarding-ctad.md`:
+
+| Rule | Source |
+|---|---|
+| PACK-1, PACK-2 | probes; diagnostics; inventory I3 to I5, I9 |
+| PACK-3 | probes; diagnostics; inventory I2 |
+| PACK-4 | diagnostics; inventory I1 |
+| PACK-5 | probes; inventory K1, K11 |
+| PACK-6 | diagnostics; inventory K5 |
+| PACK-7 | probes; inventory K4, K7 |
+| PACK-8 | diagnostics; inventory K6, K10, A6 |
+| PACK-9 | probes; grid sites; inventory K2, K3 |
+| PACK-10, PACK-11 | probes; diagnostics; inventory K9 |
+| PACK-12 | probes; inventory J4 |
+| PACK-13 | grid sites; probes; inventory L4, L5 |
+| PACK-14, PACK-15 | grid sites; diagnostics; inventory L3, L7 |
+| PACK-16 | grid sites; probes; inventory L1 |
+| PACK-17, PACK-18, PACK-25 | grid sites; probes; diagnostics; inventory A1 to A7 |
+| PACK-19, PACK-20 | grid sites; diagnostics; inventory N1 to N4 |
+| PACK-21 | grid sites; probes; inventory O1 to O3 |
+| PACK-22, PACK-23 | probes; inventory P4, P7, P10 |
+| PACK-24 | probes; inventory P1 |
+
+Inventory items left out of this page:
+
+- L2, an expansion in an attribute list: no standard attribute accepts
+  one.
+- K8 restates how the other rules treat a pack and adds no behavior.
+- Other pages state these items: I1 for template parameters
+  ({rule}`TPL-13`, {rule}`TPL-34`), I6 to I8 ({rule}`TPL-30`,
+  {rule}`TPL-35`, {rule}`TPL-36`), J1 to J3 and J5 to J10
+  ({rule}`DED-2`, {rule}`DED-20`, {rule}`DED-23`, {rule}`DED-37`,
+  {rule}`ORD-4`, {rule}`ORD-12`), M1 to M5 ({rule}`PRIM-27` to
+  {rule}`PRIM-29`), P2, P3, P5 to P10 ({rule}`DED-8`, {rule}`DED-30`,
+  {rule}`AUTO-4`, {rule}`ORD-10`), Q1 ({rule}`DEP-33`), Q3
+  ({rule}`TSP-9`, {rule}`TSP-11`), Q4 ({rule}`TPL-20`), and Q5
+  ({rule}`TARG-17`).
+- Q2, a pack in the argument list of a template for itself, is in part
+  {rule}`TPL-43`.
+
+Inputs: clang-diag-sema, clang-diag-parse.
