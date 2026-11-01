@@ -68,7 +68,9 @@ Outside those positions there is nothing to point at, and the
 behavior is undefined. Two pointers into different arrays have no
 distance. The arithmetic counts in the size of the pointer's type. A
 pointer of another type, such as a base class pointer into an array of
-a derived class, sees only its own object, as an array of one.
+a derived class, sees only its own object, as an array of one. A byte
+pointer sees the bytes of the object, as an array of `sizeof` bytes
+({rule}`STG-13`).
 :::
 
 :::{principle} ADD-P4
@@ -155,12 +157,14 @@ than the largest value of the type.
 
 :::{rule} ADD-6
 :kind: required
-:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/base-pointer-one-past-subobject.cpp
+:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/base-pointer-one-past-subobject.cpp foundations/storage/byte-pointer-walks-object.cpp
 
 Adding `n` to a pointer to an array element moves the pointer `n`
 elements forward. Subtracting `n` moves the pointer back. The position
 after the last element is valid. A single object counts as an array with
-one element.
+one element. A pointer to `std::byte`, `unsigned char`, or `char` can
+step through the bytes of any object as an array of `sizeof` elements
+({rule}`STG-13`, {question}`Q-0304`).
 :::
 
 :::{rule} ADD-7
@@ -202,7 +206,9 @@ is:
 - not zero distance from a null pointer.
 
 Each row of a multidimensional array is a separate array for this rule.
-Reading through a pointer one past the last element is also undefined.
+For a byte pointer that steps through an object, the array is the bytes
+of the object ({rule}`STG-13`, {question}`Q-0304`). Reading through a
+pointer one past the last element is also undefined.
 :::
 
 :::{rule} ADD-11
@@ -218,11 +224,16 @@ If two pointers do not point into the same array, `p - q` is undefined.
 
 Arithmetic on a pointer whose type differs from the array's element
 type counts the object as an array of one. Cv-qualifiers do not count
-as a difference. These operations on such a pointer are undefined
-({question}`Q-0049`):
+as a difference. A pointer to `std::byte`, `unsigned char`, or `char`
+counts the bytes instead (ADD-6). These operations on any other such
+pointer are undefined ({question}`Q-0049`):
 
 - a move to a position other than the object or one past it,
 - a subtraction of two pointers into different array elements.
+
+The rule covers a pointer to the signed or unsigned integer type that
+matches the element type. A read through such a pointer is valid
+({rule}`STG-14`). A read of another element through it is undefined.
 :::
 
 :::{rule} ADD-17
@@ -294,8 +305,8 @@ first + 2;                // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 46
-of 54 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 47
+of 55 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
@@ -319,6 +330,12 @@ of 54 tests.
   past, and a difference of base pointers into two elements. GCC
   accepts all three, and computes the difference from the addresses
   ({question}`Q-0049`).
+- ADD-6, ADD-10, ADD-14: the address and undefined sanitizers of Clang
+  and GCC report no step through the bytes of an object. They also
+  report no read of the next element through the unsigned type that
+  matches `int`. Constant evaluation
+  cannot form either pointer ({rule}`CAST-8`). The byte rule is
+  provisional ({question}`Q-0304`).
 - ADD-16, MUL-16: Clang and GCC warn about these operations as
   deprecated.
 - ADD-17: Clang gives an infinity during constant evaluation. GCC and

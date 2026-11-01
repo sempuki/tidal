@@ -1,4 +1,4 @@
-// tidal-rules: STG-19
+// tidal-rules: STG-19 LSUP-10
 // tidal-expect: reject
 // tidal-error-gcc: accessing .U::whole. member instead of (initialized|active) .U::real. member
 // tidal-error-clang: read of member .* of union with active member

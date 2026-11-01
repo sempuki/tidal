@@ -1,4 +1,4 @@
-// tidal-rules: STG-1
+// tidal-rules: STG-1 DCL-10
 // tidal-expect: reject
 // tidal-error-gcc: exceeds maximum object size
 // tidal-error-clang: array is too large

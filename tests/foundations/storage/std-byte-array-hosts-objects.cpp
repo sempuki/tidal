@@ -1,4 +1,4 @@
-// tidal-rules: STG-4 STG-5
+// tidal-rules: STG-4 STG-5 LSUP-9
 // tidal-expect: run
 #include "byte.h"
 #include "placement.h"

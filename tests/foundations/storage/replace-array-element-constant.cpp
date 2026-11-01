@@ -1,4 +1,4 @@
-// tidal-rules: STG-9
+// tidal-rules: STG-9 LSUP-10
 // tidal-expect: accept
 #include "construct.h"
 struct Item { int value; };

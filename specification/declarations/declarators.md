@@ -487,7 +487,7 @@ cast.
 
 :::{rule} DCL-10
 :kind: impl-defined
-:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp declarations/declarators/array-4gib-ilp32.cpp
+:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp declarations/declarators/array-4gib-ilp32.cpp foundations/storage/array-size-exceeds-size-type.cpp
 
 The largest array that an implementation accepts is
 implementation-defined. The limit can depend on the target. An array
@@ -555,7 +555,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All eight compilers agree on 82 of 85 tests. The results are in
+All eight compilers agree on 83 of 86 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of

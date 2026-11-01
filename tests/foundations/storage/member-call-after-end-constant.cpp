@@ -1,4 +1,4 @@
-// tidal-rules: STG-22
+// tidal-rules: STG-22 DTOR-7
 // tidal-expect: reject
 // tidal-error-gcc: outside its lifetime
 // tidal-error-clang: member call on object outside its lifetime

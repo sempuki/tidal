@@ -1,4 +1,4 @@
-// tidal-rules: STG-12
+// tidal-rules: STG-12 LSUP-9
 // tidal-expect: run
 #include "byte.h"
 int main() {

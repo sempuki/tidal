@@ -14,6 +14,8 @@ nothing else about the library (decision 0041):
 | `std::nothrow_t`, `std::nothrow`, the nothrow forms | {rule}`NEW-31`, {rule}`NEW-36` |
 | the non-allocating placement forms | {rule}`NEW-33` |
 | `std::exception`, `std::bad_alloc`, `std::bad_array_new_length`, `std::bad_cast` | {rule}`NEW-35`, {rule}`NEW-38`, {rule}`VIRT-10` |
+| `std::byte` | {rule}`STG-4`, {rule}`STG-13`, {rule}`STG-14` |
+| `std::construct_at` | {rule}`STG-5`, {rule}`NEW-37` |
 
 The type that `typeid` gives and the exception that a failed `typeid`
 throws stay with the library *(library referenced)*. So do the new
@@ -22,7 +24,7 @@ referenced)*.
 
 Depends on: fundamental types; list initialization of classes;
 comparison operators; structured bindings; new and delete; virtual
-functions.
+functions; raw storage and object representation.
 
 ## Principles
 
@@ -55,6 +57,22 @@ kind. Each name has one job:
 The library defines the functions and the members. A program that
 includes no header declares the names, and the library supplies the
 definitions when the program is linked.
+:::
+
+:::{principle} LSUP-P3
+:rules: LSUP-9 LSUP-10
+
+Two library names give a program direct use of raw storage:
+
+| Name | Job |
+|---|---|
+| `std::byte` | a byte type with no arithmetic, which hosts objects and reads any object, as `unsigned char` does |
+| `std::construct_at` | the placement `new` that constant evaluation runs |
+
+Constant evaluation runs no placement form that the program defines
+({rule}`NEW-37`). The implementation recognizes `std::construct_at` by
+its name and runs the placement `new` inside it. A program that
+includes no header declares both names itself.
 :::
 
 ## Constraints
@@ -172,6 +190,35 @@ and the library defines the destructor.
 | `bad_cast` | `exception` | a failed `dynamic_cast` to a reference ({rule}`VIRT-10`) |
 :::
 
+:::{rule} LSUP-9
+:kind: required
+:tests: foundations/language-support/byte-self-declared.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp
+
+A program that includes no header can declare `std::byte` itself. The
+declaration gives a scoped enumeration with the underlying type
+`unsigned char` and no enumerators. The type is then a byte type for
+{rule}`STG-4`, {rule}`STG-13`, and {rule}`STG-14`.
+:::
+
+:::{rule} LSUP-10
+:kind: required
+:tests: foundations/language-support/construct-at-self-declared.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/reuse-other-union-member-constant.cpp
+
+A program that includes no header can declare `std::construct_at`
+itself, in this shape:
+
+- a `constexpr` function template with the parameters `T* location`
+  and `Args&&... args`,
+- a body that returns
+  `::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...)`,
+  which calls a non-allocating placement form (LSUP-7).
+
+During {term}`constant evaluation`, the placement `new` in
+`std::construct_at` creates the object ({rule}`STG-5`). The same
+placement `new` in any other function is not valid there
+({rule}`NEW-37`).
+:::
+
 ## Examples
 
 ```cpp
@@ -213,10 +260,29 @@ alignas(int) unsigned char cell[sizeof(int)];
 int* q = new (cell) int(2);         // the int is in cell
 ```
 
+```cpp
+namespace std {
+enum class byte : unsigned char {};
+template <class T, class... Args>
+constexpr T* construct_at(T* at, Args&&... args) {
+  return ::new (static_cast<void*>(at)) T(static_cast<Args&&>(args)...);
+}
+}
+inline void* operator new(decltype(sizeof 0), void* at) noexcept { return at; }
+
+constexpr int reset() {
+  int count = 1;
+  std::construct_at(&count, 5);     // fine in constant evaluation
+  return count;                     // 5
+}
+alignas(int) std::byte raw[sizeof(int)];
+int* r = new (raw) int(3);          // raw hosts the int
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 18
-of 28 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 28
+of 38 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -236,8 +302,9 @@ of 28 tests.
   of the allocation function matters ({rule}`NEW-31`). The shape in the
   table matches the library's names, so a declared form links to the
   library's definition.
-- LSUP-7: every compiler accepts the `inline` definitions, and Clang
-  and GCC build the object at the given address.
+- LSUP-7: every compiler accepts the `inline` definitions in a program
+  that includes no header, and Clang and GCC build the object at the
+  given address.
 - LSUP-8: Clang and GCC catch the objects that their libraries throw
   with handlers for classes that the program declares. Each class
   declares its destructor and does not define it, so the program uses
@@ -245,6 +312,15 @@ of 28 tests.
   a derived class. Clang throws `std::bad_alloc` for an erroneous
   array bound ({question}`Q-0301`). EDG compiles these programs and
   does not run them.
+- LSUP-9: every compiler accepts the declaration of `std::byte`. Clang
+  and GCC, at `-O0` and at `-O2`, let a write through a `std::byte`
+  glvalue change an `int` and place an object in an array of
+  `std::byte`.
+- LSUP-10: every compiler runs the placement `new` inside
+  `std::construct_at` during constant evaluation. The placement form
+  need not be `constexpr`. Every compiler rejects the same template in
+  another namespace. With no placement form declared, every compiler
+  rejects the template's placement `new` ({rule}`NEW-20`).
 - Scope: the page covers the names that a `new` expression and
   `dynamic_cast` use. `typeid` and its exception wait for roadmap item
   T. The new handler and the launder operation are library facilities

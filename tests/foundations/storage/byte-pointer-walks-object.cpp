@@ -1,4 +1,4 @@
-// tidal-rules: STG-13
+// tidal-rules: STG-13 ADD-6
 // tidal-expect: run
 // tidal-flags: -O0 -fsanitize=address,undefined -fno-sanitize-recover=all
 int main() {

@@ -234,10 +234,10 @@ member declared `[[no_unique_address]]` ({rule}`ATTR-9`, {rule}`ATTR-16`).
 
 :::{rule} STG-4
 :kind: required
-:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp
+:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp foundations/language-support/byte-self-declared.cpp
 
 A *byte array* is an array of `unsigned char` or of `std::byte`
-*(library referenced)*. A byte array in its lifetime *hosts* an object
+({rule}`LSUP-9`). A byte array in its lifetime *hosts* an object
 that is created inside it, if no smaller byte array inside it also
 contains the whole object. An object is *nested* in an object that
 hosts it or has it as a subobject, and in each object that those are
@@ -249,7 +249,7 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp
 
 `new (p) T(args)` with the library's non-allocating placement form
 *(library referenced)* creates an object of type `T` at the address
@@ -368,7 +368,7 @@ pointer gives one byte of the object representation.
 
 :::{rule} STG-14
 :kind: required
-:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp
+:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/language-support/byte-self-declared.cpp
 
 A program can read or write the value of an object whose dynamic type
 is `T` through a glvalue of one of these types:
@@ -567,15 +567,15 @@ byte + sizeof v;                      // one past the last byte of v
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 57 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 56
+of 59 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
   placement `new`, or a cast from `void*` to an object pointer, during
   constant evaluation. Each compiler accepts a placement `new` inside a
   function template `std::construct_at` that the program declares, so
-  the constant tests declare that function *(library referenced)*.
+  the constant tests declare that function ({rule}`LSUP-10`).
 - STG-1: Clang 18 accepts a class whose size does not fit in
   `std::size_t` and gives `sizeof` a reduced value. GCC accepts the
   class definition and rejects `sizeof` of the class. Clang 22 and EDG

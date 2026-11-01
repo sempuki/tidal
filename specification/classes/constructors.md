@@ -517,7 +517,7 @@ is also undefined.
 
 :::{rule} DTOR-7
 :kind: undefined
-:tests: classes/constructors/double-destroy-constant.cpp
+:tests: classes/constructors/double-destroy-constant.cpp foundations/storage/member-call-after-end-constant.cpp
 
 If a program destroys an object a second time, or calls a member
 function of the object, after its destructor runs, the behavior is
@@ -587,8 +587,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 154
-of 164 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 155
+of 165 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default

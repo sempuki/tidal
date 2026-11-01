@@ -1,4 +1,4 @@
-// tidal-rules: STG-14
+// tidal-rules: STG-14 LSUP-9
 // tidal-expect: run
 #include "byte.h"
 int through_char(int* number, char* other) { *number = 1; *other = 0; return *number; }

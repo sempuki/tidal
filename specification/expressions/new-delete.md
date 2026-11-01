@@ -47,8 +47,10 @@ run.
 :::{principle} NEW-P3
 :rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25 NEW-26
 
-The storage comes from an allocation function. The global allocation and
-deallocation functions exist in every program without a declaration, so
+The storage comes from an allocation function. A call of an allocation
+function also creates objects of implicit-lifetime types in the storage
+that the call returns, so the program can use the storage at once
+({rule}`STG-8`). The global allocation and deallocation functions exist in every program without a declaration, so
 a program can also call them by name. A form with placement arguments
 exists only where a declaration gives it. A program can supply its own
 allocation functions for one class, through the member `operator new`
@@ -81,7 +83,8 @@ so each object made during the evaluation must be deleted before the
 evaluation ends. The evaluation manages the storage itself, so it can
 use only the global allocation functions of the implementation. A
 function that the program writes, or a placement form, has effects that
-the evaluation cannot model.
+the evaluation cannot model. The placement `new` inside
+`std::construct_at` is the one exception ({rule}`LSUP-10`).
 :::
 
 :::{principle} NEW-P5
@@ -204,13 +207,14 @@ be deleted before the evaluation ends.
 
 :::{rule} NEW-37
 :kind: reject
-:tests: expressions/new-delete/constant-evaluation-class-allocation.cpp expressions/new-delete/constant-evaluation-placement.cpp expressions/new-delete/constant-evaluation-nothrow.cpp expressions/new-delete/aligned-new-constant.cpp
+:tests: expressions/new-delete/constant-evaluation-class-allocation.cpp expressions/new-delete/constant-evaluation-placement.cpp expressions/new-delete/constant-evaluation-nothrow.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/construct-at-other-namespace-constant.cpp
 
 During constant evaluation, a `new` expression must call a global
 allocation function of the implementation. These functions are the
 forms of NEW-19 and NEW-26, and the nothrow forms ({rule}`LSUP-6`,
 {question}`Q-0303`). A class's own `operator new` and a placement form
-that the program defines are not valid there.
+that the program defines are not valid there, except in
+`std::construct_at` ({rule}`LSUP-10`).
 :::
 
 :::{rule} NEW-39
@@ -251,8 +255,9 @@ pointer to a `const` object are valid.
 
 A `new` expression can pass placement arguments in parentheses before
 the type, as in `new (a) T`. The placement arguments become extra
-arguments of the allocation function. The type can also be in
-parentheses, as in `new (int)`.
+arguments of the allocation function. With the non-allocating placement
+form, `new (p) T` creates the object at the address `p` ({rule}`STG-5`).
+The type can also be in parentheses, as in `new (int)`.
 :::
 
 :::{rule} NEW-11
@@ -290,9 +295,11 @@ declaration in the program:
   and a parameter of the type of `sizeof 0`.
 
 A program can call these functions by name, also when it declares its
-own forms of `operator new` or `operator delete`. The `operator new`
-forms are potentially throwing, and the `operator delete` forms are
-non-throwing ({rule}`EXS-4`).
+own forms of `operator new` or `operator delete`. A call of an
+`operator new` form creates objects of implicit-lifetime types in the
+storage that it returns ({rule}`STG-8`). The `operator new` forms are
+potentially throwing, and the `operator delete` forms are non-throwing
+({rule}`EXS-4`).
 :::
 
 :::{rule} NEW-26
@@ -307,14 +314,15 @@ storage aligned to the value of that argument.
 
 :::{rule} NEW-20
 :kind: reject
-:tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp
+:tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp expressions/new-delete/placement-pointer-to-const.cpp
 
 A `new` expression with placement arguments must find a declared
 allocation function that accepts them. The function accepts them if
 their number fits its parameters after the size, and each placement
 argument converts implicitly to its parameter type, as in a function
 call ({rule}`PFX-6`). The functions of NEW-19 accept no placement
-arguments.
+arguments. A pointer to `const` does not convert to the `void*`
+parameter of the non-allocating placement form.
 :::
 
 :::{rule} NEW-30
@@ -603,7 +611,7 @@ delete[] a;                     // undefined: a is not from new[]
 int* n = nullptr;
 delete n;                       // does nothing
 
-void* raw = ::operator new(16); // storage only, no object
+void* raw = ::operator new(16); // implicit objects, as later uses need
 ::operator delete(raw);
 int x;
 new (&x) int(3);                // rejected without a declared placement form
@@ -621,8 +629,8 @@ int* h = new (std::nothrow) int[count];  // null
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 95
-of 111 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 113 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -640,7 +648,9 @@ of 111 tests.
   `new (&x) int` when no placement form is declared.
 - NEW-20: all compilers reject a placement argument that does not
   convert to the parameter type of the only declared placement form.
-  All accept an argument that converts through a constructor.
+  All accept an argument that converts through a constructor. All
+  reject a pointer to `const` as the argument of the non-allocating
+  placement form.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that the
   deletion is undefined. Clang (pedantic) and EDG reject it
   ({question}`Q-0035`).
@@ -704,7 +714,9 @@ of 111 tests.
 - NEW-37: every compiler rejects a class's own `operator new` and a
   placement form during constant evaluation, and accepts an
   over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow
-  forms. GCC 14 and EDG reject them ({question}`Q-0303`).
+  forms. GCC 14 and EDG reject them ({question}`Q-0303`). Every
+  compiler accepts the placement `new` inside `std::construct_at`, and
+  rejects the same template in another namespace ({rule}`LSUP-10`).
 - NEW-38: Clang and GCC throw `std::bad_alloc` from the global
   allocation function for a request that no system can meet.
 - NEW-25: Clang, GCC, and EDG reject a private deallocation function,

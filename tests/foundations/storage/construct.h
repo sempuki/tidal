@@ -1,6 +1,6 @@
 // The library function that constant evaluation lets run a placement
 // new expression, declared as a program that includes no header declares
-// it (STG-5).
+// it (LSUP-10).
 inline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }
 inline void operator delete(void*, void*) noexcept {}
 namespace std {
