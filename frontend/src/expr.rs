@@ -351,8 +351,10 @@ impl P {
         };
         let id = ids[0];
         if ids.iter().filter(|&&i| self.func(i).is_some()).count() > 1 {
-            // The target type chooses from an overload set; not modeled.
-            return Ok(Expr::unknown(line, "address of an overload set"));
+            // OVL-18: a target type chooses the function later.
+            let fs: Vec<DeclId> = ids.iter().copied().filter(|&i| self.func(i).is_some()).collect();
+            let set = Expr::new(EK::Overloads(fs), QTy::unknown(), Cat::L, line);
+            return Ok(Expr::new(EK::Unary(UOp::AddrOf, Box::new(set)), QTy::unknown(), Cat::PR, line));
         }
         match self.decls[id].k.clone() {
             DK::Field(f) => {
@@ -680,7 +682,13 @@ impl P {
                     // COMMA-6: the built-in subscript takes one argument.
                     self.error(line, "COMMA-6", "comma in a built-in subscript");
                 }
-                e = self.build_subscript(e, idx, line);
+                e = if extra {
+                    // Several arguments for a member operator[] (OPR-3) are
+                    // not modeled.
+                    Expr::unknown(line, "operator[] with several arguments")
+                } else {
+                    self.build_subscript(e, idx, line)
+                };
             } else if self.at("(") {
                 let adl = self.adl_pos == Some(self.pos);
                 self.pos += 1;
@@ -857,6 +865,12 @@ impl P {
             return Ok(Expr::unknown(line, "ambiguous member"));
         }
         let id = ids[0];
+        if matches!(self.decls[id].k, DK::Field(_) | DK::Var(_)) && !self.in_template() && self.scopes[self.decls[id].scope].kind == SK::Class(c) && !self.accessible(id, false) {
+            // ACC-2, ACC-4: a private or protected data member of the
+            // object's own class, used outside its members and friends.
+            let (rule, what) = if self.member_access.get(&id) == Some(&1) { ("ACC-4", "protected") } else { ("ACC-2", "private") };
+            self.error(line, rule, format!("'{}' is a {} member of '{}'", name, what, self.classes[c].name));
+        }
         match self.decls[id].k.clone() {
             DK::Field(f) => {
                 // PRIM-12 / VC-1 / VC-3: member of an lvalue is an lvalue,
@@ -1824,7 +1838,20 @@ impl P {
                 let nonstatic = fids.iter().any(|&i| self.func(i).is_some_and(|f| f.class.is_some() && !f.is_static && f.kind != FnKind::Ctor));
                 if nonstatic {
                     if let Some(this) = self.implicit_this(line, true) {
-                        return Expr::new(EK::BoundMember(Box::new(this), fids), QTy::unknown(), Cat::PR, line);
+                        // OVL-2: `*this` is the implied object argument only
+                        // if its class is the members' class or derived
+                        // from it.
+                        let tc = match &this.ty.t {
+                            Ty::Ptr(p) => match p.t {
+                                Ty::Class(c) => Some(c),
+                                _ => None,
+                            },
+                            _ => None,
+                        };
+                        let related = tc.is_none_or(|tc| fids.iter().any(|&i| self.func(i).and_then(|f| f.class).is_none_or(|fc| fc == tc || self.is_base_of(fc, tc))));
+                        if related {
+                            return Expr::new(EK::BoundMember(Box::new(this), fids), QTy::unknown(), Cat::PR, line);
+                        }
                     }
                 }
                 if fids.len() == 1 {
@@ -2098,7 +2125,7 @@ impl P {
         self.lookup(&name).is_some()
     }
 
-    fn class_has_friend_op(&self, c: usize, name: &str) -> bool {
+    pub fn class_has_friend_op(&self, c: usize, name: &str) -> bool {
         let _ = (c, name);
         // Friend functions are declared in the enclosing namespace scope.
         false
@@ -2108,6 +2135,9 @@ impl P {
     /// Returns Err with a reason if no implicit conversion exists.
     pub fn implicit(&mut self, e: Expr, to: &QTy, direct: bool) -> Result<Expr, String> {
         let line = e.line;
+        if let Some(x) = self.overload_target(&e, to, line) {
+            return Ok(x);
+        }
         if to.is_unknown() || e.ty.is_unknown() {
             let mut x = e;
             if !to.is_unknown() {
@@ -2301,7 +2331,20 @@ impl P {
                 a2.noexcept = b.noexcept;
                 a2 == **b && (a.noexcept || !b.noexcept)
             }
-            (Ty::Array(a, Some(_)), Ty::Array(b, None)) => a == b,
+            // A pointer to an array of known bound converts to a pointer
+            // to an array of unknown bound, also with cv-qualifiers added
+            // to the elements (outside knowledge; ICS-31 implies it).
+            (Ty::Array(_, Some(_)), Ty::Array(_, None)) | (Ty::Array(..), Ty::Array(..)) => self.array_qual_ok(&from.t, &to.t),
+            _ => false,
+        }
+    }
+
+    /// An array type converts to `to` by adding cv-qualifiers to its
+    /// elements, also through nested arrays, or by losing its bound
+    /// (CV-6, CV-7).
+    pub fn array_qual_ok(&self, from: &Ty, to: &Ty) -> bool {
+        match (from, to) {
+            (Ty::Array(a, n), Ty::Array(b, m)) => (n == m || m.is_none()) && (!a.c || b.c) && (!a.v || b.v) && (a.t == b.t || self.array_qual_ok(&a.t, &b.t)),
             _ => false,
         }
     }
@@ -2398,7 +2441,7 @@ impl P {
         let et = e.ty.clone();
         let related = et.t == inner.t
             || matches!((&et.t, &inner.t), (Ty::Class(a), Ty::Class(b)) if self.is_base_of(*b, *a))
-            || matches!((&et.t, &inner.t), (Ty::Array(a, Some(_)), Ty::Array(b, None)) if a == b);
+            || (matches!((&et.t, &inner.t), (Ty::Array(..), Ty::Array(..))) && self.array_qual_ok(&et.t, &inner.t));
         let cv_ok = (!et.c || inner.c) && (!et.v || inner.v);
         if matches!(et.t, Ty::Class(_)) && matches!(inner.t, Ty::Func(_)) {
             return Expr::new(EK::Unknown("conversion to a function reference".into()), inner, Cat::L, line);
@@ -2557,10 +2600,17 @@ impl P {
         let classes: Vec<usize> = [&l, &r].iter().filter_map(|e| if let Ty::Class(c) = nonref(&e.ty).t { Some(c) } else { None }).collect();
         if !classes.is_empty() && !self.in_template() && self.operator_visible(",", &classes) {
             // An operator function for the comma.
-            if let Some(x) = self.operator_select(",", &l, Some(&r), line) {
-                return x;
+            match self.op_resolve(",", &[l.clone(), r.clone()], false, line) {
+                crate::ovl::OpRes::Done(x) => return x,
+                // OVL-12: no viable function, so the built-in meaning.
+                crate::ovl::OpRes::Builtin(_) => {}
+                crate::ovl::OpRes::NotHandled => {
+                    if let Some(x) = self.operator_select(",", &l, Some(&r), line) {
+                        return x;
+                    }
+                    return Expr::unknown(line, "overloaded comma");
+                }
             }
-            return Expr::unknown(line, "overloaded comma");
         }
         let ty = r.ty.clone();
         let cat = r.cat;
@@ -2568,8 +2618,17 @@ impl P {
         Expr::new(EK::Comma(Box::new(l), Box::new(r)), ty, cat, line)
     }
 
+    /// Overload resolution for an operator with a class or enumeration
+    /// operand. Some(result) when an operator function decides the
+    /// expression. None when the built-in operator applies; after a
+    /// built-in candidate won, `op_converted` holds the operands
+    /// (OVL-11).
     pub fn class_operand(&mut self, op: &str, l: &Expr, r: Option<&Expr>, rule: &'static str, line: u32) -> Option<Expr> {
-        // Returns Some(result) if a class operand is involved.
+        self.class_operand_x(op, l, r, false, rule, line)
+    }
+
+    pub fn class_operand_x(&mut self, op: &str, l: &Expr, r: Option<&Expr>, postfix: bool, rule: &'static str, line: u32) -> Option<Expr> {
+        self.op_converted = None;
         let lt = nonref(&l.ty).t;
         let rt = r.map(|r| nonref(&r.ty).t);
         let mut classes = Vec::new();
@@ -2583,7 +2642,15 @@ impl P {
             // An operator function can take an enumeration (OPR rules).
             let has_enum = matches!(lt, Ty::Enum(_)) || matches!(rt, Some(Ty::Enum(_)));
             if has_enum && self.operator_visible(op, &[]) {
-                return Some(Expr::unknown(line, "overloaded operator for an enumeration"));
+                let ops: Vec<Expr> = std::iter::once(l.clone()).chain(r.cloned()).collect();
+                return match self.op_resolve(op, &ops, postfix, line) {
+                    crate::ovl::OpRes::Done(x) => Some(x),
+                    crate::ovl::OpRes::Builtin(v) => {
+                        self.op_converted = Some(v);
+                        None
+                    }
+                    crate::ovl::OpRes::NotHandled => Some(Expr::unknown(line, "overloaded operator for an enumeration")),
+                };
             }
             return None;
         }
@@ -2594,6 +2661,17 @@ impl P {
         if all_known && !self.operator_visible(op, &classes) {
             self.error(line, rule, format!("no operator '{}' for class operand", op));
             return Some(Expr::unknown(line, "bad class operand"));
+        }
+        if op != "," && op != "=" {
+            let ops: Vec<Expr> = std::iter::once(l.clone()).chain(r.cloned()).collect();
+            match self.op_resolve(op, &ops, postfix, line) {
+                crate::ovl::OpRes::Done(x) => return Some(x),
+                crate::ovl::OpRes::Builtin(v) => {
+                    self.op_converted = Some(v);
+                    return None;
+                }
+                crate::ovl::OpRes::NotHandled => {}
+            }
         }
         if let Some(x) = self.operator_select(op, l, r, line) {
             return Some(x);
@@ -2617,6 +2695,10 @@ impl P {
         if let Some(x) = self.class_operand(sp, &l, Some(&r), rule, line) {
             return x;
         }
+        let (l, r) = match self.op_converted.take() {
+            Some(v) if v.len() == 2 => (v[0].clone(), v[1].clone()),
+            _ => (l, r),
+        };
         // Recommended practice: parentheses warnings.
         let is_cmp = |e: &Expr| matches!(e.k, EK::Binary(BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne, ..)) && !e.paren;
         if matches!(op, BOp::BitAnd | BOp::BitOr | BOp::BitXor) && (is_cmp(&l) || is_cmp(&r)) {
@@ -2742,9 +2824,29 @@ impl P {
                 if ls != rs || (ls && lt != rt) {
                     self.error(line, "CMP-23", "three-way comparison of a scoped enumeration with another type");
                 }
-                Expr::new(EK::Unknown("<=> (comparison category types are library types)".into()), QTy::unknown(), Cat::PR, line)
+                if (lt == Ty::Bool) != (rt == Ty::Bool) && (lt.is_arithmetic() || matches!(lt, Ty::Enum(_))) && (rt.is_arithmetic() || matches!(rt, Ty::Enum(_))) {
+                    // CMP-13: a bool and an operand of another type.
+                    self.error(line, "CMP-13", "three-way comparison of a bool with an operand of another type");
+                }
+                // OVL-P4: an ordering type, std::partial_ordering for
+                // floating-point operands and std::strong_ordering
+                // otherwise. The value is not modeled.
+                let name = if lt.is_floating() || rt.is_floating() { "partial_ordering" } else { "strong_ordering" };
+                let ty = self.std_class(name).map(|c| QTy::new(Ty::Class(c))).unwrap_or(QTy::unknown());
+                Expr::new(EK::Unknown("<=> (comparison category types are library types)".into()), ty, Cat::PR, line)
             }
             BOp::LAnd | BOp::LOr => unreachable!(),
+        }
+    }
+
+    /// The class `std::name`, when the program declares it.
+    pub fn std_class(&self, name: &str) -> Option<usize> {
+        let ns = self.lookup_in_scope(self.global, "std", false)?;
+        let DK::Namespace(s) = self.decls[*ns.first()?].k else { return None };
+        let ids = self.lookup_in_scope(s, name, false)?;
+        match self.decls[*ids.first()?].k {
+            DK::Class(c) if self.classes[c].complete => Some(c),
+            _ => None,
         }
     }
 
@@ -2878,8 +2980,14 @@ impl P {
             UOp::PreInc | UOp::PostInc => "++",
             UOp::PreDec | UOp::PostDec => "--",
         };
+        if matches!(e.k, EK::BoundMember(..)) && op == UOp::AddrOf {
+            // `&f` with an unqualified name of a set that holds a
+            // non-static member; a call through it is OVL-44.
+            return Expr::new(EK::Unary(op, Box::new(e)), QTy::unknown(), Cat::PR, line);
+        }
         if matches!(e.k, EK::Overloads(_)) && op == UOp::AddrOf {
-            return Expr::unknown(line, "address of overload set");
+            // OVL-18: a target type chooses the function later.
+            return Expr::new(EK::Unary(op, Box::new(e)), QTy::unknown(), Cat::PR, line);
         }
         if let EK::Func(f) = &e.k {
             if op == UOp::AddrOf && self.func(*f).is_some_and(|fi| fi.is_main) {
@@ -2899,12 +3007,17 @@ impl P {
             _ => "UN-11",
         };
         if op != UOp::AddrOf {
-            if let Some(x) = self.class_operand(sp, &e, None, rule, line) {
+            if let Some(x) = self.class_operand_x(sp, &e, None, matches!(op, UOp::PostInc | UOp::PostDec), rule, line) {
                 return x;
             }
         } else if let Ty::Class(cc) = nonref(&e.ty).t {
             if self.operator_visible("&", &[cc]) || self.class_uncertain(cc) {
-                return Expr::unknown(line, "overloaded operator&");
+                match self.op_resolve("&", std::slice::from_ref(&e), false, line) {
+                    crate::ovl::OpRes::Done(x) => return x,
+                    // OVL-12: no viable function, so the built-in meaning.
+                    crate::ovl::OpRes::Builtin(_) => {}
+                    crate::ovl::OpRes::NotHandled => return Expr::unknown(line, "overloaded operator&"),
+                }
             }
             if e.cat == Cat::PR && !self.in_template() {
                 self.error(line, "UN-9", "address of a prvalue");
@@ -2912,6 +3025,10 @@ impl P {
             let t = QTy::new(Ty::Ptr(Box::new(e.ty.clone())));
             return Expr::new(EK::Unary(op, Box::new(e)), t, Cat::PR, line);
         }
+        let e = match self.op_converted.take() {
+            Some(mut v) if v.len() == 1 => v.remove(0),
+            _ => e,
+        };
         if e.ty.is_unknown() && !matches!(op, UOp::AddrOf) {
             let cat = if matches!(op, UOp::Deref | UOp::PreInc | UOp::PreDec) { Cat::L } else { Cat::PR };
             let ty = if op == UOp::Not { QTy::bool_() } else { QTy::unknown() };
@@ -3033,6 +3150,22 @@ impl P {
     }
 
     pub fn build_assign(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
+        let is_class = |e: &Expr| matches!(nonref(&e.ty).t, Ty::Class(_));
+        let is_enum = |e: &Expr| matches!(nonref(&e.ty).t, Ty::Enum(_));
+        let (l, r) = if op != "=" && !self.in_template() && (is_class(&l) || is_class(&r) || ((is_enum(&l) || is_enum(&r)) && self.operator_visible(op, &[]))) {
+            // OPR-6, OVL-7: a compound assignment with a class or
+            // enumeration operand.
+            match self.op_resolve(op, &[l.clone(), r.clone()], false, line) {
+                crate::ovl::OpRes::Done(x) => return x,
+                crate::ovl::OpRes::Builtin(mut v) if v.len() == 2 => {
+                    let r = v.pop().unwrap();
+                    (v.pop().unwrap(), r)
+                }
+                _ => (l, r),
+            }
+        } else {
+            (l, r)
+        };
         let lt = l.ty.clone();
         if let Ty::Class(c) = lt.t {
             // CPY-22: the implicit copy assignment operator of a derived
@@ -3284,6 +3417,18 @@ impl P {
     }
 
     pub fn build_subscript(&mut self, a: Expr, i: Expr, line: u32) -> Expr {
+        let (a, i) = if (matches!(nonref(&a.ty).t, Ty::Class(_)) || matches!(nonref(&i.ty).t, Ty::Class(_))) {
+            match self.op_resolve("[]", &[a.clone(), i.clone()], false, line) {
+                crate::ovl::OpRes::Done(x) => return x,
+                crate::ovl::OpRes::Builtin(mut v) if v.len() == 2 => {
+                    let i = v.pop().unwrap();
+                    (v.pop().unwrap(), i)
+                }
+                _ => (a, i),
+            }
+        } else {
+            (a, i)
+        };
         let at = nonref(&a.ty);
         if let Ty::Class(_) = at.t {
             return Expr::unknown(line, "overloaded operator[]");

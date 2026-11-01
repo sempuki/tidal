@@ -1,12 +1,12 @@
 // Implicit conversion sequences and their comparison
-// (spec/foundations/conversion-sequences.md, ICS-1 to ICS-37).
+// (spec/foundations/conversion-sequences.md, ICS-1 to ICS-45), and
+// overload resolution for calls (spec/foundations/overload-resolution.md,
+// OVL-22 to OVL-25, OVL-34 to OVL-36).
 //
 // A sequence is formed for one argument and one parameter. Two sequences
-// for the same argument compare by the steps of ICS-P5. Overload
-// resolution itself is not specified yet (item M). `select` uses the
-// usual rule for it, which is outside knowledge: a candidate is better
-// than another when no argument has a worse sequence and one argument
-// has a better one, and the best candidate is better than all others.
+// for the same argument compare by the steps of ICS-P5. `ics_select`
+// finds the viable functions of a call and the one that is better than
+// each other one (OVL-25, OVL-34).
 //
 // Forming returns Err(()) when the front end cannot model the argument
 // or the parameter. The caller then falls back to the older ranking.
@@ -125,6 +125,10 @@ impl Ics {
 
 pub type R = Result<Option<Ics>, ()>;
 
+fn is_list(a: &Expr) -> bool {
+    matches!(a.k, EK::InitList(_)) && a.ty.is_unknown()
+}
+
 /// How a candidate for a user-defined conversion compares: the sequence
 /// to its first parameter or object parameter, and the third part.
 struct UCand {
@@ -157,6 +161,10 @@ impl P {
         };
         let Ok(Some(Ics { kind: IK::User, user: Some(UKey::Fn(fid)), .. })) = r else { return None };
         let f = self.func(fid)?.clone();
+        if f.deleted {
+            // ICS-8: the chosen conversion function is deleted.
+            self.error_because(line, "ICS-8", "DEL-1", format!("conversion by the deleted function '{}'", self.decls[fid].name));
+        }
         let (t, cat) = crate::expr2::ret_cat(&f.fty.ret);
         let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), t, cat, line);
         if self.in_unevaluated == 0 && self.internal_fns.contains(&fid) {
@@ -185,6 +193,20 @@ impl P {
         if matches!(a.k, EK::InitList(_)) && a.ty.is_unknown() {
             return self.ics_list(a, p, std_only);
         }
+        if let Some((fs, _)) = Self::overload_set_of(a) {
+            // OVL-39: each function of the set is tried with the parameter
+            // as the target type of OVL-18. The match is the identity.
+            let target = match &p.t {
+                Ty::Ptr(_) | Ty::MemPtr(..) => p.unqual(),
+                _ => p.clone(),
+            };
+            let m = self.overload_matches(&fs, &target)?;
+            return match m.len() {
+                0 => Ok(None),
+                1 => Ok(Some(Ics::std(Std::identity(p.clone())))),
+                _ => Err(()),
+            };
+        }
         if a.ty.is_unknown() || matches!(a.k, EK::Overloads(_) | EK::BoundMember(..)) {
             return Err(());
         }
@@ -198,8 +220,10 @@ impl P {
         }
     }
 
-    fn class_ok(&self, c: usize) -> bool {
-        !self.class_uncertain(c) && self.classes[c].complete
+    /// The front end knows every member of class `c`: it is complete,
+    /// and no member declaration failed to parse.
+    pub fn class_ok(&self, c: usize) -> bool {
+        !self.class_uncertain(c) && self.classes[c].complete && !self.scopes[self.classes[c].scope].uncertain
     }
 
     pub fn ics_value_pub(&mut self, a: &Expr, p: &QTy) -> R {
@@ -398,7 +422,7 @@ impl P {
 
     /// The conversion functions of class `c` and its bases. A function
     /// of a derived class hides one of a base with the same target type.
-    fn conv_fns(&self, c: usize, depth: u32, out: &mut Vec<DeclId>) {
+    pub fn conv_fns(&self, c: usize, depth: u32, out: &mut Vec<DeclId>) {
         if depth > 16 {
             return;
         }
@@ -465,7 +489,8 @@ impl P {
         let mut cands: Vec<UCand> = Vec::new();
         for fid in fns {
             let f = self.func(fid).unwrap().clone();
-            if f.explicit || f.deleted {
+            // ICS-8: a deleted function still forms a sequence.
+            if f.explicit {
                 continue;
             }
             if f.fty.ret.is_unknown() {
@@ -512,7 +537,7 @@ impl P {
             self.conv_fns(ac, 0, &mut fns);
             for fid in fns {
                 let f = self.func(fid).unwrap().clone();
-                if f.explicit || f.deleted {
+                if f.explicit {
                     continue;
                 }
                 let rt = nonref(&f.fty.ret);
@@ -537,12 +562,15 @@ impl P {
         if cands.is_empty() {
             return None;
         }
+        let conv = |f: DeclId| self.func(f).is_some_and(|f| f.kind == FnKind::Conversion);
         let better = |x: &UCand, y: &UCand| -> bool {
             let c = self.ics_cmp(&x.first, &y.first);
             if c != 0 {
                 return c > 0;
             }
-            by_third && self.std_cmp(&x.third, &y.third, true) > 0
+            // ICS-37, OVL-26: between two conversion functions, the better
+            // third part.
+            (by_third || (conv(x.f) && conv(y.f))) && self.std_cmp(&x.third, &y.third, true) > 0
         };
         for (i, x) in cands.iter().enumerate() {
             if cands.iter().enumerate().all(|(j, y)| i == j || better(x, y)) {
@@ -570,6 +598,17 @@ impl P {
         if let Ty::LRef(i) | Ty::RRef(i) = &p.t {
             let rref = matches!(p.t, Ty::RRef(_));
             let inner = (**i).clone();
+            if let Some(x) = self.list_binds_directly(&items, &inner) {
+                // ICS-20, REF-6: the reference binds to the one element.
+                if x.ty.is_unknown() {
+                    return Err(());
+                }
+                if let (Ty::Array(_, None), Ty::Array(..)) = (&inner.t, &nonref(&x.ty).t) {
+                    let t2 = QTy { t: nonref(&x.ty).t, c: inner.c, v: inner.v };
+                    return self.ics_ref(&x, &t2, rref, std_only);
+                }
+                return self.ics_ref(&x, &inner, rref, std_only);
+            }
             if !(rref || (inner.c && !inner.v)) {
                 return Ok(None);
             }
@@ -585,10 +624,22 @@ impl P {
                     }
                 }
                 let count = items.len() as u64;
-                if items.len() == 1 && matches!(items[0].k, EK::Str(_)) && el.t.is_integral() {
+                if let (1, EK::Str(u)) = (items.len(), &items[0].k) {
+                    // ICS-38: one string literal for an array of characters,
+                    // if the literal can initialize the array (LIST-6,
+                    // LIST-15).
+                    let st = match &items[0].ty.t {
+                        Ty::Array(c, _) => c.t.clone(),
+                        _ => return Err(()),
+                    };
+                    let compatible = st == el.t || (st == Ty::Char8 && matches!(el.t, Ty::Char | Ty::UChar)) || (st == Ty::Char && matches!(el.t, Ty::SChar | Ty::UChar));
+                    let len = u.len() as u64 + 1;
+                    if !compatible || n.is_some_and(|n| len > n) {
+                        return Ok(None);
+                    }
                     let mut s = Std::identity(inner.clone());
                     s.refb = None;
-                    Some(Ics { kind: IK::Std, s, user: None, list: LT::Array(el.t.clone(), *n, count) })
+                    Some(Ics { kind: IK::Std, s, user: None, list: LT::Array(el.t.clone(), *n, len) })
                 } else {
                     let mut seqs = Vec::new();
                     for x in &items {
@@ -727,9 +778,6 @@ impl P {
                 // Phase 2: all constructors, with the elements as arguments.
                 for &cid in &ctors {
                     let f = self.func(cid).unwrap().clone();
-                    if f.deleted {
-                        continue;
-                    }
                     let np = f.params.len();
                     if items.len() > np || items.len() + f.defaults < np {
                         continue;
@@ -759,7 +807,9 @@ impl P {
             let best = self.best_of(&cands);
             let user = match best {
                 Some(i) => Ics { kind: IK::User, s: Std::identity(p.clone()), user: Some(UKey::Fn(cands[i].0)), list: LT::No },
-                None => Ics::ambig(),
+                // ICS-19: the ambiguous sequence, marked with the class so
+                // that ICS-8 can name CTOR-25.
+                None => Ics { user: Some(UKey::Agg(pc)), ..Ics::ambig() },
             };
             return Ok(Some(user));
         }
@@ -777,9 +827,10 @@ impl P {
         }
     }
 
-    /// The index of the candidate that is better than every other, by
-    /// the sequences of its arguments (overload resolution, outside the
-    /// spec).
+    /// OVL-25, OVL-34: the index of the viable function that is better
+    /// than each other one, by the sequences of its arguments. The
+    /// tie-breakers of OVL-26 to OVL-33 are left to the callers, which
+    /// give up on the candidates that need them.
     pub fn best_of(&self, cands: &[(DeclId, Vec<Ics>)]) -> Option<usize> {
         let better = |x: &Vec<Ics>, y: &Vec<Ics>| {
             let mut some = false;
@@ -860,32 +911,9 @@ impl P {
         if a.rank != b.rank {
             return if a.rank < b.rank { 1 } else { -1 };
         }
-        // c. ICS-28, ICS-29, ICS-30: references.
-        if let (Some(ra), Some(rb)) = (&a.refb, &b.refb) {
-            if ra.to_rvalue && rb.to_rvalue && !ra.obj_noref && !rb.obj_noref && ra.rref != rb.rref {
-                return if ra.rref { 1 } else { -1 };
-            }
-            if ra.fn_lvalue && rb.fn_lvalue && ra.rref != rb.rref {
-                return if ra.rref { -1 } else { 1 };
-            }
-            if ra.referenced.t == rb.referenced.t {
-                let (x, y) = (&ra.referenced, &rb.referenced);
-                let x_sub = (!x.c || y.c) && (!x.v || y.v);
-                let y_sub = (!y.c || x.c) && (!y.v || x.v);
-                if x_sub && !y_sub {
-                    return 1;
-                }
-                if y_sub && !x_sub {
-                    return -1;
-                }
-            }
-        }
-        // d. The tie-breakers.
+        // c. The one same-rank tie-breaker that applies (ICS-32 to
+        // ICS-36, and ICS-42 to ICS-44 for the third parts of ICS-37).
         let one = |x: &Std, y: &Std| -> bool {
-            // ICS-31: fewer cv-qualifiers added.
-            if x.qual && y.qual && x.sec == y.sec && x.to != y.to && self.qual_adds(&x.to, &y.to) {
-                return true;
-            }
             // ICS-32: not to bool.
             if y.sec == Sec::PtrBool && x.sec != Sec::PtrBool {
                 return true;
@@ -898,9 +926,10 @@ impl P {
                 // ICS-36: the nearer base.
                 (Sec::PtrBase(d1, m), Sec::PtrBase(d2, b)) | (Sec::ClassBase(d1, m), Sec::ClassBase(d2, b)) if d1 == d2 && m != b => self.is_base_of(*b, *m),
                 (Sec::MemBase(b1, m), Sec::MemBase(b2, d)) if b1 == b2 && m != d => self.is_base_of(*m, *d),
-                // ICS-37: the nearer source, for the third parts.
+                // ICS-42: the nearer source, for the third parts.
                 (Sec::PtrBase(m, b1), Sec::PtrBase(d, b2)) | (Sec::ClassBase(m, b1), Sec::ClassBase(d, b2)) if third && b1 == b2 && m != d => self.is_base_of(*m, *d),
                 (Sec::MemBase(m, d1), Sec::MemBase(b, d2)) if third && d1 == d2 && m != b => self.is_base_of(*b, *m),
+                // ICS-43: to void*, from the base.
                 (Sec::PtrVoid(Ty::Class(b)), Sec::PtrVoid(Ty::Class(d))) if third && b != d => self.is_base_of(*b, *d),
                 _ => false,
             }
@@ -910,6 +939,40 @@ impl P {
         }
         if one(b, a) {
             return -1;
+        }
+        if let (Some(ra), Some(rb)) = (&a.refb, &b.refb) {
+            // d. ICS-28: an rvalue reference to an rvalue (not for the
+            // object parameter of ICS-40).
+            if ra.to_rvalue && rb.to_rvalue && !ra.obj_noref && !rb.obj_noref && ra.rref != rb.rref {
+                return if ra.rref { 1 } else { -1 };
+            }
+            // e. ICS-29: an lvalue reference to a function.
+            if ra.fn_lvalue && rb.fn_lvalue && ra.rref != rb.rref {
+                return if ra.rref { -1 } else { 1 };
+            }
+        }
+        // f. ICS-31: fewer cv-qualifiers added.
+        if a.qual && b.qual && a.sec == b.sec && a.to != b.to {
+            if self.qual_adds(&a.to, &b.to) {
+                return 1;
+            }
+            if self.qual_adds(&b.to, &a.to) {
+                return -1;
+            }
+        }
+        // g. ICS-30: fewer cv-qualifiers on the referenced type.
+        if let (Some(ra), Some(rb)) = (&a.refb, &b.refb) {
+            if ra.referenced.t == rb.referenced.t {
+                let (x, y) = (&ra.referenced, &rb.referenced);
+                let x_sub = (!x.c || y.c) && (!x.v || y.v);
+                let y_sub = (!y.c || x.c) && (!y.v || x.v);
+                if x_sub && !y_sub {
+                    return 1;
+                }
+                if y_sub && !x_sub {
+                    return -1;
+                }
+            }
         }
         0
     }
@@ -930,16 +993,22 @@ impl P {
         }
     }
 
-    /// Choose among the candidates of a call by their sequences
-    /// (ICS-P5; the rule that combines the arguments is outside the spec).
-    /// Ok(Some(i)): candidate i. Ok(None): no best candidate. Err: the
-    /// front end cannot form every sequence.
+    /// Overload resolution for a call (OVL-P1): the viable functions
+    /// (OVL-22, OVL-23), then the best one (OVL-25, OVL-34).
+    /// Ok(Some(i)): candidate i. Ok(None): no viable function is better
+    /// than each of the others (OVL-36). Err: the front end cannot form
+    /// every sequence, or a candidate needs a step that it does not
+    /// model; `ics_no_viable` is set when every sequence was formed and
+    /// no candidate is viable (OVL-35).
     #[allow(clippy::type_complexity)]
     pub fn ics_select(&mut self, obj: Option<&Expr>, cands: &[DeclId], args: &[Expr]) -> Result<Option<(DeclId, Vec<Ics>)>, ()> {
+        let cands = self.same_entities_removed(cands);
         let mut viable: Vec<(DeclId, Vec<Ics>)> = Vec::new();
-        for &c in cands {
+        for &c in &cands {
             let Some(f) = self.func(c).cloned() else { return Err(()) };
-            if f.template || f.opaque {
+            if f.template || f.opaque || f.constrained {
+                // Deduction, and the constraints of OVL-24 and OVL-30,
+                // are not modeled.
                 return Err(());
             }
             let mut all: Vec<Expr> = Vec::new();
@@ -951,7 +1020,9 @@ impl P {
                     Some(s) => seqs.push(s),
                     None => continue,
                 },
-                None if member && !f.is_static => return Err(()),
+                None if member && f.explicit_obj => return Err(()),
+                // OVL-3: a call with no object still compares the members.
+                // Their object slots take no part (outside knowledge).
                 None if member => seqs.push(Ics::slot()),
                 _ => {}
             }
@@ -962,12 +1033,21 @@ impl P {
                 ptys.insert(0, self.var(f.params[0]).map(|v| v.ty.clone()).unwrap_or(QTy::unknown()));
             }
             let np = ptys.len();
+            // OVL-22: the parameter count fits.
             if all.len() + f.defaults.min(np) < np || (all.len() > np && !f.fty.variadic) {
                 continue;
             }
+            // OVL-23: a sequence for each argument.
             let mut ok = true;
             for (i, a) in all.iter().enumerate() {
                 if i >= np {
+                    if is_list(a) {
+                        // A braced list matches no `...` (outside the
+                        // spec; the classes grid of the conversion
+                        // sequences page shows it).
+                        ok = false;
+                        break;
+                    }
                     seqs.push(Ics::ellipsis());
                     continue;
                 }
@@ -988,13 +1068,47 @@ impl P {
             self.ics_no_viable = true;
             return Err(());
         }
-        // Candidates with an object slot and without one compare from the
-        // first argument when the counts differ.
         let n = viable.iter().map(|v| v.1.len()).max().unwrap();
         if viable.iter().any(|v| v.1.len() != n) {
             return Err(());
         }
         Ok(self.best_of(&viable).map(|i| viable[i].clone()))
+    }
+
+    /// One candidate for each function. Two declarations of a function
+    /// with C language linkage in different namespaces name one function
+    /// (LSP-4). A member of a derived class hides a member of a base
+    /// with the same parameters that a using-declaration brings in
+    /// (DER-3).
+    pub fn same_entities_removed(&self, cands: &[DeclId]) -> Vec<DeclId> {
+        let same_params = |a: &FuncInfo, b: &FuncInfo| a.fty.params == b.fty.params && a.fty.variadic == b.fty.variadic && a.fty.cv_c == b.fty.cv_c && a.fty.cv_v == b.fty.cv_v && a.fty.refq == b.fty.refq;
+        let mut out: Vec<DeclId> = Vec::new();
+        'next: for &c in cands {
+            let Some(f) = self.func(c) else {
+                out.push(c);
+                continue;
+            };
+            for (k, &o) in out.clone().iter().enumerate() {
+                let Some(g) = self.func(o) else { continue };
+                if !same_params(f, g) || f.template || g.template {
+                    continue;
+                }
+                if self.c_fns.contains(&c) && self.c_fns.contains(&o) {
+                    continue 'next;
+                }
+                if let (Some(fc), Some(gc)) = (f.class, g.class) {
+                    if fc != gc && self.is_base_of(fc, gc) {
+                        continue 'next;
+                    }
+                    if fc != gc && self.is_base_of(gc, fc) {
+                        out[k] = c;
+                        continue 'next;
+                    }
+                }
+            }
+            out.push(c);
+        }
+        out
     }
 
     /// An operator expression with a class operand: the operator
@@ -1074,11 +1188,19 @@ impl P {
             let mut args: Vec<&Expr> = Vec::new();
             if member {
                 if f.explicit_obj {
-                    return None;
-                }
-                match self.ics_object(l, &f) {
-                    Some(s) => seqs.push(s),
-                    None => continue,
+                    // ICS-41: an explicit object parameter is an ordinary
+                    // parameter, which a user-defined sequence can reach.
+                    let pt = f.params.first().and_then(|&p| self.var(p)).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
+                    match self.ics_form(l, &pt, false) {
+                        Ok(Some(s)) => seqs.push(s),
+                        Ok(None) => continue,
+                        Err(()) => return None,
+                    }
+                } else {
+                    match self.ics_object(l, &f) {
+                        Some(s) => seqs.push(s),
+                        None => continue,
+                    }
                 }
                 args.extend(ops.iter().skip(1).copied());
             } else {

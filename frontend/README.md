@@ -48,7 +48,9 @@ ATTR-6 with `-Wall`, `-Wunused`, `-Wunused-variable`, or
 `-Wunused-but-set-variable`, SEQ-7 with `-Wall`, ATTR-7 with
 `-Wimplicit-fallthrough` or `-Wextra`, CTOR-13 with `-Wall`, the
 deprecated-copy part of CPY-13 with `-Wextra`, and the pessimizing-move
-part of CPY-13 with `-Wall`.
+part of CPY-13 with `-Wall`. ODR-11 is on with no flag, and every test
+passes `-pedantic-errors`, which makes it an error. The front end names
+ODR-11 with ODR-9.
 
 ## Run the conformance tests
 
@@ -57,10 +59,17 @@ target/release/tidal-fe conform ../tests [-v] [--out FILE]
 ```
 
 `check` reads `#include "file"` relative to the directory of the file
-that holds the directive (INC-2). The front end has no other
-preprocessing: `#ifndef`, `#define` of a name without a value, `#endif`,
-and `#pragma once` work only as include guards, and other directives are
-unsupported.
+that holds the directive (INC-2). The other preprocessing is a small
+slice:
+
+- the conditional groups of the ODR page's grammar: `#if`, `#ifdef`,
+  `#ifndef`, `#elif`, `#else`, and `#endif`, with integer expressions
+  and `defined`,
+- `#define` of a name with or without a value, and `#undef`. A name with
+  a value is replaced by its tokens.
+- `#pragma once` anywhere in a file (INC-5).
+
+A function-like `#define` and other directives are unsupported.
 
 The harness reads the `// tidal-` directives at the top of each test. The
 harness uses the `tidal-expect-edg` override when a test has one, and treats
@@ -92,11 +101,12 @@ writes the table and one line per test to FILE.
 | `src/decl.rs`, `src/decl2.rs` | decl-specifiers, declarators, declarations, functions, templates |
 | `src/class.rs` | class and enumeration specifiers |
 | `src/expr.rs`, `src/expr2.rs` | expressions, conversions, calls, casts, initialization |
-| `src/ics.rs` | implicit conversion sequences, their comparison, and the choice between candidates (ICS rules) |
+| `src/ics.rs` | implicit conversion sequences and their comparison (ICS rules), and overload resolution for calls (OVL-22 to OVL-25, OVL-34 to OVL-36) |
+| `src/ovl.rs` | overload resolution for operators, constructors, calls on a class object, and the address of an overload set (OVL rules) |
 | `src/stmt.rs` | statements and jump checks |
 | `src/consteval.rs` | constant evaluation |
 | `src/conform.rs` | the conformance harness |
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-5.md`.
+`report-6.md`.

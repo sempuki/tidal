@@ -271,15 +271,21 @@ impl P {
         if ctx != Ctx::Namespace {
             self.error(line, "LSP-2", "linkage specification not at namespace scope");
         }
-        if self.eat("{") {
-            while !self.at("}") && self.tok().kind != TK::Eof {
-                self.parse_declaration_recover(Ctx::Namespace);
+        let c = lang == "C";
+        self.lang_c += c as u32;
+        let r = (|| {
+            if self.eat("{") {
+                while !self.at("}") && self.tok().kind != TK::Eof {
+                    self.parse_declaration_recover(Ctx::Namespace);
+                }
+                self.expect("}")?;
+            } else {
+                self.parse_declaration(Ctx::Namespace)?;
             }
-            self.expect("}")?;
-        } else {
-            self.parse_declaration(Ctx::Namespace)?;
-        }
-        Ok(())
+            Ok(())
+        })();
+        self.lang_c -= c as u32;
+        r
     }
 
     fn parse_using(&mut self, ctx: Ctx) -> PR<()> {
@@ -2013,7 +2019,11 @@ impl P {
                     if f.template != template {
                         continue;
                     }
-                    if f.fty.params == fty.params && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq && !(self.at("requires") && in_class_body) {
+                    // Two templates whose parameters depend on template
+                    // parameters can differ in ways the front end does not
+                    // model, such as a requires-clause (OVL-41).
+                    let distinct_templates = template && f.fty.ret != fty.ret && f.fty.params.iter().chain(fty.params.iter()).any(|q| q.is_unknown());
+                    if f.fty.params == fty.params && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq && !(self.at("requires") && in_class_body) && !distinct_templates {
                         // (A member with a trailing requires-clause can
                         // overload one with the same parameters.)
                         existing = Some(p);
@@ -2042,6 +2052,7 @@ impl P {
                 self.error(line, "NS-15", format!("'{}' was not declared in the namespace", name));
             }
         }
+        let mut trailing_requires = false;
         // virt-specifiers come before the body (VIRT grammar)
         while self.at("override") || self.at("final") {
             self.pos += 1;
@@ -2049,6 +2060,7 @@ impl P {
         if self.at("requires") {
             self.pos += 1;
             self.skip_constraint()?;
+            trailing_requires = true;
         }
         let deleted = self.at("=") && self.at_k(1, "delete");
         let defaulted = self.at("=") && self.at_k(1, "default");
@@ -2218,9 +2230,13 @@ impl P {
                     mem_inits: Vec::new(),
                     first_attrs: self.decl_attrs.iter().map(|a| a.name.clone()).collect(),
                     first_defaulted: defaulted,
+                    constrained: trailing_requires,
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
+                if self.lang_c > 0 && member_class.is_none() {
+                    self.c_fns.insert(id);
+                }
                 if member_class.is_none() && !is_friend && ctx != Ctx::Block && !template && !self.in_template() && (is_static || self.in_unnamed_ns(sc)) {
                     self.internal_fns.insert(id);
                 }
@@ -2853,9 +2869,11 @@ impl P {
     }
 
     /// ODR-9, ODR-11: a function with internal linkage that the unit
-    /// calls must be defined in the unit. The rule needs no diagnostic.
-    /// Clang and GCC warn, and `-pedantic-errors` makes the warning an
-    /// error, so the front end rejects.
+    /// calls must be defined in the unit. ODR-9 needs no diagnostic. The
+    /// warning-flag table of the translation page turns the ODR-11
+    /// warning on with no flag and makes it an error under
+    /// `-pedantic-errors`, which every test passes, so the front end
+    /// rejects and names both rules.
     fn check_internal_uses(&mut self) {
         let mut seen = std::collections::HashSet::new();
         for (id, line) in self.internal_uses.clone() {
@@ -2863,7 +2881,7 @@ impl P {
                 continue;
             }
             if self.func(id).is_some_and(|f| !f.defined && !f.deleted && !f.opaque) && !self.scopes[self.decls[id].scope].uncertain {
-                self.error(line, "ODR-9", format!("function '{}' has internal linkage and is used but not defined", self.decls[id].name));
+                self.error_because(line, "ODR-9", "ODR-11", format!("function '{}' has internal linkage and is used but not defined", self.decls[id].name));
             }
         }
     }

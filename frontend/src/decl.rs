@@ -988,6 +988,17 @@ impl P {
         let e = e?;
         self.expect(")")?;
         self.check_unevaluated_dtor(&e, true);
+        if let Some((fs, addr)) = Self::overload_set_of(&e) {
+            if !self.in_template() && fs.iter().all(|&f| self.func(f).is_some_and(|f| !f.constrained && f.class.is_none_or(|c| !self.class_uncertain(c)))) {
+                if addr {
+                    // OVL-20: decltype gives no target type.
+                    self.error(e.line, "OVL-20", format!("the address of the overload set '{}' has no target type", self.decls[fs[0]].name));
+                } else {
+                    // DTY-4: the name of an overloaded function.
+                    self.error(e.line, "DTY-4", format!("decltype of the overloaded function name '{}'", self.decls[fs[0]].name));
+                }
+            }
+        }
         Ok(self.decltype_of(&e, parenthesized))
     }
 

@@ -22,6 +22,20 @@ impl P {
                 self.call_overloads(None, fs, args, line)
             }
             EK::BoundMember(obj, fs) => self.call_overloads(Some(*obj), fs, args, line),
+            EK::Unary(UOp::AddrOf, ref x) if !self.in_template() && (matches!(x.k, EK::BoundMember(..)) || (x.paren && matches!(&x.k, EK::Overloads(fs) if fs.iter().any(|&f| self.func(f).is_some_and(|f| f.class.is_some() && !f.is_static && !f.explicit_obj))))) => {
+                // OVL-44: the set holds a member with an implicit object
+                // parameter, so the operand of `&` must be a qualified name
+                // without parentheses.
+                self.error(line, "OVL-44", "a call through '&' of an unqualified or parenthesized name of a set with a non-static member");
+                Expr::unknown(line, "bad call")
+            }
+            EK::Unary(UOp::AddrOf, ref x) if matches!(x.k, EK::Overloads(_)) => {
+                // OVL-21: `(&f)(a)` resolves `f` as a call by name, with no
+                // implied object argument.
+                let EK::Overloads(fs) = x.k.clone() else { unreachable!() };
+                self.call_no_object = true;
+                self.call_overloads(None, fs, args, line)
+            }
             EK::Unknown(_) if !matches!(nonref(&callee.ty).t, Ty::Class(_)) => {
                 let _ = self.args_rvalues(args);
                 Expr::unknown(line, "call of unknown callee")
@@ -36,14 +50,18 @@ impl P {
                         let c = *c;
                         // PFX-17: a class object needs an operator() or a
                         // conversion function.
-                        if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && self.lookup_member(c, "operator()").is_none() && !self.any_conv(c, 0) {
+                        if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].uncertain && self.lookup_member(c, "operator()").is_none() && !self.any_conv(c, 0) {
                             self.error(line, "PFX-17", format!("'{}' has no operator() and no conversion function", self.classes[c].name));
                             return Expr::unknown(line, "bad call");
                         }
+                        // OVL-5, OVL-6: the call operators and the surrogates.
+                        if !self.in_template() && !self.class_uncertain(c) && self.any_conv(c, 0) {
+                            if let Some(x) = self.object_call(&callee, c, &args, line) {
+                                return x;
+                            }
+                        }
                         // OPR-7: a call of a class object calls its operator().
-                        // A conversion function to a function pointer adds a
-                        // candidate that the front end does not model.
-                        if !self.in_template() && !self.class_uncertain(c) && !self.any_conv(c, 0) {
+                        if !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].uncertain && !self.any_conv(c, 0) {
                             if let Some(ids) = self.lookup_member(c, "operator()") {
                                 if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)) {
                                     return self.call_overloads(Some(callee), ids, args, line);
@@ -303,6 +321,7 @@ impl P {
     }
 
     fn call_overloads(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
+        let no_object = std::mem::take(&mut self.call_no_object);
         let mut cands = cands;
         let adl = std::mem::take(&mut self.call_adl);
         if obj.is_none() && adl {
@@ -344,7 +363,13 @@ impl P {
         if !any_template && !self.in_template() {
             match self.ics_select(obj.as_ref(), &cands, &args) {
                 Ok(Some(x)) => picked = Some(x),
-                Ok(None) => return Expr::unknown(line, "ambiguous call (no candidate has better sequences)"),
+                Ok(None) => {
+                    // OVL-36: no viable function is better than each of the
+                    // others.
+                    let name = cands.first().map(|&c| self.decls[c].name.clone()).unwrap_or_default();
+                    self.error(line, "OVL-36", format!("ambiguous call of '{}': no viable function is better than each of the others", name));
+                    return Expr::unknown(line, "bad call");
+                }
                 Err(()) => {}
             }
         }
@@ -401,17 +426,19 @@ impl P {
                 // PFX-5: one argument for each parameter without a default.
                 self.error(line, "PFX-5", "wrong number of arguments in a function call");
             } else {
-                self.error(line, "PFX-16", "no viable function: an argument cannot be converted to the parameter type");
+                self.error(line, "OVL-35", "no viable function: an argument cannot be converted to the parameter type");
             }
             return Expr::unknown(line, "bad call");
         }
         if std::mem::take(&mut self.ics_no_viable) {
             // ICS-1 to ICS-20: no candidate has a sequence for every
             // argument.
-            self.error(line, "PFX-16", "no viable function: an argument has no implicit conversion sequence to its parameter");
+            self.error(line, "OVL-35", "no viable function: an argument has no implicit conversion sequence to its parameter");
             return Expr::unknown(line, "bad call");
         }
-        if any_template && viable.iter().all(|v| v.1.iter().any(|&r| r > 0)) {
+        if any_template && !viable.iter().any(|v| self.strict_exact(v.0, &args)) {
+            // A template specialization can have better sequences than
+            // every plain function; OVL-27 decides only a tie.
             return Expr::unknown(line, "call that may select a template");
         }
         // best viable: no worse in every argument, better in one
@@ -445,13 +472,23 @@ impl P {
         viable[bi].0
         };
         if let Some((_, seqs)) = &picked {
-            if seqs.iter().any(|q| q.kind == crate::ics::IK::Ambig) {
-                // ICS-8, ICS-7: the chosen function needs the ambiguous
-                // sequence.
-                self.error_because(line, "ICS-8", "CVF-12", format!("the call of '{}' needs an ambiguous conversion", self.decls[fid].name));
+            self.check_chosen_seqs(seqs, fid, line);
+            if obj.is_none() && self.func(fid).is_some_and(|f| f.class.is_some() && !f.is_static && !f.explicit_obj && f.kind != FnKind::Ctor) && (no_object || !self.has_object_for(fid)) {
+                // OVL-3: the call has no object and chooses a member with an
+                // implicit object parameter.
+                self.error(line, "OVL-3", format!("call of non-static member function '{}' without an object", self.decls[fid].name));
+                return Expr::unknown(line, "bad call");
             }
         }
         let f = self.func(fid).unwrap().clone();
+        if let (Some(o), Some(owner)) = (&obj, f.class) {
+            // OVL-37, ACC-3: the chosen member must be accessible. Only a
+            // member of the object's own class is checked, since a
+            // using-declaration can change the access of a base member.
+            if !self.in_template() && nonref(&o.ty).t == Ty::Class(owner) && !self.accessible(fid, false) {
+                self.error(line, "ACC-3", format!("'{}' is not accessible here", self.decls[fid].name));
+            }
+        }
         if f.deleted {
             // DEL-1: a program must not refer to a deleted function.
             self.error(line, "DEL-1", format!("call of deleted function '{}'", self.decls[fid].name));
@@ -494,6 +531,62 @@ impl P {
             }
         }
         call
+    }
+
+    /// Each argument matches its parameter of `fid` with no conversion at
+    /// all: the same type, and for a reference the same cv-qualifiers and
+    /// the kind of reference that the value category binds. No template
+    /// specialization can then have a better sequence.
+    fn strict_exact(&self, fid: DeclId, args: &[Expr]) -> bool {
+        let Some(f) = self.func(fid) else { return false };
+        if args.len() > f.fty.params.len() {
+            return false;
+        }
+        args.iter().zip(f.fty.params.iter()).all(|(a, p)| {
+            let at = nonref(&a.ty);
+            match &p.t {
+                Ty::LRef(i) => a.cat == Cat::L && i.t == at.t && i.c == at.c && i.v == at.v,
+                Ty::RRef(i) => a.cat != Cat::L && i.t == at.t && i.c == at.c && i.v == at.v,
+                t => *t == at.t && !matches!(t, Ty::Unknown),
+            }
+        })
+    }
+
+    /// OVL-37, ICS-8: the faults in the sequences of the chosen function.
+    pub fn check_chosen_seqs(&mut self, seqs: &[crate::ics::Ics], fid: DeclId, line: u32) {
+        use crate::ics::{IK, UKey};
+        for q in seqs {
+            match (&q.kind, &q.user) {
+                (IK::Ambig, Some(_)) => {
+                    // ICS-19: a braced list that no constructor initializes
+                    // unambiguously.
+                    self.error_because(line, "ICS-8", "CTOR-25", format!("the call of '{}' needs a braced list that no constructor initializes unambiguously", self.decls[fid].name));
+                }
+                (IK::Ambig, None) => {
+                    // ICS-7: two or more conversion functions or constructors.
+                    self.error_because(line, "ICS-8", "CVF-12", format!("the call of '{}' needs an ambiguous conversion", self.decls[fid].name));
+                }
+                (IK::User, Some(UKey::Fn(u))) if self.func(*u).is_some_and(|f| f.deleted) => {
+                    self.error_because(line, "ICS-8", "DEL-1", format!("the call of '{}' needs the deleted function '{}'", self.decls[fid].name, self.decls[*u].name));
+                }
+                _ => {}
+            }
+        }
+    }
+
+    /// OVL-2: `this` can be used here and its class is the class of
+    /// member `fid` or derived from it. A default member initializer
+    /// counts. Otherwise a call by name has no object (OVL-3).
+    fn has_object_for(&self, fid: DeclId) -> bool {
+        let Some(fc) = self.func(fid).and_then(|f| f.class) else { return true };
+        let related = |c: usize| c == fc || self.is_base_of(fc, c) || self.class_uncertain(c);
+        match self.fns.iter().rev().find(|f| !f.is_lambda || f.class.is_some()) {
+            Some(f) => {
+                let explicit_obj = f.func.and_then(|id| self.func(id)).is_some_and(|fi| fi.explicit_obj);
+                f.class.is_some_and(|c| !f.is_static && !explicit_obj && related(c))
+            }
+            None => self.enclosing_class().is_some_and(related),
+        }
     }
 
     /// Conversion rank of an argument to a parameter: 0 exact, 1
@@ -789,17 +882,40 @@ impl P {
         if ty.t.is_ref() {
             if let (Some(v), true, Ty::LRef(inner) | Ty::RRef(inner)) = (&items, is_list, &ty.t) {
                 let inner = (**inner).clone();
-                let one_related = v.len() == 1 && match (&nonref(&v[0].ty).t, &inner.t) {
-                    (Ty::Class(a), Ty::Class(b)) => a == b || self.is_base_of(*b, *a),
-                    _ => false,
-                };
-                if matches!(inner.t, Ty::Array(..)) || (matches!(inner.t, Ty::Class(_)) && !one_related) {
-                    // ICS-17, ICS-20: the list initializes a temporary of
-                    // the referenced type.
-                    if matches!(ty.t, Ty::LRef(_)) && !(inner.c && !inner.v) {
-                        self.error(line, "REF-8", "non-const lvalue reference cannot bind to a temporary from a braced list");
+                let lref_nonconst = matches!(ty.t, Ty::LRef(_)) && !(inner.c && !inner.v);
+                if let Some(x) = self.list_binds_directly(v, &inner) {
+                    // REF-6: the list's one expression initializes the
+                    // reference, as `=` does.
+                    if let (Ty::Array(_, None), Ty::Array(..)) = (&inner.t, &nonref(&x.ty).t) {
+                        // An array of unknown bound binds an array of the
+                        // same element type.
+                        let t2 = QTy { t: nonref(&x.ty).t, c: inner.c, v: inner.v };
+                        let rt = if matches!(ty.t, Ty::LRef(_)) { Ty::LRef(Box::new(t2)) } else { Ty::RRef(Box::new(t2)) };
+                        return self.bind_ref(x, &QTy::new(rt), line, "INIT-7");
+                    }
+                    return self.bind_ref(x, ty, line, "INIT-7");
+                }
+                // REF-14: the list initializes a temporary of the
+                // referenced type.
+                if lref_nonconst && !inner.is_unknown() {
+                    self.error(line, "REF-9", "non-const lvalue reference cannot bind to a temporary from a braced list");
+                    return Expr::unknown(line, "bad reference init");
+                }
+                if let Ty::Array(el, None) = &inner.t {
+                    if v.is_empty() {
+                        // REF-11: the array has no elements.
+                        self.error(line, "REF-11", "a braced list of no elements for a reference to an array of unknown bound");
                         return Expr::unknown(line, "bad reference init");
                     }
+                    let n = match &v[0].k {
+                        EK::Str(u) if v.len() == 1 => u.len() as u64 + 1,
+                        _ => v.len() as u64,
+                    };
+                    let t = QTy { t: Ty::Array(el.clone(), Some(n)), c: false, v: false };
+                    let _ = self.convert_init(e, &t, InitForm::CopyList, line);
+                    return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+                }
+                if matches!(inner.t, Ty::Array(..) | Ty::Class(_)) || v.len() != 1 {
                     let _ = self.convert_init(e, &inner.unqual(), InitForm::CopyList, line);
                     return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
                 }
@@ -824,6 +940,15 @@ impl P {
                 }
                 _ => e,
             };
+            if form == InitForm::Copy && !self.in_template() && matches!(nonref(&one.ty).t, Ty::Class(_)) {
+                // OVL-15, OVL-35: copy-initialization of a reference from a
+                // class takes only the conversion functions that are not
+                // explicit, directly or through a temporary.
+                if let Ok(None) = self.ics_form(&one, ty, false) {
+                    self.error(line, "OVL-35", format!("no conversion function initializes a reference of type {} from {}", show(ty), show(&nonref(&one.ty))));
+                    return Expr::unknown(line, "bad reference init");
+                }
+            }
             return self.bind_ref(one, ty, line, "INIT-7");
         }
         match &ty.t {
@@ -975,6 +1100,22 @@ impl P {
                                 return e;
                             }
                         }
+                        if matches!(et.t, Ty::Class(_)) && form == InitForm::Copy && !self.in_template() {
+                            // OVL-14: copy-initialization from another class
+                            // takes the converting constructors and the
+                            // conversion functions that are not explicit.
+                            match self.ics_value_pub(&e, &ty.unqual()) {
+                                Ok(Some(s)) if s.kind == crate::ics::IK::Ambig => {
+                                    self.error(line, "OVL-36", format!("ambiguous initialization of '{}': no constructor or conversion function is better than each of the others", self.classes[c].name));
+                                    return Expr::unknown(line, "bad init");
+                                }
+                                Ok(None) => {
+                                    self.error(line, "OVL-35", format!("no constructor or conversion function initializes '{}' from {}", self.classes[c].name, show(&et)));
+                                    return Expr::unknown(line, "bad init");
+                                }
+                                _ => {}
+                            }
+                        }
                         if matches!(et.t, Ty::Class(_)) && matches!(self.ics_value_pub(&e, &ty.unqual()), Ok(Some(_))) {
                             // ICS-4: a conversion function to the class or
                             // a class derived from it.
@@ -985,7 +1126,7 @@ impl P {
                             return Expr::unknown(line, "bad init");
                         }
                         if form == InitForm::Copy && !self.classes[c].ctors.is_empty() && !matches!(et.t, Ty::Class(_)) {
-                            let x = self.ctor_call(c, std::slice::from_ref(&e), ty, line);
+                            let x = self.ctor_call_mode(c, std::slice::from_ref(&e), ty, false, true, false, line);
                             self.check_explicit_copy(&x, line);
                             return x;
                         }
@@ -995,7 +1136,7 @@ impl P {
                         if v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c) {
                             return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
                         }
-                        let x = self.ctor_call(c, v, ty, line);
+                        let x = self.ctor_call_mode(c, v, ty, is_list, false, form == InitForm::CopyList, line);
                         if form == InitForm::CopyList {
                             self.check_explicit_copy(&x, line);
                         }
@@ -1074,15 +1215,61 @@ impl P {
                             }
                         }
                     }
-                    None => match self.implicit(e, &target, false) {
-                        Ok(c) => c,
-                        Err(m) => {
-                            self.error(line, "INIT-7", m);
-                            Expr::unknown(line, "bad init")
+                    None => {
+                        if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
+                            if let Ok(Some(s)) = self.ics_value_pub(&e, &target) {
+                                if s.kind == crate::ics::IK::Ambig {
+                                    // ICS-7, ICS-8: no conversion function is
+                                    // best.
+                                    self.error_because(line, "ICS-8", "CVF-12", format!("ambiguous conversion from {} to {}", show(&nonref(&e.ty)), show(&target)));
+                                    return Expr::unknown(line, "bad init");
+                                }
+                            }
                         }
-                    },
+                        match self.implicit(e, &target, false) {
+                            Ok(c) => c,
+                            Err(m) => {
+                                self.error(line, "INIT-7", m);
+                                Expr::unknown(line, "bad init")
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    /// REF-6: the one expression of a braced list that binds a reference
+    /// to `inner` directly, if the list has one.
+    pub fn list_binds_directly(&self, v: &[Expr], inner: &QTy) -> Option<Expr> {
+        if v.len() != 1 || matches!(v[0].k, EK::InitList(_)) || matches!(&v[0].k, EK::Unknown(s) if s.starts_with("designator")) {
+            return None;
+        }
+        let xt = nonref(&v[0].ty);
+        if matches!(v[0].k, EK::Str(_)) && matches!(inner.t, Ty::Array(..)) {
+            // ICS-38 and ICS-24 treat one string literal as a list that
+            // initializes the array.
+            return None;
+        }
+        let direct = match (&inner.t, &xt.t) {
+            (Ty::Func(_), _) => true,
+            (_, Ty::Unknown) => true,
+            (a, b) if a == b => true,
+            (Ty::Class(a), Ty::Class(b)) => self.is_base_of(*a, *b),
+            // The same type apart from cv-qualifiers, also on the elements
+            // of an array.
+            (Ty::Array(e1, None), Ty::Array(e2, _)) => self.strip_array_cv(&e1.t) == self.strip_array_cv(&e2.t),
+            (a @ Ty::Array(..), b @ Ty::Array(..)) => self.strip_array_cv(a) == self.strip_array_cv(b),
+            _ => false,
+        };
+        direct.then(|| v[0].clone())
+    }
+
+    /// An array type with the cv-qualifiers of its elements removed.
+    pub fn strip_array_cv(&self, t: &Ty) -> Ty {
+        match t {
+            Ty::Array(e, n) => Ty::Array(Box::new(QTy::new(self.strip_array_cv(&e.t))), *n),
+            t => t.clone(),
         }
     }
 
@@ -1206,10 +1393,66 @@ impl P {
     /// parameters and exactly one accepts the arguments; otherwise the
     /// call stays unknown.
     pub fn ctor_call(&mut self, c: usize, args: &[Expr], ty: &QTy, line: u32) -> Expr {
+        self.ctor_call_mode(c, args, ty, false, false, false, line)
+    }
+
+    /// A constructor call. `list` and `copy` give the form of the
+    /// initialization (OVL-14).
+    #[allow(clippy::too_many_arguments)]
+    pub fn ctor_call_mode(&mut self, c: usize, args: &[Expr], ty: &QTy, list: bool, copy: bool, copy_list: bool, line: u32) -> Expr {
         let unknown = Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
         if !self.class_uncertain(c) && !self.in_template() && self.ctor_no_match(c, args) {
             self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[c].name));
             return unknown;
+        }
+        match self.ctor_resolve(c, args, list, copy, copy_list) {
+            crate::ovl::CtorRes::Ambiguous => {
+                // CTOR-25, OVL-36.
+                self.error(line, "CTOR-25", format!("ambiguous constructor call: no constructor of '{}' is better than each of the others", self.classes[c].name));
+                return unknown;
+            }
+            crate::ovl::CtorRes::NoViable => {
+                // CTOR-25, OVL-35.
+                self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[c].name));
+                return unknown;
+            }
+            crate::ovl::CtorRes::Chosen(cid, seqs) => {
+                // OVL-37: the checks on the chosen constructor.
+                self.check_chosen_seqs(&seqs, cid, line);
+                let f = self.func(cid).unwrap().clone();
+                if f.deleted {
+                    self.error(line, "DEL-1", format!("call of deleted constructor of '{}'", self.classes[c].name));
+                    return unknown;
+                }
+                if copy_list && f.explicit {
+                    // ILC-8: the best match is explicit.
+                    self.error(line, "ILC-8", format!("copy-list-initialization of '{}' chooses an explicit constructor", self.classes[c].name));
+                    return unknown;
+                }
+                if list {
+                    // ILC-4, LIST-2: no narrowing conversion of an element
+                    // to its parameter or element type.
+                    let elem = f.params.first().and_then(|&p| self.var(p)).and_then(|v| match nonref(&v.ty).t {
+                        Ty::Class(lc) if f.params.len() - f.defaults.min(f.params.len()) <= 1 => self.init_list_elem(lc),
+                        _ => None,
+                    });
+                    for (i, a) in args.iter().enumerate() {
+                        let pt = match &elem {
+                            Some(e) => e.clone(),
+                            None => match f.params.get(i).and_then(|&p| self.var(p)) {
+                                Some(v) => v.ty.clone(),
+                                None => continue,
+                            },
+                        };
+                        let pt = nonref(&pt);
+                        if !matches!(a.k, EK::InitList(_)) && !matches!(pt.t, Ty::Class(_) | Ty::Unknown) && !matches!(nonref(&a.ty).t, Ty::Class(_)) && self.is_narrowing(a, &pt.t) {
+                            self.error(line, "ILC-4", format!("narrowing conversion of an element from {} to {}", show(&nonref(&a.ty)), show(&pt)));
+                            return unknown;
+                        }
+                    }
+                }
+            }
+            crate::ovl::CtorRes::Unknown => {}
         }
         if self.class_uncertain(c) || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_))) {
             return unknown;
@@ -1289,6 +1532,15 @@ impl P {
         if matches!(init.k, EK::Overloads(_)) {
             self.error(line, "AUTO-8", "auto initialized from an overloaded function name");
             return None;
+        }
+        if let Some((fs, true)) = Self::overload_set_of(&init) {
+            if !self.in_template() && fs.iter().all(|&f| self.func(f).is_some_and(|f| !f.constrained && f.class.is_none_or(|c| !self.class_uncertain(c)))) {
+                // OVL-20: with no target type, the set must have one
+                // function that is not a template.
+                self.error(line, "OVL-20", format!("the address of the overload set '{}' has no target type", self.decls[fs[0]].name));
+                return None;
+            }
+            return Some(QTy::unknown());
         }
         if init.ty.is_unknown() {
             return Some(QTy::unknown());

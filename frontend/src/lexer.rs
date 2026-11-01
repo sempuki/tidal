@@ -88,9 +88,152 @@ pub fn alt_token(s: &str) -> Option<&'static str> {
 /// `#define` has defined and the files that `#pragma once` closed.
 #[derive(Default)]
 pub struct Pp {
-    defines: std::collections::HashSet<String>,
+    /// Names that `#define` has defined, with their replacement text.
+    defines: std::collections::HashMap<String, String>,
     once: std::collections::HashSet<std::path::PathBuf>,
     depth: u32,
+    expanding: u32,
+}
+
+/// One conditional group (`conditional_group` of the ODR page): whether
+/// its current branch is active, whether a branch was taken, and whether
+/// the text around it is active.
+struct Cond {
+    active: bool,
+    taken: bool,
+    outer: bool,
+}
+
+/// The value of the expression of an `#if` or `#elif` line, with object-like
+/// names replaced and `defined` applied. Preprocessing beyond the include
+/// slice is outside the spec; this covers integer expressions only.
+fn eval_if(text: &str, pp: &Pp) -> Option<i128> {
+    // Tokens: numbers, names, and operators.
+    let mut toks: Vec<String> = Vec::new();
+    let b: Vec<char> = text.chars().collect();
+    let mut i = 0;
+    while i < b.len() {
+        let c = b[i];
+        if c.is_whitespace() {
+            i += 1;
+        } else if c.is_alphanumeric() || c == '_' {
+            let st = i;
+            while i < b.len() && (b[i].is_alphanumeric() || b[i] == '_') {
+                i += 1;
+            }
+            toks.push(b[st..i].iter().collect());
+        } else {
+            let two: String = b[i..(i + 2).min(b.len())].iter().collect();
+            if ["&&", "||", "==", "!=", "<=", ">=", "<<", ">>"].contains(&two.as_str()) {
+                toks.push(two);
+                i += 2;
+            } else {
+                toks.push(c.to_string());
+                i += 1;
+            }
+        }
+    }
+    // `defined`, then replacement of names.
+    let mut out: Vec<String> = Vec::new();
+    let mut k = 0;
+    while k < toks.len() {
+        let t = &toks[k];
+        if t == "defined" {
+            let (name, next) = if toks.get(k + 1).is_some_and(|x| x == "(") { (toks.get(k + 2)?.clone(), k + 4) } else { (toks.get(k + 1)?.clone(), k + 2) };
+            out.push(if pp.defines.contains_key(&name) { "1".into() } else { "0".into() });
+            k = next;
+            continue;
+        }
+        if t.chars().next().is_some_and(|c| c.is_alphabetic() || c == '_') {
+            match pp.defines.get(t) {
+                Some(v) if !v.is_empty() => {
+                    let x = eval_if(v, pp)?;
+                    out.push(x.to_string());
+                }
+                _ => out.push("0".into()),
+            }
+        } else {
+            out.push(t.clone());
+        }
+        k += 1;
+    }
+    fn prec(op: &str) -> Option<u8> {
+        Some(match op {
+            "||" => 1,
+            "&&" => 2,
+            "|" => 3,
+            "^" => 4,
+            "&" => 5,
+            "==" | "!=" => 6,
+            "<" | ">" | "<=" | ">=" => 7,
+            "<<" | ">>" => 8,
+            "+" | "-" => 9,
+            "*" | "/" | "%" => 10,
+            _ => return None,
+        })
+    }
+    fn unary(t: &[String], k: &mut usize) -> Option<i128> {
+        let x = t.get(*k)?.clone();
+        *k += 1;
+        match x.as_str() {
+            "!" => Some((unary(t, k)? == 0) as i128),
+            "-" => Some(-unary(t, k)?),
+            "+" => unary(t, k),
+            "~" => Some(!unary(t, k)?),
+            "(" => {
+                let v = binary(t, k, 0)?;
+                if t.get(*k)? != ")" {
+                    return None;
+                }
+                *k += 1;
+                Some(v)
+            }
+            _ => {
+                let d = x.trim_end_matches(|c: char| matches!(c, 'u' | 'U' | 'l' | 'L'));
+                if let Some(h) = d.strip_prefix("0x").or_else(|| d.strip_prefix("0X")) {
+                    i128::from_str_radix(h, 16).ok()
+                } else {
+                    d.parse().ok()
+                }
+            }
+        }
+    }
+    fn binary(t: &[String], k: &mut usize, min: u8) -> Option<i128> {
+        let mut l = unary(t, k)?;
+        while let Some(op) = t.get(*k) {
+            let Some(p) = prec(op) else { break };
+            if p < min {
+                break;
+            }
+            let op = op.clone();
+            *k += 1;
+            let r = binary(t, k, p + 1)?;
+            l = match op.as_str() {
+                "||" => ((l != 0) || (r != 0)) as i128,
+                "&&" => ((l != 0) && (r != 0)) as i128,
+                "|" => l | r,
+                "^" => l ^ r,
+                "&" => l & r,
+                "==" => (l == r) as i128,
+                "!=" => (l != r) as i128,
+                "<" => (l < r) as i128,
+                ">" => (l > r) as i128,
+                "<=" => (l <= r) as i128,
+                ">=" => (l >= r) as i128,
+                "<<" => l.checked_shl(r as u32)?,
+                ">>" => l.checked_shr(r as u32)?,
+                "+" => l.checked_add(r)?,
+                "-" => l.checked_sub(r)?,
+                "*" => l.checked_mul(r)?,
+                "/" => l.checked_div(r)?,
+                _ => l.checked_rem(r)?,
+            };
+        }
+        Some(l)
+    }
+    let mut k = 0;
+    let v = binary(&out, &mut k, 0)?;
+    (k == out.len()).then_some(v)
 }
 
 pub fn lex(src: &str, d: &mut Diags) -> Vec<Token> {
@@ -113,16 +256,17 @@ pub fn lex_file(src: &str, path: Option<&std::path::Path>, d: &mut Diags) -> Vec
     out
 }
 
+/// INC-5: a `pragma_once` line anywhere in the file.
 fn src_has_pragma_once(src: &str) -> bool {
-    src.lines().map(str::trim).find(|l| !l.is_empty() && !l.starts_with("//")).map_or(false, |l| {
-        let w: Vec<&str> = l.trim_start_matches('#').split_whitespace().collect();
+    src.lines().map(str::trim).any(|l| {
+        let w: Vec<&str> = l.trim_start_matches('#').split_whitespace().take_while(|w| !w.starts_with("//")).collect();
         l.starts_with('#') && w == ["pragma", "once"]
     })
 }
 
 /// Handle one directive line (without the `#`). Returns the tokens it
 /// adds, and sets `*skip` when an `#ifndef` names a defined guard.
-fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp, skip: &mut bool) -> Vec<Token> {
+fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp) -> Vec<Token> {
     let text = text.split("//").next().unwrap_or("").trim();
     let (word, rest) = match text.find(|c: char| !(c.is_alphanumeric() || c == '_')) {
         Some(k) => (&text[..k], text[k..].trim()),
@@ -165,18 +309,21 @@ fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diag
             toks
         }
         "pragma" if rest == "once" => vec![],
-        "ifndef" => {
-            // INC-4: a later inclusion of a guarded file adds no text.
-            if pp.defines.contains(rest) {
-                *skip = true;
+        "define" => {
+            let k = rest.find(|c: char| !(c.is_alphanumeric() || c == '_')).unwrap_or(rest.len());
+            let (name, value) = (&rest[..k], &rest[k..]);
+            if name.is_empty() || value.starts_with('(') {
+                d.unsupported(line, "#define of a function-like macro (outside the spec)");
+                return vec![];
             }
+            // INC-4: a guard_value does not change the guard.
+            pp.defines.insert(name.to_string(), value.trim().to_string());
             vec![]
         }
-        "define" if !rest.is_empty() && rest.chars().all(|c| c.is_alphanumeric() || c == '_') => {
-            pp.defines.insert(rest.to_string());
+        "undef" => {
+            pp.defines.remove(rest);
             vec![]
         }
-        "endif" => vec![],
         _ => {
             d.unsupported(line, "preprocessor directive (outside the spec)");
             vec![]
@@ -185,6 +332,7 @@ fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diag
 }
 
 fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp) -> Vec<Token> {
+    let mut conds: Vec<Cond> = Vec::new();
     let b: Vec<char> = src.chars().collect();
     let mut i = 0;
     let mut line = 1u32;
@@ -218,46 +366,74 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
             i += 2;
             continue;
         }
-        if c == '#' && out.last().map_or(true, |t: &Token| t.line != line) && line_start(&b, i) {
+        let is_directive = c == '#' && out.last().map_or(true, |t: &Token| t.line != line) && line_start(&b, i);
+        if !conds.iter().all(|c| c.active) && !is_directive {
+            // Text in a branch that is not taken.
+            while i < n && b[i] != '\n' {
+                i += 1;
+            }
+            continue;
+        }
+        if is_directive {
             let st = i + 1;
             while i < n && b[i] != '\n' {
                 i += 1;
             }
             let text: String = b[st..i].iter().collect();
-            let mut skip = false;
-            let toks = directive(text.trim(), line, path, d, pp, &mut skip);
-            out.extend(toks);
-            if skip {
-                // Skip to the matching `#endif`.
-                let mut nest = 0;
-                while i < n {
-                    if b[i] == '\n' {
-                        line += 1;
-                        i += 1;
-                        let mut k = i;
-                        while k < n && (b[k] == ' ' || b[k] == '\t') {
-                            k += 1;
-                        }
-                        if k < n && b[k] == '#' {
-                            let rest: String = b[k + 1..].iter().take_while(|&&c| c != '\n').collect();
-                            let w = rest.trim_start();
-                            if w.starts_with("if") {
-                                nest += 1;
-                            } else if w.starts_with("endif") {
-                                if nest == 0 {
-                                    i = k;
-                                    while i < n && b[i] != '\n' {
-                                        i += 1;
-                                    }
-                                    break;
-                                }
-                                nest -= 1;
-                            }
-                        }
-                        continue;
-                    }
-                    i += 1;
+            let text = text.split("//").next().unwrap_or("").trim().to_string();
+            let (word, rest) = match text.find(|c: char| !(c.is_alphanumeric() || c == '_')) {
+                Some(k) => (text[..k].to_string(), text[k..].trim().to_string()),
+                None => (text.clone(), String::new()),
+            };
+            let outer = conds.iter().all(|c| c.active);
+            // The conditional groups of the ODR page's grammar. INC-4: a
+            // later inclusion of a guarded file adds no text.
+            match word.as_str() {
+                "ifndef" | "ifdef" | "if" => {
+                    let v = match word.as_str() {
+                        "ifndef" => Some(!pp.defines.contains_key(&rest)),
+                        "ifdef" => Some(pp.defines.contains_key(&rest)),
+                        _ if !outer => Some(false),
+                        _ => eval_if(&rest, pp).map(|x| x != 0),
+                    };
+                    let v = v.unwrap_or_else(|| {
+                        d.unsupported(line, "#if expression (outside the spec)");
+                        false
+                    });
+                    conds.push(Cond { active: outer && v, taken: v, outer });
                 }
+                "elif" | "elifdef" | "elifndef" | "else" => {
+                    let Some(top) = conds.last() else {
+                        d.unsupported(line, "#else without #if (outside the spec)");
+                        continue;
+                    };
+                    let outer = top.outer;
+                    let taken = top.taken;
+                    let v = match word.as_str() {
+                        "else" => Some(true),
+                        "elifdef" => Some(pp.defines.contains_key(&rest)),
+                        "elifndef" => Some(!pp.defines.contains_key(&rest)),
+                        _ if taken || !outer => Some(false),
+                        _ => eval_if(&rest, pp).map(|x| x != 0),
+                    };
+                    let v = v.unwrap_or_else(|| {
+                        d.unsupported(line, "#elif expression (outside the spec)");
+                        false
+                    });
+                    let top = conds.last_mut().unwrap();
+                    top.active = outer && !taken && v;
+                    top.taken = taken || v;
+                }
+                "endif" => {
+                    if conds.pop().is_none() {
+                        d.unsupported(line, "#endif without #if (outside the spec)");
+                    }
+                }
+                _ if outer => {
+                    let toks = directive(&text, line, path, d, pp);
+                    out.extend(toks);
+                }
+                _ => {}
             }
             continue;
         }
@@ -292,6 +468,20 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
                         i = lex_quoted(&b, i, p, line, &mut out, d);
                         continue;
                     }
+                }
+            }
+            if let Some(v) = pp.defines.get(&word).filter(|v| !v.is_empty()).cloned() {
+                // An object-like name from `#define` with a value
+                // (outside the spec).
+                if pp.expanding < 16 {
+                    pp.expanding += 1;
+                    let mut toks = lex_in(&v, None, d, pp);
+                    pp.expanding -= 1;
+                    for t in &mut toks {
+                        t.line = line;
+                    }
+                    out.extend(toks);
+                    continue;
                 }
             }
             if let Some(p) = alt_token(&word) {

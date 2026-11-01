@@ -77,6 +77,8 @@ pub struct FuncInfo {
     pub first_attrs: Vec<String>,
     /// The first declaration has `= default` (CTOR-23, DTOR-9, CPY-27).
     pub first_defaulted: bool,
+    /// A trailing requires-clause (OVL-24, OVL-30).
+    pub constrained: bool,
 }
 
 /// One attribute: its name without namespace, whether it had a
@@ -345,6 +347,18 @@ pub struct P {
     /// The last ICS selection formed every sequence and found no viable
     /// function.
     pub ics_no_viable: bool,
+    /// The operands after a built-in candidate won (OVL-11).
+    pub op_converted: Option<Vec<Expr>>,
+    /// The call being resolved goes through `&f`, so it has no implied
+    /// object argument (OVL-21).
+    pub call_no_object: bool,
+    /// The operator being resolved compares a `<=>` result with 0 inside
+    /// a rewritten candidate, so it has no rewritten candidates (OVL-43).
+    pub inner_rewrite: bool,
+    /// Depth of `extern "C"` linkage specifications.
+    pub lang_c: u32,
+    /// Functions declared with C language linkage.
+    pub c_fns: std::collections::HashSet<DeclId>,
     pub ce_depth: u32,
     pub pending_template: Option<crate::decl2::PendingTemplate>,
     pub skipped_template_check: bool,
@@ -431,6 +445,11 @@ impl P {
             init_list_classes: Vec::new(),
             new_paren_args: Vec::new(),
             ics_no_viable: false,
+            op_converted: None,
+            call_no_object: false,
+            inner_rewrite: false,
+            lang_c: 0,
+            c_fns: Default::default(),
             ce_depth: 0,
             pending_template: None,
             skipped_template_check: false,
