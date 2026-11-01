@@ -1,0 +1,21 @@
+{
+  "p01": {"outcome": "depends", "rules": ["LOOP-3"], "why": "With GCC 16 and Clang the condition variable is destroyed after the iteration expression, giving bsdbsdd and exit 0, while GCC 14 destroys it before and gives bdsbdsd, so main returns 1 (Q-0044)."},
+  "p02": {"outcome": "reject", "rules": ["LOOP-7"], "why": "The condition declares i, which the initializer already declares."},
+  "p03": {"outcome": "runs", "rules": ["LOOP-3", "LOOP-4"], "why": "The condition variable left takes 3, 2, 1 and then 0, which ends the loop, so sum is 6."},
+  "p04": {"outcome": "reject", "rules": ["LOOP-7", "LOOP-4"], "why": "The condition of do comes after the body's scope ends, so it cannot use done."},
+  "p05": {"outcome": "runs", "rules": ["LOOP-1"], "why": "The first loop adds 0, 1, 2 to n, and while (false) never runs its body."},
+  "p06": {"outcome": "reject", "rules": ["LOOP-8"], "why": "The outermost block of the body declares the condition variable x again."},
+  "p07": {"outcome": "reject", "rules": ["LOOP-4"], "why": "The body without braces is its own scope, so x is not visible after the loop."},
+  "p08": {"outcome": "runs", "rules": ["LOOP-2"], "why": "A do body runs once before the false condition is tested."},
+  "p09": {"outcome": "runs", "rules": ["LOOP-1"], "why": "The condition variable is created for left = 2, 1, 0 and destroyed each time, giving 3 and 3."},
+  "p10": {"outcome": "runs", "rules": ["LOOP-3"], "why": "The initializer runs once, then condition, body, and step repeat, and the last condition fails, giving 1 2 3 4 2 3 4 2."},
+  "p11": {"outcome": "runs", "rules": ["LOOP-3", "LOOP-4"], "why": "The expression-statement initializer writes i first, then the first condition writes c."},
+  "p12": {"outcome": "reject", "rules": ["LOOP-7", "IF-21"], "why": "A static_assert is not a valid for initializer."},
+  "p13": {"outcome": "reject", "rules": ["LOOP-4"], "why": "i is visible only to the end of the for statement."},
+  "p14": {"outcome": "runs", "rules": ["LOOP-4", "IF-7"], "why": "An alias declaration is a valid for initializer, and s grows 4, 8, 12."},
+  "p15": {"outcome": "runs", "rules": ["LOOP-3", "JMP-1"], "why": "The absent condition is true until break at i = 3, and the second loop counts i to 5."},
+  "p16": {"outcome": "reject", "rules": ["LOOP-6"], "why": "The condition of do must be an expression."},
+  "p17": {"outcome": "reject", "rules": ["LOOP-8"], "why": "The outermost block of the body declares the initializer's i again."},
+  "p18": {"outcome": "reject", "rules": ["LOOP-5"], "why": "S has no conversion to bool."},
+  "p19": {"outcome": "runs", "rules": ["LOOP-3"], "why": "The initializer variable t is destroyed when the statement ends after break, so the trace is 1, 9, 2."}
+}
