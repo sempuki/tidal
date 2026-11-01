@@ -1,4 +1,4 @@
-// tidal-rules: DTOR-7
+// tidal-rules: OBJ-2
 // tidal-expect: reject
 // tidal-error-gcc: accessing .s. outside its lifetime
 // tidal-error-clang: read of object outside its lifetime

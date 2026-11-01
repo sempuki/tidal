@@ -1,4 +1,4 @@
-// tidal-rules: MUL-11
+// tidal-rules: CE-28
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-gcc: \(0\.0 / 0\.0\). is not a constant expression

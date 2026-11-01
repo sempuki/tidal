@@ -266,7 +266,7 @@ The candidates of `c(a)`, for an object `c` of class type, are these:
 
 :::{rule} OVL-6
 :kind: required
-:tests: foundations/overload-resolution/surrogate-forms.cpp foundations/overload-resolution/surrogate-from-base.cpp foundations/overload-resolution/surrogate-qualifiers.cpp foundations/overload-resolution/surrogate-explicit-not-candidate.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp
+:tests: foundations/overload-resolution/surrogate-forms.cpp foundations/overload-resolution/surrogate-from-base.cpp foundations/overload-resolution/surrogate-qualifiers.cpp foundations/overload-resolution/surrogate-explicit-not-candidate.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/static-call-operator-over-surrogate.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp
 
 A conversion function gives a {term}`surrogate candidate` for `c(a)` if
 these conditions hold:
@@ -585,7 +585,7 @@ A candidate whose constraints are not satisfied is not viable
 
 :::{rule} OVL-25
 :kind: required
-:tests: foundations/overload-resolution/better-one-argument.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/static-slot-no-part.cpp foundations/overload-resolution/template-exact-over-plain.cpp
+:tests: foundations/overload-resolution/better-one-argument.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/static-slot-no-part.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/static-call-operator-over-surrogate.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp expressions/lambdas/static-call-operator.cpp
 
 A viable function `F1` is better than `F2` if no sequence of `F1` is
 worse than the sequence of `F2` for the same argument
@@ -595,9 +595,11 @@ worse than the sequence of `F2` for the same argument
 - Every sequence ties, and a tie-breaker of OVL-26 to OVL-33 or OVL-41
   prefers `F1`.
 
-Parameters that take default arguments, the object slot of a static
-member ({rule}`ICS-14`), and an object parameter in a call with no
-object (OVL-23) take no part.
+Parameters that take default arguments and an object parameter in a
+call with no object (OVL-23) take no part. The object slot of a static
+member ({rule}`ICS-14`) takes no part against another function's
+standard sequence. Against the first sequence of a surrogate candidate
+({rule}`OVL-6`), which is user-defined, the slot's sequence is better.
 :::
 
 :::{rule} OVL-26
@@ -716,7 +718,7 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 
 :::{rule} OVL-36
 :kind: reject
-:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp
+:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. These rules name specific cases
@@ -780,9 +782,14 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 121
-of 146 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 124
+of 149 tests.
 
+- OVL-25, OVL-6: every compiler chooses a static call operator over a
+  surrogate candidate with the same parameter types. Every compiler
+  finds the call ambiguous when the surrogate's parameter fits the
+  argument better. So the static member's object slot beats the
+  surrogate's user-defined conversion of the object.
 - OVL-27, OVL-28, OVL-29: the kind of function reference prefers one
   conversion function, and a template tie-breaker prefers the other.
   GCC follows the kind of reference, and EDG the template tie-breaker.

@@ -299,21 +299,29 @@ the destructor of the most derived class.
 
 :::{rule} VIRT-10
 :kind: required
-:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-during-construction.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp
+:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-during-construction.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp classes/virtual/dynamic-cast-down-inside-private-base.cpp classes/virtual/dynamic-cast-cross-from-private-base.cpp classes/virtual/dynamic-cast-cross-to-private-base.cpp classes/virtual/dynamic-cast-private-base-constant.cpp classes/virtual/dynamic-cast-reference-fails-throws.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp
 
-`dynamic_cast` converts with a check at run time:
+`dynamic_cast` converts with a check at run time. The operand refers to
+a subobject `s`. A cast to a class `T` takes the first of these steps
+that applies:
 
-- To a pointer or reference to a derived class, the cast succeeds if the
-  most derived object contains one unambiguous public subobject of the
-  target class. The result then refers to that subobject.
-- To a pointer to another base of the same object, a *cross cast*, the
-  same check applies.
-- To `void*`, the result points to the most derived object.
+1. If `s` is a public base subobject of exactly one `T` object, the
+   result refers to that `T` object.
+2. If the most derived object reaches `s` through public bases only,
+   and holds one unambiguous public base subobject of class `T`, the
+   result refers to that `T` subobject. This step includes
+   the cast to the most derived class and the *cross cast* to another
+   base.
+3. Otherwise the check fails.
 
-If the check fails for a pointer, the result is a null pointer. A null
-pointer converts to a null pointer. During a constructor or destructor
-of class `C`, the object counts as a `C`, so a cast to a class derived
-from `C` fails. Constant evaluation can do these casts.
+A cast to `void*` gives a pointer to the most derived object. If the
+check fails for a pointer, the result is a null pointer. If the check
+fails for a reference, the cast throws an exception of a type that is
+*(library referenced)*. A null pointer converts to a null pointer.
+During a constructor or destructor of class `C`, the object counts as a
+`C`, so a cast to a class derived from `C` fails. Constant evaluation
+can do these casts, and a failed cast of a reference there is not a
+constant expression.
 :::
 
 ## Undefined Behavior
@@ -389,8 +397,8 @@ delete p;                          // calls ~Circle, then ~Shape
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 104
-of 107 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 113 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the
@@ -407,6 +415,15 @@ of 107 tests.
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
 - VIRT-13: Clang and GCC give both warnings under `-Wall`.
+- VIRT-10: every Clang and GCC configuration gives a null pointer for a
+  cast from a private base, to the derived class or across to another
+  base. A cast from the same subobject to a class that has it as a
+  public base succeeds. EDG 7.0 lets the cast from a private base
+  succeed during constant evaluation ({question}`Q-0212`).
+- VIRT-10: a failed cast of a reference throws at run time on every
+  Clang and GCC configuration, and a handler `catch (...)` catches the
+  exception. Constant evaluation rejects the failed cast on every
+  compiler.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl.

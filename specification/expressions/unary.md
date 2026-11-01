@@ -305,7 +305,7 @@ fit in that type, the behavior is undefined.
 
 :::{rule} UN-7
 :kind: undefined
-:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-dangling-constant.cpp expressions/unary/indirection-null-sanitizer.cpp foundations/objects/read-after-block-ends-sanitizer.cpp
+:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-null-sanitizer.cpp
 
 If the operand of `*` does not point to an object or a function, and the
 program uses the result, the behavior is undefined. Such operands
@@ -314,6 +314,9 @@ include:
 - a null pointer,
 - a pointer past the end of an array,
 - a pointer to an object whose lifetime has ended.
+
+For a read or write of an object whose lifetime has ended,
+{rule}`OBJ-2` is the rule that applies.
 :::
 
 :::{rule} UN-21
@@ -373,7 +376,7 @@ alignof(char);          // 1
 
 ## Evidence
 
-All eight compilers agree on 65 of 68 tests. The results are in
+All eight compilers agree on 63 of 66 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-20: Clang and GCC accept `++` and `--` on a `short` or

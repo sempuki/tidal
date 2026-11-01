@@ -279,6 +279,8 @@ The behavior is undefined if the program:
 - deletes a pointer that `new` did not give,
 - uses `delete[]` through a pointer to a base for an array of a derived
   class ({question}`Q-0091`). VIRT-12 gives the rule for one object.
+
+A read or write of a dynamic object after `delete` breaks {rule}`OBJ-2`.
 :::
 
 ## Implementation Requirements

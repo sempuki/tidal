@@ -50,7 +50,7 @@ every part.
 :::
 
 :::{principle} CE-P3
-:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27 CE-28
 :exceptions: CE-26
 
 An evaluation must not depend on the machine or on where objects are
@@ -61,6 +61,8 @@ placed in memory. So an evaluation rejects these operations:
 - reading a union member that is not active,
 - comparing the addresses of string literals,
 - ordering pointers to unrelated objects,
+- dividing a floating-point value by zero, which gives an infinity or a
+  NaN only on some machines,
 - any operation that is undefined.
 
 Copying an object reads each of its parts, so a copy of an object with
@@ -185,9 +187,10 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp
 
-Constant evaluation must not evaluate a throw-expression. A
+Constant evaluation must not evaluate a throw-expression, or a failed
+`dynamic_cast` of a reference, which throws ({rule}`VIRT-10`). A
 throw-expression on a path that the evaluation does not take is valid.
 :::
 
@@ -275,6 +278,15 @@ static ({question}`Q-0193`).
 
 Constant evaluation must not compare pointers to unrelated objects with
 `<`, `>`, `<=`, or `>=`, because the result is unspecified.
+:::
+
+:::{rule} CE-28
+:kind: reject
+:tests: expressions/multiplicative/floating-divide-by-zero.cpp expressions/multiplicative/floating-zero-by-zero.cpp
+
+Constant evaluation must not evaluate a floating-point `/` whose right
+operand is zero. The rule holds also for a type that follows IEEE 754,
+where the division has a result at run time ({rule}`MUL-11`).
 :::
 
 :::{rule} CE-16
@@ -449,8 +461,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 85 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 75
+of 88 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -474,7 +486,11 @@ of 85 tests.
   and EDG. GCC rejects it ({question}`Q-0117`).
 - CE-22: Clang and EDG reject a copy of an object that has a part with
   no value, and name the part in a note. GCC 14 and 16 accept the copy
-  ({question}`Q-0115`).
+  ({question}`Q-0115`). At run time the same copy is a read under
+  {rule}`OBJ-2`.
+- CE-28: Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` and note a
+  division by zero, although both give an infinity or a NaN at run time
+  ({question}`Q-0004`). EDG 7.0 accepts both ({question}`Q-0002`).
 - CE-3 and CE-14: the compilers split on temporaries that a namespace
   `constexpr` reference extends ({question}`Q-0193`).
   - EDG rejects the reference when the temporary is extended through a

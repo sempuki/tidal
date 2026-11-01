@@ -219,15 +219,21 @@ without an exception, no handler runs.
 
 :::{rule} TRY-2
 :kind: required
-:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp
+:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp exceptions/handlers/match-void-pointer-keeps-const.cpp exceptions/handlers/match-function-pointer-not-void.cpp exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp
 
 A handler with parameter type `T` matches an exception object of type
 `E` if one of these holds:
 
 - `T` is `E`, or a reference to `E`, with any cv-qualifiers added.
 - `T` is an accessible unambiguous base of `E`, or a reference to one.
-- `T` and `E` are pointers, and `E` converts to `T` by a qualification
-  conversion or a conversion to a base, or `E` is the type of `nullptr`.
+- `T` and `E` are pointers, and `E` converts to `T` by one or more of
+  these conversions:
+  - a qualification conversion,
+  - a conversion to a pointer to a base class that is accessible and
+    unambiguous,
+  - a conversion of a pointer to an object type to a pointer to `void`
+    with the same or more cv-qualifiers.
+- `T` is a pointer and `E` is the type of `nullptr`.
 - `E` is an array or function type and `T` is the pointer that `E`
   decays to.
 
@@ -378,8 +384,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 75 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 76
+of 78 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -387,6 +393,11 @@ program only as a nonzero exit.
   for either. EDG rejects the function that flows off the end of its
   handler without any flag.
 - TRY-11: the test only shows that the program compiles.
+- TRY-2: every Clang and GCC configuration matches a thrown pointer to
+  an object, and a thrown pointer to a pointer, with a handler for a
+  pointer to `void` that has at least the same cv-qualifiers. A pointer
+  to `const int` does not match `void*`, and a pointer to a function
+  does not match `const void*`.
 - TRY-18: Clang and GCC end the program when the copy into a by-value
   handler parameter throws, also when an enclosing try block has a
   matching handler.

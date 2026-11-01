@@ -1,5 +1,6 @@
 // tidal-rules: CMP-5
 // tidal-expect: run
+// tidal-note: The NaN comes from 0.0 / 0.0 in double, which follows IEEE 754 on the matrix targets (MUL-11, MUL-20, Q-0004).
 volatile double zero = 0.0;
 int main() {
   double n = zero / zero;

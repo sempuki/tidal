@@ -12,9 +12,9 @@ answer**, and the specification follows it until a pull request changes it.
 | ID | Question | Status | Provisional answer |
 |---|---|---|---|
 | [Q-0001](Q-0001-floating-overflow-constant-evaluation.md) | Is floating overflow during constant evaluation undefined or implementation-defined? | provisional | undefined |
-| [Q-0002](Q-0002-edg-floating-division-by-zero.md) | Does EDG accepting floating division by zero during constant evaluation change MUL-11? | compiler defect | no; likely EDG defect |
+| [Q-0002](Q-0002-edg-floating-division-by-zero.md) | Does EDG accepting floating division by zero during constant evaluation change CE-28? | compiler defect | no; likely EDG defect |
 | [Q-0003](Q-0003-edg-int-min-divided-by-minus-one.md) | Does EDG accepting `INT_MIN / -1` during constant evaluation change MUL-10? | compiler defect | no; likely EDG defect |
-| [Q-0004](Q-0004-floating-division-by-zero-at-run-time.md) | Should floating division by zero be implementation-defined on IEEE 754 targets? | provisional | no, keep undefined |
+| [Q-0004](Q-0004-floating-division-by-zero-at-run-time.md) | Should floating division by zero be implementation-defined on IEEE 754 targets? | provisional | yes: the IEEE 754 result where the type follows IEEE 754 (MUL-20), undefined otherwise; constant evaluation rejects it (CE-28) |
 | [Q-0005](Q-0005-operand-order-without-observed-variation.md) | Can operand order be `unspecified` when no compiler varies it? | provisional | yes, on source evidence |
 | [Q-0006](Q-0006-promoting-report-compilers.md) | When does a report compiler become a baseline compiler? | provisional | after one clean review of its results |
 | [Q-0007](Q-0007-language-version.md) | Which language version does Tidal track, and how are newer features handled? | provisional | C++23; newer features rejected under strict mode |
@@ -222,6 +222,8 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0209](Q-0209-placeholder-bound-type.md) | What type does a placeholder constant parameter get from an array bound? | provisional | the type of `sizeof`; Clang and EDG agree, GCC gives `int` |
 | [Q-0210](Q-0210-constraints-different-heads-or-results.md) | Do constraints decide between templates whose heads, or whose conversion results, differ? | provisional | no; Clang and GCC agree, EDG lets them decide |
 | [Q-0211](Q-0211-swapped-candidate-ordering.md) | Are the parameters of a swapped candidate reversed for partial ordering? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0212](Q-0212-edg-dynamic-cast-private-base-constant.md) | Does EDG letting a `dynamic_cast` from a private base succeed during constant evaluation change VIRT-10? | compiler defect | no; Clang and GCC give a null pointer, likely EDG defect |
+| [Q-0213](Q-0213-edg-union-chain-assignment-nontrivial.md) | Does EDG accepting an assignment into a union member that has a default constructor that is not trivial change UNI-13? | compiler defect | no; Clang and GCC reject, likely EDG defect |
 
 ## Status values
 

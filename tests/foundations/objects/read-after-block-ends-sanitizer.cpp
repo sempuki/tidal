@@ -1,4 +1,4 @@
-// tidal-rules: OBJ-2 UN-7
+// tidal-rules: OBJ-2
 // tidal-expect: run-fail
 // tidal-flags: -O0 -fsanitize=address
 // tidal-error: AddressSanitizer: stack-use-after-scope

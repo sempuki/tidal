@@ -15,7 +15,7 @@ copy and move, list initialization and aggregates, standard conversions.
 ## Principles
 
 :::{principle} UNI-P1
-:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8
+:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8 UNI-13
 :exceptions: UNI-10 UNI-12
 
 A union is one piece of storage with several views. All members of the
@@ -35,7 +35,8 @@ first byte
 ```
 
 The initializer picks the first active member, and a plain assignment to
-another member makes that member active instead. Reading a member that
+another member makes that member active instead. The assignment can
+also reach a part of the member, as in `u.a.tag = 7`. Reading a member that
 is not active reads an object that is not there, so the behavior is
 undefined ({principle}`OBJ-P4`). A reference is not an object with
 storage of its own, so a union cannot hold a reference.
@@ -315,6 +316,24 @@ uses the built-in operator or a trivial assignment operator
 evaluation follows these rules.
 :::
 
+:::{rule} UNI-13
+:kind: required
+:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp
+
+The left operand of an assignment can name its object through a chain
+of member accesses and built-in subscripts, such as `s.u.a.tag` or
+`u.arr[1]`. If the assignment uses the built-in operator or a trivial
+assignment operator, each union member in the chain that is not active
+becomes active. These conditions
+apply:
+
+- A member becomes active only if its default constructor is trivial.
+- The parts of a new active member that the assignment does not write
+  have no value.
+
+Constant evaluation follows this rule.
+:::
+
 :::{rule} BF-5
 :kind: required
 :tests: classes/unions/bitfield-plain-int-signed.cpp
@@ -337,13 +356,16 @@ through the other struct. The read gives the stored value.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp
+:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. A compound assignment to a member that is not active reads
 that member. An assignment to a member that is not active, through an
 assignment operator that is user-provided, uses an object that does not
-exist yet ({question}`Q-0088`).
+exist yet ({question}`Q-0088`). An assignment through a chain of member
+accesses ({rule}`UNI-13`) to a union member whose default constructor is
+not trivial also uses an object that does not exist
+({question}`Q-0213`).
 :::
 
 ## Implementation Requirements
@@ -404,8 +426,8 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 104 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 103
+of 107 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0057`).
@@ -415,6 +437,12 @@ of 104 tests.
 - UNI-6: EDG accepts the assignment through a user-provided operator to
   a member that is not active during constant evaluation. Clang and GCC
   reject the assignment ({question}`Q-0088`).
+- UNI-13: every compiler accepts the constant evaluations in which an
+  assignment through `.` and `[]` makes members of one or two unions
+  active. Every compiler rejects a later read of a part that the
+  assignment did not write. For a member whose default constructor is
+  not trivial, Clang and GCC reject the assignment, and EDG accepts it
+  ({question}`Q-0213`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

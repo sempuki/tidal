@@ -1,4 +1,4 @@
-// tidal-rules: UNI-10
+// tidal-rules: UNI-10 UNI-13
 // tidal-expect: run
 struct A { int tag; int a; };
 struct B { int tag; double b; };

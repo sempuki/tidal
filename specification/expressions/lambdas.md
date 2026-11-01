@@ -267,7 +267,10 @@ program can call such a lambda during {term}`constant evaluation`.
 :kind: required
 :tests: expressions/lambdas/static-call-operator.cpp
 
-A lambda declared `static` has a static call operator.
+A lambda declared `static` has a static call operator. The closure
+also converts to a pointer to function ({rule}`LAM-10`). A call of the
+closure object chooses the static call operator over the surrogate
+candidate from that conversion ({rule}`OVL-25`).
 :::
 
 :::{rule} LAM-27
@@ -413,6 +416,9 @@ of 60 tests.
   Clang and GCC reject it ({question}`Q-0037`).
 - LAM-13 and LAM-16: all seven compilers accept static lambdas and
   explicit object parameters in C++23 mode.
+- LAM-13: every compiler accepts a call of a closure object with a
+  static call operator, although the closure also converts to a pointer
+  to function. OVL-25 gives the reason.
 - LAM-20: every compiler initializes the explicit captures first. The
   implicit captures follow, in the order of their first use in the body.
   LAM-20 allows this order.

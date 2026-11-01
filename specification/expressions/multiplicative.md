@@ -44,16 +44,33 @@ intermediates, and the matrix targets do not.
 :::
 
 :::{principle} MUL-P3
-:rules: MUL-9 MUL-10 MUL-11 MUL-12
+:rules: MUL-9 MUL-10 MUL-12
 
 A signed integer type is not modular, so a result that the type cannot
 hold has no value. The behavior is undefined in these cases:
 
 - a signed integer result that its type cannot hold,
-- an operation with no mathematical result, such as division by zero,
+- an integer division or remainder by zero, which has no mathematical
+  result,
 - a floating-point result beyond the range of its type.
 
 Constant evaluation rejects each of these cases ({principle}`TR-P4`).
+:::
+
+:::{principle} MUL-P6
+:rules: MUL-11 MUL-20
+
+An implementation chooses whether each floating-point type follows
+IEEE 754. A type that follows IEEE 754 has infinities and NaN values,
+so a floating-point division by zero has a result in that type.
+
+| Operation | Type follows IEEE 754 | Type does not follow IEEE 754 |
+|---|---|---|
+| `x / 0.0`, `x` nonzero and not a NaN | an infinity | undefined |
+| `0.0 / 0.0` | a NaN | undefined |
+
+Constant evaluation rejects a floating-point division by zero in every
+type ({rule}`CE-28`), because the result depends on the machine.
 :::
 
 :::{principle} MUL-P4
@@ -210,14 +227,6 @@ behavior undefined:
 {term}`Integer promotion` can give a signed type for unsigned operands.
 :::
 
-:::{rule} MUL-11
-:kind: undefined
-:tests: expressions/multiplicative/floating-divide-by-zero.cpp expressions/multiplicative/floating-zero-by-zero.cpp expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp
-
-If the right operand of floating-point `/` is zero, the behavior is
-undefined. This includes `0.0 / 0.0`.
-:::
-
 :::{rule} MUL-12
 :kind: undefined
 :tests: expressions/multiplicative/floating-overflow-constant.cpp
@@ -252,6 +261,29 @@ The order of evaluation of the two operands is unspecified.
 The common type, and so the result type, can depend on the sizes of the
 integer types. The sizes of the integer types are
 implementation-defined.
+:::
+
+:::{rule} MUL-20
+:kind: impl-defined
+:tests: expressions/multiplicative/ieee-types.cpp expressions/multiplicative/floating-divide-by-zero-infinity.cpp expressions/multiplicative/floating-zero-by-zero-nan.cpp
+
+Whether a floating-point type follows IEEE 754 is implementation-defined.
+A type that follows IEEE 754 has a positive and a negative infinity and
+NaN values. On the x86-64 targets in the matrix, `float`, `double`, and
+`long double` follow IEEE 754.
+:::
+
+:::{rule} MUL-11
+:kind: impl-defined
+:tests: expressions/multiplicative/floating-divide-by-zero-infinity.cpp expressions/multiplicative/floating-zero-by-zero-nan.cpp expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp
+
+If the right operand of floating-point `/` is zero, the result depends
+on the type ({rule}`MUL-20`):
+
+- If the type does not follow IEEE 754, the behavior is undefined.
+- If the left operand is zero or a NaN, the result is a NaN.
+- Otherwise the result is an infinity. The infinity is negative if
+  exactly one operand is negative or is `-0.0`.
 :::
 
 :::{rule} MUL-17
@@ -296,6 +328,11 @@ c * c                // type int
 
 ~0u * 2u             // ~0u - 1u
 
+double zero = 0.0;
+1.0 / zero           // positive infinity if double follows IEEE 754
+-1.0 / zero          // negative infinity if double follows IEEE 754
+zero / zero          // a NaN if double follows IEEE 754
+
 unsigned short s = 65535;
 s * s                // int; undefined if int has 32 bits
 
@@ -315,14 +352,21 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
 - **MUL-2.** Clang and GCC warn that an enumeration with a
   floating-point operand is deprecated. Both compilers accept the
   operand.
-- **MUL-9, MUL-10, MUL-11.** Clang and GCC (all tested versions) reject
+- **MUL-9, MUL-10.** Clang and GCC (all tested versions) reject
   each case during constant evaluation. Their notes name the cause:
   division by zero, a result too large for `int`, or overflow. Each case
   is otherwise valid. EDG agrees on integer division by zero and on
   multiply overflow. EDG differs on the cases below.
-- **MUL-11.** At run time on x86-64, Clang and GCC give IEEE 754
-  infinity or NaN. Tidal does not require that result
-  ({question}`Q-0004`).
+- **MUL-11, MUL-20.** At run time on x86-64, every Clang and GCC
+  configuration, `-O2` included, gives an infinity for `1.0 / 0.0` and a
+  NaN for `0.0 / 0.0` in `float`, `double`, and `long double`.
+  `-fsanitize=undefined` does not stop the division. The separate check
+  `-fsanitize=float-divide-by-zero` stops the division. Clang and GCC
+  report `__STDC_IEC_559__` and IEEE 754 types in their libraries on the
+  64-bit and 32-bit x86 targets. MUL-11 is `impl-defined` because the
+  result rests on a choice of the implementation, which these
+  implementations make and report ({question}`Q-0004`). Clang and GCC
+  reject the division during constant evaluation (CE-28).
 - **MUL-12.** These are the results for `1e308 * 10.0` in a `constexpr`
   initializer:
 
@@ -332,10 +376,14 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
 
   The provisional answer is that the behavior is undefined, and that
   Clang's acceptance is an extension ({question}`Q-0001`).
-- **MUL-11, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
+- **CE-28, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
   during constant evaluation. EDG 7.0 accepts both. EDG rejects floating
-  overflow. The provisional answer keeps MUL-11, and EDG's behavior is a
-  possible defect ({question}`Q-0002`).
+  overflow. The provisional answer keeps the rejection, and EDG's
+  behavior is a possible defect ({question}`Q-0002`).
+- **MUL-17.** `0.1 * 3.0 / 3.0` gives `0.10000000000000002` when each
+  operation rounds to `double`, and `0.1` with extra precision. The
+  test accepts both values and stays clear of overflow, which MUL-12
+  makes undefined ({question}`Q-0001`).
 - **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and
   `INT_MIN % -1` during constant evaluation. EDG 7.0 accepts both. EDG
   rejects `INT_MAX * 2`. The provisional answer keeps MUL-10, and EDG's

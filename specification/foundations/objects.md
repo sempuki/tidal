@@ -174,13 +174,23 @@ temporary ends after the function returns (VC-6).
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp
 
-If a program reads an object outside its lifetime, or reads a scalar
-object or member that has no value yet, the behavior is undefined. The
-rule includes a read through a pointer or reference to a variable whose
-block has ended, and a read of a dynamic object after `delete`.
-Constant evaluation rejects each of these reads.
+If a program reads or writes an object outside its lifetime, or reads
+a scalar object or member that has no value yet, the behavior is
+undefined. OBJ-2 is the rule for each such access, and these cases are
+included:
+
+- an access through a pointer or reference to a variable whose block
+  has ended,
+- an access to a dynamic object after `delete`,
+- an access to a class object after its destructor runs,
+- an implicit copy or move function ({rule}`CPY-8`) of an object with a
+  scalar part that has no value, because the function reads each scalar
+  part.
+
+{rule}`UN-7` and {rule}`DTOR-7` refer to OBJ-2 for these accesses.
+Constant evaluation rejects each of them.
 :::
 
 :::{rule} OBJ-10
@@ -226,8 +236,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 33
-of 35 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 38
+of 40 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - OBJ-11: the test accepts either construction point. Three containers
@@ -235,5 +245,14 @@ only that the programs are valid.
 - OBJ-4: the test for the destruction order of static objects makes a
   static object declared first, and so destroyed last, check the order
   in its destructor.
+- OBJ-2: a read or write after the end of a lifetime breaks OBJ-2, and
+  the tests of such accesses cite OBJ-2. UN-7 and DTOR-7 name OBJ-2 for
+  these accesses, in the way that decision 0042 links overlapping
+  `reject` rules. Every compiler rejects a read or a write through a
+  pointer to a variable whose block has ended during constant
+  evaluation.
+- OBJ-2: an implicit copy of an object with a part that has no value is
+  a read of that part ({question}`Q-0115`). No sanitizer in the matrix
+  reports the copy at run time.
 
 Inputs: clang-ast-exprconstant, clang-diag-ast, clang-sema-decl.

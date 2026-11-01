@@ -1,4 +1,4 @@
-// tidal-rules: DTOR-7
+// tidal-rules: OBJ-2
 // tidal-expect: run-fail
 // tidal-flags: -O0 -fsanitize=address
 // tidal-error: AddressSanitizer: heap-use-after-free

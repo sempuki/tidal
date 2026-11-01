@@ -515,11 +515,16 @@ is also undefined.
 
 :::{rule} DTOR-7
 :kind: undefined
-:tests: classes/constructors/double-destroy-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp
+:tests: classes/constructors/double-destroy-constant.cpp
 
-If a program uses an object after its destructor runs, the behavior is
-undefined. This includes a second destruction, for example at the end of
-the block after an explicit call ({question}`Q-0054`).
+If a program destroys an object a second time, or calls a member
+function of the object, after its destructor runs, the behavior is
+undefined. A second destruction happens, for example, at the end of
+the block after an explicit destructor call ({question}`Q-0054`). These
+rules cover the other uses:
+
+- {rule}`OBJ-2` for a read or write of the object,
+- {rule}`NEW-5` for a second `delete` of a dynamic object.
 :::
 
 ## Implementation Requirements
@@ -580,8 +585,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 156
-of 166 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 154
+of 164 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default

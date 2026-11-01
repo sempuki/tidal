@@ -103,7 +103,7 @@ So the following facts hold:
 :::
 
 :::{principle} TR-P3
-:rules: TR-2 TR-3 TR-9
+:rules: TR-2 TR-3 TR-9 TR-11
 
 Execution begins at `main`. The program's exit status is the value that
 `main` returns, and reaching the end of `main` returns zero. `main` is
@@ -113,6 +113,9 @@ the entry point and nothing else. A program cannot do the following:
 - take the address of `main`,
 - give `main` a form other than the two that the runtime knows how to
   call.
+
+The environment that receives the status can keep only part of the
+value. On the matrix targets the environment keeps the low eight bits.
 :::
 
 :::{principle} TR-P5
@@ -263,6 +266,16 @@ two parameters. On the matrix targets, the first parameter is at least
 1, and the first string holds the name by which the program was started.
 :::
 
+:::{rule} TR-11
+:kind: impl-defined
+:tests: foundations/translation/main-status-low-bits.cpp foundations/translation/main-status-low-bits-nonzero.cpp foundations/translation/main-status-negative.cpp
+
+The status that the environment receives from the value of `main`
+(TR-2) is implementation-defined. On the matrix targets the environment
+receives the value modulo 256, as a number from 0 to 255. A value of 256
+gives status 0, and a value of -1 gives status 255.
+:::
+
 ## Recommended Practice
 
 :::{rule} TR-6
@@ -291,11 +304,14 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 26
-of 27 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 29
+of 30 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
+- TR-11: on every Clang and GCC configuration, `return 256;` gives
+  status 0, `return 257;` gives status 1, and `return -1;` gives status
+  255.
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
   and GCC reject it ({question}`Q-0112`).
 

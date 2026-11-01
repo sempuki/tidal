@@ -73,7 +73,8 @@ are equal when they select the same member of the same subobject.
 
 A NaN is not equal to anything, not even itself, and is neither less nor
 greater than anything. So every comparison with a NaN is `false`, except
-`!=`, which is `true`.
+`!=`, which is `true`. A program gets a NaN from `0.0 / 0.0` in a type
+that follows IEEE 754 ({rule}`MUL-11`).
 :::
 
 :::{principle} CMP-P5
