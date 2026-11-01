@@ -109,13 +109,14 @@ A variable or an object is not a valid message (SA-4).
 
 :::{rule} SA-5
 :kind: required
-:tests: declarations/static-assert/discarded-branch-nontemplate.cpp declarations/static-assert/discarded-branch.cpp declarations/static-assert/template-dependent-false.cpp declarations/static-assert/template-instantiated-false.cpp declarations/static-assert/template-nondependent-false.cpp
+:tests: declarations/static-assert/discarded-branch-nontemplate.cpp declarations/static-assert/discarded-branch.cpp declarations/static-assert/template-dependent-false.cpp declarations/static-assert/template-instantiated-false.cpp declarations/static-assert/template-nondependent-false.cpp declarations/static-assert/generic-lambda-not-called.cpp
 
-In a template, a condition is checked when the template is instantiated.
-A static assertion in a template that is never instantiated is not
-checked, even if its condition does not depend on a template parameter.
-A static assertion in a {term}`discarded statement` of a template is not
-checked. Outside a template, a discarded statement is checked.
+In a {term}`templated context`, a condition is checked when the
+template is instantiated. A static assertion in a template that is
+never instantiated is not checked, even if its condition does not
+depend on a template parameter. A static assertion in a
+{term}`discarded statement` of a templated context is not checked, and
+outside one a discarded statement is checked.
 :::
 
 ## Examples
@@ -139,7 +140,7 @@ int h = half(10);                     // checked for T = int: valid
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-28 tests. Clang, GCC, and EDG each show the message of a failed
+29 tests. Clang, GCC, and EDG each show the message of a failed
 assertion.
 
 Inputs: clang-sema-declcxx, clang-diag-sema, clang-diag-parse,

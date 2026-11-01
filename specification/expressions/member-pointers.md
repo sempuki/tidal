@@ -122,12 +122,12 @@ These cases have their own rules:
 
 :::{rule} MPTR-9
 :kind: reject
-:tests: expressions/member-pointers/address-of-bound-member.cpp expressions/member-pointers/form-bitfield.cpp expressions/member-pointers/form-constructor.cpp expressions/member-pointers/form-function-without-amp.cpp expressions/member-pointers/form-needs-qualified.cpp expressions/member-pointers/form-private-access.cpp expressions/member-pointers/explicit-object-not-member-pointer.cpp
+:tests: expressions/member-pointers/address-of-bound-member.cpp expressions/member-pointers/static-member-without-amp.cpp expressions/member-pointers/form-bitfield.cpp expressions/member-pointers/form-constructor.cpp expressions/member-pointers/form-function-without-amp.cpp expressions/member-pointers/form-needs-qualified.cpp expressions/member-pointers/form-private-access.cpp expressions/member-pointers/explicit-object-not-member-pointer.cpp
 
 A pointer to member must be formed with `&` and a qualified name. These
 are not valid:
 
-- `&m` or `C::f` without `&`,
+- `&m`, or `C::f` without `&` for a non-static member `f`,
 - `&obj.f` for a member function,
 - a bit-field, a constructor, or a member that is not accessible,
 - a pointer to member for a function with an explicit object parameter.
@@ -268,6 +268,6 @@ int Point3::* any = &Point::x;     // base to derived: implicit
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-67 tests.
+68 tests.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

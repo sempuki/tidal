@@ -23,7 +23,7 @@ dependent names, the one-definition rule.
 ## Principles
 
 :::{principle} INST-P1
-:rules: INST-1 INST-2 INST-4 INST-7 INST-8 INST-9 INST-10 INST-12 INST-13
+:rules: INST-1 INST-2 INST-4 INST-7 INST-8 INST-9 INST-10 INST-12 INST-13 INST-36
 :exceptions: INST-3 INST-11
 
 The implementation instantiates a specialization only when a use needs
@@ -117,6 +117,17 @@ int use() { return Info<A>::value + info(A{}); }
   └─────────────────────────────── point of info<A>   (INST-31)
 ...
 end of the translation unit ────── another point of info<A> (INST-31)
+```
+
+A class that a function specialization needs has its point right
+before the point of that function specialization (INST-30):
+
+```text
+template <class T> struct Info { ... };
+template <class T> int read() { return Info<T>::value; }
+int main() { return read<A>(); }
+  ── point of Info<A>   right before the point of read<A>   (INST-30)
+  ── point of read<A>   right after main                     (INST-31)
 ```
 
 A function or `static` data member has a point after the declaration
@@ -284,6 +295,17 @@ the local class with these parts, also those that no use names:
 - default arguments ({question}`Q-0253`).
 :::
 
+:::{rule} INST-36
+:kind: required
+:tests: templates/instantiation/local-entities-per-specialization.cpp
+
+Each specialization of a function template has its own `static` and
+`thread_local` local variables. Each lambda expression in its body has
+a different closure type in each specialization. The call operator of a
+generic lambda is a function template ({rule}`LAM-15`), so the rule
+applies to it.
+:::
+
 :::{rule} INST-13
 :kind: reject
 :tests: templates/instantiation/friend-defined-twice.cpp templates/instantiation/friend-defined-per-specialization.cpp
@@ -378,7 +400,8 @@ specialization, with these allowances:
 - the bound of an array type can be left out ({question}`Q-0236`).
 
 An exception specification on the explicit instantiation must match
-the specialization's ({question}`Q-0255`).
+the specialization's ({question}`Q-0255`). The explicit instantiation
+can leave out the exception specification.
 :::
 
 :::{rule} INST-23
@@ -470,7 +493,7 @@ declarations before its point.
 
 :::{rule} INST-31
 :kind: required
-:tests: templates/instantiation/function-point-constant.cpp templates/instantiation/function-point-sees-earlier.cpp templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/virtual-point-after-class.cpp
+:tests: templates/instantiation/function-point-constant.cpp templates/instantiation/function-point-sees-earlier.cpp templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp
 
 A specialization of a function or of a `static` data member has these
 points of instantiation:
@@ -481,8 +504,11 @@ points of instantiation:
 - the end of the translation unit,
 - an explicit instantiation definition.
 
-A constant evaluation uses the declarations before the first point
-({question}`Q-0257`).
+A use inside a function counts at the namespace-scope declaration that
+holds the function, also when the function is not a template. A
+constant evaluation uses the declarations before the first point
+({question}`Q-0257`). Another use can see the declarations up to the
+last point, and INST-32 applies where the points differ.
 :::
 
 :::{rule} INST-33
@@ -542,7 +568,7 @@ An implementation need not diagnose a break of this rule.
 
 :::{rule} INST-32
 :kind: no-diagnostic
-:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp
+:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp
 
 All the points of instantiation of a specialization, in one translation
 unit or in several, must give the specialization the same meaning. An
@@ -601,8 +627,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 111
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 130 tests.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
@@ -682,9 +708,28 @@ bullets below say so.
 - INST-14: Clang stops at a depth of 1024, GCC at 900, and EDG at 64
   nested class instantiations. INST-15 allows any result for an endless
   chain, and every compiler rejects the test.
-- INST-28: the unoptimized builds fail to link in each test. The `-O2`
-  builds inline the inline function and run, and fail to link for the
-  others. The rule allows each result.
+- INST-28: the baseline builds use no `-O` flag and fail to link in
+  each test. The `-O2` report builds inline the inline function and
+  run, and fail to link for the others. The rule is `no-diagnostic` and
+  allows each result, so the tests record the outcome of each build and
+  decide nothing by the optimization level (decision 0047).
+- INST-35: two units with an explicit instantiation definition of one
+  specialization link with no message on every compiler that links.
+  For an explicit instantiation in one unit and an explicit
+  specialization in the other, the link also gives no message. Clang 22
+  and GCC 16 at `-O0` then call the explicit specialization from both
+  units. At `-O2`, the unit with the explicit instantiation inlines the
+  template's body and gets its result. The rule allows each result.
+- INST-31, INST-32: a `constexpr` function template is used in an
+  ordinary function, outside constant evaluation, and the function that
+  its call finds is declared after that function. GCC takes the
+  declarations at the end of the unit. Clang and EDG instantiate at
+  the first point and reject ({question}`Q-0310`). The call operator of
+  a lambda is `constexpr` when it can be, so a generic lambda gives the
+  same split.
+- INST-36: every compiler gives one counter to each specialization of
+  a function template and of a generic lambda's call operator, and a
+  different closure type to each specialization.
 - INST-32: every compiler takes the declarations at the end of the
   unit for a function. In two units, the `-O0` builds use one
   definition for both units, and the `-O2` builds inline each call.

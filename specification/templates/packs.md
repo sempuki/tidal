@@ -406,7 +406,7 @@ which must not bind to a bit-field ({rule}`REF-8`).
 
 :::{rule} PACK-23
 :kind: required
-:tests: templates/packs/forwarding-cast.cpp templates/packs/forwarding-cast-explicit-argument.cpp templates/packs/forwarding-placeholder-pack.cpp
+:tests: templates/packs/forwarding-cast.cpp templates/packs/forwarding-cast-explicit-argument.cpp templates/packs/forwarding-placeholder-pack.cpp templates/packs/forwarding-prvalue-moved.cpp
 
 Take a forwarding reference `x` of type `T&&`. The cast
 `static_cast<T&&>(x)` gives an lvalue when `T` names an lvalue reference,
@@ -512,6 +512,28 @@ template <class... T> int total(T... x) {
 }
 ```
 
+A forwarded call keeps the value category of each argument, but it
+differs from a direct call in these ways:
+
+```cpp
+void take(int*);
+void list(const int (&)[2]);
+struct Moves { Moves(); Moves(Moves&&); };
+void sink(Moves);
+template <class... A> void relay(A&&... a) { take(static_cast<A&&>(a)...); }
+template <class... A> void relay_list(A&&... a) { list(static_cast<A&&>(a)...); }
+template <class... A> void relay_sink(A&&... a) { sink(static_cast<A&&>(a)...); }
+
+take(0);              // 0 is a null pointer constant
+relay(0);             // rejected: A is int, and an int does not convert to int*
+list({1, 2});         // the list initializes the array
+relay_list({1, 2});   // rejected: a braced list gives A no type (DED-18)
+sink(Moves{});        // the prvalue initializes the parameter, with no move
+relay_sink(Moves{});  // the reference binds a temporary, and the parameter is moved from it
+struct Item { int bits : 3; } item;
+relay(item.bits);     // rejected: a bit-field that is not const (PACK-31)
+```
+
 ```cpp
 template <class... A> int make(A... a) { return int(a...); }
 make();                                    // 0: int() with no elements
@@ -527,8 +549,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 65
+of 69 tests.
 
 The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight

@@ -174,10 +174,11 @@ release is not.
 
 :::{rule} CEV-2
 :kind: reject
-:tests: declarations/constexpr/consteval-address-taken.cpp declarations/constexpr/consteval-address-in-immediate.cpp
+:tests: declarations/constexpr/consteval-address-taken.cpp declarations/constexpr/consteval-address-in-immediate.cpp declarations/constexpr/consteval-selected-by-target.cpp declarations/constexpr/consteval-not-selected-by-target.cpp
 
 A program can take the address of a `consteval` function only in an
-immediate function context.
+immediate function context. A target type that selects a `consteval`
+function from an overload set ({rule}`OVL-18`) takes its address.
 :::
 
 :::{rule} CEV-3
@@ -238,8 +239,8 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 66 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 63
+of 68 tests.
 
 - CX-6: every compiler accepts a constant evaluation that reaches the
   definition of a `static const int` with a constant initializer, as

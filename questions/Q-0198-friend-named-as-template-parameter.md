@@ -1,7 +1,7 @@
 # Q-0198: Can a friend function in a class template have the name of a template parameter?
 
 **Status:** provisional
-**Affects:** TPL-18
+**Affects:** TPL-48, TPL-18
 
 ## Context
 

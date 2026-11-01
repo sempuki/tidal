@@ -38,7 +38,7 @@ can go through an ellipsis.
 :::
 
 :::{principle} PFX-P3
-:rules: PFX-10 PFX-11 PFX-14
+:rules: PFX-10 PFX-11 PFX-14 PFX-20
 
 Member access names a member of a class object, and `->` is member
 access through a pointer. The object expression is always evaluated,
@@ -159,6 +159,15 @@ as `(*E).m`. Member access also follows these rules:
 
 The operand of `.` must be a class object, and the operand of `->` must
 be a pointer to a class. The class must have the named member.
+:::
+
+:::{rule} PFX-20
+:kind: reject
+:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-called.cpp
+
+A member access `x.f` or `p->f` that names a non-static member function
+must be the operand of a call, also inside parentheses ({rule}`VC-2`).
+A static member function reached this way is an ordinary function.
 :::
 
 :::{rule} PFX-13
@@ -300,8 +309,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 54 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 57 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).

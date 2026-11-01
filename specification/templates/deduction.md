@@ -398,13 +398,14 @@ The list initializes the parameter after substitution.
 
 :::{rule} DED-19
 :kind: required
-:tests: templates/deduction/overload-set-one-match.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/overload-set-later.cpp
+:tests: templates/deduction/overload-set-one-match.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/overload-set-later.cpp templates/deduction/overload-set-default.cpp
 
 If an argument names an overload set, each function of the set is
 matched with the parameter type. The pair gives values only if the set
 has no function template and exactly one function matches. Otherwise
 the pair gives no value, and the set resolves after substitution
-({rule}`OVL-39`).
+({rule}`OVL-39`). The parameter can then take its type from a default
+template argument (DED-23).
 :::
 
 :::{rule} DED-20
@@ -451,7 +452,7 @@ does. The bound then converts to that type.
 
 :::{rule} DED-23
 :kind: required
-:tests: templates/deduction/combine-defaults.cpp templates/deduction/combine-missing.cpp templates/deduction/combine-leading-pack-empty.cpp
+:tests: templates/deduction/combine-defaults.cpp templates/deduction/combine-missing.cpp templates/deduction/combine-leading-pack-empty.cpp templates/deduction/overload-set-default.cpp
 
 A template parameter that has no value from a pair or an explicit
 argument takes its default template argument ({rule}`TARG-9`). A
@@ -709,8 +710,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
-of 115 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 116 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight

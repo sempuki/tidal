@@ -196,7 +196,7 @@ AUTO-21 lists what is not valid.
 
 :::{rule} AUTO-21
 :kind: reject
-:tests: declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp
+:tests: declarations/auto/copy-list-mixed-types.cpp declarations/auto/copy-list-without-library.cpp declarations/auto/copy-list-empty.cpp statements/range-for/braced-list-mixed-types.cpp
 
 In `auto x = { ... };` (AUTO-7):
 
@@ -208,16 +208,19 @@ In `auto x = { ... };` (AUTO-7):
 
 :::{rule} AUTO-8
 :kind: reject
-:tests: declarations/auto/no-initializer.cpp declarations/auto/own-initializer.cpp declarations/auto/void-initializer.cpp declarations/auto/overloaded-function.cpp declarations/auto/combined-type-specifier.cpp declarations/auto/array-of-auto.cpp
+:tests: declarations/auto/no-initializer.cpp declarations/auto/own-initializer.cpp declarations/auto/void-initializer.cpp declarations/auto/overloaded-function.cpp declarations/auto/overload-set-template.cpp declarations/auto/overload-set-one-function.cpp declarations/auto/combined-type-specifier.cpp declarations/auto/array-of-auto.cpp
 
 A variable declared with `auto` must:
 
 - have an initializer,
 - not occur in its own initializer,
 - not have an initializer of type `void`,
-- not have the name of an overloaded function as its initializer,
+- not have as its initializer the name of an overload set that
+  {rule}`OVL-20` does not reduce to one function,
 - not combine `auto` with another type specifier,
 - not be an array of `auto`.
+
+AUTO-11 gives the rules for `decltype(auto)`.
 :::
 
 :::{rule} AUTO-9
@@ -258,13 +261,16 @@ the result:
 
 :::{rule} AUTO-11
 :kind: reject
-:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp
+:tests: declarations/auto/decltype-auto-with-qualifier.cpp declarations/auto/decltype-auto-with-pointer.cpp declarations/auto/decltype-auto-copy-list.cpp declarations/auto/decltype-auto-function.cpp declarations/auto/decltype-auto-overload-set.cpp declarations/auto/decltype-auto-address-of-function.cpp declarations/auto/decltype-auto-braced-multiple.cpp declarations/auto/decltype-auto-braced.cpp
 
 `decltype(auto)` must not:
 
 - be combined with `const`, `volatile`, `*`, or `&`,
 - have an initializer of the form `= { ... }`,
-- have a function name as its initializer,
+- have the name of one function as its initializer, because the
+  deduced type would be a function type,
+- have as its initializer the name of an overload set that
+  {rule}`OVL-20` does not reduce to one function ({rule}`DTY-4`),
 - have braces with more than one expression.
 
 Braces without `=` that contain one expression are permitted
@@ -375,7 +381,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 49 tests. The results are in `tests/RESULTS.md`.
+agree on all 54 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list`, because tests include no headers. Without that

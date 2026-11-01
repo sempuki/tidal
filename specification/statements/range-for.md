@@ -111,11 +111,12 @@ outermost block of the body.
 
 :::{rule} RFOR-1
 :kind: required
-:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp
+:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp statements/range-for/braced-list-mixed-types.cpp
 
 The body executes once for each element of the range, in order. Each
 element initializes the loop variable. A braced list gives a
-`std::initializer_list` ({rule}`LSUP-1`).
+`std::initializer_list<T>` ({rule}`LSUP-1`), and `T` is deduced as for
+`auto x = { ... };` ({rule}`AUTO-7`, {rule}`AUTO-21`).
 :::
 
 :::{rule} RFOR-3

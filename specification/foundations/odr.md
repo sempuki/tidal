@@ -176,7 +176,7 @@ implementation rejects the program.
 
 :::{rule} ODR-3
 :kind: required
-:tests: foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
+:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
 
 An evaluated expression that names a variable or a function uses it,
 with these exceptions:
@@ -188,6 +188,9 @@ with these exceptions:
   initializes.
 - The name is in an unevaluated operand ({rule}`UNEV-1`) or in a
   discarded statement.
+
+A name of an overload set uses only the function that overload
+resolution or a target type selects ({rule}`OVL-18`).
 
 A constant variable is a `constexpr` variable, or a `const` variable of
 integral or enumeration type that a constant expression initializes.
@@ -424,7 +427,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 59 of 64 tests. EDG checks each unit and
+All eight compilers agree on 60 of 65 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 

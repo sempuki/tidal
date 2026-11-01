@@ -33,7 +33,7 @@ variable binds to lives as long as the names do ({principle}`OBJ-P3`).
 :::
 
 :::{principle} SB-P2
-:rules: SB-2 SB-3 SB-13 SB-4 SB-5 SB-14 SB-9 SB-10 SB-16
+:rules: SB-2 SB-3 SB-13 SB-4 SB-5 SB-17 SB-14 SB-9 SB-10 SB-16
 
 The type of the hidden variable decides what its elements are, in a
 fixed order of tests:
@@ -79,8 +79,11 @@ be distinct and must not repeat a name of that scope
 :kind: reject
 :tests: declarations/structured-bindings/count-mismatch-array.cpp declarations/structured-bindings/count-mismatch-class.cpp declarations/structured-bindings/tuple-count-mismatch.cpp
 
-The number of names must be equal to the number of elements. The number
-of elements is one of these:
+The *elements* of the type of the hidden variable are the elements of an
+array, the results of `get` for a type with a tuple size (SB-5), or the
+non-static data members of any other class (SB-3). The number of names
+must be equal to the number of elements. The number of elements is one
+of these:
 
 - the bound of the array,
 - the number of data members (SB-3),
@@ -122,13 +125,18 @@ reference type.
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
-`E` is the type of the hidden variable. The `value` member of
+`E` is the type of the hidden variable `e`. The `value` member of
 `std::tuple_size<E>` gives the number of elements. Element `i` comes
-from a call to `get<i>()` ({rule}`NAM-5`), and the type of element
-`i` is `std::tuple_element<i, E>::type` ({rule}`LSUP-3`).
+from one of these calls, and its type is
+`std::tuple_element<i, E>::type` ({rule}`LSUP-3`):
+
+- `e.get<i>()`, if member lookup of `get` in `E` finds a member function
+  template,
+- otherwise `get<i>(e)`, where only argument-dependent lookup
+  ({rule}`NAM-5`) finds `get`.
 
 The calls to `get` occur in the order of the elements. If
 `std::tuple_size<E>` is complete but has no `value` member, the names
@@ -138,10 +146,23 @@ what is not valid.
 
 :::{rule} SB-14
 :kind: reject
-:tests: declarations/structured-bindings/tuple-element-missing.cpp
+:tests: declarations/structured-bindings/tuple-element-missing.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
 
-In the tuple protocol of SB-5, `std::tuple_element<i, E>::type` must
-exist for each element.
+In the tuple protocol of SB-5, these must hold for each element:
+
+- `std::tuple_element<i, E>::type` exists,
+- the call to `get` that SB-5 gives is valid.
+:::
+
+:::{rule} SB-17
+:kind: required
+:tests: declarations/structured-bindings/tuple-get-argument-category.cpp declarations/structured-bindings/tuple-get-prvalue-lives.cpp
+
+In the tuple protocol of SB-5, the call to `get` passes `e` as an
+lvalue when the hidden variable is declared with `&`, and as an xvalue
+in every other case. Each name refers to a hidden reference to its element type, and the
+result of the call initializes that reference, so a prvalue result lives
+as long as the names ({rule}`REF-4`).
 :::
 
 :::{rule} SB-7
@@ -268,7 +289,7 @@ auto [c, d]{a};           // valid: braced initializer
 
 ## Evidence
 
-All eight compilers agree on 45 of 49 tests. The results are in
+All eight compilers agree on 51 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and

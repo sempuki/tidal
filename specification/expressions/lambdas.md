@@ -231,11 +231,14 @@ Static and global variables need no capture.
 
 :::{rule} LAM-10
 :kind: required
-:tests: expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp
+:tests: expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp expressions/lambdas/generic-function-pointer.cpp
 
 A lambda without captures converts to a pointer to a function with the
 same parameters and return type. For a `noexcept` lambda, the pointer is
-a pointer to a `noexcept` function.
+a pointer to a `noexcept` function. A generic lambda without captures
+converts to a pointer to function of any type that deduction from the
+call operator template can match, as for a target type
+({rule}`OVL-18`).
 :::
 
 :::{rule} LAM-25
@@ -297,10 +300,13 @@ operand of `decltype` or `sizeof`.
 
 :::{rule} LAM-15
 :kind: required
-:tests: expressions/lambdas/generic.cpp
+:tests: expressions/lambdas/generic.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp
 
 A parameter of type `auto` makes the call operator a template
-({rule}`DED-34`). Each call deduces the parameter type.
+({rule}`DED-34`). Each call deduces the parameter type. The body is a
+{term}`templated context` also at namespace scope, so its dependent
+calls look up names as {rule}`DEP-9` gives, at the points of
+{rule}`INST-31`.
 :::
 
 :::{rule} LAM-16
@@ -416,8 +422,8 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 62 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

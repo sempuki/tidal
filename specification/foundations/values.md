@@ -112,7 +112,7 @@ These expressions are prvalues:
   a cast to a type that is not a reference,
 - `x++`, `x--`, `&x`, and the result of an arithmetic operator,
 - a member access that names a non-static member function. Such an
-  expression can only be called.
+  expression can only be called ({rule}`PFX-20`).
 
 A prvalue of a type that is not a class type has no cv-qualifiers. So a
 function can declare a return type such as `const int`, and a call to

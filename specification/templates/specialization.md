@@ -516,6 +516,18 @@ template <> int size(char) { return 1; }        // for T = char
 template <class T> int size<T*>(T*);            // rejected: partial
 ```
 
+An explicit specialization that is not `constexpr` gives no constant
+(TSP-25). A requirement that needs such a constant does not hold
+({rule}`CPT-26`):
+
+```cpp
+template <class T> constexpr int width(T) { return 0; }
+template <> int width(char) { return 1; }        // not constexpr
+template <int> struct Fixed { };
+template <class T> concept Constant = requires { typename Fixed<width(T{})>; };
+static_assert(Constant<int> && !Constant<char>);
+```
+
 Members of class specializations:
 
 ```cpp
@@ -562,9 +574,10 @@ specialization's arguments, and the result must equal the given list.
   EDG accept it ({question}`Q-0174`).
 - TSP-14: a partial specialization with a constant parameter `auto* P`
   matches only pointer arguments on every compiler. For a parameter
-  `int V` and the argument `1L`, and for `const auto* P` and an `int*`,
-  GCC and EDG use the primary template. Clang converts the argument and
-  matches. Clang 18 does not convert for `const auto*`, and it takes
+  `int V` and the arguments `1L` and `'c'`, and for `const auto* P` and
+  an `int*`, GCC and EDG use the primary template. Clang converts the
+  argument and matches, for a wider type such as `long` and a narrower
+  type such as `char`. Clang 18 does not convert for `const auto*`, and it takes
   the variable template `kind<P>` for the primary's list
   ({question}`Q-0295`).
 - TSP-6: all compilers reject an explicit specialization after a use in

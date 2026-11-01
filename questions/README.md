@@ -320,6 +320,9 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0307](Q-0307-constant-evaluation-replacement.md) | Must constant evaluation reject a use of an old pointer after a replacement that STG-9 does not allow? | provisional | yes, undefined (STG-19, STG-20); every constant evaluator in the matrix accepts |
 | [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | compiler defect | yes (STG-1); Clang 18 accepts |
 | [Q-0309](Q-0309-union-member-read-after-destructor-constant.md) | Must constant evaluation reject a read of a union member after an explicit destructor call ends it? | compiler defect | yes, undefined (UNI-14, OBJ-2); GCC 16 accepts |
+| [Q-0310](Q-0310-constexpr-function-first-point.md) | Which point of instantiation does a constexpr function specialization use outside constant evaluation? | provisional | either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point |
+| [Q-0311](Q-0311-adl-template-id-argument.md) | Does an argument that is a template-id for a function template add the namespaces of its template arguments? | provisional | yes (NAM-27), as GCC does; Clang does not |
+| [Q-0312](Q-0312-token-sequences-no-production-accepts.md) | Should the specification list token sequences that no production accepts, such as `for constexpr`? | open | no; the grammar is the only statement |
 
 ## Status values
 

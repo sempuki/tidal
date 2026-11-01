@@ -22,7 +22,7 @@ definitions, constant evaluation, name lookup.
 ## Principles
 
 :::{principle} TPL-P1
-:rules: TPL-1 TPL-22 TPL-23 TPL-24 TPL-26 TPL-28 TPL-42 TPL-44 TPL-45 TPL-46 TPL-47
+:rules: TPL-1 TPL-22 TPL-23 TPL-24 TPL-26 TPL-28 TPL-42 TPL-44 TPL-45 TPL-46 TPL-47 TPL-48
 :exceptions: TPL-29 TPL-31 TPL-43
 
 A template is a pattern for a family of entities. The template head
@@ -265,7 +265,7 @@ an enumeration.
 
 :::{rule} TPL-7
 :kind: reject
-:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp templates/declarations/constant-parameter-auto-void.cpp templates/declarations/constant-parameter-auto-not-structural.cpp
+:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp templates/declarations/constant-parameter-auto-void.cpp templates/declarations/constant-parameter-auto-not-structural.cpp templates/declarations/constant-parameter-no-constexpr-constructor.cpp
 
 A constant parameter must not have a type that TPL-6 leaves out. Such
 types include:
@@ -273,7 +273,10 @@ types include:
 - an rvalue reference type,
 - `void`,
 - a class with a data member that is private, protected, or `mutable`,
-- a class that is not a {term}`literal type`.
+- a class that is not a {term}`literal type`, such as a class with a
+  destructor that is not `constexpr`,
+- a class that is not an aggregate and has no `constexpr` constructor
+  other than a copy or move constructor.
 
 The rule also applies to the type that a placeholder gets from the
 argument (TPL-11).
@@ -345,7 +348,9 @@ head.
 A parameter in the head of a template template parameter can have a
 default. The default belongs to that one declaration of the template
 template parameter. A member definition outside the class uses the
-inner defaults of its own head, and not those of the class's head.
+inner defaults of its own head, and not those of the class's head. A
+template-id of the parameter is checked against that head at the
+definition, also if no specialization is made.
 :::
 
 :::{rule} TPL-30
@@ -472,7 +477,7 @@ A name from the enclosing namespace does not hide the parameter.
 
 :::{rule} TPL-18
 :kind: reject
-:tests: templates/declarations/parameter-twice.cpp templates/declarations/parameter-member-name.cpp templates/declarations/parameter-local-name.cpp templates/declarations/parameter-class-template-name.cpp templates/declarations/parameter-friend-name.cpp
+:tests: templates/declarations/parameter-twice.cpp templates/declarations/parameter-member-name.cpp templates/declarations/parameter-local-name.cpp templates/declarations/parameter-class-template-name.cpp
 
 A name must not be declared again in the scope of a template parameter
 with that name. These declarations are not valid:
@@ -482,10 +487,17 @@ with that name. These declarations are not valid:
 - a variable with the name in the body of a function template,
 - a class template with the name of its own parameter.
 
-A friend function declaration with the name is valid, because it
-declares no name in the template's scope ({question}`Q-0198`).
-{rule}`CPT-29` names the specific case of a requires expression
+TPL-48 gives the case of a friend function. {rule}`CPT-29` names the specific case of a requires expression
 parameter (decision 0042).
+:::
+
+:::{rule} TPL-48
+:kind: required
+:tests: templates/declarations/parameter-friend-name.cpp
+
+In a class template, a friend function declaration can use a name that
+the class's own parameter list declares. The friend declares no name in
+the template's scope, so TPL-18 does not apply ({question}`Q-0198`).
 :::
 
 :::{rule} TPL-20
@@ -699,6 +711,28 @@ int tail(Back) { return sizeof...(Front); }       // Back comes from the call
 int n = tail<char, long>(1);                      // Front is char, long
 ```
 
+A constant parameter whose type is a class template name takes its
+type from the argument, through the guides of {rule}`CTAD-1`:
+
+```cpp
+template <class T> struct Size { T value; constexpr Size(T v) : value(v) {} };
+Size(int) -> Size<long>;
+template <Size S> struct Hold { };
+Hold<3> three;                     // S has type Size<long>: the user guide
+Hold<'a'> letter;                  // S has type Size<char>: the guide from Size(T)
+Hold<Size{2.5}> half;              // S has type Size<double>
+```
+
+Defaults go from the right. The defaults of earlier declarations count:
+
+```cpp
+template <class T = int, class U> struct One;     // rejected on every compiler
+template <class T, class U> struct Two;
+template <class T = int, class U> struct Two;     // rejected: U has no default; GCC accepts
+template <class T, class U = int> struct Three;
+template <class T = int, class U> struct Three;   // valid: U has its default
+```
+
 A member defined outside the class lists the parameters in order:
 
 ```cpp
@@ -709,8 +743,8 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 118 tests.
 
 The clean-room writer probed each kind of template, each kind of
 parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
@@ -737,14 +771,27 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   ({question}`Q-0195`). The rule needs no diagnostic because no use of
   such a template is valid, and the compilers differ on the declaration
   alone.
-- TPL-37: GCC accepts a default on a friend declaration of a class
-  template. Clang and EDG reject it ({question}`Q-0196`).
+- TPL-37: the result depends on the form of the friend:
+
+  | Friend | Clang | GCC | EDG |
+  |---|---|---|---|
+  | class template, with a default | rejects | accepts | rejects |
+  | function template declaration, with a default | rejects | rejects | rejects |
+  | function template definition, with a default | accepts | accepts | accepts |
+
+  The split is in `default-friend-class.cpp` ({question}`Q-0196`).
+  `default-friend-declaration.cpp` and `default-friend-definition.cpp`
+  test the other two rows ({rule}`TPL-38`).
+- TPL-40: every compiler rejects `C<>` in a member definition whose head
+  gives `C` no inner default, also when the class is never
+  instantiated.
 - TPL-38: EDG rejects another declaration of a friend function template
   that gives a default. Clang and GCC accept it ({question}`Q-0197`).
   The rule needs no diagnostic for the same reason as TPL-35.
-- TPL-18: EDG rejects a friend function named after a parameter when the
+- TPL-48: EDG rejects a friend function named after a parameter when the
   class template is used. Clang and GCC accept the friend declaration
-  ({question}`Q-0198`).
+  ({question}`Q-0198`). Every compiler accepts the class template
+  while no specialization is made.
 - TPL-42: GCC rejects a member enumeration defined after the class body
   under `-pedantic-errors`. Clang and EDG accept it ({question}`Q-0199`).
 - TPL-46: Clang gives two closure types for two uses of one alias

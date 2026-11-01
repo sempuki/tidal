@@ -215,11 +215,12 @@ declaration hides the first one.
 
 :::{rule} IF-13
 :kind: required
-:tests: statements/if/constexpr-discard-in-template.cpp
+:tests: statements/if/constexpr-discard-in-template.cpp statements/if/constexpr-discard-generic-lambda.cpp
 
 In the `if constexpr` form, the branch that the condition does not select
-is a {term}`discarded statement`. In a template, a discarded statement is
-not instantiated and can hold code that is not valid for the arguments.
+is a {term}`discarded statement`. In a {term}`templated context`, a
+discarded statement is not instantiated and can hold code that is not
+valid for the arguments.
 A {term}`requires expression` in the condition can test that code
 ({rule}`CPT-24`).
 :::
@@ -228,8 +229,9 @@ A {term}`requires expression` in the condition can test that code
 :kind: reject
 :tests: statements/if/constexpr-template-nondependent-checked.cpp
 
-In a template, the parts of a {term}`discarded statement` that are the
-same for every template argument must be valid (IF-13). The
+In a {term}`templated context`, the parts of a {term}`discarded
+statement` that are the same for every template argument must be valid
+(IF-13). The
 implementation checks these parts.
 :::
 
@@ -254,7 +256,8 @@ definition.
 :kind: reject
 :tests: statements/if/constexpr-non-template-checked.cpp
 
-Outside a template, a {term}`discarded statement` must be valid (IF-15).
+Outside a {term}`templated context`, a {term}`discarded statement` must
+be valid (IF-15).
 :::
 
 :::{rule} IF-16
@@ -397,4 +400,4 @@ static_assert(where() == 1);   // at run time, where() returns 2
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on all 66 tests. The results are in `tests/RESULTS.md`.
+agree on all 67 tests. The results are in `tests/RESULTS.md`.

@@ -1,4 +1,4 @@
-// tidal-rules: TPL-18
+// tidal-rules: TPL-48
 // tidal-expect: accept
 // tidal-expect-edg: reject
 // tidal-error-edg: template parameter "T" may not be redeclared in this scope

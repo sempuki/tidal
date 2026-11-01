@@ -341,6 +341,8 @@ literal type
   - classes with an implicit, defaulted, or `constexpr` destructor whose
     bases and non-static data members have literal types that are not
     `volatile`. A union needs only one member that is not `volatile`.
+    The class is an aggregate, or has a `constexpr` constructor other
+    than a copy or move constructor.
 
   {rule}`CE-23` gives the full rule.
 
@@ -525,6 +527,29 @@ template template parameter
 template-id
   The name of a template followed by a template argument list in angle
   brackets, such as `Box<int>` ({rule}`TARG-1`).
+
+templated context
+  The definition of a {term}`templated entity`. The implementation checks
+  the code there once for each template argument list. A rule that says
+  "in a template" means in a templated context. Examples are the body of
+  a function template, the body of a generic lambda also at namespace
+  scope, and a member function of a local class in a function template
+  ({rule}`IF-13`, {rule}`SA-5`, {rule}`LAM-15`).
+
+templated entity
+  An entity that has template parameters of its own or from an
+  enclosing entity. These entities are templated ({rule}`CPT-11`,
+  {rule}`INST-36`):
+
+  - a template, and the call operator of a generic lambda
+    ({rule}`LAM-15`),
+  - an entity that a templated entity defines: a member, a friend
+    defined in a class template, a local class, a local enumeration, and
+    each lambda's closure type.
+
+  A function that a templated entity only declares, such as a function
+  declared at block scope, is not templated. A specialization of a
+  template is not templated.
 
 temporary object
   An object that the program makes from a prvalue, without a name. A

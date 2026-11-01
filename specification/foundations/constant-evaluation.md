@@ -82,16 +82,23 @@ unsequenced accesses to one object, which are undefined.
 :rules: CE-11 CE-19 CE-25
 
 Where the language needs a constant to build the program, it needs the
-exact value. These places need an exact value:
+exact value. In most such places, a conversion that could lose
+information is not a constant. A condition that only needs a yes or no
+permits such a conversion:
 
-- an array bound,
-- an enumerator,
-- a case label,
-- the operands of `explicit` and `noexcept`.
-
-A conversion that could lose information is not a constant there. The
-condition of `if constexpr` is the one place that only needs a yes or
-no.
+| Place | Value | Lossy conversion | Rules |
+|---|---|---|---|
+| an array bound | integer or enumeration | rejected | CE-11, CE-19, {rule}`DCL-19` |
+| an enumerator value | integer or enumeration | rejected | CE-11, CE-19, {rule}`ENUM-17` |
+| a case label | integer or enumeration | rejected | CE-11, CE-19, {rule}`SW-3` |
+| a constant template argument | the parameter's type | rejected | CE-19, {rule}`TARG-13` |
+| the operand of `explicit(...)` | `bool` | rejected | CE-19 |
+| the operand of a `noexcept` specifier | `bool` | rejected | CE-19, {rule}`EXS-1` |
+| the condition of `if constexpr` | `bool` | permitted | {rule}`IF-16` |
+| the condition of `static_assert` | `bool` | permitted | {rule}`SA-3` |
+| the operand of `alignas` | zero or a power of two | | {rule}`ALN-2` |
+| the width of a bit-field | a constant expression | | {rule}`BF-1` |
+| the initializer of a `constexpr` variable | the variable's type | as in any initialization | {rule}`CX-1` |
 :::
 
 :::{principle} CE-P5
@@ -135,7 +142,7 @@ During constant evaluation, the program can call only `constexpr` and
 
 :::{rule} CE-3
 :kind: reject
-:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp
+:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp expressions/constant-expressions/reference-reads-constant-object.cpp
 
 Constant evaluation must not read the value of a variable that is not
 usable in constant expressions. A variable is usable if it is
@@ -144,12 +151,13 @@ type with a {term}`constant initializer` (CV-8). A `const volatile`
 variable is not usable. A function parameter is usable only during an
 evaluation that called the function. A temporary that the initializer of
 a `constexpr` reference extends (CE-14) is usable if the type of the
-temporary is `const` ({question}`Q-0193`).
+temporary is `const` ({question}`Q-0193`). {rule}`CE-29` gives the
+reference variables that are usable.
 :::
 
 :::{rule} CE-29
 :kind: reject
-:tests: expressions/constant-expressions/reference-runtime-initializer.cpp expressions/constant-expressions/reference-constant-initializer.cpp
+:tests: expressions/constant-expressions/reference-runtime-initializer.cpp expressions/constant-expressions/reference-constant-initializer.cpp expressions/constant-expressions/reference-reads-constant-object.cpp expressions/constant-expressions/reference-to-local-not-usable.cpp
 
 A reference variable with a {term}`constant initializer` is usable in
 constant expressions, also if the reference is not `constexpr`.
@@ -368,7 +376,7 @@ move of a returned local variable ({rule}`CPY-12`).
 
 :::{rule} CE-23
 :kind: required
-:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp
+:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/literal-one-constexpr-constructor.cpp
 
 A *literal type* is one of these types:
 
@@ -378,7 +386,11 @@ A *literal type* is one of these types:
 - a class whose destructor is implicit, defaulted, or `constexpr`, and
   whose bases and non-static data members have literal types that are
   not `volatile`. A union can have `volatile` members if at least one
-  member is not `volatile`.
+  member is not `volatile`. The class must also be an aggregate, or have
+  a `constexpr` constructor other than a copy or move constructor.
+
+{rule}`TPL-7` rejects a constant template parameter of a class that
+fails the last condition.
 :::
 
 :::{rule} CE-24
@@ -475,8 +487,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 79
-of 92 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 82
+of 95 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.

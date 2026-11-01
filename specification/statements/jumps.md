@@ -23,6 +23,9 @@ in the same function.
 | `continue` | The end of the innermost loop body |
 | `goto` | A label |
 
+The loops are `while`, `do`, `for`, and the range-based `for`
+({doc}`/statements/range-for`).
+
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,
 and a label can share a name with a variable. A lambda body is a
@@ -186,18 +189,19 @@ including an expression of type `void`.
 
 :::{rule} JMP-1
 :kind: required
-:tests: statements/jumps/break-innermost.cpp
+:tests: statements/jumps/break-innermost.cpp statements/jumps/break-range-for.cpp
 
 `break` ends the innermost loop or `switch` that contains it.
 :::
 
 :::{rule} JMP-2
 :kind: required
-:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp
+:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp statements/jumps/continue-range-for.cpp
 
 `continue` goes to the end of the body of the innermost loop that contains
 it. The loop then evaluates its iteration expression, if any, and its
-condition. A `switch` between the `continue` and the loop does not
+condition. A range-based `for` then advances to the next element
+({principle}`RFOR-P1`). A `switch` between the `continue` and the loop does not
 change this rule.
 :::
 
@@ -266,7 +270,7 @@ skip:
 
 ## Evidence
 
-All eight compilers agree on 49 of 52 tests. The results are in
+All eight compilers agree on 51 of 54 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer

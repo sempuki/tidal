@@ -242,8 +242,8 @@ arithmetic expression need parentheses.
 :tests: templates/concepts/trailing-clause.cpp templates/concepts/trailing-clause-member.cpp templates/concepts/trailing-clause-friend.cpp templates/concepts/trailing-clause-lambda.cpp templates/concepts/trailing-clause-local-class.cpp templates/concepts/trailing-clause-member-initializer-lambda.cpp templates/concepts/trailing-clause-generic-lambda.cpp
 
 A requires clause can follow the declarator of a function, after any
-trailing return type. The function must be one of these
-({question}`Q-0260`):
+trailing return type. The function must be a {term}`templated entity`,
+such as one of these ({question}`Q-0260`):
 
 - a function template, including the call operator of a generic
   lambda,
@@ -276,10 +276,9 @@ expression.
 :kind: reject
 :tests: templates/concepts/trailing-clause-plain-function.cpp templates/concepts/trailing-clause-plain-member.cpp templates/concepts/trailing-clause-block-scope.cpp
 
-A function that CPT-11 does not list must not have a trailing requires
-clause. Such a function is not a template, and it is not declared in a
-templated entity. A function declared at block scope inside a function
-template is not listed.
+A function that is not a {term}`templated entity` must not have a
+trailing requires clause. A function declared at block scope inside a
+function template is not a templated entity.
 :::
 
 :::{rule} CPT-15

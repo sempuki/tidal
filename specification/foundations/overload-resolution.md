@@ -58,7 +58,7 @@ its object parameter ({rule}`ICS-13`):
 | initialization of a reference or a non-class object from a class | conversion functions of the initializer | the initializer | OVL-15, {rule}`ICS-4` |
 | `&f` and `f` with a target type | the functions that `f` names | none | OVL-18 to OVL-20 |
 | `(&f)(a)` | the functions that `f` names | none | OVL-21, OVL-44 |
-| an argument that names an overload set | each function of the set, with each candidate of the call | | OVL-39 |
+| an argument that names an overload set | the candidates of the call, each of which selects one function of the set | | OVL-39, {rule}`ICS-47` |
 
 Each function template that lookup finds adds at most one
 specialization, by deduction ({rule}`DED-1`). Two kinds of function are
@@ -477,7 +477,10 @@ from a target type. These contexts give a target type:
 - an explicit cast,
 - a template parameter that is not a type.
 
-A function matches if its type is the target's function type. The
+A parameter gives a target type only when its type is known. A function
+parameter whose type depends on a template parameter gets its type from
+deduction on the other arguments ({rule}`DED-19`). A constant template
+parameter declared with `auto` gives no target type. A function matches if its type is the target's function type. The
 function can be `noexcept` when the target is not. Members with an
 implicit object parameter match only pointers to member ({rule}`MPTR-2`),
 and the class of the pointer to member takes no part ({rule}`MPTR-4`).
@@ -503,16 +506,26 @@ The matching functions of OVL-18 are reduced in these steps:
 
 :::{rule} OVL-20
 :kind: reject
-:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp
+:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-return.cpp foundations/overload-resolution/address-no-target-init-capture.cpp foundations/overload-resolution/address-no-target-auto-template-parameter.cpp foundations/overload-resolution/address-no-target-cast-void.cpp foundations/overload-resolution/address-no-target-expression-statement.cpp foundations/overload-resolution/address-no-target-single-positions.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp declarations/auto/overload-set-template.cpp
 
 After OVL-19, exactly one function must remain. Without a target type,
-for example with `auto` or `decltype`, these steps apply:
+these steps apply:
 
 1. A function template adds the specialization that its explicit
    template arguments fix, if they fix every template parameter. Any
    other template makes the program not valid.
 2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0142`).
 3. Exactly one function must remain.
+
+These contexts give no target type:
+
+- a variable or a return type declared with `auto` or `decltype(auto)`
+  ({rule}`AUTO-8`, {rule}`AUTO-11`),
+- an init capture,
+- the operand of `decltype` ({rule}`DTY-4`) or of `sizeof`,
+- an argument for `...` ({rule}`ICS-47`),
+- a constant template parameter declared with `auto`,
+- a cast to `void`, and an expression statement.
 
 {rule}`DED-35` names the case of a target type that no specialization
 of a function template matches (decision 0042).
@@ -541,9 +554,10 @@ of the set would win ({question}`Q-0161`).
 :kind: required
 :tests: foundations/overload-resolution/overload-set-argument.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/overload-set-argument-with-other.cpp
 
-If an argument of a call names an overload set, each function of the
-set is tried with each candidate. The candidate's parameter is the
-target type of OVL-18. One pairing must win (OVL-36).
+If an argument of a call names an overload set, each candidate selects
+its own function from the set, with its parameter type as the target
+type ({rule}`ICS-47`). The candidates then compare as for any other
+argument, and one candidate must win (OVL-36).
 :::
 
 ### Viable functions
@@ -718,7 +732,7 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 
 :::{rule} OVL-36
 :kind: reject
-:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp
+:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. These rules name specific cases
@@ -784,8 +798,8 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 124
-of 150 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 133
+of 159 tests.
 
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler

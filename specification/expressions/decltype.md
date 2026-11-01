@@ -118,10 +118,10 @@ variable, not of the capture.
 
 :::{rule} DTY-4
 :kind: reject
-:tests: expressions/decltype/overloaded-name.cpp
+:tests: expressions/decltype/overloaded-name.cpp declarations/auto/decltype-auto-overload-set.cpp
 
-The operand of `decltype` must not be the name of an overloaded
-function.
+The operand of `decltype` must not be the name of an overload set that
+{rule}`OVL-20` does not reduce to one function.
 :::
 
 :::{rule} DTY-2
@@ -284,8 +284,8 @@ decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 47
-of 50 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 48
+of 51 tests.
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject such a use ({question}`Q-0065`).

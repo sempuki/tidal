@@ -17,7 +17,7 @@ list initialization, constructors, conversion functions.
 ## Principles
 
 :::{principle} ICS-P1
-:rules: ICS-1 ICS-3 ICS-4 ICS-5 ICS-6 ICS-7 ICS-8 ICS-9 ICS-10 ICS-45
+:rules: ICS-1 ICS-3 ICS-4 ICS-5 ICS-6 ICS-7 ICS-8 ICS-9 ICS-10 ICS-45 ICS-47
 
 A sequence measures how far an argument is from a parameter. A sequence
 has one of four kinds:
@@ -28,6 +28,10 @@ has one of four kinds:
 | User-defined | a standard sequence, one constructor or conversion function, then a second standard sequence | ICS-3, ICS-4, ICS-5, ICS-45 |
 | Ellipsis | an argument that matches `...` | ICS-6 |
 | Ambiguous | two or more constructors or conversion functions, none of them best | ICS-7 |
+
+An argument that names an overload set first selects one function of the
+set, and then has the sequence of an lvalue that names that function
+(ICS-47).
 
 A sequence holds at most one user-defined conversion (ICS-9, ICS-10).
 Forming a sequence looks only at the argument's type, cv-qualifiers, and
@@ -287,12 +291,31 @@ the third part of ICS-3 has exact-match rank.
 
 :::{rule} ICS-6
 :kind: required
-:tests: foundations/conversion-sequences/ellipsis-sequence.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp
+:tests: foundations/conversion-sequences/ellipsis-sequence.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
 
 An argument that matches the `...` of a function has an
 {term}`ellipsis conversion sequence`. A braced list has no ellipsis
 conversion sequence, so a function that needs one for a braced list is
 not viable.
+An argument that names an overload set has an ellipsis conversion
+sequence only if {rule}`OVL-20` leaves one function (ICS-47).
+:::
+
+:::{rule} ICS-47
+:kind: required
+:tests: foundations/conversion-sequences/overload-set-argument-sequence.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
+
+An argument that names an overload set selects one function of the set
+by the type of the parameter:
+
+- If the parameter's type is a pointer or a reference to a function, or
+  a pointer to a member function, that type is the target type of
+  {rule}`OVL-18`, and OVL-18 and {rule}`OVL-19` select the function.
+- Any other parameter, and `...`, give no target type, and
+  {rule}`OVL-20` selects the function.
+
+The sequence is the sequence of an lvalue that names the selected
+function. If no single function remains, the candidate is not viable.
 :::
 
 :::{rule} ICS-7
@@ -785,8 +808,8 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 110 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 91
+of 113 tests.
 
 - ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
   share one model, the table of {principle}`REF-P3`.
