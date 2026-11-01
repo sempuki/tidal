@@ -1,7 +1,7 @@
 # Q-0036: May the size in an array `new` have floating-point type?
 
 **Status:** provisional
-**Affects:** NEW-2, `tests/expressions/new-delete/array-non-integral-size.cpp`
+**Affects:** NEW-2, `tests/expressions/new-delete/array-non-integral-size.cpp`, `tests/expressions/new-delete/array-floating-size-exact.cpp`
 
 ## Context
 

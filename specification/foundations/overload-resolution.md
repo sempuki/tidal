@@ -202,7 +202,7 @@ the `char` and the `bool`.
 
 :::{rule} OVL-1
 :kind: required
-:tests: foundations/overload-resolution/call-by-name-candidates.cpp foundations/overload-resolution/call-same-function-found-twice.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp
+:tests: foundations/overload-resolution/call-by-name-candidates.cpp foundations/overload-resolution/call-same-function-found-twice.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp declarations/functions/definitions/different-parameter-types-overload.cpp
 
 The {term}`candidate functions <candidate function>` of a call by name
 are the functions that name lookup finds ({rule}`NAM-5`):
@@ -246,11 +246,12 @@ static member can be chosen.
 
 :::{rule} OVL-4
 :kind: required
-:tests: foundations/overload-resolution/member-call-object.cpp
+:tests: foundations/overload-resolution/member-call-object.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
 
-The candidates of `x.f(a)` are the members `f` that lookup finds in the
-class of `x`. `x` is the implied object argument, with its
-cv-qualifiers and value category. `p->f(a)` is `(*p).f(a)`.
+The candidates of `x.f(a)` are the members `f` that member lookup
+({rule}`NAM-37`) finds in the class of `x`. `x` is the implied object
+argument, with its cv-qualifiers and value category. `p->f(a)` is
+`(*p).f(a)`.
 :::
 
 :::{rule} OVL-5
@@ -288,14 +289,14 @@ those of the function type.
 
 :::{rule} OVL-7
 :kind: required
-:tests: foundations/overload-resolution/operator-sets.cpp foundations/overload-resolution/operator-lookup-skips-members.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp
+:tests: foundations/overload-resolution/operator-sets.cpp foundations/overload-resolution/operator-lookup-skips-members.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp
 
 For an operator with an operand of class or enumeration type, the
 candidates are these ({rule}`OPR-6`):
 
 - the member operator functions of the left operand's class,
-- the non-member operator functions that lookup finds, with members
-  skipped, and argument-dependent lookup,
+- the non-member operator functions that lookup finds, with class
+  scopes passed over ({rule}`NAM-38`), and argument-dependent lookup,
 - the built-in candidates of OVL-9,
 - the rewritten candidates of {rule}`DCMP-6`.
 
@@ -533,11 +534,12 @@ of a function template matches (decision 0042).
 
 :::{rule} OVL-21
 :kind: required
-:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp
+:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
 
 A call `(&f)(a)` resolves `f` as a call by name, with no implied object
 argument. A call `(f)(a)` is the same call as `f(a)`, and keeps the
-implied object argument of OVL-2.
+implied object argument of OVL-2. A call `(x.f)(a)` or `(p->f)(a)` is
+the call `x.f(a)` or `p->f(a)` of {rule}`OVL-4`.
 :::
 
 :::{rule} OVL-44
@@ -798,8 +800,8 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 133
-of 159 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 138
+of 164 tests.
 
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler

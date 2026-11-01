@@ -289,7 +289,7 @@ have a ref-qualifier.
 
 :::{rule} DCL-8
 :kind: required
-:tests: declarations/declarators/parameter-adjustment.cpp declarations/declarators/parameter-cv-same-function.cpp declarations/declarators/parameter-array-is-pointer.cpp
+:tests: declarations/declarators/parameter-adjustment.cpp declarations/declarators/parameter-cv-same-function.cpp declarations/declarators/parameter-array-is-pointer.cpp declarations/functions/definitions/same-parameter-types-one-function.cpp
 
 A parameter declared as an array of `T` has the type pointer to `T`. A
 parameter declared as a function has the type pointer to that function.
@@ -390,8 +390,8 @@ conversion removes a cv-qualifier or adds an array bound.
 :tests: declarations/declarators/const-integral-constant.cpp expressions/constant-expressions/constant-initializer-usable.cpp
 
 A `const` variable of integer or enumeration type with a
-{term}`constant initializer` can occur in a constant expression. CV-11
-lists what is not valid.
+{term}`constant initializer` is {term}`usable in constant expressions`
+({rule}`CE-3`). CV-11 lists what is not valid.
 :::
 
 :::{rule} CV-11
@@ -555,7 +555,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All eight compilers agree on 83 of 86 tests. The results are in
+All eight compilers agree on 84 of 87 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of

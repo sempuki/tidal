@@ -1,0 +1,42 @@
+# Q-0316: Can a member access name an earlier member of the class whose definition contains the access?
+
+**Status:** provisional
+**Affects:** PFX-11, `tests/expressions/postfix/member-access-class-being-defined.cpp`
+
+## Context
+
+In a member declaration of a class `Pair`, the expression
+`static_cast<Pair*>(nullptr)->first` names the data member `first`,
+which an earlier member declaration declares. `Pair` is incomplete at
+that place (CLS-2).
+
+| Compiler | Result |
+|---|---|
+| GCC 16 | accepts, and the type of the access is `int` |
+| EDG 7.0 | accepts |
+| Clang 22 | rejects: member access into incomplete type |
+
+For a member declared after the access, every compiler rejects the
+program. GCC and EDG say that the class has no such member, and Clang
+says that the class is incomplete.
+
+## Evidence
+
+`tests/expressions/postfix/member-access-class-being-defined.cpp` and
+`tests/expressions/postfix/member-access-later-member-in-body.cpp`.
+
+## Options
+
+1. The access is valid and sees the members declared before it, as an
+   unqualified name in a member declaration does (NAM-6).
+2. The access needs a complete class, as any other member access does.
+
+## Provisional answer
+
+Option 1. Two of three compilers accept the access, and option 1 gives
+member access the same view of the class as unqualified lookup. The test
+expects an acceptance and records Clang's result with an override.
+
+## Opinions
+
+<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

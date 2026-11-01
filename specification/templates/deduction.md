@@ -465,7 +465,7 @@ deduction fail.
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
 
 The values replace the template parameters in these places, and the
 function type is then adjusted as a declared one is ({rule}`DCL-8`):
@@ -476,7 +476,9 @@ function type is then adjusted as a declared one is ({rule}`DCL-8`):
   conversion function.
 
 If substitution makes a type or expression that is not valid, the
-template adds no candidate. {rule}`PACK-27` gives the pack cases.
+template adds no candidate. A template argument whose constant
+evaluation fails, by {rule}`CE-9` or by a limit of {rule}`CE-10`, is
+such an expression. {rule}`PACK-27` gives the pack cases.
 :::
 
 :::{rule} DED-25
@@ -602,13 +604,15 @@ case with no matching template.
 
 :::{rule} DED-34
 :kind: required
-:tests: templates/deduction/placeholder-parameter.cpp templates/deduction/placeholder-parameter-pointer-pack.cpp
+:tests: templates/deduction/placeholder-parameter.cpp templates/deduction/placeholder-parameter-pointer-pack.cpp templates/deduction/placeholder-parameter-after-pack.cpp
 
 A function parameter whose type has the placeholder `auto` makes the
 function a function template. Each `auto` adds an invented type
 parameter after those of the template head, in order. Explicit template
-arguments can give the invented parameters. A type constraint before
-`auto` constrains the invented parameter ({rule}`CPT-20`).
+arguments can give the invented parameters. If the head ends in a pack,
+the pack takes every explicit argument ({rule}`TARG-21`), and the
+invented parameters get their types from deduction. A type constraint
+before `auto` constrains the invented parameter ({rule}`CPT-20`).
 :::
 
 :::{rule} DED-39
@@ -710,8 +714,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 116 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 111
+of 119 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight

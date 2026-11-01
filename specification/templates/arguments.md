@@ -136,11 +136,19 @@ names.
 
 :::{rule} TARG-2
 :kind: required
-:tests: templates/arguments/less-after-variable.cpp templates/arguments/less-after-parameter.cpp
+:tests: templates/arguments/less-after-variable.cpp templates/arguments/less-after-parameter.cpp templates/arguments/less-after-member-access.cpp templates/arguments/template-after-member-access.cpp
 
 If lookup of the name before `<` finds something other than a template,
-the `<` is the less-than operator. TARG-23 gives the exception for
-functions.
+the `<` is the less-than operator. The lookup depends on the position
+of the name:
+
+- a plain name uses unqualified lookup ({principle}`NAM-P2`),
+- a name after `::` uses qualified lookup ({principle}`NAM-P5`),
+- a name after `.` or `->` uses member lookup in the class of the
+  object ({rule}`NAM-37`).
+
+TARG-23 gives the exception for functions, and {rule}`DEP-24` the case
+of a type-dependent object.
 :::
 
 :::{rule} TARG-23
@@ -307,7 +315,7 @@ parameters only. Each later parameter gets its argument from deduction
 
 :::{rule} TARG-21
 :kind: required
-:tests: templates/arguments/pack-takes-rest.cpp templates/arguments/pack-takes-rest-kinds.cpp
+:tests: templates/arguments/pack-takes-rest.cpp templates/arguments/pack-takes-rest-kinds.cpp templates/deduction/placeholder-parameter-after-pack.cpp
 
 A {term}`template parameter pack` takes all the arguments after the
 parameters before it. The pack can take no arguments.
@@ -534,8 +542,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 79
-of 85 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 82
+of 88 tests.
 
 The clean-room writer probed template-ids, argument kinds, and constant
 arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on

@@ -393,6 +393,15 @@ operator function
   `operator+`. An expression that uses the operator can call the
   operator function ({rule}`OPR-1`).
 
+overload set
+  The functions and function templates that one name finds where the
+  program names them without calling them, as in `&f` or in an argument
+  `f`. A target type selects one function from the set
+  ({rule}`OVL-18`). Without a target type, {rule}`OVL-20` selects it. A
+  set can hold a single function. A set of one plain function and one
+  function template is an overload set, and OVL-20 selects from it as
+  from a larger set.
+
 pack
   A name for a list of zero or more elements. Template parameters,
   function parameters, and init captures can be packs
@@ -597,6 +606,14 @@ unsequenced
   ({rule}`SEQ-8`). A function call in one operand does not
   overlap with work in the other operand. The call and the other work
   can still occur in either order.
+
+usable in constant expressions
+  Said of a variable or a temporary object whose value a constant
+  evaluation can read, also if the evaluation did not create it. The
+  kinds are a `constexpr` variable, a `const` integer or enumeration
+  variable with a {term}`constant initializer`, a reference variable
+  with a constant initializer, and a `const` temporary that a
+  `constexpr` reference extends ({rule}`CE-3`, {rule}`CE-29`).
 
 use
   A point where the running program needs a variable or a function

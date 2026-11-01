@@ -407,12 +407,16 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
 program stays valid. A name that is not accessible where the check
-happens is not valid in this sense ({question}`Q-0288`).
+happens is not valid in this sense ({question}`Q-0288`). In a
+constraint, {rule}`CNS-7` gives the lookup. A requires expression
+elsewhere, such as in the condition of `if constexpr` or in a variable
+template, looks up its names as any expression of the template does
+({rule}`DEP-9`).
 :::
 
 :::{rule} CPT-27
@@ -588,8 +592,8 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 100
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 118 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the

@@ -57,8 +57,10 @@ the pair.
 
 In a function call, the expression that gives the function is evaluated
 before the arguments. For a member function call, the expression that
-gives the function includes the object expression. In operator syntax
-the object is an operand, and SEQ-8 gives the order of the object.
+gives the function includes the object expression. {rule}`SEQ-1` gives
+the place of the initialization of an explicit object parameter. In
+operator syntax the object is an operand, and SEQ-8 gives the order of
+the object.
 :::
 
 :::{rule} SEQ-9
@@ -146,14 +148,16 @@ same volatile object are undefined too.
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp
+:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp expressions/sequencing/explicit-object-order-unspecified.cpp
 
 The arguments of a function call, including its default arguments, are
 evaluated in an unspecified order. Each argument is evaluated completely
 before the evaluation of another argument starts, so a write in one
 argument and a read of the same object in another argument are not
 undefined. The body of a called function also does not overlap with
-other evaluations in the caller.
+other evaluations in the caller. The initialization of an explicit
+object parameter ({rule}`CLS-13`) from the object takes an unspecified
+place in this order ({question}`Q-0319`).
 :::
 
 :::{rule} SEQ-8
@@ -210,9 +214,12 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 32 tests. The results are in
+All eight compilers agree on all 33 tests. The results are in
 `tests/RESULTS.md`.
 
+- SEQ-1: Clang and GCC 16 initialize an explicit object parameter
+  before they evaluate the other arguments. GCC 14 evaluates another
+  argument first ({question}`Q-0319`).
 - SEQ-1 and SEQ-8: the table gives the order that each compiler takes.
   Each operand is a call that records its turn. The run-time results are
   the same at `-O0` and `-O2`. EDG 7.0 generates no code, so its column

@@ -56,7 +56,7 @@ its own copy of each member, including the `static` data members
 :::
 
 :::{principle} TPL-P2
-:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-11 TPL-12 TPL-30 TPL-32 TPL-36
+:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-49 TPL-11 TPL-12 TPL-30 TPL-32 TPL-36
 :exceptions: TPL-7 TPL-10 TPL-33 TPL-35
 
 Each template parameter has a kind, and the kind decides what an
@@ -293,7 +293,7 @@ parameter ({rule}`DCL-8`).
 
 :::{rule} TPL-9
 :kind: required
-:tests: templates/declarations/constant-parameter-category.cpp templates/declarations/constant-parameter-class-address.cpp templates/declarations/constant-parameter-shared-object.cpp
+:tests: templates/declarations/constant-parameter-category.cpp templates/declarations/constant-parameter-class-address.cpp templates/declarations/constant-parameter-shared-object.cpp templates/declarations/parameter-object-address-constant.cpp templates/declarations/parameter-object-not-destroyed.cpp
 
 In the template, the name of a constant parameter is an expression with
 this value category:
@@ -307,6 +307,17 @@ this value category:
 For a class type, all uses with equal arguments refer to one object
 with static storage duration. The object is the same in the whole
 program, also for parameters of two different templates.
+:::
+
+:::{rule} TPL-49
+:kind: required
+:tests: templates/declarations/parameter-object-not-destroyed.cpp templates/declarations/parameter-object-before-dynamic-init.cpp templates/declarations/parameter-object-address-constant.cpp
+
+The object of TPL-9 for a parameter of class type has its value from
+the start of the program, before any dynamic initialization. The
+program never destroys the object. The address of the object is a
+constant expression, and objects for arguments that are not equal have
+different addresses.
 :::
 
 :::{rule} TPL-10
@@ -743,8 +754,8 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 121 tests.
 
 The clean-room writer probed each kind of template, each kind of
 parameter, the defaults, and the redeclarations with Clang 22, GCC 16,

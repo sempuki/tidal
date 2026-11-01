@@ -35,7 +35,7 @@ operator function has no use for them. Across translation units, an
 
 ```{eval-rst}
 .. productionlist:: tidal
-   parameter: `decl_specifiers` [`declarator` | `abstract_declarator`]
+   parameter: ["this"] `decl_specifiers` [`declarator` | `abstract_declarator`]
             :    ["=" (`assignment_expr` | `braced_init`)]
 ```
 

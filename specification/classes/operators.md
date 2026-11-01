@@ -188,7 +188,7 @@ and {rule}`OVL-9` lists the built-in candidates.
 
 :::{rule} OPR-15
 :kind: reject
-:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp
+:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
 
 For an expression that OPR-6 describes, an ambiguity or no viable
 candidate makes the expression not valid. The rule is a specific case of
@@ -302,8 +302,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 95
-of 96 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 98 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

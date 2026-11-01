@@ -173,20 +173,21 @@ using-declaration that inherits constructors must name a direct base.
 :kind: reject
 :tests: classes/derived/ambiguous-member-unused.cpp classes/derived/ambiguous-member.cpp classes/derived/ambiguous-overloads-different-bases.cpp classes/derived/ambiguous-qualified-ok.cpp classes/derived/ambiguous-repeated-base-member.cpp classes/derived/ambiguous-resolved-by-using.cpp classes/derived/dominance-derived-hides.cpp classes/derived/dominance-nonvirtual-ambiguous.cpp classes/derived/repeated-base-static-ok.cpp foundations/names/injected-two-bases-ambiguous.cpp foundations/names/injected-two-paths-virtual.cpp foundations/names/injected-two-paths.cpp
 
-If a name lookup in a derived class finds the name in more than one base
-subobject, the use of the name is ambiguous. This rule also applies to
-overloads from different bases. These exceptions apply:
+A name lookup finds no declaration, a set of declarations, or an
+ambiguity. If a name lookup in a derived class finds the name in more
+than one base subobject, the result is an ambiguity. This rule also
+applies to overloads from different bases. These exceptions apply:
 
 - A static member, a type, or an enumerator found through two paths to
   the same class is not ambiguous.
 - A declaration in a class hides a declaration with the same name in the
   virtual bases of that class, on every path.
 
-A qualified name or a using-declaration can remove the ambiguity. A name
-that is ambiguous but not used is valid. Two rules name specific cases
-of this rule (decision 0042): {rule}`NAM-18` for a qualified name
-`C::x`, and {rule}`NAM-36` for an injected class name inherited from
-two different bases.
+A qualified name or a using-declaration can remove the ambiguity. An
+ambiguity makes the program not valid only where the program uses the
+name. Two rules name specific cases of this rule (decision 0042):
+{rule}`NAM-18` for a qualified name `C::x`, and {rule}`NAM-36` for an
+injected class name inherited from two different bases.
 :::
 
 :::{rule} DER-5

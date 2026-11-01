@@ -323,6 +323,13 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0310](Q-0310-constexpr-function-first-point.md) | Which point of instantiation does a constexpr function specialization use outside constant evaluation? | provisional | either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point |
 | [Q-0311](Q-0311-adl-template-id-argument.md) | Does an argument that is a template-id for a function template add the namespaces of its template arguments? | provisional | yes (NAM-27), as GCC does; Clang does not |
 | [Q-0312](Q-0312-token-sequences-no-production-accepts.md) | Should the specification list token sequences that no production accepts, such as `for constexpr`? | open | no; the grammar is the only statement |
+| [Q-0313](Q-0313-scoped-enumeration-integral-operand.md) | Can an enumerator of a scoped enumeration give the operand of `alignas`, the width of a bit-field, or the size in an array `new`? | provisional | no (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` |
+| [Q-0314](Q-0314-class-operand-integral-constant.md) | Can a constant of class type that converts to an integer give the operand of `alignas` or the width of a bit-field? | provisional | yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects |
+| [Q-0315](Q-0315-template-argument-use.md) | Does a constant template argument use the variable or function that it names? | provisional | yes (ODR-3); Clang reports an undefined internal function, GCC does not |
+| [Q-0316](Q-0316-member-access-class-being-defined.md) | Can a member access name an earlier member of the class whose definition contains the access? | provisional | yes (PFX-11), as GCC and EDG do; Clang rejects |
+| [Q-0317](Q-0317-explicit-object-default-argument.md) | Can an explicit object parameter have a default argument? | provisional | no (CLS-14); EDG accepts |
+| [Q-0318](Q-0318-member-call-null-pointer-constant.md) | Must constant evaluation reject a member function call through a null pointer? | provisional | yes, undefined (PFX-21); EDG accepts |
+| [Q-0319](Q-0319-explicit-object-initialization-order.md) | When is an explicit object parameter initialized, relative to the other arguments? | provisional | in an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang |
 
 ## Status values
 

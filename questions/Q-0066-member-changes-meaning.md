@@ -1,7 +1,7 @@
 # Q-0066: Must an implementation diagnose a class member that changes the meaning of a name?
 
 **Status:** provisional
-**Affects:** TYN-5, `tests/declarations/type-names/alias-shadow-changes-meaning.cpp`
+**Affects:** TYN-5, `tests/declarations/type-names/alias-shadow-changes-meaning.cpp`, `tests/declarations/type-names/function-name-changes-meaning.cpp`
 
 ## Context
 

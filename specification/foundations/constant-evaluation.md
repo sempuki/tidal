@@ -79,7 +79,7 @@ unsequenced accesses to one object, which are undefined.
 :::
 
 :::{principle} CE-P4
-:rules: CE-11 CE-19 CE-25
+:rules: CE-11 CE-19 CE-25 CE-30
 
 Where the language needs a constant to build the program, it needs the
 exact value. In most such places, a conversion that could lose
@@ -96,9 +96,13 @@ permits such a conversion:
 | the operand of a `noexcept` specifier | `bool` | rejected | CE-19, {rule}`EXS-1` |
 | the condition of `if constexpr` | `bool` | permitted | {rule}`IF-16` |
 | the condition of `static_assert` | `bool` | permitted | {rule}`SA-3` |
-| the operand of `alignas` | zero or a power of two | | {rule}`ALN-2` |
-| the width of a bit-field | a constant expression | | {rule}`BF-1` |
+| the operand of `alignas` | integer or unscoped enumeration, zero or a power of two | | {rule}`ALN-2`, {rule}`ALN-8` |
+| the width of a bit-field | integer or unscoped enumeration | | {rule}`BF-1`, {rule}`BF-2` |
 | the initializer of a `constexpr` variable | the variable's type | as in any initialization | {rule}`CX-1` |
+
+Each of these places starts a new evaluation, also inside a function
+that an evaluation runs. So the parameters of that function are unknown
+there (CE-30).
 :::
 
 :::{principle} CE-P5
@@ -142,17 +146,22 @@ During constant evaluation, the program can call only `constexpr` and
 
 :::{rule} CE-3
 :kind: reject
-:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp expressions/constant-expressions/reference-reads-constant-object.cpp
+:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp expressions/constant-expressions/reference-reads-constant-object.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-nested-call.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp
 
 Constant evaluation must not read the value of a variable that is not
-usable in constant expressions. A variable is usable if it is
-`constexpr`, or if it is a `const` variable of integer or enumeration
-type with a {term}`constant initializer` (CV-8). A `const volatile`
-variable is not usable. A function parameter is usable only during an
-evaluation that called the function. A temporary that the initializer of
-a `constexpr` reference extends (CE-14) is usable if the type of the
-temporary is `const` ({question}`Q-0193`). {rule}`CE-29` gives the
-reference variables that are usable.
+{term}`usable in constant expressions`. These variables are usable:
+
+- a `constexpr` variable,
+- a `const` variable of integer or enumeration type with a
+  {term}`constant initializer` (CV-8), if the variable is not also
+  `volatile`,
+- a reference variable with a constant initializer ({rule}`CE-29`),
+- a `const` temporary that the initializer of a `constexpr` reference
+  extends (CE-14, {question}`Q-0193`).
+
+A function parameter is usable only during an evaluation that called
+the function. {rule}`CE-30` gives the places where a new evaluation
+starts.
 :::
 
 :::{rule} CE-29
@@ -165,6 +174,17 @@ Constant evaluation must not use a reference variable to name its
 object if the reference is not usable and the evaluation did not
 initialize it. {rule}`CE-18` gives the case of a reference that the
 evaluation does not read through.
+:::
+
+:::{rule} CE-30
+:kind: reject
+:tests: expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-nested-call.cpp
+
+Each place in the table of {principle}`CE-P4` starts its own constant
+evaluation where the place occurs. This holds also in the body of a
+`constexpr` or `consteval` function. The new evaluation must not read a
+parameter of that function (CE-3), because no call of the function is
+part of the new evaluation.
 :::
 
 :::{rule} CE-4
@@ -186,11 +206,14 @@ created.
 
 :::{rule} CE-6
 :kind: reject
-:tests: expressions/constant-expressions/inactive-union-member.cpp expressions/constant-expressions/active-union-member.cpp
+:tests: expressions/constant-expressions/inactive-union-member.cpp expressions/constant-expressions/active-union-member.cpp classes/unions/construct-activates-constant.cpp
 
 Constant evaluation must not read a union member that is not the active
-member ({rule}`UNI-6`). An assignment to a member makes that member
-active ({rule}`UNI-5`).
+member ({rule}`UNI-6`). Each of these makes a member active:
+
+- an assignment to the member ({rule}`UNI-5`),
+- the creation of an object of the member's type at the address of the
+  member ({rule}`UNI-14`).
 :::
 
 :::{rule} CE-7
@@ -217,7 +240,7 @@ throw-expression on a path that the evaluation does not take is valid.
 
 :::{rule} CE-9
 :kind: reject
-:tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp
+:tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
@@ -420,7 +443,7 @@ function that does not use the object.
 
 :::{rule} CE-10
 :kind: impl-defined
-:tests: expressions/constant-expressions/deep-recursion.cpp expressions/constant-expressions/moderate-recursion.cpp expressions/constant-expressions/long-loop.cpp
+:tests: expressions/constant-expressions/deep-recursion.cpp expressions/constant-expressions/moderate-recursion.cpp expressions/constant-expressions/long-loop.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
 
 An implementation sets limits on the depth of recursion and on the
 number of steps in one constant evaluation. The implementation rejects
@@ -487,11 +510,14 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 82
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 89
+of 103 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
+  In a template argument of a function template's signature, a failed
+  evaluation is a substitution failure ({rule}`DED-24`). So the limits
+  can decide which overload a call selects.
 
   - Clang stops at a depth of 512 calls and at its step limit
     (`-fconstexpr-depth`, `-fconstexpr-steps`).

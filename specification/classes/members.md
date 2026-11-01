@@ -29,9 +29,9 @@ A static data member can have the class's own type, because the
 definition of the static data member comes after the class.
 
 The class body is one scope, so each member name has one meaning in the
-body ({principle}`NAM-P1`), and code outside the body names a nested
-type through the class. A class defined inside a function is a scope
-that can own nothing that would need a definition elsewhere.
+body ({principle}`NAM-P1`, {rule}`TYN-5`), and code outside the body
+names a nested type through the class. A class defined inside a function
+is a scope that can own nothing that would need a definition elsewhere.
 :::
 
 :::{principle} CLS-P2
@@ -128,7 +128,7 @@ inside the definition, the class is not complete.
 
 :::{rule} CLS-22
 :kind: reject
-:tests: classes/members/sizeof-in-class-incomplete.cpp
+:tests: classes/members/sizeof-in-class-incomplete.cpp expressions/postfix/member-access-incomplete-class.cpp
 
 At the places inside a class definition where CLS-2 says the class is
 not complete, a use that needs a complete class type is not valid.
@@ -294,7 +294,7 @@ variables of the function, except as CLS-12 allows.
 
 :::{rule} CLS-13
 :kind: required
-:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp
+:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp expressions/sequencing/explicit-object-order-unspecified.cpp
 
 A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that
@@ -305,7 +305,7 @@ temporary ({rule}`VC-4`, {question}`Q-0181`).
 
 :::{rule} CLS-14
 :kind: reject
-:tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp classes/members/explicit-object-virtual.cpp
+:tests: classes/members/explicit-object-no-this.cpp classes/members/explicit-object-qualified.cpp classes/members/explicit-object-static.cpp classes/members/explicit-object-virtual.cpp classes/members/explicit-object-not-first.cpp classes/members/explicit-object-default-argument.cpp classes/members/explicit-object-non-member.cpp
 
 A member function with an explicit object parameter has no `this`. It
 must not:
@@ -313,6 +313,10 @@ must not:
 - be static,
 - be virtual,
 - have a cv-qualifier or a ref-qualifier.
+
+The parameter declared with `this` must be the first parameter of a
+member function or a lambda, and it must not have a default argument
+({question}`Q-0317`).
 :::
 
 :::{rule} CLS-15
@@ -424,8 +428,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 85 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 90 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
@@ -440,6 +444,10 @@ of 85 tests.
   object parameter when the class has no usable copy or move
   constructor. The other compilers initialize the parameter directly
   ({question}`Q-0181`).
+- CLS-14: every compiler rejects an explicit object parameter that is
+  not first and one on a non-member function. Clang and GCC reject a
+  default argument on an explicit object parameter, and EDG accepts it
+  ({question}`Q-0317`).
 
 Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, edg-class-
 decl.

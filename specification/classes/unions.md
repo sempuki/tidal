@@ -223,23 +223,26 @@ union must not have:
 
 :::{rule} BF-1
 :kind: required
-:tests: classes/unions/bitfield-basic.cpp classes/unions/bitfield-bool.cpp classes/unions/bitfield-char-types.cpp classes/unions/bitfield-constant-width.cpp classes/unions/bitfield-enum.cpp classes/unions/bitfield-in-union.cpp classes/unions/bitfield-zero-unnamed.cpp
+:tests: classes/unions/bitfield-basic.cpp classes/unions/bitfield-bool.cpp classes/unions/bitfield-char-types.cpp classes/unions/bitfield-constant-width.cpp classes/unions/bitfield-enum.cpp classes/unions/bitfield-in-union.cpp classes/unions/bitfield-zero-unnamed.cpp classes/unions/bitfield-width-unscoped-enumeration.cpp classes/unions/bitfield-width-class-converts.cpp
 
-A bit-field has an integral or enumeration type and a width. The width is
-a constant expression. A bit-field can be unnamed. An unnamed bit-field
-of width 0 makes the next bit-field start at a new allocation unit. A
-union can have bit-fields.
+A bit-field has an integral or enumeration type and a width. The width
+is a constant expression of integral or unscoped enumeration type, or of
+a class type that converts to such a type ({question}`Q-0314`). A
+bit-field can be unnamed. An unnamed bit-field of width 0 makes the next
+bit-field start at a new allocation unit. A union can have bit-fields.
 :::
 
 :::{rule} BF-2
 :kind: reject
-:tests: classes/unions/bitfield-float.cpp classes/unions/bitfield-negative-width.cpp classes/unions/bitfield-nonconstant-width.cpp classes/unions/bitfield-pointer.cpp classes/unions/bitfield-static.cpp classes/unions/bitfield-typedef.cpp classes/unions/bitfield-unnamed-cv.cpp classes/unions/bitfield-zero-named.cpp
+:tests: classes/unions/bitfield-float.cpp classes/unions/bitfield-negative-width.cpp classes/unions/bitfield-nonconstant-width.cpp classes/unions/bitfield-pointer.cpp classes/unions/bitfield-static.cpp classes/unions/bitfield-typedef.cpp classes/unions/bitfield-unnamed-cv.cpp classes/unions/bitfield-zero-named.cpp classes/unions/bitfield-width-floating.cpp classes/unions/bitfield-width-scoped-enumeration.cpp
 
 A bit-field must not:
 
 - have a type that is not integral or an enumeration,
 - be `static` or a `typedef`,
 - have a negative width or a width that is not a constant,
+- have a width of a type that BF-1 does not allow, such as a
+  floating-point type or a scoped enumeration ({question}`Q-0313`),
 - have width 0 and a name.
 
 An unnamed bit-field must not have a cv-qualifier ({question}`Q-0058`).
@@ -497,13 +500,18 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
-of 112 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 116 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
 - BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and
   EDG reject the cv-qualifier ({question}`Q-0058`).
+- BF-1, BF-2: every compiler rejects a width of floating-point type.
+  Clang and GCC reject an enumerator of a scoped enumeration as a width,
+  and EDG converts it ({question}`Q-0313`). Clang and EDG convert a width
+  of a class type with a `constexpr` conversion to `int`, and GCC
+  rejects it ({question}`Q-0314`).
 - BF-8: Clang and GCC warn under `-Wall` for both cases.
 - UNI-6: EDG accepts the assignment through a user-provided operator to
   a member that is not active during constant evaluation. Clang and GCC

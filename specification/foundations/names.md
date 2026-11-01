@@ -113,6 +113,7 @@ never goes outward to an enclosing scope.
 | `::` alone | The global namespace, in the same way as `N::` | Named namespaces |
 | Class `C::` | `C`, then its bases | Enclosing classes and namespaces |
 | Enumeration `E::` | The enumerators of `E` | Everything else |
+| Member access `E.m`, `E->m` | The class of `E`, then its bases ({rule}`NAM-37`) | Enclosing classes and namespaces |
 
 The name before `::` is looked up as a scope, so a variable with that
 name does not get in the way. A declaration that names a member with a
@@ -184,6 +185,25 @@ the places that need a class, such as the part before `::` or after
 `struct`, take `C::C` as the class.
 :::
 
+:::{principle} NAM-P9
+:rules: NAM-37 NAM-38
+
+Several constructs call a function that can be a member or a free
+function. Each construct has its own order:
+
+| Construct | Members | Free functions | Rules |
+|---|---|---|---|
+| `x.f(a)`, `p->f(a)` | found by member lookup in the class of `x` | never | NAM-37, {rule}`OVL-4` |
+| `f(a)` in a member function | found by ordinary lookup, which stops at the class | found by ordinary lookup outside the class; argument-dependent lookup only if no member is found | {rule}`NAM-32`, {rule}`OVL-2` |
+| `x @ y`, `@x` | the members of the left operand's class | lookup with class scopes passed over, and argument-dependent lookup | NAM-38, {rule}`OVL-7` |
+| range-based `for`: `begin`, `end` | used if the class has both names as members, of any kind | otherwise argument-dependent lookup only | {rule}`RFOR-2` |
+| structured binding: `get` | used if member lookup finds a member function template | otherwise argument-dependent lookup only | {rule}`SB-5` |
+
+In the operator row, members and free functions are candidates
+together. In the other rows, one source wins and the other is not
+searched.
+:::
+
 ## Constraints
 
 :::{rule} NAM-1
@@ -240,7 +260,8 @@ valid, even when the hidden declaration fits the use.
 :tests: foundations/names/redeclare-same-scope.cpp foundations/names/redeclare-parameter-in-body.cpp foundations/names/redeclare-different-kind.cpp foundations/names/redeclare-function-ok.cpp
 
 A name must not be declared twice in one scope, except by declarations
-that refer to one entity, such as two declarations of one function. The
+that refer to one entity, such as two declarations of one function
+({rule}`FN-15`). The
 outermost block of a function is one scope with its parameter list. A
 variable and a function with one name in one scope are not valid.
 {rule}`STMT-8` names the specific case of a block (decision 0042).
@@ -261,6 +282,18 @@ the namespace with a qualified name.
 
 From outside a namespace, a name declared in the namespace needs
 qualification (NAM-4).
+:::
+
+:::{rule} NAM-38
+:kind: required
+:tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
+
+The lookup of non-member operator functions for an operator expression
+({rule}`OVL-7`) searches outward from the use, as NAM-2 gives, and
+passes over each class scope. A block or a namespace that declares the
+operator function ends the search and hides the declarations outside
+it. {term}`Argument-dependent lookup <argument-dependent lookup>` then
+adds its functions (NAM-29).
 :::
 
 :::{rule} NAM-13
@@ -344,6 +377,20 @@ not look in these places:
 
 If the search finds `x` in two base subobjects, `C::x` is ambiguous.
 This ambiguity is a specific case of {rule}`DER-4` (decision 0042).
+:::
+
+:::{rule} NAM-37
+:kind: required
+:tests: foundations/names/member-access-lookup-kinds.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp
+
+In a member access `E.m` or `E->m`, lookup of `m` searches the class of
+`E` and then its bases, as for `C::m` ({rule}`NAM-17`). The search
+covers only the class and its bases. It finds every kind of member:
+
+- data members and member functions, static or not,
+- nested classes and type aliases,
+- the enumerators of an unscoped enumeration in the class,
+- the injected class name.
 :::
 
 :::{rule} NAM-19
@@ -605,7 +652,7 @@ The first case is a specific case of {rule}`DER-4`, and
 
 :::{rule} NAM-6
 :kind: required
-:tests: foundations/names/class-members-any-order.cpp
+:tests: foundations/names/class-members-any-order.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp
 
 A member function body sees all members of its class, including the
 members declared after the member function (CLS-2). A member declaration
@@ -710,8 +757,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 180
-of 181 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 188
+of 190 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,

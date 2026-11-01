@@ -103,7 +103,7 @@ before the template parameters, so a member can hide a parameter
 :::
 
 :::{principle} DEP-P4
-:rules: DEP-15 DEP-16 DEP-17 DEP-18
+:rules: DEP-15 DEP-16 DEP-17 DEP-18 DEP-39
 
 Inside a class template, some names stand for the specialization that
 the implementation is making. That specialization is the
@@ -121,7 +121,9 @@ A member of the current instantiation needs no `typename` (DEP-16). If
 the class has no dependent base, a name that the class does not declare
 is an error. The name is not dependent, so the implementation can
 report the error at the definition (DEP-17). With a dependent base, the
-lookup waits for the instantiation (DEP-18).
+lookup waits for the instantiation (DEP-18). A member access on an
+object whose type depends on a parameter, and is not the current
+instantiation, also waits for the instantiation (DEP-39).
 :::
 
 :::{principle} DEP-P5
@@ -319,7 +321,7 @@ cases:
 
 :::{rule} DEP-9
 :kind: required
-:tests: templates/dependent-names/argument-lookup-later.cpp templates/dependent-names/argument-lookup-better-later.cpp templates/dependent-names/dependent-call-pack.cpp templates/dependent-names/dependent-call-template-arguments.cpp templates/dependent-names/operator-lookup-later.cpp templates/dependent-names/argument-lookup-later-default.cpp templates/dependent-names/dependent-type-function-pack.cpp templates/dependent-names/dependent-type-noexcept.cpp templates/dependent-names/dependent-type-template-id.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp
+:tests: templates/dependent-names/argument-lookup-later.cpp templates/dependent-names/argument-lookup-better-later.cpp templates/dependent-names/dependent-call-pack.cpp templates/dependent-names/dependent-call-template-arguments.cpp templates/dependent-names/operator-lookup-later.cpp templates/dependent-names/argument-lookup-later-default.cpp templates/dependent-names/dependent-type-function-pack.cpp templates/dependent-names/dependent-type-noexcept.cpp templates/dependent-names/dependent-type-template-id.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp
 
 For a dependent unqualified call, ordinary lookup finds the declarations
 before the definition. {term}`Argument-dependent lookup
@@ -363,7 +365,7 @@ The rule covers a conversion function named as `operator T`
 
 :::{rule} DEP-13
 :kind: reject
-:tests: templates/dependent-names/qualified-member-found-again.cpp templates/dependent-names/this-member-ambiguous.cpp
+:tests: templates/dependent-names/qualified-member-found-again.cpp templates/dependent-names/this-member-ambiguous.cpp templates/dependent-names/this-member-dependent-base.cpp
 
 A qualified name whose qualifier is the current instantiation is looked
 up at the definition and again at the instantiation. A member access
@@ -426,12 +428,23 @@ looked up at the definition. A member type found so needs no
 
 :::{rule} DEP-17
 :kind: reject
-:tests: templates/dependent-names/current-member-missing-used.cpp templates/dependent-names/current-member-missing.cpp
+:tests: templates/dependent-names/current-member-missing-used.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing-used.cpp templates/dependent-names/this-member-dependent-base.cpp
 
 If the current instantiation has no dependent base, a qualified name
-into the current instantiation must find a declaration. The name is not
+into the current instantiation must find a declaration. The same holds
+for a member access through `this`, such as `this->f`. The name is not
 dependent, so DEP-30 applies when no specialization is made
 ({question}`Q-0228`).
+:::
+
+:::{rule} DEP-39
+:kind: required
+:tests: templates/dependent-names/member-access-dependent-object-late.cpp templates/dependent-names/member-access-dependent-object-never-found.cpp
+
+If the object expression of `.` or `->` is type-dependent and is not
+the current instantiation, the member name is looked up at the
+instantiation, in the class of the object ({rule}`NAM-37`). The
+definition of the template checks nothing about the name.
 :::
 
 :::{rule} DEP-18
@@ -599,7 +612,7 @@ is made. DEP-33 gives the general case.
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp
+:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -756,8 +769,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 92
-of 110 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 117 tests.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
@@ -801,6 +814,9 @@ bullets below say so.
   DEP-30. Every compiler rejects the name once the class is
   instantiated. DEP-30 allows both results for the unused template
   ({question}`Q-0228`).
+  For a member access through `this` that finds nothing, GCC 14 and
+  Clang 18 accept the unused template, and GCC 16, Clang 22, and EDG
+  reject it.
 - DEP-15: EDG does not treat an alias template specialization as the
   current instantiation. GCC treats the alias as the current
   instantiation but rejects a name that only a dependent base declares

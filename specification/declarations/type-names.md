@@ -227,11 +227,13 @@ A program must not:
 
 :::{rule} TYN-5
 :kind: no-diagnostic
-:tests: declarations/type-names/alias-shadow-changes-meaning.cpp
+:tests: declarations/type-names/alias-shadow-changes-meaning.cpp declarations/type-names/function-name-changes-meaning.cpp
 
 A class must not use a name from an enclosing scope and then declare a
-member with that name and another meaning. An implementation need not
-diagnose the change of meaning ({question}`Q-0066`).
+member with that name and another meaning. The rule applies to every
+kind of name, such as a function name that a later data member takes.
+An implementation need not diagnose the change of meaning
+({question}`Q-0066`).
 :::
 
 ## Examples
@@ -256,9 +258,10 @@ Mode current();
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 60 tests.
+of 61 tests.
 
-- TYN-5: GCC rejects the class. Clang and EDG accept the class
+- TYN-5: GCC rejects the class, for a type name and for a function name
+  that a later data member changes. Clang and EDG accept the class
   ({question}`Q-0066`).
 - TYN-7: GCC accepts a declaration of only a class key and a qualified
   name. Clang and EDG reject the declaration ({question}`Q-0093`).

@@ -169,7 +169,7 @@ array in `new`.
 
 :::{rule} NEW-2
 :kind: required
-:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp
+:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp expressions/new-delete/array-floating-size-exact.cpp expressions/new-delete/array-scoped-enumeration-size.cpp expressions/new-delete/array-class-size.cpp
 
 `new T[n]` creates an array of `n` elements. These rules apply:
 
@@ -178,15 +178,19 @@ array in `new`.
 - The result points to the first element, which is itself an array for
   a multi-dimensional `new`.
 - If `n` is absent, the initializer gives the number of elements.
-- `n` is converted to the type of `sizeof` ({question}`Q-0036`).
+- `n` is converted to the type of `sizeof`. `n` can have an integral,
+  unscoped enumeration, or floating-point type ({question}`Q-0036`), or
+  a class type that converts to one of these. A scoped enumeration does
+  not convert ({question}`Q-0313`).
 :::
 
 :::{rule} NEW-17
 :kind: reject
-:tests: expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-too-many-initializers.cpp expressions/new-delete/array-constant-size-too-large.cpp
+:tests: expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-too-many-initializers.cpp expressions/new-delete/array-constant-size-too-large.cpp expressions/new-delete/array-scoped-enumeration-size.cpp
 
 These conditions apply to `new T[n]` (NEW-2):
 
+- `n` must have a type that NEW-2 allows ({question}`Q-0313`).
 - Each bound after the first must be a positive constant.
 - If `n` is absent, the initializer must give the number of elements.
 - A constant `n` must not be negative.
@@ -629,8 +633,8 @@ int* h = new (std::nothrow) int[count];  // null
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 113 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 116 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -638,7 +642,12 @@ of 113 tests.
 - NEW-3, NEW-5, NEW-6: all compilers reject these cases during constant
   evaluation and name the cause.
 - NEW-2: Clang and EDG convert a floating size such as `1.5` to `1`.
-  Clang warns. GCC rejects such a size ({question}`Q-0036`).
+  Clang warns. Clang 22 accepts `new int[2.0]` under `-pedantic-errors`
+  with no diagnostic, and EDG accepts it too. GCC rejects every floating
+  size ({question}`Q-0036`).
+- NEW-2: Clang and EDG reject a size that is an enumerator of a scoped
+  enumeration. GCC converts it ({question}`Q-0313`). Every compiler
+  converts a size of a class type with a conversion function to `int`.
 - NEW-5: GCC accepts `delete[]` of a derived array through a base
   pointer during constant evaluation. Clang and EDG reject it
   ({question}`Q-0091`).

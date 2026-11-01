@@ -17,7 +17,7 @@ Depends on: declarators, class definitions and members, unary operators,
 ## Principles
 
 :::{principle} ALN-P1
-:rules: ALN-1 ALN-7 ALN-2 ALN-4
+:rules: ALN-1 ALN-7 ALN-2 ALN-8 ALN-4
 
 Every type has an alignment, and every object of the type sits at an
 address that is a multiple of the alignment, in every kind of storage.
@@ -91,14 +91,24 @@ must not apply `alignas` to an enumeration ({question}`Q-0073`).
 :tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp
 
 The operand of `alignas` must be a constant expression whose value is
-zero or a positive power of two. The result must not be weaker than the
-natural alignment of the entity ({question}`Q-0069`). `alignas` must not
-apply to any of these ({question}`Q-0072`):
+zero or a positive power of two. {rule}`ALN-8` gives its type. The
+result must not be weaker than the natural alignment of the entity
+({question}`Q-0069`). `alignas` must not apply to any of these
+({question}`Q-0072`):
 
 - a function,
 - a parameter,
 - a bit-field,
 - a type alias.
+:::
+
+:::{rule} ALN-8
+:kind: reject
+:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp
+
+The operand of `alignas` must have integral or unscoped enumeration
+type, or a class type that converts to such a type ({question}`Q-0313`,
+{question}`Q-0314`).
 :::
 
 :::{rule} ALN-3
@@ -164,8 +174,8 @@ alignas(2) int bad;              // rejected: weaker than alignof(int)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 18
-of 31 tests. Each divergence has a question, except the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 20
+of 35 tests. Each divergence has a question, except the
 implementation-defined limit of ALN-5.
 
 - ALN-1: GCC uses the last of several `alignas` on a class. On a
@@ -178,6 +188,11 @@ implementation-defined limit of ALN-5.
   GCC 14 accepts `alignas` on a function, a `typedef`, an alias
   declaration, and a bit-field. GCC 16, Clang, and EDG reject all four, so GCC 14 has a
   defect that GCC 16 fixes ({question}`Q-0072`).
+- ALN-8: every compiler rejects an operand of floating-point type.
+  Clang and GCC reject an enumerator of a scoped enumeration, and EDG
+  converts it ({question}`Q-0313`). Clang and EDG convert an operand
+  of a class type with a `constexpr` conversion to `int`, and GCC
+  rejects it ({question}`Q-0314`).
 - ALN-3: GCC accepts declarations of a variable or a class with
   different `alignas` ({question}`Q-0070`).
 - ALN-5 is implementation-defined because the alignments come from the

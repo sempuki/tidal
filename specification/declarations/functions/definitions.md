@@ -10,10 +10,25 @@ A function definition gives the body of a function. This page covers:
 ## Principles
 
 :::{principle} FN-P1
-:rules: FN-2 FN-14 FN-9 FN-12
+:rules: FN-2 FN-14 FN-15 FN-9 FN-12
 
 A function can be declared many times and defined once in a translation
-unit ({principle}`TR-P2`). A definition is the whole function, so the
+unit ({principle}`TR-P2`). The parameter types tell whether two
+declarations name one function or two overloads (FN-15). The
+declarations of one function must then agree on the other properties:
+
+| Property | Rule |
+|---|---|
+| return type | FN-14, {rule}`RET-4` for a placeholder |
+| `noexcept` specification | {rule}`DCL-14`, {rule}`EXS-8` |
+| `constexpr` and `consteval` | {rule}`CX-5`, {rule}`CEV-3` |
+| `= delete`, on the first declaration only | {rule}`DEL-2` |
+| language linkage | {rule}`LSP-7` |
+| `static` among member functions | {rule}`CLS-9` |
+| ref-qualifiers among overloads | {rule}`CLS-26` |
+| template head, for a function template | {rule}`TPL-20` |
+| each default argument, given in one declaration only | {rule}`DEFARG-9` |
+ A definition is the whole function, so the
 definition needs complete types for its parameters and its return value,
 where a declaration can leave them incomplete. A definition stands at
 namespace scope or in a class, never inside another function.
@@ -88,7 +103,7 @@ block of the function body (FN-1), or twice in one parameter list.
 
 :::{rule} FN-2
 :kind: required
-:tests: declarations/functions/definitions/redeclaration-ok.cpp
+:tests: declarations/functions/definitions/redeclaration-ok.cpp declarations/functions/definitions/same-parameter-types-one-function.cpp
 
 A function can have several declarations in a translation unit. FN-14
 lists what is not valid.
@@ -96,10 +111,21 @@ lists what is not valid.
 
 :::{rule} FN-14
 :kind: reject
-:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/return-type-mismatch.cpp
+:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/return-type-mismatch.cpp declarations/functions/definitions/same-parameter-types-two-definitions.cpp
 
 A function can have only one definition in a translation unit (FN-2).
 All declarations of a function must have the same return type.
+:::
+
+:::{rule} FN-15
+:kind: required
+:tests: declarations/functions/definitions/same-parameter-types-one-function.cpp declarations/functions/definitions/different-parameter-types-overload.cpp declarations/functions/definitions/same-parameter-types-two-definitions.cpp
+
+Two declarations of one name in one scope declare one function if they
+have the same parameter types after the adjustments of {rule}`DCL-8`.
+For member functions, the cv-qualifiers and ref-qualifiers must also be
+the same. Otherwise the declarations declare two functions, which
+overload ({rule}`OVL-1`).
 :::
 
 :::{rule} FN-4
@@ -232,7 +258,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 34 of 40 tests. The results are in
+All eight compilers agree on 37 of 43 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function

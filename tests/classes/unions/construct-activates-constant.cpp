@@ -1,4 +1,4 @@
-// tidal-rules: UNI-14
+// tidal-rules: UNI-14 CE-6
 // tidal-expect: accept
 // tidal-note: Point has no default constructor. std::construct_at creates a Point at the address of the member value, which has no active member before the call.
 inline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }

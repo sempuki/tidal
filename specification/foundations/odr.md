@@ -32,6 +32,7 @@ except where the program needs only the type or the value:
 | Where the name occurs | Use? |
 |---|---|
 | An evaluated expression that calls the function, takes an address, or binds a reference | yes |
+| A constant template argument that takes an address or binds a reference | yes |
 | An evaluated expression that reads the value of a constant variable | no |
 | An operand of `sizeof`, `decltype`, or `noexcept` | no |
 | A branch of `if constexpr` that the condition does not select | no |
@@ -176,7 +177,7 @@ implementation rejects the program.
 
 :::{rule} ODR-3
 :kind: required
-:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
+:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-is-use.cpp foundations/odr/template-argument-address-links.cpp
 
 An evaluated expression that names a variable or a function uses it,
 with these exceptions:
@@ -190,10 +191,12 @@ with these exceptions:
   discarded statement.
 
 A name of an overload set uses only the function that overload
-resolution or a target type selects ({rule}`OVL-18`).
+resolution or a target type selects ({rule}`OVL-18`). A constant
+template argument is an evaluated expression, so `S<&g>` uses `g`
+({question}`Q-0315`).
 
-A constant variable is a `constexpr` variable, or a `const` variable of
-integral or enumeration type that a constant expression initializes.
+A constant variable is a variable of object type that is
+{term}`usable in constant expressions` ({rule}`CE-3`).
 :::
 
 :::{rule} ODR-4
@@ -302,7 +305,7 @@ at every inclusion.
 
 :::{rule} ODR-8
 :kind: no-diagnostic
-:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp
 
 This rule applies to a variable or function with external linkage that
 is not `inline`. If the program uses such an entity, the program must
@@ -315,7 +318,7 @@ parts of the rule.
 
 :::{rule} ODR-9
 :kind: no-diagnostic
-:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/internal-function-used-in-unused-inline.cpp foundations/odr/internal-declarations-not-used.cpp
+:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/internal-function-used-in-unused-inline.cpp foundations/odr/internal-declarations-not-used.cpp foundations/odr/template-argument-address-is-use.cpp
 
 A variable or function with internal linkage that a translation unit
 uses must be defined in that unit. An implementation need not diagnose a
@@ -378,7 +381,7 @@ that text either.
 
 :::{rule} ODR-11
 :kind: recommended
-:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp
+:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/template-argument-address-is-use.cpp
 
 An implementation should warn about a function with internal linkage
 that the unit uses and does not define.
@@ -427,7 +430,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 60 of 65 tests. EDG checks each unit and
+All eight compilers agree on 61 of 67 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -436,6 +439,11 @@ the units are valid.
 - ODR-2: EDG accepts a lambda that reads a `mutable` member of a local
   constant, and a local class that binds a reference to a local
   constant. Clang and GCC reject both ({question}`Q-0130`).
+- ODR-3: every compiler links a program whose template argument takes
+  the address of a function with external linkage that has no
+  definition, when nothing calls the function. ODR-8 allows the result.
+  For a function with internal linkage, Clang reports the use under
+  ODR-11, and GCC gives no diagnostic ({question}`Q-0315`).
 - ODR-8: Each translation unit compiles without a diagnostic, and only
   the linker reports a missing or extra definition. At `-O2`, the
   report compilers `gcc-16-o2` and `clang-22-o2` link four of the

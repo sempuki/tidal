@@ -38,7 +38,7 @@ can go through an ellipsis.
 :::
 
 :::{principle} PFX-P3
-:rules: PFX-10 PFX-11 PFX-14 PFX-20
+:rules: PFX-10 PFX-11 PFX-14 PFX-20 PFX-21
 
 Member access names a member of a class object, and `->` is member
 access through a pointer. The object expression is always evaluated,
@@ -140,10 +140,11 @@ calls are prvalues.
 
 :::{rule} PFX-10
 :kind: required
-:tests: expressions/postfix/member-access.cpp expressions/postfix/member-of-prvalue.cpp expressions/postfix/static-member-object-evaluated.cpp expressions/postfix/mutable-and-reference-member-of-const.cpp
+:tests: expressions/postfix/member-access.cpp expressions/postfix/member-of-prvalue.cpp expressions/postfix/static-member-object-evaluated.cpp expressions/postfix/mutable-and-reference-member-of-const.cpp foundations/names/member-access-lookup-kinds.cpp
 
-`E.m` names the member `m` of the class object `E`. `E->m` is the same
-as `(*E).m`. Member access also follows these rules:
+`E.m` names the member `m` of the class object `E`, which member lookup
+finds ({rule}`NAM-37`). `E->m` is the same as `(*E).m`. Member access
+also follows these rules:
 
 - A static member can be named through an object, and the object
   expression is still evaluated.
@@ -155,15 +156,19 @@ as `(*E).m`. Member access also follows these rules:
 
 :::{rule} PFX-11
 :kind: reject
-:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp
+:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp
 
 The operand of `.` must be a class object, and the operand of `->` must
-be a pointer to a class. The class must have the named member.
+be a pointer to a class. Member lookup ({rule}`NAM-37`) must find the
+named member, and the member must not be a type. The class must be
+complete, or be the class whose definition contains the access. There
+the access sees only the members declared before it ({rule}`NAM-6`,
+{question}`Q-0316`).
 :::
 
 :::{rule} PFX-20
 :kind: reject
-:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-called.cpp
+:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-called.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
 
 A member access `x.f` or `p->f` that names a non-static member function
 must be the operand of a call, also inside parentheses ({rule}`VC-2`).
@@ -244,6 +249,15 @@ past the end is also undefined.
 A call through a null function pointer is undefined.
 :::
 
+:::{rule} PFX-21
+:kind: undefined
+:tests: expressions/postfix/member-call-null-pointer-sanitizer.cpp expressions/postfix/member-call-null-pointer-constant.cpp
+
+A call of a non-static member function through a null pointer, as in
+`p->f()`, is undefined. This holds also when the function reads no
+member. The call `(*p).f()` is the same call ({rule}`UN-7`).
+:::
+
 :::{rule} PFX-19
 :kind: undefined
 :tests: expressions/postfix/call-wrong-function-type-sanitizer.cpp
@@ -309,8 +323,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 57 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 67 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
@@ -327,6 +341,12 @@ of 57 tests.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
   conditional.
+- PFX-11: GCC and EDG accept a member access in a member declaration
+  of the class being defined, to a member declared earlier. Clang
+  rejects it because the class is incomplete ({question}`Q-0316`).
+- PFX-21: UBSan reports a member call through a null pointer on Clang
+  and GCC. Clang and GCC reject the call during constant evaluation.
+  EDG accepts it ({question}`Q-0318`).
 - PFX-19: the Clang sanitizer stops a call through a pointer whose
   parameter types differ from the function's. GCC has no such check, and
   the undefined rule allows its result. No implementation checks a

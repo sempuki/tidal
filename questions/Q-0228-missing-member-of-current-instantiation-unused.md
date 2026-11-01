@@ -1,7 +1,7 @@
 # Q-0228: Is a missing member of the current instantiation diagnosed in a template that is not used?
 
 **Status:** provisional
-**Affects:** DEP-17, DEP-30, `tests/templates/dependent-names/current-member-missing.cpp`, `tests/templates/dependent-names/current-member-missing-used.cpp`
+**Affects:** DEP-17, DEP-30, `tests/templates/dependent-names/current-member-missing.cpp`, `tests/templates/dependent-names/current-member-missing-used.cpp`, `tests/templates/dependent-names/this-member-missing.cpp`, `tests/templates/dependent-names/this-member-missing-specialized.cpp`
 
 ## Context
 
