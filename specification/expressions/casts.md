@@ -48,7 +48,8 @@ original value. The implementation decides what the bits mean in
 between. So the integer that a pointer becomes, and whether a function
 pointer can become an object pointer at all, are implementation-defined.
 Constant evaluation refuses the cast because constant evaluation has no
-bits to show.
+bits to show. The rules on raw storage say when a program can read or
+write an object through the result ({rule}`STG-14`, {rule}`STG-16`).
 :::
 
 :::{principle} CAST-P4

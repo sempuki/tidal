@@ -88,6 +88,7 @@ Every rule ID starts with the prefix of its page.
 | `SEQ` | `foundations/evaluation-order.md` |
 | `SHF` | `expressions/shift.md` |
 | `SINIT` | `declarations/initialization/static.md` |
+| `STG` | `foundations/storage.md` |
 | `STMT` | `statements/blocks.md` |
 | `STO` | `declarations/storage-linkage.md` |
 | `SW` | `statements/switch.md` |

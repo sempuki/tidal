@@ -10,7 +10,9 @@ following topics follow from this model:
 - the order in which objects end.
 
 This page states the model once; the pages on initialization,
-temporaries, constructors, and unions cite the model.
+temporaries, constructors, and unions cite the model. The page on raw
+storage ({principle}`STG-P2`) states how a program creates objects in
+storage that it obtains itself, and how it reuses that storage.
 
 Depends on: storage duration and linkage, value categories and
 temporaries, constructors and destructors, new and delete.
@@ -200,6 +202,8 @@ Constant evaluation rejects each of them.
 If the storage of an object is reused for another object, the first
 object's lifetime ends. A later read through a reference to the first
 object is undefined, and constant evaluation rejects the read.
+{rule}`STG-9` gives the case where the reference reaches the new object
+instead.
 :::
 
 ## Implementation Requirements

@@ -397,8 +397,8 @@ delete p;                          // calls ~Circle, then ~Shape
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 113 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 114 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the

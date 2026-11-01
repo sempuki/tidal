@@ -314,6 +314,11 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0301](Q-0301-erroneous-array-bound.md) | What does a `new` expression do with an erroneous run-time array bound? | provisional | no allocation call, throws `std::bad_array_new_length` (NEW-35); Clang throws `std::bad_alloc` from the allocation function, GCC allocates first for too few elements |
 | [Q-0302](Q-0302-erroneous-bound-non-throwing.md) | Does an erroneous array bound give a null pointer when the allocation function is non-throwing? | provisional | yes (NEW-36); Clang agrees, GCC throws |
 | [Q-0303](Q-0303-nothrow-new-constant-evaluation.md) | Can constant evaluation use a `new` expression with the nothrow tag? | provisional | yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject |
+| [Q-0304](Q-0304-byte-wise-pointer-arithmetic.md) | Can a pointer to a character type step through the bytes of an object that is not an array of bytes? | provisional | yes; the bytes act as an array of `sizeof` elements (STG-13) |
+| [Q-0305](Q-0305-char-array-hosting.md) | Does an array of plain `char` host an object created in it? | provisional | no; only `unsigned char` and `std::byte` arrays host (STG-4); no compiler distinguishes them |
+| [Q-0306](Q-0306-signed-char-access.md) | Can a program read or write another object through a `signed char` glvalue? | provisional | no, undefined (STG-23); every compiler allows it in practice |
+| [Q-0307](Q-0307-constant-evaluation-replacement.md) | Must constant evaluation reject a use of an old pointer after a replacement that STG-9 does not allow? | provisional | yes, undefined (STG-19, STG-20); every constant evaluator in the matrix accepts |
+| [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | compiler defect | yes (STG-1); Clang 18 accepts |
 
 ## Status values
 

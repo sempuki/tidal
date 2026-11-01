@@ -167,6 +167,12 @@ default initialization
   ({rule}`INIT-9`). A union with no default member initializer gets no
   active member ({rule}`UNI-4`).
 
+default new alignment
+  The alignment that a global allocation function without an alignment
+  parameter gives. A `new` expression for a type with a larger
+  alignment passes the alignment to the allocation function
+  ({rule}`NEW-27`, {rule}`NEW-28`).
+
 default template argument
   The argument that a template parameter takes when a template-id gives
   none for it, written after `=` in the template head ({rule}`TPL-13`,
@@ -261,6 +267,12 @@ implicit object parameter
   object of a call. Its type is a reference to the class
   ({rule}`ICS-13`).
 
+implicit-lifetime type
+  A type whose objects can exist without a constructor call: a scalar,
+  an array, a simple class, or a cv-qualified form of one. Some
+  operations create objects of these types implicitly
+  ({rule}`STG-7`, {rule}`STG-8`).
+
 implied object argument
   The object that a call passes to the object parameter of a member
   function, for example `x` in `x.f()` ({rule}`OVL-4`).
@@ -333,6 +345,12 @@ more specialized
   other's parameters from its invented types, and not the reverse
   ({rule}`ORD-1`).
 
+non-allocating placement form
+  An `operator new` or `operator new[]` with a `void*` parameter after
+  the size, which returns its `void*` argument and allocates nothing.
+  An array `new` that uses it asks for no extra storage
+  ({rule}`LSUP-7`, {rule}`NEW-33`).
+
 non-deduced position
   A place in a parameter type where a template parameter takes no value
   from the argument, such as the part before `::` in a qualified name
@@ -341,6 +359,10 @@ non-deduced position
 normal form
   A constraint written as conjunctions and disjunctions of atomic
   constraints ({rule}`CNS-2`).
+
+object representation
+  The `sizeof` bytes of an object, viewed as `unsigned char`
+  ({rule}`STG-11`).
 
 observable behavior
   The part of an execution that an implementation must reproduce:
@@ -388,6 +410,11 @@ point of instantiation
   The place in a translation unit where a specialization is made. The
   specialization sees the declarations before the place
   ({rule}`INST-30`, {rule}`INST-31`).
+
+pointer-interconvertible
+  Said of two objects at one address, such as a union and its member,
+  when a cast turns a pointer to one into a pointer to the other
+  ({rule}`STG-16`).
 
 primary template
   The declaration of a class template or variable template that is not
@@ -556,6 +583,10 @@ value category
     for example the result of `std::move`.
   - A *prvalue* computes a value, for example `a * b` or `42`. A prvalue
     has no identity.
+
+value representation
+  The bits of an object's bytes that decide its value. The other bits
+  are padding ({rule}`STG-11`).
 
 value-dependent
   Said of an expression in a template whose value can differ between

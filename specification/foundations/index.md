@@ -12,6 +12,7 @@ types
 language-support
 keywords
 objects
+storage
 values
 conversions
 conversion-sequences
@@ -31,6 +32,7 @@ types
 language-support
 keywords
 objects
+storage
 values
 conversions
 conversion-sequences

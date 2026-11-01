@@ -39,7 +39,10 @@ another member makes that member active instead. The assignment can
 also reach a part of the member, as in `u.a.tag = 7`. Reading a member that
 is not active reads an object that is not there, so the behavior is
 undefined ({principle}`OBJ-P4`). A reference is not an object with
-storage of its own, so a union cannot hold a reference.
+storage of its own, so a union cannot hold a reference. A union and
+each of its members are {term}`pointer-interconvertible`, so a
+`reinterpret_cast` turns a pointer to one into a pointer to the other
+({rule}`STG-16`).
 :::
 
 :::{principle} UNI-P2
