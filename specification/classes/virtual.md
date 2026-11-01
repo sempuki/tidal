@@ -299,7 +299,7 @@ the destructor of the most derived class.
 
 :::{rule} VIRT-10
 :kind: required
-:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-during-construction.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp classes/virtual/dynamic-cast-down-inside-private-base.cpp classes/virtual/dynamic-cast-cross-from-private-base.cpp classes/virtual/dynamic-cast-cross-to-private-base.cpp classes/virtual/dynamic-cast-private-base-constant.cpp classes/virtual/dynamic-cast-reference-fails-throws.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp
+:tests: classes/virtual/dynamic-cast-ambiguous-target.cpp classes/virtual/dynamic-cast-constant.cpp classes/virtual/dynamic-cast-cross.cpp classes/virtual/dynamic-cast-down.cpp classes/virtual/dynamic-cast-during-construction.cpp classes/virtual/dynamic-cast-null.cpp classes/virtual/dynamic-cast-private-base.cpp classes/virtual/dynamic-cast-reference.cpp classes/virtual/dynamic-cast-void.cpp classes/virtual/dynamic-cast-down-inside-private-base.cpp classes/virtual/dynamic-cast-cross-from-private-base.cpp classes/virtual/dynamic-cast-cross-to-private-base.cpp classes/virtual/dynamic-cast-private-base-constant.cpp classes/virtual/dynamic-cast-reference-fails-throws.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp foundations/language-support/exception-classes-bad-cast.cpp
 
 `dynamic_cast` converts with a check at run time. The operand refers to
 a subobject `s`. A cast to a class `T` takes the first of these steps
@@ -316,8 +316,8 @@ that applies:
 
 A cast to `void*` gives a pointer to the most derived object. If the
 check fails for a pointer, the result is a null pointer. If the check
-fails for a reference, the cast throws an exception of a type that is
-*(library referenced)*. A null pointer converts to a null pointer.
+fails for a reference, the cast throws `std::bad_cast`
+({rule}`LSUP-8`). A null pointer converts to a null pointer.
 During a constructor or destructor of class `C`, the object counts as a
 `C`, so a cast to a class derived from `C` fails. Constant evaluation
 can do these casts, and a failed cast of a reference there is not a

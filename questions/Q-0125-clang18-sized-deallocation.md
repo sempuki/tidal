@@ -1,7 +1,7 @@
 # Q-0125: Does Clang 18 omitting the sized deallocation functions change NEW-19?
 
 **Status:** compiler defect
-**Affects:** NEW-19, `tests/expressions/new-delete/global-functions-by-name.cpp`
+**Affects:** NEW-19, `tests/expressions/new-delete/global-functions-by-name.cpp`, `tests/expressions/new-delete/aligned-forms-by-name.cpp`
 
 ## Context
 

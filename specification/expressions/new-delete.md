@@ -45,20 +45,18 @@ run.
 :::
 
 :::{principle} NEW-P3
-:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25
+:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25 NEW-26
 
-The storage comes from an allocation function. The global allocation
-and deallocation functions exist in every program without a
-declaration, so a program can also call them by name. A form with
-placement arguments exists only where a declaration gives it. A program can supply its
-own allocation functions for one class, through the member
-`operator new` and `operator delete` of the class, or with extra
-placement arguments. `::new` reaches past a class's own functions to the
-global ones. A global allocation function that fails throws an
-exception of a type that is *(library referenced)*, and the deallocation
-functions never throw. The implementation chooses how often the global functions
-are called, because a program only ever sees the objects. So two `new`
-expressions may share one allocation.
+The storage comes from an allocation function. The global allocation and
+deallocation functions exist in every program without a declaration, so
+a program can also call them by name. A form with placement arguments
+exists only where a declaration gives it. A program can supply its own
+allocation functions for one class, through the member `operator new`
+and `operator delete` of the class, or with extra placement arguments.
+`::new` reaches past a class's own functions to the global ones. The
+deallocation functions never throw. The implementation chooses how often
+the global functions are called, because a program only ever sees the
+objects. So two `new` expressions may share one allocation.
 
 If the initialization throws, the storage goes back through the
 deallocation function that pairs with the allocation function. The
@@ -75,12 +73,64 @@ function, the storage stays allocated.
 :::
 
 :::{principle} NEW-P4
-:rules: NEW-6
+:rules: NEW-6 NEW-37 NEW-39
 
 Constant evaluation can use `new`, since constant evaluation runs the
 same program ({principle}`TR-P4`). Nothing can outlive the evaluation,
 so each object made during the evaluation must be deleted before the
-evaluation ends.
+evaluation ends. The evaluation manages the storage itself, so it can
+use only the global allocation functions of the implementation. A
+function that the program writes, or a placement form, has effects that
+the evaluation cannot model.
+:::
+
+:::{principle} NEW-P5
+:rules: NEW-27 NEW-28 NEW-29 NEW-30
+
+Every global allocation function without an alignment parameter gives
+storage aligned to the {term}`default new alignment`. A type that needs
+more alignment gets it from an aligned form: the `new` expression
+passes the alignment to the allocation function, and `delete` passes
+it to the deallocation function. A class that declares only the forms
+without alignment still works, because the expression drops the
+alignment when no function accepts it. The expression never adds an
+alignment that the first call did not pass.
+
+| Alignment of the type | First call | If no function accepts the first call |
+|---|---|---|
+| at most the default new alignment | `operator new(size, placement...)` | none; the program is rejected |
+| more than the default new alignment | `operator new(size, std::align_val_t(alignof(T)), placement...)` | `operator new(size, placement...)` |
+:::
+
+:::{principle} NEW-P6
+:rules: NEW-31 NEW-35 NEW-36 NEW-38
+:exceptions: NEW-32
+
+An allocation function reports failure in the way that its exception
+specification gives. A potentially throwing function throws, so the
+`new` expression trusts a result that it gets. A non-throwing function
+returns a null pointer, so the expression tests the result and stops
+at null. An erroneous run-time array bound (NEW-35) follows the same
+split, and no allocation happens.
+
+| Allocation function | It fails | The array bound is erroneous |
+|---|---|---|
+| potentially throwing | throws `std::bad_alloc` | the expression throws `std::bad_array_new_length` |
+| non-throwing | returns null, and the expression gives null | the expression gives null |
+
+A potentially throwing function that returns null breaks the model,
+and the behavior is undefined.
+:::
+
+:::{principle} NEW-P7
+:rules: NEW-33 NEW-34
+
+An array `new` can ask the allocation function for more storage than
+the elements need. The implementation keeps its own data in the extra
+storage, such as the number of elements that `delete[]` destroys. The
+{term}`non-allocating placement form` builds the array at the address
+that it receives. So an array `new` that uses the form asks for no
+extra storage, and the array starts at that address.
 :::
 
 ## Syntax
@@ -130,14 +180,18 @@ array in `new`.
 
 :::{rule} NEW-17
 :kind: reject
-:tests: expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-too-many-initializers.cpp
+:tests: expressions/new-delete/array-needs-size.cpp expressions/new-delete/array-negative-constant-size.cpp expressions/new-delete/array-too-many-initializers.cpp expressions/new-delete/array-constant-size-too-large.cpp
 
 These conditions apply to `new T[n]` (NEW-2):
 
 - Each bound after the first must be a positive constant.
 - If `n` is absent, the initializer must give the number of elements.
 - A constant `n` must not be negative.
+- A constant `n` must not make the size of the array too large for the
+  type of `sizeof`.
 - The initializer must not have more elements than `n`.
+
+NEW-35 gives the result of such an `n` known only at run time.
 :::
 
 :::{rule} NEW-6
@@ -146,6 +200,26 @@ These conditions apply to `new T[n]` (NEW-2):
 
 During {term}`constant evaluation`, each object that `new` creates must
 be deleted before the evaluation ends.
+:::
+
+:::{rule} NEW-37
+:kind: reject
+:tests: expressions/new-delete/constant-evaluation-class-allocation.cpp expressions/new-delete/constant-evaluation-placement.cpp expressions/new-delete/constant-evaluation-nothrow.cpp expressions/new-delete/aligned-new-constant.cpp
+
+During constant evaluation, a `new` expression must call a global
+allocation function of the implementation. These functions are the
+forms of NEW-19 and NEW-26, and the nothrow forms ({rule}`LSUP-6`,
+{question}`Q-0303`). A class's own `operator new` and a placement form
+that the program defines are not valid there.
+:::
+
+:::{rule} NEW-39
+:kind: reject
+:tests: expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp
+
+During constant evaluation, the first bound of `new T[n]` must not be
+erroneous (NEW-35). The throw that an erroneous bound causes is not
+valid there ({rule}`CE-8`).
 :::
 
 :::{rule} NEW-7
@@ -221,6 +295,16 @@ forms are potentially throwing, and the `operator delete` forms are
 non-throwing ({rule}`EXS-4`).
 :::
 
+:::{rule} NEW-26
+:kind: required
+:tests: expressions/new-delete/aligned-forms-by-name.cpp expressions/new-delete/aligned-forms-specifiers.cpp foundations/language-support/alignment-enumeration-with-enumerator.cpp
+
+Every translation unit also has the aligned forms of the functions of
+NEW-19. Each aligned form adds a last parameter of type
+`std::align_val_t` ({rule}`LSUP-5`). An aligned `operator new` gives
+storage aligned to the value of that argument.
+:::
+
 :::{rule} NEW-20
 :kind: reject
 :tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp
@@ -231,6 +315,16 @@ their number fits its parameters after the size, and each placement
 argument converts implicitly to its parameter type, as in a function
 call ({rule}`PFX-6`). The functions of NEW-19 accept no placement
 arguments.
+:::
+
+:::{rule} NEW-30
+:kind: reject
+:tests: expressions/new-delete/aligned-form-only-for-ordinary-type.cpp
+
+If the alignment of the type is at most the {term}`default new
+alignment`, a `new` expression must find an allocation function that
+accepts the size and the placement arguments. An aligned form is not
+tried in its place ({question}`Q-0300`).
 :::
 
 :::{rule} NEW-25
@@ -282,7 +376,7 @@ initializer are evaluated.
 
 :::{rule} NEW-21
 :kind: required
-:tests: expressions/new-delete/throw-in-initializer-argument.cpp expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp
+:tests: expressions/new-delete/throw-in-initializer-argument.cpp expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp
 
 If the initialization in a `new` expression throws, a deallocation
 function frees the storage before the exception leaves the expression
@@ -298,7 +392,7 @@ initializer's arguments. The function is an `operator delete`, or an
 
 :::{rule} NEW-22
 :kind: required
-:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp
+:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp
 
 Without placement arguments, the deallocation function is a usual form.
 A usual form has a `void*` parameter, and can have a second parameter
@@ -340,6 +434,80 @@ not freed, in these cases:
   chooses one ({question}`Q-0222`).
 :::
 
+:::{rule} NEW-28
+:kind: required
+:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp
+
+If the alignment of `T` is more than the {term}`default new
+alignment`, a `new` expression for `T` or an array of `T` passes
+`alignof(T)` as an `std::align_val_t` argument. The argument comes
+after the size and before the placement arguments. The deallocation
+function gets the alignment too, after `delete` and after a throw
+(NEW-21).
+:::
+
+:::{rule} NEW-29
+:kind: required
+:tests: expressions/new-delete/aligned-fallback-without-alignment.cpp
+
+If no allocation function accepts the arguments of NEW-28, the `new`
+expression tries again without the alignment argument. A `delete`
+expression for the object finds its deallocation function in the same
+way.
+:::
+
+:::{rule} NEW-31
+:kind: required
+:tests: expressions/new-delete/null-result-nothrow-tag.cpp expressions/new-delete/null-result-non-throwing-placement.cpp foundations/language-support/nothrow-tag-self-declared.cpp
+
+If the allocation function is non-throwing ({rule}`EXS-4`) and returns
+a null pointer, the `new` expression gives a null pointer. The
+expression then evaluates no argument of the initializer, initializes
+nothing, and calls no deallocation function.
+:::
+
+:::{rule} NEW-33
+:kind: required
+:tests: expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-forms-self-declared.cpp
+
+A `new` expression that uses a {term}`non-allocating placement form`
+({rule}`LSUP-7`) creates the object at the address of the placement
+argument. For an array, the result is that address. The expression asks
+for no extra storage (NEW-34).
+:::
+
+:::{rule} NEW-35
+:kind: required
+:tests: expressions/new-delete/bad-bound-negative.cpp expressions/new-delete/bad-bound-too-large.cpp expressions/new-delete/bad-bound-too-few.cpp foundations/language-support/exception-classes-array-length.cpp
+
+The first bound `n` of `new T[n]` is *erroneous* in these cases:
+
+- `n` is negative.
+- The size of the array is too large for the type of `sizeof`.
+- The initializer has more elements than `n`.
+
+The expression then calls no allocation function and throws
+`std::bad_array_new_length` ({rule}`LSUP-8`, {question}`Q-0301`).
+:::
+
+:::{rule} NEW-36
+:kind: required
+:tests: expressions/new-delete/bad-bound-nothrow.cpp
+
+If the bound is erroneous (NEW-35) and the allocation function is
+non-throwing, the `new` expression gives a null pointer and throws
+nothing ({question}`Q-0302`).
+:::
+
+:::{rule} NEW-38
+:kind: required
+:tests: foundations/language-support/exception-classes-allocation.cpp
+
+A global allocation function of NEW-19 or NEW-26 that cannot allocate
+the storage throws `std::bad_alloc` ({rule}`LSUP-8`). The function never
+returns a null pointer.
+:::
+
 ## Undefined Behavior
 
 :::{rule} NEW-3
@@ -367,6 +535,14 @@ The behavior is undefined if the program:
 A read or write of a dynamic object after `delete` breaks {rule}`OBJ-2`.
 :::
 
+:::{rule} NEW-32
+:kind: undefined
+:tests: expressions/new-delete/null-result-throwing-form-sanitizer.cpp
+
+If an allocation function that is not non-throwing returns a null
+pointer, the behavior is undefined.
+:::
+
 ## Implementation Requirements
 
 :::{rule} NEW-18
@@ -385,6 +561,30 @@ The number of calls to the global allocation functions can be smaller
 than the number of `new` expressions. An implementation can skip an
 allocation or serve two allocations with one call. A program that
 replaces these functions and counts calls must accept a lower count.
+:::
+
+:::{rule} NEW-27
+:kind: impl-defined
+:tests: expressions/new-delete/default-new-alignment.cpp expressions/new-delete/aligned-new-passes-alignment.cpp
+
+The {term}`default new alignment` is implementation-defined. The
+predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
+*(preprocessor referenced)*. The matrix targets choose these values:
+
+| Target | Default new alignment |
+|---|---|
+| x86-64, Clang, GCC, and EDG | 16 |
+| EDG with 32-bit `int`, `long`, and pointers | 16 |
+:::
+
+:::{rule} NEW-34
+:kind: unspecified
+:tests: expressions/new-delete/array-overhead-other-forms.cpp
+
+An array `new` that does not use a non-allocating placement form can ask
+for more storage than its elements need. The amount is unspecified and
+can differ between two expressions. The array then starts at an
+unspecified place in the storage.
 :::
 
 ## Examples
@@ -409,10 +609,20 @@ int x;
 new (&x) int(3);                // rejected without a declared placement form
 ```
 
+```cpp
+struct alignas(64) Block { int v; };
+Block* b = new Block;           // operator new(sizeof(Block), std::align_val_t(64))
+delete b;                       // operator delete(b, std::align_val_t(64)), or the sized form
+
+long count = -1;
+int* g = new int[count];        // throws std::bad_array_new_length
+int* h = new (std::nothrow) int[count];  // null
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 71
-of 80 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 95
+of 111 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -449,6 +659,54 @@ of 80 tests.
 - NEW-24: Clang and GCC call no deallocation function when two
   templates match and partial ordering prefers neither. Clang warns.
   EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).
+- NEW-26, NEW-28: Clang, GCC, and EDG declare the aligned forms with
+  no declaration in the program, once the program declares
+  `std::align_val_t`. Clang 18 does not declare the sized forms, as
+  for NEW-19 ({question}`Q-0125`). Clang and GCC pass `alignof(T)` to a
+  program's aligned `operator new` and `operator delete`, for one
+  object, an array, a placement form, and a deallocation after a throw.
+  A type whose alignment equals the default new alignment gets no
+  alignment argument.
+- NEW-27: the targets in the matrix give 16. The host Clang with
+  `-m32` gives 8, and the host GCC with `-m32` gives 16. Neither is a
+  matrix target, so the table leaves them out. The value is the
+  implementation's choice, so the rule is `impl-defined`.
+- NEW-29, NEW-30: every compiler drops the alignment when a class
+  declares only the forms without alignment. Every compiler rejects
+  the reverse case, a class of ordinary alignment whose only
+  `operator new` takes an alignment ({question}`Q-0300`).
+- NEW-31: Clang and GCC test the result of a `noexcept` allocation
+  function, with the nothrow tag or with another placement argument.
+  On null they evaluate no initializer argument and run no
+  constructor.
+- NEW-32: the undefined behavior sanitizer of Clang and GCC reports a
+  constructor call on a null pointer when a potentially throwing
+  placement form returns null.
+- NEW-33, NEW-34: Clang and GCC place an array at the address that the
+  non-allocating placement form receives, also for a class with a
+  destructor. With another placement form, both ask for extra storage
+  for an array of a class with a destructor and put the array after
+  it, and ask for none for an array of `int`. The amount is the
+  implementation's choice and need not be documented, so NEW-34 is
+  `unspecified`.
+- NEW-35: GCC throws `std::bad_array_new_length` for a negative bound
+  and for a size too large, without a call of the allocation function.
+  For a bound smaller than the initializer, GCC calls the allocation
+  function, frees the storage, and then throws. Clang passes the
+  allocation function a size that it cannot meet, so the function
+  throws `std::bad_alloc` ({question}`Q-0301`).
+- NEW-39: constant evaluation rejects each erroneous bound on every
+  compiler. Clang and EDG name the bound in a note, and GCC names the
+  call that would throw.
+- NEW-36: Clang gives a null pointer for an erroneous bound with the
+  nothrow form. GCC throws `std::bad_array_new_length`
+  ({question}`Q-0302`).
+- NEW-37: every compiler rejects a class's own `operator new` and a
+  placement form during constant evaluation, and accepts an
+  over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow
+  forms. GCC 14 and EDG reject them ({question}`Q-0303`).
+- NEW-38: Clang and GCC throw `std::bad_alloc` from the global
+  allocation function for a request that no system can meet.
 - NEW-25: Clang, GCC, and EDG reject a private deallocation function,
   also when the initialization cannot throw. Clang and EDG reject a
   deleted one in the same cases. GCC accepts the deleted function

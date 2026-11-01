@@ -64,7 +64,8 @@ In scope:
 Referenced but not specified:
 
 A few topics that the in-scope rules mention have no page: the library
-beyond the language-support types, coroutines, the memory model,
+beyond the language-support names (including `typeid` and its types,
+the new handler, and the launder operation), coroutines, the memory model,
 extended floating-point types, the full lists of class properties, and
 the preprocessor beyond `#include "file"`. Tidal sections mark each use
 with a *(topic referenced)* marker.
@@ -73,8 +74,11 @@ Out of scope:
 
 - The preprocessor other than `#include "file"` and include guards,
   lexical structure, modules.
-- The standard library, except the language-support types that the core
-  rules name (decision 0041).
+- The standard library, except the language-support names that the core
+  rules use: the types of decision 0041, the global allocation and
+  deallocation forms with their alignment and nothrow types, the
+  non-allocating placement forms, and the exception classes that the
+  language throws (decision 0041, phase 5 item F2).
 - Coroutines (`co_await`, `co_yield`, `co_return`).
 - The memory model and threads.
 

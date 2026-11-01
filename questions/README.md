@@ -309,6 +309,11 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0296](Q-0296-later-default-before-parameter-without-one.md) | Must an implementation reject a later declaration whose new default comes before a parameter that has no default in any declaration? | provisional | yes, TPL-14 counts the defaults of all declarations; Clang and EDG agree, GCC differs |
 | [Q-0297](Q-0297-const-variable-template-linkage.md) | Does a `const` variable template have one object for each specialization across translation units? | provisional | yes; Clang and GCC 16 agree, GCC 14 differs |
 | [Q-0298](Q-0298-pointer-difference-beyond-ptrdiff.md) | How do implementations treat a pointer difference that does not fit its type? | provisional | undefined (ADD-18); EDG rejects positions past the largest difference |
+| [Q-0299](Q-0299-alignment-enumeration-shape.md) | Must an implementation reject a declaration of `std::align_val_t` with another shape? | provisional | yes, reject (LSUP-5); GCC and EDG reject, Clang accepts |
+| [Q-0300](Q-0300-aligned-form-for-ordinary-type.md) | Does a `new` expression for a type of ordinary alignment fall back to an aligned allocation function? | provisional | no (NEW-30); every compiler rejects |
+| [Q-0301](Q-0301-erroneous-array-bound.md) | What does a `new` expression do with an erroneous run-time array bound? | provisional | no allocation call, throws `std::bad_array_new_length` (NEW-35); Clang throws `std::bad_alloc` from the allocation function, GCC allocates first for too few elements |
+| [Q-0302](Q-0302-erroneous-bound-non-throwing.md) | Does an erroneous array bound give a null pointer when the allocation function is non-throwing? | provisional | yes (NEW-36); Clang agrees, GCC throws |
+| [Q-0303](Q-0303-nothrow-new-constant-evaluation.md) | Can constant evaluation use a `new` expression with the nothrow tag? | provisional | yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject |
 
 ## Status values
 
