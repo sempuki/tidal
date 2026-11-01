@@ -43,7 +43,8 @@ operand is evaluated.
 - If two class types each convert to the other, there is no single
   answer, and the expression is rejected.
 - Otherwise the result is a prvalue, and each operand is converted to
-  the result type. Arithmetic operands convert by the
+  the result type. Operands of one type keep that type. Other
+  arithmetic operands convert by the
   {term}`usual arithmetic conversions`. Class operands convert by their
   own conversions, with overload resolution choosing when the types
   differ.
@@ -79,10 +80,13 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp
 
 The second and third operands give one result type and
-{term}`value category`:
+{term}`value category`. The first row that matches the operands gives
+the result. For the rows after the first four, an array operand becomes
+a pointer to its first element, a function operand becomes a pointer to
+the function, and the cv-qualifiers of a non-class operand are removed.
 
 | Operands | Result |
 |---|---|
@@ -90,7 +94,8 @@ The second and third operands give one result type and
 | Lvalues of the same type apart from cv-qualifiers, where neither set includes the other, as for `const` and `volatile` | A prvalue |
 | Two xvalues | An xvalue |
 | An lvalue and an xvalue | A prvalue |
-| Both of arithmetic or enumeration type | A prvalue of the type that the {term}`usual arithmetic conversions` give. Two integer literals `0` give `int`. |
+| Two operands of the same type | A prvalue of that type, with no promotion. `true ? 'a' : 'b'` has type `char`, and two enumerators of `E` give `E`. |
+| Both of arithmetic or enumeration type | A prvalue of the type that the {term}`usual arithmetic conversions` give. A `char` and a `short` give `int`. |
 | A pointer, and a pointer or a null pointer constant | A pointer prvalue with the combined cv-qualifiers |
 | Two `nullptr`, or `nullptr` and the literal `0` | The type of `nullptr` ({question}`Q-0102`) |
 | A pointer to member and `nullptr` | A pointer to member |
@@ -219,6 +224,8 @@ constructor is called, so the class needs none.
 int x = 1, y = 2;
 (c ? x : y) = 10;              // fine: both are lvalues of type int
 auto a = c ? 1 : 2.5;          // double
+auto k = c ? 'a' : 'b';        // char: one type, no promotion
+auto s = c ? "ab" : "xyz";     // const char*
 auto p = c ? &x : nullptr;     // int*
 int& r = c ? x : throw 1;      // the type of x
 int v = n == 0 ? 10 : n == 1 ? 11 : 12;   // groups as n == 0 ? 10 : (...)
@@ -227,13 +234,16 @@ auto bad = c ? &x : 1;         // rejected: no common type
 
 ## Evidence
 
-All eight compilers agree on 36 of 37 tests. The results are in
+All eight compilers agree on 38 of 39 tests. The results are in
 `tests/RESULTS.md`.
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
   form under `-pedantic-errors`. EDG rejects the form in all modes.
 - COND-3: operands of two different enumeration types give `int`. Clang
-  and GCC warn that this use is deprecated.
+  warns that this use is deprecated (`-Wdeprecated-enum-compare-conditional`).
+  GCC warns of an enumeration mismatch (`-Wenum-compare`). Both warnings
+  are on by default, and `-pedantic-errors` does not make them errors.
+  Every compiler accepts the program in strict mode.
 - COND-3: GCC rejects a conditional with the literal `0` and `nullptr`.
   Clang and EDG accept the conditional ({question}`Q-0102`).
 

@@ -48,7 +48,7 @@ values only.
 :::
 
 :::{principle} TYP-P3
-:rules: TYP-1 TYP-2 TYP-3 TYP-10 TYP-12 TYP-13
+:rules: TYP-1 TYP-2 TYP-3 TYP-10 TYP-12 TYP-13 TYP-14
 
 The language fixes the order of the sizes, and the target fixes the
 sizes themselves. The target also picks the signedness of `char` and
@@ -243,6 +243,16 @@ both matrix targets, the table gives the bits of precision:
 | `long double` | 64 |
 :::
 
+:::{rule} TYP-14
+:kind: impl-defined
+:tests: foundations/types/rounding-nearest-even.cpp foundations/types/rounding-nearest-even-ilp32.cpp foundations/types/rounding-nearest-even-run.cpp
+
+The rounding of a floating-point value to its type is
+implementation-defined. On both matrix targets, a value between two
+adjacent values of the type rounds to the nearer one. A value exactly
+halfway rounds to the one whose last bit of precision is zero.
+:::
+
 :::{rule} TYP-12
 :kind: impl-defined
 :tests: foundations/types/align-member-ilp32.cpp foundations/types/align-long-double-member-ilp32.cpp
@@ -265,6 +275,12 @@ auto mixed = 1L + 1u;                   // long on x86-64,
                                         // unsigned long on -m32
 static_assert(char(200) < 0);           // char is signed on both targets
 
+// Rounding to nearest, ties to the even value (TYP-14).
+// One unit in the last place of 1.0 is 0x1p-52 in double.
+1.0 + 0x1p-53 == 1.0                    // halfway: rounds down to even
+1.0 + 0x1.8p-52 == 1.0 + 0x1p-51        // halfway: rounds up to even
+1.0 + 0x1.1p-53 == 1.0 + 0x1p-52        // above halfway: rounds up
+
 // The bounds of int, written without a header (TYP-4).
 constexpr unsigned umax = ~0u;                     // 2^32 - 1 (BIT-5)
 constexpr int imax = static_cast<int>(umax >> 1);  // 2^31 - 1
@@ -283,8 +299,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 51 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 54 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both
@@ -297,6 +313,12 @@ ILP32 build runs only those.
 - TYP-7: Clang reports a sign on `wchar_t` through an error that a
   warning flag controls (`-Wsigned-unsigned-wchar`). GCC's message for
   the same error names `typeof`.
+- TYP-14: every compiler rounds to nearest, ties to even, during
+  constant evaluation and at run time, in `float` and `double`. The
+  results hold at `-O2`. With `-m32`, GCC keeps extra precision in
+  intermediates ({rule}`MUL-17`), so the `-m32` test rounds each sum
+  with a cast. CONV-7 gives the same rounding for an integer converted
+  to a floating-point type.
 - TYP-8: Clang gives each character type the rank of its underlying
   type. A program sees these ranks only through promotion (CONV-1).
 

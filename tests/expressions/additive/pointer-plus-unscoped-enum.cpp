@@ -5,4 +5,4 @@ enum E { one = 1 };
 int arr[4];
 int* p = arr + one;
 int* q = arr + true;
-int* r = arr + 'a' - 'a';
+int* r = arr + '\3';

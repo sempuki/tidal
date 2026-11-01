@@ -391,6 +391,9 @@ These properties of a closure type are unspecified:
 - whether a capture by reference adds a member,
 - the order in which the implicit captures are initialized, among
   themselves and relative to the explicit captures.
+
+A capture by copy adds a member of the captured type. So the closure is
+at least as large as each such member.
 :::
 
 ## Recommended Practice
@@ -435,6 +438,17 @@ of 62 tests.
 - LAM-20: every compiler initializes the explicit captures first. The
   implicit captures follow, in the order of their first use in the body.
   LAM-20 allows this order.
+- LAM-19: at run time, `-fsanitize=address` in Clang and GCC stops a
+  call that reads a reference capture after the variable's scope ends.
+  The report names a stack use after scope
+  (`capture-outlived-sanitizer.cpp`).
+- LAM-20: on every compiler, a closure that copies an `int` is at least
+  as large as an `int`, as the copy member requires.
+- LAM-21: GCC warns under `-Wdeprecated` and Clang under
+  `-Wdeprecated-this-capture`. Both warnings are on by default in C++20
+  and later, and `-pedantic-errors` does not make them errors. With
+  `-Werror`, alone or with `-Wall -Wextra`, both compilers reject the
+  program. EDG does not accept these flags and skips the test.
 - LAM-18: GCC 16 and EDG find the capture in the trailing return type.
   Clang and GCC 14 find the outer variable ({question}`Q-0092`).
 

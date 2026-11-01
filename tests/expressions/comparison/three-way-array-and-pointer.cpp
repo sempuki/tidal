@@ -1,4 +1,4 @@
-// tidal-rules: CMP-24 CMP-12
+// tidal-rules: CMP-24 CMP-12 CMP-6
 // tidal-expect: accept
 // tidal-note: One array operand converts to a pointer. CMP-24 applies only to two array operands.
 namespace std {

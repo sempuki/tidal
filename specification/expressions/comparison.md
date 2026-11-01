@@ -146,11 +146,13 @@ equality operator is a prvalue of type `bool`.
 
 :::{rule} CMP-6
 :kind: required
-:tests: expressions/comparison/pointer-void.cpp expressions/comparison/pointer-qualification.cpp
+:tests: expressions/comparison/pointer-void.cpp expressions/comparison/pointer-qualification.cpp expressions/comparison/single-array-operand.cpp expressions/comparison/three-way-array-and-pointer.cpp
 
 Two pointers can be compared if one converts to the type of the other.
 The conversion can add {term}`cv-qualifiers <cv-qualifier>` or convert
-to `void*`. A pointer can be compared with `nullptr` for equality.
+to `void*`. A pointer can be compared with `nullptr` for equality. An
+array operand of any comparison operator, `<=>` included, converts to a
+pointer to its first element.
 :::
 
 :::{rule} CMP-9
@@ -357,18 +359,21 @@ agree. This rule applies to pointers to:
 - members of a union,
 - members that occupy no storage.
 
-During {term}`constant evaluation`, a comparison of pointers to
-unrelated objects or functions is not a constant expression.
+Outside {term}`constant evaluation`, each such comparison is valid and
+gives `true` or `false`. During constant evaluation, a comparison of
+pointers to unrelated objects or functions is not a constant expression.
 :::
 
 :::{rule} CMP-20
 :kind: unspecified
-:tests: expressions/comparison/one-past-end-adjacent-constant.cpp expressions/comparison/one-past-end-adjacent.cpp
+:tests: expressions/comparison/one-past-end-adjacent-constant.cpp expressions/comparison/one-past-end-adjacent.cpp expressions/comparison/one-past-member-adjacent-constant.cpp
 
 A pointer one past the end of one object can compare equal or not equal
 to a pointer to another object that follows the first object in memory.
-The result is unspecified. During constant evaluation, the comparison is
-rejected ({question}`Q-0051`).
+The result is unspecified. During constant evaluation, the equality
+comparison is rejected if the first object is a complete object
+({question}`Q-0051`). Inside one complete object, such as an array
+member and the member after it, the comparison is accepted.
 :::
 
 ## Recommended Practice
@@ -424,6 +429,16 @@ int a, b;
 int grid[2][3];
 grid[0] + 3 == grid[1] // true
 
+struct Record { int values[2]; int tail; };
+Record r;
+r.values + 2 <= &r.tail   // true, also during constant evaluation
+r.values + 2 == &r.tail   // unspecified; accepted during constant evaluation
+int x, y;
+&x + 1 == &y              // unspecified; rejected during constant evaluation
+
+int list[2];
+list < &list[1]           // true: list becomes &list[0]
+
 (1 <=> 2) == std::strong_ordering::less     // true
 (1.0 <=> nan) == std::partial_ordering::unordered
 
@@ -435,8 +450,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 87 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 78
+of 89 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
@@ -447,10 +462,22 @@ operands.
   warning off. Clang 18, GCC, and EDG accept a chained comparison
   ({question}`Q-0029`).
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
-  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives
-  no warning for a chained comparison of variables ({question}`Q-0029`).
-  CMP-14 covers the four relational operators only. GCC also warns
-  about `a == b == c` and `a < b == c`, and Clang does not.
+  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. GCC turns on
+  `-Wparentheses` under `-Wall`. CMP-14 covers the four relational
+  operators only. These are the results for a chained comparison
+  ({question}`Q-0029`):
+
+  | Compiler | No flags | Relational chain, `-Werror -Wparentheses` | Equality chain, `-Werror -Wparentheses` |
+  |---|---|---|---|
+  | Clang 22 | rejects a relational chain, accepts an equality chain | rejects | accepts, no warning |
+  | Clang 18 | accepts | accepts, no warning | accepts, no warning |
+  | GCC 14 and 16 | accepts | rejects | rejects |
+  | EDG 7.0 | accepts | skips the test | skips the test |
+
+  A relational chain of variables (`a < b < c`) and of constants
+  (`1 < 2 < 3`) give the same result on each compiler. An equality
+  chain is `a == b == c` or `a < b == c`. EDG does not accept the
+  warning flags.
 - CMP-7, CMP-26: every compiler orders pointers into two rows of one
   array of arrays, and into an array member and the member after it,
   during constant evaluation. Every compiler gives `true` for a pointer
@@ -459,6 +486,10 @@ operands.
 - CMP-8: for pointers to two members of a union, or to an empty member
   and its neighbor, all three implementations give a result during
   constant evaluation. Only the unrelated-object case is rejected there.
+- CMP-8: at run time, every Clang and GCC configuration orders two
+  unrelated global variables by address, so `&a < &b` and `&a > &b`
+  disagree (`pointer-unrelated-run.cpp`). CMP-8 does not promise this
+  result.
 - CMP-8: all compilers reject the comparison of unrelated pointers
   during constant evaluation. A function name followed by `<` starts a
   template argument list, so the function-pointer test puts each operand
@@ -488,8 +519,17 @@ operands.
   `std::partial_ordering`. Clang and GCC reject the comparison
   ({question}`Q-0050`).
 - CMP-20: Clang and GCC reject the comparison during constant
-  evaluation. EDG accepts the comparison ({question}`Q-0051`). Inside
-  one array of arrays, every compiler accepts the comparison, as CMP-26
-  states.
+  evaluation if the first object is a complete object. EDG accepts the
+  comparison ({question}`Q-0051`). Inside one array of arrays, every
+  compiler accepts the comparison, as CMP-26 states. Inside one class
+  object, every compiler accepts `==` and `<` between the pointer one
+  past an array member and the next member, and gives `true` for both
+  (`one-past-member-adjacent-constant.cpp`).
+- CMP-21: Clang warns under `-Wdeprecated-enum-compare` for two
+  different enumerations, and GCC warns under `-Wenum-compare`. For an
+  enumeration and a floating-point value, both compilers warn under
+  `-Wdeprecated-enum-float-conversion`. Each warning is on by default,
+  and `-pedantic-errors` does not make it an error. A test turns the
+  warning into an error with `-Werror`.
 
 Inputs: clang-sema-expr, clang-diag-sema.

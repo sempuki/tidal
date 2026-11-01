@@ -204,7 +204,8 @@ more than the largest value of the type.
 
 For arithmetic operands, `*` gives the mathematical product and `/` on
 floating-point operands gives the mathematical quotient. For a
-floating-point type, the result is rounded to the type.
+floating-point type, the result is rounded to the type
+({rule}`TYP-14`).
 :::
 
 ## Undefined Behavior
@@ -365,9 +366,13 @@ low / short(-1)      // 32768: both operands become int
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
 All eight compilers agree on 47 of 52 tests.
 
-- **MUL-2.** Clang and GCC warn that an enumeration with a
-  floating-point operand is deprecated. Both compilers accept the
-  operand.
+- **MUL-2, MUL-16.** Clang and GCC warn that an enumeration with a
+  floating-point operand is deprecated
+  (`-Wdeprecated-enum-float-conversion`). Both compilers warn about two
+  different enumerations under `-Wdeprecated-enum-enum-conversion`. Each
+  warning is on by default, and `-pedantic-errors` does not make it an
+  error, so both compilers accept the operands in strict mode. The
+  MUL-16 tests turn the warning into an error with `-Werror`.
 - **MUL-9, MUL-10.** Clang and GCC (all tested versions) reject
   each case during constant evaluation. Their notes name the cause:
   division by zero, a result too large for `int`, or overflow. Each case
@@ -418,10 +423,12 @@ All eight compilers agree on 47 of 52 tests.
   overloaded `*` or `/`, GCC evaluates the right operand first. This
   result shows that the order is not fixed. The tests accept either
   order ({question}`Q-0005`).
-- **MUL-14.** Clang warns "unsequenced modification and access". GCC
-  warns "operation ... may be undefined". The tests change these
-  warnings into errors. EDG does not accept these warning flags and
-  skips the tests.
+- **MUL-14.** Clang warns "unsequenced modification and access" under
+  `-Wunsequenced`, which is on by default. GCC warns "operation ... may
+  be undefined" under `-Wsequence-point`, which `-Wall` turns on. GCC
+  gives no warning without `-Wall` or the named flag. The tests change
+  these warnings into errors. EDG does not accept these warning flags
+  and skips the tests.
 - **MUL-15.** The result type on x86-64 (LP64) differs from the result
   type with `-m32` (ILP32). The tests depend on `sizeof(long)`.
 - **MUL-17.** `0.1 * 3.0 / 3.0` gives `0.10000000000000002` when each

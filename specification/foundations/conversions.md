@@ -364,7 +364,8 @@ The results are in `tests/RESULTS.md`.
 - CONV-8: EDG accepts a character literal with the value zero as a null
   pointer constant. Clang and GCC reject it ({question}`Q-0100`).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
-  to the even value at a tie.
+  to the even value at a tie. {rule}`TYP-14` gives the same rounding
+  for floating-point arithmetic.
 - CONV-11: Clang and GCC give infinity. EDG rejects the conversion
   during constant evaluation ({question}`Q-0028`).
 

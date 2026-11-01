@@ -180,7 +180,9 @@ forms itself. Each form is an `inline` function with `noexcept`:
 | `operator delete`, `operator delete[]` | `void*`, `void*` | none |
 
 An array placement `new`, such as `new (p) T[n]`, calls the
-`operator new[]` form ({rule}`NEW-20`).
+`operator new[]` form ({rule}`NEW-20`). The program's own definitions
+are the {term}`non-allocating placement forms <non-allocating placement form>`
+of {rule}`NEW-33`.
 :::
 
 :::{rule} LSUP-8

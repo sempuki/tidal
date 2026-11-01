@@ -196,7 +196,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that
 is:
@@ -293,6 +293,8 @@ int* p = a + 3;           // points to a[3]
 int* end = a + 4;         // fine: one past the last element
 int* bad = a + 5;         // undefined
 end - a;                  // 4
+a + 'a' - 'a';            // undefined: the first step, a + 97, leaves the array
+a + ('a' - 'a');          // fine: a + 0
 
 int b[2];
 &b[0] - &a[0];            // undefined: different arrays
@@ -315,7 +317,7 @@ bool add_fits(int a, int b) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 48
-of 56 tests.
+of 57 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
@@ -326,8 +328,21 @@ of 56 tests.
 - ADD-10: Clang and EDG reject a pointer before or beyond the array
   during constant evaluation. GCC 14 and 16 accept the pointer, even
   far outside the array, and reject only a read through it
-  ({question}`Q-0031`). All compilers reject a nonzero offset from a
-  null pointer.
+  ({question}`Q-0031`). The same split holds for an intermediate step
+  that leaves the array, as in `a + 'a' - 'a'`, although the final
+  position is inside the array. All compilers reject a nonzero offset
+  from a null pointer.
+- ADD-10: during constant evaluation, every compiler rejects a read of
+  the next row through a pointer into the current row of a
+  two-dimensional array (`past-end-of-row.cpp`). GCC names the bound of
+  the row in its message.
+- ADD-10: at run time, `-fsanitize=undefined` in Clang stops a nonzero
+  offset from a null pointer. The GCC sanitizer does not check the
+  offset and lets the program run (`null-plus-nonzero-sanitizer.cpp`).
+- ADD-10: a namespace-scope variable whose initializer is not a
+  constant expression is dynamically initialized ({rule}`SINIT-2`). If
+  that initializer forms a pointer outside the array, the behavior at
+  run time is undefined.
 - ADD-12: `p - q` has type `long` on x86-64 (LP64) and `int` with
   `-m32` (ILP32).
 - ADD-13: Clang and GCC evaluate the left operand of the built-in `+`
@@ -346,14 +361,25 @@ of 56 tests.
   cannot form either pointer ({rule}`CAST-8`). The byte rule is
   provisional ({question}`Q-0304`).
 - ADD-16, MUL-16: Clang and GCC warn about these operations as
-  deprecated.
+  deprecated. The flag is `-Wdeprecated-enum-enum-conversion` for two
+  different enumerations and `-Wdeprecated-enum-float-conversion` for an
+  enumeration and a floating-point value. Each warning is on by
+  default, and `-pedantic-errors` does not make it an error. So both
+  compilers accept the operands in strict mode. The ADD-16 tests add
+  `-Werror` and the named flag. EDG does not accept `-Werror` and skips
+  the tests.
 - ADD-17: Clang gives an infinity during constant evaluation. GCC and
   EDG reject the expression ({question}`Q-0001`).
 - ADD-18: with `-m32`, Clang rejects a difference of `2147483648`
   during constant evaluation and accepts `INT_MIN`. EDG rejects every
   position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`
   bytes, so no difference into one array overflows there
-  ({question}`Q-0298`).
+  ({question}`Q-0298`). The boundary is the same on every compiler.
+  An array of `0x7fffffff` bytes, with the differences `0x7fffffff` and
+  `-0x7fffffff` inside it, is accepted
+  (`pointer-difference-largest-ilp32.cpp`). An array of `0x80000000`
+  bytes with a difference across the whole array is rejected
+  (`pointer-difference-overflow-ilp32.cpp`).
 - ADD-9: `-fsanitize=undefined` in Clang and GCC stops a signed `+`
   whose result does not fit, at run time
   (`signed-overflow-add-sanitizer.cpp`).

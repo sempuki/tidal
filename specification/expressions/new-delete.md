@@ -176,7 +176,7 @@ array in `new`.
 
 :::{rule} NEW-2
 :kind: required
-:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-paren-init-runtime-bound.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp expressions/new-delete/array-floating-size-exact.cpp expressions/new-delete/array-scoped-enumeration-size.cpp expressions/new-delete/array-class-size.cpp
+:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-paren-init-narrowing.cpp expressions/new-delete/array-paren-init-runtime-bound.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp expressions/new-delete/array-floating-size-exact.cpp expressions/new-delete/array-scoped-enumeration-size.cpp expressions/new-delete/array-class-size.cpp
 
 `new T[n]` creates an array of `n` elements. These rules apply:
 
@@ -187,6 +187,11 @@ array in `new`.
 - If `n` is absent, the initializer gives the number of elements.
 - `new T[n]()` value-initializes each element, so each `int` element
   is 0.
+- `new T[n](a, b)` initializes the elements from the list in order, as
+  parenthesized aggregate initialization does ({rule}`LIST-9`). Each
+  element without a value is value-initialized. A parenthesized list
+  allows a narrowing conversion, and a braced list rejects it
+  ({rule}`LIST-2`).
 - `n` is converted to the type of `sizeof`. `n` can have an integral,
   unscoped enumeration, or floating-point type ({question}`Q-0036`), or
   a class type that converts to one of these. A scoped enumeration does
@@ -227,7 +232,9 @@ allocation function of the implementation. These functions are the
 forms of NEW-19 and NEW-26, and the nothrow forms ({rule}`LSUP-6`,
 {question}`Q-0303`). A class's own `operator new` and a placement form
 that the program defines are not valid there, except in
-`std::construct_at` ({rule}`LSUP-10`).
+`std::construct_at` ({rule}`LSUP-10`). A call of `::operator new` by
+name is valid there only inside the members of `std::allocator`
+({rule}`LSUP-11`).
 :::
 
 :::{rule} NEW-39
@@ -649,6 +656,10 @@ int* b = new int();             // 0
 int* c = new int;               // no value yet
 auto* d = new auto(7);          // int*
 int* e = new int[3]{1, 2};      // 1, 2, 0
+int* e2 = new int[3](1, 2);     // 1, 2, 0
+double half = 0.5;
+int* e3 = new int[2](half, 1);  // 0, 1: parentheses allow narrowing
+int* e4 = new int[2]{half, 1};  // rejected: narrowing in braces
 int* f = new int[]{1, 2, 3};    // three elements
 
 delete a;
@@ -681,10 +692,35 @@ int* g = new int[count];        // throws std::bad_array_new_length
 int* h = new (std::nothrow) int[count];  // null
 ```
 
+```cpp
+struct Plain {                  // ordinary alignment
+  static void* operator new(std::size_t, std::align_val_t);
+};
+Plain* p = new Plain;           // rejected: no form without alignment (NEW-30)
+
+struct Guarded {
+  static void* operator new(std::size_t);
+private:
+  static void operator delete(void*);
+};
+Guarded* g = new Guarded;       // rejected: operator delete is private,
+                                // although nothing can throw (NEW-25)
+```
+
+A program that includes no header declares the non-allocating
+placement forms itself ({rule}`LSUP-7`). `new (p) T` then uses that
+form:
+
+```cpp
+inline void* operator new(decltype(sizeof 0), void* at) noexcept { return at; }
+alignas(int) unsigned char cell[sizeof(int)];
+int* q = new (cell) int(4);     // the int is at cell (NEW-33)
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 126 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 127 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -713,6 +749,10 @@ of 126 tests.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that the
   deletion is undefined. Clang (pedantic) and EDG reject it
   ({question}`Q-0035`).
+- NEW-19: Clang 18 does not declare the sized forms of
+  `operator delete` and `operator delete[]`, so a call of them by name
+  is rejected there. Clang 22, GCC, and EDG declare them
+  ({question}`Q-0125`).
 - NEW-19: all compilers give `noexcept` the value `false` for a call of
   the global `operator new` forms and `true` for the `operator delete`
   forms.
@@ -724,7 +764,9 @@ of 126 tests.
   when both match. EDG chooses the same function. A probe with a failing
   `static_assert` in the template shows that EDG does not instantiate
   the template. Clang warns that two functions match and calls neither
-  ({question}`Q-0220`).
+  ({question}`Q-0220`). Clang, GCC, and EDG all accept the probe, so
+  none of them instantiates the body of the template
+  (`throw-placement-function-before-template-instantiation.cpp`).
 - NEW-24: Clang and GCC call no deallocation function when two
   templates match and partial ordering prefers neither. Clang warns.
   EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).
@@ -764,12 +806,17 @@ of 126 tests.
   it, and ask for none for an array of `int`. The amount is the
   implementation's choice and need not be documented, so NEW-34 is
   `unspecified`.
-- NEW-35: GCC throws `std::bad_array_new_length` for a negative bound
-  and for a size too large, without a call of the allocation function.
-  For a bound smaller than the initializer, GCC calls the allocation
-  function, frees the storage, and then throws. Clang passes the
-  allocation function a size that it cannot meet, so the function
-  throws `std::bad_alloc` ({question}`Q-0301`).
+- NEW-35: Clang and GCC differ in each erroneous case
+  ({question}`Q-0301`):
+
+  | Erroneous bound | GCC 14 and 16 | Clang 18 and 22 |
+  |---|---|---|
+  | Negative | throws `std::bad_array_new_length`, with no call of the allocation function | calls the allocation function with the largest value of `std::size_t`, which throws `std::bad_alloc` |
+  | Size too large | throws `std::bad_array_new_length`, with no call of the allocation function | the same as for a negative bound |
+  | Fewer elements than the initializer | calls the allocation function, frees the storage, and throws `std::bad_array_new_length` | the same as for a negative bound |
+
+  Under `-O2`, GCC 16 omits the call for the third case, as NEW-14
+  allows.
 - NEW-39: constant evaluation rejects each erroneous bound on every
   compiler. Clang and EDG name the bound in a note, and GCC names the
   call that would throw.
@@ -789,6 +836,15 @@ of 126 tests.
   deleted one in the same cases. GCC accepts the deleted function
   ({question}`Q-0221`). All three reject a placement form whose match
   is a usual form.
+- NEW-5: at run time, `-fsanitize=address` in Clang and GCC stops a
+  double delete ("attempting double-free") and `delete` of storage from
+  `new[]` ("alloc-dealloc-mismatch"). The tests are
+  `delete-twice-sanitizer.cpp`, `delete-array-mismatch-sanitizer.cpp`,
+  and `implicit-copy-of-owner-sanitizer.cpp`. The same sanitizer stops
+  `delete[]` through a pointer to a base ({rule}`VIRT-12`).
+- NEW-2: Clang, GCC, and EDG accept a narrowing conversion in a
+  parenthesized list of `new T[n](...)`, and reject one in a braced
+  list as LIST-2 requires.
 - NEW-3: no sanitizer of GCC or Clang stops a read of an object that
   `new T` left with no value, under `-fsanitize=undefined` or
   `-fsanitize=address`.

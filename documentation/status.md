@@ -9,7 +9,7 @@ current state only. The history of how the project got here is in
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
 | [Translation, execution, and behavior classes](../specification/foundations/translation.md) | 12 | 4 required, 4 reject, 1 undefined, 2 impl-defined, 1 recommended | 35 | 1 | 1 | 49 | Q-0024, Q-0029, Q-0312 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 1 IDs not checked |
-| [Fundamental types](../specification/foundations/types.md) | 13 | 7 required, 1 reject, 5 impl-defined | 51 | 3 | 2 | 27 | Q-0120 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
+| [Fundamental types](../specification/foundations/types.md) | 14 | 7 required, 1 reject, 6 impl-defined | 54 | 3 | 2 | 27 | Q-0120 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 1 IDs not checked |
 | [Language-support types](../specification/foundations/language-support.md) | 11 | 8 required, 3 reject | 46 | 2 | 12 | 47 | Q-0299, Q-0301, Q-0321, Q-0323 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 1 IDs not checked |
 | [Keywords and reserved names](../specification/foundations/keywords.md) | 4 | 2 required, 1 reject, 1 no-diagnostic | 96 | 2 | 0 | 3 |  | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Objects, storage, and lifetime](../specification/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 43 | 4 | 2 | 43 | Q-0115 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
@@ -31,19 +31,19 @@ current state only. The history of how the project got here is in
 | [Primary expressions](../specification/expressions/primary.md) | 33 | 14 required, 10 reject, 1 undefined, 1 unspecified, 3 impl-defined, 3 conditionally-supported, 1 recommended | 114 | 9 | 7 | 22 | Q-0033, Q-0063, Q-0064, Q-0194 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 4 IDs not checked |
 | [decltype, unevaluated operands, and discarded values](../specification/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 51 | 3 | 3 | 19 | Q-0065, Q-0089 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Multiplicative operators](../specification/expressions/multiplicative.md) | 20 | 7 required, 3 reject, 4 undefined, 2 unspecified, 3 impl-defined, 1 recommended | 52 | 0 | 5 | 51 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
-| [Additive operators](../specification/expressions/additive.md) | 17 | 7 required, 1 reject, 6 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 56 | 0 | 8 | 41 | Q-0001, Q-0005, Q-0031, Q-0049, Q-0298, Q-0304 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
+| [Additive operators](../specification/expressions/additive.md) | 17 | 7 required, 1 reject, 6 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 57 | 0 | 9 | 41 | Q-0001, Q-0005, Q-0031, Q-0049, Q-0298, Q-0304 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Shift operators](../specification/expressions/shift.md) | 9 | 6 required, 1 reject, 1 undefined, 1 recommended | 25 | 3 | 0 | 21 |  | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
-| [Comparison operators](../specification/expressions/comparison.md) | 27 | 15 required, 6 reject, 2 unspecified, 4 recommended | 87 | 1 | 11 | 36 | Q-0029, Q-0030, Q-0050, Q-0051, Q-0103, Q-0104 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
+| [Comparison operators](../specification/expressions/comparison.md) | 27 | 15 required, 6 reject, 2 unspecified, 4 recommended | 89 | 1 | 11 | 36 | Q-0029, Q-0030, Q-0050, Q-0051, Q-0103, Q-0104 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Bitwise operators](../specification/expressions/bitwise.md) | 8 | 4 required, 1 reject, 3 recommended | 21 | 2 | 0 | 5 |  | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Logical operators](../specification/expressions/logical.md) | 14 | 10 required, 2 reject, 2 recommended | 34 | 0 | 1 | 8 | Q-0101 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
-| [The conditional operator](../specification/expressions/conditional.md) | 15 | 8 required, 7 reject | 37 | 9 | 1 | 9 | Q-0102 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
+| [The conditional operator](../specification/expressions/conditional.md) | 15 | 8 required, 7 reject | 39 | 9 | 1 | 9 | Q-0102 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Assignment operators](../specification/expressions/assignment.md) | 13 | 7 required, 5 reject, 1 unspecified | 32 | 4 | 1 | 13 | Q-0032 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [The comma operator](../specification/expressions/comma.md) | 9 | 5 required, 3 reject, 1 recommended | 24 | 1 | 0 | 6 |  | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Unary operators](../specification/expressions/unary.md) | 21 | 10 required, 6 reject, 3 undefined, 1 impl-defined, 1 recommended | 68 | 3 | 4 | 50 | Q-0031, Q-0124 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Pointers to members](../specification/expressions/member-pointers.md) | 12 | 5 required, 5 reject, 1 undefined, 1 unspecified | 70 | 1 | 0 | 6 |  | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Postfix expressions](../specification/expressions/postfix.md) | 21 | 7 required, 8 reject, 5 undefined, 1 conditionally-supported | 68 | 6 | 7 | 53 | Q-0031, Q-0034, Q-0124, Q-0178, Q-0316, Q-0318 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Casts](../specification/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 55 | 4 | 1 | 30 | Q-0017, Q-0325 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
-| [New and delete](../specification/expressions/new-delete.md) | 41 | 22 required, 11 reject, 4 undefined, 3 unspecified, 1 impl-defined | 126 | 12 | 20 | 95 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 2 IDs not checked |
+| [New and delete](../specification/expressions/new-delete.md) | 41 | 22 required, 11 reject, 4 undefined, 3 unspecified, 1 impl-defined | 127 | 12 | 20 | 95 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)); 2 IDs not checked |
 | [Lambda expressions](../specification/expressions/lambdas.md) | 28 | 16 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 62 | 14 | 2 | 50 | Q-0037, Q-0092 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Placeholder types in variable declarations](../specification/declarations/auto.md) | 22 | 12 required, 10 reject | 55 | 8 | 0 | 19 | Q-0010 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
 | [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 61 | 2 | 4 | 5 | Q-0066, Q-0067, Q-0093 | none flagged ([2026-11-01-whole-specification-after-d](../reports/similarity/2026-11-01-whole-specification-after-d.txt)) |
@@ -131,8 +131,8 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 326 questions: 285 open for opinions (284
-provisional and 1 open), 10 compiler defects, and 31 settled. Each open
+The question index has 326 questions: 287 open for opinions (286
+provisional and 1 open), 10 compiler defects, and 29 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is
 wrong (Q-0002, Q-0003, Q-0013, Q-0016, Q-0044, Q-0115, Q-0212, Q-0213,
@@ -155,7 +155,7 @@ Q-0238, Q-0309). Q-0009 (license) is among the settled questions. See
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2555 tests carry `tidal-error` patterns. A pattern checks that a
+- 2556 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 45 tests, some compiler family has no pattern, because that
@@ -200,6 +200,10 @@ Waiting on the maintainer:
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).
+- Decide Q-0300 and Q-0181, which the gap review of question cluster 1
+  reopened. In both, the compilers of the matrix agree with each other,
+  and the review reads the C++23 text the other way. Q-0181 also asks
+  whether Tidal follows a later change that the newest compilers apply.
 - Decide whether to probe which C++23 rejections later language
   versions accept, as an index with no rules (designer view, item 4;
   Q-0007).

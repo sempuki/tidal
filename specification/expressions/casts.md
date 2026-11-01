@@ -327,6 +327,19 @@ All eight compilers agree on 54 of 55 tests. The results are in
   constant evaluation. Clang rejects the value ({question}`Q-0017`).
 - CAST-5, CAST-8: all compilers reject these operations during constant
   evaluation.
+- CAST-5: at run time, `-fsanitize=address` in Clang and GCC stops a
+  write through `const_cast` to a `const` object with static storage
+  duration. The object is in storage that cannot be written, so the
+  write faults (`const-cast-write-const-object-sanitizer.cpp`). No
+  sanitizer stops a write to a `const` automatic object
+  ({rule}`CV-5`).
+- CAST-14: at run time, `-fsanitize=vptr` in Clang and GCC stops a
+  `static_cast` downcast to the wrong derived class of a polymorphic
+  base. `-fsanitize=undefined` stops the read of an enumeration
+  variable that holds a value outside its range. The sanitizer reports
+  the read, after the conversion. The tests are
+  `static-cast-downcast-wrong-object-sanitizer.cpp` and
+  `cast-out-of-range-sanitizer.cpp`.
 - CAST-12: every compiler in the matrix accepts the conversion and the
   round trip works.
 - CAST-16: the library names integer types for a pointer value
