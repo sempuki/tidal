@@ -37,13 +37,14 @@ Constant evaluation rejects the undefined cases ({principle}`TR-P4`).
 :::
 
 :::{principle} ADD-P3
-:rules: ADD-6 ADD-7 ADD-8 ADD-12
+:rules: ADD-6 ADD-7 ADD-8 ADD-12 ADD-18
 
 A pointer into an array is a position in that array, counted in
 elements of the array's own type. Adding moves the position, and
 subtracting two positions in one array gives the count between them, in
-a signed type that the implementation chooses. A null pointer is no
-position at all, so only moving it by zero means anything.
+a signed type that the implementation chooses. A count that does not
+fit that type has no value. A null pointer is no position at all, so
+only moving it by zero means anything.
 :::
 
 :::{principle} ADD-P6
@@ -65,8 +66,9 @@ end:
 
 Outside those positions there is nothing to point at, and the
 behavior is undefined. Two pointers into different arrays have no
-distance. The element type must be the array's element type, because
-the arithmetic counts in that type's size.
+distance. The arithmetic counts in the size of the pointer's type. A
+pointer of another type, such as a base class pointer into an array of
+a derived class, sees only its own object, as an array of one.
 :::
 
 :::{principle} ADD-P4
@@ -94,7 +96,7 @@ enumerations, is deprecated, and an implementation should say so.
 
 :::{rule} ADD-1
 :kind: required
-:tests: expressions/additive/grouping.cpp
+:tests: expressions/additive/grouping.cpp expressions/additive/grouping-shift.cpp
 
 `+` and `-` have the same precedence and group from left to right.
 Both operators bind more tightly than shifts and less tightly than `*`,
@@ -103,7 +105,7 @@ Both operators bind more tightly than shifts and less tightly than `*`,
 
 :::{rule} ADD-2
 :kind: required
-:tests: expressions/additive/operands-arithmetic.cpp
+:tests: expressions/additive/operands-arithmetic.cpp expressions/additive/operands-mixed.cpp
 
 Both operators accept two operands of arithmetic type or unscoped
 enumeration type, in any combination.
@@ -133,7 +135,7 @@ a function is not valid.
 
 :::{rule} ADD-4
 :kind: required
-:tests: expressions/additive/result-types.cpp expressions/additive/result-prvalue.cpp
+:tests: expressions/additive/result-types.cpp expressions/additive/result-prvalue.cpp expressions/additive/operands-mixed.cpp
 
 Arithmetic operands go through the {term}`usual arithmetic conversions`.
 The result has the common type. A pointer and an integer give the type
@@ -144,7 +146,7 @@ of the pointer. The result is a prvalue.
 
 :::{rule} ADD-5
 :kind: required
-:tests: expressions/additive/unsigned-wraps.cpp
+:tests: expressions/additive/unsigned-wraps.cpp expressions/additive/unsigned-wraps-subtract.cpp
 
 If the common type is an unsigned integer type, the result wraps around.
 The wrapped result is the mathematical result reduced modulo one more
@@ -153,7 +155,7 @@ than the largest value of the type.
 
 :::{rule} ADD-6
 :kind: required
-:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp
+:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/base-pointer-one-past-subobject.cpp
 
 Adding `n` to a pointer to an array element moves the pointer `n`
 elements forward. Subtracting `n` moves the pointer back. The position
@@ -163,7 +165,7 @@ one element.
 
 :::{rule} ADD-7
 :kind: required
-:tests: expressions/additive/pointer-difference.cpp
+:tests: expressions/additive/pointer-difference.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/pointer-difference-largest-ilp32.cpp
 
 The difference of two pointers into one array is the number of elements
 from the second pointer to the first. The difference is negative if the
@@ -172,7 +174,7 @@ first pointer comes earlier.
 
 :::{rule} ADD-8
 :kind: required
-:tests: expressions/additive/null-plus-zero.cpp
+:tests: expressions/additive/null-plus-zero.cpp expressions/additive/null-minus-null-run.cpp
 
 Adding or subtracting zero to a null pointer gives a null pointer. The
 difference of two null pointers is zero.
@@ -190,7 +192,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that
 is:
@@ -205,28 +207,39 @@ Reading through a pointer one past the last element is also undefined.
 
 :::{rule} ADD-11
 :kind: undefined
-:tests: expressions/additive/pointer-difference-different-arrays.cpp
+:tests: expressions/additive/pointer-difference-different-arrays.cpp expressions/additive/pointer-difference-separate-objects.cpp
 
 If two pointers do not point into the same array, `p - q` is undefined.
 :::
 
 :::{rule} ADD-14
 :kind: undefined
-:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp
+:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp
 
-Pointer arithmetic, including the subtraction of two pointers, is
-undefined if a pointer's element type differs from the type of the array
-elements, apart from cv-qualifiers. An example is a base class pointer
-into an array of a derived class ({question}`Q-0049`).
+Arithmetic on a pointer whose type differs from the array's element
+type counts the object as an array of one. Cv-qualifiers do not count
+as a difference. These operations on such a pointer are undefined
+({question}`Q-0049`):
+
+- a move to a position other than the object or one past it,
+- a subtraction of two pointers into different array elements.
 :::
 
 :::{rule} ADD-17
 :kind: undefined
-:tests: expressions/additive/float-overflow-constant.cpp
+:tests: expressions/additive/float-overflow-constant.cpp expressions/additive/float-overflow-subtract-constant.cpp
 
 If the exact result of a floating-point `+` or `-` is finite but outside
 the range of its type, the behavior is undefined, as for MUL-12
 ({question}`Q-0001`).
+:::
+
+:::{rule} ADD-18
+:kind: undefined
+:tests: expressions/additive/pointer-difference-overflow-ilp32.cpp expressions/additive/pointer-difference-largest-ilp32.cpp
+
+If the difference of two pointers does not fit in the type of `p - q`
+({rule}`ADD-12`), the behavior is undefined ({question}`Q-0298`).
 :::
 
 ## Implementation Requirements
@@ -241,7 +254,7 @@ chooses. The library names it `std::ptrdiff_t` ({rule}`LSUP-4`).
 
 :::{rule} ADD-13
 :kind: unspecified
-:tests: expressions/additive/operand-order.cpp
+:tests: expressions/additive/operand-order.cpp expressions/additive/operand-order-overloaded.cpp
 
 The order in which the two operands are evaluated is unspecified.
 :::
@@ -250,7 +263,7 @@ The order in which the two operands are evaluated is unspecified.
 
 :::{rule} ADD-16
 :kind: recommended
-:tests: expressions/additive/mixed-enum-warns.cpp
+:tests: expressions/additive/mixed-enum-warns.cpp expressions/additive/enum-float-warns.cpp
 
 An implementation should warn about `+` or `-` between two different
 enumeration types, or between an enumeration and a floating-point value.
@@ -270,32 +283,50 @@ end - a;                  // 4
 
 int b[2];
 &b[0] - &a[0];            // undefined: different arrays
+
+struct Base { int id; };
+struct Item : Base { int extra; };
+Item items[3];
+Base* first = items;
+first + 1;                // fine: one past the Base subobject
+first + 2;                // undefined
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 46
+of 54 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
   such arithmetic in all modes.
 - ADD-9, ADD-11: all compilers reject these operations during
-  {term}`constant evaluation`.
+  {term}`constant evaluation`. For ADD-11 this includes two local
+  variables that are not arrays.
 - ADD-10: Clang and EDG reject a pointer before or beyond the array
-  during constant evaluation. GCC accepts the pointer and rejects only a
-  read through it ({question}`Q-0031`). All compilers reject a nonzero
-  offset from a null pointer.
+  during constant evaluation. GCC 14 and 16 accept the pointer, even
+  far outside the array, and reject only a read through it
+  ({question}`Q-0031`). All compilers reject a nonzero offset from a
+  null pointer.
 - ADD-12: `p - q` has type `long` on x86-64 (LP64) and `int` with
   `-m32` (ILP32).
-- ADD-13: Clang and GCC evaluate the left operand first. No variation is
-  observed (compare {question}`Q-0005`).
-- ADD-14: Clang and EDG reject arithmetic on a base class pointer into
-  an array of a derived class during constant evaluation. GCC accepts
-  the arithmetic ({question}`Q-0049`).
+- ADD-13: Clang and GCC evaluate the left operand of the built-in `+`
+  first. For an overloaded `+`, GCC evaluates the right operand first.
+  The tests accept either order ({question}`Q-0005`).
+- ADD-14: every compiler accepts a base class pointer moved one past
+  its subobject during constant evaluation, with a difference of `1`.
+  Clang and EDG reject a move of two, a read through the pointer one
+  past, and a difference of base pointers into two elements. GCC
+  accepts all three, and computes the difference from the addresses
+  ({question}`Q-0049`).
 - ADD-16, MUL-16: Clang and GCC warn about these operations as
   deprecated.
-- ADD-17: Clang gives infinity during constant evaluation. GCC and EDG
-  reject the expression ({question}`Q-0001`).
+- ADD-17: Clang gives an infinity during constant evaluation. GCC and
+  EDG reject the expression ({question}`Q-0001`).
+- ADD-18: with `-m32`, Clang rejects a difference of `2147483648`
+  during constant evaluation and accepts `INT_MIN`. EDG rejects every
+  position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`
+  bytes, so no difference into one array overflows there
+  ({question}`Q-0298`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -40,7 +40,8 @@ The result is the mathematical one, fitted to the type.
 | Unsigned | The type is modular, so the result wraps around instead of overflowing. |
 
 An implementation can keep extra precision in floating-point
-intermediates, and the matrix targets do not.
+intermediates. The x86-64 targets in the matrix do not. GCC on 32-bit
+x86 does.
 :::
 
 :::{principle} MUL-P3
@@ -49,7 +50,8 @@ intermediates, and the matrix targets do not.
 A signed integer type is not modular, so a result that the type cannot
 hold has no value. The behavior is undefined in these cases:
 
-- a signed integer result that its type cannot hold,
+- a signed integer result that its type cannot hold, such as the most
+  negative value divided by `-1`,
 - an integer division or remainder by zero, which has no mathematical
   result,
 - a floating-point result beyond the range of its type.
@@ -101,7 +103,7 @@ the mix.
 
 :::{rule} MUL-1
 :kind: required
-:tests: expressions/multiplicative/grouping.cpp
+:tests: expressions/multiplicative/grouping.cpp expressions/multiplicative/grouping-mixed.cpp
 
 `*`, `/`, and `%` have the same precedence and group from left to right.
 They bind more tightly than `+` and `-`, and less tightly than unary
@@ -154,7 +156,7 @@ An operand of `%` must not have floating-point type.
 
 :::{rule} MUL-5
 :kind: required
-:tests: expressions/multiplicative/result-types.cpp
+:tests: expressions/multiplicative/result-types.cpp expressions/multiplicative/result-types-promoted.cpp expressions/multiplicative/most-negative-short-promoted.cpp
 
 Both operands go through the {term}`usual arithmetic conversions`. The
 result has the common type and is a prvalue (see
@@ -172,7 +174,7 @@ A program cannot assign to the result of MUL-5 or take its address.
 
 :::{rule} MUL-6
 :kind: required
-:tests: expressions/multiplicative/division-truncates.cpp
+:tests: expressions/multiplicative/division-truncates.cpp expressions/multiplicative/division-most-negative.cpp expressions/multiplicative/remainder-run.cpp
 
 For integer operands, `a / b` is the mathematical quotient without its
 fractional part. The quotient rounds toward zero.
@@ -180,7 +182,7 @@ fractional part. The quotient rounds toward zero.
 
 :::{rule} MUL-7
 :kind: required
-:tests: expressions/multiplicative/remainder-sign.cpp
+:tests: expressions/multiplicative/remainder-sign.cpp expressions/multiplicative/division-most-negative.cpp expressions/multiplicative/remainder-run.cpp
 
 For integer operands, `a % b` is the value that makes
 `(a / b) * b + a % b` equal to `a`. A nonzero remainder has the sign of
@@ -189,7 +191,7 @@ For integer operands, `a % b` is the value that makes
 
 :::{rule} MUL-8
 :kind: required
-:tests: expressions/multiplicative/unsigned-wraps.cpp
+:tests: expressions/multiplicative/unsigned-wraps.cpp expressions/multiplicative/unsigned-wraps-wide.cpp
 
 If the common type is an unsigned integer type, the result wraps around.
 The result differs from the mathematical result by a multiple of one
@@ -198,7 +200,7 @@ more than the largest value of the type.
 
 :::{rule} MUL-18
 :kind: required
-:tests: expressions/multiplicative/product-value.cpp
+:tests: expressions/multiplicative/product-value.cpp expressions/multiplicative/product-value-run.cpp
 
 For arithmetic operands, `*` gives the mathematical product and `/` on
 floating-point operands gives the mathematical quotient. For a
@@ -216,7 +218,7 @@ Integer division or remainder by zero is undefined.
 
 :::{rule} MUL-10
 :kind: undefined
-:tests: expressions/multiplicative/signed-overflow-multiply.cpp expressions/multiplicative/signed-overflow-divide.cpp expressions/multiplicative/signed-overflow-remainder.cpp expressions/multiplicative/signed-overflow-after-promotion.cpp expressions/multiplicative/signed-overflow-divide-sanitizer.cpp expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp
+:tests: expressions/multiplicative/signed-overflow-multiply.cpp expressions/multiplicative/signed-overflow-divide.cpp expressions/multiplicative/signed-overflow-remainder.cpp expressions/multiplicative/signed-overflow-after-promotion.cpp expressions/multiplicative/signed-overflow-divide-sanitizer.cpp expressions/multiplicative/signed-overflow-multiply-sanitizer.cpp expressions/multiplicative/signed-overflow-remainder-sanitizer.cpp expressions/multiplicative/signed-overflow-divide-long-long.cpp expressions/multiplicative/most-negative-short-promoted.cpp
 
 If the common type is a signed integer type, these conditions make the
 behavior undefined:
@@ -224,12 +226,14 @@ behavior undefined:
 - the mathematical result of `*` or `/` does not fit in the type,
 - `/` on the same operands has undefined behavior, for `%`.
 
+The most negative value of the type, with a right operand of `-1`, is
+such a case for `/` and for `%`.
 {term}`Integer promotion` can give a signed type for unsigned operands.
 :::
 
 :::{rule} MUL-12
 :kind: undefined
-:tests: expressions/multiplicative/floating-overflow-constant.cpp
+:tests: expressions/multiplicative/floating-overflow-constant.cpp expressions/multiplicative/floating-overflow-divide-constant.cpp
 
 If the mathematical result of floating-point `*` or `/` is finite and
 larger in magnitude than the largest finite value of the type, the
@@ -238,7 +242,7 @@ behavior is undefined. This rule is provisional ({question}`Q-0001`).
 
 :::{rule} MUL-14
 :kind: undefined
-:tests: expressions/multiplicative/unsequenced-modification.cpp
+:tests: expressions/multiplicative/unsequenced-modification.cpp expressions/multiplicative/unsequenced-modification-remainder.cpp
 
 If one operand modifies a scalar object and the other operand reads or
 modifies the same object, the behavior is undefined. This rule does not
@@ -288,7 +292,7 @@ on the type ({rule}`MUL-20`):
 
 :::{rule} MUL-17
 :kind: unspecified
-:tests: expressions/multiplicative/excess-precision-either.cpp expressions/multiplicative/cast-rounds-to-type.cpp
+:tests: expressions/multiplicative/excess-precision-either.cpp expressions/multiplicative/cast-rounds-to-type.cpp expressions/multiplicative/cast-rounds-to-type-ilp32.cpp
 
 An implementation can evaluate floating-point operations with more range
 and precision than the type of the expression. The extra range and
@@ -298,13 +302,15 @@ precision apply to the additive operators too. These rules apply:
 - A cast or an assignment rounds the value to its type.
 - On the x86-64 targets in the matrix, each operation rounds to its
   type.
+- On the 32-bit x86 target, GCC keeps extra precision, and Clang and
+  EDG round each operation.
 :::
 
 ## Recommended Practice
 
 :::{rule} MUL-16
 :kind: recommended
-:tests: expressions/multiplicative/enum-float-warns.cpp
+:tests: expressions/multiplicative/enum-float-warns.cpp expressions/multiplicative/enum-enum-warns.cpp
 
 An implementation should warn about `*`, `/`, or `%` between an
 enumeration and a floating-point value, or between two different
@@ -343,11 +349,21 @@ int q = left() / right();   // left() or right() can execute first
 
 -1L / 2u             // 0 if long has 64 bits and unsigned has 32 bits
                      // ULONG_MAX / 2 if both have 32 bits
+
+int lowest = -2147483647 - 1;   // int has 32 bits
+lowest / 2           // -1073741824
+lowest % 3           // -2
+lowest / -1          // undefined
+lowest % -1          // undefined, although the remainder would be 0
+
+short low = -32768;
+low / short(-1)      // 32768: both operands become int
 ```
 
 ## Evidence
 
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
+All eight compilers agree on 47 of 52 tests.
 
 - **MUL-2.** Clang and GCC warn that an enumeration with a
   floating-point operand is deprecated. Both compilers accept the
@@ -357,6 +373,18 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
   division by zero, a result too large for `int`, or overflow. Each case
   is otherwise valid. EDG agrees on integer division by zero and on
   multiply overflow. EDG differs on the cases below.
+- **MUL-10, the most negative value.** At run time, `INT_MIN / -1` and
+  `INT_MIN % -1` stop the program with a hardware exception on every
+  Clang and GCC configuration, `-O2` included. MUL-10 allows this
+  result. `-fsanitize=undefined` reports both operators with the same
+  words. Integer promotion makes the most negative `short` divided by
+  `-1` an `int` division, which every compiler evaluates to `32768`.
+- **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and
+  `INT_MIN % -1` during constant evaluation, in `int` and in
+  `long long`. EDG 7.0 accepts both, and its quotient lies outside the
+  range of `int`. EDG rejects `-INT_MIN` and `INT_MIN * -1`. The
+  provisional answer keeps MUL-10, and EDG's behavior is a possible
+  defect ({question}`Q-0003`).
 - **MUL-11, MUL-20.** At run time on x86-64, every Clang and GCC
   configuration, `-O2` included, gives an infinity for `1.0 / 0.0` and a
   NaN for `0.0 / 0.0` in `float`, `double`, and `long double`.
@@ -365,38 +393,44 @@ The results for each compiler in the matrix are in `tests/RESULTS.md`.
   report `__STDC_IEC_559__` and IEEE 754 types in their libraries on the
   64-bit and 32-bit x86 targets. MUL-11 is `impl-defined` because the
   result rests on a choice of the implementation, which these
-  implementations make and report ({question}`Q-0004`). Clang and GCC
-  reject the division during constant evaluation (CE-28).
-- **MUL-12.** These are the results for `1e308 * 10.0` in a `constexpr`
-  initializer:
+  implementations make and report ({question}`Q-0004`, settled). Clang
+  and GCC reject the division during constant evaluation (CE-28).
+- **CE-28, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
+  during constant evaluation. EDG 7.0 accepts both and gives an
+  infinity and a NaN. EDG rejects floating overflow. The provisional
+  answer keeps the rejection, and EDG's behavior is a possible defect
+  ({question}`Q-0002`).
+- **MUL-12.** These are the results for an overflow of `*` or `/` in a
+  `constexpr` initializer, in `float` or `double`:
 
-  - Clang 22.1.8 and 18.1.3 accept it and give positive infinity.
-  - GCC 16.2.1 and 14.2.0 reject it ("not a constant expression").
+  - Clang 22.1.8 and 18.1.3 accept it and give an infinity.
+  - GCC 16.2.1, 16.2.0, and 14.2.0 reject it ("not a constant
+    expression").
   - EDG 7.0 rejects it ("floating-point error").
 
-  The provisional answer is that the behavior is undefined, and that
-  Clang's acceptance is an extension ({question}`Q-0001`).
-- **CE-28, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
-  during constant evaluation. EDG 7.0 accepts both. EDG rejects floating
-  overflow. The provisional answer keeps the rejection, and EDG's
-  behavior is a possible defect ({question}`Q-0002`).
+  Clang rejects a result that is a NaN. At run time every Clang and GCC
+  configuration gives an infinity, and `-fsanitize=undefined` lets the
+  overflow run. The provisional answer is that the behavior is
+  undefined, and that Clang's acceptance is an extension
+  ({question}`Q-0001`).
+- **MUL-13.** Clang and GCC evaluate the left operand of the built-in
+  operators first at `-O0` and at `-O2`, in every form probed. For an
+  overloaded `*` or `/`, GCC evaluates the right operand first. This
+  result shows that the order is not fixed. The tests accept either
+  order ({question}`Q-0005`).
+- **MUL-14.** Clang warns "unsequenced modification and access". GCC
+  warns "operation ... may be undefined". The tests change these
+  warnings into errors. EDG does not accept these warning flags and
+  skips the tests.
+- **MUL-15.** The result type on x86-64 (LP64) differs from the result
+  type with `-m32` (ILP32). The tests depend on `sizeof(long)`.
 - **MUL-17.** `0.1 * 3.0 / 3.0` gives `0.10000000000000002` when each
   operation rounds to `double`, and `0.1` with extra precision. The
   test accepts both values and stays clear of overflow, which MUL-12
-  makes undefined ({question}`Q-0001`).
-- **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and
-  `INT_MIN % -1` during constant evaluation. EDG 7.0 accepts both. EDG
-  rejects `INT_MAX * 2`. The provisional answer keeps MUL-10, and EDG's
-  behavior is a possible defect ({question}`Q-0003`).
-- **MUL-13.** Clang and GCC evaluate the left operand first at `-O0` and
-  at `-O2`. For an overloaded `*`, GCC evaluates the right operand
-  first. This result shows that the order for `*` is not fixed. The test
-  accepts either order ({question}`Q-0005`).
-- **MUL-14.** Clang warns "unsequenced modification and access". GCC
-  warns "operation ... may be undefined". The test changes these
-  warnings into errors. EDG does not accept these warning flags and
-  skips the test.
-- **MUL-15.** The result type on x86-64 (LP64) differs from the result
-  type with `-m32` (ILP32). The tests depend on `sizeof(long)`.
+  makes undefined ({question}`Q-0001`). With `-m32`, GCC keeps `float`
+  and `double` intermediates in the x87 format during constant
+  evaluation, so `1.0 + 0x1p-53 != 1.0` holds there. Clang and EDG give
+  `1.0` for the sum. A cast, an initializer, and a return value round
+  the sum to `1.0` on every compiler. MUL-17 allows both results.
 
 Inputs: clang-sema-expr.

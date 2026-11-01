@@ -48,7 +48,7 @@ compares their addresses.
 :::
 
 :::{principle} CMP-P3
-:rules: CMP-7 CMP-15 CMP-22
+:rules: CMP-7 CMP-15 CMP-22 CMP-26
 :exceptions: CMP-8 CMP-20
 
 Pointers have an order only inside one thing:
@@ -64,7 +64,9 @@ directions need not even agree. Two pointers are equal when they hold
 one address. Pointers to different objects can hold one address too, for
 example an object and its first member. A pointer past the end of one
 object can hold the address of the next object in memory, and whether
-the two pointers compare equal is unspecified. Two pointers to members
+the two pointers compare equal is unspecified. The rows of an array of
+arrays have no gap between them, so the position past the end of one
+row equals the first element of the next row. Two pointers to members
 are equal when they select the same member of the same subobject.
 :::
 
@@ -88,7 +90,8 @@ that follows IEEE 754 ({rule}`MUL-11`).
 | `partial_ordering` | Some values are unordered, or equal values can differ | Floating-point types, with NaN as the unordered case |
 
 Because `<=>` stands in for all six comparisons, its operands must be
-comparable without loss. These operand forms are rejected:
+comparable without loss. Whether a conversion loses a value can depend
+on the sizes of the integer types. These operand forms are rejected:
 
 - a narrowing conversion,
 - a `bool` against another type,
@@ -166,22 +169,22 @@ A comparison must not have these operands:
 
 :::{rule} CMP-10
 :kind: required
-:tests: expressions/comparison/scoped-enum-same.cpp
+:tests: expressions/comparison/scoped-enum-same.cpp expressions/comparison/scoped-enum-order.cpp
 
 Two values of the same scoped enumeration can be compared.
 :::
 
 :::{rule} CMP-23
 :kind: reject
-:tests: expressions/comparison/scoped-enum-different.cpp
+:tests: expressions/comparison/scoped-enum-different.cpp expressions/comparison/scoped-enum-integer.cpp
 
-Values of two different scoped enumerations must not be compared
-(CMP-10).
+A value of a scoped enumeration must not be compared with a value of
+another type, such as an integer or another scoped enumeration (CMP-10).
 :::
 
 :::{rule} CMP-11
 :kind: required
-:tests: expressions/comparison/array-comparison.cpp
+:tests: expressions/comparison/array-comparison.cpp expressions/comparison/array-comparison-constant.cpp
 
 If both operands of `==`, `!=`, `<`, `>`, `<=`, or `>=` are arrays, each
 converts to a pointer to its first element. The comparison then compares
@@ -190,14 +193,14 @@ the addresses.
 
 :::{rule} CMP-24
 :kind: reject
-:tests: expressions/comparison/three-way-arrays.cpp
+:tests: expressions/comparison/three-way-arrays.cpp expressions/comparison/three-way-same-array.cpp expressions/comparison/three-way-array-and-pointer.cpp
 
 `<=>` must not have two array operands (CMP-11).
 :::
 
 :::{rule} CMP-12
 :kind: required
-:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-precedence.cpp
+:tests: expressions/comparison/three-way-type.cpp expressions/comparison/three-way-precedence.cpp expressions/comparison/three-way-array-and-pointer.cpp
 
 `<=>` on integer, enumeration, or object pointer operands gives
 `std::strong_ordering`. On floating-point operands it gives
@@ -220,7 +223,7 @@ must not compare:
 
 :::{rule} CMP-13
 :kind: reject
-:tests: expressions/comparison/three-way-narrowing.cpp expressions/comparison/three-way-bool-int.cpp expressions/comparison/three-way-pointer-zero.cpp expressions/comparison/three-way-int-to-double.cpp
+:tests: expressions/comparison/three-way-narrowing.cpp expressions/comparison/three-way-bool-int.cpp expressions/comparison/three-way-pointer-zero.cpp expressions/comparison/three-way-int-to-double.cpp expressions/comparison/three-way-long-unsigned-lp64.cpp expressions/comparison/three-way-long-unsigned-ilp32.cpp expressions/comparison/three-way-mixed-types.cpp
 
 These operands of `<=>` are not valid:
 
@@ -228,6 +231,10 @@ These operands of `<=>` are not valid:
   integer to a floating-point type is not counted as narrowing here.
 - a `bool` and an operand of another type,
 - a pointer and the literal `0`.
+
+A constant whose value fits the converted type does not narrow. Whether
+a conversion narrows can depend on the sizes of the integer types
+({rule}`MUL-15`).
 :::
 
 :::{rule} CMP-18
@@ -242,7 +249,7 @@ case).
 
 :::{rule} CMP-19
 :kind: required
-:tests: expressions/comparison/derived-base-pointer-equality.cpp expressions/comparison/multilevel-qualification.cpp expressions/comparison/null-pointer-equality.cpp expressions/comparison/noexcept-function-pointer-equality.cpp expressions/comparison/nullptr-equals-zero.cpp
+:tests: expressions/comparison/derived-base-pointer-equality.cpp expressions/comparison/multilevel-qualification.cpp expressions/comparison/null-pointer-equality.cpp expressions/comparison/noexcept-function-pointer-equality.cpp expressions/comparison/nullptr-equals-zero.cpp expressions/comparison/member-pointer-equality.cpp
 
 Equality comparison is valid for these pointer operands:
 
@@ -261,7 +268,7 @@ Equality comparison is valid for these pointer operands:
 
 :::{rule} CMP-3
 :kind: required
-:tests: expressions/comparison/signed-unsigned.cpp
+:tests: expressions/comparison/signed-unsigned.cpp expressions/comparison/signed-unsigned-promoted.cpp
 
 The comparison uses the values after conversion. If an `int` is
 converted to `unsigned`, `-1` becomes the largest `unsigned` value.
@@ -269,7 +276,7 @@ converted to `unsigned`, `-1` becomes the largest `unsigned` value.
 
 :::{rule} CMP-5
 :kind: required
-:tests: expressions/comparison/nan.cpp
+:tests: expressions/comparison/nan.cpp expressions/comparison/nan-float.cpp
 
 If an operand is a NaN, `<`, `>`, `<=`, `>=`, and `==` give `false`.
 `!=` gives `true`.
@@ -277,7 +284,7 @@ If an operand is a NaN, `<`, `>`, `<=`, `>=`, and `==` give `false`.
 
 :::{rule} CMP-7
 :kind: required
-:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp expressions/comparison/subobject-order.cpp expressions/comparison/subobject-order-constant.cpp
+:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp expressions/comparison/subobject-order.cpp expressions/comparison/subobject-order-constant.cpp expressions/comparison/pointer-array-member-order.cpp expressions/comparison/row-end-equals-next-row.cpp
 
 Pointers to elements of the same array compare in the order of their
 indexes. A pointer one past the last element is greater than all element
@@ -287,9 +294,18 @@ into these subobjects, for example into two elements or two members.
 Constant evaluation can do these comparisons.
 :::
 
+:::{rule} CMP-26
+:kind: required
+:tests: expressions/comparison/row-end-equals-next-row.cpp expressions/comparison/row-end-equals-next-row-run.cpp
+
+In an array of arrays, a pointer one past the end of one row and a
+pointer to the next row's first element are equal. Constant evaluation
+can do this comparison.
+:::
+
 :::{rule} CMP-15
 :kind: required
-:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp expressions/comparison/struct-and-first-member-equal.cpp expressions/comparison/union-members-equal.cpp
+:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp expressions/comparison/struct-and-first-member-equal.cpp expressions/comparison/union-members-equal.cpp expressions/comparison/struct-and-first-member-equal-run.cpp
 
 Two pointers are equal if they hold the same address, or if both are
 null. Pointers to different objects can be equal. Examples are a pointer
@@ -299,7 +315,7 @@ to a class object and a pointer to its first member, after conversion to
 
 :::{rule} CMP-17
 :kind: required
-:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp expressions/comparison/three-way-negative-zero.cpp
+:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp expressions/comparison/three-way-negative-zero.cpp expressions/comparison/three-way-mixed-types.cpp
 
 For integer and pointer operands, `a <=> b` gives `less`, `equal`, or
 `greater` as `a` is less than, equal to, or greater than `b`. For
@@ -310,7 +326,7 @@ floating-point operands, equal values give `equivalent`, and `-0.0` and
 
 :::{rule} CMP-22
 :kind: required
-:tests: expressions/comparison/member-pointer-two-paths.cpp
+:tests: expressions/comparison/member-pointer-two-paths.cpp expressions/comparison/member-pointer-equality.cpp
 
 Two pointers to members that are not null are equal if they select the
 same member of the same subobject. If a class has one base on two paths,
@@ -359,7 +375,7 @@ warning.
 
 :::{rule} CMP-14
 :kind: recommended
-:tests: expressions/comparison/chained-comparison-warns.cpp
+:tests: expressions/comparison/chained-comparison-warns.cpp expressions/comparison/chained-less-equal-warns.cpp
 
 An implementation should warn about a chained comparison such as
 `a < b < c`.
@@ -367,7 +383,7 @@ An implementation should warn about a chained comparison such as
 
 :::{rule} CMP-16
 :kind: recommended
-:tests: expressions/comparison/array-comparison-warns.cpp
+:tests: expressions/comparison/array-comparison-warns.cpp expressions/comparison/array-relational-warns.cpp
 
 An implementation should warn when a comparison has two array operands.
 :::
@@ -394,48 +410,74 @@ int arr[4];
 int a, b;
 &a < &b                // unspecified
 
+int grid[2][3];
+grid[0] + 3 == grid[1] // true
+
 (1 <=> 2) == std::strong_ordering::less     // true
 (1.0 <=> nan) == std::partial_ordering::unordered
+
+long balance = -1;
+unsigned count = 1;
+balance <=> count      // valid if long is wider than unsigned
+                       // rejected if they have the same size
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. The `<=>` tests declare a minimal
-`std::strong_ordering`, `std::weak_ordering`, and
-`std::partial_ordering`, because tests include no headers. EDG needs
-`std::weak_ordering` declared even for integer operands.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 84 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+`std::weak_ordering`, and `std::partial_ordering`, because tests include
+no headers. EDG needs `std::weak_ordering` declared even for integer
+operands.
 
+- CMP-1: Clang 22 rejects a chained comparison by default, through a
+  `-Wparentheses` warning whose default severity is an error. Clang 22
+  accepts the comparison with `-Wno-error=parentheses` or with the
+  warning off. Clang 18, GCC, and EDG accept a chained comparison
+  ({question}`Q-0029`).
+- CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
+  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives
+  no warning for a chained comparison of variables ({question}`Q-0029`).
+  GCC also warns about `a == b == c`, and Clang does not.
+- CMP-7, CMP-26: every compiler orders pointers into two rows of one
+  array of arrays, and into an array member and the member after it,
+  during constant evaluation. Every compiler gives `true` for a pointer
+  past the end of one row compared with the first element of the next
+  row, during constant evaluation and at run time.
 - CMP-8: for pointers to two members of a union, or to an empty member
   and its neighbor, all three implementations give a result during
   constant evaluation. Only the unrelated-object case is rejected there.
-- CMP-1: Clang 22 rejects a chained comparison by default as a
-  `-Wparentheses` error. Clang 22 accepts the comparison when that
-  warning is off. Clang 18, GCC, and EDG accept a chained
-  comparison ({question}`Q-0029`).
 - CMP-8: all compilers reject the comparison of unrelated pointers
   during constant evaluation. A function name followed by `<` starts a
   template argument list, so the function-pointer test puts each operand
   in parentheses.
-- CMP-9 and CMP-13: EDG accepts an ordered comparison or `<=>` between a
-  pointer and the literal `0`. Clang and GCC reject both
-  ({question}`Q-0030`).
+- CMP-9 and CMP-13: EDG accepts `<=>` between a pointer and `0`. EDG
+  accepts a relational comparison between a pointer and a literal zero
+  (`0` or `0L`) or `nullptr`. EDG rejects a pointer and `1`, and a
+  pointer and a named constant whose value is zero. Clang and GCC
+  reject all of these ({question}`Q-0030`).
+- CMP-9: EDG accepts a relational comparison of two values of the type
+  of `nullptr`, and rejects `<=>` on them. Clang and GCC reject both
+  ({question}`Q-0103`).
 - CMP-11 and CMP-16: Clang and GCC warn that array comparison is
-  deprecated. In strict C++23 mode both accept array comparison.
-- CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
-  `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives
-  no warning for a chained comparison of variables ({question}`Q-0029`).
-- CMP-9: EDG accepts a relational comparison of a pointer with
-  `nullptr`, as with `0` ({question}`Q-0030`).
-- CMP-18: EDG accepts `<=>` between an unscoped enumeration and a
-  floating-point value. Clang and GCC reject the comparison
-  ({question}`Q-0050`).
-- CMP-20: Clang and GCC reject the comparison during constant
-  evaluation. EDG accepts the comparison ({question}`Q-0051`).
+  deprecated. In strict C++23 mode both accept array comparison, also
+  during constant evaluation.
+- CMP-13: the usual arithmetic conversions of `long` and `unsigned` give
+  `long` on x86-64 and `unsigned long` with `-m32`. Every compiler
+  accepts `<=>` on the two types on x86-64 and rejects it with `-m32` as
+  narrowing. Every compiler accepts a constant that fits the converted
+  type, such as `1 <=> 2u`.
 - CMP-15: EDG evaluates the comparison of a class object and its first
   member, after conversion to `void*`, to `false`. Clang and GCC give
-  `true` ({question}`Q-0104`).
-- CMP-9: EDG accepts a relational comparison of two values of the type
-  of `nullptr`. Clang and GCC reject the comparison
-  ({question}`Q-0103`).
+  `true`, during constant evaluation and at run time
+  ({question}`Q-0104`).
+- CMP-18: EDG accepts `<=>` between an unscoped enumeration and a
+  floating-point value, in either order, and gives
+  `std::partial_ordering`. Clang and GCC reject the comparison
+  ({question}`Q-0050`).
+- CMP-20: Clang and GCC reject the comparison during constant
+  evaluation. EDG accepts the comparison ({question}`Q-0051`). Inside
+  one array of arrays, every compiler accepts the comparison, as CMP-26
+  states.
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -14,7 +14,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0001](Q-0001-floating-overflow-constant-evaluation.md) | Is floating overflow during constant evaluation undefined or implementation-defined? | provisional | undefined |
 | [Q-0002](Q-0002-edg-floating-division-by-zero.md) | Does EDG accepting floating division by zero during constant evaluation change CE-28? | compiler defect | no; likely EDG defect |
 | [Q-0003](Q-0003-edg-int-min-divided-by-minus-one.md) | Does EDG accepting `INT_MIN / -1` during constant evaluation change MUL-10? | compiler defect | no; likely EDG defect |
-| [Q-0004](Q-0004-floating-division-by-zero-at-run-time.md) | Should floating division by zero be implementation-defined on IEEE 754 targets? | provisional | yes: the IEEE 754 result where the type follows IEEE 754 (MUL-20), undefined otherwise; constant evaluation rejects it (CE-28) |
+| [Q-0004](Q-0004-floating-division-by-zero-at-run-time.md) | Should floating division by zero be implementation-defined on IEEE 754 targets? | settled | yes: the IEEE 754 result where the type follows IEEE 754 (MUL-11, MUL-20), undefined otherwise; constant evaluation rejects it (CE-28) |
 | [Q-0005](Q-0005-operand-order-without-observed-variation.md) | Can operand order be `unspecified` when no compiler varies it? | provisional | yes, on source evidence |
 | [Q-0006](Q-0006-promoting-report-compilers.md) | When does a report compiler become a baseline compiler? | provisional | after one clean review of its results |
 | [Q-0007](Q-0007-language-version.md) | Which language version does Tidal track, and how are newer features handled? | provisional | C++23; newer features rejected under strict mode |
@@ -59,7 +59,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0046](Q-0046-likely-and-unlikely.md) | Is `[[likely]] [[unlikely]]` on one statement rejected or ignored? | provisional | option 1 |
 | [Q-0047](Q-0047-using-enum-opaque.md) | May `using enum` name an enumeration that is declared but not defined? | provisional | option 1 |
 | [Q-0048](Q-0048-tuple-size-without-value.md) | If `std::tuple_size<E>` is complete but has no `value`, do structured bindings use the data members? | provisional | option 1 |
-| [Q-0049](Q-0049-base-pointer-derived-array.md) | Is arithmetic on a base class pointer into an array of a derived class undefined? | provisional | option 1 |
+| [Q-0049](Q-0049-base-pointer-derived-array.md) | Is arithmetic on a base class pointer into an array of a derived class undefined? | provisional | option 2: the subobject is an array of one; moves past it and differences across elements are undefined; GCC differs |
 | [Q-0050](Q-0050-three-way-enum-float.md) | May `<=>` compare an unscoped enumeration with a floating-point value? | provisional | option 1 |
 | [Q-0051](Q-0051-one-past-end-adjacent.md) | Is comparing a one-past-the-end pointer with a pointer to the next object rejected during constant evaluation? | provisional | option 1 |
 | [Q-0052](Q-0052-using-declaration-reduces-access.md) | Can a using-declaration make a public base member private? | provisional | option 1 |
@@ -82,7 +82,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0069](Q-0069-alignas-weaker-than-natural.md) | Can alignas make an alignment weaker than the natural one? | provisional | option 1 |
 | [Q-0070](Q-0070-alignas-redeclaration-mismatch.md) | Must all declarations of a variable agree on alignas? | provisional | option 1 |
 | [Q-0071](Q-0071-several-alignas-on-class.md) | Which alignas applies when a class has several? | provisional | option 1 |
-| [Q-0072](Q-0072-alignas-invalid-positions-gcc14.md) | Can alignas apply to a function, a type alias, or a bit-field? | provisional | option 1 |
+| [Q-0072](Q-0072-alignas-invalid-positions-gcc14.md) | Can alignas apply to a function, a type alias, or a bit-field? | compiler defect | no; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0073](Q-0073-alignas-on-enumeration.md) | Can alignas apply to an enumeration? | provisional | option 1 |
 | [Q-0074](Q-0074-language-linkage-in-function-type.md) | Is language linkage part of a function type? | provisional | option 1 |
 | [Q-0075](Q-0075-c-linkage-conflicts-global.md) | Can a name with C language linkage match a global variable? | provisional | option 1 |
@@ -111,7 +111,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0098](Q-0098-range-for-data-member-begin.md) | Do data members named begin and end select the member form of a range-based for? | provisional | option 1 |
 | [Q-0099](Q-0099-array-xvalue-subscript.md) | Is a subscript of an array xvalue an xvalue? | settled | duplicate of Q-0034 |
 | [Q-0100](Q-0100-char-zero-null-pointer.md) | Is a character literal with value zero a null pointer constant? | provisional | option 1 |
-| [Q-0101](Q-0101-nullptr-logical-operand.md) | Can nullptr be an operand of a logical operator? | provisional | option 1 |
+| [Q-0101](Q-0101-nullptr-logical-operand.md) | Can nullptr be an operand of a logical operator? | compiler defect | yes; GCC 14's rejection is fixed in GCC 16 |
 | [Q-0102](Q-0102-conditional-zero-nullptr.md) | Does a conditional with the literal 0 and nullptr have the type of nullptr? | provisional | option 1 |
 | [Q-0103](Q-0103-relational-nullptr-type.md) | Can two values of the type of nullptr be compared with a relational operator? | provisional | option 1 |
 | [Q-0104](Q-0104-object-and-first-member-equal.md) | Do a class object and its first member compare equal through void pointers? | provisional | option 1 |
@@ -305,6 +305,10 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0292](Q-0292-partial-specialization-repeats-primary-not-more-constrained.md) | Can a partial specialization repeat the primary template's parameters when it is not more constrained? | provisional | no; Clang and GCC agree, EDG differs |
 | [Q-0293](Q-0293-constraints-templates-differing-in-ellipsis.md) | Do constraints decide between two templates that differ only in an ellipsis? | provisional | yes, the ellipsis does not count for templates (ORD-13); Clang and EDG agree, GCC differs |
 | [Q-0294](Q-0294-braced-list-model.md) | How does a braced list bind a reference, initialize an array, and form a conversion sequence? | provisional | the table of REF-P3: direct, temporary, or none; 14 child questions keep each split |
+| [Q-0295](Q-0295-partial-specialization-constant-parameter-type.md) | Must a constant argument's type fit the declared type of a partial specialization's constant parameter with no conversion? | provisional | yes, as in a function template (DED-12); GCC and EDG agree, Clang differs |
+| [Q-0296](Q-0296-later-default-before-parameter-without-one.md) | Must an implementation reject a later declaration whose new default comes before a parameter that has no default in any declaration? | provisional | yes, TPL-14 counts the defaults of all declarations; Clang and EDG agree, GCC differs |
+| [Q-0297](Q-0297-const-variable-template-linkage.md) | Does a `const` variable template have one object for each specialization across translation units? | provisional | yes; Clang and GCC 16 agree, GCC 14 differs |
+| [Q-0298](Q-0298-pointer-difference-beyond-ptrdiff.md) | How do implementations treat a pointer difference that does not fit its type? | provisional | undefined (ADD-18); EDG rejects positions past the largest difference |
 
 ## Status values
 
