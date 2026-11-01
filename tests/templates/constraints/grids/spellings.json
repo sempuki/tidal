@@ -1,0 +1,19 @@
+{
+ "prelude": "template <class T> concept A = sizeof(T) > 1;\ntemplate <class T> concept AB = A<T> && sizeof(T) < 100;\n",
+ "template": "{prelude}{a} {{ return 1; }}\n{b} {{ return 2; }}\n{row}",
+ "rows": {
+  "int → first": "static_assert(f(1) == 1);",
+  "int → second": "static_assert(f(1) == 2);"
+ },
+ "pairs": {
+  "none": "template <class T> constexpr int f(T)",
+  "A T": "template <A T> constexpr int f(T)",
+  "A leading": "template <class T> requires A<T> constexpr int f(T)",
+  "A trailing": "template <class T> constexpr int f(T) requires A<T>",
+  "A auto": "constexpr int f(A auto)",
+  "AB T": "template <AB T> constexpr int f(T)",
+  "AB trailing": "template <class T> constexpr int f(T) requires AB<T>",
+  "AB auto": "constexpr int f(AB auto)"
+ },
+ "flags": []
+}

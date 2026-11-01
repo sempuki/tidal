@@ -1,0 +1,22 @@
+{
+ "prelude": "template <class T> concept A = sizeof(T) > 1;\ntemplate <class T> concept A2 = sizeof(T) > 1;\ntemplate <class T> concept B = sizeof(T) < 100;\ntemplate <class T> concept AB = A<T> && B<T>;\ntemplate <class T> concept Z = sizeof(T) > 100;\ntemplate <class T> concept NotZ = !Z<T>;\n",
+ "template": "{prelude}template <class T> struct Box {{\n  static constexpr int f() {a} {{ return 1; }}\n  static constexpr int f() {b} {{ return 2; }}\n}};\n{row}",
+ "rows": {
+  "int → first": "static_assert(Box<int>::f() == 1);",
+  "int → second": "static_assert(Box<int>::f() == 2);"
+ },
+ "pairs": {
+  "none": "",
+  "A": "requires A<T>",
+  "B": "requires B<T>",
+  "A and B": "requires A<T> && B<T>",
+  "A or B": "requires A<T> || B<T>",
+  "AB": "requires AB<T>",
+  "A2": "requires A2<T>",
+  "not Z": "requires (!Z<T>)",
+  "A and not Z": "requires A<T> && (!Z<T>)",
+  "NotZ": "requires NotZ<T>",
+  "A and NotZ": "requires A<T> && NotZ<T>"
+ },
+ "flags": []
+}
