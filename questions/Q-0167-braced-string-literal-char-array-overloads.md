@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-38, LIST-6
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

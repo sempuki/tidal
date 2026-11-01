@@ -34,7 +34,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0021](Q-0021-misplaced-standard-attribute.md) | Is a standard attribute applied to the wrong kind of entity rejected or ignored? | provisional | rejected |
 | [Q-0022](Q-0022-func-outside-function.md) | Is `__func__` outside a function rejected? | provisional | yes |
 | [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | compiler defect | yes; GCC 14's acceptance is fixed in GCC 16 |
-| [Q-0024](Q-0024-main-parameter-lists.md) | Which parameter lists may `main` have? | provisional | () and (int, char**) everywhere; others implementation-defined |
+| [Q-0024](Q-0024-main-parameter-lists.md) | Which parameter lists may `main` have? | provisional | () and (int, char**) everywhere; others implementation-defined, including a first parameter of type `long` |
 | [Q-0025](Q-0025-constinit-placement.md) | Which declarations of a variable must carry `constinit`? | provisional | the initializing declaration, if any declaration does |
 | [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | compiler defect | no; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0027](Q-0027-mixed-ref-qualifiers.md) | May a member function with a ref-qualifier be overloaded with one without? | provisional | no; the declarations are rejected |
@@ -44,18 +44,18 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0031](Q-0031-pointer-outside-array.md) | Is forming a pointer outside an array undefined, even without a read through it? | provisional | undefined |
 | [Q-0032](Q-0032-braced-compound-assignment.md) | May the right operand of a compound assignment be a braced list? | provisional | no; rejected |
 | [Q-0033](Q-0033-string-literal-identity.md) | May constant evaluation compare the addresses of two string literals? | provisional | no; rejected |
-| [Q-0034](Q-0034-subscript-prvalue-array.md) | Is a subscript of an array member of a prvalue an xvalue? | provisional | yes; xvalue |
+| [Q-0034](Q-0034-subscript-prvalue-array.md) | Is a subscript of an array xvalue or an array member of a prvalue an xvalue? | provisional | yes, an xvalue (PFX-3); EDG gives an lvalue |
 | [Q-0035](Q-0035-delete-void-pointer.md) | Is `delete` of a `void*` rejected? | provisional | yes |
 | [Q-0036](Q-0036-new-floating-size.md) | May the size in an array `new` have floating-point type? | provisional | yes; converted to the type of `sizeof` |
 | [Q-0037](Q-0037-capture-default-outside-function.md) | May a lambda outside a function have a capture default? | provisional | no; rejected |
 | [Q-0038](Q-0038-parameter-in-unevaluated-default.md) | May a default argument name a parameter in an operand that is not evaluated? | provisional | option 1 |
 | [Q-0039](Q-0039-indeterminate-unsigned-char.md) | Is copying an uninitialized `unsigned char` undefined? | provisional | option 1 |
 | [Q-0040](Q-0040-aggregate-paren-reference-member.md) | Does parenthesized aggregate initialization extend the life of a temporary bound to a reference member? | provisional | option 1 |
-| [Q-0041](Q-0041-jump-past-nontrivial-destructor.md) | May a jump skip a class object that has a non-trivial destructor and no initializer? | provisional | option 1 |
+| [Q-0041](Q-0041-jump-past-nontrivial-destructor.md) | May a jump skip a class object that has a non-trivial destructor and no initializer? | provisional | no; JMP-6 and SW-5 reject the jump; GCC accepts it |
 | [Q-0042](Q-0042-bit-field-narrowing.md) | Is converting a bit-field whose values all fit the target a narrowing conversion? | provisional | option 1 |
 | [Q-0043](Q-0043-paren-brace-elision.md) | Does parenthesized aggregate initialization allow brace elision? | provisional | option 1 |
 | [Q-0044](Q-0044-for-condition-destruction.md) | Is a `for` condition variable destroyed before or after the iteration expression? | compiler defect | after; GCC 14 is fixed in GCC 16 |
-| [Q-0045](Q-0045-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be declared `static`? | provisional | option 1 |
+| [Q-0045](Q-0045-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be declared `static`? | provisional | yes, `static` at every namespace scope (STO-11, UNI-9); Clang differs |
 | [Q-0046](Q-0046-likely-and-unlikely.md) | Is `[[likely]] [[unlikely]]` on one statement rejected or ignored? | provisional | option 1 |
 | [Q-0047](Q-0047-using-enum-opaque.md) | May `using enum` name an enumeration that is declared but not defined? | provisional | option 1 |
 | [Q-0048](Q-0048-tuple-size-without-value.md) | If `std::tuple_size<E>` is complete but has no `value`, do structured bindings use the data members? | provisional | option 1 |
@@ -67,7 +67,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0054](Q-0054-double-destruction-constant.md) | Is a second destruction rejected during constant evaluation? | provisional | option 1 |
 | [Q-0055](Q-0055-defaulted-parameter-mismatch.md) | Is a defaulted copy or move constructor with a different parameter type deleted or invalid? | provisional | option 1 |
 | [Q-0056](Q-0056-delete-without-virtual-destructor.md) | Is delete through a base pointer without a virtual destructor rejected during constant evaluation? | provisional | option 1 |
-| [Q-0057](Q-0057-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be static? | provisional | option 1 |
+| [Q-0057](Q-0057-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be static? | settled | duplicate of Q-0045 |
 | [Q-0058](Q-0058-unnamed-bitfield-cv.md) | Can an unnamed bit-field have a cv-qualifier? | provisional | option 1 |
 | [Q-0059](Q-0059-deduced-conversion-function.md) | Can a conversion function have a deduced return type? | provisional | option 1 |
 | [Q-0060](Q-0060-literal-operator-default-argument.md) | Can a literal operator have a default argument? | provisional | option 1 |
@@ -107,9 +107,9 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0094](Q-0094-class-operator-delete-noexcept.md) | Is a class-specific operator delete without a specifier non-throwing? | provisional | option 1 |
 | [Q-0095](Q-0095-defaulted-comparison-member-throwing.md) | Is a defaulted == non-throwing if a member == is potentially throwing? | provisional | option 1 |
 | [Q-0096](Q-0096-case-label-ends-block.md) | Can a case or default label be the last item of a block? | provisional | option 1 |
-| [Q-0097](Q-0097-jump-skips-nontrivial-destructor.md) | Can a jump skip a variable whose destructor is not trivial? | provisional | option 1 |
+| [Q-0097](Q-0097-jump-skips-nontrivial-destructor.md) | Can a jump skip a variable whose destructor is not trivial? | settled | duplicate of Q-0041 |
 | [Q-0098](Q-0098-range-for-data-member-begin.md) | Do data members named begin and end select the member form of a range-based for? | provisional | option 1 |
-| [Q-0099](Q-0099-array-xvalue-subscript.md) | Is a subscript of an array xvalue an xvalue? | provisional | option 1 |
+| [Q-0099](Q-0099-array-xvalue-subscript.md) | Is a subscript of an array xvalue an xvalue? | settled | duplicate of Q-0034 |
 | [Q-0100](Q-0100-char-zero-null-pointer.md) | Is a character literal with value zero a null pointer constant? | provisional | option 1 |
 | [Q-0101](Q-0101-nullptr-logical-operand.md) | Can nullptr be an operand of a logical operator? | provisional | option 1 |
 | [Q-0102](Q-0102-conditional-zero-nullptr.md) | Does a conditional with the literal 0 and nullptr have the type of nullptr? | provisional | option 1 |
@@ -122,13 +122,13 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0109](Q-0109-extend-through-array-member.md) | Does a reference bound to an element of an array member of a temporary extend the temporary? | provisional | option 1 |
 | [Q-0110](Q-0110-null-dereference-reference-constant.md) | Is a reference bound through a null pointer rejected during constant evaluation? | provisional | option 1 |
 | [Q-0111](Q-0111-using-sees-later-default.md) | Does a using declaration see a default argument that a later namespace declaration adds? | provisional | option 1 |
-| [Q-0112](Q-0112-main-parameter-types.md) | Must the parameters of main have the types int and char**? | provisional | option 1 |
-| [Q-0113](Q-0113-scope-of-overload-resolution-and-templates.md) | Should Tidal specify overload resolution and templates in full? | provisional | yes, after phases 1 and 2 |
+| [Q-0112](Q-0112-main-parameter-types.md) | Must the parameters of main have the types int and char**? | settled | duplicate of Q-0024 |
+| [Q-0113](Q-0113-scope-of-overload-resolution-and-templates.md) | Should Tidal specify overload resolution and templates in full? | settled | yes; phases 3 and 4 drafted them as normative chapters (decisions 0033, 0050) |
 | [Q-0114](Q-0114-type-of-a-growing-enumerator.md) | What type does an enumerator get when its value outgrows the type before it? | provisional | unspecified: any integer type that holds the value |
 | [Q-0115](Q-0115-gcc-copy-of-object-with-unset-part.md) | Does GCC accepting a copy of an object with an unset part during constant evaluation change CE-22? | compiler defect | no; likely GCC defect |
 | [Q-0116](Q-0116-designer-persona-as-source-reader.md) | Should a designer persona that knows WG21 papers also run, as a source reader? | provisional | no, the clean-room designer only for now |
-| [Q-0117](Q-0117-constant-union-with-no-active-member.md) | Is a union with no active member a valid constant? | provisional | yes; GCC rejects it |
-| [Q-0118](Q-0118-instantiation-before-deduction.md) | Should instantiation (N2) come before deduction (O) in phase 4? | provisional | no, O first |
+| [Q-0117](Q-0117-constant-union-with-no-active-member.md) | Is a union with no active member a valid constant? | provisional | yes, and also a valid template argument (CE-21, TARG-19); GCC rejects it |
+| [Q-0118](Q-0118-instantiation-before-deduction.md) | Should instantiation (N2) come before deduction (O) in phase 4? | settled | no, O first; phase 4 drafted O before N2 (decision 0050) |
 | [Q-0119](Q-0119-diagram-format.md) | Should diagrams use a renderer such as Mermaid, or plain text? | provisional | plain text |
 | [Q-0120](Q-0120-edg-i686-long-long-alignment.md) | Does EDG's 8-byte alignment of `long long` on i686 change TYP-2? | provisional | no; the alignment is implementation-defined |
 | [Q-0121](Q-0121-write-to-skipped-variable-in-constant-evaluation.md) | Can constant evaluation write a variable whose declaration a jump skipped? | provisional | yes; GCC and EDG reject it |
@@ -152,11 +152,11 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0139](Q-0139-surrogates-with-one-parameter-list.md) | Is a call ambiguous when two surrogates differ only in the qualifiers of their conversion functions? | provisional | yes; Clang and EDG agree, GCC differs |
 | [Q-0140](Q-0140-default-argument-from-two-scopes.md) | Is a call valid when it uses a default argument that two scopes give? | provisional | no, if the defaults differ; GCC agrees, Clang and EDG differ |
 | [Q-0141](Q-0141-builtin-candidate-operand-conversion.md) | After a built-in candidate wins, does a class operand convert past its conversion function? | provisional | no; Clang and GCC agree, EDG differs |
-| [Q-0142](Q-0142-constraints-in-address-of-overload-set.md) | Does the more constrained function win when a target type selects from an overload set? | provisional | yes; Clang 22 and GCC 16 agree, EDG, Clang 18 and GCC 14 differ |
+| [Q-0142](Q-0142-constraints-in-address-of-overload-set.md) | Do constraints reduce an overload set whose address is taken, with or without a target type? | provisional | yes, when the functions meet the conditions of ORD-13; Clang 22 and GCC 16 agree, EDG, Clang 18 and GCC 14 differ |
 | [Q-0143](Q-0143-call-through-address-with-static-member.md) | Can a call through the address of an overload set choose a static member? | provisional | yes; Clang 22 agrees, Clang 18 and GCC differ, EDG has an internal error |
 | [Q-0144](Q-0144-const-object-surrogate.md) | Does a const object get a surrogate from a conversion function that is not const? | provisional | no; Clang and EDG agree, GCC differs |
 | [Q-0145](Q-0145-copy-list-init-explicit-conversion-function.md) | Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter? | provisional | no; GCC and EDG agree, Clang differs |
-| [Q-0146](Q-0146-constraints-between-templates-with-different-parameters.md) | Do constraints decide between two templates whose function parameters differ? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0146](Q-0146-constraints-between-templates-with-different-parameters.md) | Which conditions must two functions meet before their constraints decide between them? | provisional | the conditions of ORD-13: same parameter lists, heads, and conversion results; Clang 22 and GCC agree, EDG differs |
 | [Q-0147](Q-0147-rewritten-candidate-removes-builtin.md) | Does a rewritten candidate remove the built-in candidate with the same parameter list? | provisional | yes; Clang and EDG agree, GCC differs |
 | [Q-0148](Q-0148-reference-kind-against-template.md) | Does the function reference kind come before the template tie-breakers? | provisional | yes, the kind comes first; GCC agrees, EDG differs, Clang does not apply the kind |
 | [Q-0149](Q-0149-list-for-reference-to-unknown-bound-array.md) | What type does a braced list give a reference to an array of unknown bound? | provisional | the reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces |
@@ -170,9 +170,9 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0157](Q-0157-list-class-element-for-reference.md) | Does a braced list with one class element bind a reference through the element's conversion function? | provisional | no; a temporary unless the element has the referenced type or a derived class; Clang and EDG agree, GCC differs |
 | [Q-0158](Q-0158-equality-returning-reference-to-bool.md) | Can an `==` used for a reversed or rewritten comparison return a reference to `bool`? | provisional | no; Clang and EDG agree, GCC differs |
 | [Q-0159](Q-0159-current-object-of-another-class.md) | Is `*this` the implied object argument when its class is not the class of the members found? | provisional | no, the call has no object; GCC agrees, Clang and EDG differ |
-| [Q-0160](Q-0160-constraints-without-target-type.md) | Do constraints reduce an overload set whose address has no target type? | provisional | yes; Clang 22 and GCC 16 agree, GCC 14 and EDG differ |
+| [Q-0160](Q-0160-constraints-without-target-type.md) | Do constraints reduce an overload set whose address has no target type? | settled | duplicate of Q-0142 |
 | [Q-0161](Q-0161-address-of-member-set-other-forms.md) | Can a call through `&(C::f)` or `&f` use a set that holds a non-static member? | provisional | no; GCC agrees, Clang 22 and EDG differ in part |
-| [Q-0162](Q-0162-constraint-tie-breaker-parameter-lists.md) | Does the constraint tie-breaker apply when the parameter lists differ beyond the parameters that the call uses? | provisional | no; Clang 22 and GCC agree, EDG differs |
+| [Q-0162](Q-0162-constraint-tie-breaker-parameter-lists.md) | Does the constraint tie-breaker apply when the parameter lists differ beyond the parameters that the call uses? | settled | duplicate of Q-0146 |
 | [Q-0163](Q-0163-conversion-result-function-pointer-conversion.md) | Does the result tie-breaker prefer the identity to a function pointer conversion? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0164](Q-0164-braced-array-for-unknown-bound-reference.md) | Does one braced array lvalue bind a reference to an array of unknown bound directly? | provisional | yes; Clang and EDG agree, GCC makes a temporary |
 | [Q-0165](Q-0165-braced-function-for-function-reference.md) | Does one braced function name bind a reference to a function as `=` does? | provisional | yes; GCC rejects an overload set, EDG a noexcept function |
@@ -212,7 +212,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0199](Q-0199-member-enumeration-defined-outside.md) | Can a member enumeration of a class template be defined after the class body? | provisional | yes; Clang and EDG accept, GCC rejects under -pedantic-errors |
 | [Q-0200](Q-0200-alias-template-lambda-same-arguments.md) | Do two uses of one alias template specialization with a lambda give one closure type? | provisional | yes; GCC and EDG agree, Clang gives two types |
 | [Q-0201](Q-0201-template-template-constant-types-differ.md) | Does a template template argument match when its constant parameter has another fixed type? | provisional | yes; Clang 22 and GCC accept, Clang 18 and EDG reject |
-| [Q-0202](Q-0202-union-argument-no-active-member.md) | Can a union with no active member be a template argument? | provisional | yes; Clang and EDG accept, GCC rejects |
+| [Q-0202](Q-0202-union-argument-no-active-member.md) | Can a union with no active member be a template argument? | settled | duplicate of Q-0117 |
 | [Q-0203](Q-0203-thread-local-explicit-specialization-only.md) | Can an explicit specialization of a variable template be thread_local when the template is not? | provisional | yes; Clang and GCC accept, EDG rejects |
 | [Q-0204](Q-0204-access-in-explicit-specialization-function-type.md) | Is a private type in the function type of an explicit specialization access-checked? | provisional | no; Clang and EDG accept, GCC rejects |
 | [Q-0205](Q-0205-explicit-specialization-member-enumeration.md) | Can a member enumeration of a class template have an explicit specialization? | provisional | yes if the class template only declares it; Clang and EDG accept, GCC rejects under -pedantic-errors |
@@ -220,7 +220,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0207](Q-0207-explicit-specialization-of-member-partial-specialization.md) | Does an explicit specialization of one member partial specialization keep the others? | provisional | yes, and it is selected; Clang and EDG agree, GCC ignores it |
 | [Q-0208](Q-0208-noexcept-deduces-bool.md) | Does the noexcept of a function type give a value to a bool constant parameter? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0209](Q-0209-placeholder-bound-type.md) | What type does a placeholder constant parameter get from an array bound? | provisional | the type of `sizeof`; Clang and EDG agree, GCC gives `int` |
-| [Q-0210](Q-0210-constraints-different-heads-or-results.md) | Do constraints decide between templates whose heads, or whose conversion results, differ? | provisional | no; Clang and GCC agree, EDG lets them decide |
+| [Q-0210](Q-0210-constraints-different-heads-or-results.md) | Do constraints decide between templates whose heads, or whose conversion results, differ? | settled | duplicate of Q-0146 |
 | [Q-0211](Q-0211-swapped-candidate-ordering.md) | Are the parameters of a swapped candidate reversed for partial ordering? | provisional | yes; Clang and EDG agree, GCC differs |
 | [Q-0212](Q-0212-edg-dynamic-cast-private-base-constant.md) | Does EDG letting a `dynamic_cast` from a private base succeed during constant evaluation change VIRT-10? | compiler defect | no; Clang and GCC give a null pointer, likely EDG defect |
 | [Q-0213](Q-0213-edg-union-chain-assignment-nontrivial.md) | Does EDG accepting an assignment into a union member that has a default constructor that is not trivial change UNI-13? | compiler defect | no; Clang and GCC reject, likely EDG defect |
@@ -251,7 +251,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0238](Q-0238-alignas-pack-on-class.md) | Does `alignas(T...)` on a class take the strictest alignment of the elements? | compiler defect | yes; GCC takes the last element on a class |
 | [Q-0239](Q-0239-deduction-through-inherited-constructors.md) | Does a class template that inherits constructors get the deduction guides of its base? | provisional | yes; GCC and EDG agree, Clang differs |
 | [Q-0240](Q-0240-deduction-through-alias-templates.md) | Can a program deduce the arguments of a class template through an alias template? | provisional | yes; Clang 22 and GCC agree, Clang 18 and EDG 7.0 differ |
-| [Q-0241](Q-0241-guide-parameter-not-deducible.md) | Must an implementation diagnose a deduction guide whose template parameter cannot be deduced? | provisional | no; no-diagnostic, Clang rejects |
+| [Q-0241](Q-0241-guide-parameter-not-deducible.md) | Must an implementation diagnose a deduction guide whose template parameter cannot be deduced? | provisional | yes; Clang agrees, GCC and EDG differ |
 | [Q-0242](Q-0242-guide-result-with-cv-qualifier.md) | Can the result of a deduction guide have a cv-qualifier? | provisional | no; Clang and EDG agree, GCC differs |
 | [Q-0243](Q-0243-deduced-name-after-dependent-qualifier.md) | Can a deduced class template name follow a dependent qualifier? | provisional | yes; every compiler accepts |
 | [Q-0244](Q-0244-aggregate-candidate-in-new-expression.md) | Does a parenthesized list in a `new` expression form the aggregate deduction candidate? | provisional | yes; Clang and EDG agree, GCC differs |
@@ -281,6 +281,30 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0268](Q-0268-constrained-friend-definitions-distinct.md) | Are the constrained friend definitions of two class specializations two functions? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0269](Q-0269-placeholder-parameter-redeclares-template.md) | Does a function with a placeholder parameter redeclare the function template with the same invented head? | provisional | yes, following DED-34 and TPL-20; Clang agrees, GCC and EDG differ |
 | [Q-0270](Q-0270-attribute-on-concept.md) | Can a concept definition have an attribute after the concept's name? | provisional | yes; every current compiler agrees, Clang 18 differs |
+| [Q-0271](Q-0271-expansion-for-alias-template-parameters.md) | Can a pack expansion give an argument to a parameter of an alias template that is not a pack? | provisional | no; every compiler rejects |
+| [Q-0272](Q-0272-expansion-for-concept-parameters.md) | Can a pack expansion give an argument to a parameter of a concept that is not a pack? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0273](Q-0273-expansion-before-end-outside-a-call.md) | How does a list with an expansion before its end take part in deduction outside a call? | provisional | non-deduced; the partial specialization is rejected; Clang agrees, GCC and EDG differ |
+| [Q-0274](Q-0274-using-declaration-empty-pack-name.md) | What does a name mean that finds an expanded using-declarator when the pack is empty? | provisional | not valid, no diagnostic required; GCC and EDG accept, Clang rejects |
+| [Q-0275](Q-0275-template-template-parameter-deduction.md) | Can a template template parameter stand without arguments for class template argument deduction? | provisional | yes; every compiler accepts |
+| [Q-0276](Q-0276-trailing-base-pack-length-fixed.md) | When an earlier element fixes the length of a trailing pack of bases, does each later element still deduce? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0277](Q-0277-string-literal-for-array-member.md) | How does a string literal initialize an array member in the aggregate candidate? | provisional | braces elided for a fixed bound; Clang and GCC agree, EDG differs on a fixed char array |
+| [Q-0278](Q-0278-alias-guide-rvalue-reference.md) | Is `T&&` of a class parameter a forwarding reference in a guide made through an alias template? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0279](Q-0279-alias-single-element-list.md) | Does one element of the class type skip the initializer-list phase through an alias template? | provisional | yes; Clang 22 and GCC agree, EDG differs |
+| [Q-0280](Q-0280-guides-with-same-parameters.md) | Can two deduction guides have the same parameters and different results? | provisional | templates yes, others no; Clang and GCC agree, EDG differs |
+| [Q-0281](Q-0281-constrained-constant-parameter-more-constrained.md) | Is a function template with a constrained constant parameter more constrained than the same template with `auto`? | provisional | yes; Clang 22 and GCC 16 agree, Clang 18, GCC 14, and EDG differ |
+| [Q-0282](Q-0282-order-of-constant-placeholder-constraint.md) | Is the constraint of a constrained constant parameter checked in the order of the template parameters? | provisional | yes; Clang and GCC 16 agree, GCC 14 and EDG differ |
+| [Q-0283](Q-0283-template-template-parameter-own-constraints.md) | Does an implementation diagnose a use of a template template parameter that fails the parameter's own constraints? | provisional | no diagnostic required; EDG diagnoses |
+| [Q-0284](Q-0284-parameter-mapping-holds-used-parameters.md) | Does the mapping of an atomic constraint hold only the template parameters that its expression uses? | provisional | yes; Clang 22 and GCC agree, EDG and Clang 18 differ |
+| [Q-0285](Q-0285-type-constraints-on-packs-ordered.md) | Are two variadic templates ordered by the type constraints on their packs? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0286](Q-0286-constrained-placeholder-structured-binding.md) | Can a structured binding declaration have a constrained placeholder? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0287](Q-0287-compound-requirement-step-order.md) | In a compound requirement, are the arguments of the type constraint substituted only after the expression and the `noexcept` test hold? | provisional | yes, and unused extra arguments are substituted; EDG agrees, Clang and GCC each differ in one case |
+| [Q-0288](Q-0288-requirement-access-inside-member.md) | Can a requires expression inside a member function use a private member of the class? | provisional | yes; every current compiler agrees, GCC 14 differs |
+| [Q-0289](Q-0289-nested-requirement-evaluates-parameter.md) | Is a nested requirement that evaluates a parameter of the requires expression an error? | provisional | yes; every current compiler agrees, Clang 18 differs |
+| [Q-0290](Q-0290-requires-expression-void-parameter-list.md) | Does `(void)` give a requires expression no parameters inside a template? | provisional | yes; GCC and EDG agree, Clang differs |
+| [Q-0291](Q-0291-explicit-instantiation-unsatisfied-member.md) | Can a program explicitly instantiate a member function whose constraints fail for the class's arguments? | provisional | no; every current compiler agrees, Clang 18 differs |
+| [Q-0292](Q-0292-partial-specialization-repeats-primary-not-more-constrained.md) | Can a partial specialization repeat the primary template's parameters when it is not more constrained? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0293](Q-0293-constraints-templates-differing-in-ellipsis.md) | Do constraints decide between two templates that differ only in an ellipsis? | provisional | yes, the ellipsis does not count for templates (ORD-13); Clang and EDG agree, GCC differs |
+| [Q-0294](Q-0294-braced-list-model.md) | How does a braced list bind a reference, initialize an array, and form a conversion sequence? | provisional | the table of REF-P3: direct, temporary, or none; 14 child questions keep each split |
 
 ## Status values
 

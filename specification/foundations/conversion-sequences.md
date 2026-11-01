@@ -108,7 +108,9 @@ A braced list has no type, so its sequence depends on the parameter:
 | Class with constructors | User-defined through the chosen constructor, or ambiguous | ICS-19 |
 
 Each element converts on its own, so one list can use several
-user-defined conversions.
+user-defined conversions. For a reference, {principle}`REF-P3` gives
+which lists bind directly, which make a temporary, and which have no
+sequence.
 :::
 
 :::{principle} ICS-P5
@@ -463,8 +465,8 @@ sequence.
 :kind: required
 :tests: foundations/conversion-sequences/list-array.cpp foundations/conversion-sequences/list-array-against-scalar.cpp
 
-For a reference to an array of `E` that binds a temporary (ICS-20), a
-braced list has a sequence if each element converts to `E` and these
+For a reference to an array of `E` that binds a temporary (ICS-20,
+{principle}`REF-P3`), a braced list has a sequence if each element converts to `E` and these
 conditions hold:
 
 - A known bound is not less than the number of elements.
@@ -481,7 +483,7 @@ literal for an array of characters.
 For a reference to an array of a character type, one string literal in
 braces has the identity if the literal can initialize the array
 ({rule}`LIST-6`, {rule}`LIST-15`), and no sequence otherwise
-({question}`Q-0155`). If the array has the literal's type, or is an
+({principle}`REF-P3`, {question}`Q-0155`). If the array has the literal's type, or is an
 array of unknown bound of its element type, the reference binds directly
 to the literal ({rule}`REF-6`).
 :::
@@ -518,7 +520,8 @@ Each element can use its own user-defined conversion.
 :tests: foundations/conversion-sequences/list-reference.cpp foundations/conversion-sequences/list-reference-direct.cpp foundations/conversion-sequences/list-reference-temporary.cpp foundations/conversion-sequences/list-reference-class-element-scalar.cpp foundations/conversion-sequences/list-reference-class-element-class.cpp
 
 For a reference parameter, a braced list binds the reference as
-{rule}`REF-6` and {rule}`REF-14` give ({question}`Q-0157`):
+{rule}`REF-6` and {rule}`REF-14` give, by the table of
+{principle}`REF-P3` ({question}`Q-0294`, {question}`Q-0157`):
 
 - If the reference binds to the list's one element, the sequence is the
   element's sequence for the reference (ICS-11, ICS-12).
@@ -572,7 +575,7 @@ of known bound is better than the array of unknown bound.
 If two references to arrays bind directly to one array, the reference to
 the array of known bound is better than the reference to an array of
 unknown bound ({question}`Q-0188`). The binding can come from a braced
-list of one element ({rule}`ICS-20`, ICS-38).
+list of one element ({rule}`ICS-20`, ICS-38, {principle}`REF-P3`).
 :::
 
 :::{rule} ICS-25
@@ -785,6 +788,10 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 The results are in `tests/RESULTS.md`. All eight compilers agree on 88
 of 110 tests.
 
+- ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
+  share one model, the table of {principle}`REF-P3`.
+  {question}`Q-0294` names the model and lists each split with its
+  question.
 - ICS-8: GCC keeps an `explicit` constructor in the sequence of a
   copy-list-initialized parameter, chooses the function, and rejects the
   call. Clang and EDG form no sequence and choose the other function

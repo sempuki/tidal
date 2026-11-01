@@ -206,8 +206,8 @@ union can be:
 :kind: reject
 :tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp
 
-Outside a function or class, an anonymous union needs `static`, even in
-an unnamed namespace ({question}`Q-0057`). The members of the anonymous
+At namespace scope, an anonymous union needs `static`, as
+{rule}`STO-11` gives ({question}`Q-0045`). The members of the anonymous
 union must all be public data members that are not static. An anonymous
 union must not have:
 
@@ -430,7 +430,7 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 103
 of 107 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
-  namespace. GCC and EDG reject the declaration ({question}`Q-0057`).
+  namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
 - BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and
   EDG reject the cv-qualifier ({question}`Q-0058`).
 - BF-8: Clang and GCC warn under `-Wall` for both cases.

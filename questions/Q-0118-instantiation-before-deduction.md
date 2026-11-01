@@ -1,6 +1,6 @@
 # Q-0118: Should instantiation (N2) come before deduction (O) in phase 4?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** `documentation/roadmap.md`, phase 4
 
 ## Context
@@ -22,9 +22,12 @@ as an expansion over the elements of an object or a constant parameter.
    needs overload resolution (M), which comes first anyway.
 2. Put N2 before O, and add runner outcome sets before phase 4.
 
-## Provisional answer
+## Answer
 
-Option 1. The order follows the prerequisites. The question comes back
-when phase 4 starts.
+Option 1. Phase 4 drafted deduction and function templates (O) before
+dependent names and instantiation (N2), and both pages exist
+(`specification/templates/deduction.md`,
+`specification/templates/instantiation.md`). Decision 0050 records
+phase 4 as drafted, so the order no longer has an effect.
 
 ## Opinions

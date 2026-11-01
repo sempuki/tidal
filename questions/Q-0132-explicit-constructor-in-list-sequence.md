@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-8, ICS-19, `tests/foundations/conversion-sequences/chosen-explicit-copy-list.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

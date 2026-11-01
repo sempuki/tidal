@@ -1,23 +1,14 @@
 # Q-0112: Must the parameters of main have the types int and char**?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TR-3, FN-6, `tests/foundations/translation/main-wrong-parameter-types.cpp`
 
-## Context
+Duplicate of Q-0024.
 
-A program defines `main` with a first parameter of type `long` instead of
-`int`. Clang and GCC reject the definition. EDG 7.0 accepts it.
+## Answer
 
-## Options
-
-1. The two-parameter form of `main` must take `int` and `char**`.
-2. Other parameter types are valid.
-
-## Provisional answer
-
-Option 2, as FN-6 states the rule. An implementation accepts `()` and
-`(int, char**)`, and decides about other parameter lists. Clang and GCC
-reject a first parameter of type `long`, and EDG accepts it. TR-3
-agrees with FN-6 (`reports/clean-room/rust-frontend/`, F16).
+Q-0024 asks which parameter lists `main` may have, and now holds this
+question's case of a first parameter of type `long`. Q-0024 holds the
+context, the evidence, and the provisional answer.
 
 ## Opinions

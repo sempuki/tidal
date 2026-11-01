@@ -3584,6 +3584,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/address-more-constrained.cpp` | OVL-19 | accept | accept | accept | reject | skip | reject | reject | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/address-more-specialized.cpp` | OVL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/address-no-conversion.cpp` | OVL-20 OVL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` | OVL-20 ORD-13 | reject | reject | reject | reject | skip | reject | accept | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/address-no-target-constraints.cpp` | OVL-20 | accept | accept | accept | reject | skip | reject | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/address-no-target-explicit-arguments.cpp` | OVL-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/address-no-target-explicit-partial.cpp` | OVL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4799,6 +4800,7 @@ compilers affect the Status column.
 | `templates/ordering/constraints-conversion.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/constraints-default-parameter.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/constraints-different-heads.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/constraints-ellipsis.cpp` | ORD-13 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/ordering/constraints-partial.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/constraints-placeholder-parameter.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/constraints-type-constraint.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4962,7 +4964,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-explicit.cpp` | TSP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-4944/4944 tests pass on baseline compilers.
+4946/4946 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -19309,6 +19311,14 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/address-no-conversion.cpp` (gcc-16-o2): error: no matches converting function 'pick' to type 'void (*)(struct Derived*)'
 - `foundations/overload-resolution/address-no-conversion.cpp` (clang-22): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
 - `foundations/overload-resolution/address-no-conversion.cpp` (clang-22-o2): error: address of overloaded function 'pick' does not match required type 'void (Derived *)' / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'int') / note: candidate function has type mismatch at 1st parameter (expected 'Derived *' but has 'Base *')
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (clang-host): error: variable 'p' with type 'const auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (gcc-host): error: unable to deduce ‘const auto’ from ‘& Size<char>::f’ / note:   couldn’t deduce template parameter ‘auto’
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (gcc-14): error: unable to deduce 'const auto' from '& Size<char>::f' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (gcc-16): error: unable to deduce 'const auto' from '& Size<char>::f' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (gcc-16-o2): error: unable to deduce 'const auto' from '& Size<char>::f' / note:   couldn't deduce template parameter 'auto'
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (clang-22): error: variable 'p' with type 'const auto' has incompatible initializer of type '<overloaded function type>'
+- `foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp` (clang-22-o2): error: variable 'p' with type 'const auto' has incompatible initializer of type '<overloaded function type>'
 - `foundations/overload-resolution/address-no-target-constraints.cpp` (edg-7.0): error: cannot deduce "auto" type / error: cannot deduce "auto" type
 - `foundations/overload-resolution/address-no-target-constraints.cpp` (gcc-14): error: unable to deduce 'const auto' from '& Mode<1>::f' / note:   couldn't deduce template parameter 'auto' / error: unable to deduce 'const auto' from '& Mode<2>::f' / note:   couldn't deduce template parameter 'auto'
 - `foundations/overload-resolution/address-no-target-explicit-partial.cpp` (clang-host): error: variable 'p' with type 'auto' has incompatible initializer of type '<overloaded function type>'
@@ -24557,6 +24567,10 @@ check that the rejection has the intended cause.
 - `templates/ordering/constraints-different-heads.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
 - `templates/ordering/constraints-different-heads.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
 - `templates/ordering/constraints-different-heads.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/constraints-ellipsis.cpp` (gcc-host): error: call of overloaded ‘pick(int)’ is ambiguous
+- `templates/ordering/constraints-ellipsis.cpp` (gcc-14): error: call of overloaded 'pick(int)' is ambiguous / note: candidate: 'constexpr int pick(T) requires  sizeof (T) > 1 [with T = int]' / note: candidate: 'constexpr int pick(T, ...) [with T = int]'
+- `templates/ordering/constraints-ellipsis.cpp` (gcc-16): error: call of overloaded 'pick(int)' is ambiguous
+- `templates/ordering/constraints-ellipsis.cpp` (gcc-16-o2): error: call of overloaded 'pick(int)' is ambiguous
 - `templates/ordering/member-object-rvalue.cpp` (clang-host): error: use of overloaded operator '+' is ambiguous (with operand types 'X' and 'int') / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/member-object-rvalue.cpp` (gcc-host): error: ambiguous overload for ‘operator+’ (operand types are ‘X’ and ‘int’)
 - `templates/ordering/member-object-rvalue.cpp` (gcc-14): error: ambiguous overload for 'operator+' (operand types are 'X' and 'int') / note: candidate: 'One X::operator+(T) [with T = int]' / note: candidate: 'Two operator+(X&&, T) [with T = int]'

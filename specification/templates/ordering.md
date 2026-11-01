@@ -75,7 +75,8 @@ F1, F2, and the types that take part (ORD-P1)
    v
    c. pack        no trailing pack beats a trailing pack              ORD-12
    d. constraints the more constrained wins, if the heads and the     ORD-13
-                  parameter lists are the same
+                  parameter lists are the same (the conditions of
+                  ORD-13)
 ```
 
 An invented type stands for any argument that `F1` accepts. If `F2`
@@ -244,19 +245,24 @@ parameter at that position ({question}`Q-0216`).
 
 :::{rule} ORD-13
 :kind: required
-:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp
+:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp
 
 If no earlier step decides, the more constrained template
-({rule}`CNS-23`) is more specialized. The rule applies only if these
-conditions hold ({question}`Q-0210`, {question}`Q-0146`):
+({rule}`CNS-23`) is more specialized. Constraints decide between two
+functions, templates or not, only if all these conditions hold
+({question}`Q-0146`):
 
-- The template heads are equivalent by {rule}`TPL-20`, which leaves out
-  constraints. The invented type parameters of {rule}`DED-34` are part
-  of the head.
 - The function parameter lists have the same length, including the
   parameters with default arguments.
 - The function parameter types are the same, position by position.
 - For conversion functions, the result types are the same.
+- For two templates, the template heads are equivalent by
+  {rule}`TPL-20`, which leaves out constraints. The invented type
+  parameters of {rule}`DED-34` are part of the head.
+- For two functions that are not templates, both parameter lists end
+  in an ellipsis or neither does ({question}`Q-0293`).
+
+{rule}`OVL-19`, {rule}`OVL-30`, and {rule}`OVL-41` use these conditions.
 :::
 
 ### Partial specializations
@@ -323,7 +329,7 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 27
-of 36 tests.
+of 38 tests.
 
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight
@@ -339,8 +345,12 @@ cell of the grids below.
 - ORD-13: EDG lets a constraint decide between templates whose heads
   differ in length, and between conversion function templates whose
   results differ. Clang and GCC find both calls ambiguous
-  ({question}`Q-0210`). {question}`Q-0146` is the case of different
-  function parameters.
+  ({question}`Q-0146`).
+- ORD-13: two templates that differ only in an ellipsis tie in ordering
+  by types on every compiler. Clang and EDG then let the constraint
+  decide, and GCC finds the call ambiguous ({question}`Q-0293`). For
+  two functions that are not templates, Clang 22 and GCC count the
+  ellipsis ({question}`Q-0146`).
 - ORD-5: two templates that differ only in a parameter with a default
   argument are ambiguous for a call that uses the default, on every
   compiler.
@@ -365,8 +375,8 @@ cell of the grids below.
   pack makes the call ambiguous on Clang. GCC and EDG choose the
   template with no pack ({question}`Q-0216`).
 - ORD-13: EDG lets a constraint decide between parameter lists of
-  different lengths, as in {question}`Q-0146`. Clang and GCC find the
-  call ambiguous.
+  different lengths. Clang and GCC find the call ambiguous
+  ({question}`Q-0146`).
 - ORD-16: the gap review (item O9) expected the compilers to differ on
   a non-deduced position in partial ordering. Every compiler gives the
   same result in both calls of `nondeduced-position.cpp`.

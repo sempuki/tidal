@@ -3,7 +3,7 @@
 // tidal-expect-gcc: accept
 // tidal-error-clang: cannot jump from this goto statement to its label
 // tidal-error-edg: transfer of control bypasses initialization
-// tidal-note: Q-0097. GCC accepts a jump past a variable whose destructor is not trivial. Clang and EDG reject it.
+// tidal-note: Q-0041. GCC accepts a jump past a variable whose destructor is not trivial. Clang and EDG reject it.
 // tidal-note: Gap review 2026-10-31 (third).
 struct D { int a; ~D() {} };
 int f() { goto skip; D d; skip: return 0; }

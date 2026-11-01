@@ -313,7 +313,7 @@ the run and link tests say only that the programs are valid.
   status 0, `return 257;` gives status 1, and `return -1;` gives status
   255.
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
-  and GCC reject it ({question}`Q-0112`).
+  and GCC reject it ({question}`Q-0024`).
 
 The table below gives, for each `recommended` rule that asks for a
 warning, the flag that turns the warning on in Clang 22 and GCC 16. The

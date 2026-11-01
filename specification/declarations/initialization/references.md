@@ -10,7 +10,7 @@ function. This page covers:
 ## Principles
 
 :::{principle} REF-P1
-:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10 REF-6 REF-14 REF-11
+:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives the reference that object.
@@ -23,14 +23,8 @@ may do with its referent.
 | `const` lvalue reference | Nothing | Also rvalues and values of other types, through a temporary object when there is no object to bind to |
 | Rvalue reference | Take from an object that is going away | Rvalues, and never an lvalue of its own type |
 
-In parentheses and after `=`, the initializer is one expression. In
-braces, one expression that already has the referenced type binds as it
-does after `=`. A derived class counts as the referenced type, and so
-does an array of known bound for an array of unknown bound. A function
-also binds as it does after `=`. Any other braced list holds the values
-of a new object, even one value that converts to the referenced type.
-The list then makes a temporary of the referenced type, and the
-reference binds to the temporary.
+In parentheses and after `=`, the initializer is one expression.
+{principle}`REF-P3` gives the binding from a braced list.
 :::
 
 :::{principle} REF-P2
@@ -49,6 +43,41 @@ The extension does not reach a function parameter or a returned
 reference. A reference used after its object has ended, or bound through
 a null pointer, has no defined meaning, and an implementation should warn
 where it can see such a reference.
+:::
+
+:::{principle} REF-P3
+:rules: REF-6 REF-14 REF-11
+
+A braced list binds a reference in one of three ways:
+
+- **direct**: the reference binds to the list's one element, as after
+  `=`.
+- **temporary**: the list initializes a temporary of the referenced
+  type, and the reference binds to the temporary.
+- **none**: the list cannot initialize the reference. A declaration is
+  rejected, and a parameter gets no conversion sequence.
+
+The shape of the list and the referenced type choose the way. A braced
+element binds directly only if the element is already what the
+reference names. Any other list holds the values of a new object, even
+one value that converts to the referenced type.
+
+| List | Scalar `T` | Class `C` | Array `E[N]` | Array `E[]` | Function |
+|---|---|---|---|---|---|
+| `{}` | temporary | temporary | temporary | none | none |
+| `{x}`, where `x` has the referenced type, ignoring cv-qualifiers, or a derived class | direct | direct | direct | direct, and `x` can be any `E[N]` | direct, and `x` can be an overload set |
+| `{x}`, where `x` has another type, even one with a conversion function to the referenced type | temporary | temporary | temporary | temporary of one element | none |
+| `{s}`, where `s` is a string literal of another array type | temporary | temporary | temporary if `s` can initialize the array, none otherwise | as for `E[N]` | none |
+| several values | none | temporary | temporary if `N` is not less than the number of values | temporary of one element for each value | none |
+| a designated list | none | temporary, for an aggregate | none | none | none |
+
+A temporary binds only a `const` lvalue reference or an rvalue
+reference (REF-2, REF-3). The temporary is copy-initialized from the
+list, so it cannot use an `explicit` constructor, and a narrowing
+conversion is not valid. For a parameter, a direct binding has the
+element's sequence, and a temporary has the list's sequence to the
+referenced type ({principle}`ICS-P4`). {question}`Q-0294` holds the
+model, and its child questions hold each split between the compilers.
 :::
 
 ## Constraints
@@ -144,6 +173,7 @@ that expression, as `=` does, in these cases:
   ({question}`Q-0164`).
 
 REF-14 gives the other braced lists. REF-11 lists what is not valid.
+{principle}`REF-P3` gives the three rules as one table.
 :::
 
 :::{rule} REF-14
@@ -151,7 +181,8 @@ REF-14 gives the other braced lists. REF-11 lists what is not valid.
 :tests: declarations/initialization/references/braced-list-array-temporary.cpp declarations/initialization/references/braced-list-class-temporary.cpp declarations/initialization/references/braced-list-unknown-bound.cpp declarations/initialization/references/braced-list-unknown-bound-values.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/list/string-literal-reference-temporary.cpp
 
 A braced list that REF-6 does not cover initializes a temporary object
-of the referenced type from the list ({rule}`LIST-3`, {rule}`ILC-2`).
+of the referenced type from the list ({rule}`LIST-3`, {rule}`ILC-2`,
+{principle}`REF-P3`).
 The reference binds to the temporary as REF-2 and REF-3 give. For a
 reference to an array of unknown bound, the temporary has one element
 for each value, and the reference keeps its declared type
@@ -167,8 +198,8 @@ These conditions apply to the initializer of a reference:
 - In parentheses, the initializer must hold exactly one expression
   ({question}`Q-0151`).
 - In braces, a narrowing conversion must not occur ({rule}`LIST-2`).
-- A braced list for a temporary (REF-14) must be valid for the
-  referenced type, for example under {rule}`LIST-11` and
+- A braced list for a temporary (REF-14, {principle}`REF-P3`) must be
+  valid for the referenced type, for example under {rule}`LIST-11` and
   {rule}`LIST-12`. An array must not have zero elements
   ({question}`Q-0149`).
 - The temporary must not need an `explicit` constructor
@@ -317,6 +348,9 @@ All eight compilers agree on 47 of 61 tests. The results are in
 - **REF-5.** GCC and Clang 22 reject a reference bound through a null
   pointer during constant evaluation. EDG 7.0 and Clang 18 accept the
   reference ({question}`Q-0110`).
+- **REF-P3.** The compilers split on several cells of the table of
+  braced lists. {question}`Q-0294` names the model and lists each split
+  with its question.
 - **REF-14.** For a braced list and a reference to an array of unknown
   bound, Clang gives the reference the bound of the list. GCC and EDG
   keep the declared type. For empty braces, Clang and EDG reject the

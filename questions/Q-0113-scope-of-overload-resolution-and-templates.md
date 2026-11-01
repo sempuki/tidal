@@ -1,6 +1,6 @@
 # Q-0113: Should Tidal specify overload resolution and templates in full?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** `documentation/roadmap.md` phases 3 and 4, `documentation/charter.md`
 
 ## Context
@@ -21,11 +21,11 @@ informative subsets of overload resolution and templates.
 3. Keep the topics referenced, and state for each affected rule that the
    rule cannot be decided without these topics.
 
-## Provisional answer
+## Answer
 
-Option 1, after phase 1 repairs the existing pages and phase 2 lays the
-foundations, with the method controls on the roadmap page. Three of the
-four views ask for option 1, and the front end's largest groups of
-missed rejections are in these topics.
+Option 1. Decision 0033 adopted the order, and phases 3 and 4 drafted
+name lookup, overload resolution, and templates as normative chapters
+(`specification/foundations/` and `specification/templates/`). Decision
+0050 starts phase 5 from that state.
 
 ## Opinions

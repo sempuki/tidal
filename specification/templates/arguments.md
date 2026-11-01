@@ -431,7 +431,7 @@ parameter of the argument with no default and no match, is not valid.
 
 Two template-ids name the same specialization if they name the same
 template and, after defaults are added, each pair of arguments is the
-same by the table in {principle}`TARG-P4` ({question}`Q-0202`).
+same by the table in {principle}`TARG-P4` ({question}`Q-0117`).
 Otherwise the specializations are different entities, and two class
 specializations are different types.
 :::
@@ -539,7 +539,7 @@ probes for TARG-23 to TARG-27 and for the additions to the older rules.
 - TARG-19: GCC rejects a union with no active member as a template
   argument, because GCC does not treat the value as a constant. Clang
   and EDG accept it, and give one specialization for two such values
-  ({question}`Q-0202`).
+  ({question}`Q-0117`).
 - TARG-15: the test for `typeid` needs the `<typeinfo>` header, and the
   EDG image has no library. Clang and GCC reject the address of a
   `typeid` result. The test covers `__func__` and the class argument.

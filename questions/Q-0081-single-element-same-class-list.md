@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ILC-3, `tests/classes/initializer-lists/copy-from-single-same-class.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-20, REF-6, REF-14, `tests/foundations/conversion-sequences/list-reference-class-element-scalar.cpp`, `tests/foundations/conversion-sequences/list-reference-class-element-class.cpp`, `tests/declarations/initialization/references/braced-list-conversion-temporary.cpp`, `tests/declarations/initialization/references/braced-list-conversion-nonconst.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

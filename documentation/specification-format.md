@@ -30,6 +30,17 @@ such a page is cited. The rules keep their IDs, classes, and tests.
 | `recommended` | Implementations should behave this way, usually by warning, but a program that triggers it is still valid. | Compilers warn by default or under a common flag; the test makes the warning an error. |
 | `conditionally-supported` | An implementation can reject the construct. If the implementation accepts the construct, the implementation documents the behavior. | Some compilers in the matrix reject under `-pedantic-errors` and others accept, each consistently. |
 
+A `no-diagnostic` rule allows an implementation to reject a program
+that breaks the rule or to accept it. A test whose program breaks such
+a rule accepts every outcome that the rule allows. The test's
+`tidal-expect` gives one outcome, and a `tidal-expect-<x>` override
+records each compiler that gives the other. The override's `tidal-note`
+names the rule or the question that allows the outcome. A failing test
+then means that a compiler changed its behavior, and the failure says
+nothing about conformance. The test checks only translation and
+linking, because the rule allows any result at run time (decision
+0047).
+
 Classifying behavior is the hardest step. Each rule in the last four classes
 needs a sentence in the section's "Evidence" notes explaining why the
 rule was put in that class.

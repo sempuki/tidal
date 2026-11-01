@@ -140,7 +140,8 @@ These expressions are xvalues:
   type,
 - a non-static data member of an xvalue or of a class prvalue, if the
   member is not a reference,
-- a subscript of an array xvalue or array prvalue ({question}`Q-0099`),
+- a subscript of an array xvalue or array prvalue ({rule}`PFX-3`,
+  {question}`Q-0034`),
 - `.*` applied to an xvalue, for a data member.
 
 A cast to an rvalue reference to a function type gives an lvalue. A
@@ -303,7 +304,7 @@ All eight compilers agree on 55 of 56 tests. The results are in
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC
   16 the first.
 - VC-3: EDG gives an lvalue for a subscript of an array xvalue. Clang
-  and GCC give an xvalue ({question}`Q-0099`).
+  and GCC give an xvalue ({question}`Q-0034`).
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the
   parameter at the end of the full expression.

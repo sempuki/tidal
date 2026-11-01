@@ -106,12 +106,7 @@ must not be declared again in the outermost block of the body (SW-4).
 A transfer to a `case` or `default` label must not skip the
 initialization of a variable that is in scope at the label. A transfer
 can skip a whole block, or a declaration without an initializer whose
-type JMP-6 permits ({question}`Q-0097`):
-
-- a scalar,
-- a class whose default constructor and destructor are both trivial
-  ({rule}`CTOR-23`, {rule}`DTOR-9`),
-- an array of these types.
+type {rule}`JMP-6` lists ({question}`Q-0041`).
 :::
 
 ## Runtime Behavior
@@ -189,7 +184,7 @@ question is noted. The results are in `tests/RESULTS.md`.
   on. The warning is recommended practice, so the rule is in the
   recommended class.
 - SW-5: GCC accepts a `case` label that skips a variable whose destructor
-  is not trivial. Clang and EDG reject the label ({question}`Q-0097`).
+  is not trivial. Clang and EDG reject the label ({question}`Q-0041`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

@@ -1,20 +1,13 @@
 # Q-0099: Is a subscript of an array xvalue an xvalue?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** VC-3, `tests/expressions/value-categories/xvalue-array-subscript.cpp`
 
-## Context
+Duplicate of Q-0034.
 
-An array xvalue (a cast to an rvalue reference to an array) or an array prvalue is subscripted. Clang and GCC give an xvalue. EDG 7.0 gives an lvalue.
+## Answer
 
-## Options
-
-1. The result is an xvalue.
-
-2. The result is an lvalue.
-
-## Provisional answer
-
-Option 1. Clang and GCC agree, and option 1 matches member access on an xvalue.
+Q-0034 asks the same question for PFX-3, and VC-3 refers to PFX-3.
+Q-0034 holds the context, the evidence, and the provisional answer.
 
 ## Opinions

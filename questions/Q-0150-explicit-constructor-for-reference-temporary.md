@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** REF-11, REF-14, `tests/declarations/initialization/references/braced-list-explicit-constructor.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

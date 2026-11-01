@@ -272,7 +272,7 @@ All eight compilers agree on 49 of 52 tests. The results are in
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
   whose destructor is not trivial. Clang and EDG reject the `goto`, so a
   class type whose destructor is not trivial is not an exception
-  ({question}`Q-0041`, {question}`Q-0097`).
+  ({question}`Q-0041`).
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
   accepts zero or one copy.

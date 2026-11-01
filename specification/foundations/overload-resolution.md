@@ -92,10 +92,10 @@ viable functions F1 and F2
    c. template    a plain function or a built-in candidate         OVL-27
                   beats a template specialization
    d. template    the more specialized template wins               OVL-28
-   e. template    of two templates with the same parameters,       OVL-41
-                  the more constrained one wins
-   f. concepts    of two plain functions with the same parameter   OVL-30
-                  list, the more constrained one wins
+   e. template    of two templates that meet the conditions of     OVL-41
+                  ORD-13, the more constrained one wins
+   f. concepts    of two plain functions that meet the conditions  OVL-30
+                  of ORD-13, the more constrained one wins
    g. inherited   a constructor of the derived class beats an      OVL-31
                   inherited constructor
    h. rewritten   a written candidate beats a rewritten one        OVL-32
@@ -495,14 +495,15 @@ The matching functions of OVL-18 are reduced in these steps:
    removed.
 3. If a plain function remains, the specializations are removed.
 4. A plain function is removed if another plain function is more
-   constrained ({rule}`CNS-23`).
+   constrained ({rule}`CNS-23`) and the two meet the conditions of
+   {rule}`ORD-13` ({question}`Q-0142`).
 5. A specialization is removed if another comes from a more specialized
    template ({rule}`ORD-9`).
 :::
 
 :::{rule} OVL-20
 :kind: reject
-:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp
+:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp
 
 After OVL-19, exactly one function must remain. Without a target type,
 for example with `auto` or `decltype`, these steps apply:
@@ -510,7 +511,7 @@ for example with `auto` or `decltype`, these steps apply:
 1. A function template adds the specialization that its explicit
    template arguments fix, if they fix every template parameter. Any
    other template makes the program not valid.
-2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0160`).
+2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0142`).
 3. Exactly one function must remain.
 
 {rule}`DED-35` names the case of a target type that no specialization
@@ -641,10 +642,10 @@ Of two specializations, the one from the more specialized template wins
 :kind: required
 :tests: foundations/overload-resolution/tie-more-specialized-constraints.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
 
-Of two specializations from templates with the same function
-parameters, the one from the more constrained template wins
-({rule}`ORD-13`, {rule}`CNS-23`). Templates with different function
-parameters do not compare by their constraints ({question}`Q-0146`).
+Of two specializations, the one from the more constrained template
+({rule}`CNS-23`) wins if the two templates meet the conditions of
+{rule}`ORD-13`. Otherwise the constraints do not decide
+({question}`Q-0146`).
 :::
 
 :::{rule} OVL-29
@@ -662,10 +663,10 @@ The rule comes after OVL-26 and before OVL-27 and OVL-28
 :kind: required
 :tests: foundations/overload-resolution/tie-more-constrained.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp
 
-Of two functions that are not specializations and have the same
-parameter list, the more constrained one ({rule}`CNS-23`) wins. The
-parameter list includes the parameters with default arguments and the
-ellipsis ({question}`Q-0162`). The rule comes after OVL-26 and OVL-29.
+Of two functions that are not specializations, the more constrained one
+({rule}`CNS-23`) wins if the two functions meet the conditions of
+{rule}`ORD-13` ({question}`Q-0146`). The rule comes after OVL-26 and
+OVL-29.
 :::
 
 :::{rule} OVL-31
@@ -784,7 +785,7 @@ tick(1, 1);                      // rejected: each is better on one argument
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 124
-of 149 tests.
+of 150 tests.
 
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler
@@ -825,7 +826,10 @@ of 149 tests.
 - OVL-20: without a target type, Clang 22 and GCC 16 remove the
   functions whose constraints fail, and the less constrained function.
   GCC 16 does so for `auto` only. GCC 14 and EDG do not reduce the set,
-  and Clang 18 does not compare constraints ({question}`Q-0160`).
+  and Clang 18 does not compare constraints ({question}`Q-0142`).
+- OVL-20: without a target type, Clang 22, GCC, and EDG find no single
+  function when the two constrained functions have different parameter
+  lists. Clang 18 keeps the more constrained one ({question}`Q-0142`).
 - OVL-21: Clang 22 calls a static member through the address of a set of
   members. Clang 18 and GCC reject the call, and EDG stops with an
   internal error ({question}`Q-0143`).
@@ -853,7 +857,7 @@ of 149 tests.
 - OVL-30: EDG lets a constraint decide between plain functions whose
   parameter lists differ in a defaulted parameter or an ellipsis. Clang
   18 does so for an ellipsis. Clang 22 and GCC find the call ambiguous
-  ({question}`Q-0162`).
+  ({question}`Q-0146`).
 - OVL-41: EDG lets a constraint decide between templates with different
   function parameters. Clang and GCC find the call ambiguous
   ({question}`Q-0146`).

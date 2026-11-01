@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LIST-6, REF-14, `tests/declarations/initialization/list/string-literal-reference-temporary.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 

@@ -1,7 +1,7 @@
 # Q-0024: Which parameter lists may `main` have?
 
 **Status:** provisional
-**Affects:** FN-6, tests `main-*-param*.cpp` under `tests/declarations/functions/definitions`
+**Affects:** FN-6, TR-3, tests `main-*-param*.cpp` under `tests/declarations/functions/definitions`, `tests/foundations/translation/main-wrong-parameter-types.cpp`
 
 ## Context
 
@@ -13,10 +13,17 @@
 | `(int)` | accept | reject (`-Wmain`, pedantic) | accept |
 | `(double)` | reject | reject | accept |
 | `(int, char**, char**, char**)` | reject | reject | accept |
+| `(long, char**)` | reject | reject | accept |
+
+TR-3 refers to FN-6 for the parameter lists of `main`. Q-0112 asked
+about the `(long, char**)` row for TR-3 and is a duplicate of this
+question.
 
 ## Evidence
 
-`tests/RESULTS.md`, the `main-*` rows.
+`tests/RESULTS.md`, the `main-*` rows, and
+`tests/foundations/translation/main-wrong-parameter-types.cpp`, which
+has an override for EDG.
 
 ## Options
 

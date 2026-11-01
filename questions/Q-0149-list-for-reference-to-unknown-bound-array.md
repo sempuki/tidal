@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** REF-14, REF-11, `tests/declarations/initialization/references/braced-list-unknown-bound.cpp`, `tests/declarations/initialization/references/braced-list-unknown-bound-empty.cpp`
+**Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
 
