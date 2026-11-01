@@ -642,6 +642,7 @@ the implementation rejects.
 If the second lookup of DEP-13 finds one member other than the member
 found at the definition, the program is not valid. An implementation
 need not diagnose a break of this rule ({question}`Q-0246`).
+{rule}`PACK-30` gives the case of an empty expanded using-declarator.
 :::
 
 :::{rule} DEP-38

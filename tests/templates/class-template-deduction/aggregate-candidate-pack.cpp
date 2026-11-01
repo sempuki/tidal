@@ -1,4 +1,4 @@
-// tidal-rules: CTAD-9
+// tidal-rules: CTAD-9 CTAD-27
 // tidal-expect: accept
 // tidal-note: The base list F... is a trailing pack, so it takes every element of the list, one base per element.
 template <class A, class B> constexpr bool same = false;

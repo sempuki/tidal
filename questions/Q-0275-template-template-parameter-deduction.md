@@ -1,0 +1,39 @@
+# Q-0275: Can a template template parameter stand without arguments for class template argument deduction?
+
+**Status:** provisional
+**Affects:** CTAD-1, `tests/templates/class-template-deduction/template-template-parameter.cpp`, `template-template-parameter-alias.cpp`
+
+## Context
+
+`template <template <class> class W> int f() { W w(1); ... }` and
+then `f<Box>()`, where `Box(T)` is a constructor of `Box`. A second
+form uses a member alias `template <class T> using A = W<T>;` and
+then `A a(1);`.
+
+| Compiler | `W w(1);` | `A a(1);` |
+|---|---|---|
+| Clang 22, host | accepts, `Box<int>` | accepts, `Box<int>` |
+| Clang 18 | accepts, `Box<int>` | rejects: no deduction through an alias (Q-0240) |
+| GCC 14, 16, host | accepts, `Box<int>` | accepts, `Box<int>` |
+| EDG 7.0 | accepts, `Box<int>` | accepts, `Box<int>` |
+
+## Evidence
+
+The tests above. Item 20 of the gap review `reports/review/2026-10-31-gap-review-packs-and-ctad.md` says that a template
+template parameter is never usable for deduction, nor an alias whose
+type is a specialization of one, and predicts a rejection.
+
+## Options
+
+1. Deduction uses the class template that the parameter names after
+   substitution, as every compiler does.
+2. The program is not valid, as the gap review predicts.
+
+## Provisional answer
+
+Option 1. Every implementation deduces, and the specification follows
+the behavior that implementations share.
+
+## Opinions
+
+<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

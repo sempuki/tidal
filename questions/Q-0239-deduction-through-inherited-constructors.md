@@ -1,7 +1,7 @@
 # Q-0239: Does a class template that inherits constructors get the deduction guides of its base?
 
 **Status:** provisional
-**Affects:** CTAD-16, CTAD-19, `tests/templates/class-template-deduction/inherited-constructors.cpp`, `inherited-user-guide.cpp`
+**Affects:** CTAD-16, CTAD-19, `tests/templates/class-template-deduction/inherited-constructors.cpp`, `inherited-user-guide.cpp`, `tie-own-constructor-types-differ.cpp`
 
 ## Context
 
@@ -18,6 +18,10 @@ and then `Derived d(1);`, where `Base<T>` has the constructor
 GCC and EDG also take a user guide of the base, and order the guides
 from the class's own constructors before the inherited ones
 (`tie-own-constructor-template.cpp`, `tie-own-constructor-user-guide.cpp`).
+With `Derived(const T&)` and an inherited `Base(T)`, GCC and EDG find
+the two guides ambiguous, because their parameter types differ and the
+tie-breaker does not apply. Clang has only the first guide and deduces
+`Derived<int>` (`tie-own-constructor-types-differ.cpp`).
 
 ## Evidence
 

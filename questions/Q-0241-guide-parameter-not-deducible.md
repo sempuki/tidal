@@ -18,7 +18,10 @@ Such a guide is never viable, so the guide changes no deduction.
 
 ## Evidence
 
-The test above, and the inventory item H4.
+The test above, and the inventory item H4. Item 38 of the gap review
+`reports/review/2026-10-31-gap-review-packs-and-ctad.md` reads the rule
+as one that gives no exemption from diagnosis, so an implementation
+must reject the guide. Clang's rejection matches that reading.
 
 ## Options
 
@@ -29,9 +32,10 @@ The test above, and the inventory item H4.
 
 ## Provisional answer
 
-Option 1. The inventory says that the guide is not valid, and two of
-three implementations accept the declaration. A rule that needs no
-diagnostic allows both results.
+Option 2. The inventory and the gap review say that the guide is not
+valid, and the gap review finds no exemption from diagnosis. Clang
+rejects the guide. GCC and EDG accept it, and the tests record their
+results as overrides.
 
 ## Opinions
 

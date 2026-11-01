@@ -469,7 +469,7 @@ function type is then adjusted as a declared one is ({rule}`DCL-8`):
   conversion function.
 
 If substitution makes a type or expression that is not valid, the
-template adds no candidate.
+template adds no candidate. {rule}`PACK-27` gives the pack cases.
 :::
 
 :::{rule} DED-25

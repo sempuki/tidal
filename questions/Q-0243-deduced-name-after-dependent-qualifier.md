@@ -1,7 +1,7 @@
 # Q-0243: Can a deduced class template name follow a dependent qualifier?
 
 **Status:** provisional
-**Affects:** CTAD-1, `tests/templates/class-template-deduction/dependent-qualifier.cpp`
+**Affects:** CTAD-1, `tests/templates/class-template-deduction/dependent-qualifier.cpp`, `dependent-qualifier-template-keyword.cpp`
 
 ## Context
 
@@ -15,25 +15,37 @@ member class template of `Outer<T>`.
 | EDG 7.0 | accepts, the same type |
 
 The source reader's inventory (item G7) says that the qualifier before
-a deduced name must not be dependent. The compilers differ when the
-name has the keyword `template` before it: Clang rejects
-`typename Outer<T>::template In x(1);`, and GCC and EDG accept it. No
-test covers the form with `template`.
+a deduced name must not be dependent. Item 19 of the gap review
+`reports/review/2026-10-31-gap-review-packs-and-ctad.md` reads the
+reference the same way, and notes that the compilers accept the
+dependent form once the template is instantiated.
+
+The compilers differ when the name has the keyword `template` before
+it: `typename Outer<T>::template In x(1);`.
+
+| Compiler | Result |
+|---|---|
+| Clang 18, 22, host | rejects: an argument list is expected after the name |
+| GCC 14, 16, host | accepts, `Outer<T>::In<int>` |
+| EDG 7.0 | accepts, `Outer<T>::In<int>` |
 
 ## Evidence
 
-The test above, and a probe with the keyword `template`.
+The tests above.
 
 ## Options
 
 1. The qualifier can be dependent, as every compiler accepts.
-2. The qualifier must not be dependent, as the inventory says.
+2. The qualifier must not be dependent, as the inventory and the gap
+   review read the reference.
 
 ## Provisional answer
 
-Option 1. Every implementation accepts the form, and the specification
-follows the behavior that implementations share. A gap review can show
-whether the inventory item names a different form.
+Option 1. Every implementation accepts the form without the keyword
+`template`, and the specification follows the behavior that
+implementations share. The form with `template` follows the same
+answer, which GCC and EDG give. The question keeps both readings open
+for contributors.
 
 ## Opinions
 

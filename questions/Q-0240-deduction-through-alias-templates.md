@@ -1,7 +1,7 @@
 # Q-0240: Can a program deduce the arguments of a class template through an alias template?
 
 **Status:** provisional
-**Affects:** CTAD-14, `tests/templates/class-template-deduction/alias-template.cpp`, `alias-template-fixed-argument.cpp`, `alias-template-guides.cpp`, `alias-template-unreachable.cpp`
+**Affects:** CTAD-14, `tests/templates/class-template-deduction/alias-template.cpp`, `alias-template-fixed-argument.cpp`, `alias-template-guides.cpp`, `alias-template-unreachable.cpp`, `template-template-parameter-alias.cpp`, `list-single-specialization-alias.cpp`
 
 ## Context
 
