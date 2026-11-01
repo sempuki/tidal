@@ -100,10 +100,17 @@ compilers affect the Status column.
 | `classes/comparisons/eq-wrong-param.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/eq-wrong-return.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/member-eq-returns-int.cpp` | DCMP-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `classes/comparisons/ne-declared-blocks-reversed.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-declared-blocks-reversed.cpp` | DCMP-12 DCMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/ne-declared-direct-ok.cpp` | DCMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/comparisons/ne-declared-not-rewritten.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/comparisons/ne-matching-base-member.cpp` | DCMP-13 DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-matching-other-result.cpp` | DCMP-13 DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-matching-ref-qualifier.cpp` | DCMP-13 DCMP-12 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `classes/comparisons/ne-matching-using-declaration.cpp` | DCMP-13 DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/ne-needs-bool-eq.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/ne-not-matching-friend.cpp` | DCMP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/ne-not-matching.cpp` | DCMP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` | DCMP-12 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/comparisons/non-member-reversed.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/comparisons/not-equal-defaulted.cpp` | DCMP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1203,6 +1210,9 @@ compilers affect the Status column.
 | `declarations/declarators/pointer-to-reference.cpp` | DCL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/pointer-to-void-member.cpp` | DCL-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/pointer-to-void-ok.cpp` | DCL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/qualification-conversion-array-inner-bound.cpp` | CV-10 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `declarations/declarators/qualification-conversion-array-to-known.cpp` | CV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/qualification-conversion-array.cpp` | CV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/qualification-conversion-drops-const.cpp` | CV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/qualification-conversion-ok.cpp` | CV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/qualification-conversion-unsafe.cpp` | CV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1298,6 +1308,10 @@ compilers affect the Status column.
 | `declarations/exception-specifications/defaulted-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/delete-class-follows-destructor.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/delete-operator-noexcept.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` | EXS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` | EXS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/dependent-operand-not-needed.cpp` | EXS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/exception-specifications/dependent-operand-per-specialization.cpp` | EXS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/forms.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/implicit-follows-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/implicit-special-members.cpp` | EXS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1531,6 +1545,8 @@ compilers affect the Status column.
 | `declarations/initialization/references/braced-list-unknown-bound.cpp` | REF-14 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/initialization/references/braced-reference-narrowing.cpp` | REF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` | REF-10 REF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/references/const-element-array-ref.cpp` | REF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/references/const-ref-binds-lvalue-directly.cpp` | REF-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2316,6 +2332,8 @@ compilers affect the Status column.
 | `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/constant-initializer-usable.cpp` | CE-24 CV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/constant-initializer-zero-scalar.cpp` | CE-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` | CE-24 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
 | `expressions/constant-expressions/converted-constant-narrowing.cpp` | CE-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/copy-after-every-part-set.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/copy-unset-array-element.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -2325,6 +2343,10 @@ compilers affect the Status column.
 | `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/enumerator-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/extended-temporary-member.cpp` | CE-14 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/extended-temporary-nested.cpp` | CE-14 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/extended-temporary-static-local.cpp` | CE-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/constant-expressions/extended-temporary-through-cast.cpp` | CE-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/function-pointer-equality.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/goto-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/goto-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2347,8 +2369,12 @@ compilers affect the Status column.
 | `expressions/constant-expressions/new-delete-transient.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/non-constexpr-call.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/nonliteral-variable-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/order-may-differ-from-run.cpp` | CE-27 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/constant-expressions/read-const-constant-init.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/read-const-runtime-init.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/read-extended-temporary-class.cpp` | CE-3 CE-14 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `expressions/constant-expressions/read-extended-temporary-nested.cpp` | CE-3 CE-14 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `expressions/constant-expressions/read-extended-temporary-not-const.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/read-non-const-variable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/read-parameter-outside.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/reinterpret-cast.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2371,6 +2397,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/undefined-behavior-dangling.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/undefined-behavior.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/unknown-reference-not-read.cpp` | CE-18 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/unsequenced-not-detected.cpp` | CE-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/unset-member-not-copied.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2513,11 +2540,13 @@ compilers affect the Status column.
 | `expressions/lambdas/default-captures.cpp` | LAM-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/default-constructible.cpp` | LAM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/default-member-initializer-captures-this.cpp` | LAM-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/explicit-capture-order.cpp` | LAM-28 LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/explicit-object-mutable.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/explicit-object-recursion.cpp` | LAM-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/function-pointer.cpp` | LAM-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/generic.cpp` | LAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/immediately-invoked.cpp` | LAM-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/implicit-capture-order.cpp` | LAM-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/implicit-this-capture-warns.cpp` | LAM-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/init-capture-extends-temporary.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/init-capture-outer-lookup.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2805,6 +2834,15 @@ compilers affect the Status column.
 | `expressions/primary/float-overflow-warns.cpp` | PRIM-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-types.cpp` | PRIM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/fold-empty-pack.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-expansion.cpp` | PRIM-27 PRIM-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/fold-mismatched-operators.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-no-pack.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-operand-binary.cpp` | PRIM-29 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-order.cpp` | PRIM-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/fold-three-way-operator.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-two-packs.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/fold-without-parentheses.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/int-bad-digit-binary.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/int-bad-digit-octal.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/int-bad-suffix.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3038,6 +3076,7 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/ambiguous-loses-to-standard.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/ambiguous-ties-user-defined.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/array-fewer-elements.cpp` | ICS-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/array-known-bound.cpp` | ICS-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` | ICS-33 ICS-36 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/assignment-left-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3061,6 +3100,8 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/conversion-choice-second-part.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/conversion-choice-void.cpp` | ICS-43 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/double-brace-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp` | ICS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/ellipsis-braced-list.cpp` | ICS-6 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/ellipsis-sequence.cpp` | ICS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp` | ICS-28 ICS-34 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/fixed-enumeration-promotion.cpp` | ICS-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3092,7 +3133,8 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/list-reference-temporary.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-reference.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-scalar.cpp` | ICS-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/conversion-sequences/list-string-literal-bound.cpp` | ICS-38 ICS-24 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/list-string-literal-binds-literal.cpp` | ICS-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-string-literal-bound.cpp` | ICS-38 ICS-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/list-string-literal-too-short.cpp` | ICS-38 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/list-string-literal-utf8.cpp` | ICS-38 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/list-string-literal.cpp` | ICS-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3526,6 +3568,10 @@ compilers affect the Status column.
 | `foundations/overload-resolution/builtin-enumeration.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/builtin-integer-only.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/builtin-integral-compound.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-logical-explicit-bool.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` | OVL-9 OVL-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` | OVL-9 OVL-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/builtin-logical-explicit-int.cpp` | OVL-9 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/builtin-member-pointer-equality.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/builtin-member-pointer-order.cpp` | OPR-15 OVL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/builtin-none-for-address-comma.cpp` | OVL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3540,6 +3586,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/builtin-three-way.cpp` | OVL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/call-by-name-candidates.cpp` | OVL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/call-parenthesized-name.cpp` | OVL-21 OVL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/call-same-function-found-twice.cpp` | OVL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/call-through-address-nonstatic.cpp` | OVL-3 OVL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp` | OVL-44 OVL-21 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/call-through-address-parenthesized-static.cpp` | OVL-44 OVL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3553,20 +3600,21 @@ compilers affect the Status column.
 | `foundations/overload-resolution/current-object-explicit-extra-argument.cpp` | OVL-35 OVL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/current-object-explicit-parameter.cpp` | OVL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/current-object-other-class.cpp` | OVL-2 OVL-3 | reject | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
-| `foundations/overload-resolution/default-from-two-scopes-passed.cpp` | OVL-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/default-from-two-scopes-passed.cpp` | OVL-38 OVL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/default-from-two-scopes-same.cpp` | OVL-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/default-from-two-scopes.cpp` | OVL-38 | reject | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/overload-resolution/defaults-take-no-part.cpp` | OVL-36 OVL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/deleted-defaulted-move-not-candidate.cpp` | OVL-42 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/overload-resolution/enum-operand-no-parameter.cpp` | OPR-15 OVL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/enum-operand-parameter.cpp` | OVL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/enum-operand-swapped.cpp` | OVL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/explicit-condition-after-deduction.cpp` | OVL-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/inherited-copy-shape-any-argument.cpp` | OVL-17 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/inherited-copy-shape-default.cpp` | OVL-17 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/inherited-copy-shape-excluded.cpp` | OVL-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/inherited-copy-shape-two-arguments.cpp` | OVL-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/init-constructor-against-conversion.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/overload-resolution/init-constructor-conversion-tie.cpp` | OVL-36 OVL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/init-constructor-conversion-tie.cpp` | OVL-36 OVL-14 OVL-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/init-conversion-to-derived.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/init-copy-explicit-conversion.cpp` | OVL-14 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/init-copy-list-explicit-conversion.cpp` | OVL-40 OVL-35 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
@@ -3574,6 +3622,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/init-qualified-result.cpp` | OVL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/member-call-object.cpp` | OVL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` | OVL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/no-object-ref-qualified-member.cpp` | OVL-3 OVL-23 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/overload-resolution/no-object-static-chosen.cpp` | OVL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` | OVL-36 OVL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/no-viable-function.cpp` | OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3610,6 +3659,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/tie-constraints-ellipsis.cpp` | OVL-30 OVL-36 | reject | reject | reject | accept | skip | reject | accept | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/tie-conversion-result-before-constraints.cpp` | OVL-26 OVL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/tie-conversion-result-before-template.cpp` | OVL-26 OVL-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/tie-conversion-result-constructor.cpp` | OVL-26 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/overload-resolution/tie-conversion-result-noexcept.cpp` | OVL-26 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/tie-conversion-result-templates.cpp` | OVL-26 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/tie-conversion-result.cpp` | OVL-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3915,8 +3965,116 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-read-first.cpp` | JMP-16 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/alias-template-lambda-same.cpp` | TPL-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/declarations/alias-template-lambda.cpp` | TPL-46 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/alias-template-self-through-class.cpp` | TPL-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/alias-template-self.cpp` | TPL-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/alias-template.cpp` | TPL-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/block-scope.cpp` | TPL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/c-linkage-explicit.cpp` | TPL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/c-linkage-partial.cpp` | TPL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/c-linkage.cpp` | TPL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/class-template-declarator.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-address.cpp` | TPL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-adjusted.cpp` | TPL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-assign.cpp` | TPL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-auto-not-structural.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-auto-void.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-auto.cpp` | TPL-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-category.cpp` | TPL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-class-address.cpp` | TPL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-class-template.cpp` | TPL-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-cv.cpp` | TPL-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-defines-type.cpp` | TPL-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-mutable-member.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-not-literal.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-private-member.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-rvalue-reference.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-shared-object.cpp` | TPL-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/constant-parameter-storage-class.cpp` | TPL-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/constant-parameter-types.cpp` | TPL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-void-pointer.cpp` | TPL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/constant-parameter-void.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-class-member-outside.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-friend-class.cpp` | TPL-37 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/declarations/default-friend-declaration.cpp` | TPL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-friend-definition.cpp` | TPL-38 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/default-friend-redeclared.cpp` | TPL-38 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/default-greater-parenthesized.cpp` | TPL-39 TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/default-greater.cpp` | TPL-39 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-member-definition.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-not-last-alias.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-not-last-variable.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-not-last.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-pack-constant.cpp` | TPL-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-pack-template.cpp` | TPL-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-pack.cpp` | TPL-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-repeated.cpp` | TPL-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/defaults-function-any-order.cpp` | TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/defaults-merge.cpp` | TPL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/defaults.cpp` | TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/destructor-template.cpp` | TPL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/function-template-heads-differ.cpp` | TPL-22 TPL-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/function-template-overload.cpp` | TPL-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/kinds.cpp` | TPL-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/local-class-friend.cpp` | TPL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/local-class-member.cpp` | TPL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/main-template.cpp` | TPL-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/member-class-outside.cpp` | TPL-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/member-enum-outside.cpp` | TPL-42 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/declarations/member-outside-names.cpp` | TPL-23 TPL-43 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/member-outside-order.cpp` | TPL-43 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/member-outside-pack.cpp` | TPL-43 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/member-outside.cpp` | TPL-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/member-template-and-function.cpp` | TPL-44 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/member-template-not-override.cpp` | TPL-44 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/member-template-one-head.cpp` | TPL-20 TPL-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/member-template-virtual.cpp` | TPL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/member-template.cpp` | TPL-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/name-conflict-variable-template.cpp` | TPL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/name-conflict.cpp` | TPL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/pack-declared.cpp` | TPL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-last-alias.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/pack-last-variable.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/pack-last.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/pack-then-deducible.cpp` | TPL-30 TPL-35 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/pack-then-not-deducible.cpp` | TPL-35 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-typed-by-enclosing-pack.cpp` | TPL-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-typed-by-same-head.cpp` | TPL-36 TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/parameter-class-template-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/parameter-friend-name.cpp` | TPL-18 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/parameter-hidden-by-base.cpp` | TPL-41 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/parameter-local-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/parameter-member-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/parameter-namespace-name.cpp` | TPL-41 TPL-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/parameter-scope.cpp` | TPL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/parameter-twice.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/plain-function-not-from-template.cpp` | TPL-45 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `templates/declarations/redeclare-count.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/redeclare-kind.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/redeclare-names-differ.cpp` | TPL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/redeclare-pack.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/redeclare-template-template.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/redeclare-type.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/static-member-per-specialization.cpp` | TPL-47 TPL-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/template-template-inner-default-missing.cpp` | TPL-40 TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/template-template-inner-default.cpp` | TPL-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/template-template-parameter.cpp` | TPL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/two-declarators.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/type-parameter-keywords.cpp` | TPL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/typedef-template.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/unnamed-class.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/variable-template-non-static.cpp` | TPL-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/variable-template.cpp` | TPL-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/arguments/argument-gives-no-access.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/argument-makes-parameter-invalid.cpp` | TARG-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/argument-private-type-inside.cpp` | TARG-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/argument-private-type.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/class-argument-reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/class-argument-string-literal.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/class-arguments.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/class-for-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/closing-angles-cast.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/closing-angles.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/constant-converted.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/constant-floating-to-integer.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3924,6 +4082,10 @@ compilers affect the Status column.
 | `templates/arguments/constant-integer-to-floating.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/constant-narrowing.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/constant-not-constant.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-overloaded-function.cpp` | TARG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/arguments/constant-pointer-conversions.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/constant-pointer-to-base.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-pointer-to-void.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/constant-scoped-enum.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/defaults-fill.cpp` | TARG-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/empty-list-needs-angles.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3933,90 +4095,51 @@ compilers affect the Status column.
 | `templates/arguments/function-explicit-too-many.cpp` | TARG-6 TARG-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/greater-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/injected-name-as-template.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-specialization.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-two-bases-arguments.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-two-bases-template.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/injected-name-two-bases.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/injected-name.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/less-after-qualified-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/less-after-template-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/less-after-variable.cpp` | TARG-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/less-function-found.cpp` | TARG-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/arguments/match-in-order.cpp` | TARG-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/name-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/pack-takes-rest.cpp` | TARG-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/pointer-arguments.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/pointer-function-name.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/pointer-local.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/pointer-string-literal.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/pointer-subobject.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/pointer-zero.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/qualified-name-in-class.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/reference-arguments.cpp` | TARG-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/arguments/reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/same-specialization-alias-template.cpp` | TARG-22 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/arguments/same-specialization-class.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/same-specialization-floating.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-kinds.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/same-specialization-pointers.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-union-empty.cpp` | TARG-19 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/arguments/same-specialization.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/shift-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/template-template-arguments.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-auto.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-constant-type.cpp` | TARG-17 | accept | accept | accept | reject | skip | accept | reject | accept | accept | accept | accept | pass |
 | `templates/arguments/template-template-defaults.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
 | `templates/arguments/template-template-mismatch.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/template-template-pack.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-partial.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/template-template-too-many.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/too-few.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/too-many.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/type-argument-kinds.cpp` | TARG-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/type-for-constant.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/type-or-expression-constant.cpp` | TARG-7 TARG-8 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/type-or-expression.cpp` | TARG-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/arguments/variable-template-for-class-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/arguments/variable-template-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/alias-template-self.cpp` | TPL-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/alias-template.cpp` | TPL-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/block-scope.cpp` | TPL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/c-linkage.cpp` | TPL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-address.cpp` | TPL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-adjusted.cpp` | TPL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/constant-parameter-assign.cpp` | TPL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-auto.cpp` | TPL-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/constant-parameter-category.cpp` | TPL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/constant-parameter-class-address.cpp` | TPL-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/constant-parameter-mutable-member.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-not-literal.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-private-member.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-rvalue-reference.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/constant-parameter-types.cpp` | TPL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/constant-parameter-void.cpp` | TPL-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-class-member-outside.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-member-definition.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-not-last-alias.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-not-last-variable.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-not-last.cpp` | TPL-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/default-repeated.cpp` | TPL-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/defaults-function-any-order.cpp` | TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/defaults-merge.cpp` | TPL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/defaults.cpp` | TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/function-template-overload.cpp` | TPL-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/kinds.cpp` | TPL-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/declarations/local-class-member.cpp` | TPL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/main-template.cpp` | TPL-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/member-outside.cpp` | TPL-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/declarations/member-template-one-head.cpp` | TPL-20 TPL-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/member-template-virtual.cpp` | TPL-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/member-template.cpp` | TPL-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/declarations/name-conflict-variable-template.cpp` | TPL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/name-conflict.cpp` | TPL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/pack-declared.cpp` | TPL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/pack-last.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/parameter-local-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/parameter-member-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/parameter-scope.cpp` | TPL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/parameter-twice.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/redeclare-count.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/redeclare-kind.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/redeclare-names-differ.cpp` | TPL-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/redeclare-type.cpp` | TPL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/template-template-parameter.cpp` | TPL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/two-declarators.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/type-parameter-keywords.cpp` | TPL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/declarations/typedef-template.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/unnamed-class.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/variable-template-non-static.cpp` | TPL-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/declarations/variable-template.cpp` | TPL-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/specialization/alias-explicit.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/alias-partial.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/class-explicit-declared-only.cpp` | TSP-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4026,13 +4149,39 @@ compilers affect the Status column.
 | `templates/specialization/explicit-after-use-function.cpp` | TSP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-after-use.cpp` | TSP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-block-scope.cpp` | TSP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-class-key.cpp` | TSP-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/explicit-class-member-default.cpp` | TSP-22 TSP-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-class-member-outside.cpp` | TSP-22 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-class-member-prefix.cpp` | TSP-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-class-scope.cpp` | TSP-19 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/specialization/explicit-default-argument-member-template.cpp` | TSP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-default-argument-member.cpp` | TSP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-default-argument.cpp` | TSP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-enclosing-namespace.cpp` | TSP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/explicit-enum-after-use.cpp` | TSP-6 TSP-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-enum-declared.cpp` | TSP-30 TSP-3 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/specialization/explicit-friend.cpp` | TSP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-function-private-argument.cpp` | TSP-29 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/specialization/explicit-implicit-member.cpp` | TSP-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-member-class-member-outside.cpp` | TSP-22 TSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-member-class-template-member.cpp` | TSP-22 TSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-member-class-template-no-prefix.cpp` | TSP-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-member-enclosing-not-specialized.cpp` | TSP-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-member-prefix-count.cpp` | TSP-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-needs-header.cpp` | TSP-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-no-matching-template.cpp` | TSP-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-not-constexpr.cpp` | TSP-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/explicit-not-inline.cpp` | TSP-25 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `templates/specialization/explicit-not-template.cpp` | TSP-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/explicit-other-namespace.cpp` | TSP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-private-argument.cpp` | TSP-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/explicit-static-member-declaration.cpp` | TSP-28 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `templates/specialization/explicit-static-member-definition.cpp` | TSP-28 TSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-static-member-template-declaration.cpp` | TSP-28 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `templates/specialization/explicit-storage-class.cpp` | TSP-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/explicit-thread-local-only.cpp` | TSP-24 TSP-25 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-thread-local.cpp` | TSP-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/explicit-union-key.cpp` | TSP-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/function-explicit.cpp` | TSP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/function-partial-used.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/function-partial.cpp` | TSP-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4041,15 +4190,29 @@ compilers affect the Status column.
 | `templates/specialization/match-defaults.cpp` | TSP-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/match-repeated-parameter.cpp` | TSP-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/match-template-template.cpp` | TSP-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/match-using-declaration.cpp` | TSP-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/match-values.cpp` | TSP-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/member-explicit.cpp` | TSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/member-template-explicit-partial.cpp` | TSP-21 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/specialization/member-template-explicit-primary.cpp` | TSP-21 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
 | `templates/specialization/member-template-explicit.cpp` | TSP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/member-template-nested-explicit.cpp` | TSP-3 TSP-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/specialization/partial-after-use.cpp` | TSP-17 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/specialization/partial-default.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-dependent-type-value.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/partial-friend.cpp` | TSP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-member-not-defined.cpp` | TSP-18 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `templates/specialization/partial-member-outside.cpp` | TSP-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/specialization/partial-member-template.cpp` | TSP-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/partial-no-primary.cpp` | TSP-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-pack-before-parameter.cpp` | TSP-9 TPL-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/partial-pack-not-expanded.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-pack-not-last.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-private-argument.cpp` | TSP-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/specialization/partial-redeclared.cpp` | TSP-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/partial-reordered.cpp` | TSP-11 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/specialization/partial-same-as-primary.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/specialization/partial-union-key.cpp` | TSP-32 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/partial-unused-parameter.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/partial-value-expression.cpp` | TSP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/select-ambiguous-unused.cpp` | TSP-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4059,7 +4222,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-explicit.cpp` | TSP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-4041/4041 tests pass on baseline compilers.
+4204/4204 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -4431,6 +4594,38 @@ check that the rejection has the intended cause.
 - `classes/comparisons/ne-declared-blocks-reversed.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'int' and 'S')
 - `classes/comparisons/ne-declared-blocks-reversed.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'S')
 - `classes/comparisons/ne-declared-blocks-reversed.cpp` (clang-22-o2): error: invalid operands to binary expression ('int' and 'S')
+- `classes/comparisons/ne-matching-base-member.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘int’ and ‘Meter’)
+- `classes/comparisons/ne-matching-base-member.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `classes/comparisons/ne-matching-base-member.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-base-member.cpp` (clang-22-o2): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘int’ and ‘Meter’)
+- `classes/comparisons/ne-matching-other-result.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `classes/comparisons/ne-matching-other-result.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-other-result.cpp` (clang-22-o2): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-ref-qualifier.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-ref-qualifier.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `classes/comparisons/ne-matching-ref-qualifier.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-ref-qualifier.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-ref-qualifier.cpp` (clang-22-o2): error: invalid operands to binary expression ('int' and 'Meter')
+- `classes/comparisons/ne-matching-using-declaration.cpp` (clang-host): error: invalid operands to binary expression ('int' and 'units::Meter') / note: candidate function not viable: no known conversion from 'int' to 'const Meter' for 1st argument
+- `classes/comparisons/ne-matching-using-declaration.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘int’ and ‘units::Meter’)
+- `classes/comparisons/ne-matching-using-declaration.cpp` (edg-7.0): error: no operator "==" matches these operands / note: function "units::operator==" does not match because argument #1 does not match parameter / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #2 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
+- `classes/comparisons/ne-matching-using-declaration.cpp` (gcc-14): error: no match for 'operator==' (operand types are 'int' and 'units::Meter') / note: candidate: 'bool units::operator==(const Meter&, int)' / note:   no known conversion for argument 1 from 'int' to 'const units::Meter&'
+- `classes/comparisons/ne-matching-using-declaration.cpp` (clang-18): error: invalid operands to binary expression ('int' and 'units::Meter') / note: candidate function not viable: no known conversion from 'int' to 'const Meter' for 1st argument
+- `classes/comparisons/ne-matching-using-declaration.cpp` (gcc-16): error: no match for 'operator==' (operand types are 'int' and 'units::Meter')
+- `classes/comparisons/ne-matching-using-declaration.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'int' and 'units::Meter')
+- `classes/comparisons/ne-matching-using-declaration.cpp` (clang-22): error: invalid operands to binary expression ('int' and 'units::Meter') / note: candidate function not viable: no known conversion from 'int' to 'const Meter' for 1st argument
+- `classes/comparisons/ne-matching-using-declaration.cpp` (clang-22-o2): error: invalid operands to binary expression ('int' and 'units::Meter') / note: candidate function not viable: no known conversion from 'int' to 'const Meter' for 1st argument
 - `classes/comparisons/ne-needs-bool-eq.cpp` (clang-host): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
 - `classes/comparisons/ne-needs-bool-eq.cpp` (gcc-host): error: return type of ‘int S::operator==(int) const’ is not ‘bool’ / note: used as rewritten candidate for comparison of ‘S’ and ‘int’
 - `classes/comparisons/ne-needs-bool-eq.cpp` (edg-7.0): error: function "S::operator==" (declared at line 6) selected for operator rewrite does not return type bool
@@ -4440,6 +4635,11 @@ check that the rejection has the intended cause.
 - `classes/comparisons/ne-needs-bool-eq.cpp` (gcc-16-o2): error: return type of 'int S::operator==(int) const' is not 'bool' / note: used as rewritten candidate for comparison of 'S' and 'int'
 - `classes/comparisons/ne-needs-bool-eq.cpp` (clang-22): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
 - `classes/comparisons/ne-needs-bool-eq.cpp` (clang-22-o2): error: ISO C++20 requires return type of selected 'operator==' function for rewritten '!=' comparison to be 'bool', not 'int' [-Werror,-Wrewrite-not-bool]
+- `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` (clang-host): error: return type 'const bool &' of selected 'operator==' function for rewritten '!=' comparison is not 'bool'
+- `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` (edg-7.0): error: function "Meter::operator==" (declared at line 7) selected for operator rewrite does not return type bool
+- `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` (clang-18): error: return type 'const bool &' of selected 'operator==' function for rewritten '!=' comparison is not 'bool'
+- `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` (clang-22): error: return type 'const bool &' of selected 'operator==' function for rewritten '!=' comparison is not 'bool'
+- `classes/comparisons/ne-rewrite-reference-to-bool-result.cpp` (clang-22-o2): error: return type 'const bool &' of selected 'operator==' function for rewritten '!=' comparison is not 'bool'
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'S')
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘S’ and ‘S’)
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
@@ -9242,6 +9442,19 @@ check that the rejection has the intended cause.
 - `declarations/declarators/pointer-to-void-member.cpp` (gcc-16-o2): error: cannot declare pointer to 'void' member
 - `declarations/declarators/pointer-to-void-member.cpp` (clang-22): error: 'pm' declared as a member pointer to void
 - `declarations/declarators/pointer-to-void-member.cpp` (clang-22-o2): error: 'pm' declared as a member pointer to void
+- `declarations/declarators/qualification-conversion-array-inner-bound.cpp` (clang-host): error: cannot initialize a variable of type 'int (**)[]' with an rvalue of type 'int (**)[3]'
+- `declarations/declarators/qualification-conversion-array-inner-bound.cpp` (clang-18): error: cannot initialize a variable of type 'int (**)[]' with an rvalue of type 'int (**)[3]'
+- `declarations/declarators/qualification-conversion-array-inner-bound.cpp` (clang-22): error: cannot initialize a variable of type 'int (**)[]' with an rvalue of type 'int (**)[3]'
+- `declarations/declarators/qualification-conversion-array-inner-bound.cpp` (clang-22-o2): error: cannot initialize a variable of type 'int (**)[]' with an rvalue of type 'int (**)[3]'
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (clang-host): error: cannot initialize a variable of type 'int (*)[3]' with an lvalue of type 'int (*)[]'
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (gcc-host): error: cannot convert ‘int (*)[]’ to ‘int (*)[3]’ in initialization
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (edg-7.0): error: a value of type "int (*)[]" cannot be used to initialize an entity of type "int (*)[3]"
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (gcc-14): error: cannot convert 'int (*)[]' to 'int (*)[3]' in initialization
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (clang-18): error: cannot initialize a variable of type 'int (*)[3]' with an lvalue of type 'int (*)[]'
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (gcc-16): error: cannot convert 'int (*)[]' to 'int (*)[3]' in initialization
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (gcc-16-o2): error: cannot convert 'int (*)[]' to 'int (*)[3]' in initialization
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (clang-22): error: cannot initialize a variable of type 'int (*)[3]' with an lvalue of type 'int (*)[]'
+- `declarations/declarators/qualification-conversion-array-to-known.cpp` (clang-22-o2): error: cannot initialize a variable of type 'int (*)[3]' with an lvalue of type 'int (*)[]'
 - `declarations/declarators/qualification-conversion-drops-const.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'const int *'
 - `declarations/declarators/qualification-conversion-drops-const.cpp` (gcc-host): error: invalid conversion from ‘const int*’ to ‘int*’ [-fpermissive]
 - `declarations/declarators/qualification-conversion-drops-const.cpp` (edg-7.0): error: a value of type "const int *" cannot be used to initialize an entity of type "int *"
@@ -9595,6 +9808,24 @@ check that the rejection has the intended cause.
 - `declarations/exception-specifications/class-delete-operator-noexcept.cpp` (gcc-16): error: static assertion failed
 - `declarations/exception-specifications/class-delete-operator-noexcept.cpp` (gcc-16-o2): error: static assertion failed
 - `declarations/exception-specifications/defaulted-comparison-member-throwing.cpp` (edg-7.0): error: static assertion failed
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (gcc-host): error: ‘safe’ is not a member of ‘int’
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (gcc-14): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (gcc-16): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (gcc-16-o2): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-call.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (gcc-host): error: ‘safe’ is not a member of ‘int’
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (gcc-14): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (gcc-16): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (gcc-16-o2): error: 'safe' is not a member of 'int'
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
+- `declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'put' requested here
 - `declarations/exception-specifications/narrowing-operand.cpp` (clang-host): error: noexcept specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
 - `declarations/exception-specifications/narrowing-operand.cpp` (gcc-host): error: narrowing conversion of ‘2’ from ‘int’ to ‘bool’ [-Wnarrowing]
 - `declarations/exception-specifications/narrowing-operand.cpp` (gcc-14): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
@@ -10650,6 +10881,15 @@ check that the rejection has the intended cause.
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (gcc-16-o2): error: narrowing conversion of '2.5e+0' from 'double' to 'int' [-Wnarrowing]
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `declarations/initialization/references/braced-reference-narrowing.cpp` (clang-22-o2): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (clang-host): error: reference to type 'const char[3]' could not bind to an lvalue of type 'const char[3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (gcc-host): error: cannot bind rvalue reference of type ‘const char (&&)[3]’ to lvalue of type ‘const char [3]’
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (edg-7.0): error: an rvalue reference cannot be bound to an lvalue
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (gcc-14): error: cannot bind rvalue reference of type 'const char (&&)[3]' to lvalue of type 'const char [3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (clang-18): error: reference to type 'const char[3]' could not bind to an lvalue of type 'const char[3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (gcc-16): error: cannot bind rvalue reference of type 'const char (&&)[3]' to lvalue of type 'const char [3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (gcc-16-o2): error: cannot bind rvalue reference of type 'const char (&&)[3]' to lvalue of type 'const char [3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (clang-22): error: reference to type 'const char[3]' could not bind to an lvalue of type 'const char[3]'
+- `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` (clang-22-o2): error: reference to type 'const char[3]' could not bind to an lvalue of type 'const char[3]'
 - `declarations/initialization/references/const-volatile-ref-rvalue.cpp` (clang-host): error: volatile lvalue reference to type 'const volatile int' cannot bind to a temporary of type 'int'
 - `declarations/initialization/references/const-volatile-ref-rvalue.cpp` (gcc-host): error: cannot bind lvalue reference of type ‘const volatile int&’ to an rvalue of type ‘int’
 - `declarations/initialization/references/const-volatile-ref-rvalue.cpp` (edg-7.0): error: initial value of reference to const volatile must be an lvalue
@@ -13479,6 +13719,10 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (gcc-16-o2): error: 'constinit' variable 'setting' does not have a constant initializer / error: call to non-'constexpr' function 'int read_setting()'
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-22-o2): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
+- `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-22-o2): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (clang-host): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘unsigned char’ [-Wnarrowing]
 - `expressions/constant-expressions/converted-constant-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned char": constant value does not fit in destination type
@@ -13542,6 +13786,8 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (gcc-16-o2): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (clang-22): error: explicit specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
 - `expressions/constant-expressions/explicit-condition-narrowing.cpp` (clang-22-o2): error: explicit specifier argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `expressions/constant-expressions/extended-temporary-member.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
+- `expressions/constant-expressions/extended-temporary-nested.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
 - `expressions/constant-expressions/goto-reached.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: subexpression not valid in a constant expression
 - `expressions/constant-expressions/goto-reached.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘goto’ is not a constant expression
 - `expressions/constant-expressions/goto-reached.cpp` (edg-7.0): error: expression must have a constant value / note: 'goto' cannot be executed in constexpr contexts
@@ -13641,6 +13887,24 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: the value of 'n' is not usable in a constant expression / note: 'n' was not initialized with a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: initializer of 'n' is not a constant expression
 - `expressions/constant-expressions/read-const-runtime-init.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: initializer of 'n' is not a constant expression
+- `expressions/constant-expressions/read-extended-temporary-class.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘<temporary>’ is not usable in a constant expression / note: ‘<temporary>’ was not declared ‘constexpr’
+- `expressions/constant-expressions/read-extended-temporary-class.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-class.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-class.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-nested.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘<temporary>’ is not usable in a constant expression / note: ‘<temporary>’ was not declared ‘constexpr’
+- `expressions/constant-expressions/read-extended-temporary-nested.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
+- `expressions/constant-expressions/read-extended-temporary-nested.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-nested.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-nested.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: '<temporary>' was not declared 'constexpr'
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of temporary is not allowed in a constant expression outside the expression that created the temporary / note: temporary created here
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘<temporary>’ is not usable in a constant expression / note: ‘int <temporary>’ is not const
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access run-time storage
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (gcc-14): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: 'int <temporary>' is not const
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of temporary is not allowed in a constant expression outside the expression that created the temporary / note: temporary created here
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (gcc-16): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: 'int <temporary>' is not const
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: the value of '<temporary>' is not usable in a constant expression / note: 'int <temporary>' is not const
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of temporary is not allowed in a constant expression outside the expression that created the temporary / note: temporary created here
+- `expressions/constant-expressions/read-extended-temporary-not-const.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of temporary is not allowed in a constant expression outside the expression that created the temporary / note: temporary created here
 - `expressions/constant-expressions/read-non-const-variable.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
 - `expressions/constant-expressions/read-non-const-variable.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘n’ is not usable in a constant expression / note: ‘int n’ is not const
 - `expressions/constant-expressions/read-non-const-variable.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 6) cannot be used as a constant
@@ -15446,6 +15710,68 @@ check that the rejection has the intended cause.
 - `expressions/primary/float-overflow-warns.cpp` (clang-22): error: magnitude of floating-point constant too large for type 'float'; maximum is 3.40282347E+38 [-Werror,-Wliteral-range]
 - `expressions/primary/float-overflow-warns.cpp` (clang-22-o2): error: magnitude of floating-point constant too large for type 'float'; maximum is 3.40282347E+38 [-Werror,-Wliteral-range]
 - `expressions/primary/float-overflow.cpp` (edg-7.0): error: floating constant is out of range
+- `expressions/primary/fold-empty-pack.cpp` (clang-host): error: unary fold expression has empty expansion for operator '+' with no fallback value / note: in instantiation of variable template specialization 'sum<>' requested here
+- `expressions/primary/fold-empty-pack.cpp` (gcc-host): error: fold of empty expansion over operator+
+- `expressions/primary/fold-empty-pack.cpp` (edg-7.0): error: empty expansion not valid for this fold expression
+- `expressions/primary/fold-empty-pack.cpp` (gcc-14): error: fold of empty expansion over operator+
+- `expressions/primary/fold-empty-pack.cpp` (clang-18): error: unary fold expression has empty expansion for operator '+' with no fallback value / note: in instantiation of variable template specialization 'sum<>' requested here
+- `expressions/primary/fold-empty-pack.cpp` (gcc-16): error: fold of empty expansion over operator+
+- `expressions/primary/fold-empty-pack.cpp` (gcc-16-o2): error: fold of empty expansion over operator+
+- `expressions/primary/fold-empty-pack.cpp` (clang-22): error: unary fold expression has empty expansion for operator '+' with no fallback value / note: in instantiation of variable template specialization 'sum<>' requested here
+- `expressions/primary/fold-empty-pack.cpp` (clang-22-o2): error: unary fold expression has empty expansion for operator '+' with no fallback value / note: in instantiation of variable template specialization 'sum<>' requested here
+- `expressions/primary/fold-mismatched-operators.cpp` (clang-host): error: operators in fold expression must be the same
+- `expressions/primary/fold-mismatched-operators.cpp` (gcc-host): error: mismatched operator in fold-expression before ‘*’ token / error: expected ‘)’ before ‘*’ token
+- `expressions/primary/fold-mismatched-operators.cpp` (edg-7.0): error: second operator in binary fold expression does not match first / error: operand of "*" must be a pointer but has type "int"
+- `expressions/primary/fold-mismatched-operators.cpp` (gcc-14): error: mismatched operator in fold-expression before '*' token / error: expected ')' before '*' token
+- `expressions/primary/fold-mismatched-operators.cpp` (clang-18): error: operators in fold expression must be the same
+- `expressions/primary/fold-mismatched-operators.cpp` (gcc-16): error: mismatched operator in fold-expression before '*' token / error: expected ')' before '*' token
+- `expressions/primary/fold-mismatched-operators.cpp` (gcc-16-o2): error: mismatched operator in fold-expression before '*' token / error: expected ')' before '*' token
+- `expressions/primary/fold-mismatched-operators.cpp` (clang-22): error: operators in fold expression must be the same
+- `expressions/primary/fold-mismatched-operators.cpp` (clang-22-o2): error: operators in fold expression must be the same
+- `expressions/primary/fold-no-pack.cpp` (clang-host): error: pack expansion does not contain any unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (gcc-host): error: operand of fold expression has no unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (edg-7.0): error: fold expression does not refer to a parameter pack
+- `expressions/primary/fold-no-pack.cpp` (gcc-14): error: operand of fold expression has no unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (clang-18): error: pack expansion does not contain any unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (gcc-16): error: operand of fold expression has no unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (gcc-16-o2): error: operand of fold expression has no unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (clang-22): error: pack expansion does not contain any unexpanded parameter packs
+- `expressions/primary/fold-no-pack.cpp` (clang-22-o2): error: pack expansion does not contain any unexpanded parameter packs
+- `expressions/primary/fold-operand-binary.cpp` (clang-host): error: expression not permitted as operand of fold expression
+- `expressions/primary/fold-operand-binary.cpp` (gcc-host): error: binary expression in operand of fold-expression
+- `expressions/primary/fold-operand-binary.cpp` (gcc-14): error: binary expression in operand of fold-expression
+- `expressions/primary/fold-operand-binary.cpp` (clang-18): error: expression not permitted as operand of fold expression
+- `expressions/primary/fold-operand-binary.cpp` (gcc-16): error: binary expression in operand of fold-expression
+- `expressions/primary/fold-operand-binary.cpp` (gcc-16-o2): error: binary expression in operand of fold-expression
+- `expressions/primary/fold-operand-binary.cpp` (clang-22): error: expression not permitted as operand of fold expression
+- `expressions/primary/fold-operand-binary.cpp` (clang-22-o2): error: expression not permitted as operand of fold expression
+- `expressions/primary/fold-three-way-operator.cpp` (clang-host): error: expected expression
+- `expressions/primary/fold-three-way-operator.cpp` (gcc-host): error: expected ‘)’ before ‘<=>’ token / error: parameter packs not expanded with ‘...’: / note:         ‘V’
+- `expressions/primary/fold-three-way-operator.cpp` (edg-7.0): error: invalid fold expression operator
+- `expressions/primary/fold-three-way-operator.cpp` (gcc-14): error: expected ')' before '<=>' token / error: parameter packs not expanded with '...': / note:         'V'
+- `expressions/primary/fold-three-way-operator.cpp` (clang-18): error: expected expression
+- `expressions/primary/fold-three-way-operator.cpp` (gcc-16): error: expected ')' before '<=>' token / error: parameter packs not expanded with '...': / note:         'V'
+- `expressions/primary/fold-three-way-operator.cpp` (gcc-16-o2): error: expected ')' before '<=>' token / error: parameter packs not expanded with '...': / note:         'V'
+- `expressions/primary/fold-three-way-operator.cpp` (clang-22): error: expected expression
+- `expressions/primary/fold-three-way-operator.cpp` (clang-22-o2): error: expected expression
+- `expressions/primary/fold-two-packs.cpp` (clang-host): error: binary fold expression has unexpanded parameter packs in both operands / error: constexpr variable 'both' must be initialized by a constant expression
+- `expressions/primary/fold-two-packs.cpp` (gcc-host): error: both arguments in binary fold have unexpanded parameter packs [-Wtemplate-body]
+- `expressions/primary/fold-two-packs.cpp` (edg-7.0): error: a binary fold expression cannot apply to two parameter packs
+- `expressions/primary/fold-two-packs.cpp` (gcc-14): error: both arguments in binary fold have unexpanded parameter packs
+- `expressions/primary/fold-two-packs.cpp` (clang-18): error: binary fold expression has unexpanded parameter packs in both operands / error: constexpr variable 'both' must be initialized by a constant expression
+- `expressions/primary/fold-two-packs.cpp` (gcc-16): error: both arguments in binary fold have unexpanded parameter packs [-Wtemplate-body]
+- `expressions/primary/fold-two-packs.cpp` (gcc-16-o2): error: both arguments in binary fold have unexpanded parameter packs [-Wtemplate-body]
+- `expressions/primary/fold-two-packs.cpp` (clang-22): error: binary fold expression has unexpanded parameter packs in both operands / error: constexpr variable 'both' must be initialized by a constant expression
+- `expressions/primary/fold-two-packs.cpp` (clang-22-o2): error: binary fold expression has unexpanded parameter packs in both operands / error: constexpr variable 'both' must be initialized by a constant expression
+- `expressions/primary/fold-without-parentheses.cpp` (clang-host): error: expression contains unexpanded parameter pack 'V' / error: expected expression
+- `expressions/primary/fold-without-parentheses.cpp` (gcc-host): error: parameter packs not expanded with ‘...’: [-Wtemplate-body] / note:         ‘V’ / error: expected ‘;’ before ‘+’ token [-Wtemplate-body] / error: expected primary-expression before ‘...’ token [-Wtemplate-body]
+- `expressions/primary/fold-without-parentheses.cpp` (edg-7.0): error: expected an expression / error: parameter pack "V" was referenced but not expanded
+- `expressions/primary/fold-without-parentheses.cpp` (gcc-14): error: parameter packs not expanded with '...': / note:         'V' / error: expected ';' before '+' token / error: expected primary-expression before '...' token
+- `expressions/primary/fold-without-parentheses.cpp` (clang-18): error: expression contains unexpanded parameter pack 'V' / error: expected expression / error: no return statement in constexpr function / error: no matching function for call to 'bare' / note: candidate template ignored: substitution failure [with V = <1, 2>]
+- `expressions/primary/fold-without-parentheses.cpp` (gcc-16): error: parameter packs not expanded with '...': [-Wtemplate-body] / note:         'V' / error: expected ';' before '+' token [-Wtemplate-body] / error: expected primary-expression before '...' token [-Wtemplate-body]
+- `expressions/primary/fold-without-parentheses.cpp` (gcc-16-o2): error: parameter packs not expanded with '...': [-Wtemplate-body] / note:         'V' / error: expected ';' before '+' token [-Wtemplate-body] / error: expected primary-expression before '...' token [-Wtemplate-body]
+- `expressions/primary/fold-without-parentheses.cpp` (clang-22): error: expression contains unexpanded parameter pack 'V' / error: expected expression
+- `expressions/primary/fold-without-parentheses.cpp` (clang-22-o2): error: expression contains unexpanded parameter pack 'V' / error: expected expression
 - `expressions/primary/int-bad-digit-binary.cpp` (clang-host): error: invalid digit '2' in binary constant
 - `expressions/primary/int-bad-digit-binary.cpp` (gcc-host): error: invalid digit ‘2’ in binary constant
 - `expressions/primary/int-bad-digit-binary.cpp` (edg-7.0): error: invalid binary number
@@ -16172,6 +16498,10 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22-o2): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-22-o2): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
 - `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-host): error: call of overloaded ‘take(Derived [2])’ is ambiguous / error: call of overloaded ‘take(Derived [2])’ is ambiguous / error: template argument 1 is invalid / error: call of overloaded ‘near(Derived [2])’ is ambiguous / error: call of overloaded ‘near(Derived [2])’ is ambiguous / error: template argument 1 is invalid
 - `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-14): error: call of overloaded 'take(Derived [2])' is ambiguous / note: candidate: 'One take(void*)' / note: candidate: 'Two take(Base*)' / error: call of overloaded 'take(Derived [2])' is ambiguous / note: candidate: 'One take(void*)' / note: candidate: 'Two take(Base*)' / error: template argument 1 is invalid / error: call of overloaded 'near(Derived [2])' is ambiguous / note: candidate: 'One near(Base*)' / note: candidate: 'Two near(Middle*)' / error: call of overloaded 'near(Derived [2])' is ambiguous / note: candidate: 'One near(Base*)' / note: candidate: 'Two near(Middle*)' / error: template argument 1 is invalid
 - `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` (gcc-16): error: call of overloaded 'take(Derived [2])' is ambiguous / error: call of overloaded 'take(Derived [2])' is ambiguous / error: template argument 1 is invalid / error: call of overloaded 'near(Derived [2])' is ambiguous / error: call of overloaded 'near(Derived [2])' is ambiguous / error: template argument 1 is invalid
@@ -16288,6 +16618,15 @@ check that the rejection has the intended cause.
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-18): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-22): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-22-o2): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (clang-host): error: cannot pass initializer list to variadic function
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (gcc-host): error: invalid use of brace-enclosed initializer list
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (edg-7.0): error: a brace-enclosed list cannot be passed for an ellipsis parameter
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (gcc-14): error: invalid use of brace-enclosed initializer list
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (clang-18): error: cannot pass initializer list to variadic function
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (gcc-16): error: invalid use of brace-enclosed initializer list
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (gcc-16-o2): error: invalid use of brace-enclosed initializer list
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (clang-22): error: cannot pass initializer list to variadic function
+- `foundations/conversion-sequences/ellipsis-braced-list.cpp` (clang-22-o2): error: cannot pass initializer list to variadic function
 - `foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp` (gcc-host): error: static assertion failed
 - `foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp` (edg-7.0): error: static assertion failed
 - `foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp` (gcc-14): error: static assertion failed
@@ -18254,6 +18593,33 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/builtin-integer-only.cpp` (gcc-16-o2): error: no match for 'operator%' (operand types are 'ToDouble' and 'int')
 - `foundations/overload-resolution/builtin-integer-only.cpp` (clang-22): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
 - `foundations/overload-resolution/builtin-integer-only.cpp` (clang-22-o2): error: use of overloaded operator '%' is ambiguous (with operand types 'ToDouble' and 'int') / note: built-in candidate operator%(int, int) / note: built-in candidate operator%(long, int) / note: built-in candidate operator%(long long, int) / note: built-in candidate operator%(__int128, int) / note: built-in candidate operator%(unsigned int, int) / note: built-in candidate operator%(unsigned long, int) / note: built-in candidate operator%(unsigned long long, int) / note: built-in candidate operator%(unsigned __int128, int)
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (clang-host): error: use of overloaded operator '&&' is ambiguous (with operand types 'Flag' and 'Flag') / note: candidate function / note: built-in candidate operator&&(_Bool, _Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (gcc-host): error: ambiguous overload for ‘operator&&’ (operand types are ‘Flag’ and ‘Flag’)
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (edg-7.0): error: more than one operator "&&" matches these operands:
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (gcc-14): error: ambiguous overload for 'operator&&' (operand types are 'Flag' and 'Flag') / note: candidate: 'operator&&(bool, bool)' (built-in) / note: candidate: 'int operator&&(Gate, Gate)'
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (clang-18): error: use of overloaded operator '&&' is ambiguous (with operand types 'Flag' and 'Flag') / note: candidate function / note: built-in candidate operator&&(_Bool, _Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (gcc-16): error: ambiguous overload for 'operator&&' (operand types are 'Flag' and 'Flag')
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (gcc-16-o2): error: ambiguous overload for 'operator&&' (operand types are 'Flag' and 'Flag')
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (clang-22): error: use of overloaded operator '&&' is ambiguous (with operand types 'Flag' and 'Flag') / note: candidate function / note: built-in candidate operator&&(_Bool, _Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp` (clang-22-o2): error: use of overloaded operator '&&' is ambiguous (with operand types 'Flag' and 'Flag') / note: candidate function / note: built-in candidate operator&&(_Bool, _Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (clang-host): error: use of overloaded operator '!' is ambiguous (operand type 'Flag') / note: candidate function / note: built-in candidate operator!(_Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (gcc-host): error: ambiguous overload for ‘operator!’ (operand type is ‘Flag’)
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (edg-7.0): error: more than one operator "!" matches these operands:
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (gcc-14): error: ambiguous overload for 'operator!' (operand type is 'Flag') / note: candidate: 'operator!(bool)' (built-in) / note: candidate: 'int operator!(Gate)'
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (clang-18): error: use of overloaded operator '!' is ambiguous (operand type 'Flag') / note: candidate function / note: built-in candidate operator!(_Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (gcc-16): error: ambiguous overload for 'operator!' (operand type is 'Flag')
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (gcc-16-o2): error: ambiguous overload for 'operator!' (operand type is 'Flag')
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (clang-22): error: use of overloaded operator '!' is ambiguous (operand type 'Flag') / note: candidate function / note: built-in candidate operator!(_Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-competes.cpp` (clang-22-o2): error: use of overloaded operator '!' is ambiguous (operand type 'Flag') / note: candidate function / note: built-in candidate operator!(_Bool)
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (clang-host): error: invalid argument type 'Count' to unary expression
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (gcc-host): error: no match for ‘operator!’ (operand type is ‘Count’)
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (edg-7.0): error: no operator "!" matches these operands / note: built-in operator!(<bool>) does not match because argument #1 does not match parameter
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (gcc-14): error: no match for 'operator!' (operand type is 'Count') / note: candidate: 'operator!(bool)' (built-in) / note:   conversion of argument 1 would be ill-formed: / error: could not convert 'c' from 'Count' to 'bool'
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (clang-18): error: invalid argument type 'Count' to unary expression
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (gcc-16): error: no match for 'operator!' (operand type is 'Count')
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (gcc-16-o2): error: no match for 'operator!' (operand type is 'Count')
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (clang-22): error: invalid argument type 'Count' to unary expression
+- `foundations/overload-resolution/builtin-logical-explicit-int.cpp` (clang-22-o2): error: invalid argument type 'Count' to unary expression
 - `foundations/overload-resolution/builtin-member-pointer-order.cpp` (clang-host): error: invalid operands to binary expression ('ToMember' and 'ToMember')
 - `foundations/overload-resolution/builtin-member-pointer-order.cpp` (gcc-host): error: no match for ‘operator<’ (operand types are ‘ToMember’ and ‘ToMember’)
 - `foundations/overload-resolution/builtin-member-pointer-order.cpp` (edg-7.0): error: no operator "<" matches these operands / note: built-in operator<(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator<(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter / note: built-in operator<=>(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator<=>(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
@@ -18434,6 +18800,11 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (gcc-16-o2): error: cannot call member function 'void Item::reset()' without object
 - `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-22): error: call to non-static member function without an object argument
 - `foundations/overload-resolution/no-object-nonstatic-chosen.cpp` (clang-22-o2): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-ref-qualified-member.cpp` (clang-host): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-ref-qualified-member.cpp` (edg-7.0): error: a nonstatic member reference must be relative to a specific object
+- `foundations/overload-resolution/no-object-ref-qualified-member.cpp` (clang-18): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-ref-qualified-member.cpp` (clang-22): error: call to non-static member function without an object argument
+- `foundations/overload-resolution/no-object-ref-qualified-member.cpp` (clang-22-o2): error: call to non-static member function without an object argument
 - `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (clang-host): error: call to 'reset' is ambiguous / note: candidate function / note: candidate function
 - `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (gcc-host): error: call of overloaded ‘reset()’ is ambiguous
 - `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` (edg-7.0): error: more than one instance of overloaded function "Item::reset" matches the argument list:
@@ -18551,6 +18922,10 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/tie-constraints-ellipsis.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
 - `foundations/overload-resolution/tie-constraints-ellipsis.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
 - `foundations/overload-resolution/tie-constraints-ellipsis.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
+- `foundations/overload-resolution/tie-conversion-result-constructor.cpp` (clang-host): error: conversion from 'const Source' to 'const Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/tie-conversion-result-constructor.cpp` (clang-18): error: conversion from 'const Source' to 'const Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/tie-conversion-result-constructor.cpp` (clang-22): error: conversion from 'const Source' to 'const Target' is ambiguous / note: candidate constructor / note: candidate function
+- `foundations/overload-resolution/tie-conversion-result-constructor.cpp` (clang-22-o2): error: conversion from 'const Source' to 'const Target' is ambiguous / note: candidate constructor / note: candidate function
 - `foundations/overload-resolution/tie-conversion-result-noexcept.cpp` (edg-7.0): error: more than one conversion function from "Source" to "int (*const)()" applies:
 - `foundations/overload-resolution/tie-conversion-result-templates.cpp` (edg-7.0): error: more than one conversion function from "Source" to "int (*const)()" applies:
 - `foundations/overload-resolution/tie-function-reference-kind.cpp` (clang-host): error: reference initialization of type 'F &&' (aka 'int (&&)()') with initializer of type 'Source' is ambiguous / note: candidate function / note: candidate function
@@ -19701,6 +20076,579 @@ check that the rejection has the intended cause.
 - `statements/switch/two-defaults.cpp` (gcc-16-o2): error: multiple default labels in one switch / note: this is the first default label
 - `statements/switch/two-defaults.cpp` (clang-22): error: multiple default labels in one switch / note: previous case defined here
 - `statements/switch/two-defaults.cpp` (clang-22-o2): error: multiple default labels in one switch / note: previous case defined here
+- `templates/declarations/alias-template-lambda-same.cpp` (clang-host): error: static assertion failed due to requirement 'same<(lambda at /home/ryanm/Code/tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /home/ryanm/Code/tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
+- `templates/declarations/alias-template-lambda-same.cpp` (clang-18): error: static assertion failed due to requirement 'same<(lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
+- `templates/declarations/alias-template-lambda-same.cpp` (clang-22): error: static assertion failed due to requirement 'same<(lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
+- `templates/declarations/alias-template-lambda-same.cpp` (clang-22-o2): error: static assertion failed due to requirement 'same<(lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
+- `templates/declarations/alias-template-self-through-class.cpp` (clang-host): error: no type named 'type' in 'Holder<T>' / note: in instantiation of template type alias 'Self' requested here / error: no type named 'type' in 'Holder<int>' / note: in instantiation of template type alias 'Self' requested here
+- `templates/declarations/alias-template-self-through-class.cpp` (gcc-host): error: invalid use of incomplete type ‘struct Holder<int>’ / note: declaration of ‘struct Holder<int>’
+- `templates/declarations/alias-template-self-through-class.cpp` (edg-7.0): error: class "Holder<int>" has no member "type"
+- `templates/declarations/alias-template-self-through-class.cpp` (gcc-14): error: invalid use of incomplete type 'struct Holder<int>' / note: declaration of 'struct Holder<int>'
+- `templates/declarations/alias-template-self-through-class.cpp` (clang-18): error: no type named 'type' in 'Holder<T>' / note: in instantiation of template type alias 'Self' requested here / error: no type named 'type' in 'Holder<int>' / note: in instantiation of template type alias 'Self' requested here
+- `templates/declarations/alias-template-self-through-class.cpp` (gcc-16): error: invalid use of incomplete type 'struct Holder<int>' / note: declaration of 'struct Holder<int>'
+- `templates/declarations/alias-template-self-through-class.cpp` (gcc-16-o2): error: invalid use of incomplete type 'struct Holder<int>' / note: declaration of 'struct Holder<int>'
+- `templates/declarations/alias-template-self-through-class.cpp` (clang-22): error: no type named 'type' in 'Holder<T>' / note: in instantiation of template type alias 'Self' requested here / error: no type named 'type' in 'Holder<int>' / note: in instantiation of template type alias 'Self' requested here
+- `templates/declarations/alias-template-self-through-class.cpp` (clang-22-o2): error: no type named 'type' in 'Holder<T>' / note: in instantiation of template type alias 'Self' requested here / error: no type named 'type' in 'Holder<int>' / note: in instantiation of template type alias 'Self' requested here
+- `templates/declarations/alias-template-self.cpp` (clang-host): error: no template named 'Self'
+- `templates/declarations/alias-template-self.cpp` (gcc-host): error: ‘Self’ does not name a type
+- `templates/declarations/alias-template-self.cpp` (edg-7.0): error: Self is not a template
+- `templates/declarations/alias-template-self.cpp` (gcc-14): error: 'Self' does not name a type
+- `templates/declarations/alias-template-self.cpp` (clang-18): error: no template named 'Self'
+- `templates/declarations/alias-template-self.cpp` (gcc-16): error: 'Self' does not name a type
+- `templates/declarations/alias-template-self.cpp` (gcc-16-o2): error: 'Self' does not name a type
+- `templates/declarations/alias-template-self.cpp` (clang-22): error: no template named 'Self'
+- `templates/declarations/alias-template-self.cpp` (clang-22-o2): error: no template named 'Self'
+- `templates/declarations/block-scope.cpp` (clang-host): error: templates can only be declared in namespace or class scope
+- `templates/declarations/block-scope.cpp` (gcc-host): error: a template declaration cannot appear at block scope
+- `templates/declarations/block-scope.cpp` (edg-7.0): error: a template declaration is not allowed here
+- `templates/declarations/block-scope.cpp` (gcc-14): error: a template declaration cannot appear at block scope
+- `templates/declarations/block-scope.cpp` (clang-18): error: expected expression
+- `templates/declarations/block-scope.cpp` (gcc-16): error: a template declaration cannot appear at block scope
+- `templates/declarations/block-scope.cpp` (gcc-16-o2): error: a template declaration cannot appear at block scope
+- `templates/declarations/block-scope.cpp` (clang-22): error: templates can only be declared in namespace or class scope
+- `templates/declarations/block-scope.cpp` (clang-22-o2): error: templates can only be declared in namespace or class scope
+- `templates/declarations/c-linkage-explicit.cpp` (clang-host): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-explicit.cpp` (gcc-host): error: template specialization with C linkage / note: ‘extern "C"’ linkage started here
+- `templates/declarations/c-linkage-explicit.cpp` (edg-7.0): error: this declaration may not have extern "C" linkage
+- `templates/declarations/c-linkage-explicit.cpp` (gcc-14): error: template specialization with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-explicit.cpp` (clang-18): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-explicit.cpp` (gcc-16): error: template specialization with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-explicit.cpp` (gcc-16-o2): error: template specialization with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-explicit.cpp` (clang-22): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-explicit.cpp` (clang-22-o2): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-partial.cpp` (clang-host): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-partial.cpp` (gcc-host): error: template with C linkage / note: ‘extern "C"’ linkage started here
+- `templates/declarations/c-linkage-partial.cpp` (edg-7.0): error: this declaration may not have extern "C" linkage
+- `templates/declarations/c-linkage-partial.cpp` (gcc-14): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-partial.cpp` (clang-18): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-partial.cpp` (gcc-16): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-partial.cpp` (gcc-16-o2): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage-partial.cpp` (clang-22): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage-partial.cpp` (clang-22-o2): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage.cpp` (clang-host): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage.cpp` (gcc-host): error: template with C linkage / note: ‘extern "C"’ linkage started here
+- `templates/declarations/c-linkage.cpp` (edg-7.0): error: this declaration may not have extern "C" linkage
+- `templates/declarations/c-linkage.cpp` (gcc-14): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage.cpp` (clang-18): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage.cpp` (gcc-16): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage.cpp` (gcc-16-o2): error: template with C linkage / note: 'extern "C"' linkage started here
+- `templates/declarations/c-linkage.cpp` (clang-22): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/c-linkage.cpp` (clang-22-o2): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
+- `templates/declarations/class-template-declarator.cpp` (clang-host): error: expected ';' after struct / error: no template named 'box'; did you mean 'Box'? / error: '<deduction guide for Box>' cannot be the name of a variable or data member
+- `templates/declarations/class-template-declarator.cpp` (gcc-host): error: a class template declaration must not declare anything else
+- `templates/declarations/class-template-declarator.cpp` (edg-7.0): error: expected a ";"
+- `templates/declarations/class-template-declarator.cpp` (gcc-14): error: a class template declaration must not declare anything else
+- `templates/declarations/class-template-declarator.cpp` (clang-18): error: expected ';' after struct / error: no template named 'box'; did you mean 'Box'? / error: '<deduction guide for Box>' cannot be the name of a variable or data member
+- `templates/declarations/class-template-declarator.cpp` (gcc-16): error: a class template declaration must not declare anything else
+- `templates/declarations/class-template-declarator.cpp` (gcc-16-o2): error: a class template declaration must not declare anything else
+- `templates/declarations/class-template-declarator.cpp` (clang-22): error: expected ';' after struct / error: no template named 'box'; did you mean 'Box'? / error: '<deduction guide for Box>' cannot be the name of a variable or data member
+- `templates/declarations/class-template-declarator.cpp` (clang-22-o2): error: expected ';' after struct / error: no template named 'box'; did you mean 'Box'? / error: '<deduction guide for Box>' cannot be the name of a variable or data member
+- `templates/declarations/constant-parameter-address.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `templates/declarations/constant-parameter-address.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand [-Wtemplate-body]
+- `templates/declarations/constant-parameter-address.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `templates/declarations/constant-parameter-address.cpp` (gcc-14): error: lvalue required as unary '&' operand
+- `templates/declarations/constant-parameter-address.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `templates/declarations/constant-parameter-address.cpp` (gcc-16): error: lvalue required as unary '&' operand [-Wtemplate-body]
+- `templates/declarations/constant-parameter-address.cpp` (gcc-16-o2): error: lvalue required as unary '&' operand [-Wtemplate-body]
+- `templates/declarations/constant-parameter-address.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `templates/declarations/constant-parameter-address.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
+- `templates/declarations/constant-parameter-assign.cpp` (clang-host): error: expression is not assignable
+- `templates/declarations/constant-parameter-assign.cpp` (gcc-host): error: lvalue required as left operand of assignment [-Wtemplate-body]
+- `templates/declarations/constant-parameter-assign.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `templates/declarations/constant-parameter-assign.cpp` (gcc-14): error: lvalue required as left operand of assignment
+- `templates/declarations/constant-parameter-assign.cpp` (clang-18): error: expression is not assignable
+- `templates/declarations/constant-parameter-assign.cpp` (gcc-16): error: lvalue required as left operand of assignment [-Wtemplate-body]
+- `templates/declarations/constant-parameter-assign.cpp` (gcc-16-o2): error: lvalue required as left operand of assignment [-Wtemplate-body]
+- `templates/declarations/constant-parameter-assign.cpp` (clang-22): error: expression is not assignable
+- `templates/declarations/constant-parameter-assign.cpp` (clang-22-o2): error: expression is not assignable
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (clang-host): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (gcc-host): error: ‘Secret’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Secret::hidden’ is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (gcc-14): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (clang-18): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (gcc-16): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (gcc-16-o2): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (clang-22): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-auto-not-structural.cpp` (clang-22-o2): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-auto-void.cpp` (clang-host): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-auto-void.cpp` (gcc-host): error: ‘void’ is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-auto-void.cpp` (edg-7.0): error: cannot deduce "auto" template parameter type "auto" from "void"
+- `templates/declarations/constant-parameter-auto-void.cpp` (gcc-14): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-auto-void.cpp` (clang-18): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-auto-void.cpp` (gcc-16): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-auto-void.cpp` (gcc-16-o2): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-auto-void.cpp` (clang-22): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-auto-void.cpp` (clang-22-o2): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-defines-type.cpp` (clang-host): error: 'Color' cannot be defined in a type specifier
+- `templates/declarations/constant-parameter-defines-type.cpp` (gcc-host): error: types may not be defined in parameter types
+- `templates/declarations/constant-parameter-defines-type.cpp` (edg-7.0): error: type definition is not allowed
+- `templates/declarations/constant-parameter-defines-type.cpp` (gcc-14): error: types may not be defined in parameter types
+- `templates/declarations/constant-parameter-defines-type.cpp` (clang-18): error: 'Color' cannot be defined in a type specifier
+- `templates/declarations/constant-parameter-defines-type.cpp` (gcc-16): error: types may not be defined in parameter types
+- `templates/declarations/constant-parameter-defines-type.cpp` (gcc-16-o2): error: types may not be defined in parameter types
+- `templates/declarations/constant-parameter-defines-type.cpp` (clang-22): error: 'Color' cannot be defined in a type specifier
+- `templates/declarations/constant-parameter-defines-type.cpp` (clang-22-o2): error: 'Color' cannot be defined in a type specifier
+- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-host): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
+- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-host): error: ‘Counter’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Counter::hits’ is mutable
+- `templates/declarations/constant-parameter-mutable-member.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
+- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-14): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
+- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-18): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
+- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-16): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
+- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-16-o2): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
+- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-22): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
+- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-22-o2): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
+- `templates/declarations/constant-parameter-not-literal.cpp` (clang-host): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
+- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-host): error: ‘Owner’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Owner’ is not literal because: / note:   ‘Owner’ does not have ‘constexpr’ destructor
+- `templates/declarations/constant-parameter-not-literal.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
+- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-14): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
+- `templates/declarations/constant-parameter-not-literal.cpp` (clang-18): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
+- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-16): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
+- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-16-o2): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
+- `templates/declarations/constant-parameter-not-literal.cpp` (clang-22): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
+- `templates/declarations/constant-parameter-not-literal.cpp` (clang-22-o2): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
+- `templates/declarations/constant-parameter-private-member.cpp` (clang-host): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (gcc-host): error: ‘Secret’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Secret::hidden’ is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
+- `templates/declarations/constant-parameter-private-member.cpp` (gcc-14): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (clang-18): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (gcc-16): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (gcc-16-o2): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (clang-22): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-private-member.cpp` (clang-22-o2): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-host): error: non-type template parameter has rvalue reference type 'int &&'
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-host): error: ‘int&&’ is not a valid type for a template non-type parameter because it is not structural
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (edg-7.0): error: a nontype template parameter cannot have rvalue reference type
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-14): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-18): error: non-type template parameter has rvalue reference type 'int &&'
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-16): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-16-o2): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-22): error: non-type template parameter has rvalue reference type 'int &&'
+- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-22-o2): error: non-type template parameter has rvalue reference type 'int &&'
+- `templates/declarations/constant-parameter-storage-class.cpp` (clang-host): error: invalid declaration specifier in template non-type parameter
+- `templates/declarations/constant-parameter-storage-class.cpp` (gcc-host): error: storage class specified for template parameter ‘N’
+- `templates/declarations/constant-parameter-storage-class.cpp` (edg-7.0): error: a storage class may not be specified here
+- `templates/declarations/constant-parameter-storage-class.cpp` (gcc-14): error: storage class specified for template parameter 'N'
+- `templates/declarations/constant-parameter-storage-class.cpp` (clang-18): error: invalid declaration specifier in template non-type parameter
+- `templates/declarations/constant-parameter-storage-class.cpp` (gcc-16): error: storage class specified for template parameter 'N'
+- `templates/declarations/constant-parameter-storage-class.cpp` (gcc-16-o2): error: storage class specified for template parameter 'N'
+- `templates/declarations/constant-parameter-storage-class.cpp` (clang-22): error: invalid declaration specifier in template non-type parameter
+- `templates/declarations/constant-parameter-storage-class.cpp` (clang-22-o2): error: invalid declaration specifier in template non-type parameter
+- `templates/declarations/constant-parameter-void.cpp` (clang-host): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-void.cpp` (gcc-host): error: ‘void’ is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-void.cpp` (edg-7.0): error: a template parameter may not have void type
+- `templates/declarations/constant-parameter-void.cpp` (gcc-14): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-void.cpp` (clang-18): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-void.cpp` (gcc-16): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-void.cpp` (gcc-16-o2): error: 'void' is not a valid type for a template non-type parameter
+- `templates/declarations/constant-parameter-void.cpp` (clang-22): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/constant-parameter-void.cpp` (clang-22-o2): error: non-type template parameter has incomplete type 'void'
+- `templates/declarations/default-class-member-outside.cpp` (clang-host): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-class-member-outside.cpp` (gcc-host): error: default argument for template parameter for class enclosing ‘void Box<T>::set()’ [-Wtemplate-body]
+- `templates/declarations/default-class-member-outside.cpp` (edg-7.0): error: a default template argument cannot be specified on the definition of a member of a class template outside the template
+- `templates/declarations/default-class-member-outside.cpp` (gcc-14): error: default argument for template parameter for class enclosing 'void Box<T>::set()'
+- `templates/declarations/default-class-member-outside.cpp` (clang-18): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-class-member-outside.cpp` (gcc-16): error: default argument for template parameter for class enclosing 'void Box<T>::set()' [-Wtemplate-body]
+- `templates/declarations/default-class-member-outside.cpp` (gcc-16-o2): error: default argument for template parameter for class enclosing 'void Box<T>::set()' [-Wtemplate-body]
+- `templates/declarations/default-class-member-outside.cpp` (clang-22): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-class-member-outside.cpp` (clang-22-o2): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-friend-class.cpp` (clang-host): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-class.cpp` (edg-7.0): error: default argument is not allowed on a friend class template declaration
+- `templates/declarations/default-friend-class.cpp` (clang-18): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-class.cpp` (clang-22): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-class.cpp` (clang-22-o2): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-declaration.cpp` (clang-host): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-declaration.cpp` (gcc-host): error: default template arguments may not be used in template friend declarations
+- `templates/declarations/default-friend-declaration.cpp` (edg-7.0): error: a default template argument in a friend declaration may only be specified in a definition
+- `templates/declarations/default-friend-declaration.cpp` (gcc-14): error: default template arguments may not be used in template friend declarations
+- `templates/declarations/default-friend-declaration.cpp` (clang-18): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-declaration.cpp` (gcc-16): error: default template arguments may not be used in template friend declarations
+- `templates/declarations/default-friend-declaration.cpp` (gcc-16-o2): error: default template arguments may not be used in template friend declarations
+- `templates/declarations/default-friend-declaration.cpp` (clang-22): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-declaration.cpp` (clang-22-o2): error: default template argument not permitted on a friend template
+- `templates/declarations/default-friend-redeclared.cpp` (edg-7.0): error: a friend template declaration with a default template argument must be the only declaration (first declared at line 7)
+- `templates/declarations/default-greater.cpp` (clang-host): error: expected unqualified-id
+- `templates/declarations/default-greater.cpp` (gcc-host): error: expected unqualified-id before numeric constant
+- `templates/declarations/default-greater.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "bool": constant value does not fit in destination type / error: expected a declaration / error: expected a ";"
+- `templates/declarations/default-greater.cpp` (gcc-14): error: expected unqualified-id before numeric constant
+- `templates/declarations/default-greater.cpp` (clang-18): error: expected unqualified-id
+- `templates/declarations/default-greater.cpp` (gcc-16): error: expected unqualified-id before numeric constant
+- `templates/declarations/default-greater.cpp` (gcc-16-o2): error: expected unqualified-id before numeric constant
+- `templates/declarations/default-greater.cpp` (clang-22): error: expected unqualified-id
+- `templates/declarations/default-greater.cpp` (clang-22-o2): error: expected unqualified-id
+- `templates/declarations/default-member-definition.cpp` (clang-host): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-member-definition.cpp` (gcc-host): error: default argument for template parameter for class enclosing ‘U Box<T>::get()’ [-Wtemplate-body]
+- `templates/declarations/default-member-definition.cpp` (edg-7.0): error: a default template argument cannot be specified on the definition of a member of a class template outside the template
+- `templates/declarations/default-member-definition.cpp` (gcc-14): error: default argument for template parameter for class enclosing 'U Box<T>::get()'
+- `templates/declarations/default-member-definition.cpp` (clang-18): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-member-definition.cpp` (gcc-16): error: default argument for template parameter for class enclosing 'U Box<T>::get()' [-Wtemplate-body]
+- `templates/declarations/default-member-definition.cpp` (gcc-16-o2): error: default argument for template parameter for class enclosing 'U Box<T>::get()' [-Wtemplate-body]
+- `templates/declarations/default-member-definition.cpp` (clang-22): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-member-definition.cpp` (clang-22-o2): error: cannot add a default template argument to the definition of a member of a class template
+- `templates/declarations/default-not-last-alias.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-alias.cpp` (gcc-host): error: no default argument for ‘U’
+- `templates/declarations/default-not-last-alias.cpp` (edg-7.0): error: default argument not at end of parameter list
+- `templates/declarations/default-not-last-alias.cpp` (gcc-14): error: no default argument for 'U'
+- `templates/declarations/default-not-last-alias.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-alias.cpp` (gcc-16): error: no default argument for 'U'
+- `templates/declarations/default-not-last-alias.cpp` (gcc-16-o2): error: no default argument for 'U'
+- `templates/declarations/default-not-last-alias.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-alias.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-variable.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-variable.cpp` (gcc-host): error: no default argument for ‘M’
+- `templates/declarations/default-not-last-variable.cpp` (edg-7.0): error: default argument not at end of parameter list
+- `templates/declarations/default-not-last-variable.cpp` (gcc-14): error: no default argument for 'M'
+- `templates/declarations/default-not-last-variable.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-variable.cpp` (gcc-16): error: no default argument for 'M'
+- `templates/declarations/default-not-last-variable.cpp` (gcc-16-o2): error: no default argument for 'M'
+- `templates/declarations/default-not-last-variable.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last-variable.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last.cpp` (gcc-host): error: no default argument for ‘U’
+- `templates/declarations/default-not-last.cpp` (edg-7.0): error: default argument not at end of parameter list
+- `templates/declarations/default-not-last.cpp` (gcc-14): error: no default argument for 'U'
+- `templates/declarations/default-not-last.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last.cpp` (gcc-16): error: no default argument for 'U'
+- `templates/declarations/default-not-last.cpp` (gcc-16-o2): error: no default argument for 'U'
+- `templates/declarations/default-not-last.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-not-last.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
+- `templates/declarations/default-pack-constant.cpp` (clang-host): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (gcc-host): error: template parameter pack ‘N’ cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (edg-7.0): error: a parameter pack cannot have a default
+- `templates/declarations/default-pack-constant.cpp` (gcc-14): error: template parameter pack 'N' cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (clang-18): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (gcc-16): error: template parameter pack 'N' cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (gcc-16-o2): error: template parameter pack 'N' cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (clang-22): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-constant.cpp` (clang-22-o2): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (clang-host): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (gcc-host): error: template parameter pack ‘C’ cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (edg-7.0): error: a parameter pack cannot have a default
+- `templates/declarations/default-pack-template.cpp` (gcc-14): error: template parameter pack 'C' cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (clang-18): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (gcc-16): error: template parameter pack 'C' cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (gcc-16-o2): error: template parameter pack 'C' cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (clang-22): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack-template.cpp` (clang-22-o2): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack.cpp` (clang-host): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack.cpp` (gcc-host): error: template parameter pack ‘T’ cannot have a default argument
+- `templates/declarations/default-pack.cpp` (edg-7.0): error: a parameter pack cannot have a default
+- `templates/declarations/default-pack.cpp` (gcc-14): error: template parameter pack 'T' cannot have a default argument
+- `templates/declarations/default-pack.cpp` (clang-18): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack.cpp` (gcc-16): error: template parameter pack 'T' cannot have a default argument
+- `templates/declarations/default-pack.cpp` (gcc-16-o2): error: template parameter pack 'T' cannot have a default argument
+- `templates/declarations/default-pack.cpp` (clang-22): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-pack.cpp` (clang-22-o2): error: template parameter pack cannot have a default argument
+- `templates/declarations/default-repeated.cpp` (clang-host): error: template parameter redefines default argument / note: previous default template argument defined here
+- `templates/declarations/default-repeated.cpp` (gcc-host): error: redefinition of default argument for ‘class T’ / note: original definition appeared here
+- `templates/declarations/default-repeated.cpp` (edg-7.0): error: redefinition of default argument
+- `templates/declarations/default-repeated.cpp` (gcc-14): error: redefinition of default argument for 'class T' / note: original definition appeared here
+- `templates/declarations/default-repeated.cpp` (clang-18): error: template parameter redefines default argument / note: previous default template argument defined here
+- `templates/declarations/default-repeated.cpp` (gcc-16): error: redefinition of default argument for 'class T' / note: original definition appeared here
+- `templates/declarations/default-repeated.cpp` (gcc-16-o2): error: redefinition of default argument for 'class T' / note: original definition appeared here
+- `templates/declarations/default-repeated.cpp` (clang-22): error: template parameter redefines default argument / note: previous default template argument defined here
+- `templates/declarations/default-repeated.cpp` (clang-22-o2): error: template parameter redefines default argument / note: previous default template argument defined here
+- `templates/declarations/destructor-template.cpp` (clang-host): error: destructor cannot be declared as a template
+- `templates/declarations/destructor-template.cpp` (gcc-host): error: destructor ‘Holder::~Holder()’ declared as member template
+- `templates/declarations/destructor-template.cpp` (edg-7.0): error: expected a declaration / error: expected a ";"
+- `templates/declarations/destructor-template.cpp` (gcc-14): error: destructor 'Holder::~Holder()' declared as member template
+- `templates/declarations/destructor-template.cpp` (clang-18): error: destructor cannot be declared as a template
+- `templates/declarations/destructor-template.cpp` (gcc-16): error: destructor 'Holder::~Holder()' declared as member template
+- `templates/declarations/destructor-template.cpp` (gcc-16-o2): error: destructor 'Holder::~Holder()' declared as member template
+- `templates/declarations/destructor-template.cpp` (clang-22): error: destructor cannot be declared as a template
+- `templates/declarations/destructor-template.cpp` (clang-22-o2): error: destructor cannot be declared as a template
+- `templates/declarations/local-class-friend.cpp` (clang-host): error: templates cannot be declared inside of a local class
+- `templates/declarations/local-class-friend.cpp` (gcc-host): error: invalid declaration of member template in local class
+- `templates/declarations/local-class-friend.cpp` (edg-7.0): error: a template friend declaration cannot be declared in a local class
+- `templates/declarations/local-class-friend.cpp` (gcc-14): error: invalid declaration of member template in local class
+- `templates/declarations/local-class-friend.cpp` (clang-18): error: templates cannot be declared inside of a local class
+- `templates/declarations/local-class-friend.cpp` (gcc-16): error: invalid declaration of member template in local class
+- `templates/declarations/local-class-friend.cpp` (gcc-16-o2): error: invalid declaration of member template in local class
+- `templates/declarations/local-class-friend.cpp` (clang-22): error: templates cannot be declared inside of a local class
+- `templates/declarations/local-class-friend.cpp` (clang-22-o2): error: templates cannot be declared inside of a local class
+- `templates/declarations/local-class-member.cpp` (clang-host): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
+- `templates/declarations/local-class-member.cpp` (gcc-host): error: invalid declaration of member template in local class / error: ‘struct use()::Local’ has no member named ‘get’
+- `templates/declarations/local-class-member.cpp` (edg-7.0): error: a template declaration is not allowed here / error: no instance of function template "Local::get" matches the argument list / note: candidate function template "Local::get" failed deduction
+- `templates/declarations/local-class-member.cpp` (gcc-14): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
+- `templates/declarations/local-class-member.cpp` (clang-18): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
+- `templates/declarations/local-class-member.cpp` (gcc-16): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
+- `templates/declarations/local-class-member.cpp` (gcc-16-o2): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
+- `templates/declarations/local-class-member.cpp` (clang-22): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
+- `templates/declarations/local-class-member.cpp` (clang-22-o2): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
+- `templates/declarations/main-template.cpp` (clang-host): error: 'main' cannot be a template
+- `templates/declarations/main-template.cpp` (gcc-host): error: cannot declare ‘::main’ to be a template
+- `templates/declarations/main-template.cpp` (edg-7.0): error: "main" is not a valid name for a function template
+- `templates/declarations/main-template.cpp` (gcc-14): error: cannot declare '::main' to be a template
+- `templates/declarations/main-template.cpp` (clang-18): error: 'main' cannot be a template
+- `templates/declarations/main-template.cpp` (gcc-16): error: cannot declare '::main' to be a template
+- `templates/declarations/main-template.cpp` (gcc-16-o2): error: cannot declare '::main' to be a template
+- `templates/declarations/main-template.cpp` (clang-22): error: 'main' cannot be a template
+- `templates/declarations/main-template.cpp` (clang-22-o2): error: 'main' cannot be a template
+- `templates/declarations/member-enum-outside.cpp` (gcc-host): error: ‘enum Outer<T>::Kind’ is an enumeration template [-Wpedantic] / error: ‘enum Outer<T>::Plain’ is an enumeration template [-Wpedantic]
+- `templates/declarations/member-enum-outside.cpp` (gcc-14): error: 'enum Outer<T>::Kind' is an enumeration template [-Wpedantic] / error: 'enum Outer<T>::Plain' is an enumeration template [-Wpedantic]
+- `templates/declarations/member-enum-outside.cpp` (gcc-16): error: 'enum Outer<T>::Kind' is an enumeration template [-Wpedantic] / error: 'enum Outer<T>::Plain' is an enumeration template [-Wpedantic]
+- `templates/declarations/member-enum-outside.cpp` (gcc-16-o2): error: 'enum Outer<T>::Kind' is an enumeration template [-Wpedantic] / error: 'enum Outer<T>::Plain' is an enumeration template [-Wpedantic]
+- `templates/declarations/member-outside-order.cpp` (clang-host): error: nested name specifier 'Pair<U, T>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/declarations/member-outside-order.cpp` (gcc-host): error: invalid use of incomplete type ‘struct Pair<U, T>’ / note: declaration of ‘struct Pair<U, T>’
+- `templates/declarations/member-outside-order.cpp` (edg-7.0): error: template argument list must match the parameter list
+- `templates/declarations/member-outside-order.cpp` (gcc-14): error: invalid use of incomplete type 'struct Pair<U, T>' / note: declaration of 'struct Pair<U, T>'
+- `templates/declarations/member-outside-order.cpp` (clang-18): error: nested name specifier 'Pair<U, T>::' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/declarations/member-outside-order.cpp` (gcc-16): error: invalid use of incomplete type 'struct Pair<U, T>' / note: declaration of 'struct Pair<U, T>'
+- `templates/declarations/member-outside-order.cpp` (gcc-16-o2): error: invalid use of incomplete type 'struct Pair<U, T>' / note: declaration of 'struct Pair<U, T>'
+- `templates/declarations/member-outside-order.cpp` (clang-22): error: nested name specifier 'Pair<U, T>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/declarations/member-outside-order.cpp` (clang-22-o2): error: nested name specifier 'Pair<U, T>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/declarations/member-outside-pack.cpp` (clang-host): error: qualifier contains unexpanded parameter pack 'T'
+- `templates/declarations/member-outside-pack.cpp` (gcc-host): error: parameter packs not expanded with ‘...’: / note:         ‘T’
+- `templates/declarations/member-outside-pack.cpp` (edg-7.0): error: parameter pack "T" was referenced but not expanded / error: template argument list must match the parameter list
+- `templates/declarations/member-outside-pack.cpp` (gcc-14): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/declarations/member-outside-pack.cpp` (clang-18): error: qualifier contains unexpanded parameter pack 'T'
+- `templates/declarations/member-outside-pack.cpp` (gcc-16): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/declarations/member-outside-pack.cpp` (gcc-16-o2): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/declarations/member-outside-pack.cpp` (clang-22): error: qualifier contains unexpanded parameter pack 'T'
+- `templates/declarations/member-outside-pack.cpp` (clang-22-o2): error: qualifier contains unexpanded parameter pack 'T'
+- `templates/declarations/member-template-one-head.cpp` (clang-host): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/member-template-one-head.cpp` (gcc-host): error: no declaration matches ‘U Box<T>::as() const’ [-Wtemplate-body] / note: ‘struct Box<T>’ defined here
+- `templates/declarations/member-template-one-head.cpp` (edg-7.0): error: declaration is incompatible with function template "U Box<T>::as<U>() const" (declared at line 8)
+- `templates/declarations/member-template-one-head.cpp` (gcc-14): error: no declaration matches 'U Box<T>::as() const' / note: candidate is: 'template<class T> template<class U> U Box<T>::as() const' / note: 'struct Box<T>' defined here
+- `templates/declarations/member-template-one-head.cpp` (clang-18): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/member-template-one-head.cpp` (gcc-16): error: no declaration matches 'U Box<T>::as() const' [-Wtemplate-body] / note: 'struct Box<T>' defined here
+- `templates/declarations/member-template-one-head.cpp` (gcc-16-o2): error: no declaration matches 'U Box<T>::as() const' [-Wtemplate-body] / note: 'struct Box<T>' defined here
+- `templates/declarations/member-template-one-head.cpp` (clang-22): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/member-template-one-head.cpp` (clang-22-o2): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/member-template-virtual.cpp` (clang-host): error: 'virtual' cannot be specified on member function templates
+- `templates/declarations/member-template-virtual.cpp` (gcc-host): error: templates may not be ‘virtual’
+- `templates/declarations/member-template-virtual.cpp` (edg-7.0): error: "virtual" is not allowed in a function template declaration
+- `templates/declarations/member-template-virtual.cpp` (gcc-14): error: templates may not be 'virtual'
+- `templates/declarations/member-template-virtual.cpp` (clang-18): error: 'virtual' cannot be specified on member function templates
+- `templates/declarations/member-template-virtual.cpp` (gcc-16): error: templates may not be 'virtual'
+- `templates/declarations/member-template-virtual.cpp` (gcc-16-o2): error: templates may not be 'virtual'
+- `templates/declarations/member-template-virtual.cpp` (clang-22): error: 'virtual' cannot be specified on member function templates
+- `templates/declarations/member-template-virtual.cpp` (clang-22-o2): error: 'virtual' cannot be specified on member function templates
+- `templates/declarations/name-conflict-variable-template.cpp` (clang-host): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict-variable-template.cpp` (gcc-host): error: conflicting declaration of template ‘template<class T> constexpr const int Size’ / note: previous declaration ‘template<class T> struct Size’
+- `templates/declarations/name-conflict-variable-template.cpp` (edg-7.0): error: "Size" has already been declared in the current scope
+- `templates/declarations/name-conflict-variable-template.cpp` (gcc-14): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
+- `templates/declarations/name-conflict-variable-template.cpp` (clang-18): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict-variable-template.cpp` (gcc-16): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
+- `templates/declarations/name-conflict-variable-template.cpp` (gcc-16-o2): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
+- `templates/declarations/name-conflict-variable-template.cpp` (clang-22): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict-variable-template.cpp` (clang-22-o2): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict.cpp` (clang-host): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict.cpp` (gcc-host): error: ‘int Box’ redeclared as different kind of entity / note: previous declaration ‘template<class T> struct Box’
+- `templates/declarations/name-conflict.cpp` (edg-7.0): error: "Box" has already been declared in the current scope
+- `templates/declarations/name-conflict.cpp` (gcc-14): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
+- `templates/declarations/name-conflict.cpp` (clang-18): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict.cpp` (gcc-16): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
+- `templates/declarations/name-conflict.cpp` (gcc-16-o2): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
+- `templates/declarations/name-conflict.cpp` (clang-22): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
+- `templates/declarations/name-conflict.cpp` (clang-22-o2): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
+- `templates/declarations/pack-last-alias.cpp` (clang-host): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-alias.cpp` (gcc-host): error: parameter pack ‘Front’ must be at the end of the template parameter list
+- `templates/declarations/pack-last-alias.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
+- `templates/declarations/pack-last-alias.cpp` (gcc-14): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-alias.cpp` (clang-18): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-alias.cpp` (gcc-16): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-alias.cpp` (gcc-16-o2): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-alias.cpp` (clang-22): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-alias.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-variable.cpp` (clang-host): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-variable.cpp` (gcc-host): error: parameter pack ‘Front’ must be at the end of the template parameter list
+- `templates/declarations/pack-last-variable.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
+- `templates/declarations/pack-last-variable.cpp` (gcc-14): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-variable.cpp` (clang-18): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-variable.cpp` (gcc-16): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-variable.cpp` (gcc-16-o2): error: parameter pack 'Front' must be at the end of the template parameter list
+- `templates/declarations/pack-last-variable.cpp` (clang-22): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last-variable.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last.cpp` (clang-host): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last.cpp` (gcc-host): error: parameter pack ‘Ts’ must be at the end of the template parameter list
+- `templates/declarations/pack-last.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
+- `templates/declarations/pack-last.cpp` (gcc-14): error: parameter pack 'Ts' must be at the end of the template parameter list
+- `templates/declarations/pack-last.cpp` (clang-18): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last.cpp` (gcc-16): error: parameter pack 'Ts' must be at the end of the template parameter list
+- `templates/declarations/pack-last.cpp` (gcc-16-o2): error: parameter pack 'Ts' must be at the end of the template parameter list
+- `templates/declarations/pack-last.cpp` (clang-22): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-last.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-then-not-deducible.cpp` (edg-7.0): error: template parameter "Back" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "count"
+- `templates/declarations/pack-typed-by-same-head.cpp` (clang-host): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-typed-by-same-head.cpp` (gcc-host): error: parameter pack ‘T’ must be at the end of the template parameter list
+- `templates/declarations/pack-typed-by-same-head.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
+- `templates/declarations/pack-typed-by-same-head.cpp` (gcc-14): error: parameter pack 'T' must be at the end of the template parameter list
+- `templates/declarations/pack-typed-by-same-head.cpp` (clang-18): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-typed-by-same-head.cpp` (gcc-16): error: parameter pack 'T' must be at the end of the template parameter list
+- `templates/declarations/pack-typed-by-same-head.cpp` (gcc-16-o2): error: parameter pack 'T' must be at the end of the template parameter list
+- `templates/declarations/pack-typed-by-same-head.cpp` (clang-22): error: template parameter pack must be the last template parameter
+- `templates/declarations/pack-typed-by-same-head.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
+- `templates/declarations/parameter-class-template-name.cpp` (clang-host): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-class-template-name.cpp` (gcc-host): error: using template type parameter ‘T’ after ‘struct’
+- `templates/declarations/parameter-class-template-name.cpp` (edg-7.0): error: class template and template parameter may not have the same name
+- `templates/declarations/parameter-class-template-name.cpp` (gcc-14): error: using template type parameter 'T' after 'struct'
+- `templates/declarations/parameter-class-template-name.cpp` (clang-18): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-class-template-name.cpp` (gcc-16): error: using template type parameter 'T' after 'struct'
+- `templates/declarations/parameter-class-template-name.cpp` (gcc-16-o2): error: using template type parameter 'T' after 'struct'
+- `templates/declarations/parameter-class-template-name.cpp` (clang-22): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-class-template-name.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-friend-name.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
+- `templates/declarations/parameter-local-name.cpp` (clang-host): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-local-name.cpp` (gcc-host): error: declaration of ‘int T’ shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-local-name.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
+- `templates/declarations/parameter-local-name.cpp` (gcc-14): error: declaration of 'int T' shadows template parameter
+- `templates/declarations/parameter-local-name.cpp` (clang-18): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-local-name.cpp` (gcc-16): error: declaration of 'int T' shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-local-name.cpp` (gcc-16-o2): error: declaration of 'int T' shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-local-name.cpp` (clang-22): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-local-name.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-member-name.cpp` (clang-host): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-member-name.cpp` (gcc-host): error: declaration of ‘int Box<T>::T’ shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-member-name.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
+- `templates/declarations/parameter-member-name.cpp` (gcc-14): error: declaration of 'int Box<T>::T' shadows template parameter
+- `templates/declarations/parameter-member-name.cpp` (clang-18): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-member-name.cpp` (gcc-16): error: declaration of 'int Box<T>::T' shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-member-name.cpp` (gcc-16-o2): error: declaration of 'int Box<T>::T' shadows template parameter [-Wtemplate-body]
+- `templates/declarations/parameter-member-name.cpp` (clang-22): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-member-name.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-twice.cpp` (clang-host): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-twice.cpp` (gcc-host): error: conflicting declaration ‘class T’ / note: previous declaration as ‘class T’
+- `templates/declarations/parameter-twice.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
+- `templates/declarations/parameter-twice.cpp` (gcc-14): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
+- `templates/declarations/parameter-twice.cpp` (clang-18): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-twice.cpp` (gcc-16): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
+- `templates/declarations/parameter-twice.cpp` (gcc-16-o2): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
+- `templates/declarations/parameter-twice.cpp` (clang-22): error: declaration of 'T' shadows template parameter
+- `templates/declarations/parameter-twice.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
+- `templates/declarations/plain-function-not-from-template.cpp` (clang-host): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (gcc-host): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (gcc-14): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (clang-18): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (gcc-16): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (gcc-16-o2): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (clang-22): link: undefined reference to `twice(int)'
+- `templates/declarations/plain-function-not-from-template.cpp` (clang-22-o2): link: undefined reference to `twice(int)'
+- `templates/declarations/redeclare-count.cpp` (clang-host): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-count.cpp` (gcc-host): error: redeclared with 2 template parameters / note: previous declaration ‘template<class T> struct Box’ used 1 template parameter
+- `templates/declarations/redeclare-count.cpp` (edg-7.0): error: too many template parameters -- does not match previous declaration (declared at line 6)
+- `templates/declarations/redeclare-count.cpp` (gcc-14): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
+- `templates/declarations/redeclare-count.cpp` (clang-18): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-count.cpp` (gcc-16): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
+- `templates/declarations/redeclare-count.cpp` (gcc-16-o2): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
+- `templates/declarations/redeclare-count.cpp` (clang-22): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-count.cpp` (clang-22-o2): error: too many template parameters in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-kind.cpp` (clang-host): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-kind.cpp` (gcc-host): error: template parameter ‘class T’
+- `templates/declarations/redeclare-kind.cpp` (edg-7.0): error: declaration is incompatible with template parameter "T" (declared at line 6)
+- `templates/declarations/redeclare-kind.cpp` (gcc-14): error: template parameter 'class T'
+- `templates/declarations/redeclare-kind.cpp` (clang-18): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-kind.cpp` (gcc-16): error: template parameter 'class T'
+- `templates/declarations/redeclare-kind.cpp` (gcc-16-o2): error: template parameter 'class T'
+- `templates/declarations/redeclare-kind.cpp` (clang-22): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-kind.cpp` (clang-22-o2): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
+- `templates/declarations/redeclare-pack.cpp` (clang-host): error: template type parameter pack conflicts with previous template type parameter
+- `templates/declarations/redeclare-pack.cpp` (gcc-host): error: template parameter ‘class T’
+- `templates/declarations/redeclare-pack.cpp` (edg-7.0): error: declaration is incompatible with template parameter "T" (declared at line 6)
+- `templates/declarations/redeclare-pack.cpp` (gcc-14): error: template parameter 'class T'
+- `templates/declarations/redeclare-pack.cpp` (clang-18): error: template type parameter pack conflicts with previous template type parameter
+- `templates/declarations/redeclare-pack.cpp` (gcc-16): error: template parameter 'class T'
+- `templates/declarations/redeclare-pack.cpp` (gcc-16-o2): error: template parameter 'class T'
+- `templates/declarations/redeclare-pack.cpp` (clang-22): error: template type parameter pack conflicts with previous template type parameter
+- `templates/declarations/redeclare-pack.cpp` (clang-22-o2): error: template type parameter pack conflicts with previous template type parameter
+- `templates/declarations/redeclare-template-template.cpp` (clang-host): error: template parameter has a different kind in template template parameter redeclaration / note: previous template template parameter is here
+- `templates/declarations/redeclare-template-template.cpp` (gcc-host): error: template parameter ‘template<class> class C’
+- `templates/declarations/redeclare-template-template.cpp` (edg-7.0): error: declaration is incompatible with template template parameter "C" (declared at line 6)
+- `templates/declarations/redeclare-template-template.cpp` (gcc-14): error: template parameter 'template<class> class C'
+- `templates/declarations/redeclare-template-template.cpp` (clang-18): error: template parameter has a different kind in template template parameter redeclaration / note: previous template template parameter is here
+- `templates/declarations/redeclare-template-template.cpp` (gcc-16): error: template parameter 'template<class> class C'
+- `templates/declarations/redeclare-template-template.cpp` (gcc-16-o2): error: template parameter 'template<class> class C'
+- `templates/declarations/redeclare-template-template.cpp` (clang-22): error: template parameter has a different kind in template template parameter redeclaration / note: previous template template parameter is here
+- `templates/declarations/redeclare-template-template.cpp` (clang-22-o2): error: template parameter has a different kind in template template parameter redeclaration / note: previous template template parameter is here
+- `templates/declarations/redeclare-type.cpp` (clang-host): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
+- `templates/declarations/redeclare-type.cpp` (gcc-host): error: template parameter ‘int N’
+- `templates/declarations/redeclare-type.cpp` (edg-7.0): error: declaration is incompatible with constant "int N" (declared at line 6)
+- `templates/declarations/redeclare-type.cpp` (gcc-14): error: template parameter 'int N'
+- `templates/declarations/redeclare-type.cpp` (clang-18): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
+- `templates/declarations/redeclare-type.cpp` (gcc-16): error: template parameter 'int N'
+- `templates/declarations/redeclare-type.cpp` (gcc-16-o2): error: template parameter 'int N'
+- `templates/declarations/redeclare-type.cpp` (clang-22): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
+- `templates/declarations/redeclare-type.cpp` (clang-22-o2): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
+- `templates/declarations/template-template-inner-default-missing.cpp` (clang-host): error: too few template arguments for template template parameter 'C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (gcc-host): error: wrong number of template arguments (0, should be 1) [-Wtemplate-body] / note: provided for ‘template<class> class C’
+- `templates/declarations/template-template-inner-default-missing.cpp` (edg-7.0): error: too few arguments for template template parameter "C"
+- `templates/declarations/template-template-inner-default-missing.cpp` (gcc-14): error: wrong number of template arguments (0, should be 1) / note: provided for 'template<class> class C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (clang-18): error: too few template arguments for template template parameter 'C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (gcc-16): error: wrong number of template arguments (0, should be 1) [-Wtemplate-body] / note: provided for 'template<class> class C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (gcc-16-o2): error: wrong number of template arguments (0, should be 1) [-Wtemplate-body] / note: provided for 'template<class> class C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (clang-22): error: too few template arguments for template template parameter 'C'
+- `templates/declarations/template-template-inner-default-missing.cpp` (clang-22-o2): error: too few template arguments for template template parameter 'C'
+- `templates/declarations/two-declarators.cpp` (clang-host): error: a template declaration can only declare a single entity
+- `templates/declarations/two-declarators.cpp` (gcc-host): error: expected ‘;’ before ‘,’ token
+- `templates/declarations/two-declarators.cpp` (edg-7.0): error: expected a ";"
+- `templates/declarations/two-declarators.cpp` (gcc-14): error: expected ';' before ',' token
+- `templates/declarations/two-declarators.cpp` (clang-18): error: a template declaration can only declare a single entity
+- `templates/declarations/two-declarators.cpp` (gcc-16): error: expected ';' before ',' token
+- `templates/declarations/two-declarators.cpp` (gcc-16-o2): error: expected ';' before ',' token
+- `templates/declarations/two-declarators.cpp` (clang-22): error: a template declaration can only declare a single entity
+- `templates/declarations/two-declarators.cpp` (clang-22-o2): error: a template declaration can only declare a single entity
+- `templates/declarations/typedef-template.cpp` (clang-host): error: a typedef cannot be a template
+- `templates/declarations/typedef-template.cpp` (gcc-host): error: template declaration of ‘typedef’
+- `templates/declarations/typedef-template.cpp` (edg-7.0): error: "typedef" may not be specified here
+- `templates/declarations/typedef-template.cpp` (gcc-14): error: template declaration of 'typedef'
+- `templates/declarations/typedef-template.cpp` (clang-18): error: a typedef cannot be a template
+- `templates/declarations/typedef-template.cpp` (gcc-16): error: template declaration of 'typedef'
+- `templates/declarations/typedef-template.cpp` (gcc-16-o2): error: template declaration of 'typedef'
+- `templates/declarations/typedef-template.cpp` (clang-22): error: a typedef cannot be a template
+- `templates/declarations/typedef-template.cpp` (clang-22-o2): error: a typedef cannot be a template
+- `templates/declarations/unnamed-class.cpp` (clang-host): error: cannot declare a class template with no name
+- `templates/declarations/unnamed-class.cpp` (gcc-host): error: template class without a name
+- `templates/declarations/unnamed-class.cpp` (edg-7.0): error: expected an identifier
+- `templates/declarations/unnamed-class.cpp` (gcc-14): error: template class without a name
+- `templates/declarations/unnamed-class.cpp` (clang-18): error: cannot declare a class template with no name
+- `templates/declarations/unnamed-class.cpp` (gcc-16): error: template class without a name
+- `templates/declarations/unnamed-class.cpp` (gcc-16-o2): error: template class without a name
+- `templates/declarations/unnamed-class.cpp` (clang-22): error: cannot declare a class template with no name
+- `templates/declarations/unnamed-class.cpp` (clang-22-o2): error: cannot declare a class template with no name
+- `templates/declarations/variable-template-non-static.cpp` (clang-host): error: non-static data member 'cell' cannot be declared as a template
+- `templates/declarations/variable-template-non-static.cpp` (gcc-host): error: data member ‘cell’ cannot be a member template
+- `templates/declarations/variable-template-non-static.cpp` (edg-7.0): error: member "Table::cell" is not a valid class member template
+- `templates/declarations/variable-template-non-static.cpp` (gcc-14): error: data member 'cell' cannot be a member template
+- `templates/declarations/variable-template-non-static.cpp` (clang-18): error: member 'cell' declared as a template
+- `templates/declarations/variable-template-non-static.cpp` (gcc-16): error: data member 'cell' cannot be a member template
+- `templates/declarations/variable-template-non-static.cpp` (gcc-16-o2): error: data member 'cell' cannot be a member template
+- `templates/declarations/variable-template-non-static.cpp` (clang-22): error: non-static data member 'cell' cannot be declared as a template
+- `templates/declarations/variable-template-non-static.cpp` (clang-22-o2): error: non-static data member 'cell' cannot be declared as a template
+- `templates/arguments/argument-gives-no-access.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 8) is inaccessible
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-private-type.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 7) is inaccessible
+- `templates/arguments/argument-private-type.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-host): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-host): error: ‘Ref{((const int&)(&<anonymous>.Pair::a))}’ is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-14): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-18): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16-o2): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22-o2): error: reference to subobject of temporary object is not allowed in a template argument
 - `templates/arguments/class-for-template.cpp` (clang-host): error: template argument for template template parameter must be a class template or type alias template
 - `templates/arguments/class-for-template.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Use’ / note:   expected a class template, got ‘Plain’
 - `templates/arguments/class-for-template.cpp` (edg-7.0): error: class "Plain" is not a class template
@@ -19755,6 +20703,24 @@ check that the rejection has the intended cause.
 - `templates/arguments/constant-not-constant.cpp` (gcc-16-o2): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
 - `templates/arguments/constant-not-constant.cpp` (clang-22): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
 - `templates/arguments/constant-not-constant.cpp` (clang-22-o2): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-host): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-host): error: conversion from ‘Derived*’ to ‘Base*’ in a converted constant expression / error: could not convert ‘& object’ from ‘Derived*’ to ‘Base*’
+- `templates/arguments/constant-pointer-to-base.cpp` (edg-7.0): error: argument of type "Derived *" is incompatible with template parameter of type "Base *"
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-14): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-18): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16-o2): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-22): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-22-o2): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-host): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-host): error: conversion from ‘int*’ to ‘void*’ in a converted constant expression / error: could not convert ‘& global’ from ‘int*’ to ‘void*’
+- `templates/arguments/constant-pointer-to-void.cpp` (edg-7.0): error: argument of type "int *" is incompatible with template parameter of type "void *"
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-14): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-18): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16-o2): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-22): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-22-o2): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
 - `templates/arguments/constant-scoped-enum.cpp` (clang-host): error: value of type 'Level' is not implicitly convertible to 'int'
 - `templates/arguments/constant-scoped-enum.cpp` (gcc-host): error: could not convert ‘Level::low’ from ‘Level’ to ‘int’
 - `templates/arguments/constant-scoped-enum.cpp` (edg-7.0): error: argument of type "Level" is incompatible with template parameter of type "int"
@@ -19800,6 +20766,24 @@ check that the rejection has the intended cause.
 - `templates/arguments/greater-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before numeric constant
 - `templates/arguments/greater-ends-list.cpp` (clang-22): error: expected unqualified-id
 - `templates/arguments/greater-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-host): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (edg-7.0): error: "Both::Base" is ambiguous
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-14): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16-o2): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-host): error: reference to ‘Base’ is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (edg-7.0): error: "Both::Base" is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-14): error: reference to 'Base' is ambiguous / note: candidates are: 'struct Base<char> Base<char>::Base' / note:                 'struct Base<int> Base<int>::Base'
+- `templates/arguments/injected-name-two-bases.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-16): error: reference to 'Base' is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-16-o2): error: reference to 'Base' is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
 - `templates/arguments/name-without-arguments.cpp` (clang-host): error: cannot form pointer to deduced class template specialization type
 - `templates/arguments/name-without-arguments.cpp` (gcc-host): error: missing template argument list after ‘Box’; for deduction, template placeholder must be followed by a simple declarator-id
 - `templates/arguments/name-without-arguments.cpp` (edg-7.0): error: cannot deduce class template arguments
@@ -19809,6 +20793,15 @@ check that the rejection has the intended cause.
 - `templates/arguments/name-without-arguments.cpp` (gcc-16-o2): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
 - `templates/arguments/name-without-arguments.cpp` (clang-22): error: cannot form pointer to deduced class template specialization type
 - `templates/arguments/name-without-arguments.cpp` (clang-22-o2): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/pointer-function-name.cpp` (clang-host): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (gcc-host): error: ‘"use"’ is not a valid template argument of type ‘const char*’ because ‘"use"’ is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (edg-7.0): error: a template argument may not reference a non-external entity
+- `templates/arguments/pointer-function-name.cpp` (gcc-14): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (clang-18): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (gcc-16): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (gcc-16-o2): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (clang-22): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (clang-22-o2): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
 - `templates/arguments/pointer-local.cpp` (clang-host): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
 - `templates/arguments/pointer-local.cpp` (gcc-host): error: the address of ‘local’ is not a valid template argument because it does not have static storage duration
 - `templates/arguments/pointer-local.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 8) cannot be used as a constant
@@ -19836,6 +20829,15 @@ check that the rejection has the intended cause.
 - `templates/arguments/pointer-zero.cpp` (gcc-16-o2): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
 - `templates/arguments/pointer-zero.cpp` (clang-22): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
 - `templates/arguments/pointer-zero.cpp` (clang-22-o2): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
+- `templates/arguments/qualified-name-in-class.cpp` (clang-host): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-host): error: missing template argument list after ‘lib::Box’; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (edg-7.0): error: argument list for class template "lib::Box" is missing
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-14): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/qualified-name-in-class.cpp` (clang-18): error: use of class template 'Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-16): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-16-o2): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (clang-22): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (clang-22-o2): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
 - `templates/arguments/reference-temporary.cpp` (clang-host): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
 - `templates/arguments/reference-temporary.cpp` (gcc-host): error: initializing ‘const int&’ with ‘int’ in converted constant expression does not bind directly / error: could not convert ‘5’ from ‘int’ to ‘const int&’
 - `templates/arguments/reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
@@ -19850,6 +20852,10 @@ check that the rejection has the intended cause.
 - `templates/arguments/same-specialization-alias-template.cpp` (gcc-14): error: static assertion failed
 - `templates/arguments/same-specialization-alias-template.cpp` (gcc-16): error: static assertion failed
 - `templates/arguments/same-specialization-alias-template.cpp` (gcc-16-o2): error: static assertion failed
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-host): error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-14): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16-o2): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
 - `templates/arguments/shift-ends-list.cpp` (clang-host): error: expected unqualified-id
 - `templates/arguments/shift-ends-list.cpp` (gcc-host): error: expected unqualified-id before ‘>’ token
 - `templates/arguments/shift-ends-list.cpp` (edg-7.0): error: expected an identifier
@@ -19859,6 +20865,8 @@ check that the rejection has the intended cause.
 - `templates/arguments/shift-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before '>' token
 - `templates/arguments/shift-ends-list.cpp` (clang-22): error: expected unqualified-id
 - `templates/arguments/shift-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
+- `templates/arguments/template-template-constant-type.cpp` (edg-7.0): error: class template "Long" is not compatible with template template parameter "C"
+- `templates/arguments/template-template-constant-type.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: template non-type parameter has a different type 'long' in template argument / note: previous non-type template parameter with type 'int' is here
 - `templates/arguments/template-template-defaults.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: too many template parameters in template template argument / note: previous template template parameter is here / error: expected expression
 - `templates/arguments/template-template-mismatch.cpp` (clang-host): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
 - `templates/arguments/template-template-mismatch.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Apply’ / note:   expected a template of type ‘template<class> class C’, got ‘template<int N> struct Num’
@@ -19931,303 +20939,6 @@ check that the rejection has the intended cause.
 - `templates/arguments/variable-template-without-arguments.cpp` (gcc-16-o2): error: missing template arguments before ';' token
 - `templates/arguments/variable-template-without-arguments.cpp` (clang-22): error: use of variable template 'width' requires template arguments
 - `templates/arguments/variable-template-without-arguments.cpp` (clang-22-o2): error: use of variable template 'width' requires template arguments
-- `templates/declarations/alias-template-self.cpp` (clang-host): error: no template named 'Self'
-- `templates/declarations/alias-template-self.cpp` (gcc-host): error: ‘Self’ does not name a type
-- `templates/declarations/alias-template-self.cpp` (edg-7.0): error: Self is not a template
-- `templates/declarations/alias-template-self.cpp` (gcc-14): error: 'Self' does not name a type
-- `templates/declarations/alias-template-self.cpp` (clang-18): error: no template named 'Self'
-- `templates/declarations/alias-template-self.cpp` (gcc-16): error: 'Self' does not name a type
-- `templates/declarations/alias-template-self.cpp` (gcc-16-o2): error: 'Self' does not name a type
-- `templates/declarations/alias-template-self.cpp` (clang-22): error: no template named 'Self'
-- `templates/declarations/alias-template-self.cpp` (clang-22-o2): error: no template named 'Self'
-- `templates/declarations/block-scope.cpp` (clang-host): error: templates can only be declared in namespace or class scope
-- `templates/declarations/block-scope.cpp` (gcc-host): error: a template declaration cannot appear at block scope
-- `templates/declarations/block-scope.cpp` (edg-7.0): error: a template declaration is not allowed here
-- `templates/declarations/block-scope.cpp` (gcc-14): error: a template declaration cannot appear at block scope
-- `templates/declarations/block-scope.cpp` (clang-18): error: expected expression
-- `templates/declarations/block-scope.cpp` (gcc-16): error: a template declaration cannot appear at block scope
-- `templates/declarations/block-scope.cpp` (gcc-16-o2): error: a template declaration cannot appear at block scope
-- `templates/declarations/block-scope.cpp` (clang-22): error: templates can only be declared in namespace or class scope
-- `templates/declarations/block-scope.cpp` (clang-22-o2): error: templates can only be declared in namespace or class scope
-- `templates/declarations/c-linkage.cpp` (clang-host): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
-- `templates/declarations/c-linkage.cpp` (gcc-host): error: template with C linkage / note: ‘extern "C"’ linkage started here
-- `templates/declarations/c-linkage.cpp` (edg-7.0): error: this declaration may not have extern "C" linkage
-- `templates/declarations/c-linkage.cpp` (gcc-14): error: template with C linkage / note: 'extern "C"' linkage started here
-- `templates/declarations/c-linkage.cpp` (clang-18): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
-- `templates/declarations/c-linkage.cpp` (gcc-16): error: template with C linkage / note: 'extern "C"' linkage started here
-- `templates/declarations/c-linkage.cpp` (gcc-16-o2): error: template with C linkage / note: 'extern "C"' linkage started here
-- `templates/declarations/c-linkage.cpp` (clang-22): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
-- `templates/declarations/c-linkage.cpp` (clang-22-o2): error: templates must have C++ linkage / note: extern "C" language linkage specification begins here
-- `templates/declarations/constant-parameter-address.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
-- `templates/declarations/constant-parameter-address.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand [-Wtemplate-body]
-- `templates/declarations/constant-parameter-address.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
-- `templates/declarations/constant-parameter-address.cpp` (gcc-14): error: lvalue required as unary '&' operand
-- `templates/declarations/constant-parameter-address.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
-- `templates/declarations/constant-parameter-address.cpp` (gcc-16): error: lvalue required as unary '&' operand [-Wtemplate-body]
-- `templates/declarations/constant-parameter-address.cpp` (gcc-16-o2): error: lvalue required as unary '&' operand [-Wtemplate-body]
-- `templates/declarations/constant-parameter-address.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
-- `templates/declarations/constant-parameter-address.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
-- `templates/declarations/constant-parameter-assign.cpp` (clang-host): error: expression is not assignable
-- `templates/declarations/constant-parameter-assign.cpp` (gcc-host): error: lvalue required as left operand of assignment [-Wtemplate-body]
-- `templates/declarations/constant-parameter-assign.cpp` (edg-7.0): error: expression must be a modifiable lvalue
-- `templates/declarations/constant-parameter-assign.cpp` (gcc-14): error: lvalue required as left operand of assignment
-- `templates/declarations/constant-parameter-assign.cpp` (clang-18): error: expression is not assignable
-- `templates/declarations/constant-parameter-assign.cpp` (gcc-16): error: lvalue required as left operand of assignment [-Wtemplate-body]
-- `templates/declarations/constant-parameter-assign.cpp` (gcc-16-o2): error: lvalue required as left operand of assignment [-Wtemplate-body]
-- `templates/declarations/constant-parameter-assign.cpp` (clang-22): error: expression is not assignable
-- `templates/declarations/constant-parameter-assign.cpp` (clang-22-o2): error: expression is not assignable
-- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-host): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
-- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-host): error: ‘Counter’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Counter::hits’ is mutable
-- `templates/declarations/constant-parameter-mutable-member.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
-- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-14): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
-- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-18): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
-- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-16): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
-- `templates/declarations/constant-parameter-mutable-member.cpp` (gcc-16-o2): error: 'Counter' is not a valid type for a template non-type parameter because it is not structural / note: 'Counter::hits' is mutable
-- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-22): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
-- `templates/declarations/constant-parameter-mutable-member.cpp` (clang-22-o2): error: type 'Counter' of non-type template parameter is not a structural type / note: 'Counter' is not a structural type because it has a mutable non-static data member
-- `templates/declarations/constant-parameter-not-literal.cpp` (clang-host): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
-- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-host): error: ‘Owner’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Owner’ is not literal because: / note:   ‘Owner’ does not have ‘constexpr’ destructor
-- `templates/declarations/constant-parameter-not-literal.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
-- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-14): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
-- `templates/declarations/constant-parameter-not-literal.cpp` (clang-18): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
-- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-16): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
-- `templates/declarations/constant-parameter-not-literal.cpp` (gcc-16-o2): error: 'Owner' is not a valid type for a template non-type parameter because it is not structural / note: 'Owner' is not literal because: / note:   'Owner' does not have 'constexpr' destructor
-- `templates/declarations/constant-parameter-not-literal.cpp` (clang-22): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
-- `templates/declarations/constant-parameter-not-literal.cpp` (clang-22-o2): error: non-type template parameter has non-literal type 'Owner' / note: 'Owner' is not literal because its destructor is not constexpr
-- `templates/declarations/constant-parameter-private-member.cpp` (clang-host): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (gcc-host): error: ‘Secret’ is not a valid type for a template non-type parameter because it is not structural / note: ‘Secret::hidden’ is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (edg-7.0): error: a template parameter of class type must be of structural class type
-- `templates/declarations/constant-parameter-private-member.cpp` (gcc-14): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (clang-18): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (gcc-16): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (gcc-16-o2): error: 'Secret' is not a valid type for a template non-type parameter because it is not structural / note: 'Secret::hidden' is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (clang-22): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
-- `templates/declarations/constant-parameter-private-member.cpp` (clang-22-o2): error: type 'Secret' of non-type template parameter is not a structural type / note: 'Secret' is not a structural type because it has a non-static data member that is not public
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-host): error: non-type template parameter has rvalue reference type 'int &&'
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-host): error: ‘int&&’ is not a valid type for a template non-type parameter because it is not structural
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (edg-7.0): error: a nontype template parameter cannot have rvalue reference type
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-14): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-18): error: non-type template parameter has rvalue reference type 'int &&'
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-16): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (gcc-16-o2): error: 'int&&' is not a valid type for a template non-type parameter because it is not structural
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-22): error: non-type template parameter has rvalue reference type 'int &&'
-- `templates/declarations/constant-parameter-rvalue-reference.cpp` (clang-22-o2): error: non-type template parameter has rvalue reference type 'int &&'
-- `templates/declarations/constant-parameter-void.cpp` (clang-host): error: non-type template parameter has incomplete type 'void'
-- `templates/declarations/constant-parameter-void.cpp` (gcc-host): error: ‘void’ is not a valid type for a template non-type parameter
-- `templates/declarations/constant-parameter-void.cpp` (edg-7.0): error: a template parameter may not have void type
-- `templates/declarations/constant-parameter-void.cpp` (gcc-14): error: 'void' is not a valid type for a template non-type parameter
-- `templates/declarations/constant-parameter-void.cpp` (clang-18): error: non-type template parameter has incomplete type 'void'
-- `templates/declarations/constant-parameter-void.cpp` (gcc-16): error: 'void' is not a valid type for a template non-type parameter
-- `templates/declarations/constant-parameter-void.cpp` (gcc-16-o2): error: 'void' is not a valid type for a template non-type parameter
-- `templates/declarations/constant-parameter-void.cpp` (clang-22): error: non-type template parameter has incomplete type 'void'
-- `templates/declarations/constant-parameter-void.cpp` (clang-22-o2): error: non-type template parameter has incomplete type 'void'
-- `templates/declarations/default-class-member-outside.cpp` (clang-host): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-class-member-outside.cpp` (gcc-host): error: default argument for template parameter for class enclosing ‘void Box<T>::set()’ [-Wtemplate-body]
-- `templates/declarations/default-class-member-outside.cpp` (edg-7.0): error: a default template argument cannot be specified on the definition of a member of a class template outside the template
-- `templates/declarations/default-class-member-outside.cpp` (gcc-14): error: default argument for template parameter for class enclosing 'void Box<T>::set()'
-- `templates/declarations/default-class-member-outside.cpp` (clang-18): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-class-member-outside.cpp` (gcc-16): error: default argument for template parameter for class enclosing 'void Box<T>::set()' [-Wtemplate-body]
-- `templates/declarations/default-class-member-outside.cpp` (gcc-16-o2): error: default argument for template parameter for class enclosing 'void Box<T>::set()' [-Wtemplate-body]
-- `templates/declarations/default-class-member-outside.cpp` (clang-22): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-class-member-outside.cpp` (clang-22-o2): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-member-definition.cpp` (clang-host): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-member-definition.cpp` (gcc-host): error: default argument for template parameter for class enclosing ‘U Box<T>::get()’ [-Wtemplate-body]
-- `templates/declarations/default-member-definition.cpp` (edg-7.0): error: a default template argument cannot be specified on the definition of a member of a class template outside the template
-- `templates/declarations/default-member-definition.cpp` (gcc-14): error: default argument for template parameter for class enclosing 'U Box<T>::get()'
-- `templates/declarations/default-member-definition.cpp` (clang-18): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-member-definition.cpp` (gcc-16): error: default argument for template parameter for class enclosing 'U Box<T>::get()' [-Wtemplate-body]
-- `templates/declarations/default-member-definition.cpp` (gcc-16-o2): error: default argument for template parameter for class enclosing 'U Box<T>::get()' [-Wtemplate-body]
-- `templates/declarations/default-member-definition.cpp` (clang-22): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-member-definition.cpp` (clang-22-o2): error: cannot add a default template argument to the definition of a member of a class template
-- `templates/declarations/default-not-last-alias.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-alias.cpp` (gcc-host): error: no default argument for ‘U’
-- `templates/declarations/default-not-last-alias.cpp` (edg-7.0): error: default argument not at end of parameter list
-- `templates/declarations/default-not-last-alias.cpp` (gcc-14): error: no default argument for 'U'
-- `templates/declarations/default-not-last-alias.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-alias.cpp` (gcc-16): error: no default argument for 'U'
-- `templates/declarations/default-not-last-alias.cpp` (gcc-16-o2): error: no default argument for 'U'
-- `templates/declarations/default-not-last-alias.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-alias.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-variable.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-variable.cpp` (gcc-host): error: no default argument for ‘M’
-- `templates/declarations/default-not-last-variable.cpp` (edg-7.0): error: default argument not at end of parameter list
-- `templates/declarations/default-not-last-variable.cpp` (gcc-14): error: no default argument for 'M'
-- `templates/declarations/default-not-last-variable.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-variable.cpp` (gcc-16): error: no default argument for 'M'
-- `templates/declarations/default-not-last-variable.cpp` (gcc-16-o2): error: no default argument for 'M'
-- `templates/declarations/default-not-last-variable.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last-variable.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last.cpp` (clang-host): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last.cpp` (gcc-host): error: no default argument for ‘U’
-- `templates/declarations/default-not-last.cpp` (edg-7.0): error: default argument not at end of parameter list
-- `templates/declarations/default-not-last.cpp` (gcc-14): error: no default argument for 'U'
-- `templates/declarations/default-not-last.cpp` (clang-18): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last.cpp` (gcc-16): error: no default argument for 'U'
-- `templates/declarations/default-not-last.cpp` (gcc-16-o2): error: no default argument for 'U'
-- `templates/declarations/default-not-last.cpp` (clang-22): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-not-last.cpp` (clang-22-o2): error: template parameter missing a default argument / note: previous default template argument defined here
-- `templates/declarations/default-repeated.cpp` (clang-host): error: template parameter redefines default argument / note: previous default template argument defined here
-- `templates/declarations/default-repeated.cpp` (gcc-host): error: redefinition of default argument for ‘class T’ / note: original definition appeared here
-- `templates/declarations/default-repeated.cpp` (edg-7.0): error: redefinition of default argument
-- `templates/declarations/default-repeated.cpp` (gcc-14): error: redefinition of default argument for 'class T' / note: original definition appeared here
-- `templates/declarations/default-repeated.cpp` (clang-18): error: template parameter redefines default argument / note: previous default template argument defined here
-- `templates/declarations/default-repeated.cpp` (gcc-16): error: redefinition of default argument for 'class T' / note: original definition appeared here
-- `templates/declarations/default-repeated.cpp` (gcc-16-o2): error: redefinition of default argument for 'class T' / note: original definition appeared here
-- `templates/declarations/default-repeated.cpp` (clang-22): error: template parameter redefines default argument / note: previous default template argument defined here
-- `templates/declarations/default-repeated.cpp` (clang-22-o2): error: template parameter redefines default argument / note: previous default template argument defined here
-- `templates/declarations/local-class-member.cpp` (clang-host): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
-- `templates/declarations/local-class-member.cpp` (gcc-host): error: invalid declaration of member template in local class / error: ‘struct use()::Local’ has no member named ‘get’
-- `templates/declarations/local-class-member.cpp` (edg-7.0): error: a template declaration is not allowed here / error: no instance of function template "Local::get" matches the argument list / note: candidate function template "Local::get" failed deduction
-- `templates/declarations/local-class-member.cpp` (gcc-14): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
-- `templates/declarations/local-class-member.cpp` (clang-18): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
-- `templates/declarations/local-class-member.cpp` (gcc-16): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
-- `templates/declarations/local-class-member.cpp` (gcc-16-o2): error: invalid declaration of member template in local class / error: 'struct use()::Local' has no member named 'get'
-- `templates/declarations/local-class-member.cpp` (clang-22): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
-- `templates/declarations/local-class-member.cpp` (clang-22-o2): error: templates cannot be declared inside of a local class / error: no matching member function for call to 'get'
-- `templates/declarations/main-template.cpp` (clang-host): error: 'main' cannot be a template
-- `templates/declarations/main-template.cpp` (gcc-host): error: cannot declare ‘::main’ to be a template
-- `templates/declarations/main-template.cpp` (edg-7.0): error: "main" is not a valid name for a function template
-- `templates/declarations/main-template.cpp` (gcc-14): error: cannot declare '::main' to be a template
-- `templates/declarations/main-template.cpp` (clang-18): error: 'main' cannot be a template
-- `templates/declarations/main-template.cpp` (gcc-16): error: cannot declare '::main' to be a template
-- `templates/declarations/main-template.cpp` (gcc-16-o2): error: cannot declare '::main' to be a template
-- `templates/declarations/main-template.cpp` (clang-22): error: 'main' cannot be a template
-- `templates/declarations/main-template.cpp` (clang-22-o2): error: 'main' cannot be a template
-- `templates/declarations/member-template-one-head.cpp` (clang-host): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/member-template-one-head.cpp` (gcc-host): error: no declaration matches ‘U Box<T>::as() const’ [-Wtemplate-body] / note: ‘struct Box<T>’ defined here
-- `templates/declarations/member-template-one-head.cpp` (edg-7.0): error: declaration is incompatible with function template "U Box<T>::as<U>() const" (declared at line 8)
-- `templates/declarations/member-template-one-head.cpp` (gcc-14): error: no declaration matches 'U Box<T>::as() const' / note: candidate is: 'template<class T> template<class U> U Box<T>::as() const' / note: 'struct Box<T>' defined here
-- `templates/declarations/member-template-one-head.cpp` (clang-18): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/member-template-one-head.cpp` (gcc-16): error: no declaration matches 'U Box<T>::as() const' [-Wtemplate-body] / note: 'struct Box<T>' defined here
-- `templates/declarations/member-template-one-head.cpp` (gcc-16-o2): error: no declaration matches 'U Box<T>::as() const' [-Wtemplate-body] / note: 'struct Box<T>' defined here
-- `templates/declarations/member-template-one-head.cpp` (clang-22): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/member-template-one-head.cpp` (clang-22-o2): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/member-template-virtual.cpp` (clang-host): error: 'virtual' cannot be specified on member function templates
-- `templates/declarations/member-template-virtual.cpp` (gcc-host): error: templates may not be ‘virtual’
-- `templates/declarations/member-template-virtual.cpp` (edg-7.0): error: "virtual" is not allowed in a function template declaration
-- `templates/declarations/member-template-virtual.cpp` (gcc-14): error: templates may not be 'virtual'
-- `templates/declarations/member-template-virtual.cpp` (clang-18): error: 'virtual' cannot be specified on member function templates
-- `templates/declarations/member-template-virtual.cpp` (gcc-16): error: templates may not be 'virtual'
-- `templates/declarations/member-template-virtual.cpp` (gcc-16-o2): error: templates may not be 'virtual'
-- `templates/declarations/member-template-virtual.cpp` (clang-22): error: 'virtual' cannot be specified on member function templates
-- `templates/declarations/member-template-virtual.cpp` (clang-22-o2): error: 'virtual' cannot be specified on member function templates
-- `templates/declarations/name-conflict-variable-template.cpp` (clang-host): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict-variable-template.cpp` (gcc-host): error: conflicting declaration of template ‘template<class T> constexpr const int Size’ / note: previous declaration ‘template<class T> struct Size’
-- `templates/declarations/name-conflict-variable-template.cpp` (edg-7.0): error: "Size" has already been declared in the current scope
-- `templates/declarations/name-conflict-variable-template.cpp` (gcc-14): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
-- `templates/declarations/name-conflict-variable-template.cpp` (clang-18): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict-variable-template.cpp` (gcc-16): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
-- `templates/declarations/name-conflict-variable-template.cpp` (gcc-16-o2): error: conflicting declaration of template 'template<class T> constexpr const int Size' / note: previous declaration 'template<class T> struct Size'
-- `templates/declarations/name-conflict-variable-template.cpp` (clang-22): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict-variable-template.cpp` (clang-22-o2): error: redefinition of 'Size' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict.cpp` (clang-host): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict.cpp` (gcc-host): error: ‘int Box’ redeclared as different kind of entity / note: previous declaration ‘template<class T> struct Box’
-- `templates/declarations/name-conflict.cpp` (edg-7.0): error: "Box" has already been declared in the current scope
-- `templates/declarations/name-conflict.cpp` (gcc-14): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
-- `templates/declarations/name-conflict.cpp` (clang-18): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict.cpp` (gcc-16): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
-- `templates/declarations/name-conflict.cpp` (gcc-16-o2): error: 'int Box' redeclared as different kind of entity / note: previous declaration 'template<class T> struct Box'
-- `templates/declarations/name-conflict.cpp` (clang-22): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
-- `templates/declarations/name-conflict.cpp` (clang-22-o2): error: redefinition of 'Box' as different kind of symbol / note: previous definition is here
-- `templates/declarations/pack-last.cpp` (clang-host): error: template parameter pack must be the last template parameter
-- `templates/declarations/pack-last.cpp` (gcc-host): error: parameter pack ‘Ts’ must be at the end of the template parameter list
-- `templates/declarations/pack-last.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
-- `templates/declarations/pack-last.cpp` (gcc-14): error: parameter pack 'Ts' must be at the end of the template parameter list
-- `templates/declarations/pack-last.cpp` (clang-18): error: template parameter pack must be the last template parameter
-- `templates/declarations/pack-last.cpp` (gcc-16): error: parameter pack 'Ts' must be at the end of the template parameter list
-- `templates/declarations/pack-last.cpp` (gcc-16-o2): error: parameter pack 'Ts' must be at the end of the template parameter list
-- `templates/declarations/pack-last.cpp` (clang-22): error: template parameter pack must be the last template parameter
-- `templates/declarations/pack-last.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
-- `templates/declarations/parameter-local-name.cpp` (clang-host): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-local-name.cpp` (gcc-host): error: declaration of ‘int T’ shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-local-name.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
-- `templates/declarations/parameter-local-name.cpp` (gcc-14): error: declaration of 'int T' shadows template parameter
-- `templates/declarations/parameter-local-name.cpp` (clang-18): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-local-name.cpp` (gcc-16): error: declaration of 'int T' shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-local-name.cpp` (gcc-16-o2): error: declaration of 'int T' shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-local-name.cpp` (clang-22): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-local-name.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-member-name.cpp` (clang-host): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-member-name.cpp` (gcc-host): error: declaration of ‘int Box<T>::T’ shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-member-name.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
-- `templates/declarations/parameter-member-name.cpp` (gcc-14): error: declaration of 'int Box<T>::T' shadows template parameter
-- `templates/declarations/parameter-member-name.cpp` (clang-18): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-member-name.cpp` (gcc-16): error: declaration of 'int Box<T>::T' shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-member-name.cpp` (gcc-16-o2): error: declaration of 'int Box<T>::T' shadows template parameter [-Wtemplate-body]
-- `templates/declarations/parameter-member-name.cpp` (clang-22): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-member-name.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-twice.cpp` (clang-host): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-twice.cpp` (gcc-host): error: conflicting declaration ‘class T’ / note: previous declaration as ‘class T’
-- `templates/declarations/parameter-twice.cpp` (edg-7.0): error: template parameter "T" may not be redeclared in this scope
-- `templates/declarations/parameter-twice.cpp` (gcc-14): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
-- `templates/declarations/parameter-twice.cpp` (clang-18): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-twice.cpp` (gcc-16): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
-- `templates/declarations/parameter-twice.cpp` (gcc-16-o2): error: conflicting declaration 'class T' / note: previous declaration as 'class T'
-- `templates/declarations/parameter-twice.cpp` (clang-22): error: declaration of 'T' shadows template parameter
-- `templates/declarations/parameter-twice.cpp` (clang-22-o2): error: declaration of 'T' shadows template parameter
-- `templates/declarations/redeclare-count.cpp` (clang-host): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-count.cpp` (gcc-host): error: redeclared with 2 template parameters / note: previous declaration ‘template<class T> struct Box’ used 1 template parameter
-- `templates/declarations/redeclare-count.cpp` (edg-7.0): error: too many template parameters -- does not match previous declaration (declared at line 6)
-- `templates/declarations/redeclare-count.cpp` (gcc-14): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
-- `templates/declarations/redeclare-count.cpp` (clang-18): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-count.cpp` (gcc-16): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
-- `templates/declarations/redeclare-count.cpp` (gcc-16-o2): error: redeclared with 2 template parameters / note: previous declaration 'template<class T> struct Box' used 1 template parameter
-- `templates/declarations/redeclare-count.cpp` (clang-22): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-count.cpp` (clang-22-o2): error: too many template parameters in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-kind.cpp` (clang-host): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-kind.cpp` (gcc-host): error: template parameter ‘class T’
-- `templates/declarations/redeclare-kind.cpp` (edg-7.0): error: declaration is incompatible with template parameter "T" (declared at line 6)
-- `templates/declarations/redeclare-kind.cpp` (gcc-14): error: template parameter 'class T'
-- `templates/declarations/redeclare-kind.cpp` (clang-18): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-kind.cpp` (gcc-16): error: template parameter 'class T'
-- `templates/declarations/redeclare-kind.cpp` (gcc-16-o2): error: template parameter 'class T'
-- `templates/declarations/redeclare-kind.cpp` (clang-22): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-kind.cpp` (clang-22-o2): error: template parameter has a different kind in template redeclaration / note: previous template declaration is here
-- `templates/declarations/redeclare-type.cpp` (clang-host): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
-- `templates/declarations/redeclare-type.cpp` (gcc-host): error: template parameter ‘int N’
-- `templates/declarations/redeclare-type.cpp` (edg-7.0): error: declaration is incompatible with constant "int N" (declared at line 6)
-- `templates/declarations/redeclare-type.cpp` (gcc-14): error: template parameter 'int N'
-- `templates/declarations/redeclare-type.cpp` (clang-18): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
-- `templates/declarations/redeclare-type.cpp` (gcc-16): error: template parameter 'int N'
-- `templates/declarations/redeclare-type.cpp` (gcc-16-o2): error: template parameter 'int N'
-- `templates/declarations/redeclare-type.cpp` (clang-22): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
-- `templates/declarations/redeclare-type.cpp` (clang-22-o2): error: template non-type parameter has a different type 'long' in template redeclaration / note: previous non-type template parameter with type 'int' is here
-- `templates/declarations/two-declarators.cpp` (clang-host): error: a template declaration can only declare a single entity
-- `templates/declarations/two-declarators.cpp` (gcc-host): error: expected ‘;’ before ‘,’ token
-- `templates/declarations/two-declarators.cpp` (edg-7.0): error: expected a ";"
-- `templates/declarations/two-declarators.cpp` (gcc-14): error: expected ';' before ',' token
-- `templates/declarations/two-declarators.cpp` (clang-18): error: a template declaration can only declare a single entity
-- `templates/declarations/two-declarators.cpp` (gcc-16): error: expected ';' before ',' token
-- `templates/declarations/two-declarators.cpp` (gcc-16-o2): error: expected ';' before ',' token
-- `templates/declarations/two-declarators.cpp` (clang-22): error: a template declaration can only declare a single entity
-- `templates/declarations/two-declarators.cpp` (clang-22-o2): error: a template declaration can only declare a single entity
-- `templates/declarations/typedef-template.cpp` (clang-host): error: a typedef cannot be a template
-- `templates/declarations/typedef-template.cpp` (gcc-host): error: template declaration of ‘typedef’
-- `templates/declarations/typedef-template.cpp` (edg-7.0): error: "typedef" may not be specified here
-- `templates/declarations/typedef-template.cpp` (gcc-14): error: template declaration of 'typedef'
-- `templates/declarations/typedef-template.cpp` (clang-18): error: a typedef cannot be a template
-- `templates/declarations/typedef-template.cpp` (gcc-16): error: template declaration of 'typedef'
-- `templates/declarations/typedef-template.cpp` (gcc-16-o2): error: template declaration of 'typedef'
-- `templates/declarations/typedef-template.cpp` (clang-22): error: a typedef cannot be a template
-- `templates/declarations/typedef-template.cpp` (clang-22-o2): error: a typedef cannot be a template
-- `templates/declarations/unnamed-class.cpp` (clang-host): error: cannot declare a class template with no name
-- `templates/declarations/unnamed-class.cpp` (gcc-host): error: template class without a name
-- `templates/declarations/unnamed-class.cpp` (edg-7.0): error: expected an identifier
-- `templates/declarations/unnamed-class.cpp` (gcc-14): error: template class without a name
-- `templates/declarations/unnamed-class.cpp` (clang-18): error: cannot declare a class template with no name
-- `templates/declarations/unnamed-class.cpp` (gcc-16): error: template class without a name
-- `templates/declarations/unnamed-class.cpp` (gcc-16-o2): error: template class without a name
-- `templates/declarations/unnamed-class.cpp` (clang-22): error: cannot declare a class template with no name
-- `templates/declarations/unnamed-class.cpp` (clang-22-o2): error: cannot declare a class template with no name
-- `templates/declarations/variable-template-non-static.cpp` (clang-host): error: non-static data member 'cell' cannot be declared as a template
-- `templates/declarations/variable-template-non-static.cpp` (gcc-host): error: data member ‘cell’ cannot be a member template
-- `templates/declarations/variable-template-non-static.cpp` (edg-7.0): error: member "Table::cell" is not a valid class member template
-- `templates/declarations/variable-template-non-static.cpp` (gcc-14): error: data member 'cell' cannot be a member template
-- `templates/declarations/variable-template-non-static.cpp` (clang-18): error: member 'cell' declared as a template
-- `templates/declarations/variable-template-non-static.cpp` (gcc-16): error: data member 'cell' cannot be a member template
-- `templates/declarations/variable-template-non-static.cpp` (gcc-16-o2): error: data member 'cell' cannot be a member template
-- `templates/declarations/variable-template-non-static.cpp` (clang-22): error: non-static data member 'cell' cannot be declared as a template
-- `templates/declarations/variable-template-non-static.cpp` (clang-22-o2): error: non-static data member 'cell' cannot be declared as a template
 - `templates/specialization/alias-explicit.cpp` (clang-host): error: explicit specialization of alias templates is not permitted
 - `templates/specialization/alias-explicit.cpp` (gcc-host): error: expected unqualified-id before ‘using’
 - `templates/specialization/alias-explicit.cpp` (edg-7.0): error: an alias template cannot be explicitly specialized
@@ -20282,10 +20993,37 @@ check that the rejection has the intended cause.
 - `templates/specialization/explicit-block-scope.cpp` (gcc-16-o2): error: a template declaration cannot appear at block scope
 - `templates/specialization/explicit-block-scope.cpp` (clang-22): error: templates can only be declared in namespace or class scope
 - `templates/specialization/explicit-block-scope.cpp` (clang-22-o2): error: templates can only be declared in namespace or class scope
+- `templates/specialization/explicit-class-member-prefix.cpp` (clang-host): error: no function template matches function template specialization 'get'
+- `templates/specialization/explicit-class-member-prefix.cpp` (gcc-host): error: template-id ‘get<>’ for ‘int Box<int>::get()’ does not match any template declaration
+- `templates/specialization/explicit-class-member-prefix.cpp` (edg-7.0): error: "int Box<int>::get()" is not an entity that can be explicitly specialized
+- `templates/specialization/explicit-class-member-prefix.cpp` (gcc-14): error: template-id 'get<>' for 'int Box<int>::get()' does not match any template declaration / note: candidate is: 'int Box<int>::get()'
+- `templates/specialization/explicit-class-member-prefix.cpp` (clang-18): error: no function template matches function template specialization 'get'
+- `templates/specialization/explicit-class-member-prefix.cpp` (gcc-16): error: template-id 'get<>' for 'int Box<int>::get()' does not match any template declaration
+- `templates/specialization/explicit-class-member-prefix.cpp` (gcc-16-o2): error: template-id 'get<>' for 'int Box<int>::get()' does not match any template declaration
+- `templates/specialization/explicit-class-member-prefix.cpp` (clang-22): error: no function template matches function template specialization 'get'
+- `templates/specialization/explicit-class-member-prefix.cpp` (clang-22-o2): error: no function template matches function template specialization 'get'
 - `templates/specialization/explicit-class-scope.cpp` (gcc-host): error: explicit specialization in non-namespace scope ‘struct Codes’ / error: template-id ‘of<int>’ in declaration of primary template / error: static assertion failed
 - `templates/specialization/explicit-class-scope.cpp` (gcc-14): error: explicit specialization in non-namespace scope 'struct Codes' / error: template-id 'of<int>' in declaration of primary template / error: static assertion failed / note: the comparison reduces to '(0 == 1)'
 - `templates/specialization/explicit-class-scope.cpp` (gcc-16): error: explicit specialization in non-namespace scope 'struct Codes' / error: template-id 'of<int>' in declaration of primary template / error: static assertion failed
 - `templates/specialization/explicit-class-scope.cpp` (gcc-16-o2): error: explicit specialization in non-namespace scope 'struct Codes' / error: template-id 'of<int>' in declaration of primary template / error: static assertion failed
+- `templates/specialization/explicit-default-argument-member-template.cpp` (clang-host): error: redefinition of default argument / note: previous definition is here
+- `templates/specialization/explicit-default-argument-member-template.cpp` (gcc-host): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member-template.cpp` (edg-7.0): error: default argument is not allowed
+- `templates/specialization/explicit-default-argument-member-template.cpp` (gcc-14): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member-template.cpp` (clang-18): error: redefinition of default argument / note: previous definition is here
+- `templates/specialization/explicit-default-argument-member-template.cpp` (gcc-16): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member-template.cpp` (gcc-16-o2): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member-template.cpp` (clang-22): error: redefinition of default argument / note: previous definition is here
+- `templates/specialization/explicit-default-argument-member-template.cpp` (clang-22-o2): error: redefinition of default argument / note: previous definition is here
+- `templates/specialization/explicit-default-argument-member.cpp` (clang-host): error: default argument not permitted on an explicit specialization of function 'get'
+- `templates/specialization/explicit-default-argument-member.cpp` (gcc-host): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member.cpp` (edg-7.0): error: default argument is not allowed
+- `templates/specialization/explicit-default-argument-member.cpp` (gcc-14): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member.cpp` (clang-18): error: default argument not permitted on an explicit specialization of function 'get'
+- `templates/specialization/explicit-default-argument-member.cpp` (gcc-16): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member.cpp` (gcc-16-o2): error: default argument specified in explicit specialization [-fpermissive]
+- `templates/specialization/explicit-default-argument-member.cpp` (clang-22): error: default argument not permitted on an explicit specialization of function 'get'
+- `templates/specialization/explicit-default-argument-member.cpp` (clang-22-o2): error: default argument not permitted on an explicit specialization of function 'get'
 - `templates/specialization/explicit-default-argument.cpp` (clang-host): error: default argument not permitted on an explicit specialization of function 'scale'
 - `templates/specialization/explicit-default-argument.cpp` (gcc-host): error: default argument specified in explicit specialization [-fpermissive]
 - `templates/specialization/explicit-default-argument.cpp` (edg-7.0): error: default argument is not allowed
@@ -20295,6 +21033,68 @@ check that the rejection has the intended cause.
 - `templates/specialization/explicit-default-argument.cpp` (gcc-16-o2): error: default argument specified in explicit specialization [-fpermissive]
 - `templates/specialization/explicit-default-argument.cpp` (clang-22): error: default argument not permitted on an explicit specialization of function 'scale'
 - `templates/specialization/explicit-default-argument.cpp` (clang-22-o2): error: default argument not permitted on an explicit specialization of function 'scale'
+- `templates/specialization/explicit-enum-after-use.cpp` (clang-host): error: explicit specialization of 'Kind' after instantiation / note: implicit instantiation first required here
+- `templates/specialization/explicit-enum-after-use.cpp` (gcc-host): error: template specialization of ‘enum Holder<int>::Kind’ not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-after-use.cpp` (edg-7.0): error: an unscoped enumeration must be opaque in order to be specialized
+- `templates/specialization/explicit-enum-after-use.cpp` (gcc-14): error: template specialization of 'enum Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-after-use.cpp` (clang-18): error: explicit specialization of 'Kind' after instantiation / note: implicit instantiation first required here
+- `templates/specialization/explicit-enum-after-use.cpp` (gcc-16): error: template specialization of 'enum Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-after-use.cpp` (gcc-16-o2): error: template specialization of 'enum Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-after-use.cpp` (clang-22): error: explicit specialization of 'Kind' after instantiation / note: implicit instantiation first required here
+- `templates/specialization/explicit-enum-after-use.cpp` (clang-22-o2): error: explicit specialization of 'Kind' after instantiation / note: implicit instantiation first required here
+- `templates/specialization/explicit-enum-declared.cpp` (gcc-host): error: template specialization of ‘enum class Holder<int>::Kind’ not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-declared.cpp` (gcc-14): error: template specialization of 'enum class Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-declared.cpp` (gcc-16): error: template specialization of 'enum class Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-enum-declared.cpp` (gcc-16-o2): error: template specialization of 'enum class Holder<int>::Kind' not allowed by ISO C++ [-Wpedantic]
+- `templates/specialization/explicit-friend.cpp` (clang-host): error: cannot declare an explicit specialization in a friend
+- `templates/specialization/explicit-friend.cpp` (gcc-host): error: explicit specialization in non-namespace scope ‘struct Host’
+- `templates/specialization/explicit-friend.cpp` (edg-7.0): error: an explicit specialization declaration may not be a friend declaration / error: function "size(T) [with T=char]" cannot be specialized in the current scope
+- `templates/specialization/explicit-friend.cpp` (gcc-14): error: explicit specialization in non-namespace scope 'struct Host'
+- `templates/specialization/explicit-friend.cpp` (clang-18): error: cannot declare an explicit specialization in a friend
+- `templates/specialization/explicit-friend.cpp` (gcc-16): error: explicit specialization in non-namespace scope 'struct Host'
+- `templates/specialization/explicit-friend.cpp` (gcc-16-o2): error: explicit specialization in non-namespace scope 'struct Host'
+- `templates/specialization/explicit-friend.cpp` (clang-22): error: cannot declare an explicit specialization in a friend
+- `templates/specialization/explicit-friend.cpp` (clang-22-o2): error: cannot declare an explicit specialization in a friend
+- `templates/specialization/explicit-function-private-argument.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
+- `templates/specialization/explicit-function-private-argument.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/specialization/explicit-function-private-argument.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/specialization/explicit-function-private-argument.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/specialization/explicit-implicit-member.cpp` (clang-host): error: specialization of member 'Box<int>::Box' does not specialize an instantiated member / note: attempt to specialize declaration here
+- `templates/specialization/explicit-implicit-member.cpp` (gcc-host): error: template-id ‘__ct <>’ for ‘Box<int>::Box(const Box<int>&)’ does not match any template declaration
+- `templates/specialization/explicit-implicit-member.cpp` (edg-7.0): error: "Box<T>::Box(const Box<int> &) noexcept [with T=int]" is not an entity that can be explicitly specialized
+- `templates/specialization/explicit-implicit-member.cpp` (gcc-14): error: template-id '__ct <>' for 'Box<int>::Box(const Box<int>&)' does not match any template declaration / note: candidates are: 'constexpr Box<int>::Box(Box<int>&&)' / note:                 'constexpr Box<int>::Box(const Box<int>&)' / note:                 'constexpr Box<int>::Box()'
+- `templates/specialization/explicit-implicit-member.cpp` (clang-18): error: specialization of member 'Box<int>::Box' does not specialize an instantiated member / note: attempt to specialize declaration here
+- `templates/specialization/explicit-implicit-member.cpp` (gcc-16): error: template-id '__ct <>' for 'Box<int>::Box(const Box<int>&)' does not match any template declaration
+- `templates/specialization/explicit-implicit-member.cpp` (gcc-16-o2): error: template-id '__ct <>' for 'Box<int>::Box(const Box<int>&)' does not match any template declaration
+- `templates/specialization/explicit-implicit-member.cpp` (clang-22): error: specialization of member 'Box<int>::Box' does not specialize an instantiated member / note: attempt to specialize declaration here
+- `templates/specialization/explicit-implicit-member.cpp` (clang-22-o2): error: specialization of member 'Box<int>::Box' does not specialize an instantiated member / note: attempt to specialize declaration here
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (clang-host): error: template parameter list matching the non-templated nested type 'Outer<int>' should be empty ('template<>')
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (gcc-host): error: specializing member ‘Outer<int>::Inner<U>::get’ requires ‘template<>’ syntax
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (edg-7.0): error: template argument list must match the parameter list
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (gcc-14): error: specializing member 'Outer<int>::Inner<U>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (clang-18): error: template parameter list matching the non-templated nested type 'Outer<int>' should be empty ('template<>')
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (gcc-16): error: specializing member 'Outer<int>::Inner<U>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (gcc-16-o2): error: specializing member 'Outer<int>::Inner<U>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (clang-22): error: template parameter list matching the non-templated nested type 'Outer<int>' should be empty ('template<>')
+- `templates/specialization/explicit-member-class-template-no-prefix.cpp` (clang-22-o2): error: template parameter list matching the non-templated nested type 'Outer<int>' should be empty ('template<>')
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (clang-host): error: nested name specifier 'Outer<T>::Inner<int>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (gcc-host): error: invalid explicit specialization before ‘>’ token / error: enclosing class templates are not explicitly specialized / error: invalid use of incomplete type ‘struct Outer<T>::Inner<int>’ / note: declaration of ‘struct Outer<T>::Inner<int>’
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (edg-7.0): error: a template declaration containing a template parameter list may not be followed by an explicit specialization declaration / error: partial specialization of nontype "Outer<T>::Inner<U>::get [with U=int]" is not allowed
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (gcc-14): error: invalid explicit specialization before '>' token / error: enclosing class templates are not explicitly specialized / error: invalid use of incomplete type 'struct Outer<T>::Inner<int>' / note: declaration of 'struct Outer<T>::Inner<int>'
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (clang-18): error: nested name specifier 'Outer<T>::Inner<int>::' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (gcc-16): error: invalid explicit specialization before '>' token / error: enclosing class templates are not explicitly specialized / error: invalid use of incomplete type 'struct Outer<T>::Inner<int>' / note: declaration of 'struct Outer<T>::Inner<int>'
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (gcc-16-o2): error: invalid explicit specialization before '>' token / error: enclosing class templates are not explicitly specialized / error: invalid use of incomplete type 'struct Outer<T>::Inner<int>' / note: declaration of 'struct Outer<T>::Inner<int>'
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (clang-22): error: nested name specifier 'Outer<T>::Inner<int>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/specialization/explicit-member-enclosing-not-specialized.cpp` (clang-22-o2): error: nested name specifier 'Outer<T>::Inner<int>' for declaration does not refer into a class, class template or class template partial specialization
+- `templates/specialization/explicit-member-prefix-count.cpp` (clang-host): error: template specialization requires 'template<>'
+- `templates/specialization/explicit-member-prefix-count.cpp` (gcc-host): error: specializing member ‘Outer<char>::Inner<int>::get’ requires ‘template<>’ syntax
+- `templates/specialization/explicit-member-prefix-count.cpp` (edg-7.0): error: template nesting depth does not match the previous declaration of function "Outer<T>::Inner<U>::get [with T=char, U=int]"
+- `templates/specialization/explicit-member-prefix-count.cpp` (gcc-14): error: specializing member 'Outer<char>::Inner<int>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-prefix-count.cpp` (clang-18): error: template specialization requires 'template<>'
+- `templates/specialization/explicit-member-prefix-count.cpp` (gcc-16): error: specializing member 'Outer<char>::Inner<int>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-prefix-count.cpp` (gcc-16-o2): error: specializing member 'Outer<char>::Inner<int>::get' requires 'template<>' syntax
+- `templates/specialization/explicit-member-prefix-count.cpp` (clang-22): error: template specialization requires 'template<>'
+- `templates/specialization/explicit-member-prefix-count.cpp` (clang-22-o2): error: template specialization requires 'template<>'
 - `templates/specialization/explicit-needs-header.cpp` (clang-host): error: template specialization requires 'template<>'
 - `templates/specialization/explicit-needs-header.cpp` (gcc-host): error: an explicit specialization must be preceded by ‘template <>’
 - `templates/specialization/explicit-needs-header.cpp` (edg-7.0): error: specializing class "Box<int>" without "template<>" syntax is nonstandard
@@ -20313,6 +21113,14 @@ check that the rejection has the intended cause.
 - `templates/specialization/explicit-no-matching-template.cpp` (gcc-16-o2): error: template-id 'f<>' for 'int f(char*)' does not match any template declaration
 - `templates/specialization/explicit-no-matching-template.cpp` (clang-22): error: no function template matches function template specialization 'f' / note: candidate template ignored: failed template argument deduction
 - `templates/specialization/explicit-no-matching-template.cpp` (clang-22-o2): error: no function template matches function template specialization 'f' / note: candidate template ignored: failed template argument deduction
+- `templates/specialization/explicit-not-inline.cpp` (clang-host): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (gcc-host): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (gcc-14): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (clang-18): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (gcc-16): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (gcc-16-o2): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (clang-22): link: multiple definition of `int
+- `templates/specialization/explicit-not-inline.cpp` (clang-22-o2): link: multiple definition of `int
 - `templates/specialization/explicit-not-template.cpp` (clang-host): error: explicit specialization of non-template struct 'Plain' / error: redefinition of 'Plain' / note: previous definition is here
 - `templates/specialization/explicit-not-template.cpp` (gcc-host): error: ‘Plain’ is not a class template / error: ‘Plain’ is not a template / note: previous declaration here
 - `templates/specialization/explicit-not-template.cpp` (edg-7.0): error: class "Plain" may not have a template argument list
@@ -20331,6 +21139,41 @@ check that the rejection has the intended cause.
 - `templates/specialization/explicit-other-namespace.cpp` (gcc-16-o2): error: declaration of 'struct lib::Box<int>' in namespace 'other' which does not enclose 'lib'
 - `templates/specialization/explicit-other-namespace.cpp` (clang-22): error: class template specialization of 'Box' not in a namespace enclosing 'lib' / note: explicitly specialized declaration is here
 - `templates/specialization/explicit-other-namespace.cpp` (clang-22-o2): error: class template specialization of 'Box' not in a namespace enclosing 'lib' / note: explicitly specialized declaration is here
+- `templates/specialization/explicit-static-member-declaration.cpp` (clang-host): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (gcc-host): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (gcc-14): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (clang-18): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (gcc-16): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (gcc-16-o2): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (clang-22): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-declaration.cpp` (clang-22-o2): link: undefined reference to `Box<char>::count'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (clang-host): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (gcc-host): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (gcc-14): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (clang-18): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (gcc-16): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (gcc-16-o2): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (clang-22): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-static-member-template-declaration.cpp` (clang-22-o2): link: undefined reference to `Plain::size<char>'
+- `templates/specialization/explicit-storage-class.cpp` (clang-host): error: explicit specialization cannot have a storage class [-Werror,-Wexplicit-specialization-storage-class]
+- `templates/specialization/explicit-storage-class.cpp` (gcc-host): error: explicit template specialization cannot have a storage class
+- `templates/specialization/explicit-storage-class.cpp` (edg-7.0): error: a storage class is not allowed in an explicit specialization
+- `templates/specialization/explicit-storage-class.cpp` (gcc-14): error: explicit template specialization cannot have a storage class
+- `templates/specialization/explicit-storage-class.cpp` (clang-18): error: explicit specialization has extraneous, inconsistent storage class 'static'
+- `templates/specialization/explicit-storage-class.cpp` (gcc-16): error: explicit template specialization cannot have a storage class
+- `templates/specialization/explicit-storage-class.cpp` (gcc-16-o2): error: explicit template specialization cannot have a storage class
+- `templates/specialization/explicit-storage-class.cpp` (clang-22): error: explicit specialization cannot have a storage class [-Werror,-Wexplicit-specialization-storage-class]
+- `templates/specialization/explicit-storage-class.cpp` (clang-22-o2): error: explicit specialization cannot have a storage class [-Werror,-Wexplicit-specialization-storage-class]
+- `templates/specialization/explicit-thread-local-only.cpp` (edg-7.0): error: thread-local declaration follows non-thread-local declaration (declared at line 6)
+- `templates/specialization/explicit-union-key.cpp` (clang-host): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/explicit-union-key.cpp` (gcc-host): error: ‘union’ tag used in naming ‘struct Box<int>’ [-fpermissive]
+- `templates/specialization/explicit-union-key.cpp` (edg-7.0): error: invalid reference to class template "Box" (union/nonunion mismatch)
+- `templates/specialization/explicit-union-key.cpp` (gcc-14): error: 'union' tag used in naming 'struct Box<int>' [-fpermissive]
+- `templates/specialization/explicit-union-key.cpp` (clang-18): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/explicit-union-key.cpp` (gcc-16): error: 'union' tag used in naming 'struct Box<int>' [-fpermissive]
+- `templates/specialization/explicit-union-key.cpp` (gcc-16-o2): error: 'union' tag used in naming 'struct Box<int>' [-fpermissive]
+- `templates/specialization/explicit-union-key.cpp` (clang-22): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/explicit-union-key.cpp` (clang-22-o2): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
 - `templates/specialization/function-partial-used.cpp` (clang-host): error: function template partial specialization is not allowed
 - `templates/specialization/function-partial-used.cpp` (gcc-host): error: non-class, non-variable partial specialization ‘pick<T, int>’ is not allowed
 - `templates/specialization/function-partial-used.cpp` (edg-7.0): error: an explicit template argument list is not allowed on this declaration
@@ -20348,6 +21191,11 @@ check that the rejection has the intended cause.
 - `templates/specialization/function-partial.cpp` (gcc-16-o2): error: non-class, non-variable partial specialization 'pick<T, int>' is not allowed
 - `templates/specialization/function-partial.cpp` (clang-22): error: function template partial specialization is not allowed
 - `templates/specialization/function-partial.cpp` (clang-22-o2): error: function template partial specialization is not allowed
+- `templates/specialization/member-template-explicit-partial.cpp` (gcc-host): error: static assertion failed
+- `templates/specialization/member-template-explicit-partial.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(1 == 2)'
+- `templates/specialization/member-template-explicit-partial.cpp` (gcc-16): error: static assertion failed
+- `templates/specialization/member-template-explicit-partial.cpp` (gcc-16-o2): error: static assertion failed
+- `templates/specialization/member-template-explicit-primary.cpp` (clang-18): error: static assertion failed due to requirement 'Outer<short>::Inner<int *>::kind == 2' / note: expression evaluates to '1 == 2'
 - `templates/specialization/partial-after-use.cpp` (gcc-host): error: partial specialization of ‘struct Kind<T*>’ after instantiation of ‘struct Kind<int*>’ [-fpermissive]
 - `templates/specialization/partial-after-use.cpp` (edg-7.0): error: this partial specialization would have been used to instantiate class "Kind<int *>"
 - `templates/specialization/partial-after-use.cpp` (gcc-14): error: partial specialization of 'struct Kind<T*>' after instantiation of 'struct Kind<int*>' [-fpermissive]
@@ -20362,6 +21210,15 @@ check that the rejection has the intended cause.
 - `templates/specialization/partial-default.cpp` (gcc-16-o2): error: default template arguments may not be used in partial specializations
 - `templates/specialization/partial-default.cpp` (clang-22): error: default template argument in a class template partial specialization
 - `templates/specialization/partial-default.cpp` (clang-22-o2): error: default template argument in a class template partial specialization
+- `templates/specialization/partial-dependent-type-value.cpp` (clang-host): error: non-type template argument specializes a template parameter with dependent type 'T'
+- `templates/specialization/partial-dependent-type-value.cpp` (gcc-host): error: type ‘T’ of template argument ‘(T)1’ depends on a template parameter
+- `templates/specialization/partial-dependent-type-value.cpp` (edg-7.0): error: the template argument list of the partial specialization includes a nontype argument whose type depends on a template parameter
+- `templates/specialization/partial-dependent-type-value.cpp` (gcc-14): error: type 'T' of template argument '(T)1' depends on a template parameter
+- `templates/specialization/partial-dependent-type-value.cpp` (clang-18): error: non-type template argument specializes a template parameter with dependent type 'T'
+- `templates/specialization/partial-dependent-type-value.cpp` (gcc-16): error: type 'T' of template argument '(T)1' depends on a template parameter
+- `templates/specialization/partial-dependent-type-value.cpp` (gcc-16-o2): error: type 'T' of template argument '(T)1' depends on a template parameter
+- `templates/specialization/partial-dependent-type-value.cpp` (clang-22): error: non-type template argument specializes a template parameter with dependent type 'T'
+- `templates/specialization/partial-dependent-type-value.cpp` (clang-22-o2): error: non-type template argument specializes a template parameter with dependent type 'T'
 - `templates/specialization/partial-friend.cpp` (clang-host): error: partial specialization cannot be declared as a friend
 - `templates/specialization/partial-friend.cpp` (gcc-host): error: specialization of ‘template<class T> struct Box’ must appear at namespace scope
 - `templates/specialization/partial-friend.cpp` (edg-7.0): error: a friend declaration may not declare a partial specialization
@@ -20371,6 +21228,41 @@ check that the rejection has the intended cause.
 - `templates/specialization/partial-friend.cpp` (gcc-16-o2): error: specialization of 'template<class T> struct Box' must appear at namespace scope
 - `templates/specialization/partial-friend.cpp` (clang-22): error: partial specialization cannot be declared as a friend
 - `templates/specialization/partial-friend.cpp` (clang-22-o2): error: partial specialization cannot be declared as a friend
+- `templates/specialization/partial-member-not-defined.cpp` (clang-host): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (gcc-host): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (gcc-14): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (clang-18): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (gcc-16): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (gcc-16-o2): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (clang-22): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-member-not-defined.cpp` (clang-22-o2): link: undefined reference to `Box<int*>::get()'
+- `templates/specialization/partial-no-primary.cpp` (clang-host): error: explicit specialization of undeclared template struct 'Box'
+- `templates/specialization/partial-no-primary.cpp` (gcc-host): error: ‘Box’ is not a class template
+- `templates/specialization/partial-no-primary.cpp` (edg-7.0): error: a template argument list is not allowed in a declaration of a primary template
+- `templates/specialization/partial-no-primary.cpp` (gcc-14): error: 'Box' is not a class template
+- `templates/specialization/partial-no-primary.cpp` (clang-18): error: explicit specialization of undeclared template struct 'Box'
+- `templates/specialization/partial-no-primary.cpp` (gcc-16): error: 'Box' is not a class template
+- `templates/specialization/partial-no-primary.cpp` (gcc-16-o2): error: 'Box' is not a class template
+- `templates/specialization/partial-no-primary.cpp` (clang-22): error: explicit specialization of undeclared template struct 'Box'
+- `templates/specialization/partial-no-primary.cpp` (clang-22-o2): error: explicit specialization of undeclared template struct 'Box'
+- `templates/specialization/partial-pack-not-expanded.cpp` (clang-host): error: partial specialization contains unexpanded parameter pack 'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (gcc-host): error: parameter packs not expanded with ‘...’: / note:         ‘T’
+- `templates/specialization/partial-pack-not-expanded.cpp` (edg-7.0): error: parameter pack "T" was referenced but not expanded
+- `templates/specialization/partial-pack-not-expanded.cpp` (gcc-14): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (clang-18): error: partial specialization contains unexpanded parameter pack 'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (gcc-16): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (gcc-16-o2): error: parameter packs not expanded with '...': / note:         'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (clang-22): error: partial specialization contains unexpanded parameter pack 'T'
+- `templates/specialization/partial-pack-not-expanded.cpp` (clang-22-o2): error: partial specialization contains unexpanded parameter pack 'T'
+- `templates/specialization/partial-pack-not-last.cpp` (clang-host): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization] / error: class template partial specialization contains a template parameter that cannot be deduced; this partial specialization will never be used [-Wunusable-partial-specialization] / note: non-deducible template parameter 'T'
+- `templates/specialization/partial-pack-not-last.cpp` (gcc-host): error: partial specialization ‘struct Pair<T ..., int>’ is not more specialized than / note: primary template ‘template<class A, class B> struct Pair’ / error: parameter pack argument ‘T ...’ must be at the end of the template argument list
+- `templates/specialization/partial-pack-not-last.cpp` (edg-7.0): error: a parameter pack must be the final template argument in a partial specialization
+- `templates/specialization/partial-pack-not-last.cpp` (gcc-14): error: partial specialization 'struct Pair<T ..., int>' is not more specialized than / note: primary template 'template<class A, class B> struct Pair' / error: parameter pack argument 'T ...' must be at the end of the template argument list
+- `templates/specialization/partial-pack-not-last.cpp` (clang-18): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization] / error: class template partial specialization contains a template parameter that cannot be deduced; this partial specialization will never be used [-Wunusable-partial-specialization] / note: non-deducible template parameter 'T'
+- `templates/specialization/partial-pack-not-last.cpp` (gcc-16): error: partial specialization 'struct Pair<T ..., int>' is not more specialized than / note: primary template 'template<class A, class B> struct Pair' / error: parameter pack argument 'T ...' must be at the end of the template argument list
+- `templates/specialization/partial-pack-not-last.cpp` (gcc-16-o2): error: partial specialization 'struct Pair<T ..., int>' is not more specialized than / note: primary template 'template<class A, class B> struct Pair' / error: parameter pack argument 'T ...' must be at the end of the template argument list
+- `templates/specialization/partial-pack-not-last.cpp` (clang-22): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization] / error: class template partial specialization contains a template parameter that cannot be deduced; this partial specialization will never be used [-Wunusable-partial-specialization] / note: non-deducible template parameter 'T'
+- `templates/specialization/partial-pack-not-last.cpp` (clang-22-o2): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization] / error: class template partial specialization contains a template parameter that cannot be deduced; this partial specialization will never be used [-Wunusable-partial-specialization] / note: non-deducible template parameter 'T'
 - `templates/specialization/partial-reordered.cpp` (clang-host): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization]
 - `templates/specialization/partial-reordered.cpp` (clang-18): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization]
 - `templates/specialization/partial-reordered.cpp` (clang-22): error: class template partial specialization is not more specialized than the primary template [-Winvalid-partial-specialization]
@@ -20384,6 +21276,15 @@ check that the rejection has the intended cause.
 - `templates/specialization/partial-same-as-primary.cpp` (gcc-16-o2): error: partial specialization 'struct Pair<T, U>' does not specialize any template arguments and is not more constrained than the primary template; to define the primary template, remove the template argument list / note: primary template here
 - `templates/specialization/partial-same-as-primary.cpp` (clang-22): error: class template partial specialization does not specialize any template argument; to define the primary template, remove the template argument list / error: redefinition of 'Pair' / note: previous definition is here
 - `templates/specialization/partial-same-as-primary.cpp` (clang-22-o2): error: class template partial specialization does not specialize any template argument; to define the primary template, remove the template argument list / error: redefinition of 'Pair' / note: previous definition is here
+- `templates/specialization/partial-union-key.cpp` (clang-host): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/partial-union-key.cpp` (gcc-host): error: ‘union’ tag used in naming ‘struct Box<T*>’ [-fpermissive]
+- `templates/specialization/partial-union-key.cpp` (edg-7.0): error: tag kind of union is incompatible with declaration of class template "Box" (declared at line 6)
+- `templates/specialization/partial-union-key.cpp` (gcc-14): error: 'union' tag used in naming 'struct Box<T*>' [-fpermissive]
+- `templates/specialization/partial-union-key.cpp` (clang-18): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/partial-union-key.cpp` (gcc-16): error: 'union' tag used in naming 'struct Box<T*>' [-fpermissive]
+- `templates/specialization/partial-union-key.cpp` (gcc-16-o2): error: 'union' tag used in naming 'struct Box<T*>' [-fpermissive]
+- `templates/specialization/partial-union-key.cpp` (clang-22): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
+- `templates/specialization/partial-union-key.cpp` (clang-22-o2): error: use of 'Box' with tag type that does not match previous declaration / note: previous use is here
 - `templates/specialization/partial-unused-parameter.cpp` (clang-host): error: class template partial specialization contains a template parameter that cannot be deduced; this partial specialization will never be used [-Wunusable-partial-specialization] / note: non-deducible template parameter 'U'
 - `templates/specialization/partial-unused-parameter.cpp` (gcc-host): error: template parameters not deducible in partial specialization: / note:         ‘U’
 - `templates/specialization/partial-unused-parameter.cpp` (edg-7.0): error: template parameter "U" is not used in or cannot be deduced from the template argument list of class template "Box<T *>"

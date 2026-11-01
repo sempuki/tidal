@@ -197,6 +197,27 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0184](Q-0184-vendor-options-in-evidence.md) | Should Evidence record vendor options that change behavior? | provisional | yes, when a test runs the compiler with the option |
 | [Q-0185](Q-0185-change-notation-and-versions.md) | How does Tidal mark a change to a rule and the language version a rule holds for? | provisional | a change table for proposals now; a version field when a second version is specified |
 | [Q-0186](Q-0186-proposals-and-outside-judgments.md) | May a proposal rest on judgments from outside Tidal? | provisional | yes, marked as outside knowledge |
+| [Q-0187](Q-0187-no-object-member-object-parameter.md) | In a call with no object, does a member's object parameter take part in overload resolution? | provisional | no; it takes no part; Clang and EDG agree, GCC differs |
+| [Q-0188](Q-0188-known-bound-direct-binding.md) | When two references bind directly to one array, is the reference to the known bound better? | provisional | yes; GCC and EDG agree, Clang finds a tie |
+| [Q-0189](Q-0189-constructor-against-conversion-result.md) | Does the result tie-breaker compare a constructor with a conversion function? | provisional | yes; the constructor's result has the identity; GCC and EDG agree, Clang differs |
+| [Q-0190](Q-0190-matching-not-equal-ref-qualifier.md) | Do ref-qualifiers take part in the match of `!=` and `==`? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0191](Q-0191-inner-array-bound-drop.md) | Does an array bound dropped at an inner pointer level need `const` above it? | provisional | no; GCC and EDG agree, Clang differs |
+| [Q-0192](Q-0192-constinit-trivial-default-constructor.md) | Does a class with a trivial default constructor and no initializer have a constant initializer? | provisional | yes, the zero counts, as for a scalar; Clang differs |
+| [Q-0193](Q-0193-extended-temporaries-in-constants.md) | Can a constant refer to, and read, every temporary that a namespace reference extends? | provisional | yes for any REF-4 binding, and a read needs a `const` type; EDG and GCC differ |
+| [Q-0194](Q-0194-fold-operand-with-binary-operator.md) | Can an operand of a fold expression contain a binary operator without parentheses? | provisional | no, it needs parentheses; EDG differs |
+| [Q-0195](Q-0195-parameter-after-pack-not-deducible.md) | Must an implementation diagnose a function template parameter after a pack that deduction cannot find? | provisional | no diagnostic required; Clang and GCC accept, EDG rejects |
+| [Q-0196](Q-0196-default-on-friend-class-template.md) | Can a friend declaration of a class template give a default template argument? | provisional | no; Clang and EDG reject, GCC accepts |
+| [Q-0197](Q-0197-friend-default-other-declaration.md) | Must an implementation diagnose another declaration of a friend function template that gives a default? | provisional | invalid, no diagnostic required; EDG rejects, Clang and GCC accept |
+| [Q-0198](Q-0198-friend-named-as-template-parameter.md) | Can a friend function in a class template have the name of a template parameter? | provisional | yes for a declaration; Clang and GCC accept, EDG rejects at instantiation |
+| [Q-0199](Q-0199-member-enumeration-defined-outside.md) | Can a member enumeration of a class template be defined after the class body? | provisional | yes; Clang and EDG accept, GCC rejects under -pedantic-errors |
+| [Q-0200](Q-0200-alias-template-lambda-same-arguments.md) | Do two uses of one alias template specialization with a lambda give one closure type? | provisional | yes; GCC and EDG agree, Clang gives two types |
+| [Q-0201](Q-0201-template-template-constant-types-differ.md) | Does a template template argument match when its constant parameter has another fixed type? | provisional | yes; Clang 22 and GCC accept, Clang 18 and EDG reject |
+| [Q-0202](Q-0202-union-argument-no-active-member.md) | Can a union with no active member be a template argument? | provisional | yes; Clang and EDG accept, GCC rejects |
+| [Q-0203](Q-0203-thread-local-explicit-specialization-only.md) | Can an explicit specialization of a variable template be thread_local when the template is not? | provisional | yes; Clang and GCC accept, EDG rejects |
+| [Q-0204](Q-0204-access-in-explicit-specialization-function-type.md) | Is a private type in the function type of an explicit specialization access-checked? | provisional | no; Clang and EDG accept, GCC rejects |
+| [Q-0205](Q-0205-explicit-specialization-member-enumeration.md) | Can a member enumeration of a class template have an explicit specialization? | provisional | yes if the class template only declares it; Clang and EDG accept, GCC rejects under -pedantic-errors |
+| [Q-0206](Q-0206-clang18-member-template-explicit-primary.md) | Are partial specializations of a member template ignored when its primary is explicitly specialized for one class? | compiler defect | yes; Clang 18's choice is fixed in Clang 22 |
+| [Q-0207](Q-0207-explicit-specialization-of-member-partial-specialization.md) | Does an explicit specialization of one member partial specialization keep the others? | provisional | yes, and it is selected; Clang and EDG agree, GCC ignores it |
 
 ## Status values
 

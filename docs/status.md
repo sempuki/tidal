@@ -15,19 +15,19 @@ current state only. The history of how the project got here is in
 | [Objects, storage, and lifetime](../spec/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 35 | 4 | 2 | 31 |  | 0 flagged |
 | [Value categories and temporaries](../spec/foundations/values.md) | 16 | 9 required, 4 reject, 2 unspecified, 1 impl-defined | 56 | 8 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 62 | 6 | 2 | 31 | Q-0028, Q-0100 | 0 flagged |
-| [Implicit conversion sequences](../spec/foundations/conversion-sequences.md) | 45 | 44 required, 1 reject | 106 | 12 | 21 | 52 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157 | 0 flagged |
-| [Overload resolution](../spec/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 137 | 8 | 23 | 46 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0160, Q-0161, Q-0162, Q-0163 | 0 flagged |
+| [Implicit conversion sequences](../spec/foundations/conversion-sequences.md) | 46 | 45 required, 1 reject | 110 | 12 | 22 | 52 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0188 | 0 flagged |
+| [Overload resolution](../spec/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 146 | 6 | 25 | 46 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0160, Q-0161, Q-0162, Q-0163, Q-0187, Q-0189 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 36 | 18 required, 18 reject | 178 | 5 | 0 | 44 |  | 0 flagged |
 | [Use and the one-definition rule](../spec/foundations/odr.md) | 16 | 7 required, 3 reject, 2 impl-defined, 3 no-diagnostic, 1 recommended | 50 | 2 | 8 | 17 | Q-0127, Q-0128, Q-0129, Q-0130 | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 9 | 5 required, 1 undefined, 2 unspecified, 1 recommended | 25 | 2 | 0 | 65 |  | 0 flagged |
-| [Constant expressions](../spec/foundations/constant-evaluation.md) | 25 | 6 required, 18 reject, 1 impl-defined | 74 | 7 | 6 | 110 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117 | 0 flagged |
+| [Constant expressions](../spec/foundations/constant-evaluation.md) | 27 | 6 required, 18 reject, 1 unspecified, 1 impl-defined, 1 no-diagnostic | 85 | 9 | 11 | 110 | Q-0020, Q-0033, Q-0078, Q-0090, Q-0115, Q-0117, Q-0192, Q-0193 | 0 flagged |
 | [Expression statements and blocks](../spec/statements/blocks.md) | 8 | 6 required, 1 reject, 1 recommended | 15 | 3 | 2 | 3 | Q-0096 | 0 flagged |
 | [The if statement](../spec/statements/if.md) | 24 | 13 required, 11 reject | 66 | 9 | 0 | 23 |  | 0 flagged |
 | [The switch statement](../spec/statements/switch.md) | 7 | 2 required, 4 reject, 1 recommended | 34 | 0 | 1 | 16 | Q-0097 | 0 flagged |
 | [Iteration statements](../spec/statements/loops.md) | 8 | 4 required, 4 reject | 19 | 3 | 1 | 2 | Q-0044 | 0 flagged |
 | [The range-based for statement](../spec/statements/range-for.md) | 7 | 4 required, 3 reject | 28 | 1 | 6 | 16 | Q-0020, Q-0026, Q-0098 | 0 flagged |
 | [Jump statements and labels](../spec/statements/jumps.md) | 16 | 9 required, 6 reject, 1 unspecified | 52 | 3 | 3 | 28 | Q-0041, Q-0097 | 0 flagged |
-| [Primary expressions](../spec/expressions/primary.md) | 26 | 9 required, 9 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 96 | 6 | 4 | 11 | Q-0033, Q-0063, Q-0064 | 0 flagged |
+| [Primary expressions](../spec/expressions/primary.md) | 29 | 11 required, 10 reject, 1 undefined, 1 unspecified, 2 impl-defined, 3 conditionally-supported, 1 recommended | 105 | 7 | 5 | 11 | Q-0033, Q-0063, Q-0064, Q-0194 | 0 flagged |
 | [decltype, unevaluated operands, and discarded values](../spec/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 49 | 4 | 3 | 10 | Q-0065, Q-0089 | 0 flagged |
 | [Multiplicative operators](../spec/expressions/multiplicative.md) | 19 | 7 required, 3 reject, 5 undefined, 2 unspecified, 1 impl-defined, 1 recommended | 38 | 9 | 5 | 26 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | 0 flagged |
 | [Additive operators](../spec/expressions/additive.md) | 16 | 7 required, 1 reject, 5 undefined, 1 unspecified, 1 impl-defined, 1 recommended | 41 | 9 | 6 | 11 | Q-0001, Q-0005, Q-0031, Q-0049 | 0 flagged |
@@ -43,17 +43,17 @@ current state only. The history of how the project got here is in
 | [Postfix expressions](../spec/expressions/postfix.md) | 19 | 7 required, 7 reject, 4 undefined, 1 conditionally-supported | 54 | 7 | 5 | 23 | Q-0031, Q-0034, Q-0124, Q-0178 | 0 flagged |
 | [Casts](../spec/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 50 | 6 | 1 | 15 | Q-0017 | 0 flagged |
 | [New and delete](../spec/expressions/new-delete.md) | 20 | 9 required, 7 reject, 2 undefined, 2 unspecified | 57 | 5 | 4 | 37 | Q-0005, Q-0035, Q-0036, Q-0091 | 0 flagged |
-| [Lambda expressions](../spec/expressions/lambdas.md) | 27 | 15 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 58 | 15 | 2 | 23 | Q-0037, Q-0092 | 0 flagged |
+| [Lambda expressions](../spec/expressions/lambdas.md) | 28 | 16 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 60 | 15 | 2 | 23 | Q-0037, Q-0092 | 0 flagged |
 | [Placeholder types in variable declarations](../spec/declarations/auto.md) | 22 | 12 required, 10 reject | 49 | 9 | 0 | 5 | Q-0010 | 0 flagged |
 | [Type aliases and class names](../spec/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 60 | 3 | 3 | 3 | Q-0066, Q-0067, Q-0093 | 0 flagged |
 | [Storage duration and linkage](../spec/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 54 | 11 | 2 | 22 | Q-0011, Q-0045, Q-0105 | 0 flagged |
 | [The inline specifier](../spec/declarations/inline.md) | 8 | 4 required, 2 reject, 2 no-diagnostic | 34 | 2 | 3 | 0 | Q-0068 | 0 flagged |
-| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 82 | 8 | 2 | 30 | Q-0012, Q-0106 | 0 flagged |
+| [Declarators and cv-qualifiers](../spec/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 85 | 7 | 3 | 30 | Q-0012, Q-0106, Q-0191 | 0 flagged |
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 12 | 5 required, 5 reject, 1 undefined, 1 recommended | 34 | 4 | 1 | 3 | Q-0080, Q-0176 | 0 flagged |
 | [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 31 | 3 | 1 | 24 | Q-0013, Q-0039 | 0 flagged |
 | [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 60 | 4 | 3 | 17 | Q-0042, Q-0043, Q-0166, Q-0167 | 0 flagged |
-| [Reference binding](../spec/declarations/initialization/references.md) | 14 | 8 required, 4 reject, 1 undefined, 1 recommended | 59 | 2 | 14 | 52 | Q-0040, Q-0109, Q-0110, Q-0149, Q-0150, Q-0151, Q-0157, Q-0164, Q-0165, Q-0166, Q-0180 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 14 | 8 required, 4 reject, 1 undefined, 1 recommended | 61 | 2 | 14 | 52 | Q-0040, Q-0109, Q-0110, Q-0149, Q-0150, Q-0151, Q-0157, Q-0164, Q-0165, Q-0166, Q-0180 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 12 | 2 | 0 | 15 | Q-0014, Q-0175 | 0 flagged |
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 16 | 9 required, 7 reject | 49 | 6 | 4 | 11 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 21 | 10 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 59 | 5 | 3 | 19 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
@@ -64,7 +64,7 @@ current state only. The history of how the project got here is in
 | [Default arguments](../spec/declarations/functions/default-arguments.md) | 9 | 3 required, 5 reject, 1 no-diagnostic | 21 | 3 | 2 | 15 | Q-0038, Q-0111 | 0 flagged |
 | [Deleted and defaulted functions](../spec/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 17 | 2 | 1 | 8 | Q-0007, Q-0023 | 0 flagged |
 | [Return type deduction](../spec/declarations/functions/return-deduction.md) | 7 | 2 required, 4 reject, 1 undefined | 22 | 1 | 0 | 14 |  | 0 flagged |
-| [Exception specifications](../spec/declarations/exception-specifications.md) | 8 | 3 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 36 | 2 | 6 | 35 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
+| [Exception specifications](../spec/declarations/exception-specifications.md) | 10 | 4 required, 4 reject, 1 impl-defined, 1 no-diagnostic | 40 | 2 | 6 | 44 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | 0 flagged |
 | [The constexpr, consteval, and constinit specifiers](../spec/declarations/constexpr.md) | 12 | 3 required, 9 reject | 65 | 2 | 5 | 40 | Q-0020, Q-0025 | 0 flagged |
 | [Static assertions](../spec/declarations/static-assert.md) | 8 | 4 required, 4 reject | 28 | 0 | 0 | 4 |  | 0 flagged |
 | [Class definitions and members](../spec/classes/members.md) | 27 | 14 required, 11 reject, 1 impl-defined, 1 no-diagnostic | 85 | 11 | 2 | 21 | Q-0027, Q-0181 | 0 flagged |
@@ -77,7 +77,7 @@ current state only. The history of how the project got here is in
 | [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 104 | 5 | 3 | 23 | Q-0057, Q-0058, Q-0088 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 64 | 1 | 1 | 12 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 96 | 3 | 1 | 33 | Q-0060 | 0 flagged |
-| [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 67 | 2 | 3 | 24 | Q-0061, Q-0062, Q-0158 | 0 flagged |
+| [Defaulted comparisons](../spec/classes/comparisons.md) | 13 | 6 required, 5 reject, 1 no-diagnostic, 1 recommended | 74 | 2 | 5 | 24 | Q-0061, Q-0062, Q-0158, Q-0190 | 0 flagged |
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 12 | 10 required, 1 reject | 28 | 5 | 0 | 34 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 18 | 8 required, 6 reject, 1 undefined, 3 recommended | 75 | 6 | 2 | 26 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 9 | 7 required, 1 impl-defined, 1 recommended | 34 | 2 | 1 | 41 | Q-0179 | 0 flagged |
@@ -95,7 +95,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 4041/4041 tests pass on each. Two
+Eight compilers are baseline, and 4204/4204 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -116,11 +116,11 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and eighty-five questions are open for opinions, each
-with a provisional answer the spec follows. Twelve of them have the status
+Two hundred and six questions are open for opinions, each with a
+provisional answer the spec follows. Thirteen of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
-Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181). Q-0009 (license) is settled. See `questions/README.md`.
+Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
 
@@ -169,13 +169,8 @@ forward-progress rule belongs with threads, which are out of scope.
 to 3 are done. Next:
 
 1. The interpreter (decision 0048, roadmap item FI).
-2. Repairs from front-end round 6, findings G46 to G56
-   (`reports/clean-room/rust-frontend/report-6.md`).
-3. The X findings deferred because their pages were in use: X1-7,
-   X1-9, X1-10, X1-13, X3-3, X4-4 (CE-14 and an extended temporary at
-   namespace scope), and X2-6.
-4. Phase 4 of the roadmap: a gap review of item N1, then items O and
-   N2.
+2. Phase 4 of the roadmap: item O (deduction and partial ordering) is
+   in progress; then item N2 (dependent names and instantiation).
 
 Waiting on the maintainer:
 
