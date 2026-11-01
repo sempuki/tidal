@@ -39,8 +39,8 @@ counts and next steps.
 | `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
 | `questions/` | Open questions where the compilers disagree or a rule is unclear, each with the provisional answer the spec follows |
-| `frontend/` | `tidal-fe`, a C++ compiler front end in Rust, written only from the specification. It is a test of the spec, not a website front end and not a production compiler. It checks programs, names the rule each error breaks, and runs the conformance tests (`frontend/README.md`) |
-| `guides/` | A tutorial and how-to guides written from the specification. They are not part of the specification and the site does not publish them (decisions 0045, 0046) |
+| `frontend/` | `tidal-fe`, a C++ compiler front end in Rust, written only from the specification to test it. It checks programs, names the rule each error breaks, and runs the conformance tests (`frontend/README.md`) |
+| `guides/` | A tutorial and how-to guides written from the specification, kept apart from it and unpublished (decisions 0045, 0046) |
 | `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, site build |
 | `site/` | Sphinx configuration, the `rule` directive extension, and the stylesheet |
 | `reports/` | Similarity reports from the checker, see `reports/README.md` |
