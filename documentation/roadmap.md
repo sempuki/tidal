@@ -80,6 +80,23 @@ each item starts.
 |---|---|---|
 | FI | The interpreter of decision 0048: run tests on the abstract machine, stop at undefined behavior with the rule, and serve constant evaluation as a client | front-end round 6 |
 
+## Phase 5: consolidate, fill the object model, exercise
+
+Decision 0050 (provisional) adopts this phase from the second round of
+clean-room roadmaps (`reports/clean-room/roadmap-2/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| T0 | Close phase 4: gap-review repairs of R and P, front-end round 8 | phase 4 |
+| C1 | Consolidate question clusters; merge duplicates; close moot questions | none |
+| C2 | Thicken the templates chapter: second tests, every template test cited | none |
+| F1 | Objects in raw storage (new Foundations page) | an inventory |
+| F2 | Language-support types, round 2: placement and aligned allocation, the exceptions the language throws | an inventory |
+| F3 | Templates across translation units on `odr.md` | none |
+| L | Lanes U, V, and X | none |
+| E | Write suites for generic code, Predict batches for templates, a Diagnose batch, Propose round 2 | C2 |
+| FE | Templates in the interpreter, run outcomes in the baseline, `run-fail` tests for `undefined` rules | T0 |
+
 ## Parallel lanes
 
 These lanes run beside the phases when a phase waits for review.

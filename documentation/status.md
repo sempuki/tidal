@@ -164,14 +164,13 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-`documentation/roadmap.md` orders the work (decisions 0033 and 0039).
-Phases 1 to 4 are drafted. Next:
+`documentation/roadmap.md` orders the work (decisions 0033, 0039, and
+0050). Phases 1 to 4 are drafted, and phase 5 is provisional. Next:
 
-1. Gap reviews of items R and P by a source reader (decision 0044),
-   and their repairs.
-2. Front end, round 8: templates in the front end (in progress).
-3. A pass over the roadmap's parallel lanes and deferred items, and a
-   plan for what follows phase 4.
+1. Phase 5, item T0: the gap-review repairs of items R and P, and
+   front-end round 8 (in progress).
+2. Phase 5, items C1, C2, F3, and L, which need no inventory.
+3. Inventories for items F1 and F2.
 
 Waiting on the maintainer:
 
