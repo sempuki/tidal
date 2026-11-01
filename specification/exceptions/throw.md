@@ -35,7 +35,7 @@ exception object.
 :::
 
 :::{principle} THR-P2
-:rules: THR-4 THR-6 THR-8 THR-12
+:rules: THR-4 THR-6 THR-8 THR-12 THR-13
 
 The exception object belongs to no scope ({principle}`OBJ-P2` does not
 apply to the exception object). The object:
@@ -45,7 +45,9 @@ apply to the exception object). The object:
 - ends when the last handler for it ends.
 
 A destructor of the exception object that throws at that end starts a
-new exception at the end of the handler.
+new exception at the end of the handler. The implementation provides the
+storage of the exception object by its own means, so a program's
+allocation functions never see the exception object.
 
 The type of the exception object is fixed at the `throw` as the static
 type of the operand, so a derived object thrown through a base reference
@@ -204,6 +206,16 @@ handler. A try block that encloses the handler's try block can catch the
 new exception.
 :::
 
+:::{rule} THR-13
+:kind: required
+:tests: exceptions/throw/storage-not-from-operator-new.cpp
+
+The implementation chooses where the storage of the exception object
+comes from. A `throw` gets that storage without a call to an allocation
+function, also when the program replaces the global `operator new` or
+the class declares its own ({rule}`NEW-13`).
+:::
+
 ## Recommended Practice
 
 :::{rule} THR-11
@@ -235,7 +247,7 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-28 tests. EDG runs no programs, so its results for the run and run-fail
+29 tests. EDG runs no programs, so its results for the run and run-fail
 tests say only that the programs are valid. A `run-fail` test shows that
 the program ended with a nonzero status or a signal; the harness cannot
 see that termination was the reason.

@@ -260,12 +260,18 @@ on each side.
 
 :::{rule} PRIM-26
 :kind: reject
-:tests: expressions/primary/number-extends-over-sign.cpp expressions/primary/number-ends-at-space.cpp
+:tests: expressions/primary/number-extends-over-sign.cpp expressions/primary/number-ends-at-space.cpp expressions/primary/number-runs-over-letters.cpp expressions/primary/number-runs-over-dots.cpp expressions/primary/number-runs-over-underscore.cpp
 
-A numeric literal runs over every letter, digit, `'`, and `.` that
-follows it, and over a `+` or `-` right after `e`, `E`, `p`, or `P`.
-The whole run must form one valid literal, so `0xe+1` is not valid,
-and `0xe + 1` is.
+A numeric literal runs over each following character that the table
+allows:
+
+| After | The literal takes |
+|---|---|
+| any character of the literal | a digit, a letter, `_`, `'`, or `.` |
+| `e`, `E`, `p`, or `P` | also a `+` or `-` |
+
+The whole run must form one valid literal. So `1u8` is one literal
+with the suffix `u8`, and `1.2.3` and `0xe+1` are not valid.
 :::
 
 :::{rule} PRIM-4
@@ -578,8 +584,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 106 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 104
+of 109 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

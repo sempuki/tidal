@@ -384,10 +384,12 @@ warning.
 
 :::{rule} CMP-14
 :kind: recommended
-:tests: expressions/comparison/chained-comparison-warns.cpp expressions/comparison/chained-less-equal-warns.cpp
+:tests: expressions/comparison/chained-comparison-warns.cpp expressions/comparison/chained-less-equal-warns.cpp expressions/comparison/chained-mixed-relational-warns.cpp expressions/comparison/chained-parenthesized-no-warning.cpp
 
-An implementation should warn about a chained comparison such as
-`a < b < c`.
+An implementation should warn about a chained comparison. In a
+*chained comparison*, the left operand of a relational operator is a
+relational comparison without parentheses, as in `a < b >= c`.
+Parentheses around the inner comparison should silence the warning.
 :::
 
 :::{rule} CMP-16
@@ -433,8 +435,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 75
-of 85 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 76
+of 87 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
@@ -447,7 +449,8 @@ operands.
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
   `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. Clang 18 gives
   no warning for a chained comparison of variables ({question}`Q-0029`).
-  GCC also warns about `a == b == c`, and Clang does not.
+  CMP-14 covers the four relational operators only. GCC also warns
+  about `a == b == c` and `a < b == c`, and Clang does not.
 - CMP-7, CMP-26: every compiler orders pointers into two rows of one
   array of arrays, and into an array member and the member after it,
   during constant evaluation. Every compiler gives `true` for a pointer

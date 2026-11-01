@@ -49,7 +49,8 @@ runs. Objects that the throw did not reach are never created. Static
 objects are not part of any of those blocks, so unwinding leaves them
 alone, and an exception that leaves the initialization of a static local
 variable leaves the variable not yet initialized, so the next call tries
-again.
+again. These rules assume that a function body runs to its end without
+suspension *(coroutines referenced)*.
 :::
 
 :::{principle} UNW-P2

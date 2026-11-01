@@ -121,19 +121,26 @@ decides the common type:
 
 :::{rule} CONV-20
 :kind: required
-:tests: expressions/conversions/implicit-conversion-contexts.cpp
+:tests: expressions/conversions/implicit-conversion-contexts.cpp expressions/conversions/implicit-conversion-more-contexts.cpp
 
 An implicit conversion happens in each of these contexts. The rule named
 for each context gives the target type:
 
 - the initializer of a variable ({rule}`INIT-4`),
 - a function argument ({rule}`PFX-6`),
+- a default argument, to the type of its parameter ({rule}`DEFARG-5`),
 - the expression of a `return` statement ({rule}`JMP-3`),
 - the right operand of an assignment ({rule}`ASN-1`),
+- the result of `op` in a compound assignment `E1 op= E2`, to the type
+  of `E1` ({rule}`ASN-5`),
 - the operands of a binary arithmetic or comparison operator (CONV-19),
+- the second and third operands of `?:`, to the result type
+  ({rule}`COND-3`),
 - a condition, by {term}`contextual conversion` ({rule}`IF-3`),
 - an array bound, an enumerator value, and a case label (CE-11, CE-19),
-- the condition of a `switch` ({rule}`SW-2`).
+- the condition of a `switch` ({rule}`SW-2`),
+- the parameter of a handler, from the exception object, by the
+  conversions of {rule}`TRY-2` only.
 :::
 
 :::{rule} CONV-8

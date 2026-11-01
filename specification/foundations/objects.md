@@ -108,8 +108,9 @@ its storage is obtained, before the object has a value.
 
 Objects with automatic storage duration are destroyed when control
 leaves their block, in the reverse of the order of their construction.
-This rule applies to a `return`, and to each iteration of a loop.
-Constant evaluation follows the same order.
+This rule applies to a `return`, to each iteration of a loop, and to
+constant evaluation. The rule assumes that a function body runs to its
+end without suspension *(coroutines referenced)*.
 :::
 
 :::{rule} OBJ-4

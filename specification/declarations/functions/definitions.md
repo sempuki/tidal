@@ -10,12 +10,13 @@ A function definition gives the body of a function. This page covers:
 ## Principles
 
 :::{principle} FN-P1
-:rules: FN-2 FN-14 FN-15 FN-9 FN-12
+:rules: FN-2 FN-14 FN-15 FN-16 FN-9 FN-12
 
 A function can be declared many times and defined once in a translation
 unit ({principle}`TR-P2`). The parameter types tell whether two
 declarations name one function or two overloads (FN-15). The
-declarations of one function must then agree on the other properties:
+declarations of one function must then agree on the other properties,
+apart from the parameter names:
 
 | Property | Rule |
 |---|---|
@@ -28,9 +29,11 @@ declarations of one function must then agree on the other properties:
 | ref-qualifiers among overloads | {rule}`CLS-26` |
 | template head, for a function template | {rule}`TPL-20` |
 | each default argument, given in one declaration only | {rule}`DEFARG-9` |
- A definition is the whole function, so the
-definition needs complete types for its parameters and its return value,
-where a declaration can leave them incomplete. A definition stands at
+| parameter names, which can differ or be left out | FN-16 |
+
+A definition is the whole function, so the definition needs complete
+types for its parameters and its return value, where a declaration can
+leave them incomplete. A definition stands at
 namespace scope or in a class, never inside another function.
 :::
 
@@ -126,6 +129,16 @@ have the same parameter types after the adjustments of {rule}`DCL-8`.
 For member functions, the cv-qualifiers and ref-qualifiers must also be
 the same. Otherwise the declarations declare two functions, which
 overload ({rule}`OVL-1`).
+:::
+
+:::{rule} FN-16
+:kind: required
+:tests: declarations/functions/definitions/parameter-names-may-differ.cpp declarations/functions/definitions/parameter-name-from-definition.cpp
+
+Declarations of one function can give a parameter different names, or
+no name. In the body, only the names that the definition gives are
+visible. An overriding function ({rule}`VIRT-1`) can also use names
+other than those of the function that it overrides.
 :::
 
 :::{rule} FN-4
@@ -258,7 +271,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 37 of 43 tests. The results are in
+All eight compilers agree on 39 of 45 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function

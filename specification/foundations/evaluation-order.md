@@ -15,7 +15,7 @@ For other operands the order is not fixed.
 ## Principles
 
 :::{principle} SEQ-P1
-:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9 SEQ-10
+:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9 SEQ-10 SEQ-11
 
 The language fixes the order of evaluation only where meaning needs it.
 A full expression finishes, with all its side effects, before the next
@@ -131,6 +131,24 @@ The arguments of a call, with all their side effects, are complete
 before the body of the called function starts.
 :::
 
+:::{rule} SEQ-11
+:kind: required
+:tests: expressions/sequencing/operand-used-twice-evaluated-once.cpp
+
+One evaluation of a construct evaluates each of its operands at most
+once. If the construct uses the result of an operand more than once,
+each use refers to that one result. These constructs use a result more
+than once:
+
+| Construct | Operand | Uses | Rule |
+|---|---|---|---|
+| `E1 op= E2` | `E1` | a read and a write | {rule}`ASN-9` |
+| `++E`, `--E`, `E++`, `E--` | `E` | a read and a write | {rule}`UN-10`, {rule}`PFX-12` |
+| A structured binding declaration | the initializer | each name, through the hidden variable | {rule}`SB-1` |
+| A range-based `for` | the range expression | `begin` and `end`, through a hidden reference | {rule}`RFOR-3` |
+| A `switch` | the condition | the comparison with each case label | {rule}`SW-1` |
+:::
+
 ## Undefined Behavior
 
 :::{rule} SEQ-4
@@ -214,7 +232,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 33 tests. The results are in
+All eight compilers agree on all 34 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter

@@ -50,7 +50,7 @@ every part.
 :::
 
 :::{principle} CE-P3
-:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27 CE-28
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27 CE-28 CE-31
 :exceptions: CE-26
 
 An evaluation must not depend on the machine or on where objects are
@@ -68,7 +68,8 @@ placed in memory. So an evaluation rejects these operations:
 Copying an object reads each of its parts, so a copy of an object with
 a part that has no value is undefined too. An exception has no handler
 at translation time, so a `throw` that the evaluation reaches ends the
-evaluation.
+evaluation. For the same reason an evaluation never reaches a point
+where the program would terminate.
 
 Where the language leaves an order of evaluation to the implementation,
 an evaluation picks an order, as a run does. The order of an evaluation
@@ -99,6 +100,8 @@ permits such a conversion:
 | the operand of `alignas` | integer or unscoped enumeration, zero or a power of two | | {rule}`ALN-2`, {rule}`ALN-8` |
 | the width of a bit-field | integer or unscoped enumeration | | {rule}`BF-1`, {rule}`BF-2` |
 | the initializer of a `constexpr` variable | the variable's type | as in any initialization | {rule}`CX-1` |
+| the initializer of a `constinit` variable | the variable's type | as in any initialization | {rule}`CINIT-1` |
+| a call to a `consteval` function, outside an {term}`immediate function context` | the function's return type | as in any call | {rule}`CEV-1` |
 
 Each of these places starts a new evaluation, also inside a function
 that an evaluation runs. So the parameters of that function are unknown
@@ -231,11 +234,20 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp
 
 Constant evaluation must not evaluate a throw-expression, or a failed
 `dynamic_cast` of a reference, which throws ({rule}`VIRT-10`). A
 throw-expression on a path that the evaluation does not take is valid.
+:::
+
+:::{rule} CE-31
+:kind: reject
+:tests: expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp expressions/constant-expressions/termination-not-reached.cpp
+
+Constant evaluation must not reach a point where the program terminates
+({rule}`UNW-5`, {rule}`THR-7`). Each such point follows a thrown
+exception, so CE-8 rejects the evaluation before that point.
 :::
 
 :::{rule} CE-9
@@ -510,8 +522,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 89
-of 103 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 92
+of 106 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
