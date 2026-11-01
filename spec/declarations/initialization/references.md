@@ -24,10 +24,13 @@ may do with its referent.
 | Rvalue reference | Take from an object that is going away | Rvalues, and never an lvalue of its own type |
 
 In parentheses and after `=`, the initializer is one expression. In
-braces, the initializer is one expression when that expression can
-initialize the reference by itself. Any other braced list holds the
-values of a new object. The list then makes a temporary of the
-referenced type, and the reference binds to the temporary.
+braces, one expression that already has the referenced type binds as it
+does after `=`. A derived class counts as the referenced type, and so
+does an array of known bound for an array of unknown bound. A function
+also binds as it does after `=`. Any other braced list holds the values
+of a new object, even one value that converts to the referenced type.
+The list then makes a temporary of the referenced type, and the
+reference binds to the temporary.
 :::
 
 :::{principle} REF-P2
@@ -76,7 +79,7 @@ object exists.
 
 :::{rule} REF-8
 :kind: reject
-:tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp foundations/conversion-sequences/chosen-bit-field.cpp
+:tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp foundations/conversion-sequences/chosen-bit-field.cpp declarations/initialization/references/braced-list-array-drops-const.cpp
 
 The lvalue that a non-`const` lvalue reference binds to must have one of
 the types that REF-1 lists. A non-`const` lvalue reference must not bind
@@ -97,7 +100,7 @@ the value. REF-9 lists what is not valid.
 
 :::{rule} REF-9
 :kind: reject
-:tests: declarations/initialization/references/const-volatile-ref-rvalue.cpp declarations/initialization/references/braced-list-nonconst-lvalue.cpp
+:tests: declarations/initialization/references/const-volatile-ref-rvalue.cpp declarations/initialization/references/braced-list-nonconst-lvalue.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp
 
 An lvalue reference that is `volatile`, or that is not `const`, must not
 bind to an rvalue.
@@ -115,7 +118,7 @@ function type binds to a function. REF-10 lists what is not valid.
 
 :::{rule} REF-10
 :kind: reject
-:tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp
+:tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp
 
 An rvalue reference to an object type must not bind to an lvalue of the
 same type, or of a class derived from that type. The reference must not
@@ -124,22 +127,26 @@ drop a cv-qualifier of the object.
 
 :::{rule} REF-6
 :kind: required
-:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp
+:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp declarations/initialization/references/braced-list-array-binds-directly.cpp declarations/initialization/references/braced-list-array-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-list-array-unknown-bound.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp declarations/initialization/references/braced-function-reference.cpp declarations/initialization/references/braced-function-overload-set.cpp declarations/initialization/references/braced-function-noexcept.cpp
 
 A reference can be initialized with `=`, parentheses, or braces. A
 braced list that holds one expression initializes the reference from
 that expression, as `=` does, in these cases:
 
-- The referenced type is not a class or an array.
-- The expression has the referenced class type, or a class derived
-  from it.
+- The referenced type is a function type ({question}`Q-0165`).
+- The expression has the referenced type, ignoring
+  {term}`cv-qualifiers <cv-qualifier>`, or a class derived from that
+  type ({question}`Q-0157`).
+- The referenced type is an array of unknown bound, and the expression
+  is an array of the same element type, ignoring cv-qualifiers
+  ({question}`Q-0164`).
 
 REF-14 gives the other braced lists. REF-11 lists what is not valid.
 :::
 
 :::{rule} REF-14
 :kind: required
-:tests: declarations/initialization/references/braced-list-array-temporary.cpp declarations/initialization/references/braced-list-class-temporary.cpp declarations/initialization/references/braced-list-unknown-bound.cpp declarations/initialization/references/braced-list-unknown-bound-values.cpp
+:tests: declarations/initialization/references/braced-list-array-temporary.cpp declarations/initialization/references/braced-list-class-temporary.cpp declarations/initialization/references/braced-list-unknown-bound.cpp declarations/initialization/references/braced-list-unknown-bound-values.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/list/string-literal-reference-temporary.cpp
 
 A braced list that REF-6 does not cover initializes a temporary object
 of the referenced type from the list ({rule}`LIST-3`, {rule}`ILC-2`).
@@ -251,11 +258,21 @@ const int (&row)[3]{1, 2};   // row refers to a temporary {1, 2, 0}
 const Point& corner{0, 4};   // corner refers to a temporary Point
 Point& moved{0, 4};          // rejected: a temporary needs const or &&
 const int& pair{1, 2};       // rejected: two values for an int
+
+int cells[2] = {1, 2};
+int (&whole)[2]{cells};      // whole refers to cells
+int (&open)[]{cells};        // open refers to cells
+const unsigned char (&bytes)[3]{"ab"};   // bytes refers to a temporary
+
+struct Source { operator int&(); };
+Source s;
+const int& n{s};             // n refers to a temporary int
+int& m{s};                   // rejected: a temporary needs const or &&
 ```
 
 ## Evidence
 
-All eight compilers agree on 39 of 46 tests. The results are in
+All eight compilers agree on 43 of 56 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
@@ -275,6 +292,22 @@ All eight compilers agree on 39 of 46 tests. The results are in
   array of zero elements, and GCC accepts it ({question}`Q-0149`).
 - **REF-11.** GCC and EDG reject a braced list whose temporary needs an
   `explicit` constructor. Clang accepts the list ({question}`Q-0150`).
+- **REF-6.** Every compiler binds a reference to an array directly to
+  one braced lvalue of that array type. For a reference to an array of
+  unknown bound, Clang and EDG also bind directly. GCC makes a temporary
+  array of one element and rejects the list ({question}`Q-0164`).
+- **REF-6.** For one braced element of a class type that converts to
+  the referenced type, Clang and EDG make a temporary. GCC binds a
+  reference to a non-class type through the conversion function, and
+  makes a temporary for a class type ({question}`Q-0157`).
+- **REF-6.** For a reference to a function type, GCC rejects an
+  overloaded function name in braces, and EDG rejects a `noexcept`
+  function in braces. The other compilers bind the reference as after
+  `=` ({question}`Q-0165`).
+- **REF-14.** GCC rejects a braced string literal for a reference to a
+  character array when the reference does not bind the literal
+  directly. Clang and EDG make a temporary array from the literal
+  ({question}`Q-0166`).
 - **REF-11.** GCC accepts a parenthesized list of several values for a
   reference to an aggregate, and initializes a temporary from it. Clang
   and EDG reject the list ({question}`Q-0151`).

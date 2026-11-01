@@ -48,9 +48,10 @@ first.
 :::{principle} LIST-P3
 :rules: LIST-6 LIST-15
 
-A character array is an aggregate of characters, so a string literal of
-the matching character type initializes the array, with the terminating
-null included.
+A character array is an aggregate of characters, so a string literal
+initializes the array, with the terminating null included. A literal
+initializes an array of its own character type. A plain or UTF-8
+literal also initializes arrays of some other one-byte character types.
 :::
 
 ## Syntax
@@ -168,29 +169,40 @@ The designators in a braced list must obey these conditions:
 
 :::{rule} LIST-6
 :kind: required
-:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/char-array-rest-zero.cpp
+:tests: declarations/initialization/list/string-literal-array.cpp declarations/initialization/list/string-literal-u8-to-char8.cpp declarations/initialization/list/string-literal-u8-to-char.cpp declarations/initialization/list/char-array-rest-zero.cpp declarations/initialization/list/string-literal-plain-to-signed-unsigned.cpp declarations/initialization/list/string-literal-reference-temporary.cpp
 
 A character array can be initialized from a string literal, with or
-without braces. These conditions apply:
+without braces, if the table gives the array's element type for the
+literal.
 
-- If the bound is omitted, it counts the terminating null character.
+| Literal | Element types |
+|---|---|
+| Plain (`"..."`) | `char`, `signed char`, `unsigned char` |
+| UTF-8 (`u8"..."`) | `char8_t`, `char`, `unsigned char` |
+| UTF-16 (`u"..."`) | `char16_t` |
+| UTF-32 (`U"..."`) | `char32_t` |
+| Wide (`L"..."`) | `wchar_t` |
+
+These conditions apply:
+
+- If the bound is omitted, the bound counts the terminating null
+  character.
 - The elements after the literal and its null character become zero.
-- A UTF-8 literal (`u8"..."`) can also initialize a `char` or
-  `unsigned char` array.
 
-LIST-15 lists what is not valid.
+The same holds for the temporary array of a reference ({rule}`REF-14`,
+{question}`Q-0166`). LIST-15 lists what is not valid.
 :::
 
 :::{rule} LIST-15
 :kind: reject
-:tests: declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp
+:tests: declarations/initialization/list/string-literal-too-long.cpp declarations/initialization/list/string-literal-wrong-type.cpp declarations/initialization/list/string-literal-plain-to-char8.cpp declarations/initialization/list/string-literal-u8-to-signed-char.cpp declarations/initialization/list/string-literal-wide-to-char32.cpp
 
 When a string literal initializes a character array, these conditions
 apply:
 
 - The literal, with its null character, must fit in the array.
-- The character type of the literal must match the element type, except
-  for the UTF-8 case that LIST-6 gives.
+- The element type must be one that LIST-6 gives for the kind of the
+  literal.
 :::
 
 :::{rule} LIST-9
@@ -270,16 +282,27 @@ char h[] = "ab";          // char[3]
 char i[2] = "ab";         // rejected: too long
 char j[] = u8"x";         // valid
 char8_t k[] = "x";        // rejected: wrong character type
+unsigned char n[] = "x";  // valid
+signed char o[] = u8"x";  // rejected: wrong character type
 ```
 
 ## Evidence
 
-All eight compilers agree on 55 of 57 tests. The results are in
+All eight compilers agree on 57 of 60 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-14.** Clang accepts array designators, chained designators, and
   a mix of designated and plain values as C99 extensions, and rejects
   them only under `-pedantic-errors`. GCC and EDG reject them.
+- **LIST-6.** Every compiler accepts each pair of literal and element
+  type in the table, for an array variable, with and without braces.
+  Every compiler rejects the other pairs of the five literal kinds and
+  the seven character types. For a reference to a character array, GCC
+  rejects a braced literal that needs a temporary array. Clang and EDG
+  make the temporary ({question}`Q-0166`).
+- **LIST-6.** For one braced plain literal, GCC prefers a parameter
+  that is a reference to a `char` array over one to an `unsigned char`
+  array. Clang and EDG find the call ambiguous ({question}`Q-0167`).
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).
