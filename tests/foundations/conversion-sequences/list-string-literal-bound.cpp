@@ -1,8 +1,8 @@
-// tidal-rules: ICS-38 ICS-24
+// tidal-rules: ICS-38 ICS-46
 // tidal-expect: accept
 // tidal-expect-clang: reject
 // tidal-error-clang: ambiguous
-// tidal-note: Q-0155. Both arrays get three elements, and ICS-24 prefers the known bound. Clang finds a tie.
+// tidal-note: Q-0155, Q-0188. Both references bind directly to the literal, and ICS-46 prefers the known bound. Clang finds a tie.
 template <class T, class U> constexpr bool same = false;
 template <class T> constexpr bool same<T, T> = true;
 struct One {};

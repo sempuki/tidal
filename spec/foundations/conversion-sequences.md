@@ -112,7 +112,7 @@ user-defined conversions.
 :::
 
 :::{principle} ICS-P5
-:rules: ICS-21 ICS-22 ICS-23 ICS-24 ICS-25 ICS-26 ICS-27 ICS-28 ICS-29 ICS-30 ICS-31 ICS-32 ICS-33 ICS-34 ICS-35 ICS-36 ICS-37 ICS-42 ICS-43 ICS-44
+:rules: ICS-21 ICS-22 ICS-23 ICS-24 ICS-25 ICS-26 ICS-27 ICS-28 ICS-29 ICS-30 ICS-31 ICS-32 ICS-33 ICS-34 ICS-35 ICS-36 ICS-37 ICS-42 ICS-43 ICS-44 ICS-46
 
 Two sequences for the same argument compare in these steps. The first
 step that tells the two sequences apart decides:
@@ -145,6 +145,8 @@ sequences S1 and S2 for one argument
                        f. fewer cv-qualifiers added             ICS-31
                        g. fewer cv-qualifiers on the            ICS-30
                           referenced type
+                       h. two direct bindings to one array:     ICS-46
+                          the known bound is better
    |
    v
 5. nothing decides     the sequences tie
@@ -168,6 +170,8 @@ observable:
   tells apart.
 - Step 4f needs results that differ below the top level, and step 4g
   needs referenced types that differ only at the top level.
+- Step 4h compares two references to arrays of one element type. No
+  test observes its order against steps 4d to 4g.
 
 Tests observe step 4b before 4d, and 4d before 4g. Step 1 before
 step 2 ({question}`Q-0133`), 4c before 4d, and 4d before 4f
@@ -246,7 +250,8 @@ These functions can be the second part of ICS-3:
 - for a reference that binds directly to the result, the conversion
   functions that {rule}`OVL-15` gives for the kind of reference.
 
-ICS-45 adds `explicit` conversion functions in direct initialization.
+ICS-45 adds `explicit` conversion functions in direct initialization
+and for the operands of the built-in `!`, `&&`, and `||` ({rule}`OVL-9`).
 {rule}`CPY-7` and {rule}`OVL-17` remove some constructors.
 :::
 
@@ -280,10 +285,12 @@ the third part of ICS-3 has exact-match rank.
 
 :::{rule} ICS-6
 :kind: required
-:tests: foundations/conversion-sequences/ellipsis-sequence.cpp
+:tests: foundations/conversion-sequences/ellipsis-sequence.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp
 
 An argument that matches the `...` of a function has an
-{term}`ellipsis conversion sequence`.
+{term}`ellipsis conversion sequence`. A braced list has no ellipsis
+conversion sequence, so a function that needs one for a braced list is
+not viable.
 :::
 
 :::{rule} ICS-7
@@ -469,12 +476,14 @@ literal for an array of characters.
 
 :::{rule} ICS-38
 :kind: required
-:tests: foundations/conversion-sequences/list-string-literal.cpp foundations/conversion-sequences/list-string-literal-utf8.cpp foundations/conversion-sequences/list-string-literal-too-short.cpp foundations/conversion-sequences/list-string-literal-bound.cpp foundations/conversion-sequences/list-array.cpp
+:tests: foundations/conversion-sequences/list-string-literal.cpp foundations/conversion-sequences/list-string-literal-utf8.cpp foundations/conversion-sequences/list-string-literal-too-short.cpp foundations/conversion-sequences/list-string-literal-bound.cpp foundations/conversion-sequences/list-array.cpp foundations/conversion-sequences/list-string-literal-binds-literal.cpp
 
 For a reference to an array of a character type, one string literal in
 braces has the identity if the literal can initialize the array
-({rule}`LIST-6`, {rule}`LIST-15`). A literal that cannot initialize the
-array gives no sequence ({question}`Q-0155`).
+({rule}`LIST-6`, {rule}`LIST-15`), and no sequence otherwise
+({question}`Q-0155`). If the array has the literal's type, or is an
+array of unknown bound of its element type, the reference binds directly
+to the literal ({rule}`REF-6`).
 :::
 
 :::{rule} ICS-18
@@ -550,10 +559,20 @@ type, the sequence to the array with fewer elements is better.
 
 :::{rule} ICS-24
 :kind: required
-:tests: foundations/conversion-sequences/array-known-bound.cpp foundations/conversion-sequences/list-string-literal-bound.cpp
+:tests: foundations/conversion-sequences/array-known-bound.cpp
 
 If the two arrays of ICS-23 have the same number of elements, the array
 of known bound is better than the array of unknown bound.
+:::
+
+:::{rule} ICS-46
+:kind: required
+:tests: foundations/conversion-sequences/array-known-bound-direct.cpp foundations/conversion-sequences/list-string-literal-bound.cpp
+
+If two references to arrays bind directly to one array, the reference to
+the array of known bound is better than the reference to an array of
+unknown bound ({question}`Q-0188`). The binding can come from a braced
+list of one element ({rule}`ICS-20`, ICS-38).
 :::
 
 :::{rule} ICS-25
@@ -763,8 +782,8 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 85
-of 106 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 110 tests.
 
 - ICS-8: GCC keeps an `explicit` constructor in the sequence of a
   copy-list-initialized parameter, chooses the function, and rejects the
@@ -806,6 +825,14 @@ of 106 tests.
   array. Clang gives a literal a sequence to an array that is too short,
   and finds a tie between a known and an unknown bound
   ({question}`Q-0155`).
+- ICS-46: two references bind directly to one array, one with a known
+  bound and one without. GCC and EDG prefer the known bound, with or
+  without braces. Clang finds a tie ({question}`Q-0188`).
+- ICS-38: every compiler binds a reference to a braced string literal of
+  the referenced type directly. An rvalue reference cannot bind to the
+  literal, and an lvalue reference wins over an rvalue reference.
+- ICS-6: every compiler rejects a braced list for an ellipsis, and
+  chooses another viable function when one exists.
 - ICS-45: Clang lets direct initialization of a reference use an
   `explicit` conversion function that returns a value. GCC and EDG do
   not ({question}`Q-0156`).
@@ -1021,7 +1048,7 @@ The source of each rule:
 | ICS-3 | grid user-defined; inventory A14 to A17 |
 | ICS-4 | diagnostics for explicit conversion functions; probes of conversion functions that return a value; inventory E1 to E5; gap review E5, M6 |
 | ICS-5 | probe of a defaulted conversion template; inventory A18 |
-| ICS-6 | grids classes, user-defined; inventory A4 |
+| ICS-6 | grids classes, user-defined; probes of braced lists for an ellipsis; inventory A4; front-end finding G51 |
 | ICS-7 | grid user-defined (ToBoth); probes of a constructor against a conversion function; inventory A1 to A3; gap review E2 |
 | ICS-8 | diagnostics in the `chosen-*` tests; inventory A7, C1, F6, F9, F19; gap review M1; front-end finding G43 |
 | ICS-9, ICS-10 | probes; inventory D1, D3 to D7, G1, G3; gap review M9 |
@@ -1036,7 +1063,8 @@ The source of each rule:
 | ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
 | ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
 | ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
-| ICS-38 | probes of braced string literals; gap review S3 |
+| ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
+| ICS-46 | probes of references to arrays of known and unknown bound; front-end finding G49 |
 | ICS-39 | grid arithmetic (enum : short); gap review S1 |
 | ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
 | ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |

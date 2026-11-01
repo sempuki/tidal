@@ -55,7 +55,7 @@ where it can see such a reference.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp
 
 A non-`const` lvalue reference binds directly to an lvalue. The
 reference and the lvalue are then the same object. The lvalue can have:
@@ -64,8 +64,9 @@ reference and the lvalue are then the same object. The lvalue can have:
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
 - a class derived from the type through an accessible base.
 
-A reference to an array of unknown bound binds to an array of known
-bound. REF-8 lists what is not valid.
+The cv-qualifiers of an array's elements count as those of the array
+({rule}`CV-6`), and a reference to an array of unknown bound binds to an
+array of known bound. REF-8 lists what is not valid.
 :::
 
 :::{rule} REF-13
@@ -119,7 +120,7 @@ function type binds to a function. REF-10 lists what is not valid.
 
 :::{rule} REF-10
 :kind: reject
-:tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp
+:tests: declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp declarations/initialization/references/rvalue-ref-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-string-literal-rvalue-ref.cpp
 
 An rvalue reference to an object type must not bind to an lvalue of the
 same type, or of a class derived from that type. The reference must not
@@ -128,7 +129,7 @@ drop a cv-qualifier of the object.
 
 :::{rule} REF-6
 :kind: required
-:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp declarations/initialization/references/braced-list-array-binds-directly.cpp declarations/initialization/references/braced-list-array-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-list-array-unknown-bound.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp declarations/initialization/references/braced-function-reference.cpp declarations/initialization/references/braced-function-overload-set.cpp declarations/initialization/references/braced-function-noexcept.cpp
+:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp declarations/initialization/references/braced-list-array-binds-directly.cpp declarations/initialization/references/braced-list-array-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-list-array-unknown-bound.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp declarations/initialization/references/braced-function-reference.cpp declarations/initialization/references/braced-function-overload-set.cpp declarations/initialization/references/braced-function-noexcept.cpp declarations/initialization/references/braced-string-literal-rvalue-ref.cpp
 
 A reference can be initialized with `=`, parentheses, or braces. A
 braced list that holds one expression initializes the reference from
@@ -294,7 +295,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 45 of 59 tests. The results are in
+All eight compilers agree on 47 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
@@ -334,6 +335,12 @@ All eight compilers agree on 45 of 59 tests. The results are in
   overloaded function name in braces, and EDG rejects a `noexcept`
   function in braces. The other compilers bind the reference as after
   `=` ({question}`Q-0165`).
+- **REF-6.** Every compiler binds a reference to a braced string literal
+  of the referenced type directly, as after `=`. An rvalue reference
+  then cannot bind, for a known and for an unknown bound.
+  {rule}`ICS-38` and {rule}`ICS-46` give the sequences.
+- **REF-1.** Every compiler binds a reference to an array of `const int`
+  directly to an array of `int`, with a known or an unknown bound.
 - **REF-14.** GCC rejects a braced string literal for a reference to a
   character array when the reference does not bind the literal
   directly. Clang and EDG make a temporary array from the literal

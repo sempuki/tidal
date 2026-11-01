@@ -101,7 +101,8 @@ if the declaration would be a definition without the braces.
 
 A C name is known by its spelling alone. These rules follow:
 
-- C names with the same spelling in different namespaces are one entity.
+- C names with the same spelling in different namespaces are one entity,
+  and one candidate in overload resolution ({rule}`OVL-1`).
 - A C function and a C++ function can overload.
 - A later declaration without a linkage specification keeps the C
   language linkage.

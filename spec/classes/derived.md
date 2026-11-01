@@ -147,7 +147,7 @@ its bases. The hidden members include:
 A qualified name such as `d.B::f()` finds the base member. A
 using-declaration of a base member makes the overloads of that member
 visible in the derived class. A derived member with the same parameters
-hides the base function that the using-declaration brings.
+hides the base function that the using-declaration brings ({rule}`OVL-1`).
 :::
 
 :::{rule} DER-19

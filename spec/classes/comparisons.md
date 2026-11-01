@@ -28,7 +28,7 @@ defaulted `==` with it.
 :::
 
 :::{principle} DCMP-P2
-:rules: DCMP-6 DCMP-7 DCMP-12
+:rules: DCMP-6 DCMP-7 DCMP-12 DCMP-13
 
 The other comparison operators are spelled from `==` and `<=>`. An
 expression with `!=` or a relational operator also tries `==` or `<=>`,
@@ -179,20 +179,39 @@ considers these candidates:
 - for `x <=> y`, the candidate `y <=> x` with the operands reversed.
 
 `<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
-before a rewritten one. If the scope of an `==` declares a matching
-`!=`, that `==` is not used for reversed or rewritten candidates.
+before a rewritten one. If an `==` has a matching `!=` (DCMP-13), that
+`==` is not used for reversed or rewritten candidates.
 {rule}`OVL-13` gives what each rewritten candidate evaluates, and
 {rule}`OVL-32` and {rule}`OVL-33` rank the candidates.
 :::
 
 :::{rule} DCMP-12
 :kind: reject
-:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq-needs-bool.cpp classes/comparisons/eq-cv-bool-result.cpp classes/comparisons/eq-reference-to-bool-result.cpp
+:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq-needs-bool.cpp classes/comparisons/eq-cv-bool-result.cpp classes/comparisons/eq-reference-to-bool-result.cpp classes/comparisons/ne-rewrite-reference-to-bool-result.cpp classes/comparisons/ne-matching-other-result.cpp classes/comparisons/ne-matching-base-member.cpp classes/comparisons/ne-matching-using-declaration.cpp classes/comparisons/ne-matching-ref-qualifier.cpp
 
-An `==` used to rewrite `!=` must return `bool`. A reversed `==` that wins
-for `==` must also return `bool`, which can be cv-qualified
-({question}`Q-0158`). A comparison that needs a candidate that DCMP-6
-excludes is not valid.
+An `==` used to rewrite `!=`, and a reversed `==` that wins for `==`,
+must return `bool`. The `bool` can be cv-qualified, and a reference to
+`bool` does not count ({question}`Q-0158`). A comparison that needs a
+candidate that DCMP-6 excludes is not valid.
+:::
+
+:::{rule} DCMP-13
+:kind: required
+:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-matching-other-result.cpp classes/comparisons/ne-matching-base-member.cpp classes/comparisons/ne-matching-using-declaration.cpp classes/comparisons/ne-matching-ref-qualifier.cpp classes/comparisons/ne-not-matching.cpp classes/comparisons/ne-not-matching-friend.cpp
+
+An `operator!=` matches an `operator==` for DCMP-6 if these conditions
+hold:
+
+- A search finds the `!=`. For a member `==`, the search is member
+  lookup in the class of the object operand. For a non-member `==`, the
+  search looks in the namespace of the `==`, and a `friend` declared only
+  in a class is not found.
+- Both are members with an implicit object parameter, or both are
+  non-members, and neither is a template.
+- Both have the same parameter types ({rule}`DCL-8`).
+
+The return types, the cv-qualifiers and ref-qualifiers of members,
+access, and deletion take no part ({question}`Q-0190`).
 :::
 
 ## Implementation Requirements
@@ -242,8 +261,8 @@ bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 67 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 69
+of 74 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
@@ -253,6 +272,13 @@ of 67 tests. The tests declare the comparison category types themselves.
 - DCMP-12: a reversed or rewritten `==` that returns `bool&` or
   `bool&&` is rejected by Clang and EDG. GCC accepts it
   ({question}`Q-0158`). Every compiler accepts a cv-qualified `bool`.
+- DCMP-12: an `==` that rewrites `!=` follows the same result rules as
+  a reversed `==`. Every compiler accepts a cv-qualified `bool`. Clang
+  and EDG reject `const bool&`, and GCC accepts it ({question}`Q-0158`).
+- DCMP-13: the compilers agree on what makes a `!=` match an `==`,
+  except for the ref-qualifiers `&` and `&&`. Clang and EDG ignore the
+  ref-qualifiers, and GCC treats `const&` and `const&&` as different
+  ({question}`Q-0190`). The rule comes from probes of each condition.
 - DCMP-6, DCMP-12: the reversed `<=>` candidate and the `bool` result of
   a reversed `==` come from items M-1 and M-3 of the gap review
   `reports/review/2026-10-31-gap-review-overload-resolution.md`, and from

@@ -158,6 +158,7 @@ REFERENCED_TOPICS = {
     "extended floating-point types",
     "library",
     "memory model",
+    "preprocessor",          # #if evaluation and macro replacement
     "templates",
     "threads",
 }

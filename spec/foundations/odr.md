@@ -125,6 +125,9 @@ Each directive is on a line of its own. The rules for these lines are:
 - Each `if_line` pairs with the first `#endif` after it that no later
   `if_line` takes. The `#endif` that ends the `include_guard` pairs
   with its `#ifndef`.
+- How an `if_line` condition is evaluated, and how a name defined with
+  a `guard_value` is replaced in later text, are outside this
+  specification *(preprocessor referenced)*.
 
 ## Constraints
 

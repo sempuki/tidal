@@ -361,19 +361,23 @@ no effect.
 
 :::{rule} CV-7
 :kind: required
-:tests: declarations/declarators/qualification-conversion-ok.cpp
+:tests: declarations/declarators/qualification-conversion-ok.cpp declarations/declarators/qualification-conversion-array.cpp
 
 A pointer converts implicitly to a pointer with more cv-qualifiers on
-the pointed-to type. CV-10 lists what is not valid.
+the pointed-to type, and the cv-qualifiers of an array's elements count
+as those of the array (CV-6). A pointer to an array of known bound also
+converts to a pointer to an array of unknown bound. CV-10 lists what is
+not valid.
 :::
 
 :::{rule} CV-10
 :kind: reject
-:tests: declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp
+:tests: declarations/declarators/qualification-conversion-unsafe.cpp declarations/declarators/qualification-conversion-drops-const.cpp declarations/declarators/qualification-conversion-array-to-known.cpp declarations/declarators/qualification-conversion-array-inner-bound.cpp
 
 Across several levels of pointers, `const` added at one level needs
-`const` at each higher level except the outermost. No implicit
-conversion removes a cv-qualifier.
+`const` at each higher level except the outermost. An array bound
+dropped at one level needs no `const` ({question}`Q-0191`). No implicit
+conversion removes a cv-qualifier or adds an array bound.
 :::
 
 :::{rule} CV-8
@@ -533,6 +537,10 @@ const C z = 1;                 // const int
 using A = int[2];
 const A arr = {1, 2};          // const int[2]
 
+int row[3];
+const int (*all)[] = &row;     // const elements, bound dropped
+int (*some)[3] = all;          // rejected: adds a bound and drops const
+
 const int ci = 1;
 const_cast<int&>(ci) = 2;      // undefined
 int v = 1;
@@ -542,7 +550,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All eight compilers agree on 80 of 82 tests. The results are in
+All eight compilers agree on 82 of 85 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
@@ -556,6 +564,11 @@ All eight compilers agree on 80 of 82 tests. The results are in
   type", "modifying a const object", "attempt to modify const storage").
   A change to an object that is not `const`, through the same cast, is
   accepted and executes.
+- **CV-7.** Every compiler converts a pointer to an array of `int` to a
+  pointer to an array of `const int`, with or without the bound.
+- **CV-10.** GCC and EDG drop an array bound at an inner level without
+  `const` at the levels above. Clang rejects the conversion
+  ({question}`Q-0191`).
 - **DCL-16.** EDG 7.0 accepts a reference parameter to a function type
   with a ref-qualifier. Clang and GCC reject the parameter
   ({question}`Q-0106`).
