@@ -2,7 +2,8 @@
 // front end's answer with the test's expectation.
 
 use crate::diag::Diag;
-use crate::{check_source, Outcome};
+use crate::interp::run::{run_units, RunOutcome};
+use crate::{outcome_of, parse_source, Outcome};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
@@ -20,6 +21,31 @@ struct Test {
     /// The -W flags other than -Werror.
     wflags: Vec<String>,
     sources: Vec<PathBuf>,
+    /// The base expectation is `run` or `run-fail`: the harness runs the
+    /// program after the check accepts it.
+    run: Option<RunExpect>,
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+enum RunExpect {
+    Run,
+    RunFail,
+}
+
+/// The result of running a `run` or `run-fail` test.
+#[derive(Clone, PartialEq, Debug)]
+enum RunRes {
+    Pass,
+    /// A `run` test ended with a nonzero status, or a `run-fail` test whose
+    /// rules name no undefined behavior ended with status 0.
+    WrongResult,
+    /// A `run-fail` test ended with status 0.
+    MissedUndefined,
+    /// The run stopped at undefined behavior that the test does not expect.
+    UnexpectedUndefined,
+    Unsupported,
+    /// The check did not accept the program, so it did not run.
+    NotRun,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -76,6 +102,11 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
     // A front end only checks programs: run, run-fail, and link-fail mean
     // accept. An EDG override takes precedence.
     let base_reject = if edg.is_some() { expect.as_ref().map(|x| x == "reject") } else { None };
+    let run = match expect.as_deref() {
+        Some("run") => Some(RunExpect::Run),
+        Some("run-fail") => Some(RunExpect::RunFail),
+        _ => None,
+    };
     let e = edg.or(expect)?;
     let rel = path.strip_prefix(root).unwrap_or(path).to_string_lossy().to_string();
     Some(Test {
@@ -88,12 +119,15 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
         werror: flags.contains("-Werror"),
         wflags: flags.split_whitespace().filter(|f| f.starts_with("-W") && *f != "-Werror").map(String::from).collect(),
         sources,
+        run,
     })
 }
 
 struct Outcome2 {
     res: Res,
     diags: Vec<Diag>,
+    /// The run of a `run` or `run-fail` test, and a line that describes it.
+    run: Option<(RunRes, String)>,
 }
 
 fn run_one(t: &Test) -> Outcome2 {
@@ -101,30 +135,58 @@ fn run_one(t: &Test) -> Outcome2 {
     files.extend(t.sources.iter().cloned());
     let mut any_reject = None;
     let mut unsup = Vec::new();
-    for f in files {
-        let src = std::fs::read_to_string(&f).unwrap_or_default();
-        let (m32, werror, wflags) = (t.m32, t.werror, t.wflags.clone());
-        let (tx, rx) = mpsc::channel();
-        let fpath = f.clone();
-        std::thread::Builder::new()
-            .stack_size(64 << 20)
-            .spawn(move || {
-                let r = std::panic::catch_unwind(|| check_source(&src, Some(&fpath), m32, werror, &wflags));
-                let _ = tx.send(r.map(|(o, _)| o).map_err(|_| ()));
-            })
-            .unwrap();
-        match rx.recv_timeout(Duration::from_secs(10)) {
-            Ok(Ok(Outcome::Accept)) => {}
-            Ok(Ok(Outcome::Reject(d))) => {
-                if any_reject.is_none() {
-                    any_reject = Some(d);
+    let want_run = t.run.is_some();
+    let (m32, werror, wflags) = (t.m32, t.werror, t.wflags.clone());
+    let (tx, rx) = mpsc::channel();
+    let paths = files.clone();
+    // One thread parses every unit, checks each on its own, and runs the
+    // linked program if every unit is accepted.
+    std::thread::Builder::new()
+        .stack_size(256 << 20)
+        .spawn(move || {
+            let r = std::panic::catch_unwind(|| {
+                let ps: Vec<_> = paths
+                    .iter()
+                    .map(|f| {
+                        let src = std::fs::read_to_string(f).unwrap_or_default();
+                        parse_source(&src, Some(f), m32, werror, &wflags)
+                    })
+                    .collect();
+                let outs: Vec<Outcome> = ps.iter().map(|p| outcome_of(p).0).collect();
+                let ran = if want_run && outs.iter().all(|o| matches!(o, Outcome::Accept)) {
+                    // A panic in the interpreter is unsupported, not a
+                    // failed check.
+                    let refs: Vec<&crate::parser::P> = ps.iter().collect();
+                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| run_units(&refs)));
+                    Some(r.unwrap_or(RunOutcome::Unsupported("interpreter crashed".into(), 0)))
+                } else {
+                    None
+                };
+                (outs, ran)
+            });
+            let _ = tx.send(r.map_err(|_| ()));
+        })
+        .unwrap();
+    let mut run_out: Option<RunOutcome> = None;
+    match rx.recv_timeout(Duration::from_secs(30)) {
+        Ok(Ok((outs, ran))) => {
+            run_out = ran;
+            for o in outs {
+                match o {
+                    Outcome::Accept => {}
+                    Outcome::Reject(d) => {
+                        if any_reject.is_none() {
+                            any_reject = Some(d);
+                        }
+                    }
+                    Outcome::Unsupported(d) => unsup.extend(d),
                 }
             }
-            Ok(Ok(Outcome::Unsupported(d))) => unsup.extend(d),
-            Ok(Err(())) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end crashed".into(), line: 0 }),
-            Err(_) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end timed out".into(), line: 0 }),
         }
+        Ok(Err(())) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end crashed".into(), line: 0 }),
+        Err(_) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end timed out".into(), line: 0 }),
     }
+    let run = t.run.map(|k| judge_run(t, k, run_out.as_ref()));
     if let Some(d) = any_reject {
         let res = if t.expect_reject {
             Res::Pass
@@ -133,10 +195,10 @@ fn run_one(t: &Test) -> Outcome2 {
         } else {
             Res::FalseReject
         };
-        return Outcome2 { res, diags: d };
+        return Outcome2 { res, diags: d, run };
     }
     if !unsup.is_empty() {
-        return Outcome2 { res: Res::Unsupported, diags: unsup };
+        return Outcome2 { res: Res::Unsupported, diags: unsup, run };
     }
     let res = if !t.expect_reject {
         Res::Pass
@@ -145,7 +207,35 @@ fn run_one(t: &Test) -> Outcome2 {
     } else {
         Res::MissedReject
     };
-    Outcome2 { res, diags: vec![] }
+    Outcome2 { res, diags: vec![], run }
+}
+
+/// Compare a run with the test's expectation (decision 0048).
+fn judge_run(t: &Test, k: RunExpect, o: Option<&RunOutcome>) -> (RunRes, String) {
+    let Some(o) = o else {
+        return (RunRes::NotRun, "the check did not accept the program".to_string());
+    };
+    let line = crate::describe_run(o);
+    let res = match (k, o) {
+        (_, RunOutcome::Unsupported(..)) => RunRes::Unsupported,
+        (RunExpect::Run, RunOutcome::Result(0, _)) => RunRes::Pass,
+        (RunExpect::Run, RunOutcome::Result(..)) => RunRes::WrongResult,
+        (RunExpect::Run, RunOutcome::Undefined(..)) => RunRes::UnexpectedUndefined,
+        (RunExpect::RunFail, RunOutcome::Result(0, _)) => RunRes::MissedUndefined,
+        (RunExpect::RunFail, RunOutcome::Result(..)) => RunRes::Pass,
+        // The program ends with a nonzero status.
+        (RunExpect::Run, RunOutcome::Terminated(..)) => RunRes::WrongResult,
+        (RunExpect::RunFail, RunOutcome::Terminated(..)) => RunRes::Pass,
+        (RunExpect::RunFail, RunOutcome::Undefined(r, ..)) => {
+            // A stop can name several rules, separated by commas.
+            if r.split(", ").any(|r| t.rules.iter().any(|x| x == r)) {
+                RunRes::Pass
+            } else {
+                RunRes::UnexpectedUndefined
+            }
+        }
+    };
+    (res, line)
 }
 
 fn normalize(msg: &str) -> String {
@@ -254,6 +344,37 @@ pub fn run(args: &[String]) {
         let first = o.diags.first().map(|d| format!("{}:{} {}", d.line, d.rule.unwrap_or("-"), d.msg)).unwrap_or_default();
         lines.push(format!("{}\t{}\t{}\t{}", tag, t.rel, t.rules.join(" "), first));
     }
+    // The run tests: a table of their own.
+    let mut run_dir: BTreeMap<String, [usize; 7]> = BTreeMap::new();
+    let mut run_lines = Vec::new();
+    for (t, o) in tests.iter().zip(results.iter()) {
+        let o = o.as_ref().unwrap();
+        let Some((rr, line)) = &o.run else { continue };
+        let idx = match rr {
+            RunRes::Pass => 0,
+            RunRes::WrongResult => 1,
+            RunRes::MissedUndefined => 2,
+            RunRes::UnexpectedUndefined => 3,
+            RunRes::Unsupported => 4,
+            RunRes::NotRun => 5,
+        };
+        let parts: Vec<&str> = t.rel.split('/').collect();
+        let top = parts.first().copied().unwrap_or("").to_string();
+        let e = run_dir.entry(top).or_default();
+        e[idx] += 1;
+        e[6] += 1;
+        let tag = match rr {
+            RunRes::Pass => "run-pass",
+            RunRes::WrongResult => "RUN-WRONG-RESULT",
+            RunRes::MissedUndefined => "RUN-MISSED-UB",
+            RunRes::UnexpectedUndefined => "RUN-UNEXPECTED-UB",
+            RunRes::Unsupported => "run-unsupported",
+            RunRes::NotRun => "run-not-run",
+        };
+        // The tag comes second, so that tools that read the check lines
+        // (tools/frontend_check.py) skip these lines.
+        run_lines.push(format!("RUN\t{}\t{}\t{}\t{}", tag, t.rel, t.rules.join(" "), line));
+    }
     let mut report = String::new();
     report.push_str("| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only |\n|---|---|---|---|---|---|---|\n");
     let mut tot = [0usize; 6];
@@ -269,6 +390,31 @@ pub fn run(args: &[String]) {
     for (d, c) in &by_sub {
         report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5]));
     }
+    report.push_str("\nRun tests (`run` and `run-fail`):\n\n| Directory | Tests | Pass | Wrong result | Missed undefined behavior | Unexpected undefined behavior | Unsupported | Check did not accept |\n|---|---|---|---|---|---|---|---|\n");
+    let mut rt = [0usize; 7];
+    for (d, c) in &run_dir {
+        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[6], c[0], c[1], c[2], c[3], c[4], c[5]));
+        for i in 0..7 {
+            rt[i] += c[i];
+        }
+    }
+    report.push_str(&format!("| **total** | {} | {} | {} | {} | {} | {} | {} |\n", rt[6], rt[0], rt[1], rt[2], rt[3], rt[4], rt[5]));
+    let mut run_unsup: BTreeMap<String, usize> = BTreeMap::new();
+    for l in &run_lines {
+        if let Some(i) = l.find("unsupported at line ") {
+            let rest = &l[i..];
+            let msg = rest.split_once(": ").map(|x| x.1).unwrap_or(rest);
+            *run_unsup.entry(normalize(msg)).or_default() += 1;
+        } else if l.contains("\trun-unsupported\t") {
+            *run_unsup.entry(l.rsplit('\t').next().unwrap_or("").to_string()).or_default() += 1;
+        }
+    }
+    let mut ru: Vec<_> = run_unsup.into_iter().collect();
+    ru.sort_by(|a, b| b.1.cmp(&a.1));
+    report.push_str("\nConstructs the interpreter does not run (tests affected):\n\n");
+    for (m, c) in ru.iter().take(if verbose { 400 } else { 30 }) {
+        report.push_str(&format!("  {:5}  {}\n", c, m));
+    }
     let mut um: Vec<_> = unsup_msgs.into_iter().collect();
     um.sort_by(|a, b| b.1.cmp(&a.1));
     report.push_str("\nUnsupported constructs (tests affected):\n\n");
@@ -282,11 +428,20 @@ pub fn run(args: &[String]) {
                 println!("{}", l);
             }
         }
+        for l in &run_lines {
+            if !l.starts_with("RUN\trun-pass") {
+                println!("{}", l);
+            }
+        }
     }
     if let Some(f) = out_file {
         let mut s = report.clone();
         s.push_str("\n\nPer test:\n");
         for l in &lines {
+            s.push_str(l);
+            s.push('\n');
+        }
+        for l in &run_lines {
             s.push_str(l);
             s.push('\n');
         }

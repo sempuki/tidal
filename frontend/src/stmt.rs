@@ -6,6 +6,7 @@ use crate::lexer::TK;
 use crate::parser::*;
 use crate::types::*;
 use std::collections::HashSet;
+use std::rc::Rc;
 
 impl P {
     /// Parse `{ ... }` using `scope`, which the caller has pushed. This
@@ -87,6 +88,7 @@ impl P {
                 if let Some(f) = self.fns.last().and_then(|f| f.func) {
                     if let Some(fi) = self.func_mut(f) {
                         fi.opaque = true;
+                        fi.parse_failed = true;
                     }
                 }
                 Stmt::Unsupported(e.msg)
@@ -163,9 +165,9 @@ impl P {
                 }
                 "try" => {
                     self.pos += 1;
-                    self.parse_compound()?;
-                    self.parse_handlers()?;
-                    return Ok(Stmt::Unsupported("try block".into()));
+                    let body = self.parse_compound()?;
+                    let hs = self.parse_handlers()?;
+                    return Ok(Stmt::Try(Box::new(body), hs));
                 }
                 "co_return" => return Err(self.err("coroutines (outside the spec)")),
                 _ => {}
@@ -597,7 +599,7 @@ impl P {
             return Ok(Stmt::Return(None));
         }
         if let (Some(x), Some(fid), false) = (&e, f.func, f.is_lambda) {
-            if matches!(&x.k, EK::Unknown(w) if w == "lambda with reference captures") {
+            if matches!(&x.k, EK::Unknown(w) if w == "lambda with reference captures") || matches!(&x.k, EK::Closure(_, _, true)) {
                 // LAM-19: the closure outlives the variables it refers to.
                 self.ref_lambda_fns.insert(fid);
             }
@@ -1288,6 +1290,11 @@ impl P {
             self.error(line, "RFOR-7", "range-for over a value that is not a range");
         }
         let s = self.cur_scope();
+        // RFOR-1, RFOR-2: the loop as a block with a reference to the
+        // range, an iterator and its end, for the interpreter. A step that
+        // raises a diagnostic leaves the statement unsupported, as before.
+        let lowered = if decl.is_some() && names.is_empty() && !self.in_template() { self.lower_range_for(&range, s, line) } else { None };
+        let mut loop_var = None;
         if let Some(d) = decl {
             let base = match (&ds.ty, ds.auto) {
                 (Some(t), _) => t.clone(),
@@ -1295,13 +1302,23 @@ impl P {
             };
             let mut ty = self.apply_ops(base, &d.ops, line);
             if ds.auto.is_some() {
-                ty = match &elem {
-                    Some(e) => {
+                ty = match (&elem, &lowered) {
+                    (_, Some(lw)) => {
+                        let fk = crate::decl2::InitForm::Copy;
+                        let x = lw.3.clone();
+                        let mark = self.d.list.len();
+                        let t = self.deduce_auto(&ds, &d, &ty, &x, &fk, line).unwrap_or(QTy::unknown());
+                        if self.d.list.len() != mark {
+                            self.d.list.truncate(mark);
+                        }
+                        t
+                    }
+                    (Some(e), None) => {
                         let lv = Expr::new(EK::Unknown("element".into()), e.clone(), Cat::L, line);
                         let fk = crate::decl2::InitForm::Copy;
                         self.deduce_auto(&ds, &d, &ty, &lv, &fk, line).unwrap_or(QTy::unknown())
                     }
-                    None => QTy::unknown(),
+                    (None, None) => QTy::unknown(),
                 };
             }
             let name = d.name.clone().unwrap_or_default();
@@ -1320,7 +1337,23 @@ impl P {
             if self.scopes[s].names.get(&name).is_some_and(|v| !v.is_empty()) {
                 self.error(line, "NAM-3", format!("'{}' declared twice", name));
             }
-            self.add_decl(&name, DK::Var(vi), line);
+            let vty = vi.ty.clone();
+            let id = self.add_decl(&name, DK::Var(vi), line);
+            // The loop variable from `*__begin`.
+            if let Some(lw) = &lowered {
+                if !vty.is_unknown() {
+                    let mark = self.d.list.len();
+                    let init = self.convert_init(lw.3.clone(), &vty, crate::decl2::InitForm::Copy, line);
+                    if self.d.list.len() == mark && !matches!(init.k, EK::Unknown(_)) {
+                        if let DK::Var(v) = &mut self.decls[id].k {
+                            v.init = Some(Rc::new(init));
+                        }
+                        loop_var = Some(id);
+                    } else {
+                        self.d.list.truncate(mark);
+                    }
+                }
+            }
         } else {
             for n in names {
                 let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: false, defined: true, class: None };
@@ -1328,8 +1361,93 @@ impl P {
             }
         }
         let body = self.loop_body(Some((cs, "RFOR-6")))?;
-        let _ = body;
+        if let (Some((range_var, begin_var, end_var, _, cond, inc)), Some(lv)) = (lowered, loop_var) {
+            let decls = Stmt::Decl(vec![begin_var, end_var]);
+            let body = Stmt::Block(vec![Stmt::Decl(vec![lv]), body]);
+            let lp = Stmt::For { init: Some(Box::new(decls)), cond: Some(CondK::Expr(cond)), inc: Some(inc), body: Box::new(body) };
+            let mut items = Vec::new();
+            if let Some(i) = init {
+                items.push(*i);
+            }
+            items.push(Stmt::Decl(vec![range_var]));
+            items.push(lp);
+            return Ok(Stmt::Block(items));
+        }
         Ok(Stmt::Unsupported("range-based for".into()))
+    }
+
+    /// RFOR-1, RFOR-2: the variables `__range`, `__begin`, and `__end`, and
+    /// the expressions `*__begin`, `__begin != __end`, and `++__begin`.
+    /// None if a step is not modeled or raises a diagnostic.
+    fn lower_range_for(&mut self, range: &Expr, s: usize, line: u32) -> Option<(DeclId, DeclId, DeclId, Expr, Expr, Expr)> {
+        if range.ty.is_unknown() || matches!(range.k, EK::InitList(_) | EK::Unknown(_)) {
+            return None;
+        }
+        let mark = self.d.list.len();
+        let r = (|| -> Option<(DeclId, DeclId, DeclId, Expr, Expr, Expr)> {
+            let rt = nonref(&range.ty);
+            // auto&& __range = range;
+            let rref = if range.cat == Cat::L { QTy::new(Ty::LRef(Box::new(rt.clone()))) } else { QTy::new(Ty::RRef(Box::new(rt.clone()))) };
+            let rinit = self.convert_init(range.clone(), &rref, crate::decl2::InitForm::Copy, line);
+            let local = |ty: QTy, init: Expr| VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: Some(Rc::new(init)), param: false, local: true, dependent: false, defined: true, class: None };
+            let range_var = self.add_decl_in(s, " range", DK::Var(local(rref.clone(), rinit)), line);
+            let rv = Expr::new(EK::Var(range_var), rt.clone(), Cat::L, line);
+            let (b, e) = match &rt.t {
+                Ty::Array(_, Some(n)) => {
+                    let b = self.rvalue(rv.clone());
+                    let e = self.build_binary(BOp::Add, b.clone(), Expr::new(EK::Int(*n as i128), QTy::new(Ty::size_t()), Cat::PR, line), line);
+                    (b, e)
+                }
+                Ty::Class(c) => {
+                    let c = *c;
+                    let mb = self.lookup_member(c, "begin");
+                    let me = self.lookup_member(c, "end");
+                    if mb.is_some() || me.is_some() {
+                        let fb: Vec<DeclId> = mb?.into_iter().filter(|&f| self.func(f).is_some()).collect();
+                        let fe: Vec<DeclId> = me?.into_iter().filter(|&f| self.func(f).is_some()).collect();
+                        let b = self.call_overloads_pub(Some(rv.clone()), fb, vec![], line);
+                        let e = self.call_overloads_pub(Some(rv.clone()), fe, vec![], line);
+                        (b, e)
+                    } else {
+                        let (fb, _) = self.adl_lookup("begin", std::slice::from_ref(&rv));
+                        let (fe, _) = self.adl_lookup("end", std::slice::from_ref(&rv));
+                        if fb.is_empty() || fe.is_empty() {
+                            return None;
+                        }
+                        let b = self.call_overloads_pub(None, fb, vec![rv.clone()], line);
+                        let e = self.call_overloads_pub(None, fe, vec![rv.clone()], line);
+                        (b, e)
+                    }
+                }
+                _ => return None,
+            };
+            if matches!(b.k, EK::Unknown(_)) || matches!(e.k, EK::Unknown(_)) || b.ty.is_unknown() || e.ty.is_unknown() {
+                return None;
+            }
+            let bt = nonref(&b.ty).unqual();
+            let et = nonref(&e.ty).unqual();
+            let b = self.rvalue(b);
+            let e = self.rvalue(e);
+            let begin_var = self.add_decl_in(s, " begin", DK::Var(local(bt.clone(), b)), line);
+            let end_var = self.add_decl_in(s, " end", DK::Var(local(et.clone(), e)), line);
+            let bv = Expr::new(EK::Var(begin_var), bt, Cat::L, line);
+            let ev = Expr::new(EK::Var(end_var), et, Cat::L, line);
+            let cond = self.build_binary(BOp::Ne, bv.clone(), ev, line);
+            let cond = self.contextual_bool(cond, "RFOR-1");
+            let inc = self.build_unary(UOp::PreInc, bv.clone(), line);
+            let deref = self.build_unary(UOp::Deref, bv, line);
+            for x in [&cond, &inc, &deref] {
+                if matches!(x.k, EK::Unknown(_)) || x.ty.is_unknown() {
+                    return None;
+                }
+            }
+            Some((range_var, begin_var, end_var, deref, cond, inc))
+        })();
+        if self.d.list.len() != mark || r.is_none() {
+            self.d.list.truncate(mark);
+            return None;
+        }
+        r
     }
 }
 
@@ -1403,6 +1521,7 @@ fn falls_through(p: &P, s: &Stmt) -> bool {
         Stmt::If { then, els: Some(els), .. } => falls_through(p, then) || falls_through(p, els),
         Stmt::For { cond: None, body, .. } => has_break(body),
         Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => falls_through(p, x),
+        Stmt::Try(b, hs) => falls_through(p, b) || hs.iter().any(|h| falls_through(p, &h.body)),
         _ => true,
     }
 }

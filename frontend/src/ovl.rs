@@ -672,11 +672,32 @@ impl P {
                 }
             }
         }
-        // The implicit copy and move constructors.
+        // The implicit copy and move constructors, which the front end does
+        // not list as candidates. A class that declares a copy or move
+        // constructor has no implicit copy or move constructor of that kind
+        // (CPY-5); a declared copy constructor also removes the implicit
+        // move constructor.
         if args.len() == 1 {
             let own = list && matches!(args[0].k, EK::InitList(_));
             let ct = QTy::new(Ty::Class(c));
-            for p in [QTy::new(Ty::LRef(Box::new(QTy { t: ct.t.clone(), c: true, v: false }))), QTy::new(Ty::RRef(Box::new(ct.clone())))] {
+            let declared = |rv: bool| {
+                ctors.iter().any(|&cid| {
+                    self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| match &v.ty.t {
+                        Ty::LRef(x) => !rv && x.t == Ty::Class(c),
+                        Ty::RRef(x) => rv && x.t == Ty::Class(c),
+                        _ => false,
+                    })
+                })
+            };
+            let (has_copy, has_move) = (declared(false), declared(true));
+            let mut implicit = Vec::new();
+            if !has_copy {
+                implicit.push(QTy::new(Ty::LRef(Box::new(QTy { t: ct.t.clone(), c: true, v: false }))));
+            }
+            if !has_copy && !has_move {
+                implicit.push(QTy::new(Ty::RRef(Box::new(ct.clone()))));
+            }
+            for p in implicit {
                 match self.ics_form(&args[0], &p, own) {
                     Ok(None) => {}
                     _ => return CtorRes::Unknown,

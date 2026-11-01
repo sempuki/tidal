@@ -79,6 +79,12 @@ pub struct FuncInfo {
     pub first_defaulted: bool,
     /// A trailing requires-clause (OVL-24, OVL-30).
     pub constrained: bool,
+    /// The handlers of a function try block (TRY-9, TRY-10).
+    pub fn_try: Option<Rc<Vec<Handler>>>,
+    /// A statement of the body failed to parse.
+    pub parse_failed: bool,
+    /// The declaration says `noexcept(false)` (EXS-4, UNW-5).
+    pub noexcept_false: bool,
 }
 
 /// One attribute: its name without namespace, whether it had a
@@ -91,11 +97,13 @@ pub struct Attr {
     pub line: u32,
 }
 
-/// One mem-initializer. `field` is None for a base or a delegating
-/// constructor, which the evaluator does not model.
+/// One mem-initializer: a member (`field`), or a base or the class
+/// itself for a delegating constructor (`base`). `init` is None when the
+/// front end could not form the initialization.
 #[derive(Clone, Debug)]
 pub struct MemInit {
     pub field: Option<DeclId>,
+    pub base: Option<usize>,
     pub init: Option<Rc<Expr>>,
 }
 
@@ -344,6 +352,8 @@ pub struct P {
     pub init_list_classes: Vec<(QTy, usize)>,
     /// The parenthesized arguments of the `new` initializer being parsed.
     pub new_paren_args: Vec<Expr>,
+    /// The braced initializer of the `new` expression being parsed.
+    pub new_braced: Option<Expr>,
     /// The last ICS selection formed every sequence and found no viable
     /// function.
     pub ics_no_viable: bool,
@@ -399,6 +409,8 @@ pub struct P {
     pub class_friends: HashMap<usize, Vec<DeclId>>,
     /// Inline namespaces (NAM-13).
     pub inline_ns: std::collections::HashSet<usize>,
+    /// Namespace-scope variables with internal linkage (LNK rules).
+    pub var_internal: std::collections::HashSet<DeclId>,
     /// Inside a base clause, where `C::C` names the class (NAM-33).
     pub in_base_clause: u32,
     /// The token position of the `(` of a call whose callee is an
@@ -406,6 +418,16 @@ pub struct P {
     pub adl_pos: Option<usize>,
     /// Set by build_call for the call being built (NAM-31, NAM-32).
     pub call_adl: bool,
+    /// The captures of each closure's `operator()`: the variable, the
+    /// member of the closure that holds it, and whether the capture is by
+    /// reference (LAM rules).
+    pub closure_caps: HashMap<DeclId, Vec<(DeclId, usize, bool)>>,
+    /// The member of a closure that holds the captured `this`, and whether
+    /// it is a copy of `*this`.
+    pub closure_this: HashMap<DeclId, (usize, bool)>,
+    /// The conversion function of a closure with no captures, and its call
+    /// operator (LAM-10).
+    pub closure_conv: HashMap<DeclId, DeclId>,
     /// Functions that return a lambda with reference captures (LAM-19).
     pub ref_lambda_fns: std::collections::HashSet<DeclId>,
     /// ENUM-10: the type of an enumerator inside its enumerator list.
@@ -444,6 +466,7 @@ impl P {
             static_member_defs: Default::default(),
             init_list_classes: Vec::new(),
             new_paren_args: Vec::new(),
+            new_braced: None,
             ics_no_viable: false,
             op_converted: None,
             call_no_object: false,
@@ -477,10 +500,14 @@ impl P {
             hidden_friends: HashMap::new(),
             class_friends: HashMap::new(),
             inline_ns: Default::default(),
+            var_internal: Default::default(),
             in_base_clause: 0,
             adl_pos: None,
             call_adl: false,
             ref_lambda_fns: Default::default(),
+            closure_caps: Default::default(),
+            closure_this: Default::default(),
+            closure_conv: Default::default(),
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;

@@ -1,9 +1,10 @@
 # tidal-fe
 
 A C++ front end written in Rust from the Tidal specification, to exercise
-the specification. The front end checks programs and does not generate
-code. The front end can use any crate that does not encode knowledge of
-C++ (decision 0035).
+the specification. The front end checks programs and runs them on an
+interpreter of the abstract machine. It does not generate code. The
+front end can use any crate that does not encode knowledge of C++
+(decision 0035).
 
 ## Build
 
@@ -52,6 +53,40 @@ part of CPY-13 with `-Wall`. ODR-11 is on with no flag, and every test
 passes `-pedantic-errors`, which makes it an error. The front end names
 ODR-11 with ODR-9.
 
+## Run one program
+
+```sh
+target/release/tidal-fe run FILE [FILE...] [--m32]
+```
+
+`run` checks each file as a translation unit of its own, links the units
+together, and runs the program on the interpreter (decision 0048). It
+prints one line:
+
+```
+result: 0
+unspecified: result 0 with fixed choices: SEQ-1 at line 7 (arguments evaluated from left to right)
+undefined [MUL-9] at line 8: division by zero
+terminated [UNW-5] at line 4: an exception leaves main
+unsupported at line 3: pointer to member constant
+rejected [CTOR-25] at line 5: no constructor of 'S' accepts the arguments
+```
+
+| Exit status | Meaning |
+|---|---|
+| the program's status, reduced to 0 to 255 | `result` or `unspecified`: the program returned from `main` |
+| 125 | the check rejected a translation unit |
+| 126 | `undefined`: the run stopped at undefined behavior and gives no result |
+| 127 | `unsupported`: the check or the interpreter met a construct it does not model |
+| 134 | `terminated`: the program ended without returning from `main` (UNW-5, THR-7), as `std::abort` does on the matrix targets |
+
+A program's own status can also be 125 to 127 or 134. The printed line
+tells the cases apart.
+
+An `unspecified` line lists the choice points that the run passed, each
+with the rule that leaves the choice open. The interpreter takes one
+fixed choice at each point and does not try the others.
+
 ## Run the conformance tests
 
 ```sh
@@ -73,7 +108,7 @@ A function-like `#define` and other directives are unsupported.
 
 The harness reads the `// tidal-` directives at the top of each test. The
 harness uses the `tidal-expect-edg` override when a test has one, and treats
-`run`, `run-fail`, and `link-fail` as accept. `-Werror` in `tidal-flags`
+`run`, `run-fail`, and `link-fail` as accept for the check. `-Werror` in `tidal-flags`
 passes `--werror`, `-m32` passes `--m32`, and the other `-W` flags
 pass through. A test with
 `tidal-sources` checks each translation unit on its own.
@@ -88,9 +123,29 @@ columns:
 - **Differs from EDG only**: the answer differs from the EDG override
   but matches the test's base `tidal-expect` line.
 
+The harness then runs each test whose base expectation is `run` or
+`run-fail`, if the check accepted every translation unit, and links the
+units of a test with `tidal-sources`. A `run` test passes when the
+result is exit status 0. A `run-fail` test passes when the run stops at
+undefined behavior that names one of the test's rules, or the program
+ends with a nonzero status or terminates. A separate table counts the run
+tests:
+
+- **Pass**.
+- **Wrong result**: a `run` test ended with a nonzero status or
+  terminated.
+- **Missed undefined behavior**: a `run-fail` test ended with status 0.
+- **Unexpected undefined behavior**: the run stopped at undefined
+  behavior that the test does not expect.
+- **Unsupported**: the interpreter met a construct it does not model.
+- **Check did not accept**: the check rejected a unit or gave up, so the
+  program did not run.
+
 The output then lists the unsupported constructs, with the number of tests each
-one affects. `-v` also lists every test that did not pass. `--out FILE`
-writes the table and one line per test to FILE.
+one affects, first for the interpreter and then for the check. `-v`
+also lists every test that did not pass. The lines for run tests start
+with `RUN`, so that `tools/frontend_check.py` reads only the check
+lines. `--out FILE` writes the tables and one line per test to FILE.
 
 ## Layout
 
@@ -104,9 +159,13 @@ writes the table and one line per test to FILE.
 | `src/ics.rs` | implicit conversion sequences and their comparison (ICS rules), and overload resolution for calls (OVL-22 to OVL-25, OVL-34 to OVL-36) |
 | `src/ovl.rs` | overload resolution for operators, constructors, calls on a class object, and the address of an overload set (OVL rules) |
 | `src/stmt.rs` | statements and jump checks |
-| `src/consteval.rs` | constant evaluation |
+| `src/interp/mod.rs` | the interpreter's machine: values, objects, places, the objects that end with a block, a full expression, or the program, and the stops (decision 0048) |
+| `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, `new`, `delete`, `throw`, and `dynamic_cast` |
+| `src/interp/stmt.rs` | statements, blocks, `goto`, `switch`, try blocks and handlers, and static locals |
+| `src/interp/run.rs` | a whole program: linking the units, static initialization, `main`, and the end of the static objects |
+| `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
 | `src/conform.rs` | the conformance harness |
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-6.md`.
+`report-7.md`.

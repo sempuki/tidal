@@ -51,6 +51,8 @@ pub struct FnDecl {
     pub cv_v: bool,
     pub refq: u8,
     pub noexcept: bool,
+    /// `noexcept(false)` was written.
+    pub noexcept_false: bool,
     pub trailing: Option<QTy>,
     pub scope: usize,
     pub defaults: usize,
@@ -1583,6 +1585,7 @@ impl P {
             cv_v: false,
             refq: 0,
             noexcept: false,
+            noexcept_false: false,
             trailing: None,
             scope,
             defaults: 0,
@@ -1615,6 +1618,7 @@ impl P {
                 // EXS-1 / CE-11: the operand is a constant of type bool.
                 if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
                     f.noexcept = v;
+                    f.noexcept_false = !v;
                 }
             }
         } else if self.at("throw") && self.at_k(1, "(") {

@@ -1078,6 +1078,7 @@ impl P {
                     cv_v: ft.cv_v,
                     refq: ft.refq,
                     noexcept: ft.noexcept,
+                    noexcept_false: false,
                     trailing: None,
                     scope,
                     defaults: 0,
@@ -1557,7 +1558,19 @@ impl P {
             };
             match redecl {
                 Some(p) => p,
-                None => self.add_decl_in(target_scope, &name, DK::Var(vi), line),
+                None => {
+                    let id = self.add_decl_in(target_scope, &name, DK::Var(vi), line);
+                    // LNK rules: a namespace-scope variable has internal
+                    // linkage if it is static, in an unnamed namespace, or
+                    // const and neither inline nor extern.
+                    if !local && class_member.is_none() && !matches!(self.scopes[target_scope].kind, SK::Class(_)) {
+                        let internal = storage == Storage::Static || self.in_unnamed_ns(target_scope) || ((ty.c || ds.constexpr) && !ty.v && !ds.inline && storage != Storage::Extern);
+                        if internal {
+                            self.var_internal.insert(id);
+                        }
+                    }
+                    id
+                }
             }
         };
         self.auto_in_own_init = if ds.auto.is_some() { Some(id_placeholder) } else { None };
@@ -2231,6 +2244,9 @@ impl P {
                     first_attrs: self.decl_attrs.iter().map(|a| a.name.clone()).collect(),
                     first_defaulted: defaulted,
                     constrained: trailing_requires,
+                    fn_try: None,
+                    parse_failed: false,
+                    noexcept_false: fd.noexcept_false,
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
@@ -2645,9 +2661,12 @@ impl P {
             }
             let body = self.parse_compound_in(param_scope)?;
             if is_try {
-                self.parse_handlers()?;
+                let hs = self.parse_handlers()?;
                 if let Some(f) = self.func_mut(fid) {
+                    // Overload resolution still treats the function as one
+                    // it does not model; the interpreter runs it.
                     f.opaque = true;
+                    f.fn_try = Some(Rc::new(hs));
                 }
             }
             Ok(body)
@@ -2786,7 +2805,7 @@ impl P {
                         Some(self.convert_init(e, &fty, InitForm::DirectList, line))
                     } else {
                         let n = args.len();
-                        let e = Expr::new(EK::InitList(args), QTy::unknown(), Cat::PR, line);
+                        let e = Expr::new(EK::InitList(args.clone()), QTy::unknown(), Cat::PR, line);
                         Some(self.convert_init(e, &fty, InitForm::Paren(n), line))
                     };
                     e.map(Rc::new)
@@ -2798,7 +2817,41 @@ impl P {
                     field_order.push((fi.index, line));
                 }
             }
-            out.push(MemInit { field, init });
+            // A base or a delegation: the constructor call, for the
+            // interpreter. Its diagnostics are dropped, since the checks
+            // above already judged the mem-initializer.
+            let base = if field.is_none() && !self.in_template() {
+                target.as_ref().and_then(|ids| match &self.decls[ids[0]].k {
+                    DK::Class(b) => Some(*b),
+                    DK::Type(q) => match q.t {
+                        Ty::Class(b) => Some(b),
+                        _ => None,
+                    },
+                    _ => None,
+                })
+            } else {
+                None
+            };
+            let init = match (base, class) {
+                (Some(b), Some(c)) if init.is_none() && (b == c || self.classes[c].bases.iter().any(|x| x.class == Some(b))) && !self.class_uncertain(b) => {
+                    let mark = self.d.list.len();
+                    let ty = QTy::new(Ty::Class(b));
+                    let e = if braced {
+                        self.convert_init(args[0].clone(), &ty, InitForm::DirectList, line)
+                    } else if args.is_empty() {
+                        let e = Expr::new(EK::InitList(vec![]), QTy::unknown(), Cat::PR, line);
+                        self.convert_init(e, &ty, InitForm::DirectList, line)
+                    } else {
+                        let n = args.len();
+                        let e = Expr::new(EK::InitList(args.clone()), QTy::unknown(), Cat::PR, line);
+                        self.convert_init(e, &ty, InitForm::Paren(n), line)
+                    };
+                    self.d.list.truncate(mark);
+                    if matches!(e.k, EK::Unknown(_)) { None } else { Some(Rc::new(e)) }
+                }
+                _ => init,
+            };
+            out.push(MemInit { field, base, init });
             if !self.eat(",") {
                 break;
             }
@@ -2826,33 +2879,37 @@ impl P {
             })
     }
 
-    pub fn parse_handlers(&mut self) -> PR<()> {
+    pub fn parse_handlers(&mut self) -> PR<Vec<Handler>> {
         if !self.at("catch") {
             return Err(self.err("try block without a handler"));
         }
+        let mut out = Vec::new();
         while self.eat("catch") {
             self.expect("(")?;
             self.push_scope(SK::Block);
-            let r = (|| -> PR<()> {
+            let r = (|| -> PR<Handler> {
+                let mut var = None;
+                let mut hty = None;
                 if !self.eat("...") {
                     let ds = self.parse_decl_specs(None)?;
                     let base = self.ds_base(&ds)?;
                     let d = self.parse_declarator(true, true)?;
                     let ty = self.apply_ops(base, &d.ops, d.line);
+                    hty = Some(ty.clone());
                     if let Some(n) = d.name {
                         let vi = VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: false, defined: true, class: None };
-                        self.add_decl(&n, DK::Var(vi), d.line);
+                        var = Some(self.add_decl(&n, DK::Var(vi), d.line));
                     }
                 }
                 self.expect(")")?;
                 let s = self.cur_scope();
-                self.parse_compound_in(s)?;
-                Ok(())
+                let body = self.parse_compound_in(s)?;
+                Ok(Handler { var, ty: hty, body: Box::new(body) })
             })();
             self.pop_scope();
-            r?;
+            out.push(r?);
         }
-        Ok(())
+        Ok(out)
     }
 
     /// A scope inside an unnamed namespace (LNK rules: internal linkage).
@@ -2908,6 +2965,7 @@ fn has_return(s: &Stmt) -> bool {
         Stmt::Block(v) => v.iter().any(has_return),
         Stmt::If { then, els, .. } => has_return(then) || els.as_deref().is_some_and(has_return),
         Stmt::While { body, .. } | Stmt::Do { body, .. } | Stmt::For { body, .. } | Stmt::Switch { body, .. } => has_return(body),
+        Stmt::Try(b, hs) => has_return(b) || hs.iter().any(|h| has_return(&h.body)),
         _ => false,
     }
 }
@@ -2933,6 +2991,7 @@ fn can_complete(p: &P, s: &Stmt) -> bool {
         },
         Stmt::For { cond: None, body, .. } => has_break(body),
         Stmt::If { then, els: Some(els), .. } => can_complete(p, then) || can_complete(p, els),
+        Stmt::Try(b, hs) => can_complete(p, b) || hs.iter().any(|h| can_complete(p, &h.body)),
         _ => true,
     }
 }

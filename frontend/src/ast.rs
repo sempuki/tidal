@@ -126,6 +126,9 @@ pub struct Expr {
     pub line: u32,
     /// Written in parentheses (matters for decltype).
     pub paren: bool,
+    /// The object of a member access with a qualified name, as in
+    /// `d.B::f()`: a call through it does not dispatch virtually.
+    pub qualified: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -157,16 +160,30 @@ pub enum EK {
     Throw(Option<Box<Expr>>),
     /// A constructor call: the constructor and its converted arguments.
     Construct(DeclId, Vec<Expr>),
+    /// A `new` expression with no placement and the global allocation
+    /// function: the type of the object or of each element, the number of
+    /// elements of an array `new`, and the converted initializer (none
+    /// for default-initialization).
+    New { ty: QTy, count: Option<Box<Expr>>, init: Option<Box<Expr>> },
+    /// A `delete` or `delete[]` expression.
+    Delete(bool, Box<Expr>),
+    /// A `dynamic_cast` whose checks passed; the type and category of the
+    /// node are the target's.
+    DynamicCast(Box<Expr>),
+    /// A lambda expression: the closure class and the initializer of each
+    /// of its members, one per capture (LAM rules). The flag says that a
+    /// capture is by reference.
+    Closure(usize, Vec<Expr>, bool),
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
 
 impl Expr {
     pub fn new(k: EK, ty: QTy, cat: Cat, line: u32) -> Expr {
-        Expr { k, ty, cat, line, paren: false }
+        Expr { k, ty, cat, line, paren: false, qualified: false }
     }
     pub fn unknown(line: u32, why: &str) -> Expr {
-        Expr { k: EK::Unknown(why.to_string()), ty: QTy::unknown(), cat: Cat::PR, line, paren: false }
+        Expr { k: EK::Unknown(why.to_string()), ty: QTy::unknown(), cat: Cat::PR, line, paren: false, qualified: false }
     }
     pub fn is_glvalue(&self) -> bool {
         self.cat != Cat::PR
@@ -185,6 +202,15 @@ pub enum IfKind {
     Normal,
     Constexpr,
     Consteval(bool),
+}
+
+/// A handler of a try block: its parameter, if named, and its type
+/// (None for `...`).
+#[derive(Clone, Debug)]
+pub struct Handler {
+    pub var: Option<DeclId>,
+    pub ty: Option<QTy>,
+    pub body: Box<Stmt>,
 }
 
 #[derive(Clone, Debug)]
@@ -209,6 +235,7 @@ pub enum Stmt {
     Return(Option<Expr>),
     Goto(String),
     Label(String, Box<Stmt>),
+    Try(Box<Stmt>, Vec<Handler>),
     Unsupported(String),
 }
 
@@ -232,12 +259,84 @@ pub fn walk_expr(e: &Expr, f: &mut dyn FnMut(&Expr)) {
                 walk_expr(x, f);
             }
         }
-        EK::InitList(v) | EK::Construct(_, v) => {
+        EK::InitList(v) | EK::Construct(_, v) | EK::Closure(_, v, _) => {
             for x in v {
                 walk_expr(x, f);
             }
         }
-        EK::Throw(Some(a)) => walk_expr(a, f),
+        EK::Throw(Some(a)) | EK::Delete(_, a) | EK::DynamicCast(a) => walk_expr(a, f),
+        EK::New { count, init, .. } => {
+            if let Some(c) = count {
+                walk_expr(c, f);
+            }
+            if let Some(i) = init {
+                walk_expr(i, f);
+            }
+        }
         _ => {}
+    }
+}
+
+/// A compact form of an expression, for `tidal-fe dump`.
+pub fn sexp(e: &Expr) -> String {
+    let cat = match e.cat {
+        Cat::L => "l",
+        Cat::X => "x",
+        Cat::PR => "",
+    };
+    let ty = crate::types::show(&e.ty);
+    let inner = match &e.k {
+        EK::Int(v) => format!("{}", v),
+        EK::Float(v) => format!("{}", v),
+        EK::NullPtr => "nullptr".into(),
+        EK::Str(_) => "\"...\"".into(),
+        EK::Var(d) => format!("var#{}", d),
+        EK::Func(d) => format!("func#{}", d),
+        EK::Overloads(v) => format!("overloads{:?}", v),
+        EK::BoundMember(a, v) => format!("bound {} {:?}", sexp(a), v),
+        EK::This => "this".into(),
+        EK::Unary(op, a) => format!("{:?} {}", op, sexp(a)),
+        EK::Binary(op, a, b) => format!("{} {} {}", op.spelling(), sexp(a), sexp(b)),
+        EK::Assign(op, a, b) => format!("= {:?} {} {}", op.as_ref().map(|x| x.0), sexp(a), sexp(b)),
+        EK::Cond(a, b, c) => format!("? {} {} {}", sexp(a), sexp(b), sexp(c)),
+        EK::Comma(a, b) => format!(", {} {}", sexp(a), sexp(b)),
+        EK::Call(a, args, f) => format!("call#{:?} {} [{}]", f, sexp(a), args.iter().map(sexp).collect::<Vec<_>>().join(" ")),
+        EK::Conv(k, a) => format!("{:?} {}", k, sexp(a)),
+        EK::Member(a, f) => format!("member#{} {}", f, sexp(a)),
+        EK::Index(a, b) => format!("[] {} {}", sexp(a), sexp(b)),
+        EK::InitList(v) => format!("{{{}}}", v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
+        EK::ZeroInit => "zero".into(),
+        EK::Throw(a) => format!("throw {}", a.as_ref().map(|x| sexp(x)).unwrap_or_default()),
+        EK::Construct(c, v) => format!("construct#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
+        EK::New { ty, count, init } => format!("new {} [{}] {}", crate::types::show(ty), count.as_ref().map(|c| sexp(c)).unwrap_or_default(), init.as_ref().map(|c| sexp(c)).unwrap_or_default()),
+        EK::Delete(a, x) => format!("delete{} {}", if *a { "[]" } else { "" }, sexp(x)),
+        EK::DynamicCast(x) => format!("dynamic_cast {}", sexp(x)),
+        EK::Closure(c, v, _) => format!("closure#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
+        EK::Unknown(w) => format!("UNKNOWN({})", w),
+    };
+    format!("({}{}{}:{})", if e.qualified { "Q " } else { "" }, inner, if cat.is_empty() { String::new() } else { format!(" {}", cat) }, ty)
+}
+
+/// A compact form of a statement, for `tidal-fe dump`.
+pub fn sstmt(s: &Stmt, ind: usize) -> String {
+    let pad = " ".repeat(ind);
+    match s {
+        Stmt::Block(v) => format!("{}{{\n{}{}}}\n", pad, v.iter().map(|x| sstmt(x, ind + 2)).collect::<String>(), pad),
+        Stmt::Expr(e) => format!("{}{}\n", pad, sexp(e)),
+        Stmt::Return(e) => format!("{}return {}\n", pad, e.as_ref().map(sexp).unwrap_or_default()),
+        Stmt::Decl(ids) => format!("{}decl {:?}\n", pad, ids),
+        Stmt::If { cond, then, els, .. } => format!(
+            "{}if {}\n{}{}",
+            pad,
+            match cond {
+                Some(CondK::Expr(e)) => sexp(e),
+                Some(CondK::Decl(d, e)) => format!("decl#{} {}", d, sexp(e)),
+                None => String::new(),
+            },
+            sstmt(then, ind + 2),
+            els.as_ref().map(|e| format!("{}else\n{}", pad, sstmt(e, ind + 2))).unwrap_or_default()
+        ),
+        Stmt::While { body, .. } | Stmt::Do { body, .. } | Stmt::For { body, .. } | Stmt::Switch { body, .. } => format!("{}loop/switch\n{}", pad, sstmt(body, ind + 2)),
+        other => format!("{}{:?}\n", pad, other).chars().take(300).collect(),
     }
 }

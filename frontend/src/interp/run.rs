@@ -1,0 +1,293 @@
+// Running a whole program (TR-2, OBJ-4): static initialization, `main`,
+// and the end of the static objects after `main` returns.
+
+use super::*;
+
+/// How a run ended.
+#[derive(Debug, Clone)]
+pub enum RunOutcome {
+    /// The exit status, with the choice points the run passed.
+    Result(i128, Vec<Choice>),
+    /// Undefined behavior: the rule, a message, and the line.
+    Undefined(&'static str, String, u32),
+    /// A construct the interpreter does not model, and the line.
+    Unsupported(String, u32),
+    /// The program ended without returning from `main` (UNW-5, THR-7):
+    /// the rules, a message, and the line. On the matrix targets the
+    /// program then ends with a nonzero status.
+    Terminated(&'static str, String, u32),
+}
+
+fn stop_outcome(s: Stop, line: u32) -> RunOutcome {
+    match s {
+        Stop::Undefined(r, m) => RunOutcome::Undefined(r, m, line),
+        // A run has no constant-evaluation limits; a limit here is a
+        // constant evaluation that ran during the run.
+        Stop::Limit(r, m) => RunOutcome::Unsupported(format!("constant evaluation stopped at run time ({}: {})", r, m), line),
+        Stop::Unsupported(m) => RunOutcome::Unsupported(m, line),
+        Stop::Terminate(r, m) => RunOutcome::Terminated(r, m, line),
+        Stop::Throw(_) => RunOutcome::Terminated("UNW-5", "an exception has no handler".into(), line),
+    }
+}
+
+/// Run the program whose translation units are `ps`, each checked and
+/// accepted, linked together (TR-4).
+pub fn run_units(ps: &[&P]) -> RunOutcome {
+    let mut m = Machine::new(ps[0], false);
+    m.ps = ps.to_vec();
+    m.link();
+    match m.run_all() {
+        Ok(status) => RunOutcome::Result(status, m.choices.clone()),
+        Err(s) => {
+            let line = m.line;
+            stop_outcome(s, line)
+        }
+    }
+}
+
+impl<'a> Machine<'a> {
+    /// The variables with static storage duration at namespace or class
+    /// scope that this unit defines, in the order of their definitions.
+    fn static_vars(&self) -> Vec<DeclId> {
+        let mut out = Vec::new();
+        for (id, d) in self.p.decls.iter().enumerate() {
+            let DK::Var(v) = &d.k else { continue };
+            if v.local || v.param || v.dependent {
+                continue;
+            }
+            if v.storage == Storage::Extern && v.init.is_none() {
+                continue;
+            }
+            if v.class.is_some() && v.init.is_none() && !self.p.static_member_defs.contains(&id) && !v.defined {
+                continue;
+            }
+            out.push(id);
+        }
+        out
+    }
+
+    /// The linkage name of a declaration: its qualified name, and for a
+    /// function its parameter types, with classes and enumerations by
+    /// name.
+    fn link_name(p: &P, id: DeclId) -> String {
+        let mut parts = vec![p.decls[id].name.clone()];
+        let mut s = Some(p.decls[id].scope);
+        while let Some(x) = s {
+            let sc = &p.scopes[x];
+            match sc.kind {
+                SK::Namespace if x != p.global => parts.push(if sc.name.is_empty() { "(unnamed)".into() } else { sc.name.clone() }),
+                SK::Class(c) => parts.push(p.classes[c].name.clone()),
+                _ => {}
+            }
+            s = sc.parent;
+        }
+        parts.reverse();
+        let mut n = parts.join("::");
+        if let Some(f) = p.func(id) {
+            let ps: Vec<String> = f.fty.params.iter().map(|q| type_name(p, q)).collect();
+            n.push_str(&format!("({}){}{}{}", ps.join(","), if f.fty.cv_c { " const" } else { "" }, if f.fty.cv_v { " volatile" } else { "" }, ["", " &", " &&"][f.fty.refq.min(2) as usize]));
+        }
+        n
+    }
+
+    /// TR-4, LNK rules: each declaration with external linkage names the
+    /// first definition in the units' order. An inline function or
+    /// variable is one entity in every unit.
+    pub fn link(&mut self) {
+        let ps = self.ps.clone();
+        let linkable = |p: &P, id: DeclId| -> Option<bool> {
+            match &p.decls[id].k {
+                DK::Func(f) => {
+                    if p.internal_fns.contains(&id) || f.template || p.in_unnamed_ns(p.decls[id].scope) {
+                        return None;
+                    }
+                    Some(f.body.is_some() || f.defaulted)
+                }
+                DK::Var(v) => {
+                    if v.local || v.param || v.dependent || p.var_internal.contains(&id) {
+                        return None;
+                    }
+                    let defined = if v.class.is_some() { v.init.is_some() || p.static_member_defs.contains(&id) } else { v.storage != Storage::Extern || v.init.is_some() };
+                    Some(defined)
+                }
+                _ => None,
+            }
+        };
+        let mut defs: HashMap<String, (usize, DeclId)> = HashMap::new();
+        for (t, p) in ps.iter().enumerate() {
+            for id in 0..p.decls.len() {
+                if linkable(p, id) == Some(true) {
+                    defs.entry(Self::link_name(p, id)).or_insert((t, id));
+                }
+            }
+        }
+        for (t, p) in ps.iter().enumerate() {
+            for id in 0..p.decls.len() {
+                if linkable(p, id).is_some() {
+                    if let Some(&d) = defs.get(&Self::link_name(p, id)) {
+                        // Within one unit a declaration is its own entity.
+                        if d.0 != t {
+                            self.links.insert((t, id), d);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Initialize the static objects of every unit, run `main`, and end
+    /// the static objects.
+    fn run_all(&mut self) -> R<i128> {
+        let mut main = None;
+        for (t, p) in self.ps.clone().iter().enumerate() {
+            for (id, d) in p.decls.iter().enumerate() {
+                if let DK::Func(f) = &d.k {
+                    if f.is_main && f.body.is_some() {
+                        main = Some((t, id));
+                    }
+                }
+            }
+        }
+        let Some((mt, main)) = main else {
+            return unsup("no definition of main in the program (TR-4)");
+        };
+        let n = self.ps.len();
+        // Zero-initialization of every static object comes first.
+        let mut vars = Vec::new();
+        for t in 0..n {
+            let vs = self.in_tu(t, |m| Ok(m.static_vars()))?;
+            for id in vs {
+                if !self.links.contains_key(&(t, id)) {
+                    vars.push((t, id));
+                }
+            }
+        }
+        for &(t, id) in &vars {
+            self.in_tu(t, |m| m.zero_static(id))?;
+        }
+        // Constant initialization, then the dynamic initializations in the
+        // order of the definitions (OBJ-4). SINIT-3: the order between
+        // units is unspecified; the interpreter takes the units in order.
+        let mut dynamic = Vec::new();
+        for &(t, id) in &vars {
+            if self.in_tu(t, |m| m.init_constant(id))? {
+                continue;
+            }
+            dynamic.push((t, id));
+        }
+        if n > 1 && dynamic.iter().any(|d| d.0 != dynamic[0].0) {
+            self.choice("SINIT-3", "the translation units initialize their static objects in the order the units are given");
+        }
+        for (t, id) in dynamic {
+            let r = self.in_tu(t, |m| {
+                let v = m.p.var(id).unwrap().clone();
+                m.init_static(id, &v)
+            });
+            if let Err(e) = r {
+                if let Stop::Throw(_) = e {
+                    // UNW-5: no handler can catch it.
+                    return Err(Stop::Terminate("UNW-5", "an exception leaves the initialization of a static object".into()));
+                }
+                return Err(e);
+            }
+        }
+        let status = self.in_tu(mt, |m| m.run_main_fn(main))?;
+        // OBJ-4: the static objects end after main returns, in the reverse
+        // of the order in which their construction completed.
+        let list = std::mem::take(&mut self.static_dtors);
+        match self.cleanup(list) {
+            Err(Stop::Throw(_)) => return Err(Stop::Terminate("UNW-5", "an exception leaves the destructor of a static object".into())),
+            r => r?,
+        }
+        Ok(status)
+    }
+
+    fn zero_static(&mut self, id: DeclId) -> R<()> {
+        let v = self.p.var(id).unwrap().clone();
+        if v.ty.t.is_ref() {
+            return Ok(());
+        }
+        let place = self.alloc(&v.ty.unqual())?;
+        let z = self.zero(&v.ty);
+        self.write(&place, z, true)?;
+        self.objs[place.obj].is_static = true;
+        self.objs[place.obj].volatile = v.ty.v;
+        self.globals.insert((self.tu, id), place.obj);
+        Ok(())
+    }
+
+    /// CE-24: a constant initializer runs before any dynamic one. Returns
+    /// whether the variable had one.
+    fn init_constant(&mut self, id: DeclId) -> R<bool> {
+        let v = self.p.var(id).unwrap().clone();
+        let constant = !v.ty.t.is_ref() && (v.constexpr || v.constinit || (v.init.is_some() && self.p.const_eval_init(id).is_ok() && !self.needs_dtor(&v.ty.t) && !matches!(v.ty.t, Ty::Class(_) | Ty::Array(..))));
+        if !constant {
+            return Ok(false);
+        }
+        // The constant initializer runs as a constant evaluation, so
+        // `if consteval` takes its first branch (IF-18).
+        self.constant = true;
+        let r = self.init_static(id, &v);
+        self.constant = false;
+        r?;
+        Ok(true)
+    }
+
+    fn run_main_fn(&mut self, main: DeclId) -> R<i128> {
+        // TR-2: execution begins with a call to main.
+        let f = self.p.func(main).unwrap().clone();
+        let mut frame = Frame::new();
+        if f.params.len() == 2 {
+            // TR-9: one argument, the program's name.
+            let name: Vec<u32> = "tidal-fe".chars().map(|c| c as u32).collect();
+            let s = self.string_obj(&name);
+            let s = Ptr { obj: s.obj, path: vec![], off: 0, array: true };
+            let argv = self.new_obj(Val::Agg(vec![Val::Ptr(s), Val::Null]), true);
+            let argc = self.new_obj(Val::Int(1), true);
+            frame.vars.insert(f.params[0], argc);
+            let pv = self.new_obj(Val::Ptr(Ptr { obj: argv, path: vec![], off: 0, array: true }), true);
+            frame.vars.insert(f.params[1], pv);
+        } else if !f.params.is_empty() {
+            return unsup("main with parameters other than (int, char**)");
+        }
+        let body = f.body.clone().unwrap();
+        self.enter_call(Some(main), None, false, false, None)?;
+        self.install_params(frame);
+        let r = match f.fn_try.clone() {
+            Some(hs) => self.run_fn_try(&body, &hs, false),
+            None => self.run_body(&body),
+        };
+        let ret = self.leave_call();
+        if let Err(Stop::Throw(_)) = &r {
+            // UNW-7: whether the stack unwinds before the program ends is
+            // implementation-defined; the interpreter unwinds.
+            self.choice("UNW-7", "the automatic objects end before the program ends");
+            return Err(Stop::Terminate("UNW-5", "an exception leaves main".into()));
+        }
+        let flow = r?;
+        let ret = ret?;
+        let status = match (flow, ret) {
+            (Flow::Return, Some(Ret::Val(Val::Int(v)))) => v,
+            (Flow::Return, Some(_)) => return unsup("main returned something other than an integer"),
+            (Flow::Goto(l), _) => return unsup(format!("goto to label '{}' that the interpreter did not find", l)),
+            // TR-2: reaching the end of main returns zero.
+            _ => 0,
+        };
+        Ok(status)
+    }
+}
+
+/// A type with classes and enumerations by name, for linkage names.
+fn type_name(p: &P, q: &QTy) -> String {
+    let cv = format!("{}{}", if q.c { "const " } else { "" }, if q.v { "volatile " } else { "" });
+    let t = match &q.t {
+        Ty::Class(c) => p.classes[*c].name.clone(),
+        Ty::Enum(e) => p.enums[*e].name.clone(),
+        Ty::Ptr(x) => format!("{}*", type_name(p, x)),
+        Ty::LRef(x) => format!("{}&", type_name(p, x)),
+        Ty::RRef(x) => format!("{}&&", type_name(p, x)),
+        Ty::Array(x, n) => format!("{}[{}]", type_name(p, x), n.map(|n| n.to_string()).unwrap_or_default()),
+        _ => show(&QTy::new(q.t.clone())),
+    };
+    format!("{}{}", cv, t)
+}

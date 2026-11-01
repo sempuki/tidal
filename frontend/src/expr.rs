@@ -240,6 +240,7 @@ impl P {
                 }
                 "new" => return self.parse_new(line),
                 "delete" => {
+                    let global = self.pos >= 1 && self.toks[self.pos - 1].text == "::";
                     self.pos += 1;
                     let arr = if self.at("[") && self.at_k(1, "]") {
                         self.pos += 2;
@@ -267,7 +268,12 @@ impl P {
                             }
                         }
                     }
-                    return Ok(Expr::new(EK::Unknown("delete expression".into()), QTy::new(Ty::Void), Cat::PR, line));
+                    let user = ["operatordelete", "operatordelete[]"].iter().any(|n| self.scopes[self.global].names.get(*n).is_some_and(|v| !v.is_empty()))
+                        || matches!(&pt.t, Ty::Ptr(x) if matches!(x.t, Ty::Class(c) if self.lookup_member(c, "operatordelete").is_some() || self.lookup_member(c, "operatordelete[]").is_some()));
+                    if global || user || !matches!(pt.t, Ty::Ptr(_)) || self.in_template() {
+                        return Ok(Expr::new(EK::Unknown("delete expression".into()), QTy::new(Ty::Void), Cat::PR, line));
+                    }
+                    return Ok(Expr::new(EK::Delete(arr, Box::new(e)), QTy::new(Ty::Void), Cat::PR, line));
                 }
                 "co_await" => return Err(self.err("coroutines (outside the spec)")),
                 _ => {}
@@ -496,6 +502,7 @@ impl P {
         let mut bounds: Vec<Option<u64>> = Vec::new();
         let mut first_absent = false;
         let mut first_const: Option<i128> = None;
+        let mut first_bound: Option<Expr> = None;
         while self.at("[") {
             self.pos += 1;
             let bl = self.line();
@@ -505,6 +512,9 @@ impl P {
             }
             if !self.at("]") {
                 let e = self.parse_expression()?;
+                if bounds.is_empty() {
+                    first_bound = Some(self.rvalue(e.clone()));
+                }
                 let et = nonref(&e.ty);
                 if matches!(et.t, Ty::Ptr(_)) {
                     // NEW-2: the size converts to the type of sizeof.
@@ -541,8 +551,10 @@ impl P {
             }
         }
         self.new_paren_args.clear();
+        self.new_braced = None;
         let init = self.parse_new_init()?;
         let pargs = std::mem::take(&mut self.new_paren_args);
+        let braced_init = self.new_braced.take();
         if let (Ty::Class(c), true, Some((false, _))) = (&t.t, bounds.is_empty(), init) {
             // CTOR-25: a constructor must accept the arguments.
             if !self.class_uncertain(*c) && !self.in_template() && self.ctor_no_match(*c, &pargs) {
@@ -565,7 +577,50 @@ impl P {
         if rt.t == Ty::Void {
             self.error(line, "NEW-7", "new of void");
         }
-        Ok(Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
+        let unknown = Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(rt.clone()))), Cat::PR, line);
+        // The expression for the interpreter: the plain forms only, with
+        // the global allocation function (NEW-13, NEW-19).
+        let user_alloc = |p: &P, c: Option<usize>| -> bool {
+            let names = ["operatornew", "operatornew[]", "operatordelete", "operatordelete[]"];
+            names.iter().any(|n| p.scopes[p.global].names.get(*n).is_some_and(|v| !v.is_empty()) || c.is_some_and(|c| p.lookup_member(c, n).is_some()))
+        };
+        let elem_class = crate::decl2::elem_class(&rt.t);
+        if placement.is_some() || global || self.in_template() || rt.is_unknown() || user_alloc(self, elem_class) || bounds.iter().skip(1).any(|b| b.is_none()) {
+            return Ok(unknown);
+        }
+        let mark = self.d.list.len();
+        let count = if bounds.is_empty() { None } else { first_bound.clone() };
+        if !bounds.is_empty() && count.is_none() {
+            return Ok(unknown);
+        }
+        let conv_init = match (init, braced_init) {
+            (None, _) => None,
+            (Some((true, _)), Some(b)) => {
+                let t = if bounds.is_empty() { rt.clone() } else { QTy::new(Ty::Array(Box::new(rt.clone()), Some(first_const.unwrap_or(0).max(0) as u64))) };
+                Some(self.convert_init(b, &t, InitForm::DirectList, line))
+            }
+            (Some((false, n)), _) => {
+                if !bounds.is_empty() {
+                    if n != 0 {
+                        return Ok(unknown);
+                    }
+                    Some(Expr::new(EK::ZeroInit, rt.clone(), Cat::PR, line))
+                } else if n == 0 {
+                    let e = Expr::new(EK::InitList(vec![]), QTy::unknown(), Cat::PR, line);
+                    Some(self.convert_init(e, &rt, InitForm::DirectList, line))
+                } else {
+                    let e = Expr::new(EK::InitList(pargs.clone()), QTy::unknown(), Cat::PR, line);
+                    Some(self.convert_init(e, &rt, InitForm::Paren(n), line))
+                }
+            }
+            _ => return Ok(unknown),
+        };
+        if self.d.list.len() != mark || conv_init.as_ref().is_some_and(|e| matches!(e.k, EK::Unknown(_))) {
+            self.d.list.truncate(mark);
+            return Ok(unknown);
+        }
+        let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new) };
+        Ok(Expr::new(k, QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
     }
 
     /// DTOR-3: a class prvalue written where its destructor is deleted
@@ -645,6 +700,7 @@ impl P {
                 EK::InitList(v) => v.len(),
                 _ => 1,
             };
+            self.new_braced = Some(e);
             return Ok(Some((true, n)));
         }
         Ok(None)
@@ -849,6 +905,18 @@ impl P {
             // TYN-7: no member access on an incomplete class.
             self.error(line, "TYN-7", "member access into an incomplete class");
             return Ok(Expr::unknown(line, "incomplete"));
+        }
+        // DER-3: a qualified name looks in the class it names, which is
+        // the object's class or one of its bases.
+        let mut obj = obj;
+        let mut c = c;
+        if let Some(Ok(s)) = scope {
+            if let SK::Class(qc) = self.scopes[s].kind {
+                if qc == c || self.is_base_of(qc, c) {
+                    c = qc;
+                    obj.qualified = true;
+                }
+            }
         }
         let Some(ids) = self.lookup_member(c, &name) else {
             if !self.class_uncertain(c) {
@@ -1159,7 +1227,15 @@ impl P {
                 self.pos += 1;
                 let name = self.ident()?;
                 return Ok(match self.lookup_member(c, &name) {
-                    Some(ids) => self.name_expr(ids, line),
+                    Some(ids) => {
+                        let mut e = self.name_expr(ids, line);
+                        // A qualified member function name calls with no
+                        // virtual dispatch (VIRT-1).
+                        if let EK::BoundMember(obj, _) = &mut e.k {
+                            obj.qualified = true;
+                        }
+                        e
+                    }
                     None => {
                         self.error(line, "NAM-9", format!("no member named '{}'", name));
                         Expr::unknown(line, "member")
@@ -1304,28 +1380,55 @@ impl P {
             }
             Ok(d) => d,
         };
-        let (cap_default, cap_refs) = cap_default;
+        let (cap_default, cap_refs, cap_items) = cap_default;
         let mut is_mutable = false;
+        let mut is_static = false;
+        let mut is_consteval = false;
+        let mut generic = false;
         if self.at("<") {
             self.skip_template_args()?;
+            generic = true;
         }
-        let scope = if self.at("(") {
+        let mark = self.decls.len();
+        let ppos = self.pos;
+        let (scope, fdecl) = if self.at("(") {
             let f = self.parse_params()?;
-            f.scope
+            (f.scope, Some(f))
         } else {
-            self.new_scope(SK::Params, Some(self.cur_scope()), "")
+            (self.new_scope(SK::Params, Some(self.cur_scope()), ""), None)
         };
-        let mut ret = None;
+        // The parameter list can carry `noexcept` and the trailing return
+        // type. A `decltype` there can name a capture (Q-0092), which the
+        // front end does not model, so such a lambda stays unknown.
+        let has_decltype = self.toks[ppos..self.pos].iter().any(|t| t.text == "decltype");
+        if has_decltype {
+            generic = true;
+        }
+        let mut ret = if has_decltype { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
+        let mut lambda_noexcept = fdecl.as_ref().is_some_and(|f| f.noexcept);
+        let mut lambda_noexcept_expr = false;
         loop {
             if self.at("mutable") || self.at("constexpr") || self.at("consteval") || self.at("static") {
                 if self.at("mutable") {
                     is_mutable = true;
                 }
+                if self.at("static") {
+                    // A static call operator competes with the conversion
+                    // to a function pointer in ways the front end does not
+                    // model, so the lambda stays unknown.
+                    is_static = true;
+                    generic = true;
+                }
+                if self.at("consteval") {
+                    is_consteval = true;
+                }
                 self.pos += 1;
             } else if self.at("noexcept") {
                 self.pos += 1;
+                lambda_noexcept = true;
                 if self.at("(") {
                     self.skip_balanced();
+                    lambda_noexcept_expr = true;
                 }
             } else if self.at("->") {
                 self.pos += 1;
@@ -1359,19 +1462,320 @@ impl P {
         let ctx = self.fns.pop().unwrap();
         self.pop_scope();
         let _ = cap_scope;
-        r?;
+        let body = r?;
         for (l, ln) in &ctx.gotos {
             if !ctx.labels.contains_key(l) {
                 self.error(*ln, "JMP-14", format!("goto names an undefined label '{}' (a lambda body is a separate function)", l));
             }
         }
         let what = if ctx.lambda_refs.is_empty() || !in_fn { "lambda" } else { "lambda with reference captures" };
+        let refs = what != "lambda";
+        // The closure type, for the interpreter and for calls. A generic
+        // lambda, or one in a template, stays unknown.
+        let generic = generic || fdecl.as_ref().is_some_and(|f| f.ptys.iter().any(|t| t.t.contains_unknown()) || f.variadic);
+        if !generic && !self.in_template() && !self.fns.iter().any(|f| f.is_lambda && f.deduce && f.deduced.is_none() && false) {
+            let rt = match (&ret, &ctx.deduced) {
+                (Some(t), _) => Some(t.clone()),
+                (None, Some(t)) => Some(t.clone()),
+                (None, None) => Some(QTy::new(Ty::Void)),
+            };
+            if let Some(rt) = rt.filter(|t| !t.t.contains_unknown()) {
+                let noexcept = if lambda_noexcept_expr { None } else { Some(lambda_noexcept) };
+                if let Some(x) = noexcept.and_then(|ne| self.build_closure(line, mark, cap_default, &cap_items, fdecl, rt, body, is_mutable, is_static, is_consteval, refs, in_fn, ne)) {
+                    return Ok(x);
+                }
+            }
+        }
         Ok(Expr::new(EK::Unknown(what.into()), QTy::unknown(), Cat::PR, line))
     }
 
-    fn parse_captures(&mut self, in_fn: bool, line: u32) -> PR<(Option<bool>, Vec<String>)> {
+    /// The closure class of a lambda (LAM rules): one member for each
+    /// capture, in the order of the capture list and then of first use,
+    /// and a function call operator with the lambda's body.
+    #[allow(clippy::too_many_arguments)]
+    fn build_closure(&mut self, line: u32, mark: usize, cap_default: Option<bool>, items: &[(u8, Option<DeclId>, bool, Option<Expr>)], fdecl: Option<crate::decl::FnDecl>, ret: QTy, body: Stmt, is_mutable: bool, is_static: bool, is_consteval: bool, refs: bool, in_fn: bool, noexcept: bool) -> Option<Expr> {
+        // The variables and `this` that the body uses.
+        let mut used: Vec<DeclId> = Vec::new();
+        let mut this_ty: Option<QTy> = None;
+        self.stmt_uses(&body, &mut used, &mut this_ty);
+        let capturable = |p: &P, id: DeclId| -> bool {
+            id < mark && p.var(id).is_some_and(|v| (v.local || v.param) && v.storage == Storage::Auto && v.class.is_none())
+        };
+        // (initializer, member type, captured variable, by reference)
+        let mut members: Vec<(Expr, QTy, Option<DeclId>, bool)> = Vec::new();
+        let mut this_member: Option<(usize, bool)> = None;
+        let mut explicit: Vec<DeclId> = Vec::new();
+        for (kind, id, by_ref, init) in items {
+            match kind {
+                0 => {
+                    let id = (*id)?;
+                    let v = self.var(id)?.clone();
+                    if v.dependent || v.ty.is_unknown() {
+                        return None;
+                    }
+                    explicit.push(id);
+                    let t = nonref(&v.ty);
+                    let e = Expr::new(EK::Var(id), t.clone(), Cat::L, line);
+                    let mt = if *by_ref { QTy::new(Ty::LRef(Box::new(t.clone()))) } else { t.unqual() };
+                    members.push((e, mt, Some(id), *by_ref));
+                }
+                1 => {
+                    let id = (*id)?;
+                    let init = init.clone()?;
+                    let v = self.var(id)?.clone();
+                    if v.ty.is_unknown() || init.ty.is_unknown() {
+                        return None;
+                    }
+                    explicit.push(id);
+                    members.push((init, v.ty.clone(), Some(id), *by_ref));
+                }
+                2 | 3 => {
+                    let t = this_ty.clone().or_else(|| self.implicit_this(line, false).map(|x| x.ty))?;
+                    let Ty::Ptr(ct) = &t.t else { return None };
+                    let this_e = Expr::new(EK::This, t.clone(), Cat::PR, line);
+                    if *kind == 3 {
+                        let obj = Expr::new(EK::Unary(UOp::Deref, Box::new(this_e)), (**ct).clone(), Cat::L, line);
+                        this_member = Some((members.len(), true));
+                        members.push((obj, ct.unqual(), None, false));
+                    } else {
+                        this_member = Some((members.len(), false));
+                        members.push((this_e, t.unqual(), None, false));
+                    }
+                }
+                _ => return None,
+            }
+        }
+        // Implicit captures (LAM rules): the variables that the body uses,
+        // in the capture default's mode.
+        for id in used {
+            if !capturable(self, id) || explicit.contains(&id) || members.iter().any(|m| m.2 == Some(id)) {
+                continue;
+            }
+            let by_ref = match cap_default {
+                Some(copy) => !copy,
+                None => {
+                    // A constant read for its value needs no capture.
+                    let v = self.var(id)?;
+                    if v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) {
+                        continue;
+                    }
+                    return None;
+                }
+            };
+            let v = self.var(id)?.clone();
+            if v.dependent || v.ty.is_unknown() {
+                return None;
+            }
+            let t = nonref(&v.ty);
+            let e = Expr::new(EK::Var(id), t.clone(), Cat::L, line);
+            let mt = if by_ref { QTy::new(Ty::LRef(Box::new(t.clone()))) } else { t.unqual() };
+            members.push((e, mt, Some(id), by_ref));
+        }
+        if this_member.is_none() {
+            if let Some(t) = &this_ty {
+                if cap_default.is_none() || !in_fn {
+                    return None;
+                }
+                this_member = Some((members.len(), false));
+                members.push((Expr::new(EK::This, t.clone(), Cat::PR, line), t.unqual(), None, false));
+            }
+        }
+        // The class.
+        let parent = self.cur_scope();
+        let c = self.classes.len();
+        let cscope = self.new_scope(SK::Class(c), Some(parent), "(lambda)");
+        self.classes.push(ClassInfo {
+            name: "(lambda)".into(),
+            key: 1,
+            scope: cscope,
+            complete: true,
+            fields: vec![],
+            bases: vec![],
+            has_conv: false,
+            conv_targets: vec![],
+            ctors: vec![],
+            dtor: None,
+            has_virtual: false,
+            template: false,
+            opaque: false,
+            line,
+            align: 0,
+            anon_unions: vec![],
+        });
+        let mut caps = Vec::new();
+        let mut inits = Vec::new();
+        for (i, (e, t, var, by_ref)) in members.into_iter().enumerate() {
+            let fi = FieldInfo { ty: t, class: c, index: i, bits: None, mutable: false, init: None, align: 0, nua: false };
+            let fd = self.add_decl_in(cscope, "", DK::Field(fi), line);
+            self.classes[c].fields.push(fd);
+            if let Some(v) = var {
+                caps.push((v, i, by_ref));
+            }
+            inits.push(e);
+        }
+        let (params, ptys, defaults, variadic) = match &fdecl {
+            Some(f) => (f.params.clone(), f.ptys.clone(), f.defaults, f.variadic),
+            None => (vec![], vec![], 0, false),
+        };
+        let fty = FnTy { ret, params: ptys, variadic, noexcept, cv_c: !is_mutable && !is_static, cv_v: false, refq: 0 };
+        let ptr_fty = FnTy { cv_c: false, ..fty.clone() };
+        let captureless = caps.is_empty() && this_member.is_none() && self.classes[c].fields.is_empty();
+        let fi = FuncInfo {
+            fty,
+            params: params.clone(),
+            defaults,
+            body: Some(Rc::new(body)),
+            defined: true,
+            // LAM rules: a lambda's call operator is constexpr when it can be.
+            constexpr: true,
+            consteval: is_consteval,
+            deleted: false,
+            defaulted: false,
+            class: Some(c),
+            kind: FnKind::Operator,
+            is_static,
+            is_virtual: false,
+            template: false,
+            explicit: false,
+            opaque: false,
+            is_main: false,
+            explicit_obj: false,
+            default_exprs: params.iter().map(|&p| self.var(p).and_then(|v| v.init.clone())).collect(),
+            ret_auto: None,
+            mem_inits: Vec::new(),
+            first_attrs: Vec::new(),
+            first_defaulted: false,
+            constrained: false,
+            fn_try: None,
+            parse_failed: false,
+            noexcept_false: false,
+        };
+        let conv_template = fi.clone();
+        let op = self.add_decl_in(cscope, "operator()", DK::Func(fi), line);
+        if captureless {
+            // LAM-10: a lambda with no captures converts to a pointer to a
+            // function with the parameters and result of its call operator.
+            let target = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(ptr_fty))))));
+            let cf = FuncInfo {
+                fty: FnTy { ret: target.clone(), params: vec![], variadic: false, noexcept: true, cv_c: true, cv_v: false, refq: 0 },
+                params: vec![],
+                defaults: 0,
+                body: None,
+                defaulted: true,
+                kind: FnKind::Conversion,
+                consteval: false,
+                default_exprs: vec![],
+                ..conv_template
+            };
+            let conv = self.add_decl_in(cscope, "operator (lambda function pointer)", DK::Func(cf), line);
+            self.classes[c].has_conv = true;
+            self.classes[c].conv_targets.push(target);
+            self.closure_conv.insert(conv, op);
+        }
+        self.closure_caps.insert(op, caps);
+        if let Some(t) = this_member {
+            self.closure_this.insert(op, t);
+        }
+        Some(Expr::new(EK::Closure(c, inits, refs && in_fn), QTy::new(Ty::Class(c)), Cat::PR, line))
+    }
+
+    /// The variables that a statement names, and the type of `this` if it
+    /// uses `this`.
+    fn stmt_uses(&self, s: &Stmt, out: &mut Vec<DeclId>, this_ty: &mut Option<QTy>) {
+        let ex = |e: &Expr, out: &mut Vec<DeclId>, this_ty: &mut Option<QTy>| {
+            walk_expr(e, &mut |x| match &x.k {
+                EK::Var(id) => {
+                    if !out.contains(id) {
+                        out.push(*id);
+                    }
+                }
+                EK::This => {
+                    if this_ty.is_none() {
+                        *this_ty = Some(x.ty.clone());
+                    }
+                }
+                _ => {}
+            });
+        };
+        match s {
+            Stmt::Expr(e) | Stmt::Assume(e) => ex(e, out, this_ty),
+            Stmt::Return(Some(e)) => ex(e, out, this_ty),
+            Stmt::Decl(ids) => {
+                for &id in ids {
+                    if let Some(i) = self.var(id).and_then(|v| v.init.clone()) {
+                        ex(&i, out, this_ty);
+                    }
+                }
+            }
+            Stmt::Block(v) => {
+                for x in v {
+                    self.stmt_uses(x, out, this_ty);
+                }
+            }
+            Stmt::If { init, cond, then, els, .. } => {
+                if let Some(i) = init {
+                    self.stmt_uses(i, out, this_ty);
+                }
+                match cond {
+                    Some(CondK::Expr(e)) => ex(e, out, this_ty),
+                    Some(CondK::Decl(id, e)) => {
+                        self.stmt_uses(&Stmt::Decl(vec![*id]), out, this_ty);
+                        ex(e, out, this_ty);
+                    }
+                    None => {}
+                }
+                self.stmt_uses(then, out, this_ty);
+                if let Some(e) = els {
+                    self.stmt_uses(e, out, this_ty);
+                }
+            }
+            Stmt::While { cond, body } | Stmt::Switch { cond, body, .. } => {
+                if let Stmt::Switch { init: Some(i), .. } = s {
+                    self.stmt_uses(i, out, this_ty);
+                }
+                match cond {
+                    CondK::Expr(e) => ex(e, out, this_ty),
+                    CondK::Decl(id, e) => {
+                        self.stmt_uses(&Stmt::Decl(vec![*id]), out, this_ty);
+                        ex(e, out, this_ty);
+                    }
+                }
+                self.stmt_uses(body, out, this_ty);
+            }
+            Stmt::Do { body, cond } => {
+                self.stmt_uses(body, out, this_ty);
+                ex(cond, out, this_ty);
+            }
+            Stmt::For { init, cond, inc, body } => {
+                if let Some(i) = init {
+                    self.stmt_uses(i, out, this_ty);
+                }
+                if let Some(CondK::Expr(e)) | Some(CondK::Decl(_, e)) = cond {
+                    ex(e, out, this_ty);
+                }
+                if let Some(i) = inc {
+                    ex(i, out, this_ty);
+                }
+                self.stmt_uses(body, out, this_ty);
+            }
+            Stmt::Case(_, x) | Stmt::Default(x) | Stmt::Label(_, x) => self.stmt_uses(x, out, this_ty),
+            Stmt::Try(b, hs) => {
+                self.stmt_uses(b, out, this_ty);
+                for h in hs {
+                    self.stmt_uses(&h.body, out, this_ty);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    #[allow(clippy::type_complexity)]
+    fn parse_captures(&mut self, in_fn: bool, line: u32) -> PR<(Option<bool>, Vec<String>, Vec<(u8, Option<DeclId>, bool, Option<Expr>)>)> {
         let mut default: Option<bool> = None; // Some(true) for [=], Some(false) for [&]
         let mut refs: Vec<String> = Vec::new();
+        // (0 variable, 1 init capture, 2 this, 3 *this; the variable; by
+        // reference; the initializer)
+        let mut items: Vec<(u8, Option<DeclId>, bool, Option<Expr>)> = Vec::new();
         let mut seen: Vec<String> = Vec::new();
         let mut first = true;
         while !self.at("]") {
@@ -1384,10 +1788,12 @@ impl P {
                     self.error(line, "LAM-6", "capture default in a lambda outside a function");
                 }
             } else if self.at("this") || (self.at("*") && self.at_k(1, "this")) {
+                let star = self.at("*");
                 if self.at("*") {
                     self.pos += 1;
                 }
                 self.pos += 1;
+                items.push((if star { 3 } else { 2 }, None, false, None));
                 if seen.iter().any(|s| s == "this") {
                     self.error(cl, "LAM-6", "'this' captured twice");
                 }
@@ -1431,9 +1837,18 @@ impl P {
                             _ => et.unqual(),
                         }
                     };
+                    let conv = if by_ref {
+                        it.clone()
+                    } else {
+                        let mark = self.d.list.len();
+                        let x = self.convert_init(it.clone(), &ty, crate::decl2::InitForm::Copy, cl);
+                        self.d.list.truncate(mark);
+                        x
+                    };
                     let vi = VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: true, defined: true, class: None };
                     let s = self.cur_scope();
-                    self.add_decl_in(s, &name, DK::Var(vi), cl);
+                    let id = self.add_decl_in(s, &name, DK::Var(vi), cl);
+                    items.push((1, Some(id), by_ref, if matches!(conv.k, EK::Unknown(_)) { None } else { Some(conv) }));
                 } else {
                     if default == Some(!by_ref) {
                         // LAM-6: an explicit capture must not repeat the default mode.
@@ -1441,6 +1856,7 @@ impl P {
                     }
                     match self.lookup(&name) {
                         Some(ids) => {
+                            items.push((0, Some(ids[0]), by_ref, None));
                             if let Some(v) = self.var(ids[0]) {
                                 if !(v.local && v.storage == Storage::Auto) && !v.dependent {
                                     // LAM-6: only automatic variables are captured.
@@ -1464,7 +1880,7 @@ impl P {
             }
         }
         self.expect("]")?;
-        Ok((default, refs))
+        Ok((default, refs, items))
     }
 
     fn parse_id_expression(&mut self) -> PR<Expr> {
@@ -1646,7 +2062,13 @@ impl P {
             // call) or a type used as a functional cast.
             return self.parse_functional_cast(ty, line);
         }
-        Ok(self.name_expr(ids, line))
+        let mut e = self.name_expr(ids, line);
+        // A qualified name of a member function, as in `A::f()`, calls that
+        // function with no virtual dispatch (VIRT-1).
+        if let (Some(Ok(_)), EK::BoundMember(obj, _)) = (&scope, &mut e.k) {
+            obj.qualified = true;
+        }
+        Ok(e)
     }
 
     /// An ambiguous lookup: NAM-14 for a qualified name in a namespace,
@@ -2493,7 +2915,12 @@ impl P {
                 if c.ty.is_unknown() {
                     return c;
                 }
-                Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line)
+                if matches!(c.k, EK::Unknown(_)) || c.cat != Cat::PR {
+                    return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+                }
+                // The reference binds a temporary that the converted
+                // prvalue initializes.
+                Expr::new(EK::Conv(Conv::Bind, Box::new(c)), inner, Cat::L, line)
             }
             Err(msg) => {
                 self.error(line, rule, format!("cannot bind reference: {}", msg));
@@ -3190,6 +3617,13 @@ impl P {
                 if let Some(x) = self.operator_select("=", &l, Some(&r), line) {
                     return x;
                 }
+                // The implicit copy or move assignment (CPY rules), when the
+                // class declares no assignment operator.
+                let rt = nonref(&r.ty);
+                let same = rt.t == Ty::Class(c) || matches!(rt.t, Ty::Class(d) if self.is_base_of(c, d));
+                if same && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && l.cat == Cat::L && !matches!(r.k, EK::Unknown(_)) {
+                    return Expr::new(EK::Assign(None, Box::new(l), Box::new(r)), nonref(&lt), Cat::L, line);
+                }
             }
             return Expr::unknown(line, "class assignment");
         }
@@ -3542,6 +3976,13 @@ impl P {
             return Expr::unknown(line, "functional cast to unknown type");
         }
         if let Ty::Class(c) = ty.t {
+            if !braced && items.len() == 1 && items[0].cat == Cat::PR && nonref(&items[0].ty).t == Ty::Class(c) && !matches!(items[0].k, EK::Unknown(_)) {
+                // VC-4: a prvalue of the class initializes the result
+                // directly, with no constructor call.
+                let mut x = items[0].clone();
+                x.ty = ty.unqual();
+                return x;
+            }
             if !braced && !items.is_empty() && !self.in_template() && self.classes[c].complete && !self.classes[c].ctors.is_empty() {
                 let items = items.clone();
                 let x = self.ctor_call(c, &items, &ty, line);
@@ -3560,6 +4001,26 @@ impl P {
                 e.cat = Cat::PR;
                 e.ty = ty.unqual();
                 return Expr::new(EK::Conv(Conv::NoOp, Box::new(e)), ty.unqual(), Cat::PR, line);
+            }
+            // A class temporary from the initialization of a class object,
+            // for the interpreter. A form that raises a diagnostic stays
+            // unknown, as before.
+            if !self.in_template() && !self.class_uncertain(c) && self.classes[c].complete {
+                let mark = self.d.list.len();
+                let form = if braced || items.is_empty() { InitForm::DirectList } else { InitForm::Paren(items.len()) };
+                let x = self.convert_init(init.clone(), &ty.unqual(), form, line);
+                let ok = self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) && !x.ty.is_unknown();
+                self.d.list.truncate(mark);
+                if ok {
+                    let mut x = x;
+                    if x.cat != Cat::PR || matches!(x.k, EK::InitList(_)) {
+                        // A copy of a glvalue, or an aggregate's list: the
+                        // prvalue of the cast initializes the temporary.
+                        x = Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), ty.unqual(), Cat::PR, line);
+                    }
+                    x.ty = ty.unqual();
+                    return x;
+                }
             }
             let mut e = Expr::unknown(line, "class temporary");
             e.ty = ty.unqual();
@@ -3626,9 +4087,44 @@ impl P {
                     }
                 }
                 EK::Throw(_) => *res = Some(false),
+                // NEW-19: the allocation functions are potentially throwing.
+                EK::New { .. } => *res = Some(false),
+                // VIRT-10: a failed cast of a reference throws.
+                EK::DynamicCast(a) => {
+                    // A cast to the class or a base cannot fail.
+                    let up = match (nonref(&a.ty).t, &e.ty.t) {
+                        (Ty::Class(f), Ty::Class(t)) => f == *t || p.is_base_of(*t, f),
+                        _ => false,
+                    };
+                    if e.cat != Cat::PR && !up {
+                        *res = Some(false);
+                    }
+                    walk(p, a, res);
+                }
+                EK::Delete(..) => {
+                    if *res == Some(true) {
+                        *res = None;
+                    }
+                }
                 EK::Unknown(_) => {
                     if *res == Some(true) {
                         *res = None;
+                    }
+                }
+                EK::Construct(cid, args) => {
+                    // A constructor that is not noexcept. A defaulted one
+                    // follows its members (EXS-4), which the front end does
+                    // not judge here.
+                    match p.func(*cid) {
+                        Some(fi) if !fi.defaulted && !fi.fty.noexcept => *res = Some(false),
+                        _ => {
+                            if *res == Some(true) {
+                                *res = None;
+                            }
+                        }
+                    }
+                    for a in args {
+                        walk(p, a, res);
                     }
                 }
                 EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) => walk(p, a, res),
@@ -3650,7 +4146,39 @@ impl P {
             }
         }
         walk(self, e, &mut res);
+        // A class temporary also runs its destructor, which the front end
+        // does not judge here.
+        let mut temp = false;
+        walk_expr(e, &mut |x| {
+            if let Ty::Class(c) = x.ty.t {
+                // A default member initializer can also throw (EXS-4).
+                let dmi = self.classes[c].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some() || matches!(fi.ty.t, Ty::Class(_))));
+                if x.cat == Cat::PR && !matches!(x.k, EK::Unknown(_) | EK::Call(..)) && (self.dtor_runs_code(c, 0) || dmi) {
+                    temp = true;
+                }
+                if x.cat == Cat::PR && matches!(x.k, EK::Call(..)) && self.dtor_runs_code(c, 0) {
+                    temp = true;
+                }
+            }
+        });
+        if temp && res == Some(true) {
+            return None;
+        }
         res
+    }
+
+    /// Whether ending an object of class `c` runs a destructor that the
+    /// program wrote.
+    pub fn dtor_runs_code(&self, c: usize, depth: u32) -> bool {
+        if depth > 16 {
+            return true;
+        }
+        let ci = &self.classes[c];
+        if ci.dtor.is_some_and(|d| self.func(d).is_none_or(|f| !f.defaulted)) {
+            return true;
+        }
+        ci.bases.iter().any(|b| b.class.is_none_or(|bc| self.dtor_runs_code(bc, depth + 1)))
+            || ci.fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if crate::decl2::elem_class(&fi.ty.t).is_some_and(|fc| self.dtor_runs_code(fc, depth + 1))))
     }
 
     pub fn in_immediate_context(&self) -> bool {

@@ -40,7 +40,7 @@ impl P {
                 let _ = self.args_rvalues(args);
                 Expr::unknown(line, "call of unknown callee")
             }
-            EK::Call(_, _, Some(fid)) if callee.ty.is_unknown() && self.ref_lambda_fns.contains(&fid) => {
+            EK::Call(_, _, Some(fid)) if self.ref_lambda_fns.contains(&fid) => {
                 Expr::unknown(line, "LAM-19: call of a closure whose reference captures name variables of a function that has returned")
             }
             _ => {
@@ -718,8 +718,14 @@ impl P {
             return Expr::new(EK::Unknown("cast of unknown operand".into()), target, cat, line);
         }
         if kind == CastKind::Dynamic {
+            let mark = self.d.list.len();
             if !self.in_template() {
                 self.check_dynamic_cast(&e, &ty, line);
+            }
+            if self.d.list.len() == mark && !self.in_template() && !matches!(e.k, EK::Unknown(_)) {
+                // VIRT rules: the cast checks the object at run time.
+                let x = if cat == Cat::PR { self.rvalue(e) } else { e };
+                return Expr::new(EK::DynamicCast(Box::new(x)), target, cat, line);
             }
             return Expr::new(EK::Unknown("dynamic_cast".into()), target, cat, line);
         }
@@ -868,6 +874,84 @@ impl P {
 
     /// Convert an initializer to the type of the declared object
     /// (INIT-4, LIST-1, LIST-2, LIST-6, REF rules).
+    /// An aggregate with bases that are not virtual (LIST rules).
+    pub fn aggregate_with_bases(&self, c: usize) -> bool {
+        let ci = &self.classes[c];
+        ci.complete && !ci.opaque && !ci.template && ci.ctors.is_empty() && !ci.has_virtual && !self.class_uncertain(c) && ci.bases.iter().all(|b| !b.virt && b.access == 0 && b.class.is_some())
+    }
+
+    /// Aggregate initialization from a list whose elements each match a
+    /// base or member, with no brace elision: the bases first, then the
+    /// members (LIST rules). None when the list needs more, or when a
+    /// conversion raises a diagnostic, which the older paths then report.
+    fn quiet_aggregate(&mut self, c: usize, v: &[Expr], ty: &QTy, is_paren: bool, line: u32) -> Option<Expr> {
+        if self.in_template() {
+            return None;
+        }
+        let mut targets: Vec<QTy> = self.classes[c].bases.iter().map(|b| QTy::new(Ty::Class(b.class.unwrap()))).collect();
+        let is_union = self.classes[c].key == 2;
+        for &f in &self.classes[c].fields {
+            if let DK::Field(fi) = &self.decls[f].k {
+                if fi.bits.is_some() && self.decls[f].name.is_empty() {
+                    continue;
+                }
+                targets.push(fi.ty.clone());
+                if is_union {
+                    break;
+                }
+            }
+        }
+        if v.len() > targets.len() || v.iter().any(|x| matches!(x.k, EK::Unknown(_)) || (x.ty.is_unknown() && !matches!(x.k, EK::InitList(_)))) {
+            return None;
+        }
+        let mark = self.d.list.len();
+        let mut out = Vec::new();
+        for (x, t) in v.iter().zip(targets.iter()) {
+            let xl = x.line;
+            let xt = nonref(&x.ty).t;
+            let e = if matches!(x.k, EK::InitList(_)) {
+                self.convert_init(x.clone(), t, InitForm::CopyList, xl)
+            } else if let Ty::Class(tc) = t.t {
+                if !(xt == Ty::Class(tc) || matches!(xt, Ty::Class(d) if self.is_base_of(tc, d))) {
+                    self.d.list.truncate(mark);
+                    return None;
+                }
+                self.convert_init(x.clone(), t, InitForm::Copy, xl)
+            } else if matches!(t.t, Ty::Array(..)) {
+                if !matches!(x.k, EK::Str(_)) {
+                    self.d.list.truncate(mark);
+                    return None;
+                }
+                self.convert_init(x.clone(), t, InitForm::Copy, xl)
+            } else {
+                let f = if is_paren { InitForm::Copy } else { InitForm::CopyList };
+                let x = if is_paren { x.clone() } else { Expr::new(EK::InitList(vec![x.clone()]), QTy::unknown(), Cat::PR, xl) };
+                self.convert_init(x, t, f, xl)
+            };
+            if matches!(e.k, EK::Unknown(_)) {
+                self.d.list.truncate(mark);
+                return None;
+            }
+            out.push(e);
+        }
+        if self.d.list.len() != mark {
+            self.d.list.truncate(mark);
+            return None;
+        }
+        Some(Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line))
+    }
+
+    /// A reference bound to the temporary that a converted list
+    /// initializes (REF-14), or unknown if the list did not convert.
+    fn bind_temp_or_unknown(&mut self, x: Expr, inner: QTy, line: u32) -> Expr {
+        if matches!(x.k, EK::Unknown(_)) || x.ty.is_unknown() {
+            return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+        }
+        let mut x = x;
+        x.cat = Cat::PR;
+        Expr::new(EK::Conv(Conv::Bind, Box::new(x)), inner, Cat::L, line)
+    }
+
     pub fn convert_init(&mut self, e: Expr, ty: &QTy, form: InitForm, line: u32) -> Expr {
         if ty.is_unknown() {
             return e;
@@ -912,12 +996,15 @@ impl P {
                         _ => v.len() as u64,
                     };
                     let t = QTy { t: Ty::Array(el.clone(), Some(n)), c: false, v: false };
-                    let _ = self.convert_init(e, &t, InitForm::CopyList, line);
-                    return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+                    let x = self.convert_init(e, &t, InitForm::CopyList, line);
+                    return self.bind_temp_or_unknown(x, QTy { t: t.t.clone(), c: inner.c, v: inner.v }, line);
                 }
-                if matches!(inner.t, Ty::Array(..) | Ty::Class(_)) || v.len() != 1 {
-                    let _ = self.convert_init(e, &inner.unqual(), InitForm::CopyList, line);
-                    return Expr::new(EK::Unknown("reference bound to a temporary".into()), inner, Cat::L, line);
+                // A class element for a reference to a scalar converts into
+                // the temporary too (Q-0157).
+                let class_to_scalar = v.len() == 1 && matches!(nonref(&v[0].ty).t, Ty::Class(_)) && !matches!(inner.t, Ty::Class(_) | Ty::Unknown);
+                if matches!(inner.t, Ty::Array(..) | Ty::Class(_)) || v.len() != 1 || class_to_scalar {
+                    let x = self.convert_init(e, &inner.unqual(), InitForm::CopyList, line);
+                    return self.bind_temp_or_unknown(x, inner, line);
                 }
             }
             let one = match (&items, is_list || is_paren) {
@@ -1066,7 +1153,7 @@ impl P {
                             return Expr::unknown(line, "bad aggregate init");
                         }
                         if any_nested_aggr {
-                            return Expr::new(EK::Unknown("aggregate with nested aggregates".into()), ty.clone(), Cat::PR, line);
+                            return self.quiet_aggregate(c, v, ty, is_paren, line).unwrap_or_else(|| Expr::new(EK::Unknown("aggregate with nested aggregates".into()), ty.clone(), Cat::PR, line));
                         }
                         let mut out = Vec::new();
                         for (i, x) in v.iter().enumerate() {
@@ -1132,9 +1219,18 @@ impl P {
                         }
                         Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line)
                     }
+                    (Some(v), false) if (is_list || is_paren) && self.classes[c].ctors.is_empty() && self.aggregate_with_bases(c) && !(v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c)) => {
+                        self.quiet_aggregate(c, v, ty, is_paren, line).unwrap_or_else(|| Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line))
+                    }
                     (Some(v), false) if (is_list || is_paren) && !self.classes[c].ctors.is_empty() => {
+                        let has_list_ctor = self.classes[c].ctors.iter().any(|&cid| self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some())));
                         if v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c) {
-                            return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+                            if is_list && has_list_ctor {
+                                return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+                            }
+                            // A copy or move: the interpreter chooses the copy
+                            // or move constructor from the source's category.
+                            return v[0].clone();
                         }
                         let x = self.ctor_call_mode(c, v, ty, is_list, false, form == InitForm::CopyList, line);
                         if form == InitForm::CopyList {
@@ -1405,6 +1501,7 @@ impl P {
             self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[c].name));
             return unknown;
         }
+        let mut chosen_for_build = crate::ovl::CtorRes::Unknown;
         match self.ctor_resolve(c, args, list, copy, copy_list) {
             crate::ovl::CtorRes::Ambiguous => {
                 // CTOR-25, OVL-36.
@@ -1418,8 +1515,11 @@ impl P {
             }
             crate::ovl::CtorRes::Chosen(cid, seqs) => {
                 // OVL-37: the checks on the chosen constructor.
+                let mark = self.d.list.len();
                 self.check_chosen_seqs(&seqs, cid, line);
                 let f = self.func(cid).unwrap().clone();
+                let is_list_ctor = list && f.params.first().and_then(|&p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some()));
+                let clean = self.d.list.len() == mark;
                 if f.deleted {
                     self.error(line, "DEL-1", format!("call of deleted constructor of '{}'", self.classes[c].name));
                     return unknown;
@@ -1451,8 +1551,26 @@ impl P {
                         }
                     }
                 }
+                if clean && !is_list_ctor {
+                    chosen_for_build = crate::ovl::CtorRes::Chosen(cid, Vec::new());
+                }
             }
             crate::ovl::CtorRes::Unknown => {}
+        }
+        if let crate::ovl::CtorRes::Chosen(cid, _) = &chosen_for_build {
+            // The call for the interpreter, with each argument converted to
+            // its parameter. A conversion that raises a diagnostic leaves
+            // the call to the older code below.
+            let cid = *cid;
+            let f = self.func(cid).unwrap().clone();
+            if args.len() <= f.fty.params.len() && !f.fty.variadic && !args.iter().any(|a| matches!(a.k, EK::Unknown(_)) || a.ty.is_unknown() && !matches!(a.k, EK::InitList(_))) {
+                let mark = self.d.list.len();
+                let conv = self.convert_args(&f.fty, args.to_vec(), line, Some(cid));
+                if self.d.list.len() == mark && !conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                    return Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line);
+                }
+                self.d.list.truncate(mark);
+            }
         }
         if self.class_uncertain(c) || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_))) {
             return unknown;
