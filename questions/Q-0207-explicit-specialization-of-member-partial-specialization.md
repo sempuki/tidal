@@ -29,7 +29,7 @@ with an override for GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the explicit specialization would
+Yes, and it is selected; Clang and EDG agree, GCC ignores it (option 1). Clang and EDG agree, and the explicit specialization would
 otherwise have no use.
 
 ## Opinions

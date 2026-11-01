@@ -21,7 +21,7 @@
 
 ## Provisional answer
 
-Option 1. This option is the one rule that explains both rejections, and
+The initializing declaration, if any declaration does (option 1). This option is the one rule that explains both rejections, and
 it matches Clang for both programs and EDG for the second.
 
 ## Opinions

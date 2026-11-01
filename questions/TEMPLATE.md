@@ -1,4 +1,4 @@
-# Q-NNNN: Question as a single sentence?
+# Q-NEW-<slug>: Question as a single sentence?
 
 **Status:** open | provisional | compiler defect | settled
 **Affects:** rule IDs, tests, or documents
@@ -18,7 +18,9 @@ Test files, compiler output, implementation source locations.
 
 ## Provisional answer
 
-The option the specification follows now, and the reason.
+The answer in words, in one short first sentence for the index, with the
+option it follows, such as "No; the program is rejected (option 1)."
+Then the reason.
 
 ## Opinions
 

@@ -29,6 +29,6 @@ matrix.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and CLS-10 gives the two the same address.
+Yes; the pointers hold the same address (option 1). Clang and GCC agree, and CLS-10 gives the two the same address.
 
 ## Opinions

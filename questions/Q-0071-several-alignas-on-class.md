@@ -23,7 +23,7 @@ GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and every compiler, GCC included, uses
+The strictest alignment (option 1). Clang and EDG agree, and every compiler, GCC included, uses
 the strictest on variables and data members.
 
 ## Opinions

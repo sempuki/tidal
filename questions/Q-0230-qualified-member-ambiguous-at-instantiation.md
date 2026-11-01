@@ -30,7 +30,7 @@ uses the `this->m` form, which every compiler rejects.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree.
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree.
 
 ## Opinions
 

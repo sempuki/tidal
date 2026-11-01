@@ -34,7 +34,7 @@ defined case has no test.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree. The scoped enumeration that the class
+Yes if the class template only declares it; Clang and EDG accept, GCC rejects under -pedantic-errors (option 1). Clang and EDG agree. The scoped enumeration that the class
 template defines stays open: Clang and EDG accept its explicit
 specialization after a use, so Tidal states no rule for it.
 

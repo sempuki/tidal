@@ -25,7 +25,7 @@ Tidal's own files.
 
 ## Provisional answer
 
-Option 1. The clean-room designer finds gaps without a protected input.
+No, the clean-room designer only for now (option 1). The clean-room designer finds gaps without a protected input.
 Option 2 can follow if the roadmap of the clean-room designer misses
 whole areas.
 

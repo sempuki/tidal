@@ -30,7 +30,7 @@ compiler (`array-size-exceeds-size-type.cpp`, DCL-10).
 
 ## Provisional answer
 
-Option 1. Every current compiler rejects the program, and the reduced
+Yes (STG-1); Clang 18 accepts (option 1). Every current compiler rejects the program, and the reduced
 size of Clang 18 is not the size of the class.
 
 ## Opinions

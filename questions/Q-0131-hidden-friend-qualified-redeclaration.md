@@ -38,7 +38,7 @@ GCC) and `--c++23 --strict` (EDG).
 
 ## Provisional answer
 
-Option 1. GCC and EDG reject the declaration, and the answer follows
+No; GCC and EDG reject, Clang accepts (option 1). GCC and EDG reject the declaration, and the answer follows
 from the lookup rule of ACC-7 with no exception.
 
 ## Opinions

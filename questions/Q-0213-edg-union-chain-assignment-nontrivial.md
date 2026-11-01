@@ -34,7 +34,7 @@ override for EDG.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree. A member whose constructor does work
+No; Clang and GCC reject, likely EDG defect (option 1). Clang and GCC agree. A member whose constructor does work
 cannot begin its lifetime without that work.
 
 ## Opinions

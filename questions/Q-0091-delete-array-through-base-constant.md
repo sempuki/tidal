@@ -17,7 +17,7 @@ accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and VIRT-12 treats a
+Yes; the behavior is undefined, so constant evaluation rejects the deletion (option 1). Clang and EDG agree, and VIRT-12 treats a
 single object the same way (Q-0056).
 
 ## Opinions

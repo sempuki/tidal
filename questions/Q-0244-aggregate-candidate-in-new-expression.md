@@ -30,7 +30,7 @@ The test above and the grid `forms.json` (row "new", column
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and GCC itself forms the
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and GCC itself forms the
 candidate for the same list in a variable declaration and a functional
 cast.
 

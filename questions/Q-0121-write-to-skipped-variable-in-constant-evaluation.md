@@ -29,7 +29,7 @@ write.
 
 ## Provisional answer
 
-Option 1. The run-time behavior is the same on every compiler, and
+Yes; GCC and EDG reject it (option 1). The run-time behavior is the same on every compiler, and
 CE-P1 says constant evaluation is the same program run at translation
 time.
 

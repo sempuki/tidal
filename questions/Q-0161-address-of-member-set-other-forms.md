@@ -38,7 +38,7 @@ describes both forms as not valid.
 
 ## Provisional answer
 
-Option 1. GCC rejects every form, Clang rejects the parenthesized form,
+No; GCC agrees, Clang 22 and EDG differ in part (option 1). GCC rejects every form, Clang rejects the parenthesized form,
 and the gap review describes the forms as not valid.
 
 ## Opinions

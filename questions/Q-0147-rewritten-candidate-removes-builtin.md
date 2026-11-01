@@ -34,7 +34,7 @@ candidates among those that remove a built-in candidate.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the inventory
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the inventory
 describes the removal this way.
 
 ## Opinions

@@ -29,7 +29,7 @@ inventory describes the behavior.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree, and the
+The type of `sizeof`; Clang and EDG agree, GCC gives `int` (option 1). Two of three implementations and the inventory agree, and the
 number of elements of an array has the type of `sizeof` elsewhere.
 
 ## Opinions

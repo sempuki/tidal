@@ -23,7 +23,7 @@ The test above, on the eight baseline compilers.
 
 ## Provisional answer
 
-Option 1. Every other implementation agrees, and Clang 22 accepts the
+Yes; Clang 18's rejection is fixed in Clang 22 (option 1). Every other implementation agrees, and Clang 22 accepts the
 call, so the Clang 18 rejection is a defect that a later version fixes.
 
 ## Opinions

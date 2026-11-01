@@ -33,7 +33,7 @@ overrides for EDG and Clang 18, and `template-template-auto.cpp`.
 
 ## Provisional answer
 
-Option 1. The newest Clang and GCC agree, and the answer follows the
+Yes; Clang 22 and GCC accept, Clang 18 and EDG reject (option 1). The newest Clang and GCC agree, and the answer follows the
 model that TARG-17 states for the other cases (Q-0169).
 
 ## Opinions

@@ -27,7 +27,7 @@ The four tests above. EDG also rejects the clause on a lambda in a default membe
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the case is the same as a member of a class nested in a class template.
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the case is the same as a member of a class nested in a class template.
 
 ## Opinions
 

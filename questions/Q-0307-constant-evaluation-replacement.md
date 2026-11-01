@@ -37,7 +37,7 @@ static variable faults (`reuse-const-static-object-sanitizer.cpp`).
 
 ## Provisional answer
 
-Option 1. The run-time results show that the implementations keep
+Yes, undefined (STG-19, STG-20); every constant evaluator in the matrix accepts (option 1). The run-time results show that the implementations keep
 facts about the old object, and the two `const` results differ between
 compilers. No test of constant evaluation is in the matrix for these
 cases.

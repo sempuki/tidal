@@ -30,7 +30,7 @@ Probes on the six Clang and GCC compilers.
 
 ## Provisional answer
 
-Option 1. A recommended rule allows an implementation that does not
+A general recommended rule, tested on the `new` case (option 1). A recommended rule allows an implementation that does not
 warn, and the `new` case is stable across the Clang versions.
 
 ## Opinions

@@ -23,7 +23,7 @@ informative subsets of overload resolution and templates.
 
 ## Answer
 
-Option 1. Decision 0033 adopted the order, and phases 3 and 4 drafted
+Yes; phases 3 and 4 drafted them as normative chapters (decisions 0033, 0050) (option 1). Decision 0033 adopted the order, and phases 3 and 4 drafted
 name lookup, overload resolution, and templates as normative chapters
 (`specification/foundations/` and `specification/templates/`). Decision
 0050 starts phase 5 from that state.

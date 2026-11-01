@@ -39,7 +39,7 @@ NEW-14 allows.
 
 ## Provisional answer
 
-Option 1. A program can still catch the exception of every
+No allocation call, throws `std::bad_array_new_length` (NEW-35); Clang throws `std::bad_alloc` from the allocation function, GCC allocates first for too few elements (option 1). A program can still catch the exception of every
 implementation with a handler for `std::bad_alloc`, because
 `std::bad_array_new_length` derives from it.
 

@@ -41,7 +41,7 @@ type, and that such a partial specialization cannot be used.
 
 ## Provisional answer
 
-Option 1. TSP-11 asks that each parameter of a partial specialization
+Non-deduced; the partial specialization is rejected; Clang agrees, GCC and EDG differ (option 1). TSP-11 asks that each parameter of a partial specialization
 appear where deduction can find it, and the gap review reads the rule
 the same way. For the function type, Option 1 follows the result that
 two of three implementations give in each row.

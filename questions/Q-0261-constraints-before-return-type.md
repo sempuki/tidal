@@ -27,7 +27,7 @@ The test above. Every compiler accepts the same case with the class in a paramet
 
 ## Provisional answer
 
-Option 1. Every current implementation agrees.
+Yes; every current compiler agrees, Clang 18 differs (option 1). Every current implementation agrees.
 
 ## Opinions
 

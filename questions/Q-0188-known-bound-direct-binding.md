@@ -32,7 +32,7 @@ give the same split.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the answer matches
+Yes; GCC and EDG agree, Clang finds a tie (option 1). Two of three implementations agree, and the answer matches
 ICS-24 for lists.
 
 ## Opinions

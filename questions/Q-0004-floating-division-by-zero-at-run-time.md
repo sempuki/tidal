@@ -59,7 +59,7 @@ allows the extra precision.
 
 ## Answer
 
-Option 2. The choice is a property of the implementation, which the
+Yes: the IEEE 754 result where the type follows IEEE 754 (MUL-11, MUL-20), undefined otherwise; constant evaluation rejects it (CE-28) (option 2). The choice is a property of the implementation, which the
 matrix implementations make and report the same way at every
 optimization level (decision 0047). The general sanitizer does not treat
 the division as undefined. Constant evaluation rejects the division on

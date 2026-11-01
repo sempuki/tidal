@@ -20,7 +20,7 @@ it.
 
 ## Provisional answer
 
-Option 1. Every implementation's newest version in the matrix rejects a
+Yes; GCC 14's acceptance is fixed in GCC 16 (option 1). Every implementation's newest version in the matrix rejects a
 deleted `main`.
 
 ## Opinions

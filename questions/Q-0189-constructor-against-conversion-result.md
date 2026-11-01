@@ -35,7 +35,7 @@ and `init-constructor-conversion-tie.cpp`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree.
+Yes; the constructor's result has the identity; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree.
 
 ## Opinions
 

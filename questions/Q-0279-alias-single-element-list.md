@@ -30,7 +30,7 @@ the initializer-list phase applies also through an alias.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the gap review
+Yes; Clang 22 and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
 ## Opinions

@@ -61,7 +61,7 @@ describes both programs without a target type as valid.
 
 ## Provisional answer
 
-Option 1. The newest versions of two implementations agree, the
+Yes, when the functions meet the conditions of ORD-13; Clang 22 and GCC 16 agree, EDG, Clang 18 and GCC 14 differ (option 1). The newest versions of two implementations agree, the
 inventory and the gap review describe the step, and the answer matches
 the rule for calls (OVL-30, ORD-13).
 

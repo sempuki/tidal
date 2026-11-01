@@ -29,7 +29,7 @@ reversed `==` is not a candidate, and `1 == m` has no viable function.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the rule then ignores
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the rule then ignores
 every qualifier of the object parameter.
 
 ## Opinions

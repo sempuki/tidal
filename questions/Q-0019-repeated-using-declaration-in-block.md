@@ -23,7 +23,7 @@ the current scope"). GCC changed its behavior between versions 14 and 16.
 
 ## Provisional answer
 
-Option 1. Both Clang versions and the newer GCC accept the repeated
+Yes, as the newest Clang and GCC allow (option 1). Both Clang versions and the newer GCC accept the repeated
 declaration. GCC's move from rejecting to accepting suggests that the
 implementations are converging on acceptance.
 

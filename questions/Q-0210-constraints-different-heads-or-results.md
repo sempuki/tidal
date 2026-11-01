@@ -7,7 +7,7 @@ Duplicate of Q-0146.
 
 ## Answer
 
-ORD-13 states every condition under which constraints decide, and
+Duplicate of Q-0146. ORD-13 states every condition under which constraints decide, and
 OVL-30 and OVL-41 use those conditions. Q-0146 asks the question for
 every condition and holds this question's cases in its table, with the
 context, the evidence, and the provisional answer.

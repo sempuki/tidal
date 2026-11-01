@@ -21,7 +21,7 @@ split.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and the rule matches
+No; the defaulted comparison is potentially throwing, as for defaulted special members (option 1). Clang and GCC agree, and the rule matches
 defaulted special members.
 
 ## Opinions

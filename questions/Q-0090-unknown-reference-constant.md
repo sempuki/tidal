@@ -18,6 +18,6 @@ and 16, and EDG accept the program. Clang 18 rejects it.
 
 ## Provisional answer
 
-Option 1. The newer Clang agrees with GCC and EDG.
+Yes, when the evaluation does not read through the reference (option 1). The newer Clang agrees with GCC and EDG.
 
 ## Opinions

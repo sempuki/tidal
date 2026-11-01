@@ -41,7 +41,7 @@ GCC) and `--c++23 --strict` (EDG).
 
 ## Provisional answer
 
-Option 1. The answer follows ILC-3, which keeps `explicit` constructors
+Yes; GCC agrees, Clang and EDG form no sequence (option 1). The answer follows ILC-3, which keeps `explicit` constructors
 as candidates in copy list initialization, and the model of ICS-8, where
 faults of the chosen function do not stop a sequence from forming.
 

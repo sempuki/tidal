@@ -37,7 +37,7 @@ Probes with `-Wall` on the six Clang and GCC compilers. Tests:
 
 ## Provisional answer
 
-Option 1. The definition follows from TRY-2 and THR-4, and a
+Those that no enclosing handler catches by static type; a rethrow needs `catch (...)` (option 1). The definition follows from TRY-2 and THR-4, and a
 recommended rule allows an implementation that does not warn.
 
 ## Opinions

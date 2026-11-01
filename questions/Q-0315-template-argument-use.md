@@ -33,7 +33,7 @@ to link.
 
 ## Provisional answer
 
-Option 1. ODR-3 has no exception for a template argument, and the
+Yes (ODR-3); Clang reports an undefined internal function, GCC does not (option 1). ODR-3 has no exception for a template argument, and the
 argument's value is the address of the entity. ODR-8 and ODR-9 need no
 diagnostic, so both compilers conform.
 

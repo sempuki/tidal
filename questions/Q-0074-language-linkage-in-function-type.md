@@ -20,7 +20,7 @@ three accept two declarations that overload on the two types.
 
 ## Provisional answer
 
-Option 1. Two implementations ignore language linkage in the type and
+Implementation-defined (option 1). Two implementations ignore language linkage in the type and
 one keeps it, and programs need to work with both.
 
 ## Opinions

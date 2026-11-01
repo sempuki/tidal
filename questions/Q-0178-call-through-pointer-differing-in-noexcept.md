@@ -36,7 +36,7 @@ case, because no implementation observes it.
 
 ## Provisional answer
 
-Option 1. EXS-2 treats the specifier as part of the type, and an
+Yes, undefined (option 1). EXS-2 treats the specifier as part of the type, and an
 undefined rule allows the result of every implementation in the matrix.
 
 ## Opinions

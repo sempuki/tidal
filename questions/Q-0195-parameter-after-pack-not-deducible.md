@@ -34,7 +34,7 @@ shows the valid forms, which all compilers accept.
 
 ## Provisional answer
 
-Option 1. No program can use such a template, and two of three
+No diagnostic required; Clang and GCC accept, EDG rejects (option 1). No program can use such a template, and two of three
 compilers accept the declaration.
 
 ## Opinions

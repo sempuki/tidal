@@ -39,7 +39,7 @@ instantiated (`current-member-missing-used.cpp`).
 
 ## Provisional answer
 
-Option 2. The name is not dependent, so DEP-30 covers the unused
+No diagnostic required while unused; GCC 14 accepts, others reject (option 2). The name is not dependent, so DEP-30 covers the unused
 template, and every result lies within that rule. DEP-17 stays a
 `reject` rule for a class that is instantiated, where every compiler
 rejects.

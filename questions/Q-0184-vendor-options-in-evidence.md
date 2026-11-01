@@ -23,7 +23,7 @@ Finding X3-10 in `reports/clean-room/X3/report.md`.
 
 ## Provisional answer
 
-Option 2. Each configuration is an implementation (decision 0047), so a
+Yes, when a test runs the compiler with the option (option 2). Each configuration is an implementation (decision 0047), so a
 configuration that a test runs is evidence. An option no test runs is
 not.
 

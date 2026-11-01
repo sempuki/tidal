@@ -32,7 +32,7 @@ predicts a rejection of both pairs.
 
 ## Provisional answer
 
-Option 1. The guides follow the rules for the overloading of functions
+Templates yes, others no; Clang and GCC agree, EDG differs (option 1). The guides follow the rules for the overloading of functions
 and function templates, and two of three implementations agree on each
 pair. No compiler rejects the guide templates.
 

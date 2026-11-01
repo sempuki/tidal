@@ -29,7 +29,7 @@ have overrides.
 
 ## Provisional answer
 
-Option 3. The implementations split, and neither result follows from
+Unspecified; Clang says no, GCC and EDG say yes (option 3). The implementations split, and neither result follows from
 another Tidal rule. TARG-22 makes the result unspecified, and TARG-19
 covers the other cases.
 

@@ -31,7 +31,7 @@ constraints before the trailing clause (`order.cpp`).
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the order follows the order in which the declaration writes the parts.
+Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the order follows the order in which the declaration writes the parts.
 
 ## Opinions
 

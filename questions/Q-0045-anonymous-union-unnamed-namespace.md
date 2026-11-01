@@ -28,7 +28,7 @@ The two tests in **Affects**. Each has an override for Clang.
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree, and the rule is the same for every
+Yes, `static` at every namespace scope (STO-11, UNI-9); Clang differs (option 1). GCC and EDG agree, and the rule is the same for every
 namespace. The review summary's reading is a strong reason to revisit
 the answer.
 

@@ -35,7 +35,7 @@ the call, and Clang and EDG reject it.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree. The answer also matches
+No; it takes no part; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree. The answer also matches
 ICS-14, where the object slot of a static member takes no part.
 
 ## Opinions

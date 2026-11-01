@@ -34,7 +34,7 @@ resolution inventory.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the inventory
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the inventory
 describes the conversion the same way.
 
 ## Opinions

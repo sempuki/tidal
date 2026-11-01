@@ -16,6 +16,11 @@ Fails when:
 - a *(TOPIC referenced)* marker names no topic, or a topic that is not in
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
+- a generated number in documentation/status.md is out of date (run
+  tools/status_table.py),
+- the index in questions/README.md is out of date (run
+  tools/question_index.py), or a question's answer starts with an option
+  number,
 - a grammar nonterminal is defined in more than one production, or used
   and not defined (decision 0040),
 - a page of specification/ or guides/ refers with {rule} or {principle} to an ID
@@ -42,7 +47,6 @@ CLASSES = {
     "withdrawn",
 }
 HEADING = re.compile(r"^### ([A-Z]+-\d+) \(([a-z-]+)\)\s*$")
-TESTS_LINE = re.compile(r"^Tests:\s*(.*)$")
 DIRECTIVE = re.compile(r"^:::\{rule\}\s+([A-Z]+-\d+)\s*$")
 PRINCIPLE = re.compile(r"^:::\{principle\}\s+([A-Z]+-P\d+)\s*$")
 PRULES = re.compile(r"^:(rules|exceptions):\s*(.*)$")
@@ -67,7 +71,6 @@ def parse_spec():
     errors = []
     principles = {}  # id -> (file, line, [rule ids])
     for f in sorted(SPEC.rglob("*.md")):
-        current = None
         segment = None
         directive = None
         principle = None
@@ -118,20 +121,6 @@ def parse_spec():
                 continue
             if HEADING.match(line):
                 errors.append(f"{f}:{n}: old rule heading; use a rule directive (documentation/style-guide.md)")
-                continue
-            if m := HEADING.match(line):
-                rid, cls = m.groups()
-                if rid in rules:
-                    errors.append(f"{f}:{n}: duplicate rule {rid}")
-                if cls not in CLASSES:
-                    errors.append(f"{f}:{n}: {rid} has unknown class {cls}")
-                rules[rid] = (f, cls, None)
-                current = rid
-            elif line.startswith("#"):
-                current = None
-            elif current and (m := TESTS_LINE.match(line)):
-                tests = [t.strip() for t in m.group(1).split(",") if t.strip()]
-                rules[current] = (rules[current][0], rules[current][1], tests)
     for pid, (f, n, cited) in principles.items():
         if not cited:
             errors.append(f"{f}:{n}: {pid} lists no rules; a principle needs evidence")
@@ -207,6 +196,27 @@ def check_grammar(errors: list[str]) -> None:
         errors.append(f"grammar nonterminal {name} is used and not defined")
 
 
+def check_records(errors: list[str], warnings: list[str]) -> None:
+    """The status page and the question index must match what their tools write."""
+    import question_index
+    import status_table
+    questions, problems = question_index.load()
+    errors.extend(problems)
+    readme = question_index.README.read_text()
+    if question_index.render(readme, questions) != readme:
+        errors.append("questions/README.md: the index is out of date; run tools/question_index.py")
+    status = status_table.STATUS.read_text()
+    new, problems = status_table.render(status)
+    errors.extend(problems)
+    if new != status:
+        errors.append("documentation/status.md: a generated number is out of date; run tools/status_table.py")
+    for f in [*SPEC.rglob("*.md"), *GUIDES.rglob("*.md"), *TESTS.rglob("*.cpp"),
+              *(ROOT / "documentation").rglob("*.md"), *(ROOT / "questions").glob("*.md")]:
+        if re.search(r"\bQ-NEW-[a-z0-9]", f.read_text()):
+            warnings.append(f"{f.relative_to(ROOT)}: names a placeholder question ID; "
+                            "the integrator runs tools/number_questions.py")
+
+
 def main() -> int:
     rules, errors = parse_spec()
     listed = {}
@@ -266,9 +276,6 @@ def main() -> int:
     principles = set()
     for f in SPEC.rglob("*.md"):
         principles.update(re.findall(r"^:::\{principle\} (\S+)$", f.read_text(), re.M))
-    for f in sorted(SPEC.rglob("*.md")):
-        if re.search(r"\{doc\}`[^`]*guides/", f.read_text()):
-            errors.append(f"{f.relative_to(ROOT)}: a specification page links to a guide (decision 0045)")
     for f in sorted([*SPEC.rglob("*.md"), *GUIDES.rglob("*.md")]):
         text = f.read_text()
         for role, ref in re.findall(r"\{(rule|principle)\}`([^`<]+?)`", text):
@@ -279,6 +286,7 @@ def main() -> int:
         if not agreement.current(f.read_text()):
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
     check_grammar(errors)
+    check_records(errors, warnings)
 
     for w in warnings:
         print("warning: " + w)

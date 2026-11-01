@@ -34,7 +34,7 @@ Item AF-7 of the overload resolution inventory.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the answer follows
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the answer follows
 the sequence rules of ICS-25 without an exception for surrogates.
 
 ## Opinions

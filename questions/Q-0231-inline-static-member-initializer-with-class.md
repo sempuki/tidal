@@ -27,7 +27,7 @@ needed.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree.
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the inventory agree.
 
 ## Opinions
 

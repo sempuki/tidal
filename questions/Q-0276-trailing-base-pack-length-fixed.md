@@ -30,7 +30,7 @@ gap review `reports/review/2026-10-31-gap-review-packs-and-ctad.md` predicts a d
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the gap review
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
 ## Opinions

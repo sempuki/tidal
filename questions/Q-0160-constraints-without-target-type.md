@@ -7,7 +7,7 @@ Duplicate of Q-0142.
 
 ## Answer
 
-Q-0142 asks the same question with a target type. OVL-20 uses the steps
+Duplicate of Q-0142. Q-0142 asks the same question with a target type. OVL-20 uses the steps
 of OVL-19, so one answer covers both. Q-0142 holds the context, the
 evidence, and the provisional answer.
 

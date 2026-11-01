@@ -16,7 +16,7 @@ evaluation, Clang and EDG reject the deletion. GCC 14 and 16 accept it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the same delete with a virtual
+Yes; the behavior is undefined, so constant evaluation rejects it (option 1). Clang and EDG agree, and the same delete with a virtual
 destructor is accepted by all compilers.
 
 ## Opinions

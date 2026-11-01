@@ -14,6 +14,6 @@ A function is declared to return an abstract class, and a program calls it. GCC 
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree.
+No; the call creates an object of the abstract class (option 1). GCC and EDG agree.
 
 ## Opinions

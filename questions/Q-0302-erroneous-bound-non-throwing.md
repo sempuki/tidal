@@ -31,7 +31,7 @@ any exception distinguishes the two results.
 
 ## Provisional answer
 
-Option 1. A program that uses a non-throwing allocation function
+Yes (NEW-36); Clang agrees, GCC throws (option 1). A program that uses a non-throwing allocation function
 expects to test for a null result and expects no exception.
 
 ## Opinions

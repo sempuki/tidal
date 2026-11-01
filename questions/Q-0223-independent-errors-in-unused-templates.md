@@ -35,7 +35,7 @@ no diagnostic.
 
 ## Provisional answer
 
-Option 1. DEP-30 is a `no-diagnostic` rule, so each compiler's result
+No diagnostic required; Clang and EDG diagnose, GCC does not (option 1). DEP-30 is a `no-diagnostic` rule, so each compiler's result
 lies within the rule. A program that relies on GCC's result is not
 valid.
 

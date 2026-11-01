@@ -28,7 +28,7 @@ enumeration "was previously declared" another way.
 
 ## Provisional answer
 
-Option 1. Two of the three implementations check the shape, and they
+Yes, reject (LSUP-5); GCC and EDG reject, Clang accepts (option 1). Two of the three implementations check the shape, and they
 check it at the declaration, before any use.
 
 ## Opinions

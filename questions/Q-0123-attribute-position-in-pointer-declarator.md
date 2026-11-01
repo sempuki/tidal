@@ -23,6 +23,6 @@ with no qualifier.
 
 ## Provisional answer
 
-Option 1. Two of three implementations take this order.
+After; Clang differs (option 1). Two of three implementations take this order.
 
 ## Opinions

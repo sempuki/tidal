@@ -18,6 +18,6 @@ before `step`.
 
 ## Provisional answer
 
-Option 1. The newest version of every implementation agrees.
+After; GCC 14 is fixed in GCC 16 (option 1). The newest version of every implementation agrees.
 
 ## Opinions

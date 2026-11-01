@@ -16,6 +16,6 @@ reject the default. GCC accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+No; the first declaration of a defaulted comparison must be in its class (option 1). Clang and EDG agree.
 
 ## Opinions

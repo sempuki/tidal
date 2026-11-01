@@ -36,7 +36,7 @@ compiler.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree. ORD-13 states the
+Yes, the ellipsis does not count for templates (ORD-13); Clang and EDG agree, GCC differs (option 1). Two of three implementations agree. ORD-13 states the
 ellipsis condition for plain functions only. Option 2 gives a simpler
 model, and a contributor can argue for it with the plain-function
 results of Q-0146.

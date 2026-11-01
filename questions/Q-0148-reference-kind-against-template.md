@@ -39,7 +39,7 @@ the kind of reference before the plain function over a template.
 
 ## Provisional answer
 
-Option 2. Of the two implementations that apply both tie-breakers, one
+Yes, the kind comes first; GCC agrees, EDG differs, Clang does not apply the kind (option 2). Of the two implementations that apply both tie-breakers, one
 takes each order. The gap review places the kind of reference first.
 
 ## Opinions

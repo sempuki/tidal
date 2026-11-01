@@ -31,7 +31,7 @@ accept the program.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject `noreturn` on a variable
+Rejected (option 1). Two of three implementations reject `noreturn` on a variable
 and `no_unique_address` on a bit-field. Other misplacements
 (`[[fallthrough]]` outside a switch, arguments to `noreturn`) are
 rejected by all three. For `nodiscard` on a variable, only EDG rejects,

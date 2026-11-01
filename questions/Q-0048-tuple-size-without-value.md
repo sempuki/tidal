@@ -14,6 +14,6 @@ Clang and GCC fall back to binding the data members of `E` when `std::tuple_size
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, fall back.
+Yes; the bindings fall back to the data members (SB-3) (option 1). Clang and GCC, in both versions, fall back.
 
 ## Opinions

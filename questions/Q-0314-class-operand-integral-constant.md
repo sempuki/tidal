@@ -31,7 +31,7 @@ The two tests above, and
 
 ## Provisional answer
 
-Option 1. Two of three compilers accept the operand, and the array
+Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects (option 1). Two of three compilers accept the operand, and the array
 `new` size converts a class on every compiler. The tests expect an
 acceptance and record GCC's result with an override.
 

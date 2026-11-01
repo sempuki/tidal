@@ -32,7 +32,7 @@ must reject the guide. Clang's rejection matches that reading.
 
 ## Provisional answer
 
-Option 2. The inventory and the gap review say that the guide is not
+Yes; Clang agrees, GCC and EDG differ (option 2). The inventory and the gap review say that the guide is not
 valid, and the gap review finds no exemption from diagnosis. Clang
 rejects the guide. GCC and EDG accept it, and the tests record their
 results as overrides.

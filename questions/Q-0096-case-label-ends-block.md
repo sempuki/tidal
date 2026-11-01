@@ -15,6 +15,6 @@ A switch body ends with a case label or a default label, with no statement after
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and option 1 matches the rule for identifier labels.
+Yes; any label can be the last item of a block (option 1). Clang and EDG agree, and option 1 matches the rule for identifier labels.
 
 ## Opinions

@@ -19,7 +19,7 @@ reject these features.
 
 ## Provisional answer
 
-Option 1 for the proof of concept. Option 2 is needed before Tidal can
+C++23, with newer features rejected under strict mode, for the proof of concept (option 1). Option 2 is needed before Tidal can
 follow the language forward.
 
 ## Opinions

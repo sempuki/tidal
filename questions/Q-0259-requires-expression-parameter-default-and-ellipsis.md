@@ -23,7 +23,7 @@ The two tests above. Clang's diagnostic list has an error for each case (clang-d
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and a default argument or an ellipsis has no use where nothing is called.
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and a default argument or an ellipsis has no use where nothing is called.
 
 ## Opinions
 

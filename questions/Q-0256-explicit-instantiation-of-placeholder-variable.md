@@ -28,7 +28,7 @@ other forms.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the gap review agree. GCC also accepts a type other than the deduced one, and INST-22 does not allow it.
+With the deduced type; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree. GCC also accepts a type other than the deduced one, and INST-22 does not allow it.
 
 ## Opinions
 

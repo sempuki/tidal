@@ -27,7 +27,7 @@ The test above, and the columns `A T / A auto` and `AB T / AB auto` of the spell
 
 ## Provisional answer
 
-Option 1. The rules for invented parameters already put them in the head (ORD-13), and equivalent heads declare one template.
+Yes, following DED-34 and TPL-20; Clang agrees, GCC and EDG differ (option 1). The rules for invented parameters already put them in the head (ORD-13), and equivalent heads declare one template.
 
 ## Opinions
 

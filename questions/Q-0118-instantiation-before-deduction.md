@@ -24,7 +24,7 @@ as an expansion over the elements of an object or a constant parameter.
 
 ## Answer
 
-Option 1. Phase 4 drafted deduction and function templates (O) before
+No, O first; phase 4 drafted O before N2 (decision 0050) (option 1). Phase 4 drafted deduction and function templates (O) before
 dependent names and instantiation (N2), and both pages exist
 (`specification/templates/deduction.md`,
 `specification/templates/instantiation.md`). Decision 0050 records

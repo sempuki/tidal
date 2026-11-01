@@ -16,6 +16,6 @@ expression. GCC and EDG accept it.
 
 ## Provisional answer
 
-Option 1. GCC and EDG accept the array form.
+Yes; the array form is valid, as the single form is (option 1). GCC and EDG accept the array form.
 
 ## Opinions

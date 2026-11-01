@@ -29,7 +29,7 @@ The four tests above. In `eligible-unsatisfied-more-constrained.cpp` the user-pr
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and EDG already selects destructors by their constraints.
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and EDG already selects destructors by their constraints.
 
 ## Opinions
 

@@ -39,7 +39,7 @@ prefers the result that converts to the other.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree on each case. The rule
+No for bounds, yes for temporaries; Clang differs on bounds, EDG on temporaries (option 1). Two of three implementations agree on each case. The rule
 then keeps its one measure, the cv-qualifiers it adds.
 
 ## Opinions

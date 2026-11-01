@@ -16,7 +16,7 @@ accept the call. GCC rejects it and expects a class name after `~`.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and DTY-3 lets
+Yes; `decltype` can name the class in an explicit destructor call (option 1). Clang and EDG agree, and DTY-3 lets
 `decltype` occur where a type name can occur.
 
 ## Opinions

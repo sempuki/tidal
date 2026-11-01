@@ -26,7 +26,7 @@ override for Clang, and `alias-template-lambda.cpp`.
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree, and an alias template specialization names
+Yes; GCC and EDG agree, Clang gives two types (option 1). GCC and EDG agree, and an alias template specialization names
 one type (TPL-28).
 
 ## Opinions

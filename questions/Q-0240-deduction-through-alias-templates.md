@@ -31,7 +31,7 @@ The tests above and the grid `forms.json` (column "alias template").
 
 ## Provisional answer
 
-Option 1. The newest compilers of two families agree, and the source
+Yes; Clang 22 and GCC agree, Clang 18 and EDG 7.0 differ (option 1). The newest compilers of two families agree, and the source
 reader's inventory (items B2 to B8) describes the derived guides.
 Clang 18 and EDG 7.0 are older or partial implementations.
 

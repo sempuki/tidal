@@ -39,7 +39,7 @@ at `-O2`. `-fsanitize=undefined` reports both operators as "division of
 
 ## Provisional answer
 
-Option 1 for both operators. Clang and GCC treat `%` the same as `/`
+No; EDG's result is likely a defect, for both operators (option 1). Clang and GCC treat `%` the same as `/`
 during constant evaluation, at run time, and in the sanitizer. EDG's
 quotient lies outside the range of `int`, which no defined result
 allows.

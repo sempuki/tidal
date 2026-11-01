@@ -20,6 +20,6 @@ an override for GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the rule matches noreturn.
+Yes, as for noreturn (option 1). Clang and EDG agree, and the rule matches noreturn.
 
 ## Opinions

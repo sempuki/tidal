@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject the initialization.
+No; parentheses allow no brace elision (option 1). Clang and GCC, in both versions, reject the initialization.
 
 ## Opinions

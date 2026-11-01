@@ -33,7 +33,7 @@ The test above. A first version of the test expected the copy into
 
 ## Provisional answer
 
-Option 1. GCC 14 and GCC 16 differ, and option 1 allows both. The test
+In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang (option 1). GCC 14 and GCC 16 differ, and option 1 allows both. The test
 accepts every order.
 
 ## Opinions

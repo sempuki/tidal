@@ -35,7 +35,7 @@ other than `thread_local`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree on each column, and the
+No, except thread_local; Clang agrees, GCC and EDG each differ (option 1). Two of three implementations agree on each column, and the
 inventory and the gap review (item 34) allow `thread_local`.
 
 ## Opinions

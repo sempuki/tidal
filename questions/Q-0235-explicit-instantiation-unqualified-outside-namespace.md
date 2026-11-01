@@ -27,7 +27,7 @@ compiler accepts with a qualified name.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree.
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree.
 
 ## Opinions
 

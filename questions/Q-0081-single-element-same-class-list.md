@@ -18,6 +18,6 @@ calls the copy constructor. EDG does not run programs.
 
 ## Provisional answer
 
-Option 1. The newer Clang agrees with GCC.
+Yes; the initializer-list constructor is used, as for other braced lists (option 1). The newer Clang agrees with GCC.
 
 ## Opinions

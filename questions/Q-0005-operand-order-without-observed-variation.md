@@ -39,7 +39,7 @@ configuration.
 
 ## Provisional answer
 
-Option 1. Choosing option 2 would make Tidal stricter than the
+Yes, on source evidence (option 1). Choosing option 2 would make Tidal stricter than the
 implementations claim to be, which would break compatibility the first
 time an implementation reorders. The built-in forms show no variation
 in the matrix, so the question stays open for them.

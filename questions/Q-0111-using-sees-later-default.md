@@ -15,6 +15,6 @@ A namespace declares a function with one parameter. A using declaration brings t
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree.
+Yes; the default argument is usable through the using declaration (option 1). GCC and EDG agree.
 
 ## Opinions

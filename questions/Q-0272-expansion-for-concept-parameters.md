@@ -28,7 +28,7 @@ for an alias template (Q-0271).
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the gap review
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
 ## Opinions

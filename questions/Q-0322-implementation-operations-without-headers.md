@@ -39,7 +39,7 @@ implementer view (item 9), and the editor view (section 4). W15-2.
 
 ## Provisional answer
 
-Option 1. Options 2 and 3 move the line between the language and the
+Keep them referenced; tests use no standard header (decision 0051) (option 1). Options 2 and 3 move the line between the language and the
 library that the charter draws, so the maintainer decides. Writers may
 use builtin queries in probes as Evidence for class properties
 (decision 0051), and no test uses them.

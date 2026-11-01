@@ -34,7 +34,7 @@ specialization on every compiler that links.
 
 ## Provisional answer
 
-Option 1. Every current compiler that links agrees, and the newer GCC
+Yes; Clang and GCC 16 agree, GCC 14 differs (option 1). Every current compiler that links agrees, and the newer GCC
 changed from option 2 to option 1.
 
 ## Opinions

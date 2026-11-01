@@ -25,7 +25,7 @@ The test above.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the result of a guide
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the result of a guide
 names the specialization that a declaration gets. A declaration adds
 its own cv-qualifiers (CTAD-1).
 

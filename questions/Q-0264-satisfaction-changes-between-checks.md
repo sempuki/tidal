@@ -28,7 +28,7 @@ The test above.
 
 ## Provisional answer
 
-Option 1. Finding the change needs a record of every earlier check, which most implementations do not keep.
+No diagnostic required; GCC 16 diagnoses (option 1). Finding the change needs a record of every earlier check, which most implementations do not keep.
 
 ## Opinions
 

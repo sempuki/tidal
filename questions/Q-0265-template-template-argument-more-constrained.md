@@ -28,7 +28,7 @@ The test above. Every compiler accepts an argument that is less constrained than
 
 ## Provisional answer
 
-Option 1. The current Clang and GCC agree, and the rule keeps a use of the parameter inside the template valid.
+No; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clang and GCC agree, and the rule keeps a use of the parameter inside the template valid.
 
 ## Opinions
 

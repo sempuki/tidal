@@ -7,7 +7,7 @@ Duplicate of Q-0117.
 
 ## Answer
 
-The compilers split on one point, whether a union with no active member
+Duplicate of Q-0117. The compilers split on one point, whether a union with no active member
 is a constant. Q-0117 asks that question for CE-21 and now holds the
 template argument case. Q-0117 holds the context, the evidence, and the
 provisional answer.

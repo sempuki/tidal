@@ -30,7 +30,7 @@ specialization names the current instantiation.
 
 ## Provisional answer
 
-Option 1. Clang treats every case as the current instantiation, and
+Yes; Clang and GCC agree, EDG differs (option 1). Clang treats every case as the current instantiation, and
 the inventory agrees. GCC's rejection of a dependent base member
 through the alias is a separate defect under DEP-18.
 

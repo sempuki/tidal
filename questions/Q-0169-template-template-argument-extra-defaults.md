@@ -30,7 +30,7 @@ compiler.
 
 ## Provisional answer
 
-Option 1. Every newer compiler accepts the argument, and option 1 also
+Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects (option 1). Every newer compiler accepts the argument, and option 1 also
 explains why a parameter with a pack accepts a template with fixed
 parameters.
 

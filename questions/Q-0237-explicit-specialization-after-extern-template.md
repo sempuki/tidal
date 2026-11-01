@@ -28,7 +28,7 @@ The test above and `specialization-after-explicit-definition.cpp`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and both forms of
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and both forms of
 explicit instantiation name the specialization as one that comes from
 the template.
 

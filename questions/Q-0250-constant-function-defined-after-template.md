@@ -29,7 +29,7 @@ one meaning, with no diagnostic required.
 
 ## Provisional answer
 
-Option 1. DEP-31 needs no diagnostic, so each compiler's result lies within the rule. The gap review supports option 1.
+No diagnostic required; GCC and EDG accept, Clang rejects (option 1). DEP-31 needs no diagnostic, so each compiler's result lies within the rule. The gap review supports option 1.
 
 ## Opinions
 

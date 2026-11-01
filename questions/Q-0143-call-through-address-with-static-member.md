@@ -32,7 +32,7 @@ that support for this form may be partial.
 
 ## Provisional answer
 
-Option 1. The inventory describes the call this way, the newest Clang
+Yes; Clang 22 agrees, Clang 18 and GCC differ, EDG has an internal error (option 1). The inventory describes the call this way, the newest Clang
 implements it, and EDG's internal error is a defect.
 
 ## Opinions

@@ -9,15 +9,20 @@ Usage:
 `predict` takes the tests that the rules on specification/PAGE.md cite, removes
 their tidal- directives, and writes them to OUT as p01.cpp, p02.cpp, and
 so on, in a shuffled order, with a README.md that tells the reader what
-to answer. The key goes to build/exercise-keys/<name of OUT>.json, away
-from OUT, so a reader given OUT does not see it.
+to answer. It also writes a copy of specification/ to OUT/specification/
+with every `:tests:` line removed, so test names do not show the
+outcomes. The README tells the reader to read that copy. The key goes to
+build/exercise-keys/<name of OUT>.json, away from OUT, so a reader given
+OUT does not see it.
 
 The reader answers with a JSON object, one entry per program:
 
     {"p01": {"outcome": "reject", "rules": ["ADD-3"], "why": "..."}}
 
 `outcome` is one of the OUTCOMES below. `score` compares the answers
-with the key and prints a Markdown table of the wrong ones.
+with the key and prints two numbers: the right outcomes, and how many of
+those cite at least one rule that the test cites. It then prints a
+Markdown table of the wrong outcomes.
 
 `diagnose` takes the page's single-file tests that the specification and
 GCC both reject and that carry a GCC error pattern. Each program comes with the
@@ -114,6 +119,20 @@ def expectations(test: run_tests.Test) -> set[str]:
     return found
 
 
+def copy_specification(out: Path) -> None:
+    """Copy specification/ to OUT/specification/ without its :tests: lines."""
+    for f in sorted(SPEC.rglob("*")):
+        target = out / "specification" / f.relative_to(SPEC)
+        if f.is_dir():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if f.suffix == ".md":
+            target.write_text("".join(l for l in f.read_text().splitlines(keepends=True)
+                                      if not TESTS_LINE.match(l.rstrip("\n"))))
+        else:
+            target.write_bytes(f.read_bytes())
+
+
 def predict(page: str, out: Path) -> int:
     names = page_tests(page)
     if not names:
@@ -121,6 +140,7 @@ def predict(page: str, out: Path) -> int:
         return 1
     random.Random(page).shuffle(names)  # neighbors in page order share a rule
     out.mkdir(parents=True, exist_ok=False)
+    copy_specification(out)
     key, lines = {}, []
     for i, name in enumerate(names, 1):
         test = run_tests.parse_test(TESTS / name)
@@ -141,8 +161,9 @@ def predict(page: str, out: Path) -> int:
     readme = [
         f"# Predict batch for {page}",
         "",
-        f"Read specification/{page}.md and any other page under specification/. For each program",
-        "below, predict what happens when it is built with",
+        f"Read specification/{page}.md and any other page under specification/,",
+        "in the copy in this directory. The copy leaves out the lists of tests.",
+        "For each program below, predict what happens when it is built with",
         "`-std=c++23 -pedantic-errors` and no `-O` flag, and, if it compiles",
         "and links, run. Do not compile the programs.",
         "",
@@ -281,7 +302,7 @@ def score(out: Path, answers_path: Path) -> int:
     if out.name.startswith("D-"):
         return score_diagnose(out, key, json.loads(answers_path.read_text()))
     answers = json.loads(answers_path.read_text())
-    right, rows = 0, []
+    right, cited, rows = 0, 0, []
     for pid, k in key.items():
         a = answers.get(pid, {})
         got = a.get("outcome")
@@ -299,10 +320,12 @@ def score(out: Path, answers_path: Path) -> int:
         if got == "undefined":
             ok = k.get("undefined", False) and "reject" not in k["expect"]
         right += ok
+        cited += ok and bool(set(a.get("rules", [])) & set(k["rules"]))
         if not ok:
             rows.append(f"| {pid} | {k['test']} | {', '.join(k['expect'])} | {got} | "
                         f"{' '.join(a.get('rules', []))} | {a.get('why', '').replace('|', '/')} |")
-    print(f"{right}/{len(key)} predictions match the tests")
+    print(f"{right}/{len(key)} predictions match the tests; "
+          f"{cited} of the {right} right outcomes cite one of the test's rules")
     if rows:
         print()
         print("| Program | Test | Expected | Answer | Rules cited | Reason given |")

@@ -7,7 +7,7 @@ Duplicate of Q-0024.
 
 ## Answer
 
-Q-0024 asks which parameter lists `main` may have, and now holds this
+Duplicate of Q-0024. Q-0024 asks which parameter lists `main` may have, and now holds this
 question's case of a first parameter of type `long`. Q-0024 holds the
 context, the evidence, and the provisional answer.
 

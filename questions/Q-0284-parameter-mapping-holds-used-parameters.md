@@ -39,7 +39,7 @@ parameters that occur in the expression.
 
 ## Provisional answer
 
-Option 1. The newest Clang and GCC agree on both cases, and the review
+Yes; Clang 22 and GCC agree, EDG and Clang 18 differ (option 1). The newest Clang and GCC agree on both cases, and the review
 describes the same model.
 
 ## Opinions

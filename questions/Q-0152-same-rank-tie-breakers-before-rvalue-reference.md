@@ -44,7 +44,7 @@ before the qualification step.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree on the pointer, class, and
+Yes to both; Clang agrees, GCC and EDG differ in part (option 1). Two of three implementations agree on the pointer, class, and
 member pointer rows, and on the last row. Clang follows one order on
 every row, and the gap review reports the same order. The tie-breakers
 then belong to the rank step, which is where ICS-27 already puts them.

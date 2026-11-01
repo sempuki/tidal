@@ -36,7 +36,7 @@ header with neither mechanism is rejected when it is included twice.
 
 ## Provisional answer
 
-Option 3. Programs in the wild use both forms, and the tests show the
+Both; the include guard is required and `#pragma once` is implementation-defined (option 3). Programs in the wild use both forms, and the tests show the
 same behavior for both on the matrix. The guard stays the portable form,
 so the guard is the form in `required` text.
 

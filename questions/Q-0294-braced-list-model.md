@@ -60,7 +60,7 @@ and 22, GCC 14 and 16, and EDG 7.0.
 
 ## Provisional answer
 
-Option 1. The model gives one condition for a direct binding for every
+The table of REF-P3: direct, temporary, or none; 14 child questions keep each split (option 1). The model gives one condition for a direct binding for every
 referenced type. In each child except Q-0136, two of three
 implementations agree with the model. Q-0136 follows the rules that
 need elements for the bound and members for the designators. A change

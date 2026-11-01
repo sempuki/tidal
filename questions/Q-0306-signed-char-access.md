@@ -32,8 +32,7 @@ for other types.
 
 ## Provisional answer
 
-Option 1, from the description of the language in the phase 5
-inventory. The implementations' results lie within what option 1
+No; `signed char` is not an allowed type, and the access is undefined (STG-23, option 1). The answer follows the description of the language in the phase 5 inventory. The implementations' results lie within what option 1
 allows (decision 0047). A program that needs byte access can use
 `unsigned char` under both options.
 

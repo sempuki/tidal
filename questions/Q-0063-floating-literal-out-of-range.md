@@ -17,7 +17,7 @@ infinity. EDG 7.0 rejects it.
 
 ## Provisional answer
 
-Option 1. Two of the three implementations accept the literal in their
+The value is implementation-defined, and an implementation can reject the literal (option 1). Two of the three implementations accept the literal in their
 strictest mode.
 
 ## Opinions

@@ -23,7 +23,7 @@ The test above. Every compiler rejects a friend that is not a template, has a tr
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the same rule applies to a friend that is not a template.
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the same rule applies to a friend that is not a template.
 
 ## Opinions
 

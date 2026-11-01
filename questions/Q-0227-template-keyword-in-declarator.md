@@ -26,7 +26,7 @@ follow the qualifier of a name being declared.
 
 ## Provisional answer
 
-Option 1. The inventory supports it, and the keyword has no purpose in
+No; Clang only, GCC and EDG accept (option 1). The inventory supports it, and the keyword has no purpose in
 a declarator, where the name must already be a member template. The
 provisional answer goes against two of three implementations, so a
 contributor can argue for option 2.

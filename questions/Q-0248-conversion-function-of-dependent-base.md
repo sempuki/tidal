@@ -31,7 +31,7 @@ looked up at the instantiation and finds the base's function.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree. The gap review supports option 2, and a contributor can argue for it with that review.
+No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree. The gap review supports option 2, and a contributor can argue for it with that review.
 
 ## Opinions
 

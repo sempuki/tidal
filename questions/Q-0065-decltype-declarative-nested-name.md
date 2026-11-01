@@ -17,7 +17,7 @@ GCC accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree. `decltype` stays valid in a qualified
+No; `decltype` must not occur in the qualified name of a declaration (option 1). Clang and EDG agree. `decltype` stays valid in a qualified
 name in an expression.
 
 ## Opinions

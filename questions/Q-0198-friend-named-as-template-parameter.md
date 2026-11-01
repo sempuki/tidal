@@ -30,7 +30,7 @@ override for EDG. The friend definition has no test.
 
 ## Provisional answer
 
-Option 1 for the friend declaration, where Clang and GCC agree. The
+Yes for the friend declaration (option 1), where Clang and GCC agree. The
 friend definition stays open: Clang accepts it, and GCC and EDG reject
 it. Tidal states no rule for the definition.
 

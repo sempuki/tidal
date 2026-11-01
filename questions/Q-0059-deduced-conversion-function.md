@@ -17,7 +17,7 @@ and accepts it otherwise.
 
 ## Provisional answer
 
-Option 1. Most implementations accept `operator auto()`, and GCC 16
+Yes; a conversion function can have a deduced return type (option 1). Most implementations accept `operator auto()`, and GCC 16
 rejects it only as a pedantic diagnostic.
 
 ## Opinions

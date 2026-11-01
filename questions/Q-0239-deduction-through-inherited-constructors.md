@@ -37,7 +37,7 @@ constructor"), and the inventory items E1 to E4 of
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the source reader's
+Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the source reader's
 inventory lists the behavior as part of the language. The tie-breaker
 tests of CTAD-19 give the same results on Clang, because Clang has no
 inherited guide to compare.

@@ -27,7 +27,7 @@ override for GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the class is the scope where the
+Yes; Clang and EDG agree, GCC rejects (option 1). Clang and EDG agree, and the class is the scope where the
 member template is declared, which matches TSP-5's rule for namespaces.
 
 ## Opinions

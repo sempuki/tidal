@@ -28,6 +28,6 @@ reject the multiple-element form.
 
 ## Provisional answer
 
-Option 1. Tidal describes what implementations do, and they agree.
+Yes, as all implementations do (option 1). Tidal describes what implementations do, and they agree.
 
 ## Opinions

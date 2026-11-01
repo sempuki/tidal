@@ -98,6 +98,14 @@ These practices apply to every agent that changes the repository.
   and decisions and makes the commits (decision 0018). A subagent that
   cannot write its report returns the report as text, and the
   integrator saves the report.
+
+  A writer who raises a question files it as
+  `questions/Q-NEW-<slug>.md` and cites it as `Q-NEW-<slug>` in pages,
+  tests, and other questions. The slug uses lowercase letters, digits,
+  and hyphens. The writer does not pick a number. The integrator runs
+  `tools/number_questions.py`, which gives each placeholder the next free
+  number, renames the file, rewrites every reference, and rebuilds the
+  question index.
 - **Check reports before use.** A review summary or a clean-room report
   passes `tools/similarity.py` before a clean-room writer acts on it (decisions
   0019, 0029).

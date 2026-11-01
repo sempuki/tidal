@@ -26,7 +26,7 @@ expression as a placement `new` and rejects it.
 
 ## Provisional answer
 
-Option 1. The newest Clang and GCC agree, and the nothrow forms are
+Yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject (option 1). The newest Clang and GCC agree, and the nothrow forms are
 global allocation functions of the implementation, as the forms
 without placement arguments are.
 

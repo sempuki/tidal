@@ -29,7 +29,7 @@ the definitions that are made.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree.
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree.
 
 ## Opinions
 

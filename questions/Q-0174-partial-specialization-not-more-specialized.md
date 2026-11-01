@@ -32,7 +32,7 @@ for GCC and EDG.
 
 ## Provisional answer
 
-Option 1. A partial specialization that matches every argument list
+No; Clang rejects, GCC and EDG accept (option 1). A partial specialization that matches every argument list
 takes the place of the primary template, which TSP-11 already forbids
 for the plain parameter list. The check needs partial ordering, which
 roadmap item O specifies.

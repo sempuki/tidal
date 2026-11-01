@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept the floating-point size.
+Yes; converted to the type of `sizeof` (option 1). Two of three implementations accept the floating-point size.
 
 ## Opinions

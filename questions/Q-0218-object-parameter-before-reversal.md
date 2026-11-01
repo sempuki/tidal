@@ -45,7 +45,7 @@ describes option 1.
 
 ## Provisional answer
 
-Option 1. The gap review describes it, and Clang implements it. The
+Yes; Clang, GCC and EDG differ (option 1). The gap review describes it, and Clang implements it. The
 reversal of Q-0211 pairs the parameters that meet the same operand.
 After the object parameter is added and the two are reversed, each
 parameter meets the operand at its own position in `p == x`.

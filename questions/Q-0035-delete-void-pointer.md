@@ -14,6 +14,6 @@ GCC 16 and 14 accept `delete p;` where `p` is a `void*`, with a warning that the
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the deletion, and GCC's own warning says the deletion can't work.
+Yes (option 1). Two of three implementations reject the deletion, and GCC's own warning says the deletion can't work.
 
 ## Opinions

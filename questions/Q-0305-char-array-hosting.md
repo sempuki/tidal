@@ -30,8 +30,7 @@ implementation in the matrix treats the two arrays differently.
 
 ## Provisional answer
 
-Option 1, from the description of the language in the phase 5
-inventory. No implementation behavior separates the options, so the
+No; only arrays of `unsigned char` and `std::byte` host objects (STG-4, option 1). The answer follows the description of the language in the phase 5 inventory. No implementation behavior separates the options, so the
 test accepts the program's run under both.
 
 ## Opinions

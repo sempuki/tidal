@@ -35,7 +35,7 @@ placeholder as a constraint of the template.
 
 ## Provisional answer
 
-Option 1. The newest Clang and GCC agree, every compiler already drops
+Yes; Clang 22 and GCC 16 agree, Clang 18, GCC 14, and EDG differ (option 1). The newest Clang and GCC agree, every compiler already drops
 the candidate when the constraint fails, and a type constraint on a
 type parameter takes part in the comparison in the same way.
 

@@ -36,7 +36,7 @@ describes the identity as the better result.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, the gap review describes
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, the gap review describes
 it, and the answer matches the ranking of arguments.
 
 ## Opinions

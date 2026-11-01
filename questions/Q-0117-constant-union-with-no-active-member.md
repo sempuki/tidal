@@ -49,7 +49,7 @@ override for GCC.
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept the variable, and option 1
+Yes, and also a valid template argument (CE-21, TARG-19); GCC rejects it (option 1). Two of three implementations accept the variable, and option 1
 follows from CE-21 counting only the active member. The status is not
 "compiler defect", because option 2 is a consistent reading too.
 

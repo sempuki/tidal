@@ -26,7 +26,7 @@ that the choice of type is the implementation's.
 
 ## Provisional answer
 
-Option 1. Both behaviors exist, and the choice of underlying type is
+Impl-defined (option 1). Both behaviors exist, and the choice of underlying type is
 already the implementation's (ENUM-5).
 
 ## Opinions

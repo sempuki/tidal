@@ -30,7 +30,7 @@ name is read as an expression and the specialization fails.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree. The
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the inventory agree. The
 parse of a template must not depend on the arguments.
 
 ## Opinions

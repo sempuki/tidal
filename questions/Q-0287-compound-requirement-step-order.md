@@ -40,7 +40,7 @@ and constraints (item 19) gives the order: the expression, then the
 
 ## Provisional answer
 
-Option 1. EDG follows it in both cases, each of Clang and GCC follows
+Yes, and unused extra arguments are substituted; EDG agrees, Clang and GCC each differ in one case (option 1). EDG follows it in both cases, each of Clang and GCC follows
 it in one case, and the review describes the same order.
 
 ## Opinions

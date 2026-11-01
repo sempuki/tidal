@@ -32,6 +32,6 @@ in the matrix. EDG 7.0 is the only EDG version in the matrix.
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject the comparison.
+No; rejected (option 1). Clang and GCC, in both versions, reject the comparison.
 
 ## Opinions

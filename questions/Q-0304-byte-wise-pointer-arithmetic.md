@@ -36,7 +36,7 @@ bytes. No implementation in the matrix reports an error.
 
 ## Provisional answer
 
-Option 1 (STG-13). Every implementation behaves this way, and the
+Yes; the bytes act as an array of `sizeof` elements (STG-13, option 1). Every implementation behaves this way, and the
 byte-copy rules (STG-12, CPY-19) need the steps.
 
 ## Opinions

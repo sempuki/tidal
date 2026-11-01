@@ -33,7 +33,7 @@ the row "long long : 3 bit-field" of the arithmetic grid on the page.
 
 ## Provisional answer
 
-Option 1. ICS-2 gives the integer promotions of CONV-1 promotion rank,
+Yes; Clang agrees, GCC and EDG differ (option 1). ICS-2 gives the integer promotions of CONV-1 promotion rank,
 and CONV-1 decides a bit-field's promotion by its width. One rule for
 arithmetic and for sequences is simpler.
 

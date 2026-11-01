@@ -14,6 +14,6 @@ With braces, `Holder h{Note{5}};` keeps the temporary alive as long as `h` on ev
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and the review summary describes the same difference.
+Only braces extend the lifetime; parentheses do not (option 1). Clang and GCC agree, and the review summary describes the same difference.
 
 ## Opinions

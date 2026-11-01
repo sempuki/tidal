@@ -29,7 +29,7 @@ The two tests above, compiled with `--c++23 --strict` for EDG.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and a `mutable` member or a reference
+No; EDG differs (option 1). Clang and GCC agree, and a `mutable` member or a reference
 needs the object. The tests expect EDG to accept the programs.
 
 ## Opinions

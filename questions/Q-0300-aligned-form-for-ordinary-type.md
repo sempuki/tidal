@@ -31,7 +31,7 @@ EDG says the function "cannot be called".
 
 ## Provisional answer
 
-Option 1, the behavior of every implementation in the matrix.
+No; there is no reverse step, and the program is rejected (NEW-30, option 1). Every implementation in the matrix behaves this way.
 
 ## Opinions
 

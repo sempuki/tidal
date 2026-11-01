@@ -19,7 +19,7 @@ accepts with a warning. EDG accepts.
 
 ## Provisional answer
 
-Option 1. Clang diagnoses the program and GCC warns. All three
+No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang diagnoses the program and GCC warns. All three
 still conform.
 
 ## Opinions

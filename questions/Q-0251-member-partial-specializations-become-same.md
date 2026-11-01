@@ -29,7 +29,7 @@ instantiation is not valid.
 
 ## Provisional answer
 
-Option 1. INST-6 requires each declaration that an instantiation makes to be valid, and a partial specialization declared twice in one class is not. The gap review agrees with Clang. GCC and EDG accept the class.
+Yes; Clang only, GCC and EDG accept (option 1). INST-6 requires each declaration that an instantiation makes to be valid, and a partial specialization declared twice in one class is not. The gap review agrees with Clang. GCC and EDG accept the class.
 
 ## Opinions
 

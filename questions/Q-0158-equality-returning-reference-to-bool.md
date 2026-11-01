@@ -33,7 +33,7 @@ that the return type `bool &` of the selected `operator==` is not
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the cv-qualified
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the cv-qualified
 results that all accept are values of type `bool`.
 
 ## Opinions

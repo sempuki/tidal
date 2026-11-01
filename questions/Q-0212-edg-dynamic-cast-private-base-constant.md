@@ -36,7 +36,7 @@ Clang and GCC configuration.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree at run time and in constant evaluation,
+No; Clang and GCC give a null pointer, likely EDG defect (option 1). Clang and GCC agree at run time and in constant evaluation,
 and the result of a constant must match the result at run time.
 
 ## Opinions

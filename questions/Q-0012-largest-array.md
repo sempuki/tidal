@@ -24,7 +24,7 @@ because the bound doesn't fit the 32-bit size type.
 
 ## Provisional answer
 
-Option 1. Implementations disagree on the limit, and the limit changes with
+No; the limit is implementation-defined (option 1). Implementations disagree on the limit, and the limit changes with
 the target.
 
 ## Opinions

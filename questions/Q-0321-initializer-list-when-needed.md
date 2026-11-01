@@ -36,7 +36,7 @@ The three tests above and `initializer-list-no-members.cpp`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and option 1 names the
+Where a braced list initializes an object of that type or `auto` deduces it (LSUP-1); GCC checks every definition (option 1). Two of three implementations agree, and option 1 names the
 operations that use the members. The tests record GCC as an override.
 
 ## Opinions

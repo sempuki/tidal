@@ -14,6 +14,6 @@ A gap review summary says that copying an uninitialized `unsigned char` (or `std
 
 ## Provisional answer
 
-Option 1. The constant-evaluation behavior is observed, and the run-time exception comes from the review summary. A test that can observe the run-time difference would settle the question.
+Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation (option 1). The constant-evaluation behavior is observed, and the run-time exception comes from the review summary. A test that can observe the run-time difference would settle the question.
 
 ## Opinions

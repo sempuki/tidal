@@ -15,6 +15,6 @@ A class has members named begin and end. In one test both are data members of a 
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+Yes; any member named begin or end counts (option 1). Clang and GCC agree.
 
 ## Opinions

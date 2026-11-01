@@ -44,7 +44,7 @@ that the source compares the kinds first, which is Clang's result.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the rule then has one
+Yes; GCC and EDG agree, Clang compares kind first (option 1). Two of three implementations agree, and the rule then has one
 place in the order of ICS-P5 for every kind. The gap review supports
 option 2.
 

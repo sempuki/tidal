@@ -37,7 +37,7 @@ dependent qualifier and can appear after `typename`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree. The
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree. The
 gap review supports option 2, and a contributor can argue for it with
 that review.
 

@@ -24,7 +24,7 @@ accepts it. EDG rejects the same read of a scalar
 
 ## Provisional answer
 
-Option 1. EDG treats the scalar and array cases differently, and the other
+No; likely EDG defect (option 1). EDG treats the scalar and array cases differently, and the other
 implementations treat them the same.
 
 ## Opinions

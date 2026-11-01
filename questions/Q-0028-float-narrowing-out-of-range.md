@@ -25,7 +25,7 @@ out of range.
 
 ## Provisional answer
 
-Option 1. This option matches the run-time behavior of every compiler on
+Implementation-defined (option 1). This option matches the run-time behavior of every compiler on
 IEEE targets, and two of three implementations during constant evaluation.
 
 ## Opinions

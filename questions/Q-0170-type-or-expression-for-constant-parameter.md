@@ -28,7 +28,7 @@ shows that all compilers read `int()` as a type for a type parameter.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and the reading of an argument then does
+A type; Clang and GCC agree, EDG reads the value 0 (option 1). Clang and GCC agree, and the reading of an argument then does
 not depend on the template's parameters.
 
 ## Opinions

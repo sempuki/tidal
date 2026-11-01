@@ -18,8 +18,7 @@ Short shared phrases are expected, because Tidal reuses industry terms
 
 ## Provisional answer
 
-Option 1 until reports from more sections show how many flags each setting
-produces.
+Keep the thresholds (option 1) until reports from more sections show how many flags each setting produces.
 
 ## Opinions
 

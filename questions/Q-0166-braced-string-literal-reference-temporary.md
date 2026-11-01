@@ -39,7 +39,7 @@ UTF-8 literal no sequence to a `char` array.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the result follows
+Yes, under LIST-6; Clang and EDG agree, GCC rejects (option 1). Two of three implementations agree, and the result follows
 LIST-6 and REF-14 without a special case.
 
 ## Opinions

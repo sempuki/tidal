@@ -27,7 +27,7 @@ for `edg-7.0-ilp32`.
 
 ## Provisional answer
 
-Option 1. TYP-2 is implementation-defined, and EDG's configuration is
+No; the alignment is implementation-defined (option 1). TYP-2 is implementation-defined, and EDG's configuration is
 internally consistent. The tests carry an override for
 `edg-7.0-ilp32`.
 

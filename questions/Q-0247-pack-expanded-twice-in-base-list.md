@@ -27,7 +27,7 @@ error for every size of the pack.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the gap review agree.
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
 
 ## Opinions
 

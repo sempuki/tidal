@@ -49,7 +49,7 @@ targets report IEEE 754 types (MUL-20, Q-0004).
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject, and a program that
+Undefined (option 1). Two of three implementations reject, and a program that
 relies on acceptance is not portable today. Option 3 matches every
 run-time result and the treatment of division by zero (Q-0004). Option
 3 needs a new constant-evaluation rule and a change of class for MUL-12

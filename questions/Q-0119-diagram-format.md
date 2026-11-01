@@ -26,7 +26,7 @@ The site builds with Sphinx and the packages in
 
 ## Provisional answer
 
-Option 1. Plain text needs nothing new and reads the same in every
+Plain text (option 1). Plain text needs nothing new and reads the same in every
 place. The question comes back if a diagram needs more than plain text
 can show.
 

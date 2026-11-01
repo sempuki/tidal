@@ -43,7 +43,7 @@ variable, and the members read as zero at run time. Clang 18 and Clang
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept the variable. Option 1
+Yes, the zero counts, as for a scalar; Clang differs (option 1). Two of three implementations accept the variable. Option 1
 treats the trivial class the same as the scalar case, where every
 compiler accepts.
 

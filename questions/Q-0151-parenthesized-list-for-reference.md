@@ -32,7 +32,7 @@ parentheses for a reference to a scalar.
 
 ## Provisional answer
 
-Option 1. Two of the three compilers reject the list, and REF-11 keeps
+No; Clang and EDG agree, GCC differs (option 1). Two of the three compilers reject the list, and REF-11 keeps
 one rule for parentheses.
 
 ## Opinions

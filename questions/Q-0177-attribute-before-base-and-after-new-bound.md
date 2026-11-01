@@ -30,7 +30,7 @@ Every compiler accepts the other positions of ATTR-19.
 
 ## Provisional answer
 
-Option 1. Every other compiler in the matrix accepts both positions,
+Yes; GCC 14 defect (option 1). Every other compiler in the matrix accepts both positions,
 including the newer GCC.
 
 ## Opinions

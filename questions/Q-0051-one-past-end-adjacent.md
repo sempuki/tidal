@@ -29,6 +29,6 @@ version in the matrix.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and option 1 matches Q-0033.
+Rejected during constant evaluation, and unspecified at run time (option 1). Clang and GCC agree, and option 1 matches Q-0033.
 
 ## Opinions

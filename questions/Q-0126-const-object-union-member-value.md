@@ -37,8 +37,7 @@ The five tests above. The probes compiled each case with
 
 ## Provisional answer
 
-Option 1, because Tidal follows the majority where the compilers
-disagree. In the fifth row, GCC and EDG accept by different models.
+A union gives a value when one variant member has a default member initializer, and a class of only anonymous unions is valid (option 1). Tidal follows the majority where the compilers disagree. In the fifth row, GCC and EDG accept by different models.
 
 ## Opinions
 

@@ -41,7 +41,7 @@ describes option 1.
 
 ## Provisional answer
 
-Option 1. The gap review describes it, and Clang implements it. With
+Yes; Clang, GCC and EDG differ (option 1). The gap review describes it, and Clang implements it. With
 option 1, ORD-10 and ORD-11 each remove one direction of a pair on
 their own, with no condition on each other.
 

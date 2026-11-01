@@ -32,7 +32,7 @@ mode, and notes that a later language mode can order the templates.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree in the C++23 mode, and
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree in the C++23 mode, and
 the rule matches CNS-3 for a fold expression that the program writes.
 
 ## Opinions

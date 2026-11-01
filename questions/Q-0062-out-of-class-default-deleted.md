@@ -20,7 +20,7 @@ compilers in the matrix reject the same pattern (CPY-17).
 
 ## Provisional answer
 
-Option 1. Clang rejects the definition, and the rule matches CPY-17. GCC
+No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang rejects the definition, and the rule matches CPY-17. GCC
 and EDG still conform.
 
 ## Opinions

@@ -39,7 +39,7 @@ The test above, and probes with a generic lambda at namespace scope.
 
 ## Provisional answer
 
-Option 1. INST-32 already covers points that differ, and the
+Either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point (option 1). INST-32 already covers points that differ, and the
 implementations differ only in which point they take.
 
 ## Opinions

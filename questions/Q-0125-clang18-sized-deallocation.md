@@ -24,7 +24,7 @@ forms unless a flag asks for them.
 
 ## Provisional answer
 
-Option 1. The newest version of every implementation in the matrix
+No; Clang 22 declares them (option 1). The newest version of every implementation in the matrix
 declares the sized forms.
 
 ## Opinions

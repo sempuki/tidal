@@ -14,6 +14,6 @@ A derived class with a public base can redeclare a base member with a using-decl
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and the same rule increases access in `using-changes-access.cpp` on all compilers.
+Yes; the using-declaration sets the access, so the use is rejected (option 1). Clang and GCC agree, and the same rule increases access in `using-changes-access.cpp` on all compilers.
 
 ## Opinions

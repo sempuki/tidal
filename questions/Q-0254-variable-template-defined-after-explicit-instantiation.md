@@ -31,7 +31,7 @@ that the definition must be in the unit and need not come first.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the gap review agree, and every compiler allows the order for a function.
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree, and every compiler allows the order for a function.
 
 ## Opinions
 

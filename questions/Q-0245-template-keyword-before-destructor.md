@@ -27,7 +27,7 @@ accepts `p->T::template ~T()`, and Clang and GCC reject it.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the gap review agree.
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree.
 
 ## Opinions
 

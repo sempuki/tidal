@@ -20,7 +20,7 @@ GCC 14.
 
 ## Provisional answer
 
-Option 1. The newest version of every compiler in the matrix accepts
+Yes; GCC 14's rejection is fixed in GCC 16 (option 1). The newest version of every compiler in the matrix accepts
 the operand. GCC 14 has a defect that GCC 16 fixes. The override for
 GCC 14 stays while GCC 14 is in the matrix.
 

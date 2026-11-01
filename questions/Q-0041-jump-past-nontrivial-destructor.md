@@ -34,7 +34,7 @@ The three tests in **Affects**. Each has an override for GCC.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the jump, JMP-6 lists
+No; JMP-6 and SW-5 reject the jump; GCC accepts it (option 1). Two of three implementations reject the jump, JMP-6 lists
 only types whose destructor is trivial, and the review summary
 describes the same limit.
 

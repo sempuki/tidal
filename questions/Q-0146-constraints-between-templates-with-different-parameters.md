@@ -56,7 +56,7 @@ describes the two plain-function calls as ambiguous.
 
 ## Provisional answer
 
-Option 1. Clang 22 and GCC agree on every row, and the sanitized Clang
+The conditions of ORD-13: same parameter lists, heads, and conversion results; Clang 22 and GCC agree, EDG differs (option 1). Clang 22 and GCC agree on every row, and the sanitized Clang
 source and the gap review describe the same conditions.
 
 ## Opinions

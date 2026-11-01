@@ -18,7 +18,7 @@ directly to itself.
 
 ## Provisional answer
 
-Option 1. GCC accepts such a program, so a `reject` rule would make a
+No; the program is not valid, and an indirect cycle is `no-diagnostic` (option 1). GCC accepts such a program, so a `reject` rule would make a
 current implementation non-conforming. A cycle through constructors in
 other translation units cannot be found during translation.
 

@@ -34,7 +34,7 @@ in its own context, but no compiler does so.
 
 ## Provisional answer
 
-Option 1. Every current implementation agrees.
+Yes; every current compiler agrees, GCC 14 differs (option 1). Every current implementation agrees.
 
 ## Opinions
 

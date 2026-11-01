@@ -33,7 +33,7 @@ have integral or unscoped enumeration type.
 
 ## Provisional answer
 
-Option 1. Two of three compilers reject the enumerator in each place,
+No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` (option 1). Two of three compilers reject the enumerator in each place,
 and option 1 gives the three places one rule. The tests expect a
 rejection and record GCC's and EDG's results with overrides.
 

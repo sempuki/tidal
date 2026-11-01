@@ -22,7 +22,7 @@ accepts it.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the declaration with a
+No; likely EDG defect (option 1). Two of three implementations reject the declaration with a
 diagnostic written specifically for this case.
 
 ## Opinions

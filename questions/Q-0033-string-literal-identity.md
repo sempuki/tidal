@@ -20,7 +20,7 @@ GCC 16 and 14 and EDG 7.0 accept it and give a value.
 
 ## Provisional answer
 
-Option 1. A constant expression should not depend on a choice that the
+No; rejected (option 1). A constant expression should not depend on a choice that the
 implementation need not make the same way each time.
 
 ## Opinions

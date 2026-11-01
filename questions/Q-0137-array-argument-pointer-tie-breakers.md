@@ -31,7 +31,7 @@ and the row "Derived[2]" of the pointers grid on the page.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the answer keeps
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the answer keeps
 lvalue transformations out of every comparison.
 
 ## Opinions

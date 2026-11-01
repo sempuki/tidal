@@ -28,7 +28,7 @@ concepts and constraints (item 36) expects the rejection.
 
 ## Provisional answer
 
-Option 1. Every current implementation agrees.
+No; every current compiler agrees, Clang 18 differs (option 1). Every current implementation agrees.
 
 ## Opinions
 

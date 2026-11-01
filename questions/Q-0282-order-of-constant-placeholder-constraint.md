@@ -34,7 +34,7 @@ constraint of `N` before a requires clause after the head
 
 ## Provisional answer
 
-Option 1. The newest Clang and GCC agree, and the order follows the
+Yes; Clang and GCC 16 agree, GCC 14 and EDG differ (option 1). The newest Clang and GCC agree, and the order follows the
 written order of the head, as CNS-1 does for the other parts.
 
 ## Opinions

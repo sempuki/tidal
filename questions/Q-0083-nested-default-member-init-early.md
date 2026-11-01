@@ -17,6 +17,6 @@ accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+No; the program is not valid (option 1). Clang and GCC agree.
 
 ## Opinions

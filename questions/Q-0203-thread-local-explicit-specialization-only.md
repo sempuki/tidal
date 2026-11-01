@@ -32,7 +32,7 @@ an override for EDG, and `explicit-thread-local.cpp`.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and TSP-25 gives an explicit
+Yes; Clang and GCC accept, EDG rejects (option 1). Clang and GCC agree, and TSP-25 gives an explicit
 specialization its `inline` and `constexpr` from its own declaration.
 
 ## Opinions

@@ -31,7 +31,7 @@ The test above and
 
 ## Provisional answer
 
-Option 1. Clang and GCC reject the call in constant evaluation, and both
+Yes, undefined (PFX-21); EDG accepts (option 1). Clang and GCC reject the call in constant evaluation, and both
 sanitizers report it at run time. The test expects a rejection and
 records EDG's result with an override.
 

@@ -33,6 +33,6 @@ the split.
 
 ## Provisional answer
 
-Option 1. Two of three implementations diagnose the arithmetic itself.
+Undefined (option 1). Two of three implementations diagnose the arithmetic itself.
 
 ## Opinions

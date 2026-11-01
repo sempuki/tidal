@@ -32,7 +32,7 @@ forwarding reference.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the alias then gives
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the alias then gives
 the same result as the class template.
 
 ## Opinions

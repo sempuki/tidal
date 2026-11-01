@@ -43,7 +43,7 @@ result.
 
 ## Provisional answer
 
-Option 1. Clang and EDG reject the overflow during constant evaluation,
+Undefined (ADD-18); EDG rejects positions past the largest difference (option 1). Clang and EDG reject the overflow during constant evaluation,
 and GCC rejects the array that would allow it. No implementation gives a
 difference that does not fit. Option 2 would make Clang and EDG
 nonconforming for accepting the array.

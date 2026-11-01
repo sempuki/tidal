@@ -19,6 +19,6 @@ override for GCC.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the pair.
+Rejected (option 1). Two of three implementations reject the pair.
 
 ## Opinions

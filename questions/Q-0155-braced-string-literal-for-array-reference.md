@@ -32,7 +32,7 @@ case, checked before the array rule.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree on each case, and the
+When the literal can initialize the array; GCC differs on UTF-8, Clang on size and bound (option 1). Two of three implementations agree on each case, and the
 answer follows the initialization rules LIST-6 and LIST-15.
 
 ## Opinions

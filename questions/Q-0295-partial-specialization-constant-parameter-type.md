@@ -34,7 +34,7 @@ every compiler fails the pair when the types differ
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree, and option 1 gives partial specializations
+Yes, as in a function template (DED-12); GCC and EDG agree, Clang differs (option 1). GCC and EDG agree, and option 1 gives partial specializations
 the matching rule of function templates (DED-12).
 
 ## Opinions

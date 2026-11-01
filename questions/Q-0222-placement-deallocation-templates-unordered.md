@@ -31,7 +31,7 @@ with an override for EDG.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree. The answer treats two matches as no
+Yes, and no deallocation function is called; Clang and GCC agree, EDG rejects (option 1). Clang and GCC agree. The answer treats two matches as no
 single match, the same as for a placement form with no match.
 
 ## Opinions

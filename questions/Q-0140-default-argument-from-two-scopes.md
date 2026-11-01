@@ -43,7 +43,7 @@ that case.
 
 ## Provisional answer
 
-Option 1. GCC diagnoses the case, the inventory and the gap review agree
+No, if the defaults differ; GCC agrees, Clang and EDG differ (option 1). GCC diagnoses the case, the inventory and the gap review agree
 that the call is not valid, and no compiler rejects equal default
 arguments.
 

@@ -38,7 +38,7 @@ union member.
 
 ## Provisional answer
 
-Option 1. UNI-14, DTOR-6, and OBJ-2 together make the read undefined,
+Yes, undefined (UNI-14, OBJ-2); GCC 16 accepts (option 1). UNI-14, DTOR-6, and OBJ-2 together make the read undefined,
 and GCC rejects the same read outside a union. The test expects a
 rejection and records GCC's acceptance with an override.
 

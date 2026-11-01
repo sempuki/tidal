@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Clang and GCC, in both versions, reject the `using enum`.
+No; the enumeration must be complete, so the `using enum` is rejected (option 1). Clang and GCC, in both versions, reject the `using enum`.
 
 ## Opinions

@@ -32,7 +32,7 @@ The two tests in **Affects**. Each has an override for EDG.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and option 1 matches member access on
+Yes, an xvalue (PFX-3); EDG gives an lvalue (option 1). Clang and GCC agree, and option 1 matches member access on
 an xvalue.
 
 ## Opinions

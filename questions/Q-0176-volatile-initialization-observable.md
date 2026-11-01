@@ -38,7 +38,7 @@ volatile object is a write that the implementation must perform.
 
 ## Provisional answer
 
-Option 1. Both compilers keep the store, even for a local that the
+Yes, for an initializer that runs at run time (option 1). Both compilers keep the store, even for a local that the
 program never reads. Option 1 does not say how many stores write a
 class object. The compilers write two `int` members with one wide store.
 

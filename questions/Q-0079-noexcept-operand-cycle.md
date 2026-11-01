@@ -22,6 +22,6 @@ split.
 
 ## Provisional answer
 
-Option 1. Clang diagnoses the program. GCC and EDG still conform.
+No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang diagnoses the program. GCC and EDG still conform.
 
 ## Opinions

@@ -25,7 +25,7 @@ Findings X3-9 and X4-13 in `reports/clean-room/X3/report.md` and
 
 ## Provisional answer
 
-Option 1 for now. The test suite is small fragments, so counts over it
+No cost model for now; a proposal states cost in words (option 1). The test suite is small fragments, so counts over it
 would mislead. Option 2 becomes useful once Tidal has a corpus of whole
 programs.
 

@@ -18,7 +18,7 @@ The four tests above, each with an override for GCC 14.
 
 ## Provisional answer
 
-Option 1. The newest version of every compiler in the matrix rejects
+No; GCC 14's acceptance is fixed in GCC 16 (option 1). The newest version of every compiler in the matrix rejects
 all four. GCC 14 has a defect that GCC 16 fixes. The overrides for
 GCC 14 stay while GCC 14 is in the matrix.
 

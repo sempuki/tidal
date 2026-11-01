@@ -26,7 +26,7 @@ The first test above. In `friend-distinct-from-namespace.cpp`, a namespace templ
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and CNS-31 requires the friend to be a definition for this reason.
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and CNS-31 requires the friend to be a definition for this reason.
 
 ## Opinions
 

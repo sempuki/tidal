@@ -30,7 +30,7 @@ valid, and predicts a rejection. No compiler rejects.
 
 ## Provisional answer
 
-Option 1. Every compiler accepts, and option 1 allows that result. The gap review reads the program as not valid. Option 2 would define a result that the review's reading leaves invalid.
+Yes, no diagnostic required; every compiler accepts (option 1). Every compiler accepts, and option 1 allows that result. The gap review reads the program as not valid. Option 2 would define a result that the review's reading leaves invalid.
 
 ## Opinions
 

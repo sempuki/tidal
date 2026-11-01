@@ -32,7 +32,7 @@ diagnostic is required.
 
 ## Provisional answer
 
-Option 1. The implementations differ, and the gap review reads the
+Not valid, no diagnostic required; GCC and EDG accept, Clang rejects (option 1). The implementations differ, and the gap review reads the
 rule as one that requires no diagnostic.
 
 ## Opinions

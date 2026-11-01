@@ -33,7 +33,7 @@ The test above, and `nonvolatile-access-to-volatile-constant.cpp`.
 
 ## Provisional answer
 
-Option 1. VOL-6 makes the read undefined, and constant evaluation
+Yes, undefined (VOL-6); GCC and EDG accept (option 1). VOL-6 makes the read undefined, and constant evaluation
 rejects an expression whose evaluation has undefined behavior. Clang
 follows option 1. The test records GCC and EDG as overrides.
 

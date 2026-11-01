@@ -14,6 +14,6 @@ A union member has a class type with a user-provided assignment operator. Consta
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+No; the access is undefined, so constant evaluation rejects it (option 1). Clang and GCC agree.
 
 ## Opinions

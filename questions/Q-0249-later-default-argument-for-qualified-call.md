@@ -33,7 +33,7 @@ the program not valid with no diagnostic required.
 
 ## Provisional answer
 
-Option 1. DEP-31 needs no diagnostic, so each compiler's result lies within the rule. The gap review supports option 1.
+No diagnostic required; GCC uses it, Clang and EDG reject (option 1). DEP-31 needs no diagnostic, so each compiler's result lies within the rule. The gap review supports option 1.
 
 ## Opinions
 

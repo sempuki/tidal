@@ -32,7 +32,7 @@ with an override for GCC, `explicit-private-argument.cpp`, and
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the answer treats function and class
+No; Clang and EDG accept, GCC rejects (option 1). Clang and EDG agree, and the answer treats function and class
 templates alike.
 
 ## Opinions

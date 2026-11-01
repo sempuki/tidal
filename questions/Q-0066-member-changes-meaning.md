@@ -18,6 +18,6 @@ with a different meaning. GCC rejects the class. Clang and EDG accept it.
 
 ## Provisional answer
 
-Option 1. GCC diagnoses the class. Clang and EDG still conform.
+No; the class is not valid, and the error is `no-diagnostic` (option 1). GCC diagnoses the class. Clang and EDG still conform.
 
 ## Opinions

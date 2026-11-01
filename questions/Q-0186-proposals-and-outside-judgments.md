@@ -22,7 +22,7 @@ Finding X4-14 in `reports/clean-room/X4/report.md`.
 
 ## Provisional answer
 
-Option 1. The judgments matter to a proposal's case, and the mark
+Yes, marked as outside knowledge (option 1). The judgments matter to a proposal's case, and the mark
 keeps them apart from what Tidal states.
 
 ## Opinions

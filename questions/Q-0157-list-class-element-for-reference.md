@@ -55,7 +55,7 @@ element's type, and makes a temporary otherwise.
 
 ## Provisional answer
 
-Option 2. Clang and EDG agree on every row, and the gap review agrees.
+No; a temporary unless the element has the referenced type or a derived class; Clang and EDG agree, GCC differs (option 2). Clang and EDG agree on every row, and the gap review agrees.
 The condition is the one that every compiler uses for an array element,
 so REF-6 states one condition for every object type.
 

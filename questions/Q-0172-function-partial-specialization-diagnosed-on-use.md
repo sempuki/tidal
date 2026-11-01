@@ -26,7 +26,7 @@ EDG) and `tests/templates/specialization/function-partial-used.cpp`.
 
 ## Provisional answer
 
-Option 1. Clang and GCC reject the declaration itself, and EDG rejects
+Yes; Clang and GCC agree, EDG rejects only at a use (option 1). Clang and GCC reject the declaration itself, and EDG rejects
 it as soon as the template is used. TSP-7 stays a `reject` rule.
 
 ## Opinions

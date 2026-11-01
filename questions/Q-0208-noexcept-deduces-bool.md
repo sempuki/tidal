@@ -31,7 +31,7 @@ behavior.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree. The
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the inventory agree. The
 `noexcept` is part of the function type (ICS-1 lets it drop in
 a conversion), so the position matches like the other parts of the type.
 

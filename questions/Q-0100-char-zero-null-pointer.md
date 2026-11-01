@@ -15,6 +15,6 @@ A pointer is initialized from a character literal whose value is zero. Clang and
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+No; only an integer literal with value zero is a null pointer constant (option 1). Clang and GCC agree.
 
 ## Opinions

@@ -34,7 +34,7 @@ an uninitialized object.
 
 ## Provisional answer
 
-Option 1. Two of the three implementations reject the copy, and Tidal's
+No; likely GCC defect (option 1). Two of the three implementations reject the copy, and Tidal's
 rules already describe an implicit copy as a copy of each part. Option 2
 would need a new kind of value that a copy can carry without a read.
 

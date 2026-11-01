@@ -27,7 +27,7 @@ The two tests above. Clang's diagnostic list has a separate error for this case 
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and a virtual call has no point at which the constraints could be checked.
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and a virtual call has no point at which the constraints could be checked.
 
 ## Opinions
 

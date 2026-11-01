@@ -38,7 +38,7 @@ and `specification/statements/loops.md`.
 
 ## Provisional answer
 
-Option 1 for the specification, with option 3 for the roadmap. The
+No; the grammar stays the only statement (option 1), and a list of such forms can live in the roadmap (option 3). The
 grammar already rejects the form, and a rule for one unused keyword pair
 would invite a rule for every pair. The maintainer decides whether the
 roadmap keeps the list.

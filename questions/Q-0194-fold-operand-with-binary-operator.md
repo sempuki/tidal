@@ -26,7 +26,7 @@ the operand. EDG 7.0 accepts the fold. Every compiler accepts
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the fold, and option 1
+No, it needs parentheses; EDG differs (option 1). Two of three implementations reject the fold, and option 1
 keeps the grouping of a fold visible in the source. A reader need not
 compare precedences to see which operator the fold applies.
 

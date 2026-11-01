@@ -36,7 +36,7 @@ overflow during constant evaluation (UN-21, PFX-18).
 
 ## Provisional answer
 
-Option 1. Two of three implementations take this behavior, and the
+The step is defined and the value converts back; EDG differs (option 1). Two of three implementations take this behavior, and the
 sanitizer of both agrees that the step is defined.
 
 ## Opinions

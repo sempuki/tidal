@@ -32,7 +32,7 @@ and the "one {1}" rows of the lists grid on the page.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the page's rules give
+No, they tie; GCC differs (option 1). Two of three implementations agree, and the page's rules give
 a tie with no further rule.
 
 ## Opinions

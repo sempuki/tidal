@@ -17,7 +17,7 @@ initializer outside the class.
 
 ## Provisional answer
 
-Option 1. GCC and EDG accept the declaration. An opinion from a
+Yes; the initializer in the class is valid (option 1). GCC and EDG accept the declaration. An opinion from a
 contributor is welcome, because the member cannot be used in a constant
 expression either way.
 

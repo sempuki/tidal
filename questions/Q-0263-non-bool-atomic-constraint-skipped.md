@@ -33,7 +33,7 @@ CNS-39 states the check at the definition.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree. A constraint that is not valid for any argument is not valid in the template, as DEP-30 treats other constructs.
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree. A constraint that is not valid for any argument is not valid in the template, as DEP-30 treats other constructs.
 
 ## Opinions
 

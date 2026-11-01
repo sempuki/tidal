@@ -17,7 +17,7 @@ Clang and EDG reject the default argument. GCC accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and other operator functions have the
+No; a literal operator must not have a default argument (option 1). Clang and EDG agree, and other operator functions have the
 same limit.
 
 ## Opinions

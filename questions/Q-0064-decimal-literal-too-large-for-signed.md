@@ -17,6 +17,6 @@ literal an unsigned type. EDG 7.0 accepts the literal in strict mode.
 
 ## Provisional answer
 
-Option 1. Clang and GCC treat the unsigned type as an extension.
+No; the program is not valid (option 1). Clang and GCC treat the unsigned type as an extension.
 
 ## Opinions

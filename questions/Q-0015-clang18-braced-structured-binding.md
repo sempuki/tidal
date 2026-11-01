@@ -23,7 +23,7 @@ compilers accept the `=` and parenthesized forms.
 
 ## Provisional answer
 
-Option 1. The newer version of the same implementation and both other
+Yes; Clang 18's rejection is fixed in later versions (option 1). The newer version of the same implementation and both other
 implementations accept the braced form.
 
 ## Opinions

@@ -35,7 +35,7 @@ newer version settles the split.
 
 ## Provisional answer
 
-Option 1. The grouping and result are well defined, and four of five
+Valid; a warning is recommended (option 1). The grouping and result are well defined, and four of five
 compiler versions accept the expression. Clang 22 treats the rejection
 as a warning that a flag turns back into a warning, which matches
 option 1 with a strict default.

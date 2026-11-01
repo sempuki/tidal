@@ -15,6 +15,6 @@ A type alias names a function type with a ref-qualifier. A parameter is declared
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and a pointer to the same type is rejected by all three.
+No, as for a pointer to such a type (option 1). Clang and GCC agree, and a pointer to the same type is rejected by all three.
 
 ## Opinions

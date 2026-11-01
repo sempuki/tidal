@@ -20,7 +20,7 @@ bytes.
 
 ## Provisional answer
 
-Option 1. The three compilers give three types, and each type holds the
+Unspecified: any integer type that holds the value (option 1). The three compilers give three types, and each type holds the
 value.
 
 ## Opinions

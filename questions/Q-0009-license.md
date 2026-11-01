@@ -28,7 +28,7 @@ and are not committed.
 
 ## Answer
 
-Option 1, added by the repository owner in `LICENSE.txt`. Contributions are
+Apache-2.0 with LLVM exception (option 1), added by the repository owner in `LICENSE.txt`. Contributions are
 accepted under the same license. The specification, tests, and tools share
 one license with LLVM and EDG, the main implementations Tidal draws on.
 

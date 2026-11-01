@@ -44,7 +44,7 @@ compiler in the matrix. GCC 16 behaves as GCC 14.
 
 ## Provisional answer
 
-Option 2. Clang and EDG agree on every case, and every implementation
+The subobject acts as an array of one element, so moving the pointer outside `p` and `p + 1`, a read through `p + 1`, and a difference of pointers into different elements are undefined (option 2). Clang and EDG agree on every case, and every implementation
 accepts `p + 1` without a read. ADD-14 states option 2.
 
 ## Opinions

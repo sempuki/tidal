@@ -34,8 +34,7 @@ EDG read the object's value as a constant.
 
 ## Provisional answer
 
-Option 1, because Tidal follows the majority where the compilers
-disagree. The test expects Clang to reject the program.
+No; the copy is no use, and Clang differs (option 1). Tidal follows the majority where the compilers disagree. The test expects Clang to reject the program.
 
 ## Opinions
 

@@ -23,7 +23,7 @@ ref-qualifier and one without.
 
 ## Provisional answer
 
-Option 1. Three implementations, including the older GCC, reject the
+No; the declarations are rejected (option 1). Three implementations, including the older GCC, reject the
 declarations. GCC 16's change is recorded here so contributors can say
 whether it reflects a deliberate language change.
 

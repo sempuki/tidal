@@ -30,7 +30,7 @@ with an override for Clang 18.
 
 ## Provisional answer
 
-Option 1. Clang 22 agrees with GCC and EDG, so the Clang 18 result is a
+Yes; Clang 18's choice is fixed in Clang 22 (option 1). Clang 22 agrees with GCC and EDG, so the Clang 18 result is a
 defect that a later Clang fixes.
 
 ## Opinions

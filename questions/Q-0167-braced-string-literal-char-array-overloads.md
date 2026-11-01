@@ -35,7 +35,7 @@ would assert that the first call is ambiguous, with a GCC override.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and ICS-38 gives both
+No, ambiguous; Clang and EDG agree, GCC picks `char` (option 1). Two of three implementations agree, and ICS-38 gives both
 bindings the identity.
 
 ## Opinions

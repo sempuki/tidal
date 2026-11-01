@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept the declaration, and the review summary agrees.
+Valid; the ban covers only evaluated uses of a parameter (option 1). Two of three implementations accept the declaration, and the review summary agrees.
 
 ## Opinions

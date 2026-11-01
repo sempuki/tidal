@@ -22,7 +22,7 @@ valid inside function"), even under `-pedantic-errors`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject the use, and Clang's own
+Yes (option 1). Two of three implementations reject the use, and Clang's own
 warning says `__func__` is only valid inside a function.
 
 ## Opinions

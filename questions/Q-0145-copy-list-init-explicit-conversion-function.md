@@ -32,7 +32,7 @@ the overload resolution inventory names direct-initialization only.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the inventory names
+No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the inventory names
 direct-initialization only.
 
 ## Opinions

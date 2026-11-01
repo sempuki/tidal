@@ -28,7 +28,7 @@ G17 says that an array bound can be left out.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree.
+Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations and the inventory agree.
 
 ## Opinions
 

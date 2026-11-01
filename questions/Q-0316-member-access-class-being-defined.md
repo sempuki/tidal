@@ -33,7 +33,7 @@ says that the class is incomplete.
 
 ## Provisional answer
 
-Option 1. Two of three compilers accept the access, and option 1 gives
+Yes (PFX-11), as GCC and EDG do; Clang rejects (option 1). Two of three compilers accept the access, and option 1 gives
 member access the same view of the class as unqualified lookup. The test
 expects an acceptance and records Clang's result with an override.
 

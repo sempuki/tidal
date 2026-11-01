@@ -14,6 +14,6 @@ A derived class declares a member function with an explicit object parameter. Th
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+No; the declaration is not valid (option 1). Clang and GCC agree.
 
 ## Opinions

@@ -32,7 +32,7 @@ The three tests above, each with an override for GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the access check, on which all
+No; Clang and EDG reject, GCC accepts (option 1). Clang and EDG agree, and the access check, on which all
 three agree, treats the deallocation function as used.
 
 ## Opinions

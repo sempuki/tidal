@@ -24,6 +24,6 @@ GCC 14.
 
 ## Provisional answer
 
-Option 1. Clang and the newer GCC agree. The provisional answer has the weakest support of the group, and an opinion is welcome.
+No; `alignas` must not apply to an enumeration (option 1). Clang and the newer GCC agree. The provisional answer has the weakest support of the group, and an opinion is welcome.
 
 ## Opinions

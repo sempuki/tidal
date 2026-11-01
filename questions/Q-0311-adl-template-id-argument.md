@@ -37,7 +37,7 @@ EDG has not run the probes yet.
 
 ## Provisional answer
 
-Option 1, which GCC follows. NAM-27 already adds the type arguments of
+Yes; a template-id adds what each type template argument adds (NAM-27, option 1), as GCC does. NAM-27 already adds the type arguments of
 a class template specialization, and option 1 gives a function template
 specialization the same treatment. The test expects GCC's result and
 records Clang's result with an override.

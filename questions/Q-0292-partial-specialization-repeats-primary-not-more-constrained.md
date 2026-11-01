@@ -31,7 +31,7 @@ have the same constraint (`partial-specialization-same-constraints.cpp`).
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and EDG rejects the case
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and EDG rejects the case
 with equal constraints.
 
 ## Opinions

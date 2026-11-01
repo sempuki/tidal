@@ -30,7 +30,7 @@ override for GCC, and `default-friend-declaration.cpp`.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the rule then matches the rule for
+No; Clang and EDG reject, GCC accepts (option 1). Clang and EDG agree, and the rule then matches the rule for
 friend function template declarations, which all compilers apply.
 
 ## Opinions

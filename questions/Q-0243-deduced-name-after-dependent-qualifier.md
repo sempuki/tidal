@@ -41,7 +41,7 @@ The tests above.
 
 ## Provisional answer
 
-Option 1. Every implementation accepts the form without the keyword
+Yes; every compiler accepts (option 1). Every implementation accepts the form without the keyword
 `template`, and the specification follows the behavior that
 implementations share. The form with `template` follows the same
 answer, which GCC and EDG give. The question keeps both readings open

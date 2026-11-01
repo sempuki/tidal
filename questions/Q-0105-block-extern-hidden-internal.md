@@ -15,6 +15,6 @@ A namespace-scope `static` variable is hidden by a local variable of the same na
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree.
+Yes; the declaration redeclares the namespace-scope entity and takes its internal linkage (option 1). Clang and GCC agree.
 
 ## Opinions

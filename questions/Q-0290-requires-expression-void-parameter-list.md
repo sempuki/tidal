@@ -29,7 +29,7 @@ for a function's parameter list.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and every compiler
+Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and every compiler
 accepts the form outside a template.
 
 ## Opinions

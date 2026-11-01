@@ -34,7 +34,7 @@ describe partial ordering in this context.
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree, and the gap review describes the same use
+Yes; GCC and EDG agree, Clang calls none (option 1). GCC and EDG agree, and the gap review describes the same use
 of partial ordering.
 
 ## Opinions

@@ -31,7 +31,7 @@ treatment there looks unsettled.
 
 ## Provisional answer
 
-Option 1. Every implementation rejects the expansion. An alias template
+No; every compiler rejects (option 1). Every implementation rejects the expansion. An alias template
 is replaced by its type at the use, so the type needs each argument
 before the length of the pack is known.
 

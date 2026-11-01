@@ -39,7 +39,7 @@ an error by default.
 
 ## Provisional answer
 
-Option 1. For the data member, Clang and EDG agree. For the class
+Only before a template template argument or a class or alias template; Clang and GCC each differ on one case (option 1). For the data member, Clang and EDG agree. For the class
 template, GCC and EDG agree. The inventory and the gap review support
 option 1.
 

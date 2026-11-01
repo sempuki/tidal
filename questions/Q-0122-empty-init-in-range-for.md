@@ -23,7 +23,7 @@ qualified name.
 
 ## Provisional answer
 
-Option 1. Two of three implementations accept it, and one `init_stmt`
+Yes; GCC rejects it (option 1). Two of three implementations accept it, and one `init_stmt`
 for every statement that takes one keeps the grammar simple.
 
 ## Opinions

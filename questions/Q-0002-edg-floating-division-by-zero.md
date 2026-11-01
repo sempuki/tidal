@@ -30,7 +30,7 @@ version in the matrix.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject, and EDG's own handling
+No; likely EDG defect (option 1). Two of three implementations reject, and EDG's own handling
 is inconsistent with its rejection of overflow.
 
 ## Opinions

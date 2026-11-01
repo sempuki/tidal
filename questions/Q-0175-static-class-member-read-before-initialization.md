@@ -50,7 +50,7 @@ the rejections do not separate the scalar case from the class case.
 
 ## Provisional answer
 
-Option 1. The option follows the lifetime model of OBJ-1. Constant
+No; the read is undefined (OBJ-2) (option 1). The option follows the lifetime model of OBJ-1. Constant
 evaluation in every compiler treats the member as having no value. The
 run-time results of option 2 lie within what OBJ-2 allows.
 

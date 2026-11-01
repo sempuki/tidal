@@ -35,7 +35,7 @@ with an override for Clang, and
 
 ## Provisional answer
 
-Option 1. GCC and EDG agree. The answer also agrees with
+Yes; GCC and EDG agree, Clang calls none (option 1). GCC and EDG agree. The answer also agrees with
 Q-0219, where an order between the matches chooses one.
 
 ## Opinions

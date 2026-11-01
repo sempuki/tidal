@@ -33,7 +33,7 @@ error.
 
 ## Provisional answer
 
-Option 1. GCC finds the fault only where it emits code, so GCC treats
+No; the rule needs no diagnostic and a warning is recommended; GCC is silent when the only use is in an uncalled inline function (option 1). GCC finds the fault only where it emits code, so GCC treats
 the fault as a link-time fault that it reports early. Each compiler
 warns about the plain case.
 

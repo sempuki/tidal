@@ -16,6 +16,6 @@ it. GCC accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+No; the declaration is not valid (option 1). Clang and EDG agree.
 
 ## Opinions

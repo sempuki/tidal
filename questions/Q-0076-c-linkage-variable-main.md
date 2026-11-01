@@ -16,6 +16,6 @@ and Clang 18 accept both.
 
 ## Provisional answer
 
-Option 1. The newer versions agree with EDG.
+No; the program is not valid in both cases (option 1). The newer versions agree with EDG.
 
 ## Opinions

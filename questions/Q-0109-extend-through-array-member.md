@@ -15,6 +15,6 @@ An rvalue reference binds to one element of an array member of a class prvalue. 
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and REF-4 already covers a member of the temporary.
+Yes; the binding is valid and extends the temporary (option 1). Clang and GCC agree, and REF-4 already covers a member of the temporary.
 
 ## Opinions

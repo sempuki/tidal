@@ -19,6 +19,6 @@ split.
 
 ## Provisional answer
 
-Option 1. Two implementations accept `throw()` and one rejects it.
+Implementation-defined; where `throw()` is accepted, it means `noexcept` (option 1). Two implementations accept `throw()` and one rejects it.
 
 ## Opinions

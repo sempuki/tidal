@@ -31,7 +31,7 @@ bound in the original `int (*)[3]`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree.
+No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree.
 
 ## Opinions
 

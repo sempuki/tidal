@@ -16,7 +16,7 @@ qualifier. GCC accepts it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the qualifier cannot change the
+No; a program must not put a cv-qualifier on an unnamed bit-field (option 1). Clang and EDG agree, and the qualifier cannot change the
 meaning of the program.
 
 ## Opinions

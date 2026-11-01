@@ -15,6 +15,6 @@ A constexpr function binds a reference to `*p` where `p` is a null pointer, and 
 
 ## Provisional answer
 
-Option 1. The newer Clang agrees with GCC.
+Yes; the binding is undefined, so constant evaluation rejects it (option 1). The newer Clang agrees with GCC.
 
 ## Opinions

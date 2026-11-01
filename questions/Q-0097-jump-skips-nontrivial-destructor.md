@@ -7,7 +7,7 @@ Duplicate of Q-0041.
 
 ## Answer
 
-Q-0041 asks the same question and now names SW-5 and both tests. Q-0041
+Duplicate of Q-0041. Q-0041 asks the same question and now names SW-5 and both tests. Q-0041
 holds the context, the evidence, and the provisional answer.
 
 ## Opinions

@@ -15,6 +15,6 @@ A structured binding declaration at namespace scope has `constinit`. Clang and G
 
 ## Provisional answer
 
-Option 1. The newer GCC agrees with Clang.
+No; only static, thread_local, const, and volatile can occur (option 1). The newer GCC agrees with Clang.
 
 ## Opinions

@@ -30,7 +30,7 @@ override for GCC, and `member-class-outside.cpp`.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and GCC treats the form as an
+Yes; Clang and EDG accept, GCC rejects under -pedantic-errors (option 1). Clang and EDG agree, and GCC treats the form as an
 extension, so GCC gives it the same meaning.
 
 ## Opinions

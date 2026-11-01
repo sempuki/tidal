@@ -32,7 +32,7 @@ whether TPL-14 counts the defaults of earlier declarations.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and TPL-15 already merges the defaults
+Yes, TPL-14 counts the defaults of all declarations; Clang and EDG agree, GCC differs (option 1). Clang and EDG agree, and TPL-15 already merges the defaults
 of all declarations.
 
 ## Opinions

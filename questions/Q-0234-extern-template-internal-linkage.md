@@ -30,7 +30,7 @@ declaration of ... with internal linkage". Inventory item G14 agrees.
 
 ## Provisional answer
 
-Option 1. A specialization with internal linkage has no definition in
+No; Clang and EDG agree, GCC differs (option 1). A specialization with internal linkage has no definition in
 another unit, so the declaration could never be satisfied.
 
 ## Opinions

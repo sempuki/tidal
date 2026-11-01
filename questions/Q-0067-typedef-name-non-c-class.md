@@ -17,7 +17,7 @@ typedef. GCC 14 accepts it.
 
 ## Provisional answer
 
-Option 1. The newer GCC agrees with Clang and EDG, so the behavior of
+No; a class that gets its name from a typedef must be C-like (option 1). The newer GCC agrees with Clang and EDG, so the behavior of
 GCC 14 is treated as an older implementation choice.
 
 ## Opinions

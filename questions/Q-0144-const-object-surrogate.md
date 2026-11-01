@@ -32,7 +32,7 @@ G-10 of the overload resolution inventory.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the inventory states
+No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the inventory states
 the condition.
 
 ## Opinions

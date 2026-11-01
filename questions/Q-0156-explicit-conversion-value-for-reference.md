@@ -34,7 +34,7 @@ and `user-defined-explicit.cpp`.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree.
+No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree.
 
 ## Opinions
 

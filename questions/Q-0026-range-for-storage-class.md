@@ -17,7 +17,7 @@ both.
 
 ## Provisional answer
 
-Option 1. The newest version of every implementation in the matrix
+No; GCC 14's acceptance is fixed in GCC 16 (option 1). The newest version of every implementation in the matrix
 rejects both forms.
 
 ## Opinions

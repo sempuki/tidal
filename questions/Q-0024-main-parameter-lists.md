@@ -33,7 +33,7 @@ has an override for EDG.
 
 ## Provisional answer
 
-Option 1. The three-parameter form is a common convention, but nothing in
+() and (int, char**) everywhere; others implementation-defined, including a first parameter of type `long` (option 1). The three-parameter form is a common convention, but nothing in
 the evidence shows it is more than each implementation's choice.
 
 ## Opinions

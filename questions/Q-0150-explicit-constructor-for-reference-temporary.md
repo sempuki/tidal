@@ -32,7 +32,7 @@ list.
 
 ## Provisional answer
 
-Option 1. Two of the three compilers reject the list, and the result
+No; GCC and EDG agree, Clang differs (option 1). Two of the three compilers reject the list, and the result
 then does not depend on the presence of `=`.
 
 ## Opinions

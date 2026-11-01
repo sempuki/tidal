@@ -32,7 +32,7 @@ for Clang.
 
 ## Provisional answer
 
-Option 1. GCC and EDG show that the order is a fault. Clang shows that
+No, no diagnostic required; GCC and EDG reject, Clang accepts (option 1). GCC and EDG show that the order is a fault. Clang shows that
 a mature implementation does not check it, and a use in another
 translation unit cannot be checked at all.
 

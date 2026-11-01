@@ -25,6 +25,6 @@ for GCC.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+Yes; if a declaration has `alignas`, the definition must have the same alignment (option 1). Clang and EDG agree.
 
 ## Opinions

@@ -36,7 +36,7 @@ the binding with a non-`const` reference.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the result matches
+Yes; Clang and EDG agree, GCC makes a temporary (option 1). Two of three implementations agree, and the result matches
 the binding after `=` and the binding to an array of known bound.
 
 ## Opinions

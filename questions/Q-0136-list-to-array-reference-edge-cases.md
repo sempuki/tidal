@@ -41,7 +41,7 @@ page (`tests/foundations/conversion-sequences/grids/lists.json`).
 
 ## Provisional answer
 
-Option 1. ICS-17 needs the elements to give the bound, and ICS-18 needs
+No; Clang agrees, GCC and EDG differ (option 1). ICS-17 needs the elements to give the bound, and ICS-18 needs
 the named members. Clang is the only compiler with one consistent
 answer for both cases.
 

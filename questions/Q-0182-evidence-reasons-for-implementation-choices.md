@@ -25,7 +25,7 @@ the Evidence of `specification/foundations/evaluation-order.md`.
 
 ## Provisional answer
 
-Option 2. A reason is useful to a reader, and a clean input keeps the
+Only when a clean input states the reason (option 2). A reason is useful to a reader, and a clean input keeps the
 clean-room rules. A reason with no clean input stays out.
 
 ## Opinions

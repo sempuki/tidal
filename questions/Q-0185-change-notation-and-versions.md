@@ -26,8 +26,7 @@ change notation.
 
 ## Provisional answer
 
-Option 1 now, because proposals need it and Tidal specifies one
-version. Option 2 when Tidal specifies a second version.
+A change table for proposals now (option 1), because proposals need it and Tidal specifies one version. Option 2 when Tidal specifies a second version.
 
 ## Opinions
 

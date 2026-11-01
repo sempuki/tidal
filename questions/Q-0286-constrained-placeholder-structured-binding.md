@@ -28,7 +28,7 @@ compiler rejects a constrained placeholder in a functional cast
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the gap review of
+No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review of
 concepts and constraints (item 17) describes the same rule.
 
 ## Opinions

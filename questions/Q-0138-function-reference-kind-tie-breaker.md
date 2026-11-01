@@ -42,7 +42,7 @@ describes the tie-breaker.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and the inventory and the
+Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the inventory and the
 gap review describe the tie-breaker.
 
 ## Opinions

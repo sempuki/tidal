@@ -21,7 +21,7 @@ with GCC and EDG on every `assume` test.
 
 ## Provisional answer
 
-Option 1. This option needs no new tooling, and the note makes the reason
+Per-compiler expectation naming this question (option 1). This option needs no new tooling, and the note makes the reason
 visible in the test.
 
 ## Opinions

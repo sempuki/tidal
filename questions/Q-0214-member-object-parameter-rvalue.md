@@ -43,7 +43,7 @@ describes the rvalue reference.
 
 ## Provisional answer
 
-Option 1. The current Clang and GCC agree, and the gap review describes
+Yes; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clang and GCC agree, and the gap review describes
 the same behavior. Clang changed from option 2 to option 1 between
 versions 18 and 22.
 

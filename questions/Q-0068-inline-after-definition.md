@@ -16,6 +16,6 @@ it.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+No; a function must not be declared `inline` after its definition (option 1). Clang and EDG agree.
 
 ## Opinions

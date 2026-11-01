@@ -32,7 +32,7 @@ also inside an unevaluated operand.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree on each row, and the gap review supports the braced rows.
+In a braced initializer; EDG and GCC differ on single rows (option 1). Two of three implementations agree on each row, and the gap review supports the braced rows.
 
 ## Opinions
 

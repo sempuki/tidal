@@ -58,7 +58,7 @@ and `read-extended-temporary-not-const.cpp`.
 
 ## Provisional answer
 
-Option 1. REF-4 gives every form of extension the same lifetime, and
+Yes for any REF-4 binding, and a read needs a `const` type; EDG and GCC differ (option 1). REF-4 gives every form of extension the same lifetime, and
 CE-14 follows the lifetime. Clang accepts every case, and on the read of
 a class EDG agrees with Clang. A rule that depends on the form of the
 binding would be harder to state and to check.

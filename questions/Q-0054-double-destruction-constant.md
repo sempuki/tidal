@@ -17,7 +17,7 @@ it.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree. A use of the object after the first
+Yes; the behavior is undefined, so constant evaluation rejects it (option 1). Clang and GCC agree. A use of the object after the first
 destruction is rejected by all compilers.
 
 ## Opinions

@@ -44,7 +44,7 @@ element of the list is a string literal. Under that reading,
 
 ## Provisional answer
 
-Option 1. Every implementation elides the braces in the first form,
+Braces elided for a fixed bound; Clang and GCC agree, EDG differs on a fixed char array (option 1). Every implementation elides the braces in the first form,
 and two of three accept the second.
 
 ## Opinions

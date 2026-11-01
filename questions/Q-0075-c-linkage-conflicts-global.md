@@ -14,6 +14,6 @@ A namespace declares `extern "C" int clash;` and the global namespace declares a
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the two names would collide when linked.
+No; the program is not valid (option 1). Clang and EDG agree, and the two names would collide when linked.
 
 ## Opinions

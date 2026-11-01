@@ -20,6 +20,6 @@ split.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+Yes; a deallocation function is non-throwing without the keyword (option 1). Clang and EDG agree.
 
 ## Opinions

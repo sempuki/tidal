@@ -28,7 +28,7 @@ the valid range of values [0, 7] for the enumeration type 'E'".
 
 ## Provisional answer
 
-Option 1. An implementation can only diagnose such a conversion during
+Undefined (option 1). An implementation can only diagnose such a conversion during
 constant evaluation if the operation is invalid, and an implementation
 that treats the operation as valid (option 2) would forbid Clang's
 diagnostic.

@@ -37,7 +37,7 @@ reference's type has no bound.
 
 ## Provisional answer
 
-Option 1. A reference to an array of unknown bound can bind to an array
+The reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces (option 1). A reference to an array of unknown bound can bind to an array
 of known bound (REF-1) without a change to the reference's type. Two of
 the three compilers keep the declared type. An array of zero elements
 is not valid elsewhere, and Q-0136 gives empty braces no sequence to

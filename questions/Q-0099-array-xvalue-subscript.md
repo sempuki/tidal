@@ -7,7 +7,7 @@ Duplicate of Q-0034.
 
 ## Answer
 
-Q-0034 asks the same question for PFX-3, and VC-3 refers to PFX-3.
+Duplicate of Q-0034. Q-0034 asks the same question for PFX-3, and VC-3 refers to PFX-3.
 Q-0034 holds the context, the evidence, and the provisional answer.
 
 ## Opinions

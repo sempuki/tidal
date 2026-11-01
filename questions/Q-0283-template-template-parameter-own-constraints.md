@@ -35,7 +35,7 @@ one that needs no diagnostic.
 
 ## Provisional answer
 
-Option 1. The parameter's constraints describe every argument the
+No diagnostic required; EDG diagnoses (option 1). The parameter's constraints describe every argument the
 template can receive, so a use that fails them can never be valid. The
 compilers differ only in whether they diagnose the use.
 

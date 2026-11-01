@@ -15,6 +15,6 @@ In `c ? 0 : nullptr`, one operand is the literal `0` and the other is `nullptr`.
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+Yes; the result has the type of `nullptr` (option 1). Clang and EDG agree.
 
 ## Opinions

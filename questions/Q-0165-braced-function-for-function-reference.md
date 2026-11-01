@@ -37,7 +37,7 @@ type `void (*)() noexcept` cannot be used to initialize the reference.
 
 ## Provisional answer
 
-Option 1. Clang accepts both cases, each case has two of three
+Yes; GCC rejects an overload set, EDG a noexcept function (option 1). Clang accepts both cases, each case has two of three
 implementations, and braces do not change the binding of a function
 reference after `=`.
 

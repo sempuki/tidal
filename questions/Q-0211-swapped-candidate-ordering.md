@@ -37,7 +37,7 @@ inventory describes the behavior.
 
 ## Provisional answer
 
-Option 1. Two of three implementations and the inventory agree. The
+Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree. The
 reversal compares the parameters that meet the same operand.
 
 ## Opinions

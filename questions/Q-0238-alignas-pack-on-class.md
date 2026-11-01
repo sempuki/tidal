@@ -31,7 +31,7 @@ The two tests above. A run of the class form on GCC 16 gives 2 for
 
 ## Provisional answer
 
-Option 1, and GCC's result on a class is a defect. Every compiler takes
+Yes; a class takes the strictest element, as a member does (option 1), and GCC's result on a class is a defect. Every compiler takes
 the strictest element on a member, and several `alignas` on one
 declaration also give the strictest alignment (ALN-1).
 

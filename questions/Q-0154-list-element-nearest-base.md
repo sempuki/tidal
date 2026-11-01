@@ -39,7 +39,7 @@ applies.
 
 ## Provisional answer
 
-Option 1. Two of three implementations agree, and every compiler
+Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and every compiler
 applies ICS-36 to the same list for an aggregate.
 
 ## Opinions

@@ -19,7 +19,7 @@ declaration itself.
 
 ## Provisional answer
 
-Option 1. The newer GCC agrees with Clang and EDG, so the behavior of
+Deleted; only a use is rejected (option 1). The newer GCC agrees with Clang and EDG, so the behavior of
 GCC 14 is treated as an older implementation choice.
 
 ## Opinions

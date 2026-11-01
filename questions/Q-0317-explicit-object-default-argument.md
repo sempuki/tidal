@@ -29,7 +29,7 @@ have a default argument, and GCC says the same in other words.
 
 ## Provisional answer
 
-Option 1. Clang and GCC reject the declaration, and the default
+No (CLS-14); EDG accepts (option 1). Clang and GCC reject the declaration, and the default
 argument could never take effect. The test expects a rejection and
 records EDG's result with an override.
 

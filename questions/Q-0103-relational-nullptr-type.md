@@ -25,7 +25,7 @@ compiler in the matrix. EDG 7.0 is the only EDG version in the matrix.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and only `==` and `!=` apply to the type
+No, as for two pointers to members (option 1). Clang and GCC agree, and only `==` and `!=` apply to the type
 of `nullptr`. EDG's rejection of `<=>` agrees with option 1.
 
 ## Opinions

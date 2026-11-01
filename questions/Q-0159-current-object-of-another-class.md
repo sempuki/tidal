@@ -37,7 +37,7 @@ describes the call as not valid.
 
 ## Provisional answer
 
-Option 1. The gap review describes it, and it gives the same result as
+No, the call has no object; GCC agrees, Clang and EDG differ (option 1). The gap review describes it, and it gives the same result as
 the calls with no `this`, on which every compiler agrees.
 
 ## Opinions

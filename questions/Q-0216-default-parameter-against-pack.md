@@ -41,7 +41,7 @@ describes option 1.
 
 ## Provisional answer
 
-Option 1. The gap review describes it, and Clang implements it. The
+Yes; Clang, GCC and EDG differ (option 1). The gap review describes it, and Clang implements it. The
 same view of the whole parameter list applies to the constraint
 tie-breaker, where Clang and GCC agree (ORD-13, Q-0146).
 

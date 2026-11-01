@@ -14,6 +14,6 @@ A declaration such as `alignas(1) int x;` asks for an alignment weaker than the 
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree.
+No; the program is not valid (option 1). Clang and EDG agree.
 
 ## Opinions

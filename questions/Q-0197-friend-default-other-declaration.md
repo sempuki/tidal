@@ -32,7 +32,7 @@ override for EDG, and `default-friend-definition.cpp`.
 
 ## Provisional answer
 
-Option 1. EDG diagnoses the case, and Clang and GCC give the program a
+Invalid, no diagnostic required; EDG rejects, Clang and GCC accept (option 1). EDG diagnoses the case, and Clang and GCC give the program a
 meaning. A rule without a required diagnostic covers both.
 
 ## Opinions

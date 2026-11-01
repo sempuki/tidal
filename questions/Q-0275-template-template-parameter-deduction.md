@@ -31,7 +31,7 @@ type is a specialization of one, and predicts a rejection.
 
 ## Provisional answer
 
-Option 1. Every implementation deduces, and the specification follows
+Yes; every compiler accepts (option 1). Every implementation deduces, and the specification follows
 the behavior that implementations share.
 
 ## Opinions

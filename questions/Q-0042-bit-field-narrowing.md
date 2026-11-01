@@ -14,6 +14,6 @@
 
 ## Provisional answer
 
-Option 1. The newest versions of two implementations accept the initialization, and both changed in the same direction.
+Not narrowing when every value of the bit-field's width fits the target (option 1). The newest versions of two implementations accept the initialization, and both changed in the same direction.
 
 ## Opinions

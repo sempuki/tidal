@@ -43,7 +43,7 @@ describes the order of option 1.
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and the gap review describes the same
+Yes; Clang and GCC agree, EDG checks first (option 1). Clang and GCC agree, and the gap review describes the same
 order.
 
 ## Opinions

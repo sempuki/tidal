@@ -14,6 +14,6 @@ A class with a virtual base declares a constexpr destructor. Clang and GCC rejec
 
 ## Provisional answer
 
-Option 1. Clang and GCC agree, and option 1 matches the rule for constructors.
+No, as for constexpr constructors (option 1). Clang and GCC agree, and option 1 matches the rule for constructors.
 
 ## Opinions
