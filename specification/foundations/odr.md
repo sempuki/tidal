@@ -7,6 +7,7 @@ A used entity needs a definition. This page states the following:
 - which expressions and constructs use a variable or a function,
 - how many definitions each kind of entity can have, in one
   translation unit and in the whole program,
+- how templates and their specializations are shared across units,
 - how `#include "file"` puts a header's text into a translation unit,
   and how a header is kept from appearing twice.
 
@@ -15,7 +16,8 @@ functions state parts of these rules for their own constructs.
 
 Depends on: storage duration and linkage, the `inline` specifier,
 unevaluated operands, lambdas, local classes, virtual functions,
-constructors and destructors, new and delete.
+constructors and destructors, new and delete, template instantiation
+and specialization.
 
 ## Principles
 
@@ -47,7 +49,7 @@ a capture, or is not valid at all.
 :::
 
 :::{principle} ODR-P2
-:rules: ODR-1 ODR-7 ODR-8 ODR-9 ODR-10 ODR-11
+:rules: ODR-1 ODR-7 ODR-8 ODR-9 ODR-10 ODR-11 ODR-12 ODR-13 ODR-14
 
 A definition creates the entity. A declaration only names it. The
 number of definitions that the language allows depends on the kind of
@@ -59,6 +61,16 @@ entity and on the scope that is counted:
 | Variable or function with internal linkage | at most one; exactly one, if the unit uses the entity | one in each unit that uses it | the compiler, usually as a warning |
 | `inline` variable or function | at most one; exactly one, if the unit uses the entity | one in each unit that uses it, all the same | usually nothing |
 | Class or enumeration | at most one | one in each unit that needs it, all the same | usually nothing |
+| Template, member of a class template, or partial specialization | at most one | one in each unit that uses it, all the same | usually nothing |
+| Explicit specialization | as for the function, variable, or class that it is | as for the function, variable, or class that it is | as for that entity |
+
+A template is a pattern, and each unit that uses a specialization
+makes the specialization from its own copy of the pattern. The copies
+must match, and the units must see the same explicit and partial
+specializations. The program then has one entity for each
+specialization. An explicit specialization of a function template or
+a variable template is an ordinary function or variable. A header can
+hold its definition only if the definition is `inline`.
 
 A unit is translated alone ({principle}`TR-P2`). So a second definition
 inside one unit is visible to the compiler and is rejected. A missing or
@@ -230,6 +242,38 @@ class or enumeration to the others. An `inline` variable has one
 address in the program.
 :::
 
+:::{rule} ODR-12
+:kind: required
+:tests: foundations/odr/header-class-template-shared.cpp foundations/odr/header-function-template-shared.cpp foundations/odr/header-variable-template-shared.cpp foundations/odr/header-specializations-shared.cpp foundations/odr/const-variable-template-one-object.cpp
+
+Several translation units can each define the same entity of these
+kinds:
+
+- a {term}`class template` or a {term}`function template`,
+- a {term}`variable template`, also one that is `const` or `constexpr`
+  ({question}`Q-0297`),
+- a class template's member function or static data member,
+- a {term}`partial specialization`.
+
+If the definitions match (ODR-10), each {term}`specialization` that
+the units instantiate is one entity in the program. The entity has one
+address, and a static local variable in it is one object.
+:::
+
+:::{rule} ODR-13
+:kind: required
+:tests: foundations/odr/header-specializations-shared.cpp foundations/odr/explicit-specialization-declared-in-header.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp
+
+For ODR-7, ODR-8, and ODR-12, an {term}`explicit specialization`
+counts as an ordinary function, variable, or class:
+
+- If the template is a function template or a variable template,
+  several units can define the explicit specialization only if it is
+  `inline` ({rule}`TSP-25`).
+- If the template is a class template, the explicit specialization's
+  static members follow ODR-8, as in a class with no template.
+:::
+
 :::{rule} INC-1
 :kind: required
 :tests: foundations/odr/include-replaces-line.cpp foundations/odr/include-searches-own-directory.cpp foundations/odr/header-included-twice.cpp foundations/odr/header-function-in-two-units.cpp
@@ -255,7 +299,7 @@ at every inclusion.
 
 :::{rule} ODR-8
 :kind: no-diagnostic
-:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp
 
 This rule applies to a variable or function with external linkage that
 is not `inline`. If the program uses such an entity, the program must
@@ -278,12 +322,32 @@ rule for `inline` entities.
 
 :::{rule} ODR-10
 :kind: no-diagnostic
-:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp
+:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp
 
-If several translation units define the same class, enumeration,
-`inline` function, or `inline` variable, the definitions must match.
-Matching definitions have the same tokens, and each name in them refers
-to the same entity. An implementation need not diagnose a mismatch.
+If several translation units define the same entity of a kind in
+ODR-7 or ODR-12, the definitions must match. Matching definitions have
+the same tokens, and each name in them refers to the same entity, also
+where a specialization is instantiated ({rule}`INST-32`). An
+implementation need not diagnose a mismatch.
+:::
+
+:::{rule} ODR-14
+:kind: no-diagnostic
+:tests: foundations/odr/partial-specialization-in-one-unit.cpp foundations/odr/explicit-specialization-in-one-unit.cpp foundations/odr/explicit-class-specialization-in-one-unit.cpp
+
+The translation units that use a template must declare the same
+explicit and partial specializations of it:
+
+- If one unit declares an explicit specialization, every unit that
+  uses that specialization must declare it before the use
+  ({rule}`TSP-6`).
+- If one unit declares a partial specialization, every unit that
+  instantiates a specialization that it matches must declare it before
+  the use ({rule}`TSP-17`).
+
+An implementation need not diagnose a break of this rule.
+{rule}`INST-35` states the rule for an explicit instantiation and an
+explicit specialization in different units.
 :::
 
 :::{rule} INC-2
@@ -347,9 +411,20 @@ struct Guarded { int v; };
 #include "guard.h"     // adds nothing: the guard name is defined
 ```
 
+```cpp
+// holder.h, included by several units
+template <class T> struct Holder { T item; T get() const; static int made; };
+template <class T> T Holder<T>::get() const { return item; }  // valid in each unit
+template <class T> int Holder<T>::made = 0;    // one Holder<int>::made in the program
+
+template <class T> int rank = 0;               // one rank<long> in the program
+template <> inline int rank<char> = 1;         // inline: valid in each unit
+template <> int rank<bool> = 2;                // two units: two definitions
+```
+
 ## Evidence
 
-All eight compilers agree on 46 of 50 tests. EDG checks each unit and
+All eight compilers agree on 59 of 64 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -374,8 +449,22 @@ the units are valid.
   ODR-11 asks for the warning. With `-Wall` or `-Wunused-function`, GCC
   16 gives a `-Wunused-function` warning in place of that warning, and
   `-pedantic-errors` leaves the new warning a warning.
-- ODR-10: Different definitions in two units link and run. The tests
-  accept the result of either definition.
+- ODR-10, ODR-14: Different definitions in two units link and run.
+  So does a partial or explicit specialization that only one unit
+  declares. The tests accept the result of either definition. In the
+  default builds, both units use one of the definitions. In the `-O2`
+  builds, each unit can use its own. ODR-10 and ODR-14 allow both
+  results, because the rules need no diagnostic (decision 0047).
+- ODR-12: Every compiler that links gives each specialization one
+  address in the program. That includes the static members of class
+  templates and partial specializations, and a static local variable in
+  a function template. GCC 14 gives each unit its own object of a
+  `const` or `constexpr` variable template. Clang and GCC 16 give one
+  object ({question}`Q-0297`).
+- ODR-13: Two units that define a non-`inline` explicit specialization
+  of a variable template fail to link on every compiler that links. So
+  do two units that define a static data member of an explicit
+  specialization of a class template.
 - INC-2: The search order is each implementation's choice. Clang, GCC,
   and EDG take a header in the directory of the including header
   before a header of the same name in the directory of the test.

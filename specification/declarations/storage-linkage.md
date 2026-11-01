@@ -188,6 +188,10 @@ also `volatile`, `inline`, or `extern`.
 
 A `const` variable keeps external linkage if an earlier declaration of
 the variable is `extern`.
+
+A variable template follows {rule}`ODR-12` instead: each specialization
+of a `const` or `constexpr` variable template is one object in the
+program ({question}`Q-0297`).
 :::
 
 :::{rule} LNK-4
