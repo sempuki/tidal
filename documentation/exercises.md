@@ -156,6 +156,7 @@ catalog counts as done.
 | W15 | done: five programs build and run on GCC and Clang; findings W15-1 to W15-9 | `reports/clean-room/W15/` |
 | R-class-template-deduction, R-deduction, R-arguments | done, 305/305; findings RB-1 to RB-17 | `reports/clean-room/R-templates/` |
 | R-packs, R-concepts, R-constraints, R-ordering | done, 339/342; findings RA-1 to RA-14 | `reports/clean-room/R-templates/` |
+| X5 | done: 41 rule changes; findings X5-1 to X5-20 | `reports/clean-room/X5/` |
 | All others | planned | |
 
 ## 9. Prompts
