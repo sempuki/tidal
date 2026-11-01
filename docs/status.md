@@ -176,7 +176,7 @@ and 2 are done. Next:
    match, and all compilers accept a plain literal for an `unsigned
    char` array.
 3. Front end, round 6: the conversion-sequence repairs and overload
-   resolution.
+   resolution. Then the interpreter (decision 0048, roadmap item FI).
 4. Phase 4 of the roadmap: templates, starting with item N1.
 5. The remaining findings of exercises X1 to X4.
 

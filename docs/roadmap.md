@@ -74,6 +74,12 @@ each item starts.
 | P | Concepts and constraints | M, N1, N2 |
 | R | Packs, forwarding, alias templates, class template argument deduction | O |
 
+## Front end
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| FI | The interpreter of decision 0048: run tests on the abstract machine, stop at undefined behavior with the rule, and serve constant evaluation as a client | front-end round 6 |
+
 ## Parallel lanes
 
 These lanes run beside the phases when a phase waits for review.
