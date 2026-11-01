@@ -1,7 +1,7 @@
 # Q-0268: Are the constrained friend definitions of two class specializations two functions?
 
 **Status:** provisional
-**Affects:** CNS-32, `tests/templates/constraints/friend-definition-per-specialization.cpp`
+**Affects:** CNS-32, `tests/templates/constraints/friend-definition-per-specialization.cpp`, `tests/templates/constraints/friend-distinct-from-namespace.cpp`
 
 ## Context
 
@@ -16,7 +16,7 @@ requires (sizeof(T) > 1)`.
 
 ## Evidence
 
-The test above. INST-13 makes two definitions of an unconstrained friend not valid.
+The first test above. In `friend-distinct-from-namespace.cpp`, a namespace template declares `touch` with the same parameters and a constraint that does not use `T`. Clang and GCC find a call ambiguous between the friend and that template. EDG accepts the call, so it treats the two as one template. INST-13 makes two definitions of an unconstrained friend not valid.
 
 ## Options
 

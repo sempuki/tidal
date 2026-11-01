@@ -294,8 +294,8 @@ A concept name can come before `auto` or `decltype(auto)`
 
 If a concept name comes before `auto` or `decltype(auto)` (AUTO-13), the
 deduced type must satisfy the concept. {rule}`CPT-23` says which type
-the concept checks, and {rule}`CPT-22` covers return types and constant
-parameters.
+the concept checks. {rule}`CPT-22` covers return types, and
+{rule}`CPT-21` covers constant template parameters.
 :::
 
 :::{rule} AUTO-14

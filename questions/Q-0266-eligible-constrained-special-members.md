@@ -1,7 +1,7 @@
 # Q-0266: Do the constraints of special member functions decide which ones make a class trivial?
 
 **Status:** provisional
-**Affects:** CNS-21, `tests/templates/constraints/eligible-default.cpp`, `tests/templates/constraints/eligible-copy.cpp`, `tests/templates/constraints/eligible-more-constrained.cpp`
+**Affects:** CNS-21, `tests/templates/constraints/eligible-default.cpp`, `tests/templates/constraints/eligible-copy.cpp`, `tests/templates/constraints/eligible-more-constrained.cpp`, `tests/templates/constraints/eligible-unsatisfied-more-constrained.cpp`
 
 ## Context
 
@@ -19,7 +19,7 @@ member of that class needs the member's constructor to be trivial.
 
 ## Evidence
 
-The three tests above. With destructors, every compiler chooses the trivial one (`destructor-trivial.cpp`).
+The four tests above. In `eligible-unsatisfied-more-constrained.cpp` the user-provided constructor is more constrained but not satisfied, and EDG again treats the default constructor as not trivial. With destructors, every compiler chooses the trivial one (`destructor-trivial.cpp`).
 
 ## Options
 

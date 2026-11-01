@@ -1,4 +1,4 @@
-// tidal-rules: CPT-22
+// tidal-rules: CPT-21 CNS-13
 // tidal-expect: reject
 // tidal-error-clang: constraints not satisfied for class template 'Value'
 // tidal-error-gcc: placeholder constraints not satisfied|template constraint failure

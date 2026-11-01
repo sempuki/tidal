@@ -366,6 +366,10 @@ pack expansion
   copy of the pattern for each element of the packs in it
   ({rule}`PACK-5`).
 
+parameter mapping
+  The part of an atomic constraint that gives an argument to each
+  template parameter that its expression uses ({rule}`CNS-4`).
+
 partial ordering
   The comparison that decides which of two templates is more
   specialized ({principle}`ORD-P2`).

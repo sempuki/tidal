@@ -369,7 +369,7 @@ of a partial specialization can too ({rule}`TSP-9`).
 A constant parameter pack can have a type that names a type pack of an
 enclosing template, as in a member template of a class template. The
 type pack must not be declared in the same head. In a class template,
-such a head breaks TPL-30.
+such a head breaks TPL-30. {rule}`PACK-26` gives the other pack kinds.
 :::
 
 ### Default template arguments
@@ -482,6 +482,8 @@ with that name. These declarations are not valid:
 
 A friend function declaration with the name is valid, because it
 declares no name in the template's scope ({question}`Q-0198`).
+{rule}`CPT-29` names the specific case of a requires expression
+parameter (decision 0042).
 :::
 
 :::{rule} TPL-20

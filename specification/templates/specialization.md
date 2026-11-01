@@ -375,7 +375,9 @@ The head and argument list of a partial specialization must follow
 these conditions:
 
 - No parameter has a default template argument.
-- The argument list is not the primary template's parameter list again.
+- The argument list is not the primary template's parameter list
+  again, unless the partial specialization is more constrained than the
+  primary template ({rule}`CNS-36`).
 - Each parameter appears in the argument list where deduction can find
   it. A constant argument that is an expression of a parameter, such as
   `N + 1`, gives no value for `N`.

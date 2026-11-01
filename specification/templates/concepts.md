@@ -19,18 +19,19 @@ constant evaluation.
 
 :::{principle} CPT-P1
 :rules: CPT-8 CPT-9 CPT-11 CPT-16 CPT-17 CPT-19 CPT-20 CPT-21 CPT-23
-:exceptions: CPT-10 CPT-12 CPT-13 CPT-14 CPT-15 CPT-18 CPT-22
+:exceptions: CPT-10 CPT-12 CPT-13 CPT-14 CPT-15 CPT-18 CPT-22 CPT-37
 
 A constraint can be written in these places:
 
 | Place | Example | What it constrains | Rules |
 |---|---|---|---|
 | before a type parameter | `template <Big T>` | the template | CPT-17, CPT-19 |
+| before `auto` in a constant parameter | `template <Big auto N>` | the template | CPT-21 |
 | after the template parameter list | `template <class T> requires Big<T>` | the template | CPT-8 |
 | before `auto` in a function parameter | `int f(Big auto x)` | the function template | CPT-20 |
 | after the declarator of a function | `int f() requires Big<T>` | the function | CPT-11 |
 | on a lambda | `[]<class T> requires Big<T> (T) {}` | the call operator | CPT-16 |
-| before `auto` in a variable, a return type, or a constant parameter | `Big auto n = 1;` | the deduced type | CPT-21 to CPT-23 |
+| before `auto` in a variable or a return type | `Big auto n = 1;` | the deduced type | CPT-22, CPT-23 |
 | after `->` in a compound requirement | `{ e } -> Big;` | the type of `e` | CPT-33 |
 | in a nested requirement | `requires Big<T>;` | the requires expression | CPT-35 |
 
@@ -41,21 +42,23 @@ negation or a comparison for example, goes in parentheses (CPT-10).
 
 A trailing requires clause constrains a function that has template
 arguments to check. The function is a template, or the function is
-declared inside a templated entity. A clause on any other function is
-not valid. A clause on a virtual function is not valid either, because
+declared inside a templated entity. A generic lambda is a template. A
+clause on any other function is not valid. A clause on a virtual function is not valid either, because
 a call through a base class does not check the constraints (CPT-14,
 CPT-15).
 :::
 
 :::{principle} CPT-P2
 :rules: CPT-1 CPT-2 CPT-3
-:exceptions: CPT-4 CPT-5 CPT-6 CPT-7
+:exceptions: CPT-4 CPT-5 CPT-6 CPT-7 CPT-36
 
 A {term}`concept` gives a name to a constraint, so that declarations
 can share the constraint. A concept has template parameters and a
 constraint expression. A {term}`concept-id`, the name of the concept
 with a template argument list, is a constant of type `bool`. Its value
-says whether the arguments satisfy the concept ({rule}`CNS-7`).
+says whether the arguments satisfy the concept ({rule}`CNS-7`). The
+arguments must fit the concept's parameters in kind and number. A
+concept-id with other arguments is an error and has no value (CPT-36).
 
 A concept is only a name for a constraint:
 
@@ -89,10 +92,12 @@ ends the check (CPT-25). No requirement is evaluated (CPT-30). The
 optional parameters are names with types, and no objects exist for
 them (CPT-28).
 
-Inside a template, a requirement that is not valid for the arguments
-makes the expression `false` (CPT-26). A template uses the result to
-test its arguments. Outside a template, nothing is substituted, so a
-requirement that is not valid is an error (CPT-27).
+A requirement that depends on template parameters is checked when the
+arguments are substituted. If the requirement is not valid for the
+arguments, the expression is `false` (CPT-26). A template uses the
+result to test its arguments. A requirement that depends on no template
+parameter has nothing to substitute. If the requirement is not valid,
+the program is not valid, inside or outside a template (CPT-27).
 :::
 
 ## Syntax
@@ -176,6 +181,16 @@ A concept definition must not use the concept's own name, directly or
 in a template argument.
 :::
 
+:::{rule} CPT-36
+:kind: reject
+:tests: templates/concepts/concept-id-argument-kind.cpp templates/concepts/concept-id-argument-count.cpp
+
+The template arguments of a concept-id must match the concept's
+template parameters in kind and number. A concept-id with arguments
+that do not match is an error, also where a `false` value would be
+expected.
+:::
+
 :::{rule} CPT-7
 :kind: reject
 :tests: templates/concepts/declaration-only.cpp templates/concepts/redefinition.cpp templates/concepts/explicit-specialization.cpp templates/concepts/partial-specialization.cpp templates/concepts/explicit-instantiation.cpp
@@ -189,12 +204,17 @@ or instantiate it explicitly.
 
 :::{rule} CPT-8
 :kind: required
-:tests: templates/concepts/leading-clause-places.cpp
+:tests: templates/concepts/leading-clause-places.cpp templates/concepts/leading-clause-guide.cpp templates/concepts/leading-clause-template-template.cpp
 
-A {term}`requires clause` can follow the template parameter list of a
-class template, function template, variable template, alias template,
-member template, or partial specialization. The clause constrains the
-template ({rule}`CNS-1`).
+A {term}`requires clause` can follow the template parameter list of
+these templates, and constrains the template ({rule}`CNS-1`):
+
+- a class template, function template, variable template, alias
+  template, or member template,
+- a partial specialization,
+- a template template parameter,
+- a deduction guide, which deduction then uses only if the clause is
+  satisfied.
 :::
 
 :::{rule} CPT-9
@@ -219,17 +239,20 @@ arithmetic expression need parentheses.
 
 :::{rule} CPT-11
 :kind: required
-:tests: templates/concepts/trailing-clause.cpp templates/concepts/trailing-clause-member.cpp templates/concepts/trailing-clause-friend.cpp templates/concepts/trailing-clause-lambda.cpp templates/concepts/trailing-clause-local-class.cpp
+:tests: templates/concepts/trailing-clause.cpp templates/concepts/trailing-clause-member.cpp templates/concepts/trailing-clause-friend.cpp templates/concepts/trailing-clause-lambda.cpp templates/concepts/trailing-clause-local-class.cpp templates/concepts/trailing-clause-member-initializer-lambda.cpp templates/concepts/trailing-clause-generic-lambda.cpp
 
 A requires clause can follow the declarator of a function, after any
 trailing return type. The function must be one of these
 ({question}`Q-0260`):
 
-- a function template,
+- a function template, including the call operator of a generic
+  lambda,
 - a member function whose class is a class template, or lies inside
   one,
 - a friend defined in a class template,
-- a lambda or a member of a local class inside a function template.
+- a lambda or a member of a local class inside a function template,
+- a lambda inside a class template, such as one in a default member
+  initializer.
 :::
 
 :::{rule} CPT-12
@@ -251,11 +274,12 @@ expression.
 
 :::{rule} CPT-14
 :kind: reject
-:tests: templates/concepts/trailing-clause-plain-function.cpp templates/concepts/trailing-clause-plain-member.cpp
+:tests: templates/concepts/trailing-clause-plain-function.cpp templates/concepts/trailing-clause-plain-member.cpp templates/concepts/trailing-clause-block-scope.cpp
 
 A function that CPT-11 does not list must not have a trailing requires
 clause. Such a function is not a template, and it is not declared in a
-templated entity.
+templated entity. A function declared at block scope inside a function
+template is not listed.
 :::
 
 :::{rule} CPT-15
@@ -281,11 +305,12 @@ clause appertain to the lambda.
 
 :::{rule} CPT-17
 :kind: required
-:tests: templates/concepts/type-constraint-arguments.cpp templates/concepts/type-constraint-qualified.cpp
+:tests: templates/concepts/type-constraint-arguments.cpp templates/concepts/type-constraint-qualified.cpp templates/concepts/type-constraint-default.cpp templates/concepts/type-constraint-default-not-satisfied.cpp
 
 A type constraint `C` or `C<A...>` before a type parameter `T`
 constrains the template with `C<T>` or `C<T, A...>`. The name of the
-concept can be qualified.
+concept can be qualified. The parameter can have a default argument,
+which is checked only when a template-id uses it ({rule}`CNS-13`).
 :::
 
 :::{rule} CPT-18
@@ -301,10 +326,12 @@ list. A concept name before a declarator needs `auto` or
 
 :::{rule} CPT-19
 :kind: required
-:tests: templates/concepts/type-constraint-pack.cpp
+:tests: templates/concepts/type-constraint-pack.cpp templates/concepts/type-constraint-pack-one-atom.cpp templates/concepts/type-constraint-variadic-concept.cpp
 
-A type constraint before a type parameter pack constrains each element
-of the pack. An empty pack satisfies the constraint.
+A type constraint `C` before a type parameter pack `T` gives the
+constraint `(C<T> && ...)`, which is one atomic constraint
+({rule}`CNS-3`, {question}`Q-0285`). An empty pack satisfies it. If
+the first parameter of `C` is a pack, each check gives it one element.
 :::
 
 :::{rule} CPT-20
@@ -318,19 +345,23 @@ constraint constrains each element of the invented pack.
 
 :::{rule} CPT-21
 :kind: required
-:tests: templates/concepts/placeholder-constant-parameter.cpp
+:tests: templates/concepts/placeholder-constant-parameter.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp templates/concepts/placeholder-constant-parameter-not-satisfied.cpp
 
 A constant template parameter can have a constrained placeholder type.
-The type that the argument gives must satisfy the type constraint.
+The type constraint, applied to the type that the argument gives, is a
+constraint of the template ({rule}`CNS-1`). A function template whose
+constant argument fails it is not a viable candidate ({rule}`CNS-11`).
 :::
 
 :::{rule} CPT-22
 :kind: reject
-:tests: templates/concepts/placeholder-return-not-satisfied.cpp templates/concepts/placeholder-constant-parameter-not-satisfied.cpp templates/concepts/placeholder-decltype-not-satisfied.cpp
+:tests: templates/concepts/placeholder-return-not-satisfied.cpp templates/concepts/placeholder-decltype-not-satisfied.cpp templates/concepts/placeholder-return-void.cpp templates/concepts/placeholder-return-void-expression.cpp
 
-The type deduced for a constrained placeholder must satisfy its type
-constraint. The rule applies to a return type and a constant template
-parameter, as {rule}`AUTO-16` does to a variable.
+The type deduced for a constrained placeholder return type must satisfy
+its type constraint, as {rule}`AUTO-16` requires for a variable. A
+function with no `return` statement, or one that returns only
+expressions of type `void`, deduces `void` for this check. CPT-21
+covers a constant template parameter.
 :::
 
 :::{rule} CPT-23
@@ -341,6 +372,17 @@ The type constraint checks the type deduced for the placeholder alone.
 References, pointers, and qualifiers written around the placeholder take
 no part. For `decltype(auto)`, the deduced type is the type that
 {rule}`AUTO-10` gives, with its reference.
+:::
+
+:::{rule} CPT-37
+:kind: reject
+:tests: templates/concepts/placeholder-parameter-decltype-auto.cpp templates/concepts/placeholder-structured-binding.cpp templates/concepts/placeholder-functional-cast.cpp templates/concepts/placeholder-functional-cast-braces.cpp
+
+A constrained placeholder must not appear in these places:
+
+- `decltype(auto)` as the type of a function parameter,
+- a structured binding declaration ({question}`Q-0286`),
+- a functional cast, such as `C auto(x)` or `C auto{x}`.
 :::
 
 ### Requires expressions
@@ -366,36 +408,42 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp
 
-In a requires expression that depends on template parameters, a
-requirement does not hold if substitution forms a type or an expression
-that is not valid. The program stays valid.
+A requirement that depends on template parameters does not hold if
+substitution forms a type or an expression that is not valid. The
+program stays valid. A name that is not accessible where the check
+happens is not valid in this sense ({question}`Q-0288`).
 :::
 
 :::{rule} CPT-27
 :kind: reject
-:tests: templates/concepts/requires-expression-outside-template.cpp
+:tests: templates/concepts/requires-expression-outside-template.cpp templates/concepts/requirement-independent-in-template.cpp templates/concepts/requirement-independent-with-parameters.cpp
 
-A requires expression that does not depend on template parameters must
-contain only valid types and expressions.
+A requirement that does not depend on template parameters must form
+only valid types and expressions. The rule applies inside a template
+too, even if the template is never instantiated.
 :::
 
 :::{rule} CPT-28
 :kind: required
-:tests: templates/concepts/requires-parameters.cpp
+:tests: templates/concepts/requires-parameters.cpp templates/concepts/requires-parameters-adjusted.cpp templates/concepts/requires-parameters-void.cpp templates/concepts/requires-parameters-void-template.cpp
 
 A parameter of a requires expression is a name with a type, which the
 requirements can use. No object is made, so the type need not be
 constructible or destructible. A later parameter can use an earlier one.
+The parameter types adjust as in a function ({rule}`DCL-8`), and
+`(void)` means no parameters ({question}`Q-0290`).
 :::
 
 :::{rule} CPT-29
 :kind: reject
-:tests: templates/concepts/requires-parameter-default.cpp templates/concepts/requires-parameter-ellipsis.cpp
+:tests: templates/concepts/requires-parameter-default.cpp templates/concepts/requires-parameter-ellipsis.cpp templates/concepts/requires-parameter-placeholder.cpp templates/concepts/requires-parameter-template-parameter-name.cpp templates/concepts/requires-parameter-enclosing-parameter-name.cpp
 
-A parameter of a requires expression must not have a default argument.
-The parameter list must not end with an ellipsis ({question}`Q-0259`).
+A parameter of a requires expression must not have a default argument
+or a placeholder type, and must not have the name of an enclosing
+template parameter ({rule}`TPL-18`). The parameter list must not end
+with an ellipsis ({question}`Q-0259`).
 :::
 
 :::{rule} CPT-30
@@ -415,43 +463,49 @@ A simple requirement holds if its expression is valid.
 
 :::{rule} CPT-32
 :kind: required
-:tests: templates/concepts/type-requirement.cpp templates/concepts/type-requirement-not-instantiated.cpp
+:tests: templates/concepts/type-requirement.cpp templates/concepts/type-requirement-not-instantiated.cpp templates/concepts/type-requirement-constraints.cpp
 
 A type requirement holds if its name forms a valid type. The name can
 be a member type, a member template specialization, a class template
 specialization, or an alias template specialization. A class template
-specialization is not instantiated, so the class can be incomplete.
+specialization is not instantiated, so the class can be incomplete. A
+specialization whose arguments fail the template's constraints or its
+default arguments is not valid.
 :::
 
 :::{rule} CPT-33
 :kind: required
-:tests: templates/concepts/compound-requirement-type.cpp templates/concepts/compound-requirement-noexcept.cpp
+:tests: templates/concepts/compound-requirement-type.cpp templates/concepts/compound-requirement-noexcept.cpp templates/concepts/compound-requirement-order.cpp templates/concepts/compound-requirement-order-noexcept.cpp templates/concepts/compound-requirement-extra-argument.cpp templates/concepts/compound-requirement-extra-argument-unused.cpp
 
-A compound requirement `{ E }` holds if `E` is valid, and these hold
-too:
+A compound requirement `{ E } noexcept -> C<A...>` is checked in these
+steps. A step that fails ends the check, and the later steps are not
+substituted ({question}`Q-0287`).
 
-- With `noexcept`, `noexcept(E)` is `true` ({rule}`UN-18`).
-- With `-> C<A...>`, the type `decltype((E))` satisfies `C`, as the
-  first argument before `A...`.
+1. `E` must be valid.
+2. With `noexcept`, `noexcept(E)` must be `true` ({rule}`UN-18`).
+3. The arguments `A...` must be valid.
+4. `C<decltype((E)), A...>` must be satisfied.
 :::
 
 :::{rule} CPT-34
 :kind: reject
-:tests: templates/concepts/requirement-body-empty.cpp templates/concepts/compound-requirement-type-name.cpp templates/concepts/simple-requirement-noexcept.cpp
+:tests: templates/concepts/requirement-body-empty.cpp templates/concepts/compound-requirement-type-name.cpp templates/concepts/simple-requirement-noexcept.cpp templates/concepts/type-requirement-keyword.cpp
 
 The body of a requires expression must have at least one requirement.
 `noexcept` and `->` appear only in a compound requirement, and `->` is
-followed by a type constraint. A type after `->` is not valid.
+followed by a type constraint. A type after `->` is not valid, and a
+type requirement must not name a keyword type such as `int`.
 :::
 
 :::{rule} CPT-35
 :kind: required
-:tests: templates/concepts/nested-requirement.cpp
+:tests: templates/concepts/nested-requirement.cpp templates/concepts/nested-requirement-parameter-unevaluated.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp
 
 A nested requirement holds if its constraint expression is satisfied
-({rule}`CNS-5` to {rule}`CNS-7`). The expression can use the
-parameters of the requires expression. A requirement that starts with
-`requires` is always a nested requirement.
+({rule}`CNS-5` to {rule}`CNS-7`). The parameters of the requires
+expression have no values, so the expression can use them only in an
+unevaluated operand ({rule}`CNS-9`, {question}`Q-0289`). A requirement
+that starts with `requires` is always a nested requirement.
 :::
 
 ## Examples
@@ -466,19 +520,20 @@ template <class T> concept Sized = requires (T t) {
 template <Sized T> int count(const T& c);                        // a type constraint
 template <class T> requires Sized<T> int first(const T& c);     // a requires clause
 int last(const Sized auto& c);                                   // a constrained placeholder
+template <Whole auto N> int half();                              // constrains the template
 
 template <class T> struct Box {
   int get() requires (sizeof(T) > 1);   // a trailing clause on a member
 };
 
 template <class T> requires !Sized<T> int bad(T);        // rejected: needs (!Sized<T>)
-constexpr bool b = requires (int n) { n.size(); };        // rejected: not a template
+constexpr bool b = requires (int n) { n.size(); };        // rejected: depends on no template parameter
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 67 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 89
+of 105 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the
@@ -490,8 +545,40 @@ words, for example "concept cannot have associated constraints" and
 - CPT-3: Clang 18 rejects an attribute after the name of a concept.
   The other compilers accept the attribute ({question}`Q-0270`).
 - CPT-11: EDG rejects a trailing clause on a lambda that is not
-  generic, and on a member of a local class, inside a function
-  template. Clang and GCC accept both ({question}`Q-0260`).
+  generic, inside a function template or in a default member
+  initializer of a class template, and on a member of a local class
+  inside a function template. Clang and GCC accept all three
+  ({question}`Q-0260`). Every compiler rejects the clause on a function
+  declared at block scope inside a function template (CPT-14). The gap
+  review expected a split there (item 27).
+- CPT-19: EDG orders two variadic templates whose packs have the type
+  constraints `A` and `AB` in its C++23 mode. Clang and GCC find the
+  call ambiguous ({question}`Q-0285`).
+- CPT-21: every compiler drops a function template whose constant
+  argument fails the placeholder's constraint, and chooses another
+  candidate.
+- CPT-26: GCC 14 finds a requires expression in a member of the class
+  `false` when it names a private member. The other compilers find it
+  `true` ({question}`Q-0288`). Every compiler judges access from the
+  place of the check, also for a concept-id first checked inside a
+  member. The gap review expected a concept to be checked in its own
+  context (item 21). No compiler does this, and the rule follows the
+  compilers. A check at another place with another result falls
+  under {rule}`CNS-10`.
+- CPT-27: every compiler rejects a requirement that uses no template
+  parameter inside a template that is never instantiated. The gap
+  review expected the compilers to differ (item 20).
+- CPT-28: Clang finds `requires (void)` `false` inside a template. GCC
+  and EDG find it `true` ({question}`Q-0290`).
+- CPT-33: Clang substitutes the extra arguments of the type constraint
+  before it checks the expression and `noexcept`. GCC never substitutes
+  an extra argument that the concept does not use. EDG follows the
+  order of the rule in both cases ({question}`Q-0287`).
+- CPT-35: Clang 18 gives `false` for a nested requirement that reads a
+  parameter. The other compilers reject the program
+  ({question}`Q-0289`).
+- CPT-37: EDG accepts a constrained placeholder in a structured binding
+  declaration ({question}`Q-0286`).
 - CPT-15: GCC accepts a virtual function with a trailing clause, and a
   constrained function that overrides a virtual function. Clang and
   EDG reject both ({question}`Q-0258`).
@@ -523,6 +610,25 @@ numbers of `reports/review/2026-10-31-inventory-concepts-and-constraints.md`:
 | CPT-28, CPT-29 | probes; clang-diag-sema and clang-diag-parse (parameters of a requires expression); inventory D5 |
 | CPT-30, CPT-31 | probes; inventory A3, D11, D14 |
 | CPT-32 to CPT-35 | probes; clang-diag-parse (the forms of a requirement); inventory C3, D6 to D8, D10, D12, D13 |
+| CPT-36, CPT-37 | probes; diagnostics (template argument kind, constrained placeholder in a structured binding or a cast) |
+
+The gap review `reports/review/2026-10-31-gap-review-concepts-and-constraints.md`
+led to these changes, by its own numbering:
+
+| Rule | Gap review items |
+|---|---|
+| CPT-8 | 26 |
+| CPT-11, CPT-14 | 27 |
+| CPT-17 | 15 |
+| CPT-19 | 13, 14 |
+| CPT-21, CPT-22 | 1, 18 |
+| CPT-26, CPT-27 | 20, 21 |
+| CPT-28, CPT-29 | 23, 24 |
+| CPT-32, CPT-34 | 25 |
+| CPT-33 | 19 |
+| CPT-35 | 22 |
+| CPT-36 | 28 |
+| CPT-37 | 16, 17 |
 
 Inventory item D1, a requirement that fails for every argument, is
 left out. The program needs no diagnostic, and the compilers differ

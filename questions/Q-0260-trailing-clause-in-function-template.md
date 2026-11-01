@@ -1,7 +1,7 @@
 # Q-0260: Can a lambda or a member of a local class inside a function template have a trailing requires clause?
 
 **Status:** provisional
-**Affects:** CPT-11, CNS-18, `tests/templates/concepts/trailing-clause-lambda.cpp`, `tests/templates/concepts/trailing-clause-local-class.cpp`, `tests/templates/constraints/lambda-conversion.cpp`
+**Affects:** CPT-11, CNS-18, `tests/templates/concepts/trailing-clause-lambda.cpp`, `tests/templates/concepts/trailing-clause-local-class.cpp`, `tests/templates/constraints/lambda-conversion.cpp`, `tests/templates/concepts/trailing-clause-member-initializer-lambda.cpp`
 
 ## Context
 
@@ -17,7 +17,7 @@ template, and the clause names the function template's parameter.
 
 ## Evidence
 
-The three tests above. A member of a class nested in a class template is accepted by every compiler (`trailing-clause-member.cpp`).
+The four tests above. EDG also rejects the clause on a lambda in a default member initializer of a class template. A member of a class nested in a class template is accepted by every compiler (`trailing-clause-member.cpp`).
 
 ## Options
 
