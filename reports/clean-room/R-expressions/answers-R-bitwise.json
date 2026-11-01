@@ -1,0 +1,23 @@
+{
+"p01": {"outcome": "compiles", "rules": ["BIT-5"], "why": "The operators work on two's complement bits, so -1 & 0xFF is 255, -8 | 1 is -7, -1 ^ 1 is -2, and ~-1 is 0."},
+"p02": {"outcome": "compiles", "rules": ["BIT-1"], "why": "& binds tighter than ^, which binds tighter than |, and == binds tighter than all three, so each assertion holds; the warnings stay warnings without -Werror."},
+"p03": {"outcome": "reject", "rules": ["BIT-3"], "why": "A floating-point operand is not valid for &."},
+"p04": {"outcome": "reject", "rules": ["BIT-3"], "why": "Scoped enumeration operands are not valid for | without an operator function."},
+"p05": {"outcome": "reject", "rules": ["BIT-3"], "why": "S has no conversion and no operator&, so the class operand is not valid."},
+"p06": {"outcome": "reject", "rules": ["BIT-3"], "why": "A pointer operand is not valid for |."},
+"p07": {"outcome": "reject", "rules": ["BIT-3"], "why": "A pointer-to-member operand is not valid for ^."},
+"p08": {"outcome": "compiles", "rules": ["BIT-5"], "why": "The values match the page's examples: 2, 7, 5, -1, -6."},
+"p09": {"outcome": "compiles", "rules": ["BIT-2", "BIT-4", "BIT-5"], "why": "Unscoped enumerations, bool, char, and long are valid operands, and the values are 3, 1, 1, and 4."},
+"p10": {"outcome": "reject", "rules": ["BIT-7"], "why": "~ on a bool draws a -Wbool-operation warning, which -Werror makes an error."},
+"p11": {"outcome": "reject", "rules": ["BIT-6", "BIT-1"], "why": "a & b == c has a comparison as an operand of & without parentheses, so -Wparentheses warns and -Werror makes it an error."},
+"p12": {"outcome": "reject", "rules": ["BIT-3"], "why": "~ does not accept a floating-point operand."},
+"p13": {"outcome": "reject", "rules": ["BIT-3"], "why": "nullptr is not a valid operand of |."},
+"p14": {"outcome": "compiles", "rules": ["BIT-2", "BIT-8"], "why": "Two different unscoped enumerations are valid operands; the deprecation warning stays a warning without -Werror."},
+"p15": {"outcome": "compiles", "rules": ["BIT-4", "BIT-5", "BIT-7"], "why": "true promotes to int 1, so ~true is -2 and ~false is -1; the warning is off by default."},
+"p16": {"outcome": "reject", "rules": ["BIT-8"], "why": "Mixing two enumeration types draws -Wdeprecated-enum-enum-conversion, which -Werror makes an error."},
+"p17": {"outcome": "compiles", "rules": ["BIT-6"], "why": "The parentheses make the intent explicit, so no -Wparentheses warning is given."},
+"p18": {"outcome": "compiles", "rules": ["BIT-7"], "why": "~ on an int is not on a bool, so -Wbool-operation does not warn."},
+"p19": {"outcome": "compiles", "rules": ["BIT-4", "CONV-1", "CONV-2"], "why": "unsigned char 0 promotes to int, so ~zero is -1, and ~0u is the largest unsigned value."},
+"p20": {"outcome": "compiles", "rules": ["BIT-4", "CONV-1", "CONV-19"], "why": "char, bool, unsigned char, and the unscoped enum promote to int, u & 1 is unsigned, and l | 1 is long."},
+"p21": {"outcome": "reject", "rules": ["BIT-3"], "why": "&x is a pointer, which ~ does not accept."}
+}

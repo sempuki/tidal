@@ -170,6 +170,8 @@ catalog counts as done.
 | R-additive, R-multiplicative, R-shift, R-comparison | done, 220/220 (217 cite a rule of the test), without test names; findings REA-1 to REA-13 | `reports/clean-room/R-expressions/` |
 | R-conditional, R-lambdas, R-casts, R-new-delete | done, 276/278 (272 cite a rule of the test), without test names; findings REB-1 to REB-14 | `reports/clean-room/R-expressions/` |
 | R-blocks, R-if, R-jumps, R-loops, R-range-for, R-switch | done, 232/234 (231 cite a rule of the test), without test names; findings RS-1 to RS-16 | `reports/clean-room/R-statements/` |
+| R-assignment, R-bitwise, R-comma, R-decltype, R-logical, R-member-pointers | done, 232/232 (225 cite a rule of the test), without test names; findings REC-1 to REC-13 | `reports/clean-room/R-expressions/` |
+| R-postfix, R-primary, R-unary | done, 250/250 (246 cite a rule of the test), without test names; findings RED-1 to RED-16 | `reports/clean-room/R-expressions/` |
 | All others | planned | |
 
 ## 9. Prompts
