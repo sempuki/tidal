@@ -140,7 +140,7 @@ A `deduction_guide` is a `declaration`, and in a class it is a
 
 :::{rule} CTAD-1
 :kind: required
-:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp
+:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp
 
 The name of a class template, or of an alias template (CTAD-14), can
 stand with no argument list in these places:
@@ -175,7 +175,7 @@ general rule.
 
 :::{rule} CTAD-3
 :kind: reject
-:tests: templates/class-template-deduction/several-declarators.cpp
+:tests: templates/class-template-deduction/several-declarators.cpp templates/class-template-deduction/several-declarators-copy-init.cpp
 
 If one declaration declares several variables with a deduced class
 template type, each declarator must deduce the same type.
@@ -183,7 +183,7 @@ template type, each declarator must deduce the same type.
 
 :::{rule} CTAD-4
 :kind: required
-:tests: templates/class-template-deduction/empty-argument-list.cpp
+:tests: templates/class-template-deduction/empty-argument-list.cpp templates/class-template-deduction/partial-argument-list.cpp
 
 A name with an argument list, even `<>`, is a template-id. No class
 template argument deduction takes place, and the missing arguments take
@@ -224,7 +224,7 @@ defined (CTAD-11).
 
 :::{rule} CTAD-7
 :kind: required
-:tests: templates/class-template-deduction/copy-candidate.cpp
+:tests: templates/class-template-deduction/copy-candidate.cpp templates/class-template-deduction/copy-candidate-only.cpp
 
 Every class template has the {term}`copy candidate`. The copy candidate
 is a guide with the template parameters of the class and one parameter.
@@ -348,7 +348,7 @@ A `deduction_guide` must obey these rules:
 
 :::{rule} CTAD-13
 :kind: reject
-:tests: templates/class-template-deduction/guide-not-deducible.cpp
+:tests: templates/class-template-deduction/guide-not-deducible.cpp templates/class-template-deduction/guide-not-deducible-constant.cpp
 
 Each template parameter of a user guide must have a default or get a
 value from the guide's parameters ({question}`Q-0241`).
@@ -456,7 +456,7 @@ guide that is not a user guide.
 
 :::{rule} CTAD-21
 :kind: required
-:tests: templates/class-template-deduction/tie-copy-candidate.cpp
+:tests: templates/class-template-deduction/tie-copy-candidate.cpp templates/class-template-deduction/tie-copy-candidate-forms.cpp
 
 If two guides are still equal after CTAD-20, the copy candidate wins
 over the other guide.
@@ -532,10 +532,37 @@ template <class... B> struct Mix : B... { int x; };
 Mix m{5};                         // Mix<>: the pack before x takes no element
 ```
 
+```cpp
+template <class T> struct Size {
+  T value;
+  constexpr Size(T v) : value(v) {}
+};
+auto* made = new Size(2.5);       // Size<double>*
+auto copy = Size('c');            // Size<char>: a functional cast
+template <Size S> struct Fixed {};
+Fixed<4> four;                    // the parameter S has type Size<int>
+Size x(1), y(2);                  // both Size<int>
+Size u(1), v(2.0);                // rejected: Size<int> and Size<double>
+```
+
+```cpp
+template <class T, class U = T> struct Pair { constexpr Pair(T, U) {} };
+Pair<int> p(1, 2.5);              // Pair<int, int>: U takes its default
+
+template <class T> struct Box { template <class U> constexpr Box(U) {} };
+constexpr Box<int> one(5);
+Box two(one);                     // Box<int>: only the copy candidate gives T
+Box three(3);                     // rejected: no guide gives T
+
+template <class T> struct Range { constexpr Range(T*, T*) {} };
+int data[3];
+Range r(data, data + 3);          // Range<int>: each pointer gives T = int
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 84
-of 101 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 108 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight baseline

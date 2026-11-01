@@ -267,7 +267,7 @@ different places give different atomic constraints.
 
 :::{rule} CNS-5
 :kind: required
-:tests: templates/constraints/and-short-circuit.cpp
+:tests: templates/constraints/and-short-circuit.cpp templates/constraints/and-short-circuit-clause.cpp
 
 A conjunction is {term}`satisfied` if both of its operands are
 satisfied. The left operand is checked first. If the left operand is
@@ -276,7 +276,7 @@ not satisfied, the right operand is not substituted or checked.
 
 :::{rule} CNS-6
 :kind: required
-:tests: templates/constraints/or-short-circuit.cpp
+:tests: templates/constraints/or-short-circuit.cpp templates/constraints/or-short-circuit-clause.cpp
 
 A disjunction is satisfied if either of its operands is satisfied. The
 left operand is checked first. If the left operand is satisfied, the
@@ -329,7 +329,7 @@ program is not valid, even if another candidate would be chosen.
 
 :::{rule} CNS-35
 :kind: reject
-:tests: templates/constraints/recursive-satisfaction.cpp
+:tests: templates/constraints/recursive-satisfaction.cpp templates/constraints/recursive-satisfaction-operator.cpp
 
 The check of an atomic constraint must not need the result of the same
 atomic constraint with the same arguments. Such a check can arise
@@ -399,7 +399,7 @@ class instantiates only the members whose constraints are satisfied.
 
 :::{rule} CNS-16
 :kind: required
-:tests: templates/constraints/constructors-count.cpp
+:tests: templates/constraints/constructors-count.cpp templates/constraints/constructors-count-only-constrained.cpp
 
 A constructor whose constraints are not satisfied still counts as a
 declared constructor. The class therefore gets no implicit default
@@ -428,7 +428,7 @@ template ({question}`Q-0292`). The rule is a case of {rule}`TSP-11`
 
 :::{rule} CNS-18
 :kind: required
-:tests: templates/constraints/lambda-conversion.cpp
+:tests: templates/constraints/lambda-conversion.cpp templates/constraints/lambda-conversion-implicit.cpp
 
 A lambda with no captures and no template parameters converts to a
 pointer to function only if the constraints of its call operator are
@@ -500,7 +500,7 @@ holds from `D1` to `D2` and fails from `D2` to `D1`.
 
 :::{rule} CNS-34
 :kind: required
-:tests: templates/constraints/parameter-correspondence.cpp
+:tests: templates/constraints/parameter-correspondence.cpp templates/constraints/parameter-correspondence-renamed.cpp
 
 To compare the constraints of two function templates, each template
 parameter of one corresponds to the parameter at the same position in
@@ -567,7 +567,7 @@ equivalent clause defines the member with that clause.
 
 :::{rule} CNS-29
 :kind: reject
-:tests: templates/constraints/out-of-class-without-clause.cpp
+:tests: templates/constraints/out-of-class-without-clause.cpp templates/constraints/out-of-class-other-clause.cpp
 
 A definition of a member outside its class template must repeat the
 member's trailing requires clause. A definition without an equivalent
@@ -576,7 +576,7 @@ clause matches no member.
 
 :::{rule} CNS-37
 :kind: required
-:tests: templates/constraints/member-specialization-by-constraints.cpp
+:tests: templates/constraints/member-specialization-by-constraints.cpp templates/constraints/member-specialization-first-member.cpp
 
 An explicit specialization of a member template of a class template
 specialization can be declared outside the class. It specializes the
@@ -587,7 +587,7 @@ not valid after that substitution does not match.
 
 :::{rule} CNS-30
 :kind: required
-:tests: templates/constraints/function-type.cpp
+:tests: templates/constraints/function-type.cpp templates/constraints/function-type-specialization.cpp
 
 A trailing requires clause is not part of the function's type.
 :::
@@ -618,7 +618,7 @@ class, even one with the same name and form ({question}`Q-0268`).
 
 :::{rule} CNS-10
 :kind: no-diagnostic
-:tests: templates/constraints/satisfaction-changes.cpp
+:tests: templates/constraints/satisfaction-changes.cpp templates/constraints/satisfaction-changes-declaration.cpp
 
 An atomic constraint with the same arguments must give the same result
 at each point where it is checked. A program in which the result
@@ -629,7 +629,7 @@ two checks. An implementation need not diagnose the change
 
 :::{rule} CNS-38
 :kind: no-diagnostic
-:tests: templates/constraints/template-template-parameter-constraint-use.cpp
+:tests: templates/constraints/template-template-parameter-constraint-use.cpp templates/constraints/template-template-parameter-constraint-alias.cpp
 
 Inside a template, a template-id that names a template template
 parameter, with arguments that do not depend on template parameters,
@@ -657,10 +657,34 @@ template <class T> requires (!HasSize<T>) int count(T);   // satisfied for int
 template <class T> requires (!T::size) int other(T);      // not satisfied for int
 ```
 
+```cpp
+template <class T> concept Tagged = requires { typename T::tag; };
+template <class T> requires Tagged<T> && (sizeof(typename T::tag) < 4)
+int kind(T);                     // for int, the right operand is not substituted
+int kind(...);
+kind(0);                         // calls kind(...)
+
+template <class T> requires (sizeof(T) > 0) || T::flag
+int any(T);                      // T::flag is not checked when the left operand holds
+any(1);                          // valid
+```
+
+```cpp
+template <class T> struct Box {
+  Box() requires (sizeof(T) > 100) {}   // declared, even where it is not satisfied
+  int get() requires (sizeof(T) > 1);
+};
+Box<int> b;                             // rejected: no implicit default constructor
+
+template <class T> int Box<T>::get() requires (sizeof(T) > 1) { return 1; }  // defines get
+template <class T> int Box<T>::get() { return 2; }   // rejected: matches no member
+decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is not in the type
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 84
-of 107 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 93
+of 118 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the

@@ -144,7 +144,7 @@ name, and the default after `=`.
 
 :::{rule} TPL-1
 :kind: required
-:tests: templates/declarations/kinds.cpp
+:tests: templates/declarations/kinds.cpp templates/declarations/kinds-member-templates.cpp
 
 A {term}`template head` followed by a declaration declares a template.
 The declaration declares one of these:
@@ -201,7 +201,7 @@ are two templates.
 
 :::{rule} TPL-45
 :kind: required
-:tests: templates/declarations/plain-function-not-from-template.cpp
+:tests: templates/declarations/plain-function-not-from-template.cpp templates/declarations/plain-function-beside-specialization.cpp
 
 A plain function with the name and type of a specialization of a
 function template is a different function. The template never gives the
@@ -210,7 +210,7 @@ definition of the plain function.
 
 :::{rule} TPL-29
 :kind: reject
-:tests: templates/declarations/main-template.cpp
+:tests: templates/declarations/main-template.cpp templates/declarations/main-template-constant.cpp
 
 The function `main` must not be a template.
 :::
@@ -219,7 +219,7 @@ The function `main` must not be a template.
 
 :::{rule} TPL-5
 :kind: required
-:tests: templates/declarations/type-parameter-keywords.cpp
+:tests: templates/declarations/type-parameter-keywords.cpp templates/declarations/type-parameter-keywords-unnamed.cpp
 
 A {term}`type parameter` is declared with `class` or `typename`. The
 two keywords mean the same thing. The name of any template parameter
@@ -247,7 +247,7 @@ Each of these types can have `const` or `volatile` (TPL-32).
 
 :::{rule} TPL-32
 :kind: required
-:tests: templates/declarations/constant-parameter-cv.cpp
+:tests: templates/declarations/constant-parameter-cv.cpp templates/declarations/constant-parameter-cv-placeholder.cpp
 
 The implementation drops `const` and `volatile` at the top level of the
 type of a constant parameter. So `const int N` and `int N` declare the
@@ -281,7 +281,7 @@ argument (TPL-11).
 
 :::{rule} TPL-8
 :kind: required
-:tests: templates/declarations/constant-parameter-adjusted.cpp
+:tests: templates/declarations/constant-parameter-adjusted.cpp templates/declarations/constant-parameter-adjusted-unknown-bound.cpp
 
 If a constant parameter is declared with an array type or a function
 type, its type is the matching pointer type, as for a function
@@ -316,7 +316,7 @@ take its address, because the name is a prvalue (TPL-9).
 
 :::{rule} TPL-11
 :kind: required
-:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp
+:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/constant-parameter-guide.cpp
 
 The type of a constant parameter can be one of these:
 
@@ -330,7 +330,7 @@ declared with that type gets its type from its initializer
 
 :::{rule} TPL-12
 :kind: required
-:tests: templates/declarations/template-template-parameter.cpp
+:tests: templates/declarations/template-template-parameter.cpp templates/declarations/template-template-parameter-heads.cpp
 
 A {term}`template template parameter` has its own template head,
 followed by `class` or `typename` and the name. In the template, the
@@ -404,15 +404,17 @@ default must be in parentheses.
 
 :::{rule} TPL-14
 :kind: reject
-:tests: templates/declarations/default-not-last.cpp templates/declarations/default-not-last-variable.cpp templates/declarations/default-not-last-alias.cpp
+:tests: templates/declarations/default-not-last.cpp templates/declarations/default-not-last-variable.cpp templates/declarations/default-not-last-alias.cpp templates/declarations/defaults-merge-gap.cpp templates/declarations/defaults-merge-gap-later.cpp templates/declarations/defaults-merge.cpp
 
 Unless the template is a function template, each parameter after one
-with a default must have a default too. A pack needs no default.
+with a default must have a default too. A pack needs no default. The
+defaults of the declaration count together with those of the earlier
+declarations ({rule}`TPL-15`, {question}`Q-0296`).
 :::
 
 :::{rule} TPL-15
 :kind: required
-:tests: templates/declarations/defaults-merge.cpp
+:tests: templates/declarations/defaults-merge.cpp templates/declarations/defaults-merge-gap-later.cpp
 
 The defaults of the declarations of one template add up. A later
 declaration can give a default for a parameter that an earlier
@@ -421,7 +423,7 @@ declaration left without one.
 
 :::{rule} TPL-16
 :kind: reject
-:tests: templates/declarations/default-repeated.cpp
+:tests: templates/declarations/default-repeated.cpp templates/declarations/default-repeated-function.cpp
 
 Two declarations of one template must not both give a default for the
 same parameter, even if the defaults are the same.
@@ -537,7 +539,7 @@ order. A pack must appear with `...`.
 
 :::{rule} TPL-42
 :kind: required
-:tests: templates/declarations/member-enum-outside.cpp
+:tests: templates/declarations/member-enum-outside.cpp templates/declarations/member-enum-outside-unscoped.cpp
 
 In a class template, an enumeration member with a fixed underlying type
 can get its enumerators after the class body, in a definition that
@@ -547,7 +549,7 @@ can name a parameter of the class.
 
 :::{rule} TPL-47
 :kind: required
-:tests: templates/declarations/static-member-per-specialization.cpp
+:tests: templates/declarations/static-member-per-specialization.cpp templates/declarations/static-member-per-specialization-address.cpp
 
 Each specialization of a class template has its own `static` data
 members. A value stored through one specialization does not change the
@@ -600,14 +602,14 @@ namespace scope.
 
 :::{rule} TPL-27
 :kind: reject
-:tests: templates/declarations/variable-template-non-static.cpp
+:tests: templates/declarations/variable-template-non-static.cpp templates/declarations/variable-template-non-static-member.cpp
 
 A non-static data member must not be a template.
 :::
 
 :::{rule} TPL-28
 :kind: required
-:tests: templates/declarations/alias-template.cpp
+:tests: templates/declarations/alias-template.cpp templates/declarations/alias-template-deduce.cpp
 
 A specialization of an alias template is the type that the alias gives,
 with the arguments in place of the parameters. The specialization is
@@ -707,8 +709,8 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 102 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 117 tests.
 
 The clean-room writer probed each kind of template, each kind of
 parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
@@ -725,6 +727,11 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   second declarator with a parse error. Clang and EDG reject a variable
   after a class template definition with a parse error, and GCC names
   the condition.
+- TPL-14: Clang and EDG reject a later declaration whose default comes
+  before a parameter that no declaration gives a default. GCC checks
+  only the defaults on one declaration and accepts it
+  ({question}`Q-0296`). Every compiler accepts declarations that give
+  the defaults from right to left (`defaults-merge-gap-later.cpp`).
 - TPL-35: Clang and GCC accept a function template whose parameter after
   a pack has no default and no deduction. EDG rejects the declaration
   ({question}`Q-0195`). The rule needs no diagnostic because no use of

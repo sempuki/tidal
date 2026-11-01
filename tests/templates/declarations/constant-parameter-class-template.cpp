@@ -1,4 +1,4 @@
-// tidal-rules: TPL-11
+// tidal-rules: TPL-11 CTAD-1
 // tidal-expect: accept
 // tidal-note: The parameter's type is the name of a class template. The argument gives the class template's arguments.
 template <class A, class B> constexpr bool same = false;

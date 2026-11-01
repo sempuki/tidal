@@ -314,12 +314,13 @@ constructs.
 
 :::{rule} CE-20
 :kind: reject
-:tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp
+:tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp
 
 Constant evaluation must not reach any of these constructs (CE-17):
 
 - a `goto`,
-- a `static` or `thread_local` variable,
+- a `static` or `thread_local` variable that is not usable in constant
+  expressions (CE-3),
 - a variable of a type that is not a {term}`literal type`.
 :::
 
@@ -461,8 +462,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 75
-of 88 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 77
+of 90 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -480,6 +481,11 @@ of 88 tests.
   ({question}`Q-0078`).
 - CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
   EDG accept it ({question}`Q-0090`).
+- CE-20: every compiler accepts an evaluation that reaches a `static`
+  or `thread_local` variable that is usable in constant expressions:
+  a `constexpr` variable, or a `const` integer with a constant
+  initializer. Every compiler rejects one that reaches a `static const
+  double`.
 - CE-21: every compiler rejects a constant whose value has a scalar part
   with no value, for `constexpr` and `constinit` alike.
 - CE-21: a union with no active member is a valid constant for Clang

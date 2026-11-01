@@ -121,7 +121,7 @@ specialization's head appear in that `template_id`.
 
 :::{rule} TSP-1
 :kind: required
-:tests: templates/specialization/class-explicit.cpp
+:tests: templates/specialization/class-explicit.cpp templates/specialization/class-explicit-other-members.cpp
 
 An {term}`explicit specialization` of a class template defines the
 class for one argument list. The class has the members of its own
@@ -130,7 +130,7 @@ definition only.
 
 :::{rule} TSP-20
 :kind: reject
-:tests: templates/specialization/class-explicit-declared-only.cpp
+:tests: templates/specialization/class-explicit-declared-only.cpp templates/specialization/class-explicit-declared-only-member.cpp
 
 An explicit specialization of a class template that is declared and not
 defined is an incomplete class. A program must not create an object of
@@ -292,7 +292,7 @@ class template that is given explicitly must start with `template <>`.
 
 :::{rule} TSP-27
 :kind: reject
-:tests: templates/specialization/explicit-implicit-member.cpp
+:tests: templates/specialization/explicit-implicit-member.cpp templates/specialization/explicit-implicit-destructor.cpp
 
 A program must not explicitly specialize a special member function that
 the implementation declares implicitly, such as an implicit copy
@@ -341,7 +341,7 @@ apply:
 
 :::{rule} TSP-31
 :kind: reject
-:tests: templates/specialization/partial-no-primary.cpp
+:tests: templates/specialization/partial-no-primary.cpp templates/specialization/partial-no-primary-variable.cpp
 
 A partial specialization must come after a declaration of its primary
 template.
@@ -349,7 +349,7 @@ template.
 
 :::{rule} TSP-10
 :kind: required
-:tests: templates/specialization/variable-partial.cpp
+:tests: templates/specialization/variable-partial.cpp templates/specialization/variable-partial-two-parameters.cpp
 
 A variable template can have partial specializations, with the same form
 as for a class template.
@@ -369,7 +369,7 @@ needs its own definition.
 
 :::{rule} TSP-11
 :kind: reject
-:tests: templates/specialization/partial-default.cpp templates/specialization/partial-same-as-primary.cpp templates/specialization/partial-unused-parameter.cpp templates/specialization/partial-value-expression.cpp templates/specialization/partial-reordered.cpp templates/specialization/partial-dependent-type-value.cpp templates/specialization/partial-pack-not-expanded.cpp templates/specialization/partial-pack-not-last.cpp
+:tests: templates/specialization/partial-default.cpp templates/specialization/partial-same-as-primary.cpp templates/specialization/partial-unused-parameter.cpp templates/specialization/partial-value-expression.cpp templates/specialization/partial-reordered.cpp templates/specialization/partial-dependent-type-value.cpp templates/specialization/partial-pack-not-expanded.cpp templates/specialization/partial-pack-not-last.cpp templates/specialization/partial-placeholder-pattern-variable.cpp templates/specialization/partial-placeholder-pattern.cpp
 
 The head and argument list of a partial specialization must follow
 these conditions:
@@ -377,7 +377,9 @@ these conditions:
 - No parameter has a default template argument.
 - The argument list is not the primary template's parameter list
   again, unless the partial specialization is more constrained than the
-  primary template ({rule}`CNS-36`).
+  primary template ({rule}`CNS-36`). A constant parameter whose type
+  fits fewer arguments, such as `auto*` or `int` for `auto`, makes the
+  list differ.
 - Each parameter appears in the argument list where deduction can find
   it. A constant argument that is an expression of a parameter, such as
   `N + 1`, gives no value for `N`.
@@ -419,7 +421,7 @@ These parts are the exceptions, and are checked as usual
 
 :::{rule} TSP-13
 :kind: required
-:tests: templates/specialization/select.cpp
+:tests: templates/specialization/select.cpp templates/specialization/select-variable.cpp
 
 The definition of a specialization of a class template or variable
 template comes from the first of these that applies:
@@ -431,20 +433,22 @@ template comes from the first of these that applies:
 
 :::{rule} TSP-14
 :kind: required
-:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp templates/specialization/match-using-declaration.cpp
+:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp templates/specialization/match-using-declaration.cpp templates/specialization/partial-constant-type-exact.cpp templates/specialization/partial-placeholder-pattern-const.cpp templates/specialization/partial-placeholder-pattern-variable.cpp templates/specialization/partial-placeholder-pattern.cpp
 
 A partial specialization matches an argument list if there are
 arguments for its parameters that make its own argument list the same
 as the given list ({rule}`TARG-19`). The given list includes the
 primary template's defaults. A parameter that appears twice gets the
-same argument in both places. A use finds the partial specializations
+same argument in both places. A constant argument matches a constant
+parameter only if the argument's type fits the parameter's declared
+type ({rule}`DED-12`). A use finds the partial specializations
 through the primary template, so a use through a using-declaration
 also finds partial specializations declared after it.
 :::
 
 :::{rule} TSP-15
 :kind: required
-:tests: templates/specialization/select-most-specialized.cpp
+:tests: templates/specialization/select-most-specialized.cpp templates/specialization/select-most-specialized-pair.cpp
 
 If two or more partial specializations match, the selected one is more
 specialized than each of the others ({rule}`ORD-14`).
@@ -480,7 +484,7 @@ one specialization `C<A>`:
 
 :::{rule} TSP-17
 :kind: no-diagnostic
-:tests: templates/specialization/partial-after-use.cpp
+:tests: templates/specialization/partial-after-use.cpp templates/specialization/partial-after-use-variable.cpp
 
 A partial specialization must be declared before the first use that
 would select it. An implementation need not diagnose a partial
@@ -530,8 +534,8 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 81 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 80
+of 93 tests.
 
 The clean-room writer probed explicit and partial specializations with
 Clang 22, GCC 16, and EDG 7.0, and checked the tests on the eight
@@ -550,14 +554,22 @@ specialization's arguments, and the result must equal the given list.
   GCC reject the declaration ({question}`Q-0172`).
 - TSP-17: Clang accepts a partial specialization after a use that it
   would have matched, and keeps the primary template for that use. GCC
-  and EDG reject the program. The rule needs no diagnostic
+  and EDG reject the program. For a variable template, GCC rejects and
+  Clang and EDG accept. The rule needs no diagnostic
   ({question}`Q-0173`).
 - TSP-11: Clang rejects a partial specialization that only reorders the
   parameters, as no more specialized than the primary template. GCC and
   EDG accept it ({question}`Q-0174`).
+- TSP-14: a partial specialization with a constant parameter `auto* P`
+  matches only pointer arguments on every compiler. For a parameter
+  `int V` and the argument `1L`, and for `const auto* P` and an `int*`,
+  GCC and EDG use the primary template. Clang converts the argument and
+  matches. Clang 18 does not convert for `const auto*`, and it takes
+  the variable template `kind<P>` for the primary's list
+  ({question}`Q-0295`).
 - TSP-6: all compilers reject an explicit specialization after a use in
-  the same translation unit. The tests do not cover a use in another
-  translation unit.
+  the same translation unit. {rule}`ODR-14` states the rule for TSP-6
+  and TSP-17 across translation units.
 - TSP-21: Clang 18 uses a member template's partial specialization for a
   class specialization whose primary member template is given
   explicitly. Clang 22, GCC, and EDG use the explicit specialization

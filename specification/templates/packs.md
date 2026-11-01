@@ -115,7 +115,7 @@ names `decltype(x)`.
 
 :::{rule} PACK-1
 :kind: required
-:tests: templates/packs/function-pack-forms.cpp
+:tests: templates/packs/function-pack-forms.cpp templates/packs/function-pack-array-and-unnamed.cpp
 
 A function parameter whose declarator has `...` before its name, or at
 the end with no name, is a {term}`function parameter pack`. The type of
@@ -150,7 +150,7 @@ Otherwise the `...` is the variable argument part of the parameter list
 
 :::{rule} PACK-4
 :kind: reject
-:tests: templates/packs/function-pack-default.cpp
+:tests: templates/packs/function-pack-default.cpp templates/packs/function-pack-default-placeholder.cpp
 
 A function parameter pack must not have a default argument. Parameters
 before the pack can have default arguments.
@@ -206,7 +206,7 @@ candidate, and overload resolution can choose another candidate.
 
 :::{rule} PACK-7
 :kind: required
-:tests: templates/packs/nested-expansion.cpp
+:tests: templates/packs/nested-expansion.cpp templates/packs/nested-expansion-two-packs.cpp
 
 A pattern can hold another expansion. A pack belongs to the innermost
 expansion whose pattern contains it. The outer expansion expands the
@@ -226,7 +226,7 @@ a pack that no inner expansion expands. `sizeof...` and a fold
 
 :::{rule} PACK-9
 :kind: required
-:tests: templates/packs/empty-expansion.cpp
+:tests: templates/packs/empty-expansion.cpp templates/packs/empty-expansion-braces.cpp
 
 An expansion of a pack with no elements gives an empty list. The
 construct around the expansion keeps its kind. For example, `T(p...)`
@@ -245,7 +245,7 @@ type `void`. A list of one `void` is empty only in the written form
 
 :::{rule} PACK-10
 :kind: required
-:tests: templates/packs/expansion-to-fixed-parameters.cpp
+:tests: templates/packs/expansion-to-fixed-parameters.cpp templates/packs/expansion-to-fixed-constant-parameters.cpp
 
 An expansion in the argument list of a class template can give
 arguments to parameters that are not packs. The arguments are matched
@@ -283,7 +283,7 @@ expansion at the end deduces as {rule}`DED-37` gives.
 
 :::{rule} PACK-13
 :kind: required
-:tests: templates/packs/call-and-braced-list.cpp
+:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp
 
 In the arguments of a call, each copy of the pattern is one argument.
 In a braced list, each copy is one element, and the elements are
@@ -292,7 +292,7 @@ evaluated from left to right ({rule}`LIST-7`).
 
 :::{rule} PACK-14
 :kind: required
-:tests: templates/packs/base-list-and-initializers.cpp
+:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp
 
 An expansion in a base list gives one base for each element, in order.
 In a member initializer list, an expansion of a `mem_init` that names a
@@ -301,7 +301,7 @@ pack of bases gives one member initializer for each base.
 
 :::{rule} PACK-29
 :kind: reject
-:tests: templates/packs/base-list-duplicate.cpp
+:tests: templates/packs/base-list-duplicate.cpp templates/packs/base-list-duplicate-fixed.cpp
 
 An expansion in a base list must not give one class twice.
 {rule}`DER-1` is the general rule.
@@ -309,7 +309,7 @@ An expansion in a base list must not give one class twice.
 
 :::{rule} PACK-15
 :kind: reject
-:tests: templates/packs/member-initializer-data-member.cpp
+:tests: templates/packs/member-initializer-data-member.cpp templates/packs/member-initializer-data-member-braced.cpp
 
 A `mem_init` that names a data member must not be expanded.
 :::
@@ -327,7 +327,7 @@ with no elements adds no alignment requirement.
 
 :::{rule} PACK-17
 :kind: required
-:tests: templates/packs/capture-pack.cpp templates/packs/capture-pack-same-mode.cpp templates/packs/capture-default-pack.cpp
+:tests: templates/packs/capture-pack.cpp templates/packs/capture-pack-same-mode.cpp templates/packs/capture-default-pack.cpp templates/packs/capture-pack-same-mode-reference.cpp
 
 A capture `p...` captures each element of the function parameter pack
 `p` by copy, and `&p...` captures each element by reference. A capture
@@ -350,7 +350,7 @@ one capture that is not a pack.
 
 :::{rule} PACK-19
 :kind: required
-:tests: templates/packs/size-operator.cpp
+:tests: templates/packs/size-operator.cpp templates/packs/size-operator-constant.cpp
 
 `sizeof...(p)` gives the number of elements of the pack `p`. The pack
 can be of any kind. The result is a constant of the type of `sizeof`
@@ -395,7 +395,7 @@ Each element deduces on its own as {rule}`DED-8` gives. For
 
 :::{rule} PACK-31
 :kind: reject
-:tests: templates/packs/forwarding-bit-field.cpp
+:tests: templates/packs/forwarding-bit-field.cpp templates/packs/forwarding-const-bit-field.cpp
 
 An lvalue bit-field that is not `const` must not be the argument of a
 forwarding reference. Deduction gives a non-`const` lvalue reference,
@@ -414,7 +414,7 @@ arises for an lvalue argument only ({rule}`DED-8`).
 
 :::{rule} PACK-24
 :kind: required
-:tests: templates/packs/collapse-paths.cpp
+:tests: templates/packs/collapse-paths.cpp templates/packs/collapse-member-alias.cpp
 
 A reference added to a reference type collapses as {rule}`DCL-4` gives.
 The rule applies to a type from an alias, a template argument, or
@@ -425,7 +425,7 @@ The rule applies to a type from an alias, a template argument, or
 
 :::{rule} PACK-25
 :kind: reject
-:tests: templates/packs/capture-pack-same-mode.cpp
+:tests: templates/packs/capture-pack-same-mode.cpp templates/packs/capture-pack-same-mode-reference.cpp
 
 A pack capture after a capture default must use the other mode, as a
 capture of one name must ({rule}`LAM-6`). So `[=, p...]` and
@@ -436,7 +436,7 @@ capture of one name must ({rule}`LAM-6`). So `[=, p...]` and
 
 :::{rule} PACK-30
 :kind: no-diagnostic
-:tests: templates/packs/using-declaration-empty-pack-outer-name.cpp
+:tests: templates/packs/using-declaration-empty-pack-outer-name.cpp templates/packs/using-declaration-empty-pack-only.cpp
 
 A use of a name in a class template is not valid if both of these hold:
 
@@ -476,10 +476,38 @@ template <class... T> void call(T...);
 call<void>();                              // rejected: a parameter of type void
 ```
 
+```cpp
+template <class... T> struct Outer {
+  template <class... U> struct Inner {
+    using type = List<List<T, U...>...>;   // U... inside each copy, T in the outer one
+  };
+};
+Outer<int, char>::Inner<long>::type        // List<List<int, long>, List<char, long>>
+
+template <class... T> int total(T... x) {
+  int sum = 0;
+  int steps[] = {(sum += x)..., 0};        // evaluated from left to right
+  return sum;
+}
+```
+
+```cpp
+template <class... A> int make(A... a) { return int(a...); }
+make();                                    // 0: int() with no elements
+
+struct Part {};
+template <class... B> struct Mix : Part, B... {};
+Mix<Part> m;                               // rejected: Part twice in the base list
+
+template <class... T> void keep(T... x) {
+  auto f = [&, &x...] {};                  // rejected: & repeats the capture default
+}
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 54 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 68 tests.
 
 The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight baseline

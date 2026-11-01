@@ -1,4 +1,4 @@
-// tidal-rules: IF-13
+// tidal-rules: IF-13 CPT-24 CPT-31
 // tidal-expect: run
 template <class T>
 int size_of(const T& t) {

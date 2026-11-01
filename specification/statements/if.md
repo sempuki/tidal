@@ -219,8 +219,9 @@ declaration hides the first one.
 
 In the `if constexpr` form, the branch that the condition does not select
 is a {term}`discarded statement`. In a template, a discarded statement is
-not instantiated. The discarded statement can contain code that is not
-valid for the template arguments.
+not instantiated and can hold code that is not valid for the arguments.
+A {term}`requires expression` in the condition can test that code
+({rule}`CPT-24`).
 :::
 
 :::{rule} IF-22

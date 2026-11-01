@@ -114,7 +114,7 @@ if `F2` is not also at least as specialized as `F1`.
 
 :::{rule} ORD-2
 :kind: required
-:tests: templates/ordering/reference-and-cv-removed.cpp
+:tests: templates/ordering/reference-and-cv-removed.cpp templates/ordering/reference-removed-forwarding.cpp
 
 Before deduction, each type of both templates loses its reference, and
 then its top-level `const` and `volatile`. The kind of reference and
@@ -123,7 +123,7 @@ the qualifiers are kept for ORD-10 and ORD-11.
 
 :::{rule} ORD-3
 :kind: required
-:tests: templates/ordering/unused-parameter.cpp
+:tests: templates/ordering/unused-parameter.cpp templates/ordering/unused-parameter-explicit.cpp
 
 Deduction in partial ordering matches the types as they are after
 ORD-2. The adjustments of {rule}`DED-6` and the differences of
@@ -144,7 +144,7 @@ template specialization.
 
 :::{rule} ORD-16
 :kind: required
-:tests: templates/ordering/nondeduced-position.cpp
+:tests: templates/ordering/nondeduced-position.cpp templates/ordering/nondeduced-position-pointer.cpp
 
 A {term}`non-deduced position` ({rule}`DED-13`) in `F2`'s types gives
 no value, and its type is not checked against the invented type. In
@@ -283,7 +283,7 @@ as its argument list. Constraints compare by {rule}`CNS-23`.
 
 :::{rule} ORD-15
 :kind: reject
-:tests: templates/ordering/neither.cpp templates/ordering/reference-and-cv-removed.cpp templates/ordering/call-defaults-tie.cpp templates/ordering/reference-pairs-disagree.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reference-pairs-one-way.cpp templates/ordering/reference-kind-and-qualifiers.cpp templates/ordering/pack-default-parameter.cpp templates/ordering/constraints-default-parameter.cpp
+:tests: templates/ordering/neither.cpp templates/ordering/reference-and-cv-removed.cpp templates/ordering/call-defaults-tie.cpp templates/ordering/reference-pairs-disagree.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reference-pairs-one-way.cpp templates/ordering/reference-kind-and-qualifiers.cpp templates/ordering/pack-default-parameter.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/reference-removed-forwarding.cpp
 
 A use can need partial ordering to choose one template. If no template
 is more specialized than each other one, the use is not valid. The rule
@@ -328,8 +328,8 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 27
-of 38 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
+of 41 tests.
 
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight

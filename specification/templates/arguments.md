@@ -136,7 +136,7 @@ names.
 
 :::{rule} TARG-2
 :kind: required
-:tests: templates/arguments/less-after-variable.cpp
+:tests: templates/arguments/less-after-variable.cpp templates/arguments/less-after-parameter.cpp
 
 If lookup of the name before `<` finds something other than a template,
 the `<` is the less-than operator. TARG-23 gives the exception for
@@ -145,7 +145,7 @@ functions.
 
 :::{rule} TARG-23
 :kind: required
-:tests: templates/arguments/less-function-found.cpp
+:tests: templates/arguments/less-function-found.cpp templates/arguments/less-nothing-found-dependent.cpp
 
 If ordinary lookup of an unqualified name before `<` finds only
 functions, or finds nothing, the `<` opens a template argument list. If
@@ -182,7 +182,7 @@ expression does not fit after the template-id.
 
 :::{rule} TARG-5
 :kind: required
-:tests: templates/arguments/match-in-order.cpp
+:tests: templates/arguments/match-in-order.cpp templates/arguments/match-in-order-constant-first.cpp
 
 The first template argument goes to the first parameter, the second to
 the second, and so on. The table in {principle}`TARG-P2` gives the kind
@@ -201,7 +201,7 @@ for function templates.
 
 :::{rule} TARG-24
 :kind: reject
-:tests: templates/arguments/argument-makes-parameter-invalid.cpp
+:tests: templates/arguments/argument-makes-parameter-invalid.cpp templates/arguments/argument-makes-parameter-invalid-pointer.cpp
 
 The arguments of a template-id replace the parameters in the
 declarations of the later parameters. The result must be valid. For
@@ -224,7 +224,7 @@ arguments are not valid:
 
 :::{rule} TARG-25
 :kind: required
-:tests: templates/arguments/type-argument-kinds.cpp
+:tests: templates/arguments/type-argument-kinds.cpp templates/arguments/type-argument-kinds-compound.cpp
 
 A type argument can be any type. These types are valid too:
 
@@ -245,7 +245,7 @@ parameter.
 
 :::{rule} TARG-9
 :kind: required
-:tests: templates/arguments/defaults-fill.cpp
+:tests: templates/arguments/defaults-fill.cpp templates/arguments/defaults-fill-constant.cpp
 
 A parameter with no argument takes its {term}`default template
 argument`. A default that names an earlier parameter uses that
@@ -306,7 +306,7 @@ parameters only. Each later parameter gets its argument from deduction
 
 :::{rule} TARG-21
 :kind: required
-:tests: templates/arguments/pack-takes-rest.cpp
+:tests: templates/arguments/pack-takes-rest.cpp templates/arguments/pack-takes-rest-kinds.cpp
 
 A {term}`template parameter pack` takes all the arguments after the
 parameters before it. The pack can take no arguments.
@@ -452,7 +452,7 @@ private members of a class that it receives as an argument.
 
 :::{rule} TARG-22
 :kind: unspecified
-:tests: templates/arguments/same-specialization-alias-template.cpp
+:tests: templates/arguments/same-specialization-alias-template.cpp templates/arguments/same-specialization-alias-template-explicit.cpp
 
 An alias template can pass its parameters, unchanged and in order, to a
 class template. It is unspecified whether such an alias template and
@@ -511,8 +511,8 @@ Box<Owner::Secret> theirs;     // rejected: Secret is private
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 70
-of 75 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 77
+of 83 tests.
 
 The clean-room writer probed template-ids, argument kinds, and constant
 arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on

@@ -156,7 +156,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp
 
 A specialization of a class template is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -168,7 +168,8 @@ use. These uses instantiate the class:
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
   class,
-- a call to a function that returns the class.
+- a call to a function that returns the class,
+- a deduction that searches the bases of the class ({rule}`DED-15`).
 :::
 
 :::{rule} INST-2
@@ -208,7 +209,7 @@ does not make these definitions:
 
 :::{rule} INST-6
 :kind: reject
-:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp
+:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp
 
 Each declaration and definition that an instantiation makes must be
 valid for the arguments of the specialization. These include:
@@ -324,7 +325,7 @@ that is defined at that point. It does not instantiate these:
 
 :::{rule} INST-18
 :kind: required
-:tests: templates/instantiation/explicit-after-specialization.cpp
+:tests: templates/instantiation/explicit-after-specialization.cpp templates/instantiation/explicit-after-member-specialization.cpp
 
 An explicit instantiation of a specialization that has an explicit
 specialization has no effect. The explicit specialization stays the
@@ -392,7 +393,7 @@ class key. The key is `union` for a union template, and `class` or
 
 :::{rule} INST-24
 :kind: reject
-:tests: templates/instantiation/explicit-implicit-member.cpp
+:tests: templates/instantiation/explicit-implicit-member.cpp templates/instantiation/explicit-implicit-destructor.cpp
 
 An explicit instantiation must not name a special member function that
 the implementation declares implicitly.
@@ -447,7 +448,7 @@ with internal linkage. An explicit instantiation definition can
 
 :::{rule} INST-34
 :kind: required
-:tests: templates/instantiation/explicit-private-argument.cpp
+:tests: templates/instantiation/explicit-private-argument.cpp templates/instantiation/explicit-private-member-argument.cpp
 
 Access checking does not apply to the names in an explicit
 instantiation. For example, a template argument can be a private member
@@ -498,7 +499,7 @@ function specialization, that needs such a declaration is not valid
 
 :::{rule} INST-15
 :kind: undefined
-:tests: templates/instantiation/recursion-endless.cpp
+:tests: templates/instantiation/recursion-endless.cpp templates/instantiation/recursion-endless-function.cpp
 
 If an instantiation needs an endless chain of other instantiations, the
 behavior is undefined.
@@ -508,7 +509,7 @@ behavior is undefined.
 
 :::{rule} INST-3
 :kind: unspecified
-:tests: templates/instantiation/class-overload-void-pointer.cpp
+:tests: templates/instantiation/class-overload-void-pointer.cpp templates/instantiation/class-overload-two-candidates.cpp
 
 If overload resolution can choose a function without the definition of
 a class specialization, the class is or is not instantiated.
@@ -524,7 +525,7 @@ that no use names is or is not instantiated.
 
 :::{rule} INST-14
 :kind: impl-defined
-:tests: templates/instantiation/recursion-within-limit.cpp
+:tests: templates/instantiation/recursion-within-limit.cpp templates/instantiation/recursion-function-within-limit.cpp
 
 The greatest depth of nested instantiations is implementation-defined.
 :::
@@ -600,8 +601,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 111
+of 127 tests.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
@@ -660,6 +661,8 @@ bullets below say so.
 - INST-33: every compiler rejects a constant evaluation that needs a
   declaration after the first point of instantiation. The review reads
   the case as one that needs no diagnostic ({question}`Q-0257`).
+- INST-32, INST-35: {rule}`ODR-10` and {rule}`ODR-14` state the
+  rules for template definitions across translation units.
 - INST-29: GCC accepts an explicit instantiation declaration of a
   function template with internal linkage. Clang and EDG reject it
   ({question}`Q-0234`).

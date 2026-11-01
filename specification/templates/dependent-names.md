@@ -279,7 +279,7 @@ declaration after the definition does not change the result.
 
 :::{rule} DEP-6
 :kind: reject
-:tests: templates/dependent-names/independent-not-declared.cpp
+:tests: templates/dependent-names/independent-not-declared.cpp templates/dependent-names/independent-type-not-declared.cpp
 
 A name that is not dependent must be declared before the definition of
 the template. A declaration between the definition and the use does not
@@ -288,7 +288,7 @@ make an instantiation valid.
 
 :::{rule} DEP-7
 :kind: required
-:tests: templates/dependent-names/per-specialization.cpp
+:tests: templates/dependent-names/per-specialization.cpp templates/dependent-names/per-specialization-type.cpp
 
 A {term}`dependent name` is looked up again for each specialization,
 with the template arguments in place of the parameters. Two
@@ -364,7 +364,7 @@ an ambiguous set, the program is not valid ({question}`Q-0230`).
 
 :::{rule} DEP-14
 :kind: required
-:tests: templates/dependent-names/unqualified-member-kept.cpp
+:tests: templates/dependent-names/unqualified-member-kept.cpp templates/dependent-names/unqualified-member-function-kept.cpp
 
 An unqualified name that finds a member at the definition keeps that
 member in every specialization. A member of the same name in a
@@ -373,7 +373,7 @@ dependent base does not make the name ambiguous.
 
 :::{rule} DEP-36
 :kind: required
-:tests: templates/dependent-names/base-member-hides-parameter.cpp
+:tests: templates/dependent-names/base-member-hides-parameter.cpp templates/dependent-names/base-member-hides-constant-parameter.cpp
 
 In a class template, unqualified lookup searches the class and its
 independent bases before the template parameters. A member found there
@@ -426,7 +426,7 @@ dependent, so DEP-30 applies when no specialization is made
 
 :::{rule} DEP-18
 :kind: required
-:tests: templates/dependent-names/current-member-dependent-base.cpp
+:tests: templates/dependent-names/current-member-dependent-base.cpp templates/dependent-names/current-member-dependent-base-function.cpp
 
 If the current instantiation has a dependent base, a qualified name into
 the current instantiation that finds nothing at the definition is
@@ -449,7 +449,7 @@ name a type.
 
 :::{rule} DEP-20
 :kind: required
-:tests: templates/dependent-names/type-only-positions.cpp
+:tests: templates/dependent-names/type-only-positions.cpp templates/dependent-names/type-only-positions-more.cpp
 
 In these type-only positions, a qualified name with a dependent
 qualifier names a type without `typename`:
@@ -488,7 +488,7 @@ type of the same name.
 
 :::{rule} DEP-23
 :kind: required
-:tests: templates/dependent-names/using-typename.cpp
+:tests: templates/dependent-names/using-typename.cpp templates/dependent-names/using-typename-return.cpp
 
 A using-declaration that names a member of a dependent base with
 `typename` declares a type name in the class.
@@ -533,7 +533,7 @@ whose arguments are deduced ({question}`Q-0226`).
 
 :::{rule} DEP-27
 :kind: reject
-:tests: templates/dependent-names/template-keyword-in-declarator.cpp
+:tests: templates/dependent-names/template-keyword-in-declarator.cpp templates/dependent-names/template-keyword-in-declarator-static.cpp
 
 The keyword `template` must not come after the qualifier of the name
 that a declaration declares ({question}`Q-0227`).
@@ -541,7 +541,7 @@ that a declaration declares ({question}`Q-0227`).
 
 :::{rule} DEP-34
 :kind: reject
-:tests: templates/dependent-names/template-keyword-destructor.cpp
+:tests: templates/dependent-names/template-keyword-destructor.cpp templates/dependent-names/template-keyword-destructor-dot.cpp
 
 The keyword `template` must not come before the name of a destructor
 ({question}`Q-0245`).
@@ -615,7 +615,7 @@ An implementation need not diagnose a break of this rule.
 
 :::{rule} DEP-32
 :kind: no-diagnostic
-:tests: templates/dependent-names/no-valid-specialization.cpp
+:tests: templates/dependent-names/no-valid-specialization.cpp templates/dependent-names/no-valid-discarded-statement.cpp
 
 A template must have at least one argument list that makes a valid
 specialization. The rule also applies to each discarded statement of
@@ -626,7 +626,7 @@ template that breaks the rule. A `static_assert` does not count
 
 :::{rule} DEP-33
 :kind: no-diagnostic
-:tests: templates/dependent-names/pack-always-empty.cpp
+:tests: templates/dependent-names/pack-always-empty.cpp templates/dependent-names/pack-always-empty-function-type.cpp
 
 A variadic template must have a valid specialization in which the pack
 has an element. An implementation need not diagnose a template whose
@@ -637,7 +637,7 @@ the implementation rejects.
 
 :::{rule} DEP-35
 :kind: no-diagnostic
-:tests: templates/dependent-names/qualified-member-other-at-instantiation.cpp
+:tests: templates/dependent-names/qualified-member-other-at-instantiation.cpp templates/dependent-names/qualified-member-function-other.cpp
 
 If the second lookup of DEP-13 finds one member other than the member
 found at the definition, the program is not valid. An implementation
@@ -647,7 +647,7 @@ need not diagnose a break of this rule ({question}`Q-0246`).
 
 :::{rule} DEP-38
 :kind: no-diagnostic
-:tests: templates/dependent-names/argument-lookup-other-unit.cpp
+:tests: templates/dependent-names/argument-lookup-other-unit.cpp templates/dependent-names/argument-lookup-other-unit-ambiguous.cpp
 
 Suppose argument-dependent lookup for a dependent call saw each
 externally linked declaration of every translation unit. That lookup
@@ -703,8 +703,8 @@ template <class C> struct View {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 79
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 108 tests.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids

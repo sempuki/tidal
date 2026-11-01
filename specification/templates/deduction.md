@@ -175,7 +175,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 template arguments from the call arguments. The specialization that
@@ -185,7 +185,7 @@ gets its template arguments in the same way.
 
 :::{rule} DED-2
 :kind: required
-:tests: templates/deduction/explicit-leading.cpp
+:tests: templates/deduction/explicit-leading.cpp templates/deduction/explicit-pack-then-deduced.cpp
 
 Explicit template arguments go to the template parameters in order
 ({rule}`TARG-20`), and they are put in place before deduction. A pack
@@ -196,17 +196,18 @@ arguments leave.
 
 :::{rule} DED-3
 :kind: required
-:tests: templates/deduction/explicit-fixed-parameter-converts.cpp templates/deduction/explicit-fixed-not-deduced.cpp
+:tests: templates/deduction/explicit-fixed-parameter-converts.cpp templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/explicit-fixed-later-pair.cpp
 
-A function parameter whose type holds no template parameter that is
-still to be deduced takes no part in deduction. Its argument converts
-by any implicit conversion ({rule}`ICS-1`). The argument for a
+A function parameter takes no part in deduction if explicit arguments
+fix every template parameter in its type. A parameter whose type holds
+no template parameter takes no part either. Its argument converts by
+any implicit conversion ({rule}`ICS-1`). The argument for a
 parameter that takes part converts only as DED-14 and DED-15 allow.
 :::
 
 :::{rule} DED-4
 :kind: required
-:tests: templates/deduction/explicit-empty-list.cpp
+:tests: templates/deduction/explicit-empty-list.cpp templates/deduction/explicit-empty-list-default.cpp
 
 A call whose function name has a template argument list, even `<>`,
 has only function templates as candidates. A function with the name
@@ -215,7 +216,7 @@ that is not a template is not a candidate.
 
 :::{rule} DED-5
 :kind: required
-:tests: templates/deduction/explicit-invalid-removes.cpp
+:tests: templates/deduction/explicit-invalid-removes.cpp templates/deduction/explicit-invalid-template-template.cpp
 
 If the explicit arguments do not fit the parameters of a template
 ({rule}`TARG-6`, {rule}`TARG-7`), the template adds no candidate. A
@@ -226,7 +227,7 @@ constant argument that narrows ({rule}`TARG-13`) does not fit either.
 
 :::{rule} DED-6
 :kind: required
-:tests: templates/deduction/adjust-value-parameter.cpp
+:tests: templates/deduction/adjust-value-parameter.cpp templates/deduction/adjust-value-parameter-more.cpp
 
 If a function parameter's type is not a reference, the argument type is
 adjusted before the match:
@@ -298,13 +299,16 @@ parameter, that type parameter takes the type of the value.
 
 :::{rule} DED-12
 :kind: required
-:tests: templates/deduction/match-constant-type-same.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/match-constant-placeholder-type.cpp
+:tests: templates/deduction/match-constant-type-same.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/match-constant-placeholder-type.cpp templates/deduction/match-constant-placeholder-pattern.cpp templates/specialization/partial-constant-type-exact.cpp templates/specialization/partial-placeholder-pattern-const.cpp
 
 A constant parameter can take its value from an argument of a class
 template specialization. If its type has a placeholder, the parameter
-takes the type of the class template's parameter. Otherwise the two
-parameters must have the same type, apart from top-level `const`, or
-the pair fails.
+takes the type that the class template's parameter has for that
+argument. That type must have
+the form of the placeholder type, such as `auto*`, with no conversion
+({question}`Q-0295`). Otherwise the two parameters must have the same
+type, apart from top-level `const`. If a type does not fit, the pair
+fails.
 :::
 
 :::{rule} DED-13
@@ -349,7 +353,7 @@ substituted type can differ in these ways:
 
 :::{rule} DED-15
 :kind: required
-:tests: templates/deduction/difference-derived.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/difference-derived-nearest.cpp templates/deduction/difference-derived-exact-first.cpp templates/deduction/difference-derived-template-template.cpp
+:tests: templates/deduction/difference-derived.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/difference-derived-nearest.cpp templates/deduction/difference-derived-exact-first.cpp templates/deduction/difference-derived-template-template.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp
 
 A parameter type can be a template name with arguments, such as
 `Base<T>` or `TT<T>`, or a pointer to one. If the argument does not
@@ -374,7 +378,7 @@ give no value (DED-19).
 
 :::{rule} DED-17
 :kind: required
-:tests: templates/deduction/braced-array-reference.cpp
+:tests: templates/deduction/braced-array-reference.cpp templates/deduction/braced-array-reference-conflict.cpp
 
 For a parameter of type reference to an array of `P`, each element of
 a braced list is an argument for `P`. A constant parameter in the bound
@@ -436,7 +440,7 @@ be the same. Otherwise deduction fails.
 
 :::{rule} DED-22
 :kind: required
-:tests: templates/deduction/combine-bound-yields.cpp
+:tests: templates/deduction/combine-bound-yields.cpp templates/deduction/combine-bound-alone.cpp
 
 A type parameter can be the type of a constant parameter in an array
 bound. The bound gives the type parameter a value only if no other pair
@@ -474,7 +478,7 @@ template adds no candidate. {rule}`PACK-27` gives the pack cases.
 
 :::{rule} DED-25
 :kind: required
-:tests: templates/deduction/substitution-order.cpp
+:tests: templates/deduction/substitution-order.cpp templates/deduction/substitution-order-return.cpp
 
 Substitution goes through the function type in source order and stops
 at the first failure. The parts after the failure are not substituted,
@@ -483,7 +487,7 @@ and no class in them is instantiated.
 
 :::{rule} DED-26
 :kind: required
-:tests: templates/deduction/substitution-access.cpp
+:tests: templates/deduction/substitution-access.cpp templates/deduction/substitution-access-member-function.cpp
 
 Substitution checks access to each name in the function type, as at
 the template's declaration ({rule}`ACC-3`). A name that is not accessible makes
@@ -492,7 +496,7 @@ substitution fail.
 
 :::{rule} DED-27
 :kind: required
-:tests: templates/deduction/substitution-noexcept-later.cpp
+:tests: templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-noexcept-not-removed.cpp
 
 The `noexcept` operand of a function template is not part of
 substitution. The operand is substituted after the specialization is
@@ -501,7 +505,7 @@ chosen, and DED-29 applies to an error there.
 
 :::{rule} DED-38
 :kind: required
-:tests: templates/deduction/specialization-distinct-functions.cpp
+:tests: templates/deduction/specialization-distinct-functions.cpp templates/deduction/specialization-distinct-unused-parameter.cpp
 
 Each list of template arguments gives its own specialization. Two
 specializations are different functions, even when adjustment gives
@@ -552,7 +556,7 @@ matched with an lvalue reference type `A&` gives `T` the type `A&`.
 
 :::{rule} DED-31
 :kind: required
-:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp
+:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp templates/deduction/context-conversion-reference-qualifiers.cpp
 
 A conversion function template takes its template arguments from the
 type that the initialization needs ({rule}`ICS-4`). Before the match:
@@ -560,7 +564,8 @@ type that the initialization needs ({rule}`ICS-4`). Before the match:
 - a reference on either type is replaced by its referred type,
 - for a needed type that is not a reference, an array or function
   result becomes a pointer,
-- top-level `const` and `volatile` are removed from both.
+- top-level `const` and `volatile` are removed from both, unless both
+  types were references. Then the qualifiers of the needed type stay.
 
 If no exact match exists, the result type can reach the needed type by
 a qualification adjustment or by dropping `noexcept`.
@@ -568,7 +573,7 @@ a qualification adjustment or by dropping `noexcept`.
 
 :::{rule} DED-32
 :kind: required
-:tests: templates/deduction/declaration-specialization.cpp
+:tests: templates/deduction/declaration-specialization.cpp templates/deduction/declaration-specialization-friend.cpp
 
 These declarations can name a specialization of a function template:
 
@@ -583,7 +588,7 @@ the templates that match.
 
 :::{rule} DED-33
 :kind: reject
-:tests: templates/deduction/declaration-ambiguous.cpp
+:tests: templates/deduction/declaration-ambiguous.cpp templates/deduction/declaration-ambiguous-instantiation.cpp
 
 If two or more templates match such a declaration, partial ordering
 must choose one. Otherwise the program is not valid. {rule}`TSP-4` gives the
@@ -592,7 +597,7 @@ case with no matching template.
 
 :::{rule} DED-34
 :kind: required
-:tests: templates/deduction/placeholder-parameter.cpp
+:tests: templates/deduction/placeholder-parameter.cpp templates/deduction/placeholder-parameter-pointer-pack.cpp
 
 A function parameter whose type has the placeholder `auto` makes the
 function a function template. Each `auto` adds an invented type
@@ -657,10 +662,22 @@ int size(...);
 size(1);                        // int::size_type is not valid; size(...)
 ```
 
+Explicit arguments fill the template parameters from the left, and a
+parameter that they fix converts its argument:
+
+```cpp
+template <class To, class From> To convert(From);
+convert<long>('c');             // To = long, From = char
+convert<long, int>('c');        // From = int, and 'c' converts
+
+template <class... Ts> void all(Ts...);
+all<long>(1, 'c');              // Ts = long, char
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 93 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 106
+of 114 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight baseline compilers. The compilers agree on every
@@ -703,6 +720,14 @@ cell of the grids below.
   `operator T&`. Every compiler finds the exact match `T = const int`
   (`context-conversion-exact.cpp`). The differences of DED-31 apply
   only when no exact match exists (`context-conversion-differences.cpp`).
+  When only one of the two types is a reference, every compiler drops
+  the qualifiers: `operator T&` to `const int` and `operator T` to
+  `const int&` both give `T = int`
+  (`context-conversion-reference-qualifiers.cpp`).
+- DED-12: every compiler checks the form `auto*` of a placeholder
+  parameter in a function template. For a partial specialization,
+  Clang converts the argument to the parameter's type. GCC and EDG
+  match the type with no conversion ({question}`Q-0295`).
 - DED-13: with an explicit argument for `T`, the parameter
   `typename Outer<T>::template In<U>` becomes `Outer<int>::In<U>`, and
   every compiler deduces `U`. The test gives `T` its value by deduction

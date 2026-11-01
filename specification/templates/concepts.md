@@ -130,7 +130,7 @@ before a `placeholder`. A `requires_expression` is a `primary`. A
 
 :::{rule} CPT-1
 :kind: required
-:tests: templates/concepts/concept-id-value.cpp
+:tests: templates/concepts/concept-id-value.cpp templates/concepts/concept-id-constant-uses.cpp
 
 A {term}`concept-id` is a prvalue constant expression of type `bool`.
 Its value is `true` if the template arguments satisfy the constraint
@@ -140,7 +140,7 @@ wherever a constant expression can.
 
 :::{rule} CPT-2
 :kind: required
-:tests: templates/concepts/parameter-kinds.cpp
+:tests: templates/concepts/parameter-kinds.cpp templates/concepts/parameter-kinds-constant-pack.cpp
 
 A concept can have type parameters, constant parameters, template
 template parameters, and packs. The constraint expression can be any
@@ -150,7 +150,7 @@ it.
 
 :::{rule} CPT-3
 :kind: required
-:tests: templates/concepts/attribute.cpp
+:tests: templates/concepts/attribute.cpp templates/concepts/attribute-deprecated-used.cpp
 
 Attributes after the name of the concept appertain to the concept
 ({question}`Q-0270`).
@@ -175,7 +175,7 @@ template parameter with a {term}`type constraint`.
 
 :::{rule} CPT-6
 :kind: reject
-:tests: templates/concepts/self-reference.cpp
+:tests: templates/concepts/self-reference.cpp templates/concepts/self-reference-requirement.cpp
 
 A concept definition must not use the concept's own name, directly or
 in a template argument.
@@ -257,7 +257,7 @@ trailing return type. The function must be one of these
 
 :::{rule} CPT-12
 :kind: reject
-:tests: templates/concepts/trailing-clause-before-return.cpp
+:tests: templates/concepts/trailing-clause-before-return.cpp templates/concepts/trailing-clause-before-return-member.cpp
 
 A trailing requires clause must not come before a trailing return type.
 :::
@@ -293,7 +293,7 @@ does not stop it from overriding ({question}`Q-0258`).
 
 :::{rule} CPT-16
 :kind: required
-:tests: templates/concepts/lambda-clauses.cpp
+:tests: templates/concepts/lambda-clauses.cpp templates/concepts/lambda-both-clauses.cpp
 
 A lambda with a template parameter list can have a requires clause
 after that list, and a trailing requires clause after its parameters.
@@ -389,7 +389,7 @@ A constrained placeholder must not appear in these places:
 
 :::{rule} CPT-24
 :kind: required
-:tests: templates/concepts/requires-expression-value.cpp
+:tests: templates/concepts/requires-expression-value.cpp statements/if/constexpr-discard-in-template.cpp
 
 A requires expression is a prvalue constant expression of type `bool`.
 Its value is `true` if every requirement holds. A requires expression
@@ -399,7 +399,7 @@ template.
 
 :::{rule} CPT-25
 :kind: required
-:tests: templates/concepts/requirement-order.cpp
+:tests: templates/concepts/requirement-order.cpp templates/concepts/requirement-order-after-hold.cpp
 
 The requirements are checked in the order written. When one does not
 hold, the value is `false`, and the requirements after it are not
@@ -448,7 +448,7 @@ with an ellipsis ({question}`Q-0259`).
 
 :::{rule} CPT-30
 :kind: required
-:tests: templates/concepts/requirements-unevaluated.cpp
+:tests: templates/concepts/requirements-unevaluated.cpp templates/concepts/requirements-unevaluated-constant.cpp
 
 The expressions in a requires expression are not evaluated.
 {rule}`UNEV-1` applies to them as to an operand of `sizeof`.
@@ -456,7 +456,7 @@ The expressions in a requires expression are not evaluated.
 
 :::{rule} CPT-31
 :kind: required
-:tests: templates/concepts/simple-requirement.cpp
+:tests: templates/concepts/simple-requirement.cpp templates/concepts/simple-requirement-false-value.cpp statements/if/constexpr-discard-in-template.cpp
 
 A simple requirement holds if its expression is valid.
 :::
@@ -530,10 +530,36 @@ template <class T> requires !Sized<T> int bad(T);        // rejected: needs (!Si
 constexpr bool b = requires (int n) { n.size(); };        // rejected: depends on no template parameter
 ```
 
+```cpp
+template <class T> concept Wide = sizeof(T) >= 4;
+static_assert(Wide<int> && !Wide<char>);   // a concept-id is a bool constant
+char cells[Wide<int> + 1];                 // 2 elements
+
+template <class T> concept Tagged = requires {
+  typename T::tag;                         // checked first
+  T::tag::size;                            // not checked when the first fails
+};
+static_assert(!Tagged<int>);               // false, and no error
+```
+
+```cpp
+template <class T> int size_of(const T& t) {
+  if constexpr (requires { t.size(); })    // true if t.size() is valid
+    return t.size();
+  else
+    return 1;
+}
+
+template <class T> concept Valid = requires { sizeof(T) == 100; };
+static_assert(Valid<char>);                // holds: the expression is valid, though false
+
+template <class T> concept Old [[deprecated]] = true;   // the attribute appertains to Old
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 89
-of 105 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 115 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the
