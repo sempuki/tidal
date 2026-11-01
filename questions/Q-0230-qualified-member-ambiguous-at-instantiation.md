@@ -1,7 +1,7 @@
 # Q-0230: Is a qualified member name of the current instantiation looked up again at the instantiation?
 
 **Status:** provisional
-**Affects:** DEP-13, `tests/templates/dependent-names/qualified-member-found-again.cpp`
+**Affects:** DEP-13, `tests/templates/dependent-names/qualified-member-found-again.cpp`, `tests/templates/dependent-names/this-member-ambiguous.cpp`
 
 ## Context
 
@@ -17,8 +17,10 @@ also exists.
 
 ## Evidence
 
-The test above, `unqualified-member-kept.cpp` for the unqualified
-form, and inventory items A14 and A15.
+The tests above, `unqualified-member-kept.cpp` for the unqualified
+form, and inventory items A14 and A15. Item 5 of the gap review
+`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`
+uses the `this->m` form, which every compiler rejects.
 
 ## Options
 
