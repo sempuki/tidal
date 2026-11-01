@@ -1,0 +1,822 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-4"
+  ],
+  "why": "A friend declaration must not declare a concept."
+ },
+ "p02": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-3"
+  ],
+  "why": "The attribute appertains to the concept and using it only warns; Clang 18 rejects an attribute after a concept name."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-5"
+  ],
+  "why": "A concept's template head must not have a type constraint."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-20",
+   "CPT-1"
+  ],
+  "why": "Big auto constrains the invented parameter of size and of the lambda, so int passes and char fails; size<double> gives sizeof(double)."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-11",
+   "CPT-16"
+  ],
+  "why": "The lambda has an auto parameter, so it is generic and may have a trailing clause; int satisfies it."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-34"
+  ],
+  "why": "-> must be followed by a type constraint, and int is a type."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-26"
+  ],
+  "why": "Access is judged where the check happens, inside a member of Box, so t.secret is valid and Peek<Box> is true."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-14"
+  ],
+  "why": "A plain function must not have a trailing requires clause."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "CPT-24",
+   "CPT-31"
+  ],
+  "why": "size_of(Box{}) gives 4 and size_of(3) gives 1, so main returns 0."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-12"
+  ],
+  "why": "The trailing requires clause comes before the trailing return type."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-34"
+  ],
+  "why": "A requires expression body needs at least one requirement."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-25"
+  ],
+  "why": "typename T::missing fails, so the later requirement is not substituted and Trap<int> is not instantiated."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-1"
+  ],
+  "why": "A concept-id is a bool constant usable as an array bound, a case label, a noexcept operand, and a condition."
+ },
+ "p14": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "A non-generic lambda in a default member initializer of a class template may have a trailing clause; Clang and GCC accept, EDG rejects."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-15"
+  ],
+  "why": "Derived<int>::get overrides a virtual function and has a trailing clause; Clang and EDG reject, GCC accepts."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-22"
+  ],
+  "why": "The deduced return type char does not satisfy Big."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-10"
+  ],
+  "why": "A negation in a requires clause needs parentheses."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-8",
+   "CNS-25"
+  ],
+  "why": "The template template parameter has the same constraint as Box, so Box is a valid argument."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-37"
+  ],
+  "why": "A constrained placeholder must not appear in a functional cast."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-29"
+  ],
+  "why": "A requires-expression parameter must not have the name of an enclosing template parameter."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-6"
+  ],
+  "why": "The concept uses its own name."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "Each compound requirement checks decltype((E)): int&, int&&, int, Thing&, and double; char fails Big."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-5"
+  ],
+  "why": "A concept's template head must not have a requires clause."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-18"
+  ],
+  "why": "Pair needs two arguments, so the type constraint Pair gives an invalid argument list."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-7"
+  ],
+  "why": "A concept must not be partially specialized."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-21",
+   "CNS-13"
+  ],
+  "why": "'a' gives type char, which fails Big, so the template-id is not valid."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-10"
+  ],
+  "why": "A call in a requires clause needs parentheses."
+ },
+ "p28": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "noexcept fails, so by the rule Trap is not substituted and the concept is false; Clang substitutes the extra argument first and fails the static_assert, GCC and EDG accept."
+ },
+ "p29": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-37"
+  ],
+  "why": "A constrained placeholder in a structured binding is not valid; EDG accepts it."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-24"
+  ],
+  "why": "A requires expression is a bool constant inside or outside a template."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-25"
+  ],
+  "why": "typename T::tag fails first, so Trap<int> is never substituted."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-13"
+  ],
+  "why": "A trailing clause must not follow the declarator of a pointer to function."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-26"
+  ],
+  "why": "At namespace scope secret is not accessible, so the requirement fails and Peek<Box> is false."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-27"
+  ],
+  "why": "Outside a template, the requirement p.missing() is not valid."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-19",
+   "CPT-31"
+  ],
+  "why": "Big... checks each element, so count<int, char> is not valid and the simple requirement fails."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-10"
+  ],
+  "why": "A comparison in a trailing requires clause needs parentheses."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-36"
+  ],
+  "why": "Any has one parameter and gets two arguments."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-16"
+  ],
+  "why": "Both clauses constrain the call operator: int passes, char fails Big, Huge fails Small."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-28"
+  ],
+  "why": "Parameters make no objects, so deleted members do not matter, and a later parameter can use an earlier one."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "The trailing clause comes after the trailing return type, and both clauses are satisfied for int."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-20"
+  ],
+  "why": "Big auto... constrains each element of the invented pack."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-10"
+  ],
+  "why": "A comparison in a requires clause needs parentheses."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-30"
+  ],
+  "why": "The requirements are not evaluated, so throw and runtime() just need to be valid."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-31",
+   "CPT-32"
+  ],
+  "why": "Tagged has run and tag, int has neither."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "The extra argument typename int::type is not valid, so the requirement fails and the concept is false."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-28"
+  ],
+  "why": "(void) means no parameters, and outside a template every compiler finds it true."
+ },
+ "p47": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-29"
+  ],
+  "why": "A trailing ellipsis in the parameters is not valid; GCC accepts it, Clang and EDG reject."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-6"
+  ],
+  "why": "The concept uses its own name in a nested requirement."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-8"
+  ],
+  "why": "A leading requires clause works on class, function, variable, alias, member templates, and partial specializations."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-27"
+  ],
+  "why": "int().size() depends on no template parameter and is not valid, even in an uninstantiated template."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-7"
+  ],
+  "why": "A concept must not be explicitly specialized."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-31"
+  ],
+  "why": "Counter passes all three; assignment through a const parameter is not valid."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "noexcept(f()) is true only for the noexcept function pointer."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-1"
+  ],
+  "why": "A concept-id is a bool prvalue constant in every context here."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-23",
+   "CPT-22"
+  ],
+  "why": "decltype(auto) from n gives int, which is not an lvalue reference."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-23"
+  ],
+  "why": "The constraint checks only the deduced placeholder: int, int, int, int&, and int&."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-13"
+  ],
+  "why": "A trailing clause must not follow the type in a new expression."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-16"
+  ],
+  "why": "Each lambda clause constrains the call operator, and attributes after the first clause appertain to the lambda."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-14"
+  ],
+  "why": "A function declared at block scope in a function template must not have a trailing clause."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-12"
+  ],
+  "why": "The trailing requires clause comes before the trailing return type."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-2"
+  ],
+  "why": "A concept can have constant, template, and pack parameters and any logical-or expression."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-22"
+  ],
+  "why": "Returning a void expression deduces void, which fails Wide."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "CPT-30"
+  ],
+  "why": "The requirements are not evaluated, so counter stays 0 and never() needs no definition."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-4"
+  ],
+  "why": "A concept must not be defined in a block."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-13"
+  ],
+  "why": "A trailing clause must not follow a parameter declarator."
+ },
+ "p66": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "A non-generic lambda in a function template may have a trailing clause; Clang and GCC accept, EDG rejects."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-7"
+  ],
+  "why": "A concept has one declaration, its definition."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "Members of a class template and of a class inside one may have trailing clauses."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-32"
+  ],
+  "why": "Box<char> fails Wide and Pair<int> fails its default argument, so those type requirements fail."
+ },
+ "p70": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "A member of a local class in a function template may have a trailing clause; Clang and GCC accept, EDG rejects."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-29"
+  ],
+  "why": "A requires-expression parameter must not have a placeholder type."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-17"
+  ],
+  "why": "The default argument is checked only when a template-id uses it."
+ },
+ "p73": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-26",
+   "CPT-24"
+  ],
+  "why": "Inside a member, b.secret is accessible and the expression is true; GCC 14 finds it false (Q-0288), so its static_assert fails."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-32"
+  ],
+  "why": "A class template specialization is not instantiated by a type requirement, so incomplete and broken classes pass."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-32"
+  ],
+  "why": "Each form of type name is valid for Tagged; int has no tag and int& has no pointer type."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-37"
+  ],
+  "why": "decltype(auto) must not be a constrained parameter type."
+ },
+ "p77": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-3"
+  ],
+  "why": "The attribute is valid and unused; Clang 18 rejects an attribute after a concept name."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-19"
+  ],
+  "why": "With a variadic concept, each check gives it one element, so every One<X> holds."
+ },
+ "p79": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-35",
+   "CNS-9"
+  ],
+  "why": "The nested requirement reads a parameter in an evaluated context; Clang 18 gives false, the other compilers reject."
+ },
+ "p80": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-19",
+   "CNS-24"
+  ],
+  "why": "Each pack constraint is one atomic constraint; Clang and GCC find the call ambiguous, EDG picks the AB overload."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-34"
+  ],
+  "why": "noexcept appears only in a compound requirement."
+ },
+ "p82": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-28"
+  ],
+  "why": "(void) means no parameters; inside a template Clang finds it false and fails the assertion, GCC and EDG accept."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-34"
+  ],
+  "why": "A type requirement must not name a keyword type such as int."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-9"
+  ],
+  "why": "requires requires is a clause whose operand is a requires expression."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-21",
+   "CNS-12"
+  ],
+  "why": "'a' fails Wide, so pick is not viable and no other candidate exists."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-14"
+  ],
+  "why": "A member of a plain class must not have a trailing requires clause."
+ },
+ "p87": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-31"
+  ],
+  "why": "A simple requirement checks only that the expression is valid."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-17",
+   "CPT-31"
+  ],
+  "why": "one<char> fails SameAs<int>, so naming it is not valid and the requirement fails."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-4"
+  ],
+  "why": "A concept must not be defined in a class."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-28"
+  ],
+  "why": "The parameter types adjust: an array to a pointer and a function to a pointer to function."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-37"
+  ],
+  "why": "A constrained placeholder must not appear in a braced functional cast."
+ },
+ "p92": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-18"
+  ],
+  "why": "A concept name before a declarator needs auto or decltype(auto)."
+ },
+ "p93": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "t.missing() fails first, so by the rule Trap is not substituted; Clang substitutes the extra argument first and fails the static_assert."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-29"
+  ],
+  "why": "The parameter has the name of the enclosing template parameter T."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-7"
+  ],
+  "why": "A concept must not be explicitly instantiated."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-21"
+  ],
+  "why": "The constrained pick is not viable for char, so the other one gives 2."
+ },
+ "p97": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-15"
+  ],
+  "why": "A virtual function must not have a trailing clause; GCC accepts it, Clang and EDG reject."
+ },
+ "p98": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-9"
+  ],
+  "why": "Every operand of && and || is a primary expression."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-36"
+  ],
+  "why": "Any takes a type, and 1 is a value."
+ },
+ "p100": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-17"
+  ],
+  "why": "A qualified concept name works as a type constraint and before auto."
+ },
+ "p101": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-11"
+  ],
+  "why": "A friend defined in a class template may have a trailing clause, and int satisfies it."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-35"
+  ],
+  "why": "Nested requirements use parameters only in sizeof, and the && short-circuits before T::value."
+ },
+ "p103": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-33"
+  ],
+  "why": "typename int::type is not valid, so the compound requirement fails and Typed<int> is false."
+ },
+ "p104": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-35"
+  ],
+  "why": "The nested requirements use the parameter only in an unevaluated sizeof."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-27"
+  ],
+  "why": "int().size() depends on no template parameter even though the expression has a parameter."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-17",
+   "CNS-13"
+  ],
+  "why": "Box<> uses the default char, which fails Wide."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-13"
+  ],
+  "why": "A trailing clause must not follow the declarator of a variable."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-18"
+  ],
+  "why": "Positive takes a constant first, so it is not a type concept."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-8"
+  ],
+  "why": "The guide is used only when Wide holds: char gets the implicit guide and int the more constrained user guide."
+ },
+ "p110": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-2"
+  ],
+  "why": "Concepts on auto and int packs, and a call in a concept expression, are all valid."
+ },
+ "p111": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-7"
+  ],
+  "why": "The concept is defined twice."
+ },
+ "p112": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-21",
+   "CPT-32"
+  ],
+  "why": "Value<'a'> fails Big, so the type requirement fails; Value<3> passes."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-22"
+  ],
+  "why": "A function with no return statement deduces void, which fails Wide."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-18"
+  ],
+  "why": "Positive is not a type concept."
+ },
+ "p115": {
+  "outcome": "depends",
+  "rules": [
+   "CPT-29"
+  ],
+  "why": "A default argument in a requires-expression parameter is not valid; GCC accepts it, Clang and EDG reject."
+ }
+}

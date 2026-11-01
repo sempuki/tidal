@@ -1,0 +1,493 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-24"
+  ],
+  "why": "Each reference added to a reference type collapses as DCL-4 gives, and const on a reference alias has no effect, so every assertion holds."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "PACK-22",
+   "PACK-23"
+  ],
+  "why": "The lvalues reach sink(int&) and the prvalue and xvalue reach sink(int&&), so calls is 1+10+1+10 = 22."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-29"
+  ],
+  "why": "Mix<Part> lists Part twice in its bases."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-21"
+  ],
+  "why": "For an empty pack the using-declaration declares nothing, so f(1) picks f(double); with Small, f(int) is the better match."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-14"
+  ],
+  "why": "Each base gets one member initializer from the expansion, so the members hold 4, 4, 1, and 2."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-4"
+  ],
+  "why": "A function parameter pack, here from auto..., must not have a default argument."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-26"
+  ],
+  "why": "The member template packs expand the outer pack, and both lists have two elements."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-19",
+   "PACK-18"
+  ],
+  "why": "sizeof... works on each kind of pack, gives a constant of the type of sizeof, and counts the init capture pack too."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-23"
+  ],
+  "why": "T is const int&, so the cast gives an lvalue and decltype of the parenthesized cast is const int&."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-15"
+  ],
+  "why": "The mem_init value(x)... names a data member, which must not be expanded."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-20"
+  ],
+  "why": "The operand of sizeof... must be a pack name in parentheses, and T* is a pattern."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-6"
+  ],
+  "why": "Pair<A, B>... expands A with two elements and B with one element."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-12"
+  ],
+  "why": "L<T..., U> is a non-deduced position, U and T come from the other arguments, and the match then checks the first list."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-10"
+  ],
+  "why": "An expansion can give arguments to the fixed parameters of a class template."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-2"
+  ],
+  "why": "The type of a function parameter pack must name a template parameter pack or hold auto, and int does neither."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-11"
+  ],
+  "why": "An expansion must not give an argument to a non-pack parameter of an alias template."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-22",
+   "PACK-23"
+  ],
+  "why": "decltype(x) is int&, int&&, int&&, so the casts give an lvalue and two xvalues."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-27",
+   "PACK-28"
+  ],
+  "why": "f<void> forms a void parameter, so substitution fails and f(...) is chosen; f<int>(1) prefers the exact match."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-25"
+  ],
+  "why": "[=, x...] repeats the mode of the capture default."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-29"
+  ],
+  "why": "The expansion gives Part twice in the base list."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-3",
+   "PACK-1"
+  ],
+  "why": "T is not a pack, so T... with no name is the variable argument part; the other two are real packs."
+ },
+ "p22": {
+  "outcome": "depends",
+  "rules": [
+   "PACK-30",
+   "PACK-21"
+  ],
+  "why": "Inside the class, f finds a using-declarator expanded over an empty pack; PACK-30 needs no diagnostic, GCC and EDG call ::f, and Clang rejects."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-31",
+   "PACK-22"
+  ],
+  "why": "s.bits is a const bit-field, so T is const int& and the reference binds to a temporary; PACK-31 forbids only non-const bit-fields."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-18"
+  ],
+  "why": "c{p...} declares one capture that is not a pack, and with one element it is an int."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-8"
+  ],
+  "why": "The fold uses up the pack N, so the outer ... has no pack in its pattern."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-31"
+  ],
+  "why": "A non-const lvalue bit-field is passed to a forwarding reference."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-27",
+   "PACK-6"
+  ],
+  "why": "Different lengths in the return type remove the template, so zip(...) gives 2; equal lengths give List<Pair<int, char>>."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-28"
+  ],
+  "why": "Call<void> makes run have a parameter of type void through the expansion."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-21"
+  ],
+  "why": "Each using-declarator names the member, operator, or constructors of every base, so each call finds its own overload."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-1",
+   "PACK-4"
+  ],
+  "why": "Every declarator form is a valid function parameter pack, and the default argument sits before the pack."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-24"
+  ],
+  "why": "References from a template argument, an alias, and decltype collapse as DCL-4 gives."
+ },
+ "p32": {
+  "outcome": "depends",
+  "rules": [
+   "PACK-30",
+   "PACK-21"
+  ],
+  "why": "D<A> finds A::f, but D<> uses f found through an empty using-declarator expansion; GCC and EDG give 2, Clang rejects."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-16"
+  ],
+  "why": "On a member, alignas(T...) takes the strictest alignment, and an empty expansion adds no requirement."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-19"
+  ],
+  "why": "sizeof... gives a constant usable as a template argument and an array bound."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-12"
+  ],
+  "why": "List<Ts..., int> is non-deduced, Ts is the explicit char, and the parameter type List<char, int> matches the argument."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-9"
+  ],
+  "why": "An empty expansion leaves int(), Point{}, count(), and a class with no bases."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-8"
+  ],
+  "why": "sizeof... counts as an inner expansion, so the outer pattern holds no pack."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-17"
+  ],
+  "why": "x... copies, &x... references, and each capture default with a pack capture of the other mode is valid."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-8"
+  ],
+  "why": "The pattern x holds no pack."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-7"
+  ],
+  "why": "The inner expansion takes the inner T, the outer one the rest, and one pack can be expanded in both."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-13"
+  ],
+  "why": "Each copy is one argument or one element, and a braced list is evaluated from left to right."
+ },
+ "p42": {
+  "outcome": "depends",
+  "rules": [
+   "PACK-12",
+   "PACK-27"
+  ],
+  "why": "T... before int in a function type is non-deduced; with T deduced as empty, Clang and GCC fail deduction and pick take(...); the specification records that EDG differs but not how."
+ },
+ "p43": {
+  "outcome": "depends",
+  "rules": [
+   "PACK-16"
+  ],
+  "why": "On a class, GCC takes the alignment of the last element (2) and fails the assertion; Clang and EDG take 8."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-5",
+   "PACK-10"
+  ],
+  "why": "Each alias expands its pack into List, and the member alias template zips two packs of equal length."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-2"
+  ],
+  "why": "An unnamed pack must not have its ... inside parentheses."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-5"
+  ],
+  "why": "Each copy of the pattern gets its own closure, and the comma fold runs from left to right: 1*5 + 2*7 = 19."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-26",
+   "PACK-6"
+  ],
+  "why": "The outer pack has two elements and Shaped gets one template."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-13"
+  ],
+  "why": "Braced-list elements run in order, giving 1, 3, 6; the two expansions give six arguments."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-15"
+  ],
+  "why": "A mem_init that names a data member is expanded."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-25"
+  ],
+  "why": "[&, &x...] repeats the mode of the capture default."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-8"
+  ],
+  "why": "y is a pack in the body and is used outside any expansion."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-3",
+   "PACK-8"
+  ],
+  "why": "x has a name, so ... is the variable argument part and the pack T stays unexpanded."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-20"
+  ],
+  "why": "The operand of sizeof... needs parentheses."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-17"
+  ],
+  "why": "[=] copies each element of p before the reset, and [&] sees the reset to 0."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-12"
+  ],
+  "why": "Ts... is non-deduced, so Ts is empty and List<int> does not match List<char, int>; no viable function."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-1",
+   "PACK-19"
+  ],
+  "why": "A pack of references to arrays and a trailing pack after a plain parameter are both valid."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-18"
+  ],
+  "why": "Init capture packs copy or reference each element, and an empty one declares nothing."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-14"
+  ],
+  "why": "The base list order sets the base initialization order, so the log is 12 and 21."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-9"
+  ],
+  "why": "int{} is 0, count(1) is chosen for the empty pack, and Wrap<> is List<>."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-22"
+  ],
+  "why": "Each element deduces on its own: int&, const int&, int, int."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-7"
+  ],
+  "why": "U... belongs to the inner expansion and T to the outer one."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-20"
+  ],
+  "why": "T is not a pack, so it cannot be the operand of sizeof...."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-3"
+  ],
+  "why": "auto x... is one parameter followed by the variable argument part, so sizeof(x) is that of the first argument."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "PACK-10"
+  ],
+  "why": "Three<0, N...> gives the expansion to fixed constant parameters."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-2"
+  ],
+  "why": "Only a function or template parameter can have ... in its declarator."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-4"
+  ],
+  "why": "A function parameter pack must not have a default argument."
+ },
+ "p67": {
+  "outcome": "depends",
+  "rules": [
+   "PACK-11"
+  ],
+  "why": "An expansion for non-pack concept parameters: Clang and GCC reject, EDG accepts."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "PACK-8"
+  ],
+  "why": "x is a pack used outside any expansion."
+ }
+}
