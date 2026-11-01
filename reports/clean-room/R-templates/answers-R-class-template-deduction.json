@@ -1,0 +1,829 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-14",
+   "CTAD-5"
+  ],
+  "why": "The alias Same passes T to both arguments, so (1, 2) gives Pair<int, int>; the evidence says Clang 18 does not deduce through an alias."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "Two elements and one member, so no aggregate candidate exists and no other guide takes two arguments."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-16",
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "Derived inherits no constructors, and the aggregate candidate keeps the braces of the dependent base Base<T>, so int cannot deduce T."
+ },
+ "p04": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-19",
+   "CTAD-16",
+   "CTAD-24"
+  ],
+  "why": "GCC and EDG reject the tie between the guide from Derived(const T&) and the inherited guide from Base(T) as ambiguous; Clang has no inherited guide and accepts."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-17",
+   "CTAD-24"
+  ],
+  "why": "Copy initialization with = leaves out the explicit guide, and no other guide takes an int."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1",
+   "CTAD-20",
+   "TPL-11"
+  ],
+  "why": "For 3 the constructor guide and the user guide tie and the user guide gives Size<long>; for 'a' the constructor guide is an exact match and gives Size<char>."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-8",
+   "CTAD-24"
+  ],
+  "why": "T appears only in a non-deduced position, so the constructor guide gets no T and no guide is viable."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-25",
+   "CTAD-26",
+   "DEL-1"
+  ],
+  "why": "Deduction gives Gone<int>, and then the initialization calls a deleted constructor."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-27",
+   "CTAD-9"
+  ],
+  "why": "The pack of bases before x takes no element, so {5} gives Tail<>."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-11",
+   "CTAD-13",
+   "CTAD-20"
+  ],
+  "why": "The user guide with T&& is a forwarding reference (int& for n), the non-template guide wins for the string literal, and the defaulted U gives Box<short>."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1"
+  ],
+  "why": "A dependent qualifier before the class template name is allowed, and In deduces In<int>."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "Two non-template guides have the same parameter types; Clang and GCC reject, and the evidence says EDG accepts."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-22",
+   "CTAD-23"
+  ],
+  "why": "The explicit guide from Mark(T) ties with the template guide and wins by the non-template tie-breaker, and copy-list initialization cannot use an explicit guide."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-9",
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "The bound is dependent, so the string literal gives a reference to const unsigned char[N], and a char array cannot match it."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-9",
+   "CTAD-1"
+  ],
+  "why": "Clang and EDG form the aggregate candidate for new Agg(1); GCC does not and rejects."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-8",
+   "CTAD-24"
+  ],
+  "why": "T&& of a class parameter is an rvalue reference, so it cannot bind the lvalue n."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "A function parameter cannot have a deduced class template type."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-9",
+   "CTAD-24"
+  ],
+  "why": "The two elements deduce T as int and long, which conflict."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1",
+   "TPL-11"
+  ],
+  "why": "Wrap{3}, 4 and 'a' each deduce the type of the constant parameter W, so value is const int or const char."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-27",
+   "CTAD-9"
+  ],
+  "why": "The first base fixes the pack as X, Y, Z, and the two remaining {} elements do not change that length."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-5",
+   "CTAD-6"
+  ],
+  "why": "Each constructor guide deduces the stated type; Tuple e with no initializer takes the pack guide with zero arguments (CTAD-1 does not say that a missing initializer is allowed)."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "The bound of v is dependent, so the braces are not elided and 2 and 3 have no member."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-27",
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "The pack before x takes no element, so Empty{} goes to x and 5 has no member."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1",
+   "CTAD-5",
+   "CTAD-25"
+  ],
+  "why": "Every listed place deduces from the constructor guide, and const and new keep the deduced type."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-8"
+  ],
+  "why": "T&& takes the rvalue 1 as T = int, and U&& is a forwarding reference for i."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "The dependent member In<T> keeps its braces, so the second element has no member."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-25",
+   "CTAD-26"
+  ],
+  "why": "The user guide wins with two exact matches and gives Pair<int>, but then the two constructors of Pair<int> are ambiguous for (1, 2)."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-9",
+   "CTAD-10"
+  ],
+  "why": "Outer deduces from an In<int> element, and the braces of the non-dependent Plain are elided so 3L gives T = long."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-7"
+  ],
+  "why": "Only the copy candidate gives T, so two is Box<int>."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-13"
+  ],
+  "why": "U gets no value from the guide parameters and has no default; the evidence says GCC and EDG accept such a guide."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-15"
+  ],
+  "why": "Pointer is an alias for a pointer type, so it needs its arguments."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-13"
+  ],
+  "why": "N gets no value from the guide parameters and has no default; the evidence says GCC and EDG accept such a guide."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The guide for the private member template In is declared public, so its access differs from the member."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-7",
+   "CTAD-21",
+   "CTAD-18"
+  ],
+  "why": "The copy candidate beats the guide from Copy(const Copy&) by the tie-breaker, so both give Copy<char>."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-24",
+   "CTAD-1"
+  ],
+  "why": "With no initializer, the guide from Box(T) needs one argument and nothing gives T."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The result of the guide is int, which is no template-id of Box."
+ },
+ "p37": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-27"
+  ],
+  "why": "The first base fixes the pack, and the last element only converts to Y; Clang and EDG reject, GCC accepts."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-5",
+   "CTAD-23"
+  ],
+  "why": "explicit(sizeof(T) > 1) is false for char, so copy and copy-list initialization from 'c' are fine, and c{1} is direct."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-23"
+  ],
+  "why": "Copy-list initialization chooses the explicit guide."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-6",
+   "CTAD-11"
+  ],
+  "why": "The primary template is not defined, and the user guide Only(int) gives Only<int>, which is the explicit specialization."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-15"
+  ],
+  "why": "The alias names the class template after a dependent qualifier."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-11",
+   "CTAD-12"
+  ],
+  "why": "The member guide is declared in the class scope of In with the same access and gives In<int>."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-3"
+  ],
+  "why": "The two declarators deduce Box<int> and Box<char>."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1"
+  ],
+  "why": "A template template parameter can deduce, and W is Box after substitution."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "A return type cannot be a deduced class template type."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-20"
+  ],
+  "why": "The user guide ties with the constructor guide and wins, so w is Wide<long long> with value 2."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "A guide must not have a body."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-6",
+   "CTAD-10"
+  ],
+  "why": "An empty list forms no aggregate candidate, and the guide with no parameters uses the default T = int."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-20"
+  ],
+  "why": "The user guide ties with the constructor guide and wins with Box<long>."
+ },
+ "p50": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-14",
+   "CTAD-7",
+   "CTAD-11"
+  ],
+  "why": "Clang 22 and GCC deduce Box<int>, Box<char> and Agg<int, char>; EDG does not deduce through IntAgg, which fixes an argument, and Clang 18 does not deduce through any alias."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-17",
+   "CTAD-26",
+   "ACC-3"
+  ],
+  "why": "The guide from the private Secret(T*) is usable and gives Secret<int>, but the initialization then picks the private constructor."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1",
+   "CTAD-7"
+  ],
+  "why": "The copy candidate deduces in the range-for variable and in both conditions, and the constant evaluations give 3, 2 and 3."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-16",
+   "CTAD-26"
+  ],
+  "why": "The inherited copy candidate deduces Derived<int>, but Derived<int> cannot be initialized from a Base<int>."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The result names Other, which is a different template from Box."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-1",
+   "CTAD-14"
+  ],
+  "why": "An alias of a template template parameter deduces after substitution and gives Box<int>."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "A reference declarator cannot have a deduced class template type."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-17",
+   "CTAD-11"
+  ],
+  "why": "Direct initialization picks the more specialized explicit guide (Box<int>); copy initialization leaves it out and takes Box(T) with Box<int*>."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-11"
+  ],
+  "why": "make and fixed are instantiated after the guide Box(int), so they give Box<long>; later<int> is instantiated before Cell(int) is declared, so both early and z are Cell<int>."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-21"
+  ],
+  "why": "The copy candidate wins the tie with the guide from the copy constructor."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-28",
+   "CTAD-24"
+  ],
+  "why": "Indexed with double fails the Offset constraint of the alias, so no guide is viable for r."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "An array declarator cannot have a deduced class template type."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-7",
+   "CTAD-18"
+  ],
+  "why": "Each form takes the copy candidate and gives Box<int>."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-9",
+   "CTAD-27"
+  ],
+  "why": "The pack of bases takes both elements, so all is Overloads<ByInt, ByDouble>, and overload resolution picks the int and double operators."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-5",
+   "CTAD-24"
+  ],
+  "why": "Only the primary template gives guides, and no guide takes two arguments."
+ },
+ "p65": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-20",
+   "CTAD-21"
+  ],
+  "why": "The user guide and the copy candidate tie, and the user guide wins before the copy candidate, giving Box<Box<int>>."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-6"
+  ],
+  "why": "Tag has no constructor, so its guide with no parameters uses the default int for both a and b."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-24",
+   "CTAD-12"
+  ],
+  "why": "The two user guide templates have the same parameters and both fit &i, so the choice is ambiguous."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-23"
+  ],
+  "why": "The explicit user guide is more specialized and wins in copy-list initialization."
+ },
+ "p69": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-16"
+  ],
+  "why": "GCC and EDG make a guide from the inherited Base(T) and give Derived<int>; Clang makes no inherited guide and rejects."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-14",
+   "CTAD-24"
+  ],
+  "why": "Through Same, 1 and 'c' give T as int and char."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-19",
+   "CTAD-23"
+  ],
+  "why": "The guide from Derived's own constructor wins over the inherited one and is explicit, so copy-list initialization fails."
+ },
+ "p72": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-24"
+  ],
+  "why": "The two constructor template guides give Box<char> and Box<int> with exact matches, and neither is more specialized."
+ },
+ "p73": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-18",
+   "CTAD-14"
+  ],
+  "why": "Clang 22 and GCC skip the initializer-list phase for copy{one} and give List<int>; EDG uses the initializer-list guide through the alias, and Clang 18 does not deduce through the alias."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-22",
+   "CTAD-23"
+  ],
+  "why": "The non-explicit guide from Mark(T) wins the tie over the explicit constructor template guide."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-10"
+  ],
+  "why": "A fixed bound with a dependent element type has its braces elided, so the types are Three<int>, Three<const char*> and Mixed<int>."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-14"
+  ],
+  "why": "Box(T) matched with Box<T*> gives Box<int*>, and the user guide with result Box<long> cannot match the alias; the evidence says Clang 18 does not deduce through an alias."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-17"
+  ],
+  "why": "Direct initialization picks the more specialized Pick(T*); copy initialization leaves the explicit guide out and gives Pick<int*>."
+ },
+ "p78": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-14"
+  ],
+  "why": "Clang 22 and GCC deduce through an alias that fixes an argument and through an alias of an alias; EDG and Clang 18 do not."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The same guide is declared twice."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-4",
+   "TARG-9"
+  ],
+  "why": "Pair<int> is a template-id, so U takes its default int and 2.5 converts to 2."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-9",
+   "CTAD-10"
+  ],
+  "why": "A dependent bound keeps the braces, so {1, 2, 3} gives int and 3, and \"abc\" gives char and 4."
+ },
+ "p82": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-11",
+   "CTAD-20"
+  ],
+  "why": "a sees no user guide and gets Box<long>; b sees the later guide, which wins the tie with Box<char>."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-28",
+   "CTAD-24"
+  ],
+  "why": "Through Same, the user guide deduces Pair<int*, long>, which is no specialization of Same, and the other guides need two T*."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-10",
+   "CTAD-24"
+  ],
+  "why": "A user guide removes the aggregate candidate, and the user guide needs a pointer."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-6",
+   "CTAD-24"
+  ],
+  "why": "The guide with no parameters gives no value to T."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The guide is declared outside the namespace of lib::Box."
+ },
+ "p87": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-10"
+  ],
+  "why": "Clang and GCC elide the braces of the fixed char v[3] and deduce Named<int>; EDG forms no candidate and rejects."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "A guide can have no specifier other than explicit."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-19",
+   "CTAD-23"
+  ],
+  "why": "The explicit guide from Derived(T) wins over the inherited user guide, so copy-list initialization fails."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-4",
+   "CTAD-5"
+  ],
+  "why": "Box<> uses the default int, and Box b(2.5) deduces double."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "A pointer declarator cannot have a deduced class template type."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-29"
+  ],
+  "why": "For Box only the guide from Box(U, T) with U = int satisfies Wide, giving Box<char>; Pad<int> satisfies Wide."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-8"
+  ],
+  "why": "A member alias of the class stands for T, so 1 gives Wrap<int>."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-8"
+  ],
+  "why": "The rvalue 1 binds T&& with T = int."
+ },
+ "p95": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-28",
+   "CTAD-8"
+  ],
+  "why": "T&& through the alias is no forwarding reference, so Clang and GCC reject the lvalue i; EDG accepts."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-18",
+   "CTAD-7"
+  ],
+  "why": "One element of the class type, or of a class derived from it, skips the initializer-list phase, so the copies are List<int>; two elements give List<List<int>>; 1L gives List<long>."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-24"
+  ],
+  "why": "The guides from Two(T, int) and Two(int, T) both give Two<int> with exact matches and neither wins."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-5",
+   "CTAD-23"
+  ],
+  "why": "For int the condition is true, so the guide is explicit, and copy-list initialization fails."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-9"
+  ],
+  "why": "The aggregate candidate works with braces, parentheses and designators."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-29",
+   "CTAD-24"
+  ],
+  "why": "For 'a', 'a' each guide has U = char, which fails Wide, so no guide is viable."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-2"
+  ],
+  "why": "A non-static member cannot have a deduced class template type."
+ },
+ "p102": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-16"
+  ],
+  "why": "GCC and EDG inherit the user guide Base(T*) and give Derived<int>; Clang makes no inherited guides and rejects."
+ },
+ "p103": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-3"
+  ],
+  "why": "c and d deduce Box<int> and Box<double> in one declaration."
+ },
+ "p104": {
+  "outcome": "depends",
+  "rules": [
+   "CTAD-1"
+  ],
+  "why": "With the keyword template after the dependent qualifier, Clang rejects; GCC and EDG accept."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-12"
+  ],
+  "why": "The result has a cv-qualifier; the evidence says GCC accepts it."
+ },
+ "p106": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-19"
+  ],
+  "why": "The non-explicit guide from Derived(T) wins over the explicit inherited guide, and Derived's own constructor hides the inherited one."
+ },
+ "p107": {
+  "outcome": "compiles",
+  "rules": [
+   "CTAD-20",
+   "OVL-25"
+  ],
+  "why": "For short the constructor guide is an exact match and beats the user guide; for 1 they tie and the user guide gives Box<long>."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "CTAD-16",
+   "CTAD-24"
+  ],
+  "why": "The base Base<int> does not use T, so the inherited guide cannot give T."
+ }
+}

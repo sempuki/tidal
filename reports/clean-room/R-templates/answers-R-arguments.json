@@ -1,0 +1,602 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-11",
+   "TARG-27"
+  ],
+  "why": "Base with an argument list names the template, so the two inherited injected names are not ambiguous here."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-12",
+   "TARG-14"
+  ],
+  "why": "Array-to-pointer, function-to-pointer, qualification, dropping noexcept and nullptr are all allowed conversions."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-1"
+  ],
+  "why": "A qualified name that finds a template opens an argument list."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-19"
+  ],
+  "why": "Equal enumerator values, unions with the same active member and value, and equal array members name the same specialization."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-20",
+   "TARG-9",
+   "DED-2"
+  ],
+  "why": "Explicit arguments fill R and T, U takes its default long, and 1.5 converts to 1."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-6"
+  ],
+  "why": "The definition's head gives C no default, so C<> has too few arguments."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-10",
+   "CTAD-2"
+  ],
+  "why": "A pointer declarator needs Box with an argument list, even though T has a default."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-8",
+   "TARG-7"
+  ],
+  "why": "int() is read as a function type, and a type is not valid for a constant parameter; the evidence says EDG reads the value 0 and accepts."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-17",
+   "TSP-13"
+  ],
+  "why": "Use<Kind> uses Kind's partial specialization for int*."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-16"
+  ],
+  "why": "A string literal copy-initializes a Text through its constructor."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-21"
+  ],
+  "why": "A pack takes the rest of the arguments, also none."
+ },
+ "p12": {
+  "outcome": "depends",
+  "rules": [
+   "TARG-17"
+  ],
+  "why": "The head has an int parameter and Long takes long; Clang 22 and GCC accept, Clang 18 and EDG reject."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-17"
+  ],
+  "why": "A placeholder type in either head matches any type in the other."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-19"
+  ],
+  "why": "0.5 and 1.0 / 2 have one representation; 0.0 and -0.0 differ."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-14"
+  ],
+  "why": "The address of a member or an array element of a static object is valid."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "A floating-point value does not convert to int here."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-25"
+  ],
+  "why": "Local, incomplete and unnamed types are valid type arguments."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-11"
+  ],
+  "why": "In an explicit or partial specialization the injected class name names that specialization."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "A string literal is not valid for a pointer parameter."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "TARG-23",
+   "NAM-27"
+  ],
+  "why": "Lookup finds nothing or only a function, so pick<N> opens a list and argument-dependent lookup finds lib::pick; main returns 0."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "Derived* to Base* is a conversion to a base pointer, which is not allowed."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-27"
+  ],
+  "why": "Base alone is ambiguous between the injected names of Base<int> and Base<char>."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-11"
+  ],
+  "why": "Node alone names Node<int>, and Node<char> names another specialization."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-24"
+  ],
+  "why": "With T = int&, the later parameter T* is a pointer to a reference."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-25",
+   "TARG-8"
+  ],
+  "why": "Function, array of unknown bound, reference, const and closure types are valid type arguments."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "count is not a constant expression."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "The address of an automatic variable is not valid."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-24"
+  ],
+  "why": "int::size_type is not valid for the second parameter."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "2 to bool narrows."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "An integer does not convert to a floating-point parameter."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "TARG-14"
+  ],
+  "why": "Both references name objects with static storage; fixed is constexpr so read gives 5, and counter reaches 2."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "The address of __func__ is not valid."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-7"
+  ],
+  "why": "A type is not valid for a constant parameter."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-18"
+  ],
+  "why": "Num takes a constant parameter and the head takes a type."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-3"
+  ],
+  "why": ">> closes two lists, and the operators in parentheses stay inside."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-2",
+   "TARG-1"
+  ],
+  "why": "Inside use, v is a variable so < is less-than; at namespace scope v names the template and v<1, 2> is 3."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-6"
+  ],
+  "why": "Box has one parameter and no pack."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "A scoped enumerator needs an explicit conversion to int."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "The integer 0 does not convert to a pointer here."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "TARG-12"
+  ],
+  "why": "The overloaded name pick selects the overload whose type the parameter has; main returns 0."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "The reference member would bind to a member of a temporary."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-6",
+   "TARG-20",
+   "DED-5"
+  ],
+  "why": "identity has one parameter and the call gives two explicit arguments."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-4"
+  ],
+  "why": "The >> ends the list, and 2> does not fit after it."
+ },
+ "p44": {
+  "outcome": "depends",
+  "rules": [
+   "TARG-19"
+  ],
+  "why": "A union with no active member: Clang and EDG accept and give one specialization; GCC rejects the argument."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-8"
+  ],
+  "why": "int() is a function type, with no adjustment to a pointer."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-17"
+  ],
+  "why": "An alias template is a valid template template argument."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-4"
+  ],
+  "why": "The > ends the list."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-12",
+   "TARG-19"
+  ],
+  "why": "Promotions, an unscoped enumerator and a constexpr user conversion keep the value, and 'a' and 97 are the same argument."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-10"
+  ],
+  "why": "A qualified name never finds the injected class name, so lib::Box needs arguments."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-1"
+  ],
+  "why": "Function and variable templates take explicit argument lists."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-2",
+   "TARG-1"
+  ],
+  "why": "Inside use, the parameter Size hides the template, so < and > are comparisons; outside, Size<3, 4> is a type."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-9"
+  ],
+  "why": "Defaults fill missing arguments and can use earlier parameters; <> takes all defaults."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-5"
+  ],
+  "why": "Arguments match parameters by position for each kind."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-16",
+   "TARG-19"
+  ],
+  "why": "A braced list copy-initializes the Point parameter, and equal members give the same specialization."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "TARG-23"
+  ],
+  "why": "Lookup finds nothing, so pick<5> opens a list and argument-dependent lookup at instantiation finds lib::pick."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-10"
+  ],
+  "why": "A variable template needs an argument list."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-10",
+   "CTAD-2"
+  ],
+  "why": "Box* needs an argument list."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-17"
+  ],
+  "why": "Pair's extra parameter has a default, so it accepts the head's lists; the evidence says Clang 18 rejects."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-15"
+  ],
+  "why": "5 would bind the reference to a temporary."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-19",
+   "TARG-14"
+  ],
+  "why": "Ref<a> and Ref<alias> refer to the same object, and &a and &b differ."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-26"
+  ],
+  "why": "Peek gets no access to Owner's private Hidden."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-5"
+  ],
+  "why": "Arguments match parameters by position."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-19",
+   "TARG-9"
+  ],
+  "why": "Equal values and aliased types give the same specialization; const int and 3 give different ones."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-7"
+  ],
+  "why": "A variable template is not valid for a template template parameter."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "300 narrows to unsigned char."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-9"
+  ],
+  "why": "Defaults can name earlier parameters."
+ },
+ "p67": {
+  "outcome": "depends",
+  "rules": [
+   "TARG-22"
+  ],
+  "why": "Clang treats ListAlias as its own template and passes; GCC and EDG treat it as List and the static_assert fails."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-7"
+  ],
+  "why": "An expression is not valid for a type parameter."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-14",
+   "CE-20"
+  ],
+  "why": "Each pointer names a static object or function, also with internal linkage; address() reaches a static const int, which is usable in constant expressions."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-18"
+  ],
+  "why": "Pair's second parameter has no default, so it does not accept a one-argument list."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-13"
+  ],
+  "why": "int* to void* is not allowed."
+ },
+ "p72": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-6"
+  ],
+  "why": "U has no argument and no default."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-27"
+  ],
+  "why": "Base is ambiguous also as a template template argument."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-26"
+  ],
+  "why": "Owner can name its own private Hidden in an argument."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-3"
+  ],
+  "why": "Named casts nest inside lists, and >> can close a list and a cast."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-21"
+  ],
+  "why": "The pack takes the rest, also none."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-17"
+  ],
+  "why": "A head with a pack accepts a template with any number of type parameters."
+ },
+ "p78": {
+  "outcome": "depends",
+  "rules": [
+   "TARG-22"
+  ],
+  "why": "On Clang ListAlias is its own template and the primary gives 0; on GCC and EDG it is List and the specialization gives 1, failing the assert."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-26"
+  ],
+  "why": "Owner::Hidden is private where the argument is written."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-16"
+  ],
+  "why": "Class parameters are copy-initialized from a value, a braced list or an int."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-11"
+  ],
+  "why": "As a template template argument, the injected class name names the template."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "TARG-7"
+  ],
+  "why": "A class is not valid for a template template parameter."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "TARG-16"
+  ],
+  "why": "Floating-point constants are valid for a double parameter."
+ }
+}

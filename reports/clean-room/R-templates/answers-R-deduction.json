@@ -1,0 +1,860 @@
+{
+ "p01": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-23",
+   "DED-39"
+  ],
+  "why": "The function and the template both match; GCC calls the function and exits 0, while Clang calls neither and exits 10."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-4",
+   "OVL-25"
+  ],
+  "why": "show(1) prefers the exact non-template show(int); show<>(1) has only the template as a candidate."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-35"
+  ],
+  "why": "T appears only in a qualified name, so it gets no value."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-35"
+  ],
+  "why": "The bound of an array parameter is a non-deduced position, so N gets no value."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15"
+  ],
+  "why": "Derived<int>* matches Base<T>* through its base, so T is int."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-19",
+   "OVL-39"
+  ],
+  "why": "Both act functions match int(*)(T), so the set gives no value; T comes from the first argument, and then act resolves to the matching overload."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "DED-37",
+   "DED-35"
+  ],
+  "why": "Ts... is not at the end of the List argument list, so it stays empty and List<int> does not match List<char, int>."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-31"
+  ],
+  "why": "Top-level const is removed for non-reference types, a reference on one side drops qualifiers, and operator T* finds the exact pointee type."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-19"
+  ],
+  "why": "Only twice(int) matches T(*)(int), so T is int."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-22",
+   "DED-11"
+  ],
+  "why": "No other pair gives T, so the bound gives T the type of a sizeof expression and N is 3."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-35"
+  ],
+  "why": "N + 1 is an expression of a constant parameter, so N gets no value."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-36"
+  ],
+  "why": "TT takes Box from Box<int> and from Hold<Box>."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "DED-30",
+   "DED-35"
+  ],
+  "why": "The target void(int) gives T = int, but the result Tag<int> does not match void."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-3",
+   "DED-13"
+  ],
+  "why": "Explicit arguments fix both T and U, so the second parameter takes no part and the argument matches."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-24"
+  ],
+  "why": "Vec::size_type exists, so the template wins; int::size_type fails and removes the template."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "DED-29"
+  ],
+  "why": "Finding the result type of field<int> instantiates its body, and t.missing on an int is a hard error."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-16"
+  ],
+  "why": "Each list element deduces T on its own, also through a const reference to initializer_list."
+ },
+ "p18": {
+  "outcome": "depends",
+  "rules": [
+   "DED-39",
+   "NEW-24"
+  ],
+  "why": "GCC calls the more specialized T* template and exits 0; Clang calls neither and exits 10."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-35"
+  ],
+  "why": "The operand of decltype is a non-deduced position."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "DED-29"
+  ],
+  "why": "An error in the body of a lambda in a template parameter default is a hard error."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-12"
+  ],
+  "why": "&n has type int*, which has the form auto*, and 5 does not, so the ellipsis overload takes it."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "DED-16",
+   "DED-21",
+   "DED-35"
+  ],
+  "why": "The list elements give T as int and long."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-26"
+  ],
+  "why": "run is private in Locked, so substitution fails for it and the ellipsis overload is chosen."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-12",
+   "TSP-14"
+  ],
+  "why": "The int partial specialization matches only an int argument; long and char do not have the same type."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-20"
+  ],
+  "why": "A pack before the end is non-deduced and stays empty unless explicit arguments fill it."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-32",
+   "ORD-9"
+  ],
+  "why": "The friend matches both templates, and partial ordering picks the T* one, which is also the one the call picks."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-9"
+  ],
+  "why": "The default argument gives no value, so T is int in both calls."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15",
+   "DED-37"
+  ],
+  "why": "Rec<int, char> matches exactly, so A is int, char before any base is tried."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-8"
+  ],
+  "why": "A forwarding reference gives int& and const int& for lvalues and int for rvalues."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-23"
+  ],
+  "why": "U takes its default Box<int>, and the unused pack Rest is empty."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-34"
+  ],
+  "why": "Each auto adds an invented parameter after the declared ones, and explicit arguments can fill them."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-24"
+  ],
+  "why": "Each substitution makes a type that is not valid, so every template One is removed."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-3",
+   "DED-2"
+  ],
+  "why": "T is fixed to long so 1 and 'c' convert, and U is float; 2 + 1 + 99 is 102."
+ },
+ "p34": {
+  "outcome": "depends",
+  "rules": [
+   "DED-11"
+  ],
+  "why": "Clang and EDG give N the type of a sizeof expression; GCC gives int, so its static_assert fails."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15",
+   "DED-14"
+  ],
+  "why": "Each argument reaches Base<int> through a base, and the pointer can gain const."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-4",
+   "OVL-27"
+  ],
+  "why": "pick(1) prefers the non-template; pick<>(1) can only use the template."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-27",
+   "OVL-27"
+  ],
+  "why": "The non-template act(int) wins the tie, so the noexcept operand of the template is never substituted."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-2",
+   "DED-3"
+  ],
+  "why": "Explicit arguments fill from the left and the pack can grow by deduction."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-25"
+  ],
+  "why": "Substitution of the result type T::type fails first, so Hard<int> is not instantiated."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-18"
+  ],
+  "why": "The braced list gives no value; T comes from the first argument and {2} then initializes Box<int>."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "DED-12",
+   "DED-35"
+  ],
+  "why": "Fixed has an int parameter and N is long, so the types differ and the pair fails."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "DED-33"
+  ],
+  "why": "Both templates match put(int, int), and partial ordering prefers neither."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "DED-8",
+   "DED-35"
+  ],
+  "why": "T&& inside a function pointer type is no forwarding reference, so it cannot match int&."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15"
+  ],
+  "why": "Base<int> matches exactly, so its base Base<long> is not tried."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "DED-19",
+   "DED-35"
+  ],
+  "why": "Both square functions match, so the set gives no value and T has none."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "DED-15",
+   "DED-29"
+  ],
+  "why": "Looking at the bases instantiates Derived<int>, and its static_assert fails."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "DED-27",
+   "DED-29"
+  ],
+  "why": "The template wins as an exact match, and then its noexcept operand int::value is an error."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "DED-33"
+  ],
+  "why": "The explicit specialization matches both templates, and partial ordering prefers neither."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "DED-21",
+   "DED-35"
+  ],
+  "why": "shrink gives T as char from the result and int from the parameter."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "DED-15",
+   "DED-35"
+  ],
+  "why": "Two bases match with different values of T."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-24"
+  ],
+  "why": "int::value in the conditional explicit is a substitution failure, so Pick(...) is used."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "DED-9",
+   "DED-23",
+   "DED-35"
+  ],
+  "why": "A used default argument gives no value, so T has none."
+ },
+ "p53": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-24",
+   "DED-39"
+  ],
+  "why": "Two templates match and neither is more specialized; Clang and GCC call no deallocation function and exit 0, and EDG rejects the new expression."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-6",
+   "DED-7"
+  ],
+  "why": "Reference parameters keep const and array types; value parameters drop top-level const."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "DED-18",
+   "DED-35"
+  ],
+  "why": "A braced list gives a plain T no value."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-37"
+  ],
+  "why": "A trailing pack in a class argument list takes the remaining arguments, possibly none."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-10"
+  ],
+  "why": "int&& matches T&& with T = int."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-31"
+  ],
+  "why": "Deep reaches const int* const* from T** by a qualification adjustment, and Call drops noexcept to reach int(*)()."
+ },
+ "p59": {
+  "outcome": "depends",
+  "rules": [
+   "DED-28",
+   "DED-29"
+  ],
+  "why": "Clang and GCC substitute the default U first and instantiate Bad<int>, a hard error; EDG checks int* against 1 first and removes the template, so Two is chosen."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-5"
+  ],
+  "why": "Explicit arguments that do not fit, including 300 for unsigned char, remove the template."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-31"
+  ],
+  "why": "With references on both sides the qualifiers stay (const int, volatile int); with only one reference they drop (int)."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-13"
+  ],
+  "why": "T and N take their values from the deducible parameter, and the other parameter is checked after substitution."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-24",
+   "DCL-8"
+  ],
+  "why": "The function type is adjusted as a declared one, so const int becomes int and int[3] becomes int*."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-3"
+  ],
+  "why": "Explicit arguments fix T and N, so the non-deduced parameters are fine."
+ },
+ "p65": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-37"
+  ],
+  "why": "The pack takes each parameter of the function type."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "DED-8",
+   "DED-35"
+  ],
+  "why": "const T&& is no forwarding reference, so it cannot bind the lvalue n."
+ },
+ "p67": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-5"
+  ],
+  "why": "An explicit argument that does not fit removes that template."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-25"
+  ],
+  "why": "int::type fails in the second parameter, so the third is not substituted and Hard<int> is not instantiated."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-11",
+   "DED-17"
+  ],
+  "why": "N takes array bounds and specialization arguments, and T takes the type of V."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "DED-29"
+  ],
+  "why": "The body of a lambda in the function type is instantiated, and its error is a hard error."
+ },
+ "p71": {
+  "outcome": "depends",
+  "rules": [
+   "DED-11"
+  ],
+  "why": "Clang and GCC deduce B from noexcept; EDG gives B no value and rejects."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "DED-12",
+   "TSP-14"
+  ],
+  "why": "GCC and EDG require the form const auto*, so Kind<&n> uses the primary; Clang converts int* and picks the partial specialization, so its assert fails."
+ },
+ "p73": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-6"
+  ],
+  "why": "A value parameter drops volatile and turns arrays into pointers."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-26"
+  ],
+  "why": "Secret::type is private, so substitution fails and the ellipsis overload is used."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-35"
+  ],
+  "why": "The whole qualified name is non-deduced, so U gets no value."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-12"
+  ],
+  "why": "A placeholder constant parameter takes the type long of Wide's parameter."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-32",
+   "ORD-9"
+  ],
+  "why": "Partial ordering makes both declarations name the T* template, so int* gives 3 and char* gives 2."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-3"
+  ],
+  "why": "T is fixed, so every argument converts by any implicit conversion."
+ },
+ "p79": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-38"
+  ],
+  "why": "keep<int> and keep<const int> have the same type but are different functions."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-31"
+  ],
+  "why": "operator T* gives T = const int as an exact match, and operator T& keeps const because both sides are references."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-20",
+   "DED-8",
+   "DED-37"
+  ],
+  "why": "Each pack element deduces as one parameter would."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "DED-29"
+  ],
+  "why": "Substitution instantiates Hard<int>, whose body is not valid."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15",
+   "DED-36"
+  ],
+  "why": "Derived matches TT<T>& through its base Base<int>."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "DED-21",
+   "DED-35"
+  ],
+  "why": "T is Meter from the first argument and int from the second."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "DED-23",
+   "DED-35"
+  ],
+  "why": "U gets no value and has no default."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-2"
+  ],
+  "why": "Explicit arguments start the pack and deduction adds the rest."
+ },
+ "p87": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-17"
+  ],
+  "why": "Braced lists give T and the bounds, including nested bounds."
+ },
+ "p88": {
+  "outcome": "runs",
+  "rules": [
+   "DED-39",
+   "NEW-23"
+  ],
+  "why": "Only the T* template makes its parameter the same as Arena*, so called is 1 and main returns 0."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "DED-20",
+   "DED-35"
+  ],
+  "why": "A pack before the end stays empty even though List<A...> names it, so the call has too many arguments."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-38"
+  ],
+  "why": "id<char> and id<long> have the same type but different addresses."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "DED-10",
+   "DED-35"
+  ],
+  "why": "int has no pointer form for T*."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-22"
+  ],
+  "why": "T comes from the short argument, and the bound converts to short."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-23"
+  ],
+  "why": "A pack with no value is empty even before T in the template head."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-34"
+  ],
+  "why": "Abbreviated templates deduce each auto, and an explicit argument gives the first invented parameter."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-6"
+  ],
+  "why": "Value parameters decay arrays and functions and drop top-level const."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-1"
+  ],
+  "why": "Member function templates, static member templates and operator templates deduce in the same way."
+ },
+ "p97": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-10",
+   "DED-36"
+  ],
+  "why": "Each compound form gives its parts, as the DED-P3 table lists."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "DED-20",
+   "DED-35"
+  ],
+  "why": "Ts is empty, so lead takes one int and two arguments do not fit."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-1"
+  ],
+  "why": "Each parameter deduces from its argument, and a constructor template deduces T = char."
+ },
+ "p100": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-24",
+   "DED-29"
+  ],
+  "why": "The lambda call has no viable function because its return type x.missing fails, which is a substitution failure, so Two is chosen."
+ },
+ "p101": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-19",
+   "DED-21"
+  ],
+  "why": "keep gives T = int and so does 1."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-12"
+  ],
+  "why": "The types int and const int are the same apart from top-level const."
+ },
+ "p103": {
+  "outcome": "reject",
+  "rules": [
+   "DED-21",
+   "DED-35"
+  ],
+  "why": "T is int and long."
+ },
+ "p104": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-30"
+  ],
+  "why": "Each target function type gives T, and a forwarding reference matched with int& gives T = int&."
+ },
+ "p105": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-28"
+  ],
+  "why": "2 cannot convert to Plain, so the template is removed before the function type is substituted."
+ },
+ "p106": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-15"
+  ],
+  "why": "Base<int> and Base<char> both match, and Base<int> wins because it derives from Base<char>."
+ },
+ "p107": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-16",
+   "DED-19"
+  ],
+  "why": "f gives T = F; act names a set with two matches, so it gives no value and resolves later."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "DED-19",
+   "DED-35"
+  ],
+  "why": "The overload set contains a function template, so it gives no value and T has none."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-8"
+  ],
+  "why": "put is not a template, so T&& is int&&; the lvalue takes const T&, the rvalue takes T&&."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "DED-16",
+   "DED-35"
+  ],
+  "why": "An empty list gives T no value."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-14"
+  ],
+  "why": "No exact match exists, so a qualification adjustment or dropping noexcept is allowed."
+ },
+ "p112": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23",
+   "DED-39"
+  ],
+  "why": "The non-template operator delete wins over the template, which is not instantiated, and main returns 0."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "DED-7",
+   "DED-35"
+  ],
+  "why": "T is int, and int& cannot bind the prvalue 1."
+ },
+ "p114": {
+  "outcome": "compiles",
+  "rules": [
+   "DED-17",
+   "OVL-25"
+  ],
+  "why": "The template is an exact match for {1.5, 2.5}; for {1, 2L} the template fails and the non-template takes the list; {{1, 2, 3}} gives 1 and 3."
+ }
+}
