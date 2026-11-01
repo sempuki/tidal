@@ -21,8 +21,8 @@ definitions, constant evaluation, name lookup.
 ## Principles
 
 :::{principle} TPL-P1
-:rules: TPL-1 TPL-22 TPL-23 TPL-24 TPL-26 TPL-28
-:exceptions: TPL-29 TPL-31
+:rules: TPL-1 TPL-22 TPL-23 TPL-24 TPL-26 TPL-28 TPL-42 TPL-44 TPL-45 TPL-46 TPL-47
+:exceptions: TPL-29 TPL-31 TPL-43
 
 A template is a pattern for a family of entities. The template head
 lists the parameters, and the declaration after the head is the
@@ -49,12 +49,14 @@ The declaration after the head decides the kind of template:
 
 A member of a class template is not a template of its own. The member
 is part of each specialization of the class, so a definition outside
-the class repeats the class's head (TPL-23).
+the class repeats the class's head (TPL-23). Each specialization has
+its own copy of each member, including the `static` data members
+(TPL-47).
 :::
 
 :::{principle} TPL-P2
-:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-11 TPL-12 TPL-30
-:exceptions: TPL-7 TPL-10
+:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-11 TPL-12 TPL-30 TPL-32 TPL-36
+:exceptions: TPL-7 TPL-10 TPL-33 TPL-35
 
 Each template parameter has a kind, and the kind decides what an
 argument for it must be:
@@ -74,13 +76,13 @@ of arguments of its kind.
 :::
 
 :::{principle} TPL-P3
-:rules: TPL-13 TPL-15
-:exceptions: TPL-14 TPL-16 TPL-17
+:rules: TPL-13 TPL-15 TPL-38 TPL-40
+:exceptions: TPL-14 TPL-16 TPL-17 TPL-34 TPL-37 TPL-39
 
 A parameter can have a {term}`default template argument`. A use that
-leaves out the argument gets the default. The defaults of all the
-declarations of one template add up, but each parameter gets its default
-in one declaration only. In a class, variable, or alias template, the
+leaves out the argument gets the default. A pack has no default. The
+defaults of all the declarations of one template add up, but each
+parameter gets its default in one declaration only. In a class, variable, or alias template, the
 arguments are matched by position, so only a trailing parameter can be
 left out. A function template can get its arguments by deduction as
 well *(templates referenced)*, so its defaults can come in any order.
@@ -88,14 +90,15 @@ well *(templates referenced)*, so its defaults can come in any order.
 
 :::{principle} TPL-P4
 :rules: TPL-19 TPL-20 TPL-21
-:exceptions: TPL-2 TPL-3 TPL-4 TPL-18 TPL-25 TPL-27
+:exceptions: TPL-2 TPL-3 TPL-4 TPL-18 TPL-25 TPL-27 TPL-41
 
 A template parameter is a name in its own scope. The scope starts at the
 parameter and ends at the end of the template's declaration. The name
 hides the same name outside, and no declaration inside the template can
-reuse the name. Several declarations of one template must agree on the
-parameters: their number, their kinds, and the types of the constant
-parameters. The names can differ.
+reuse the name. In a member definition outside the class, the members
+of the class and of its bases come first (TPL-41). Several declarations
+of one template must agree on the parameters: their number, their
+kinds, and the types of the constant parameters. The names can differ.
 
 Templates are declared only at namespace scope and in classes that are
 not local:
@@ -107,6 +110,7 @@ not local:
 | block scope | not valid (TPL-2) |
 | body of a local class | not valid (TPL-2) |
 | inside `extern "C"` | not valid (TPL-3) |
+| a friend declaration in a local class | not valid (TPL-2) |
 :::
 
 ## Syntax
@@ -151,38 +155,53 @@ The declaration declares one of these:
 
 :::{rule} TPL-2
 :kind: reject
-:tests: templates/declarations/block-scope.cpp templates/declarations/local-class-member.cpp
+:tests: templates/declarations/block-scope.cpp templates/declarations/local-class-member.cpp templates/declarations/local-class-friend.cpp
 
 A template must not be declared at block scope. A template must not be
-declared as a member of a local class.
+declared as a member of a local class. A local class must not declare a
+friend template.
 :::
 
 :::{rule} TPL-3
 :kind: reject
-:tests: templates/declarations/c-linkage.cpp
+:tests: templates/declarations/c-linkage.cpp templates/declarations/c-linkage-explicit.cpp templates/declarations/c-linkage-partial.cpp
 
-A template must not have C language linkage ({rule}`LSP-1`).
+A template, an explicit specialization, and a partial specialization
+must not have C language linkage ({rule}`LSP-1`).
 :::
 
 :::{rule} TPL-4
 :kind: reject
-:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp
+:tests: templates/declarations/typedef-template.cpp templates/declarations/two-declarators.cpp templates/declarations/unnamed-class.cpp templates/declarations/class-template-declarator.cpp
 
 The declaration after a template head must declare exactly one named
 entity. These declarations are not valid after a template head:
 
 - a `typedef` declaration,
 - a declaration with two or more declarators,
-- a class without a name.
+- a class without a name,
+- a class definition followed by a declarator, such as a variable
+  name. A declaration of a class template declares no other entity.
 :::
 
 :::{rule} TPL-22
 :kind: required
-:tests: templates/declarations/function-template-overload.cpp
+:tests: templates/declarations/function-template-overload.cpp templates/declarations/function-template-heads-differ.cpp
 
 Function templates and plain functions can share a name in one scope.
 Each function template with the name adds a candidate to overload
-resolution ({rule}`OVL-1`).
+resolution ({rule}`OVL-1`). Two function templates with the same
+function type and heads that are not equivalent (TPL-20) are two
+templates.
+:::
+
+:::{rule} TPL-45
+:kind: required
+:tests: templates/declarations/plain-function-not-from-template.cpp
+
+A plain function with the name and type of a specialization of a
+function template is a different function. The template never gives the
+definition of the plain function.
 :::
 
 :::{rule} TPL-29
@@ -205,24 +224,44 @@ can be left out.
 
 :::{rule} TPL-6
 :kind: required
-:tests: templates/declarations/constant-parameter-types.cpp
+:tests: templates/declarations/constant-parameter-types.cpp templates/declarations/constant-parameter-void-pointer.cpp
 
 A {term}`constant parameter` is declared like a function parameter. Its
 type must be a {term}`structural type`, which is one of these:
 
 - an integral or enumeration type,
-- a pointer to an object or function type,
+- a pointer to an object type, to `void`, or to a function type,
 - an lvalue reference to an object or function type,
 - a pointer to member,
 - the type of `nullptr`,
 - a floating-point type,
 - a literal class type whose bases and non-static data members are all
   public, not `mutable`, and of structural types or arrays of them.
+
+Each of these types can have `const` or `volatile` (TPL-32).
+:::
+
+:::{rule} TPL-32
+:kind: required
+:tests: templates/declarations/constant-parameter-cv.cpp
+
+The implementation drops `const` and `volatile` at the top level of the
+type of a constant parameter. So `const int N` and `int N` declare the
+same parameter, and the name `N` is a prvalue of type `int`.
+:::
+
+:::{rule} TPL-33
+:kind: reject
+:tests: templates/declarations/constant-parameter-storage-class.cpp templates/declarations/constant-parameter-defines-type.cpp
+
+The declaration of a constant parameter must not have a storage class
+specifier, such as `static`. The declaration must not define a class or
+an enumeration.
 :::
 
 :::{rule} TPL-7
 :kind: reject
-:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp
+:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp templates/declarations/constant-parameter-auto-void.cpp templates/declarations/constant-parameter-auto-not-structural.cpp
 
 A constant parameter must not have a type that TPL-6 leaves out. Such
 types include:
@@ -231,6 +270,9 @@ types include:
 - `void`,
 - a class with a data member that is private, protected, or `mutable`,
 - a class that is not a {term}`literal type`.
+
+The rule also applies to the type that a placeholder gets from the
+argument (TPL-11).
 :::
 
 :::{rule} TPL-8
@@ -244,7 +286,7 @@ parameter ({rule}`DCL-8`).
 
 :::{rule} TPL-9
 :kind: required
-:tests: templates/declarations/constant-parameter-category.cpp templates/declarations/constant-parameter-class-address.cpp
+:tests: templates/declarations/constant-parameter-category.cpp templates/declarations/constant-parameter-class-address.cpp templates/declarations/constant-parameter-shared-object.cpp
 
 In the template, the name of a constant parameter is an expression with
 this value category:
@@ -256,7 +298,8 @@ this value category:
 | any other type | a prvalue with the argument's value |
 
 For a class type, all uses with equal arguments refer to one object
-with static storage duration.
+with static storage duration. The object is the same in the whole
+program, also for parameters of two different templates.
 :::
 
 :::{rule} TPL-10
@@ -269,12 +312,16 @@ take its address, because the name is a prvalue (TPL-9).
 
 :::{rule} TPL-11
 :kind: required
-:tests: templates/declarations/constant-parameter-auto.cpp
+:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp
 
-The type of a constant parameter can be a {term}`placeholder type`.
+The type of a constant parameter can be one of these:
+
+- a {term}`placeholder type`,
+- the name of a class template with no argument list.
+
 The parameter then gets its type from its argument, as a variable
-declared with the placeholder gets its type from its initializer
-({rule}`AUTO-1`).
+declared with that type gets its type from its initializer
+({rule}`AUTO-1`, *(templates referenced)*).
 :::
 
 :::{rule} TPL-12
@@ -287,23 +334,68 @@ name is a template that takes arguments for the parameters of that
 head.
 :::
 
+:::{rule} TPL-40
+:kind: required
+:tests: templates/declarations/template-template-inner-default.cpp templates/declarations/template-template-inner-default-missing.cpp
+
+A parameter in the head of a template template parameter can have a
+default. The default belongs to that one declaration of the template
+template parameter. A member definition outside the class uses the
+inner defaults of its own head, and not those of the class's head.
+:::
+
 :::{rule} TPL-30
 :kind: reject
-:tests: templates/declarations/pack-last.cpp templates/declarations/pack-declared.cpp
+:tests: templates/declarations/pack-last.cpp templates/declarations/pack-declared.cpp templates/declarations/pack-last-alias.cpp templates/declarations/pack-last-variable.cpp templates/declarations/pack-then-deducible.cpp templates/declarations/pack-typed-by-same-head.cpp templates/specialization/partial-pack-before-parameter.cpp
 
 A {term}`template parameter pack` is a parameter declared with `...`.
-A pack must be the last parameter, unless the template is a function
-template. A function template can have parameters after a pack.
+In these templates, a pack must be the last parameter:
+
+- a class template or a variable template, in its primary declaration,
+- an alias template.
+
+A function template can have parameters after a pack (TPL-35). The head
+of a partial specialization can too ({rule}`TSP-9`).
+:::
+
+:::{rule} TPL-36
+:kind: required
+:tests: templates/declarations/pack-typed-by-enclosing-pack.cpp templates/declarations/pack-typed-by-same-head.cpp
+
+A constant parameter pack can have a type that names a type pack of an
+enclosing template, as in a member template of a class template. The
+type pack must not be declared in the same head. In a class template,
+such a head breaks TPL-30.
 :::
 
 ### Default template arguments
 
 :::{rule} TPL-13
 :kind: required
-:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp
+:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp templates/declarations/default-greater-parenthesized.cpp
 
 A parameter of any kind can have a {term}`default template argument`
-after `=`. A default can name the parameters before it.
+after `=`, unless the parameter is a pack (TPL-34). A default can name
+the parameters before it.
+:::
+
+:::{rule} TPL-34
+:kind: reject
+:tests: templates/declarations/default-pack.cpp templates/declarations/default-pack-constant.cpp templates/declarations/default-pack-template.cpp
+
+A {term}`template parameter pack` must not have a default template
+argument. The rule applies to packs of all three kinds, in every kind
+of template.
+:::
+
+:::{rule} TPL-39
+:kind: reject
+:tests: templates/declarations/default-greater.cpp templates/declarations/default-greater-parenthesized.cpp
+
+In a template head, the default of a constant parameter ends at the
+first `>` that is not inside parentheses, brackets, or braces, as a
+template argument does ({rule}`TARG-3`). A `>` operator in such a
+default must be in parentheses.
 :::
 
 :::{rule} TPL-14
@@ -340,11 +432,20 @@ definition must not give a default template argument, in the class's
 head or in the member's own head.
 :::
 
+:::{rule} TPL-37
+:kind: reject
+:tests: templates/declarations/default-friend-class.cpp templates/declarations/default-friend-declaration.cpp
+
+A friend declaration of a template must not give a default template
+argument, unless the declaration is a definition of a function template
+({question}`Q-0196`).
+:::
+
 ### Scope and redeclaration
 
 :::{rule} TPL-19
 :kind: required
-:tests: templates/declarations/parameter-scope.cpp templates/declarations/redeclare-names-differ.cpp
+:tests: templates/declarations/parameter-scope.cpp templates/declarations/redeclare-names-differ.cpp templates/declarations/parameter-namespace-name.cpp
 
 The scope of a template parameter starts at its declaration and ends at
 the end of the template's declaration. The parameter hides a name
@@ -352,28 +453,48 @@ declared outside the template ({rule}`NAM-2`). Two declarations of one
 template can use different names for a parameter.
 :::
 
+:::{rule} TPL-41
+:kind: required
+:tests: templates/declarations/parameter-hidden-by-base.cpp templates/declarations/parameter-namespace-name.cpp
+
+In a definition of a member outside its class template, lookup searches
+the class before the template parameters. The search covers the members
+of the class and of its bases that do not depend on a parameter. So such
+a member hides a parameter of the definition's head with the same name.
+A name from the enclosing namespace does not hide the parameter.
+:::
+
 :::{rule} TPL-18
 :kind: reject
-:tests: templates/declarations/parameter-twice.cpp templates/declarations/parameter-member-name.cpp templates/declarations/parameter-local-name.cpp
+:tests: templates/declarations/parameter-twice.cpp templates/declarations/parameter-member-name.cpp templates/declarations/parameter-local-name.cpp templates/declarations/parameter-class-template-name.cpp templates/declarations/parameter-friend-name.cpp
 
 A name must not be declared again in the scope of a template parameter
 with that name. These declarations are not valid:
 
 - a second parameter with the name in the same head,
 - a member with the name in a class template,
-- a variable with the name in the body of a function template.
+- a variable with the name in the body of a function template,
+- a class template with the name of its own parameter.
+
+A friend function declaration with the name is valid, because it
+declares no name in the template's scope ({question}`Q-0198`).
 :::
 
 :::{rule} TPL-20
 :kind: reject
-:tests: templates/declarations/redeclare-count.cpp templates/declarations/redeclare-kind.cpp templates/declarations/redeclare-type.cpp templates/declarations/member-template-one-head.cpp
+:tests: templates/declarations/redeclare-count.cpp templates/declarations/redeclare-kind.cpp templates/declarations/redeclare-type.cpp templates/declarations/member-template-one-head.cpp templates/declarations/redeclare-pack.cpp templates/declarations/redeclare-template-template.cpp templates/declarations/function-template-heads-differ.cpp
 
 All declarations of one template must have equivalent template heads.
 Equivalent heads have the same number of parameters, and each pair of
 parameters at one position has:
 
 - the same kind,
-- for constant parameters, the same type.
+- a pack in both declarations or in neither,
+- for constant parameters, the same type,
+- for template template parameters, equivalent heads, by this rule.
+
+For function templates, a declaration whose head is not equivalent
+declares another template (TPL-22).
 :::
 
 :::{rule} TPL-21
@@ -389,12 +510,41 @@ entity in its scope has ({rule}`NAM-3`).
 
 :::{rule} TPL-23
 :kind: required
-:tests: templates/declarations/member-outside.cpp
+:tests: templates/declarations/member-outside.cpp templates/declarations/member-class-outside.cpp templates/declarations/member-outside-names.cpp
 
-The functions of a class template, and its `static` data members, can
-be defined after the class body. Such a definition starts with the class's
-template head and names the member with the class's template-id, such
-as `Box<T>::get`.
+The functions, `static` data members, and member classes of a class
+template can be defined after the class body. Such a definition starts
+with the class's template head and names the member with the class's
+template-id, such as `Box<T>::get`. The parameter names can differ from
+those of the class (TPL-43).
+:::
+
+:::{rule} TPL-43
+:kind: reject
+:tests: templates/declarations/member-outside-order.cpp templates/declarations/member-outside-pack.cpp templates/declarations/member-outside-names.cpp
+
+In a definition of a member outside its class template, the argument
+list after the class name must list the head's parameters in their
+order. A pack must appear with `...`.
+:::
+
+:::{rule} TPL-42
+:kind: required
+:tests: templates/declarations/member-enum-outside.cpp
+
+In a class template, an enumeration member with a fixed underlying type
+can get its enumerators after the class body, in a definition that
+starts with the class's head ({question}`Q-0199`). The underlying type
+can name a parameter of the class.
+:::
+
+:::{rule} TPL-47
+:kind: required
+:tests: templates/declarations/static-member-per-specialization.cpp
+
+Each specialization of a class template has its own `static` data
+members. A value stored through one specialization does not change the
+member of another.
 :::
 
 :::{rule} TPL-24
@@ -409,20 +559,36 @@ with the parameters of both is not valid.
 
 :::{rule} TPL-25
 :kind: reject
-:tests: templates/declarations/member-template-virtual.cpp
+:tests: templates/declarations/member-template-virtual.cpp templates/declarations/destructor-template.cpp
 
-A member function template must not be `virtual`.
+A member function template must not be `virtual`. A destructor must not
+be a member template.
+:::
+
+:::{rule} TPL-44
+:kind: required
+:tests: templates/declarations/member-template-and-function.cpp templates/declarations/member-template-not-override.cpp
+
+A class can declare a member function and a member function template
+that can give a function of the same type. These rules apply:
+
+- A call without a template argument list prefers the plain function
+  ({rule}`OVL-27`).
+- A call with a template argument list, even `<>`, uses the template.
+- A specialization of a member function template never overrides a
+  virtual function of a base.
 :::
 
 ### Variable templates and alias templates
 
 :::{rule} TPL-26
 :kind: required
-:tests: templates/declarations/variable-template.cpp
+:tests: templates/declarations/variable-template.cpp templates/declarations/static-member-per-specialization.cpp
 
 Each specialization of a variable template is a variable of its own. A
 static data member can be a variable template too, declared in the
-class with a template head.
+class with a template head. Its definition can come after the class, at
+namespace scope.
 :::
 
 :::{rule} TPL-27
@@ -441,13 +607,46 @@ with the arguments in place of the parameters. The specialization is
 not a new type.
 :::
 
+:::{rule} TPL-46
+:kind: required
+:tests: templates/declarations/alias-template-lambda.cpp templates/declarations/alias-template-lambda-same.cpp
+
+If the type in an alias template contains a lambda expression, two
+specializations with different arguments give two different closure
+types. This holds also when the lambda does not use the parameters. Two
+uses of one specialization give one closure type ({question}`Q-0200`).
+:::
+
 :::{rule} TPL-31
 :kind: reject
-:tests: templates/declarations/alias-template-self.cpp
+:tests: templates/declarations/alias-template-self.cpp templates/declarations/alias-template-self-through-class.cpp
 
 The type in an alias template declaration must not use the alias
 template. The name of the alias template is declared only at the end of
-its declaration ({rule}`NAM-1`).
+its declaration ({rule}`NAM-1`). A specialization of an alias template
+must not use itself through a member of a class template.
+:::
+
+## Implementation Requirements
+
+:::{rule} TPL-35
+:kind: no-diagnostic
+:tests: templates/declarations/pack-then-deducible.cpp templates/declarations/pack-then-not-deducible.cpp
+
+In a function template, each parameter after a pack must have a default
+or be found by deduction from the function parameters
+*(templates referenced)*. An implementation need not diagnose a
+parameter that breaks this rule ({question}`Q-0195`).
+:::
+
+:::{rule} TPL-38
+:kind: no-diagnostic
+:tests: templates/declarations/default-friend-definition.cpp templates/declarations/default-friend-redeclared.cpp
+
+A friend function template that is defined in a class can give default
+template arguments. That definition must be the only declaration of the
+function template in the translation unit. An implementation need not
+diagnose another declaration ({question}`Q-0197`).
 :::
 
 ## Examples
@@ -478,20 +677,69 @@ struct Registry { Holder<int> ids; };    // Holder<int> is List<int>
 Registry<List> registry;
 ```
 
+Parameters with a pack, a placeholder, and a default:
+
+```cpp
+template <class... T = int> struct Bad;           // rejected: a pack has no default
+template <auto V> struct Hold { };
+Hold<'a'> letter;                                 // V is a char
+template <bool B = (3 > 4)> struct Flag { };      // the > is in parentheses
+
+template <class... Front, class Back>
+int tail(Back) { return sizeof...(Front); }       // Back comes from the call
+int n = tail<char, long>(1);                      // Front is char, long
+```
+
+A member defined outside the class lists the parameters in order:
+
+```cpp
+template <class K, class V> struct Map { int size(); };
+template <class A, class B> int Map<A, B>::size() { return 0; }   // names differ
+template <class A, class B> int Map<B, A>::size();                // rejected: order
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on all
-52 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 96
+of 102 tests.
 
 The clean-room writer probed each kind of template, each kind of
 parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
 and EDG 7.0, and checked the tests on the eight baseline compilers. The
-compilers agree on every test on this page. The list of reject rules
-follows the diagnostics in the sanitized Clang sources.
+compilers agree on every test on this page except the ones that the
+bullets below name. The list of reject rules follows the diagnostics in
+the sanitized Clang sources. The gap review of the chapter
+(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
+probes for TPL-32 to TPL-47 and for the additions to the older rules.
 
 - TPL-2: Clang 18 gives a parse error for a template in a block, and the
   other compilers say that a template is not allowed there.
 - TPL-4: Clang names the single-entity condition. GCC and EDG reject a
-  second declarator with a parse error.
+  second declarator with a parse error. Clang and EDG reject a variable
+  after a class template definition with a parse error, and GCC names
+  the condition.
+- TPL-35: Clang and GCC accept a function template whose parameter after
+  a pack has no default and no deduction. EDG rejects the declaration
+  ({question}`Q-0195`). The rule needs no diagnostic because no use of
+  such a template is valid, and the compilers differ on the declaration
+  alone.
+- TPL-37: GCC accepts a default on a friend declaration of a class
+  template. Clang and EDG reject it ({question}`Q-0196`).
+- TPL-38: EDG rejects another declaration of a friend function template
+  that gives a default. Clang and GCC accept it ({question}`Q-0197`).
+  The rule needs no diagnostic for the same reason as TPL-35.
+- TPL-18: EDG rejects a friend function named after a parameter when the
+  class template is used. Clang and GCC accept the friend declaration
+  ({question}`Q-0198`).
+- TPL-42: GCC rejects a member enumeration defined after the class body
+  under `-pedantic-errors`. Clang and EDG accept it ({question}`Q-0199`).
+- TPL-46: Clang gives two closure types for two uses of one alias
+  template specialization. GCC and EDG give one ({question}`Q-0200`).
+- TPL-36: a constant pack whose type is a type pack of the same head
+  follows a pack, so in a class template all compilers report TPL-30.
+  In a function template, EDG rejects the head and Clang and GCC accept
+  it, as for TPL-35.
+- TPL-45: the plain function has no definition, so the link fails on
+  every compiler that links. The template's body is never used for it.
 
 Inputs: clang-diag-sema, clang-diag-parse.

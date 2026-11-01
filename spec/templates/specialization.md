@@ -20,8 +20,8 @@ Depends on: template declarations, template arguments.
 ## Principles
 
 :::{principle} TSP-P1
-:rules: TSP-1 TSP-2 TSP-3 TSP-9 TSP-10 TSP-18
-:exceptions: TSP-7 TSP-20
+:rules: TSP-1 TSP-2 TSP-3 TSP-9 TSP-10 TSP-18 TSP-22 TSP-25 TSP-28 TSP-30
+:exceptions: TSP-7 TSP-20 TSP-23 TSP-27
 
 Without a specialization of its own, a specialization comes from the
 definition of the template, the {term}`primary template`, with the
@@ -34,14 +34,18 @@ can replace that definition:
 | variable template | yes (TSP-2) | yes (TSP-10) |
 | function template | yes (TSP-2) | no (TSP-7) |
 | alias template | no (TSP-7) | no (TSP-7) |
-| member of a class template | yes (TSP-3) | as for its kind |
+| member of a class template: a member function, `static` data member, member class, or member enumeration | yes (TSP-3) | no |
+| member template of a class template | yes (TSP-3) | as for its kind |
 
 An explicit specialization or a partial specialization is a separate
-definition. Its members need not match those of the primary template.
+definition. Its members need not match those of the primary template,
+and it takes no `inline` or `constexpr` from the template (TSP-25). The
+members of an explicitly specialized class are members of an ordinary
+class (TSP-22).
 :::
 
 :::{principle} TSP-P2
-:rules: TSP-13 TSP-14 TSP-15
+:rules: TSP-13 TSP-14 TSP-15 TSP-21
 :exceptions: TSP-16
 
 A use of a specialization of a class template or a variable template
@@ -67,7 +71,7 @@ types match which patterns.
 :::
 
 :::{principle} TSP-P3
-:rules: TSP-4 TSP-5 TSP-6 TSP-8 TSP-11 TSP-12 TSP-19
+:rules: TSP-4 TSP-5 TSP-6 TSP-8 TSP-11 TSP-12 TSP-19 TSP-24 TSP-26 TSP-31 TSP-32
 :exceptions: TSP-17
 
 A specialization changes the meaning of every use of its argument
@@ -83,6 +87,20 @@ A partial specialization must be able to match some argument list that
 the primary template does not cover by itself. So its argument list
 uses each of its parameters in a form that deduction can find, and the
 list is not just the primary template's parameters again.
+
+A member of a nested class template is specialized from the outside
+in. The declaration fixes every enclosing class template, with one
+`template <>` for each (TSP-26).
+:::
+
+:::{principle} TSP-P4
+:rules: TSP-29
+
+An explicit or partial specialization often names a private type of a
+class, for example to give the definition for that type. So the
+implementation does not check access to the names in the declaration of
+the specialization. The body, the bases, and the initializers are
+checked as usual.
 :::
 
 ## Syntax
@@ -130,21 +148,6 @@ arguments that deduction finds from the function's type can be left out
 *(templates referenced)*.
 :::
 
-:::{rule} TSP-3
-:kind: required
-:tests: templates/specialization/member-explicit.cpp templates/specialization/member-template-explicit.cpp
-
-A member of a specialization of a class template can have an explicit
-specialization while the class does not. These members can have one:
-
-- a function member,
-- a `static` data member,
-- a member template, with one `template <>` for the class and one for
-  the member.
-
-The other members of that specialization come from the class template.
-:::
-
 :::{rule} TSP-4
 :kind: reject
 :tests: templates/specialization/explicit-needs-header.cpp templates/specialization/explicit-not-template.cpp templates/specialization/explicit-no-matching-template.cpp
@@ -153,6 +156,32 @@ An explicit specialization must start with `template <>`. The name must
 be a template-id of a template that is declared before it. For a
 function template, one of the templates with that name must have a
 specialization with the declared function type.
+:::
+
+:::{rule} TSP-32
+:kind: reject
+:tests: templates/specialization/explicit-union-key.cpp templates/specialization/partial-union-key.cpp templates/specialization/explicit-class-key.cpp
+
+The class key of an explicit or partial specialization of a class
+template must agree with the primary template's. `struct` and `class`
+agree with each other, and `union` agrees only with `union`.
+:::
+
+:::{rule} TSP-24
+:kind: reject
+:tests: templates/specialization/explicit-storage-class.cpp templates/specialization/explicit-thread-local.cpp templates/specialization/explicit-thread-local-only.cpp
+
+An explicit specialization must not have a storage class specifier
+other than `thread_local` ({question}`Q-0203`).
+:::
+
+:::{rule} TSP-25
+:kind: required
+:tests: templates/specialization/explicit-not-inline.cpp templates/specialization/explicit-not-constexpr.cpp templates/specialization/explicit-thread-local-only.cpp
+
+An explicit specialization is `inline` or `constexpr` only if its own
+declaration says so. The template's `inline`, `constexpr`, and
+attributes do not carry over to its explicit specializations.
 :::
 
 :::{rule} TSP-5
@@ -176,20 +205,30 @@ declares the member template ({question}`Q-0171`).
 
 :::{rule} TSP-6
 :kind: reject
-:tests: templates/specialization/explicit-after-use.cpp templates/specialization/explicit-after-use-function.cpp
+:tests: templates/specialization/explicit-after-use.cpp templates/specialization/explicit-after-use-function.cpp templates/specialization/explicit-enum-after-use.cpp
 
 An explicit specialization must be declared before the first use of its
 specialization that needs a definition, such as a variable of the class
-type or a call of the function, in the same translation unit.
+type or a call of the function, in the same translation unit. A use of
+a class specialization creates the member enumerations that the class
+template defines. So an explicit specialization of such an enumeration
+after that use is not valid.
 :::
 
 :::{rule} TSP-8
 :kind: reject
-:tests: templates/specialization/explicit-default-argument.cpp
+:tests: templates/specialization/explicit-default-argument.cpp templates/specialization/explicit-default-argument-member-template.cpp templates/specialization/explicit-default-argument-member.cpp templates/specialization/explicit-class-member-default.cpp
 
-The parameters of an explicit specialization of a function template get
-no default arguments ({rule}`DEFARG-1`). The program must not write
-one.
+The program must not write a default argument ({rule}`DEFARG-1`) in
+these declarations:
+
+- a `template <>` declaration that fixes the arguments of a function
+  template, also one that is a class member,
+- a `template <>` declaration that gives one member function of `C<A>`,
+  where `C<A>` itself comes from the primary template.
+
+If the program gives the whole class `C<A>` explicitly, its member
+functions are ordinary members and can have default arguments (TSP-22).
 :::
 
 :::{rule} TSP-7
@@ -201,16 +240,112 @@ specialization. A function template must not have a partial
 specialization ({question}`Q-0172`).
 :::
 
+### Member specialization
+
+:::{rule} TSP-3
+:kind: required
+:tests: templates/specialization/member-explicit.cpp templates/specialization/member-template-explicit.cpp templates/specialization/member-template-nested-explicit.cpp templates/specialization/explicit-member-class-member-outside.cpp templates/specialization/explicit-member-class-template-member.cpp templates/specialization/explicit-static-member-definition.cpp templates/specialization/explicit-enum-declared.cpp
+
+A member of a specialization of a class template can have an explicit
+specialization while the class does not. These members can have one:
+
+- a `static` data member,
+- a member function,
+- a member enumeration (TSP-30),
+- a member class,
+- a member template of any kind: class, function, or `static` data
+  member template.
+
+The other members of that specialization come from the class template.
+TSP-26 gives the number of `template <>` prefixes.
+:::
+
+:::{rule} TSP-26
+:kind: reject
+:tests: templates/specialization/explicit-member-enclosing-not-specialized.cpp templates/specialization/explicit-member-prefix-count.cpp templates/specialization/member-template-nested-explicit.cpp
+
+An explicit specialization of a member at namespace scope must fix the
+arguments of every enclosing class template. It has one `template <>`
+for each class template that it fixes, and one for the member if the
+member is a template.
+:::
+
+:::{rule} TSP-22
+:kind: required
+:tests: templates/specialization/explicit-class-member-outside.cpp templates/specialization/explicit-member-class-member-outside.cpp templates/specialization/explicit-member-class-template-member.cpp templates/specialization/explicit-class-member-default.cpp
+
+If the program gives a whole class specialization explicitly, that
+class is an ordinary class. A definition of its member outside the
+class has no `template <>`. The same holds for a member class of a
+class specialization, given explicitly. If the program gives a member
+class template explicitly as a class template, a definition of one of
+its members starts with `template <>` and then that template's head.
+:::
+
+:::{rule} TSP-23
+:kind: reject
+:tests: templates/specialization/explicit-class-member-prefix.cpp templates/specialization/explicit-member-class-template-no-prefix.cpp
+
+A definition of a member of an explicitly specialized class must not
+start with `template <>` (TSP-22). A definition of a member of a member
+class template that is given explicitly must start with `template <>`.
+:::
+
+:::{rule} TSP-27
+:kind: reject
+:tests: templates/specialization/explicit-implicit-member.cpp
+
+A program must not explicitly specialize a special member function that
+the implementation declares implicitly, such as an implicit copy
+constructor.
+:::
+
+:::{rule} TSP-28
+:kind: required
+:tests: templates/specialization/explicit-static-member-declaration.cpp templates/specialization/explicit-static-member-template-declaration.cpp templates/specialization/explicit-static-member-definition.cpp
+
+An explicit specialization of a `static` member variable, or of a
+`static` member variable template, with an initializer is a definition.
+One without an initializer is only a declaration. Empty parentheses
+after the name declare a function.
+:::
+
+:::{rule} TSP-30
+:kind: required
+:tests: templates/specialization/explicit-enum-declared.cpp templates/specialization/explicit-enum-after-use.cpp
+
+A member enumeration that a class template declares without enumerators
+can have an explicit specialization, also after a use of the class
+specialization ({question}`Q-0205`). An unscoped member enumeration
+that the class template defines must not have one.
+:::
+
 ### Partial specialization
 
 :::{rule} TSP-9
 :kind: required
-:tests: templates/specialization/class-partial.cpp templates/specialization/class-partial-more-parameters.cpp
+:tests: templates/specialization/class-partial.cpp templates/specialization/class-partial-more-parameters.cpp templates/specialization/partial-redeclared.cpp templates/specialization/partial-member-template.cpp templates/specialization/partial-pack-before-parameter.cpp
 
 A {term}`partial specialization` of a class template has its own
 template head and an argument list after the class name. The argument
-list is a pattern in terms of the head's parameters. The number of
-parameters can differ from the primary template's.
+list is a pattern in terms of the head's parameters. These rules also
+apply:
+
+- The number of parameters can differ from the primary template's.
+- The head can have a pack before other parameters ({rule}`TPL-30`).
+- A partial specialization can be declared again and defined later. Two
+  declarations with equivalent heads and argument lists declare the
+  same partial specialization.
+- A partial specialization of a member template can be declared in the
+  class, or outside it after the heads of the enclosing templates.
+:::
+
+:::{rule} TSP-31
+:kind: reject
+:tests: templates/specialization/partial-no-primary.cpp
+
+A partial specialization must come after a declaration of its primary
+template.
 :::
 
 :::{rule} TSP-10
@@ -223,16 +358,19 @@ as for a class template.
 
 :::{rule} TSP-18
 :kind: required
-:tests: templates/specialization/partial-member-outside.cpp
+:tests: templates/specialization/partial-member-outside.cpp templates/specialization/partial-member-not-defined.cpp
 
 A member of a partial specialization can be defined outside the class.
 The definition starts with the head of the partial specialization and
-names the class with the partial specialization's argument list.
+names the class with the partial specialization's argument list. The
+members of a partial specialization are separate from the primary
+template's members. A member that the partial specialization declares
+needs its own definition.
 :::
 
 :::{rule} TSP-11
 :kind: reject
-:tests: templates/specialization/partial-default.cpp templates/specialization/partial-same-as-primary.cpp templates/specialization/partial-unused-parameter.cpp templates/specialization/partial-value-expression.cpp templates/specialization/partial-reordered.cpp
+:tests: templates/specialization/partial-default.cpp templates/specialization/partial-same-as-primary.cpp templates/specialization/partial-unused-parameter.cpp templates/specialization/partial-value-expression.cpp templates/specialization/partial-reordered.cpp templates/specialization/partial-dependent-type-value.cpp templates/specialization/partial-pack-not-expanded.cpp templates/specialization/partial-pack-not-last.cpp
 
 The head and argument list of a partial specialization must follow
 these conditions:
@@ -244,13 +382,36 @@ these conditions:
   `N + 1`, gives no value for `N`.
 - The partial specialization is more specialized than the primary
   template *(templates referenced)* ({question}`Q-0174`).
+- A constant argument whose parameter type in the primary template uses
+  another parameter is not a fixed value, while that other parameter
+  stays a parameter of the partial specialization.
+- Every pack in an argument is expanded with `...`.
+- A pack expansion is the last argument.
 :::
 
 :::{rule} TSP-12
 :kind: reject
-:tests: templates/specialization/partial-friend.cpp
+:tests: templates/specialization/partial-friend.cpp templates/specialization/explicit-friend.cpp
 
-A friend declaration must not declare a partial specialization.
+A friend declaration must not declare a partial specialization or an
+explicit specialization.
+:::
+
+### Access in specialization declarations
+
+:::{rule} TSP-29
+:kind: required
+:tests: templates/specialization/explicit-private-argument.cpp templates/specialization/partial-private-argument.cpp templates/specialization/explicit-function-private-argument.cpp
+
+The implementation does not check access to the names in the
+declaration of an explicit or partial specialization ({question}`Q-0204`).
+These parts are the exceptions, and are checked as usual
+({rule}`ACC-2`):
+
+- the body and the member list,
+- the base list,
+- default arguments and initializers,
+- the enumerator list.
 :::
 
 ### Selecting a specialization
@@ -269,13 +430,15 @@ template comes from the first of these that applies:
 
 :::{rule} TSP-14
 :kind: required
-:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp
+:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp templates/specialization/match-using-declaration.cpp
 
 A partial specialization matches an argument list if there are
 arguments for its parameters that make its own argument list the same
 as the given list ({rule}`TARG-19`). The given list includes the
 primary template's defaults. A parameter that appears twice gets the
-same argument in both places.
+same argument in both places. A use finds the partial specializations
+through the primary template, so a use through a using-declaration
+also finds partial specializations declared after it.
 :::
 
 :::{rule} TSP-15
@@ -294,6 +457,22 @@ If two or more partial specializations match an argument list, and none
 is more specialized than all the others, a use of that specialization
 is not valid. Partial specializations that would be ambiguous for some
 argument list are valid until a use selects for such a list.
+:::
+
+:::{rule} TSP-21
+:kind: required
+:tests: templates/specialization/member-template-explicit-primary.cpp templates/specialization/member-template-explicit-partial.cpp
+
+A member template of a class template `C` can have partial
+specializations, and the program can give some of them explicitly for
+one specialization `C<A>`:
+
+- If the program gives the primary member template explicitly for
+  `C<A>`, the member's partial specializations play no role in `C<A>`
+  ({question}`Q-0206`).
+- If the program gives one partial specialization explicitly for
+  `C<A>`, the primary member template and the other partial
+  specializations still apply in `C<A>` ({question}`Q-0207`).
 :::
 
 ## Implementation Requirements
@@ -332,14 +511,33 @@ template <> int size(char) { return 1; }        // for T = char
 template <class T> int size<T*>(T*);            // rejected: partial
 ```
 
+Members of class specializations:
+
+```cpp
+template <class T> struct Store {
+  int get();
+  template <class U> struct Slot { int put(); };
+};
+template <> int Store<char>::get() { return 1; }        // one member only
+
+template <> struct Store<long> { int get(); };          // the whole class
+int Store<long>::get() { return 2; }                    // no template <>
+
+template <> template <> int Store<int>::Slot<int>::put() { return 3; }
+template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 37
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 81 tests.
 
 The clean-room writer probed explicit and partial specializations with
 Clang 22, GCC 16, and EDG 7.0, and checked the tests on the eight
-baseline compilers. The matching rule follows the sanitized Clang
+baseline compilers. The gap review of the chapter
+(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
+probes for TSP-21 to TSP-32 and for the additions to the older rules.
+The matching rule follows the sanitized Clang
 deduction source: the deduced values are put into the partial
 specialization's arguments, and the result must equal the given list.
 
@@ -359,6 +557,28 @@ specialization's arguments, and the result must equal the given list.
 - TSP-6: all compilers reject an explicit specialization after a use in
   the same translation unit. The tests do not cover a use in another
   translation unit.
+- TSP-21: Clang 18 uses a member template's partial specialization for a
+  class specialization whose primary member template is given
+  explicitly. Clang 22, GCC, and EDG use the explicit specialization
+  ({question}`Q-0206`). GCC ignores an explicit specialization of one
+  member partial specialization. Clang and EDG select it
+  ({question}`Q-0207`).
+- TSP-24: EDG rejects a `thread_local` explicit specialization of a
+  variable template that is not `thread_local`. Clang and GCC accept it
+  ({question}`Q-0203`).
+- TSP-29: GCC checks access in the function type of an explicit
+  specialization of a function template. Clang and EDG do not
+  ({question}`Q-0204`).
+- TSP-30: GCC rejects every explicit specialization of a member
+  enumeration under `-pedantic-errors`. Clang and EDG accept one for an
+  enumeration that the class template only declares. All compilers
+  reject one for an unscoped enumeration that the class template
+  defines, Clang and EDG for that reason ({question}`Q-0205`).
+- TSP-28: the declaration without an initializer defines nothing, so the
+  link fails on every compiler that links.
+- TSP-25: the template is `inline` and its explicit specialization is
+  not, so two translation units that define the specialization fail to
+  link on every compiler that links.
 
 The probe grid is in `tests/templates/specialization/grids/`. Each
 column declares one partial specialization of `Match`, and each row
