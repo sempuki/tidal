@@ -8,7 +8,8 @@ cd "$(dirname "$0")/.."
 python3 -I tools/check_specification.py
 python3 -I tools/run_tests.py --report tests/RESULTS.md
 if [ -n "$TIDAL_REFERENCE" ]; then
-  python3 -I tools/similarity.py --reference "$TIDAL_REFERENCE" | tail -1
+  python3 -I tools/similarity.py --fail-on-flag --reference "$TIDAL_REFERENCE" > build/similarity.txt
+  tail -1 build/similarity.txt
 else
   echo "similarity: skipped (set TIDAL_REFERENCE to the reference corpus)"
 fi

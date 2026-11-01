@@ -107,7 +107,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 4946/4946 tests pass on each. Two
+Eight compilers are baseline, and 5408/5408 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -128,19 +128,21 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Two hundred and eighty-three questions are open for opinions, each
-with a provisional answer the specification follows. Sixteen of them have the status
+Two hundred and eighty-nine questions are open for opinions, each
+with a provisional answer the specification follows. Twenty more have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
-Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213, Q-0238). Q-0009 (license) and ten questions that phase 5 merged or closed are settled. See `questions/README.md`.
+Q-0026, Q-0044, Q-0072, Q-0101, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206,
+Q-0212, Q-0213, Q-0238, Q-0308, Q-0309). Twelve questions are settled,
+Q-0009 (license) among them. See `questions/README.md`.
 
 ## Known limits of the specification text
 
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
-- 13 *(referenced)* markers remain. Each names a topic with no page:
-  the library (5), extended floating-point types (3), class properties
-  (2), coroutines (1), the memory model (1), or the preprocessor (1).
+- 21 *(referenced)* markers remain. Each names a topic with no page:
+  the library (11), extended floating-point types (4), class properties
+  (2), the preprocessor (2), coroutines (1), or the memory model (1).
 
 ## Known limits of the tooling
 
@@ -189,9 +191,7 @@ forward-progress rule belongs with threads, which are out of scope.
    - the copy-move triviality split, where Clang copies a union member
      whose class has two copy constructors,
    - a namespace-scope rule that a class and a variable can share a
-     name (`names.md`),
-   - the compiler-defect candidates Q-0015, Q-0023, Q-0026, Q-0044,
-     Q-0125, Q-0181, and Q-0206.
+     name (`names.md`).
 
 Waiting on the maintainer:
 
