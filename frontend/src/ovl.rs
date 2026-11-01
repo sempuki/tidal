@@ -259,9 +259,21 @@ impl P {
     /// written order of the operands. `swapped` takes the operands in
     /// the reverse order. Ok(None): not viable. Err: not modeled.
     fn op_fn_seqs(&mut self, fid: DeclId, member: bool, ops: &[Expr], swapped: bool, postfix: bool) -> Result<Option<Vec<Ics>>, ()> {
-        let f = self.func(fid).ok_or(())?.clone();
-        if f.template || f.opaque || f.defaulted || f.constrained || f.fty.variadic || f.defaults > 0 || f.is_static {
+        let mut f = self.func(fid).ok_or(())?.clone();
+        if f.defaulted && f.body.is_none() {
+            // DCMP: a defaulted comparison gets its body at its first use.
+            if !self.synth_defaulted_cmp(fid) {
+                return Err(());
+            }
+            f = self.func(fid).ok_or(())?.clone();
+        }
+        if f.template || f.opaque || f.constrained || f.fty.variadic || f.defaults > 0 || f.is_static {
             return Err(());
+        }
+        match self.fn_sat(fid) {
+            crate::cons::Sat::Yes => {}
+            crate::cons::Sat::Unknown => return Err(()),
+            _ => return Ok(None),
         }
         let explicit_obj_ty = if f.explicit_obj { Some(f.params.first().and_then(|&p| self.var(p)).map(|v| v.ty.clone()).ok_or(())?) } else { None };
         let order: Vec<usize> = if swapped { vec![1, 0] } else { (0..ops.len()).collect() };
@@ -401,8 +413,11 @@ impl P {
                 // A defaulted <=> also declares an ==, which lookup does not
                 // show here; a declared != changes which == is used.
                 for c in ops.iter().filter_map(class_of) {
-                    if self.lookup_member(c, "operator<=>").is_some_and(|v| v.iter().any(|&d| self.func(d).is_none_or(|f| f.defaulted))) || self.class_has_friend_op(c, "operator<=>") {
-                        return OpRes::NotHandled;
+                    if self.lookup_member(c, "operator<=>").is_some_and(|v| v.iter().any(|&d| self.func(d).is_none_or(|f| f.defaulted))) || self.class_friends.get(&c).is_some_and(|v| v.iter().any(|&d| self.decls[d].name == "operator<=>" && self.func(d).is_some_and(|f| f.defaulted))) {
+                        // DCMP: the == that the defaulted <=> declares.
+                        if self.in_template() || !self.implicit_eq(c) {
+                            return OpRes::NotHandled;
+                        }
                     }
                 }
             }
@@ -630,6 +645,17 @@ impl P {
                 return CtorRes::Unknown;
             }
         }
+        // OVL-24, CNS-16: a constructor whose constraints are not satisfied
+        // is not viable, and still counts as declared.
+        let mut kept = Vec::new();
+        for &cid in &ctors {
+            match self.fn_sat(cid) {
+                crate::cons::Sat::Yes => kept.push(cid),
+                crate::cons::Sat::Unknown => return CtorRes::Unknown,
+                _ => {}
+            }
+        }
+        let ctors = kept;
         if list {
             if args.is_empty() {
                 return CtorRes::Unknown;

@@ -239,6 +239,19 @@ fn judge_run(t: &Test, k: RunExpect, o: Option<&RunOutcome>) -> (RunRes, String)
     (res, line)
 }
 
+/// The status of a test that expects a run, after the check accepted
+/// it: `pass`, or the way the run failed.
+fn run_tag(rr: &RunRes) -> &'static str {
+    match rr {
+        RunRes::Pass => "pass",
+        RunRes::WrongResult => "RUN-WRONG-RESULT",
+        RunRes::MissedUndefined => "RUN-MISSED-UB",
+        RunRes::UnexpectedUndefined => "RUN-UNEXPECTED-UB",
+        RunRes::Unsupported => "run-unsupported",
+        RunRes::NotRun => "run-not-run",
+    }
+}
+
 fn normalize(msg: &str) -> String {
     // collapse names and numbers so that similar messages group together
     let mut out = String::new();
@@ -335,14 +348,26 @@ pub fn run(args: &[String]) {
                 rule_match += 1;
             }
         }
-        let tag = match o.res {
+        let mut tag = match o.res {
             Res::Pass => "pass",
             Res::FalseReject => "FALSE-REJECT",
             Res::MissedReject => "MISSED-REJECT",
             Res::Unsupported => "unsupported",
             Res::EdgOnly => "EDG-ONLY",
         };
-        let first = o.diags.first().map(|d| format!("{}:{} {}", d.line, d.rule.unwrap_or("-"), d.msg)).unwrap_or_default();
+        // A test that expects a run passes only if the run passes too. The
+        // status column then gives the run's outcome.
+        let mut first = o.diags.first().map(|d| format!("{}:{} {}", d.line, d.rule.unwrap_or("-"), d.msg)).unwrap_or_default();
+        if o.res == Res::Pass {
+            if let Some((rr, line)) = &o.run {
+                let rt = run_tag(rr);
+                // A reject that matches an EDG override does not run.
+                if rt != "pass" && *rr != RunRes::NotRun {
+                    tag = rt;
+                    first = line.clone();
+                }
+            }
+        }
         lines.push(format!("{}\t{}\t{}\t{}", tag, t.rel, t.rules.join(" "), first));
     }
     // The run tests: a table of their own.

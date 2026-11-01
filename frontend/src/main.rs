@@ -7,6 +7,9 @@
 mod ast;
 mod class;
 mod conform;
+mod cons;
+mod ctad;
+mod dcmp;
 mod consteval;
 mod decl;
 mod decl2;

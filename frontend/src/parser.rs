@@ -560,6 +560,60 @@ pub struct P {
     pub tparam_constrained: bool,
     /// The position of the last `friend` keyword of decl-specifiers.
     pub friend_spec_pos: Option<usize>,
+    /// Constraints (cons.rs): the head whose parameters an atomic
+    /// constraint can name, a part that the front end cannot model, and
+    /// the checks made so far.
+    pub cons_head: Option<(Rc<Vec<crate::templ::TParam>>, u32)>,
+    pub cons_unmodeled: bool,
+    pub atom_counter: usize,
+    #[allow(clippy::type_complexity)]
+    pub sat_cache: HashMap<(usize, usize), Vec<(Vec<TArg>, Vec<usize>, crate::cons::Sat)>>,
+    pub sat_busy: Vec<((usize, usize), Vec<TArg>)>,
+    /// The trailing requires clause of a function.
+    pub fn_cons: HashMap<DeclId, Rc<crate::cons::CNorm>>,
+    pub fn_clause_toks: HashMap<DeclId, Vec<String>>,
+    pub fn_sat_cache: HashMap<DeclId, crate::cons::Sat>,
+    /// The constraints of the head being recorded (CNS-1, parts 1 and 2),
+    /// and of the type constraints of the parameters so far.
+    pub head_cons: Option<Rc<crate::cons::CNorm>>,
+    pub tparam_cons: Option<Rc<crate::cons::CNorm>>,
+    /// An abbreviated function template being declared (DED-34), the
+    /// nesting of parameter lists, and the placeholder parameters so far
+    /// in the outermost one.
+    pub abbrev: Option<crate::cons::Abbrev>,
+    /// The type constraints and the requires clause of the head being
+    /// declared, for equivalence (CNS-26); the key of each declaration
+    /// of a function template.
+    pub head_parts: (Option<Rc<crate::cons::CNorm>>, Option<Rc<crate::cons::CNorm>>),
+    pub fn_head_key: HashMap<DeclId, String>,
+    pub in_concept_def: bool,
+    /// Deduction of class template arguments (ctad.rs): the user guides
+    /// of each class template, the parameters that give no forwarding
+    /// reference, the tie-breakers of the guides, and the class template
+    /// that a type specifier named without arguments.
+    pub user_guides: HashMap<usize, Vec<crate::ctad::Guide>>,
+    pub no_fwd: Option<(u32, u32)>,
+    pub extra_ties: Vec<(DeclId, DeclId)>,
+    pub ctad_tid: Option<usize>,
+    /// The base types of each class as written, with a flag for a pack
+    /// expansion; the classes that inherit constructors by the name of a
+    /// base (CTAD-16); the condition of a conditional `explicit` of a
+    /// constructor in a template.
+    pub class_base_types: HashMap<usize, Vec<(QTy, bool)>>,
+    pub inherits_ctors: HashMap<usize, Vec<String>>,
+    pub explicit_cond: HashMap<DeclId, crate::templ::Source>,
+    pub pending_explicit_cond: Option<crate::templ::Source>,
+    /// The defaulted comparisons whose bodies were made (dcmp.rs).
+    pub dcmp_done: HashMap<DeclId, bool>,
+    pub dcmp_eq: std::collections::HashSet<usize>,
+    /// The packs of the template being defined, and the places where the
+    /// pattern names one (PACK-8).
+    pub pack_decls: std::collections::HashSet<DeclId>,
+    pub pack_uses: Vec<(usize, u32)>,
+    /// The prospective destructors of each class (CNS-19).
+    pub prospective_dtors: HashMap<usize, Vec<DeclId>>,
+    pub param_nest: u32,
+    pub auto_param_k: usize,
 }
 
 impl P {
@@ -706,6 +760,35 @@ impl P {
             head_constrained: false,
             tparam_constrained: false,
             friend_spec_pos: None,
+            cons_head: None,
+            cons_unmodeled: false,
+            atom_counter: 0,
+            sat_cache: HashMap::new(),
+            sat_busy: Vec::new(),
+            fn_cons: HashMap::new(),
+            fn_clause_toks: HashMap::new(),
+            fn_sat_cache: HashMap::new(),
+            head_cons: None,
+            tparam_cons: None,
+            abbrev: None,
+            head_parts: (None, None),
+            fn_head_key: HashMap::new(),
+            in_concept_def: false,
+            user_guides: HashMap::new(),
+            no_fwd: None,
+            extra_ties: Vec::new(),
+            ctad_tid: None,
+            class_base_types: HashMap::new(),
+            inherits_ctors: HashMap::new(),
+            explicit_cond: HashMap::new(),
+            pending_explicit_cond: None,
+            dcmp_done: HashMap::new(),
+            dcmp_eq: Default::default(),
+            pack_decls: Default::default(),
+            pack_uses: Vec::new(),
+            prospective_dtors: HashMap::new(),
+            param_nest: 0,
+            auto_param_k: 0,
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;
@@ -1617,8 +1700,15 @@ impl P {
         // Bit-fields and virtual functions make the class opaque here.
         let mut size = 0u64;
         let mut align = 1u64;
-        if ci.has_virtual || ci.bases.iter().any(|b| b.virt) {
+        if ci.bases.iter().any(|b| b.virt) || (ci.has_virtual && !ci.bases.is_empty()) {
             return None;
+        }
+        if ci.has_virtual {
+            // A polymorphic class with no base: the pointer to its table
+            // of virtual functions comes first on the matrix targets.
+            let ps = if crate::types::ILP32.with(|c| c.get()) { 4 } else { 8 };
+            size = ps;
+            align = ps;
         }
         let mut items: Vec<(QTy, u64)> = Vec::new();
         for &f in &ci.fields {

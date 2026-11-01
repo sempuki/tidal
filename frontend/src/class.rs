@@ -293,7 +293,8 @@ impl P {
                     }
                     QTy::unknown()
                 };
-                self.eat("...");
+                let expand = self.eat("...");
+                self.class_base_types.entry(c).or_default().push((bq.clone(), expand));
                 self.require_ty(&bq, bl);
                 let bc = match bq.t {
                     Ty::Class(b) => {
@@ -541,6 +542,10 @@ impl P {
             _ => None,
         });
         let lazy = self.templs[t].insts.iter().position(|x| x.0 == args && matches!(x.1, crate::templ::Inst::Class(c) if !self.classes[c].complete));
+        if existing.is_none() && self.inst_depth == 0 {
+            // CNS-13: an explicit specialization satisfies the constraints.
+            self.cns13_ok(t, &args, line);
+        }
         let c = match existing {
             Some(c) => c,
             None => {
@@ -634,7 +639,8 @@ impl P {
                     self.skip_qualified_name()?;
                     QTy::unknown()
                 };
-                self.eat("...");
+                let expand = self.eat("...");
+                self.class_base_types.entry(c).or_default().push((bq.clone(), expand));
                 self.require_ty(&bq, bl);
                 let bc = match bq.t {
                     Ty::Class(b) => {
@@ -815,6 +821,13 @@ impl P {
                 e
             }
             None => {
+                if name == "align_val_t" && self.scopes[cur].kind == SK::Namespace && self.scopes[cur].name == "std" && self.inst_depth == 0 {
+                    // LSUP-5: a scoped enumeration with the underlying type
+                    // std::size_t.
+                    if !scoped || fixed.as_ref().is_some_and(|t| *t != Ty::size_t()) || fixed.is_none() {
+                        self.error(line, "LSUP-5", "std::align_val_t must be a scoped enumeration with the underlying type std::size_t");
+                    }
+                }
                 let scope = self.new_scope(SK::Enum(self.enums.len()), Some(self.cur_scope()), &name);
                 let underlying = fixed.clone().unwrap_or(Ty::Int);
                 self.enums.push(EnumInfo { name: name.clone(), scoped, fixed: if scoped && fixed.is_none() { Some(Ty::Int) } else { fixed.clone() }, underlying, complete: false, enumerators: vec![], scope });

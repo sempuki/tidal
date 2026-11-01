@@ -123,6 +123,8 @@ pub enum Heap {
     No,
     Single,
     Array,
+    /// Storage from an allocation function called by name (STG-7).
+    Raw,
 }
 
 #[derive(Clone, Debug)]
@@ -243,6 +245,12 @@ pub struct Machine<'a> {
     pub caught: Vec<Exc>,
     /// Depth of unwinding (UNW-5).
     pub unwinding: u32,
+    /// Objects that placement `new` made in the storage of another object
+    /// (STG-4, STG-5): for each host object, the first byte, the size, and
+    /// the object.
+    pub residents: HashMap<usize, Vec<(i64, i64, usize)>>,
+    /// The host and first byte of each such object.
+    pub resident_of: HashMap<usize, (usize, i64)>,
 }
 
 impl<'a> Machine<'a> {
@@ -276,6 +284,8 @@ impl<'a> Machine<'a> {
             in_aggregate: 0,
             caught: Vec::new(),
             unwinding: 0,
+            residents: HashMap::new(),
+            resident_of: HashMap::new(),
         }
     }
 
@@ -311,6 +321,27 @@ impl<'a> Machine<'a> {
         self.objs[o].ty = Some(t.clone());
         self.objs[o].volatile = t.v;
         Ok(Ptr::whole(o))
+    }
+
+    /// The type of the object or subobject at `p`.
+    pub fn type_at(&self, p: &Ptr) -> Option<QTy> {
+        let mut t = self.obj_ty(p.obj)?;
+        for &i in &full_path(p) {
+            t = match &t.t {
+                Ty::Array(el, _) => (**el).clone(),
+                Ty::Class(c) => {
+                    let nb = self.nbases(*c);
+                    if i < nb {
+                        QTy::new(Ty::Class(self.p.classes[*c].bases[i].class?))
+                    } else {
+                        let f = self.fields(*c).into_iter().find(|(_, fi)| fi.index == i - nb)?;
+                        f.1.ty
+                    }
+                }
+                _ => return None,
+            };
+        }
+        Some(t)
     }
 
     /// The type of an object, if the unit that runs uses the same class
@@ -555,6 +586,11 @@ impl<'a> Machine<'a> {
     }
 
     pub fn read(&mut self, p: &Ptr, volatile: bool) -> R<Val> {
+        if self.residents.get(&p.obj).is_some_and(|v| v.iter().any(|r| self.objs[r.2].alive)) {
+            // The bytes of a host whose storage holds another object: the
+            // interpreter keeps no object representation.
+            return unsup("bytes of storage that holds an object of another type");
+        }
         if self.constant && (volatile || self.objs[p.obj].volatile) {
             // CE-12: no read through a volatile lvalue.
             return limit("CE-12", "read of a volatile object");
@@ -684,6 +720,17 @@ impl<'a> Machine<'a> {
     /// End the objects of a list in reverse order.
     pub fn cleanup(&mut self, list: Vec<Cleanup>) -> R<()> {
         for c in list.into_iter().rev() {
+            let nontrivial = self.needs_dtor(&c.ty.t) || matches!(&c.ty.t, Ty::Class(k) if self.p.classes[*k].dtor.is_some_and(|d| self.p.func(d).is_some_and(|f| !f.defaulted)));
+            if !self.objs[c.place.obj].alive && c.place.path.is_empty() && nontrivial {
+                if let Some(r) = self.residents.get(&c.place.obj).and_then(|v| v.iter().rev().find(|r| self.objs[r.2].alive)).map(|r| r.2) {
+                    let rt = self.obj_ty(r).map(|q| q.unqual().t);
+                    if rt != Some(c.ty.unqual().t) {
+                        // STG-21: the end of the block destroys the variable
+                        // as its declared type.
+                        return ub("STG-21", "the storage of a variable holds an object of another type when its destructor runs");
+                    }
+                }
+            }
             if self.objs[c.place.obj].alive {
                 self.destroy(&c.place, &c.ty)?;
                 if c.place.path.is_empty() {

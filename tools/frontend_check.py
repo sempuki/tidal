@@ -11,8 +11,14 @@ A test passes when the front end's answer matches the test's expectation.
 "Differs from EDG only" counts as a pass, so either answer is accepted on a
 test with an EDG override.
 
-Fails when a test that passed in the baseline does not pass now. New tests
-and tests that improved are reported. --update rewrites the baseline.
+For a test that expects a run, `tidal-fe conform -v` gives the run's outcome
+once the check passed: `run-unsupported`, `RUN-WRONG-RESULT`, `RUN-MISSED-UB`,
+or `RUN-UNEXPECTED-UB`. Such a status counts as a passed check and a failed
+run. Each status has a rank: 2 for a full pass, 1 for a passed check with a
+failed run, 0 for a failed check.
+
+Fails when a test's rank is lower than in the baseline. New tests and tests
+that improved are reported. --update rewrites the baseline.
 
 Usage:
     tools/frontend_check.py [--update]
@@ -29,6 +35,15 @@ ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
 BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
 PASSING = {"pass", "EDG-ONLY"}
+
+
+def rank(status: str | None) -> int:
+    """2 for a full pass, 1 for a passed check whose run failed, 0 otherwise."""
+    if status in PASSING:
+        return 2
+    if status and status.lower().startswith("run-"):
+        return 1
+    return 0
 
 
 def cargo() -> str | None:
@@ -89,19 +104,20 @@ def main() -> int:
         print(f"frontend: baseline written, {sum(s in PASSING for s in now.values())}/{len(now)} pass")
         return 0
     base = read_baseline()
-    worse = sorted(n for n, s in now.items() if s not in PASSING and base.get(n) in PASSING)
-    better = sorted(n for n, s in now.items() if s in PASSING and n in base and base[n] not in PASSING)
+    worse = sorted(n for n, s in now.items() if n in base and rank(s) < rank(base[n]))
+    better = sorted(n for n, s in now.items() if n in base and rank(s) > rank(base[n]))
     new_failing = sorted(n for n, s in now.items() if n not in base and s not in PASSING)
     new = sum(n not in base for n in now)
     for n in worse:
-        print(f"frontend: {n}: {now[n]}, passed in the baseline")
+        print(f"frontend: {n}: {now[n]}, {base[n]} in the baseline")
     for n in better:
-        print(f"frontend: {n}: passes now, {base[n]} in the baseline")
+        print(f"frontend: {n}: {now[n]}, {base[n]} in the baseline")
     for n in new_failing:
         print(f"frontend: new test {n}: {now[n]}")
     passing = sum(s in PASSING for s in now.values())
-    print(f"frontend: {passing}/{len(now)} pass, {len(worse)} worse, {len(better)} better, "
-          f"{new} new ({len(new_failing)} not passing)")
+    checks = sum(rank(s) >= 1 for s in now.values())
+    print(f"frontend: {passing}/{len(now)} pass, {checks}/{len(now)} pass their check, "
+          f"{len(worse)} worse, {len(better)} better, {new} new ({len(new_failing)} not passing)")
     return 1 if worse else 0
 
 

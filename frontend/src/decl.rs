@@ -38,6 +38,13 @@ pub struct DeclSpec {
     pub line: u32,
     pub named_type: bool,
     pub concept_auto: bool,
+    /// The type constraint before `auto`: the concept, its other
+    /// arguments, and the span of the name and arguments (CPT-20,
+    /// CPT-22).
+    pub cons_auto: Option<(usize, Vec<crate::templ::RawArg>, (usize, usize, Option<usize>, usize))>,
+    /// A class template named without arguments: its arguments are
+    /// deduced from the initializer (CTAD-1).
+    pub ctad: Option<usize>,
     pub align: u64,
     pub has_alignas: bool,
 }
@@ -222,6 +229,11 @@ impl P {
                         }
                     }
                     ">>" => {
+                        if depth == 1 {
+                            // The list ends at the first half of `>>`: the
+                            // token after it is the second `>`.
+                            return k;
+                        }
                         depth -= 2;
                         if depth <= 0 {
                             return k + 1;
@@ -440,7 +452,9 @@ impl P {
             self.skip_attributes();
             let t = self.tok().clone();
             if t.kind == TK::Punct && t.text == "::" && ds.ty.is_none() && ds.kw.is_empty() && ds.auto.is_none() && !self.is_ctor_start(in_class) && self.qualified_names_type(0) {
+                self.ctad_tid = None;
                 let q = self.parse_type_name()?;
+                ds.ctad = self.ctad_tid.take();
                 ds.ty = Some(q);
                 ds.named_type = true;
                 continue;
@@ -477,8 +491,15 @@ impl P {
                         self.pos += 2;
                         let start = self.pos - 1;
                         let l = self.line();
+                        let cstart = self.pos;
                         match self.parse_assignment() {
                             Ok(e) if self.at(")") => {
+                                if self.in_template() {
+                                    // The condition depends on the arguments
+                                    // of a specialization (CTAD-5).
+                                    let (vid, base) = self.origin_of(cstart);
+                                    self.pending_explicit_cond = Some(crate::templ::Source { toks: self.copy_toks(cstart, self.pos), stack: self.stack.clone(), ctx: crate::decl2::Ctx::Namespace, access: 0, limit: self.decls.len(), vid, base });
+                                }
                                 self.pos += 1;
                                 if let Some(v) = self.eval_bool_const(&e, l, "CTOR-9") {
                                     ds.explicit = v;
@@ -602,7 +623,35 @@ impl P {
                         break;
                     }
                     // A concept before auto (AUTO-13).
+                    if let Some((ctid, n)) = self.concept_at() {
+                        let ns = self.pos;
+                        self.pos += n;
+                        let mut raw = Vec::new();
+                        let mut lt = None;
+                        if self.at("<") {
+                            lt = Some(self.pos);
+                            raw = self.parse_raw_targs()?;
+                        }
+                        let end = self.pos;
+                        if self.at("auto") || (self.at("decltype") && self.at_k(1, "(") && self.at_k(2, "auto")) {
+                            ds.concept_auto = true;
+                            if !self.templs[ctid].params.first().is_some_and(|p| matches!(p.kind, crate::templ::TPK::Type)) {
+                                // CPT-18: a type concept.
+                                self.error(t.line, "CPT-18", format!("the concept '{}' is not a type concept", self.templs[ctid].name));
+                            } else {
+                                ds.cons_auto = Some((ctid, raw, (ns, ns + n, lt, end)));
+                            }
+                            continue;
+                        }
+                        // CPT-18: a concept name before a declarator needs
+                        // `auto`.
+                        self.error(t.line, "CPT-18", "a concept name is used as a type without 'auto'");
+                        ds.ty = Some(QTy::unknown());
+                        continue;
+                    }
+                    self.ctad_tid = None;
                     let q = self.parse_type_name()?;
+                    ds.ctad = self.ctad_tid.take();
                     if self.at("auto") || self.at("decltype") {
                         ds.concept_auto = true;
                         continue;
@@ -957,10 +1006,13 @@ impl P {
             // TARG-10: a template name needs an argument list. A
             // variable declared with the name and an initializer deduces
             // the arguments, which the front end does not model.
-            let ctad = self.peek(0).kind == TK::Ident && !is_keyword(&self.peek(0).text) && (self.at_k(1, "{") || self.at_k(1, "(") || self.at_k(1, "="));
+            let ctad = self.peek(0).kind == TK::Ident && !is_keyword(&self.peek(0).text) && (self.at_k(1, "{") || self.at_k(1, "(") || self.at_k(1, "=") || self.at_k(1, ";") || self.at_k(1, ":") || self.at_k(1, ","));
             let ctad = ctad || self.at("{") || self.at("(");
             if !ctad && !self.in_tparam_decl && (!self.in_template() || scope.is_some()) && !self.tparam.contains_key(&id) && self.tid_of(id).is_some() {
                 self.error(line, "TARG-10", format!("the template '{}' is used without an argument list", name));
+            }
+            if ctad && matches!(self.decls[id].k, DK::Template(TemplKind::Class(_) | TemplKind::Alias)) && !self.tparam.contains_key(&id) {
+                self.ctad_tid = self.tid_of(id);
             }
             return Ok(QTy::unknown());
         }
@@ -991,6 +1043,8 @@ impl P {
             DK::TypeParam => {
                 if self.in_template() {
                     self.last_pack_ref = Some(id);
+                    let p = self.pos.saturating_sub(1);
+                    self.note_pack_use(id, p, line);
                 }
                 self.tparam_type(id)
             }
@@ -1863,6 +1917,25 @@ impl P {
 
     /// Parse `( params ) cv ref noexcept -> trailing`.
     pub fn parse_params(&mut self) -> PR<FnDecl> {
+        self.param_nest += 1;
+        let top = self.param_nest == 1;
+        let saved_k = self.auto_param_k;
+        if top {
+            self.auto_param_k = 0;
+        }
+        let r = self.parse_params_inner();
+        if top {
+            if let Some(a) = self.abbrev.as_mut() {
+                a.closed = true;
+            }
+        } else {
+            self.auto_param_k = saved_k;
+        }
+        self.param_nest -= 1;
+        r
+    }
+
+    fn parse_params_inner(&mut self) -> PR<FnDecl> {
         self.expect("(")?;
         let scope = self.push_scope(SK::Params);
         let mut f = FnDecl {
@@ -1995,6 +2068,14 @@ impl P {
             let pstart = self.pos;
             let pmark = self.pack_refs.len();
             let ds = self.parse_decl_specs(None)?;
+            // DED-34: a placeholder parameter of a function declaration.
+            let auto_k = if ds.auto.is_some() && self.param_nest == 1 && !self.at("[") {
+                let k = self.auto_param_k;
+                self.auto_param_k += 1;
+                Some(k)
+            } else {
+                None
+            };
             if !ds.storage.is_empty() || ds.register {
                 // STO-6: no storage class on a parameter.
                 self.error(line, "STO-6", "storage class on a function parameter");
@@ -2006,8 +2087,37 @@ impl P {
             if ds.has_alignas {
                 self.error(line, "ALN-2", "alignas on a parameter");
             }
-            let base = self.ds_base(&ds)?;
+            let base = match auto_k {
+                Some(k) => match self.auto_param_base(k, &ds, line)? {
+                    Some(q) => add_cv(&q, ds.c > 0, ds.v > 0),
+                    None => self.ds_base(&ds)?,
+                },
+                None => self.ds_base(&ds)?,
+            };
+            let puses = self.pack_uses.len();
             let d = self.parse_declarator(true, true)?;
+            if d.pack && self.inst_depth == 0 {
+                // PACK-2: the type of a function parameter pack names a
+                // pack or holds `auto`.
+                let names_pack = self.pack_uses.len() > puses || self.pack_uses.len() > 0 && self.pack_uses.iter().any(|&(p, _)| p >= pstart) || auto_k.is_some();
+                if !names_pack && !self.in_template() && d.name.is_some() {
+                    self.error(line, "PACK-2", "the type of a function parameter pack names no pack");
+                }
+                if self.at("=") {
+                    // PACK-4: no default argument for a parameter pack.
+                    self.error(line, "PACK-4", "a function parameter pack has a default argument");
+                }
+            } else if !d.pack && d.name.is_some() && self.at("...") && self.in_template() && self.inst_depth == 0 && self.pack_uses.iter().any(|&(p, _)| p >= pstart) {
+                // PACK-3, PACK-8: with a name, the `...` is the variable
+                // argument part, and the pack in the type stays unexpanded.
+                self.error(line, "PACK-8", "a pack in the type of a named parameter is not expanded");
+            }
+            if self.at("requires") {
+                // CPT-13: no trailing clause on a parameter.
+                self.error(self.line(), "CPT-13", "a trailing requires clause on a parameter");
+                self.pos += 1;
+                let _ = self.cons_clause(false)?;
+            }
             if d.pack && !self.in_template() && self.pack_refs.len() > pmark {
                 // A function parameter pack in a specialization: one
                 // parameter for each element.
@@ -2022,12 +2132,22 @@ impl P {
                     self.pack_index = Some(k);
                     let r = (|| -> PR<QTy> {
                         let ds = self.parse_decl_specs(None)?;
-                        let base = self.ds_base(&ds)?;
+                        let base = match auto_k {
+                            Some(ak) => match self.auto_param_base(ak, &ds, line)? {
+                                Some(q) => add_cv(&q, ds.c > 0, ds.v > 0),
+                                None => self.ds_base(&ds)?,
+                            },
+                            None => self.ds_base(&ds)?,
+                        };
                         let d = self.parse_declarator(true, true)?;
                         Ok(self.apply_ops(base, &d.ops, d.line))
                     })();
                     self.pack_index = saved;
                     let ty = r?;
+                    if ty.t == Ty::Void {
+                        // PACK-28: no parameter of type void.
+                        self.error(line, "PACK-28", "an expansion gives a parameter of type void");
+                    }
                     let ty = match ty.t {
                         Ty::Array(e, _) => QTy::new(Ty::Ptr(e)),
                         Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ty))),
@@ -2163,6 +2283,9 @@ impl P {
             if d.pack {
                 f.variadic = true;
                 self.pack_params.insert(id);
+                if self.in_template() {
+                    self.pack_decls.insert(id);
+                }
             }
             if self.eat(",") {
                 continue;

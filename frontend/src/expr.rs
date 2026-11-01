@@ -86,6 +86,20 @@ impl P {
         Ok(c)
     }
 
+    pub fn parse_binary_pub(&mut self, min: u8) -> PR<Expr> {
+        self.parse_binary(min)
+    }
+
+    pub fn parse_primary_pub(&mut self) -> PR<Expr> {
+        self.parse_postfix_name()
+    }
+
+    /// A primary expression; a qualified name and a template-id
+    /// included.
+    fn parse_postfix_name(&mut self) -> PR<Expr> {
+        self.parse_primary()
+    }
+
     fn parse_binary(&mut self, min: u8) -> PR<Expr> {
         let mut lhs = self.parse_cast()?;
         loop {
@@ -190,6 +204,21 @@ impl P {
                 "sizeof" => {
                     self.pos += 1;
                     if self.eat("...") {
+                        // PACK-19, PACK-20: the name of a pack in parentheses.
+                        let named = self.at("(") && self.peek(1).kind == TK::Ident && self.at_k(2, ")");
+                        if self.inst_depth == 0 && self.in_template() {
+                            let is_pack = named && self.lookup(&self.peek(1).text.clone()).is_some_and(|ids| self.pack_decls.contains(&ids[0]) || self.pack_params.contains(&ids[0]));
+                            if !is_pack {
+                                self.error(line, "PACK-20", "the operand of sizeof... is not the name of a pack in parentheses");
+                            }
+                        }
+                        if !named && !self.at("(") {
+                            if self.inst_depth == 0 && !self.in_template() {
+                                self.error(line, "PACK-20", "the operand of sizeof... is not the name of a pack in parentheses");
+                            }
+                            let _ = self.parse_unary();
+                            return Ok(Expr::new(EK::Unknown("sizeof...".into()), QTy::new(Ty::size_t()), Cat::PR, line));
+                        }
                         if !self.in_template() && self.at("(") && self.peek(1).kind == TK::Ident && self.at_k(2, ")") {
                             // The number of elements of a pack.
                             let name = self.peek(1).text.clone();
@@ -394,7 +423,17 @@ impl P {
             }
             DK::Func(f) => {
                 let t = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(f.fty.clone()))))));
-                Ok(Expr::new(EK::Unknown("address of static member function".into()), t, Cat::PR, line))
+                if !self.in_template() && self.fn_cons.contains_key(&id) && self.fn_sat(id) == crate::cons::Sat::No {
+                    // CNS-12: the address of a function whose constraints are
+                    // not satisfied.
+                    self.error(line, "CNS-12", format!("the address of '{}', whose constraints are not satisfied", self.decls[id].name));
+                    return Ok(Expr::unknown(line, "bad address"));
+                }
+                if self.in_template() || f.template {
+                    return Ok(Expr::new(EK::Unknown("address of static member function".into()), t, Cat::PR, line));
+                }
+                let fe = Expr::new(EK::Func(id), QTy::new(Ty::Func(Box::new(f.fty.clone()))), Cat::L, line);
+                Ok(Expr::new(EK::Unary(UOp::AddrOf, Box::new(fe)), t, Cat::PR, line))
             }
             DK::Var(v) => {
                 let t = QTy::new(Ty::Ptr(Box::new(v.ty.clone())));
@@ -402,6 +441,54 @@ impl P {
                 Ok(Expr::new(EK::Unary(UOp::AddrOf, Box::new(ve)), t, Cat::PR, line))
             }
             _ => Ok(Expr::unknown(line, "pointer to member")),
+        }
+    }
+
+    /// NEW-21 to NEW-25: the deallocation function that a throw from the
+    /// initialization would call must be accessible and not deleted, and
+    /// with placement arguments it must not be a usual form.
+    fn check_new_deallocation(&mut self, t: &QTy, array: bool, placement: Option<&[Expr]>, global: bool, line: u32) {
+        let Ty::Class(c) = t.t else { return };
+        if global || !self.classes[c].complete {
+            return;
+        }
+        let dname = if array { "operatordelete[]" } else { "operatordelete" };
+        let nname = if array { "operatornew[]" } else { "operatornew" };
+        let Some(ds) = self.lookup_member(c, dname) else { return };
+        let ds: Vec<DeclId> = ds.into_iter().filter(|&d| self.func(d).is_some()).collect();
+        if ds.is_empty() {
+            return;
+        }
+        let size_t = Ty::size_t();
+        let usual = |p: &P, d: DeclId| -> bool {
+            p.func(d).is_some_and(|f| matches!(&f.fty.params.first().map(|q| q.t.clone()), Some(Ty::Ptr(x)) if x.t == Ty::Void) && (f.fty.params.len() == 1 || (f.fty.params.len() == 2 && f.fty.params[1].t == size_t)))
+        };
+        let chosen = match placement {
+            None => {
+                let one = ds.iter().copied().find(|&d| usual(self, d) && self.func(d).is_some_and(|f| f.fty.params.len() == 1));
+                one.or_else(|| ds.iter().copied().find(|&d| usual(self, d)))
+            }
+            Some(pa) => {
+                // The allocation function with the placement parameters.
+                let Some(ns) = self.lookup_member(c, nname) else { return };
+                let Some(alloc) = ns.into_iter().find(|&n| self.func(n).is_some_and(|f| f.fty.params.len() == 1 + pa.len())) else { return };
+                let after: Vec<QTy> = self.func(alloc).unwrap().fty.params[1..].to_vec();
+                let m = ds.iter().copied().find(|&d| self.func(d).is_some_and(|f| f.fty.params.len() == 1 + after.len() && f.fty.params[1..] == after[..]));
+                if let Some(d) = m {
+                    if usual(self, d) {
+                        self.error(line, "NEW-25", "the deallocation function that matches the placement allocation function is a usual form");
+                        return;
+                    }
+                }
+                m
+            }
+        };
+        let Some(d) = chosen else { return };
+        let deleted = self.func(d).is_some_and(|f| f.deleted);
+        if deleted {
+            self.error(line, "NEW-25", format!("the deallocation function of '{}' that a new expression would call is deleted", self.classes[c].name));
+        } else if !self.accessible(d, false) {
+            self.error(line, "NEW-25", format!("the deallocation function of '{}' that a new expression would call is not accessible", self.classes[c].name));
         }
     }
 
@@ -493,7 +580,15 @@ impl P {
         }
         let ds = self.parse_decl_specs(None)?;
         let is_auto = ds.auto.is_some() && ds.ty.is_none();
-        let base = self.ds_base(&ds).unwrap_or(QTy::unknown());
+        let mut base = self.ds_base(&ds).unwrap_or(QTy::unknown());
+        if let Some(ctid) = ds.ctad {
+            // CTAD-1: a new expression with a deduced class type.
+            if !self.in_template() && (self.at("(") || self.at("{")) {
+                if let Some(q) = self.ctad_lookahead(ctid, line) {
+                    base = add_cv(&q, ds.c > 0, ds.v > 0);
+                }
+            }
+        }
         let mut t = base;
         // new-declarator: ptr ops and array bounds
         loop {
@@ -576,6 +671,7 @@ impl P {
         }
         if !self.in_template() {
             self.check_new_type(&t, is_auto, &bounds, first_absent, first_const, init, placement.as_deref(), global, line);
+            self.check_new_deallocation(&t, !bounds.is_empty(), placement.as_deref(), global, line);
         }
         // NEW-2: the result points to the first element, which is an array
         // for a multi-dimensional new.
@@ -598,7 +694,27 @@ impl P {
             names.iter().any(|n| p.scopes[p.global].names.get(*n).is_some_and(|v| !v.is_empty()) || c.is_some_and(|c| p.lookup_member(c, n).is_some()))
         };
         let elem_class = crate::decl2::elem_class(&rt.t);
-        if placement.is_some() || global || self.in_template() || rt.is_unknown() || user_alloc(self, elem_class) || bounds.iter().skip(1).any(|b| b.is_none()) {
+        // STG-5: the non-allocating placement form, declared as the
+        // library declares it, with one pointer argument.
+        let mut place_arg: Option<Expr> = None;
+        if let Some(pa) = &placement {
+            let forms_only = |p: &P, name: &str| -> bool {
+                p.scopes[p.global].names.get(name).is_none_or(|v| v.iter().all(|&d| p.func(d).is_some_and(|f| f.fty.params.len() == 2 && matches!(&f.fty.params[1].t, Ty::Ptr(x) if x.t == Ty::Void))))
+            };
+            let has_form = |p: &P, name: &str| p.scopes[p.global].names.get(name).is_some_and(|v| v.iter().any(|&d| p.func(d).is_some_and(|f| f.fty.params.len() == 2 && matches!(&f.fty.params[1].t, Ty::Ptr(x) if x.t == Ty::Void))));
+            let name = if bounds.is_empty() { "operatornew" } else { "operatornew[]" };
+            let class_alloc = elem_class.is_some_and(|c| ["operatornew", "operatornew[]", "operatordelete", "operatordelete[]"].iter().any(|n| self.lookup_member(c, n).is_some()));
+            if pa.len() == 1 && matches!(nonref(&pa[0].ty).t, Ty::Ptr(_) | Ty::Array(..)) && has_form(self, name) && forms_only(self, "operatornew") && forms_only(self, "operatornew[]") && !class_alloc && !self.in_template() && !global {
+                let vp = QTy::new(Ty::Ptr(Box::new(QTy { t: Ty::Void, c: false, v: false })));
+                let mark = self.d.list.len();
+                let a = self.convert_init(pa[0].clone(), &vp, InitForm::Copy, line);
+                if self.d.list.len() == mark && !matches!(a.k, EK::Unknown(_)) {
+                    place_arg = Some(a);
+                }
+                self.d.list.truncate(mark);
+            }
+        }
+        if (placement.is_some() && place_arg.is_none()) || global || self.in_template() || rt.is_unknown() || (place_arg.is_none() && user_alloc(self, elem_class)) || bounds.iter().skip(1).any(|b| b.is_none()) {
             return Ok(unknown);
         }
         let mark = self.d.list.len();
@@ -632,7 +748,7 @@ impl P {
             self.d.list.truncate(mark);
             return Ok(unknown);
         }
-        let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new) };
+        let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new), place: place_arg.map(Box::new) };
         Ok(Expr::new(k, QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
     }
 
@@ -691,13 +807,23 @@ impl P {
             let mut args = Vec::new();
             if !self.at(")") {
                 loop {
-                    n += 1;
                     if self.at("{") {
+                        n += 1;
                         args.push(self.parse_braced_init()?);
                     } else {
-                        let a = self.parse_assignment()?;
-                        self.check_prvalue_dtor(&a);
-                        args.push(a);
+                        // PACK-13: an expansion gives one argument for each
+                        // element.
+                        let (items, expanded) = self.parse_expansion(|p| p.parse_assignment())?;
+                        if !expanded && self.eat("...") {
+                            n += 1;
+                            args.push(Expr::unknown(self.line(), "pack expansion"));
+                        } else {
+                            for a in items {
+                                n += 1;
+                                self.check_prvalue_dtor(&a);
+                                args.push(a);
+                            }
+                        }
                     }
                     if !self.eat(",") {
                         break;
@@ -877,6 +1003,25 @@ impl P {
                 }
                 if !self.at("(") {
                     self.error(line, "DTOR-8", "a destructor must be called with '()'");
+                }
+            }
+            if !self.in_template() && self.at("(") && self.at_k(1, ")") {
+                // STG-6: the call ends the object's lifetime.
+                let target = if arrow {
+                    match &nonref(&obj.ty).t {
+                        Ty::Ptr(p) => Some(Expr::new(EK::Unary(UOp::Deref, Box::new(self.rvalue(obj.clone()))), (**p).clone(), Cat::L, line)),
+                        _ => None,
+                    }
+                } else if obj.cat != Cat::PR {
+                    Some(obj.clone())
+                } else {
+                    None
+                };
+                if let Some(t) = target {
+                    if !nonref(&t.ty).is_unknown() {
+                        self.pos += 2;
+                        return Ok(Expr::new(EK::Destroy(Box::new(t)), QTy::new(Ty::Void), Cat::PR, line));
+                    }
                 }
             }
             return Ok(Expr::new(EK::Unknown("pseudo destructor".into()), QTy::unknown(), Cat::PR, line));
@@ -1187,14 +1332,7 @@ impl P {
             }
             "requires" => {
                 self.pos += 1;
-                if self.in_template() || self.inst_depth == 0 {
-                    if self.at("(") {
-                        self.skip_balanced();
-                    }
-                    self.skip_balanced();
-                    return Ok(Expr::new(EK::Unknown("requires expression".into()), QTy::bool_(), Cat::PR, line));
-                }
-                return self.eval_requires(line);
+                return self.parse_requires_expr(line);
             }
             "__func__" => {
                 self.pos += 1;
@@ -1227,7 +1365,7 @@ impl P {
                 // every program, next to any that the program declares, so a
                 // call of one is not checked against the declared ones alone.
                 if matches!(name.as_str(), "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]") {
-                    return Ok(Expr::unknown(line, "allocation function"));
+                    return Ok(Expr::new(EK::Unknown(format!("allocation function {}", name)), QTy::unknown(), Cat::L, line));
                 }
                 let found = self.lookup(&name);
                 return Ok(match found {
@@ -1254,76 +1392,27 @@ impl P {
         if is_keyword(s) {
             return Err(self.err(format!("unexpected keyword '{}' in an expression", s)));
         }
+        if s == "__STDCPP_DEFAULT_NEW_ALIGNMENT__" {
+            // NEW-27: the default new alignment of the matrix targets.
+            self.pos += 1;
+            return Ok(Expr::new(EK::Int(16), QTy::new(Ty::size_t()), Cat::PR, line));
+        }
+        if let Some((_, n)) = self.concept_at() {
+            let mut k = n;
+            if self.at_k(k, "<") {
+                k = self.skip_angle_at(k);
+            }
+            if self.at_k(k, "auto") || (self.at_k(k, "decltype") && self.at_k(k + 2, "auto")) {
+                // CPT-37: no constrained placeholder in a functional cast.
+                self.error(line, "CPT-37", "a constrained placeholder in a functional cast");
+                self.pos += k;
+                return self.parse_primary();
+            }
+        }
         self.parse_id_expression()
     }
 
-    /// A requires-expression in a specialization: each simple requirement
-    /// is valid or not (outside the specification; constraints are not
-    /// specified yet).
-    fn eval_requires(&mut self, line: u32) -> PR<Expr> {
-        let depth = self.stack.len();
-        if self.at("(") {
-            let f = self.parse_params()?;
-            self.stack.push(f.scope);
-        }
-        self.expect("{")?;
-        let mut ok = true;
-        let mut known = true;
-        while !self.at("}") && self.tok().kind != TK::Eof {
-            let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
-            self.d.muted += 1;
-            let r: PR<()> = if self.at("{") || self.at("requires") {
-                known = false;
-                while !self.at(";") && self.tok().kind != TK::Eof {
-                    if self.at("{") || self.at("(") {
-                        self.skip_balanced();
-                    } else {
-                        self.pos += 1;
-                    }
-                }
-                Ok(())
-            } else if self.at("typename") {
-                self.pos += 1;
-                self.parse_typename_type().map(|q| {
-                    if q.is_unknown() {
-                        ok = false;
-                    }
-                })
-            } else {
-                self.parse_expression().map(|e| {
-                    if e.ty.is_unknown() && matches!(e.k, EK::Unknown(_)) {
-                        ok = false;
-                    }
-                })
-            };
-            self.d.muted -= 1;
-            if r.is_err() {
-                known = false;
-                while !self.at(";") && !self.at("}") && self.tok().kind != TK::Eof {
-                    self.pos += 1;
-                }
-            }
-            if self.d.muted_errors != me {
-                ok = false;
-            }
-            if self.d.muted_unsup != mu {
-                known = false;
-            }
-            self.d.muted_errors = me;
-            self.d.muted_unsup = mu;
-            if !self.eat(";") {
-                break;
-            }
-        }
-        self.expect("}")?;
-        self.stack.truncate(depth);
-        if !known {
-            return Ok(Expr::new(EK::Unknown("requires expression".into()), QTy::bool_(), Cat::PR, line));
-        }
-        Ok(Expr::new(EK::Int(ok as i128), QTy::bool_(), Cat::PR, line))
-    }
-
-    fn is_fold(&self) -> bool {
+    pub fn is_fold(&self) -> bool {
         // ( e op ... ) or ( ... op e ): look for `...` before the matching )
         let mut k = 0;
         let mut depth = 0;
@@ -1549,6 +1638,11 @@ impl P {
         if self.at("<") {
             self.skip_template_args()?;
             generic = true;
+            if self.at("requires") {
+                // CPT-16: a requires clause after the template parameters.
+                self.pos += 1;
+                self.skip_constraint()?;
+            }
         }
         let mark = self.decls.len();
         let ppos = self.pos;
@@ -2076,7 +2170,7 @@ impl P {
             };
             let class_scope = matches!(scope, Some(Ok(s)) if matches!(self.scopes[s].kind, SK::Class(_)));
             if !class_scope && matches!(name.as_str(), "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]") {
-                return Ok(Expr::unknown(line, "allocation function"));
+                return Ok(Expr::new(EK::Unknown(format!("allocation function {}", name)), QTy::unknown(), Cat::L, line));
             }
             let found = match scope {
                 Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
@@ -2097,6 +2191,13 @@ impl P {
             return Ok(Expr::unknown(line, "destructor name"));
         }
         let name = self.ident()?;
+        if scope.is_none() && self.in_template() && self.inst_depth == 0 {
+            if let Some(ids) = self.lookup(&name) {
+                if ids.len() == 1 {
+                    self.note_pack_use(ids[0], self.pos - 1, line);
+                }
+            }
+        }
         if let Some(Ok(sc)) = scope {
             if let SK::Class(c) = self.scopes[sc].kind {
                 if self.classes[c].name == name && start > 0 && self.toks.get(start - 1).is_some_and(|t| t.text == "&") && !self.in_template() {
@@ -2265,6 +2366,18 @@ impl P {
             if self.at("<") {
                 return self.parse_template_id_expr(t, line);
             }
+            if matches!(self.decls[t].k, DK::Template(TemplKind::Class(_) | TemplKind::Alias)) && (self.at("(") || self.at("{")) && !self.in_template() && !self.tparam.contains_key(&t) {
+                // CTAD-1: a functional cast with a deduced class type.
+                if let Some(ctid) = self.tid_of(t) {
+                    if let Some(q) = self.ctad_lookahead(ctid, line) {
+                        return self.parse_functional_cast(q, line);
+                    }
+                    if self.at("(") || self.at("{") {
+                        self.skip_balanced();
+                    }
+                    return Ok(Expr::unknown(line, "deduction of class template arguments"));
+                }
+            }
             if let DK::Template(TemplKind::Var { .. }) = self.decls[t].k {
                 if !self.in_template() && self.tid_of(t).is_some() {
                     // TARG-10: a variable template needs an argument list.
@@ -2360,8 +2473,32 @@ impl P {
                 }
             }
             DK::Template(TemplKind::Concept) => {
-                self.skip_template_args()?;
-                Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line))
+                // CPT-1: a concept-id is a constant of type bool.
+                let Some(tid) = self.tid_of(t) else {
+                    self.skip_template_args()?;
+                    return Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line));
+                };
+                let raw = self.parse_raw_targs()?;
+                let args = if self.in_template() {
+                    match self.pattern_targs(tid, raw) {
+                        Some(a) if !a.iter().any(|x| x.is_dep()) => Some(a),
+                        _ => None,
+                    }
+                } else {
+                    match self.concept_targs(tid, raw, line) {
+                        Ok(Some(a)) => Some(a),
+                        Ok(None) => None,
+                        Err(()) => return Ok(Expr::unknown(line, "bad concept-id")),
+                    }
+                };
+                let Some(args) = args else {
+                    return Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line));
+                };
+                match self.concept_value(tid, &args) {
+                    crate::cons::Sat::Yes => Ok(Expr::new(EK::Int(1), QTy::bool_(), Cat::PR, line)),
+                    crate::cons::Sat::No | crate::cons::Sat::Error => Ok(Expr::new(EK::Int(0), QTy::bool_(), Cat::PR, line)),
+                    crate::cons::Sat::Unknown => Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line)),
+                }
             }
             DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias) | DK::Class(_) => {
                 let q = self.parse_template_id_type(t, line)?;
@@ -3404,6 +3541,7 @@ impl P {
         }
         let lnull = self.is_null_ptr_constant(&l);
         let rnull = self.is_null_ptr_constant(&r);
+        let both_arrays = matches!(nonref(&l.ty).t, Ty::Array(..)) && matches!(nonref(&r.ty).t, Ty::Array(..));
         let l = self.rvalue(l);
         let r = self.rvalue(r);
         let lt = l.ty.t.clone();
@@ -3507,26 +3645,138 @@ impl P {
                 Expr::new(EK::Binary(op, Box::new(l), Box::new(r)), ty, Cat::PR, line)
             }
             BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne => self.build_compare(op, l, r, lnull, rnull, line),
-            BOp::Spaceship => {
-                if ls != rs || (ls && lt != rt) {
-                    self.error(line, "CMP-23", "three-way comparison of a scoped enumeration with another type");
-                }
-                if (lt == Ty::Bool) != (rt == Ty::Bool) && (lt.is_arithmetic() || matches!(lt, Ty::Enum(_))) && (rt.is_arithmetic() || matches!(rt, Ty::Enum(_))) {
-                    // CMP-13: a bool and an operand of another type.
-                    self.error(line, "CMP-13", "three-way comparison of a bool with an operand of another type");
-                }
-                // OVL-P4: an ordering type, std::partial_ordering for
-                // floating-point operands and std::strong_ordering
-                // otherwise. The value is not modeled.
-                let name = if lt.is_floating() || rt.is_floating() { "partial_ordering" } else { "strong_ordering" };
-                let ty = self.std_class(name).map(|c| QTy::new(Ty::Class(c))).unwrap_or(QTy::unknown());
-                Expr::new(EK::Unknown("<=> (comparison category types are library types)".into()), ty, Cat::PR, line)
-            }
+            BOp::Spaceship => self.build_three_way(l, r, lnull, rnull, both_arrays, line),
             BOp::LAnd | BOp::LOr => unreachable!(),
         }
     }
 
-    /// The class `std::name`, when the program declares it.
+    /// The built-in `<=>` (CMP-12, CMP-13, CMP-17, CMP-18, CMP-24,
+    /// CMP-25). The result is the static member of the comparison
+    /// category type that the comparison of the values chooses.
+    fn build_three_way(&mut self, l: Expr, r: Expr, lnull: bool, rnull: bool, both_arrays: bool, line: u32) -> Expr {
+        let (lt, rt) = (l.ty.t.clone(), r.ty.t.clone());
+        let unk = |ty: QTy| Expr::new(EK::Unknown("<=> (comparison category types are library types)".into()), ty, Cat::PR, line);
+        if both_arrays {
+            self.error(line, "CMP-24", "three-way comparison of two arrays");
+            return Expr::unknown(line, "bad operand");
+        }
+        let (ls, rs) = (self.is_scoped_enum(&lt), self.is_scoped_enum(&rt));
+        if ls != rs || (ls && lt != rt) {
+            self.error(line, "CMP-23", "three-way comparison of a scoped enumeration with another type");
+            return Expr::unknown(line, "bad operand");
+        }
+        let arith = |p: &P, t: &Ty| t.is_arithmetic() || matches!(t, Ty::Enum(_)) && !p.is_scoped_enum(t);
+        if (lt == Ty::Bool) != (rt == Ty::Bool) && arith(self, &lt) && arith(self, &rt) {
+            // CMP-13: a bool and an operand of another type.
+            self.error(line, "CMP-13", "three-way comparison of a bool with an operand of another type");
+            return Expr::unknown(line, "bad operand");
+        }
+        let (le, re) = (self.is_unscoped_enum(&lt), self.is_unscoped_enum(&rt));
+        if (le && re && lt != rt) || (le && rt.is_floating()) || (re && lt.is_floating()) {
+            // CMP-18: two unscoped enumerations, or one and a floating value.
+            self.error(line, "CMP-18", "three-way comparison of different enumerations, or of an enumeration and a floating value");
+            return Expr::unknown(line, "bad operand");
+        }
+        let fnptr = |t: &Ty| matches!(t, Ty::Ptr(x) if matches!(x.t, Ty::Func(_)));
+        let np = |t: &Ty| *t == Ty::NullPtr;
+        if (fnptr(&lt) && (fnptr(&rt) || np(&rt) || rnull)) || (fnptr(&rt) && (np(&lt) || lnull)) || (matches!(lt, Ty::MemPtr(..)) || matches!(rt, Ty::MemPtr(..))) || (np(&lt) && np(&rt)) {
+            // CMP-25: no three-way comparison of these.
+            self.error(line, "CMP-25", "three-way comparison of function pointers, pointers to members, or null pointer values");
+            return Expr::unknown(line, "bad operand");
+        }
+        let lptr = matches!(lt, Ty::Ptr(_));
+        let rptr = matches!(rt, Ty::Ptr(_));
+        if (lptr && rnull && !np(&rt)) || (rptr && lnull && !np(&lt)) {
+            // CMP-13: a pointer and the literal 0.
+            self.error(line, "CMP-13", "three-way comparison of a pointer with the literal 0");
+            return Expr::unknown(line, "bad operand");
+        }
+        let floating = lt.is_floating() || rt.is_floating();
+        let name = if floating { "partial_ordering" } else { "strong_ordering" };
+        let Some(cc) = self.std_class(name) else {
+            // CMP-25: the comparison category type must be declared.
+            self.error(line, "CMP-25", format!("three-way comparison needs 'std::{}', which is not declared", name));
+            return Expr::unknown(line, "bad operand");
+        };
+        let ty = QTy::new(Ty::Class(cc));
+        if arith(self, &lt) && arith(self, &rt) {
+            // CMP-13: no narrowing conversion of an integer operand.
+            let lb = self.arith_base(&lt);
+            let rb = self.arith_base(&rt);
+            let ct = usual_arith(&lb, &rb);
+            if ct.is_integral() {
+                for (e, b) in [(&l, &lb), (&r, &rb)] {
+                    if !b.is_integral() || *b == ct {
+                        continue;
+                    }
+                    let fits_type = (b.is_signed() == ct.is_signed() && b.int_bits() <= ct.int_bits()) || (!b.is_signed() && ct.is_signed() && b.int_bits() < ct.int_bits());
+                    if fits_type {
+                        continue;
+                    }
+                    let fits_value = match self.const_int_quiet(e) {
+                        Ok(v) => {
+                            let bits = ct.int_bits();
+                            if ct.is_signed() { v >= -(1i128 << (bits - 1)) && v < (1i128 << (bits - 1)) } else { v >= 0 && v < (1i128 << bits) }
+                        }
+                        Err(_) => false,
+                    };
+                    if !fits_value {
+                        self.error(line, "CMP-13", "three-way comparison needs a narrowing conversion of an operand");
+                        return Expr::unknown(line, "bad operand");
+                    }
+                }
+            }
+        } else if !(lptr || rptr || lnull || rnull) {
+            self.error(line, "CMP-12", format!("invalid operands to '<=>': {} and {}", show(&l.ty), show(&r.ty)));
+            return Expr::unknown(line, "bad operand");
+        }
+        if crate::interp::has_effects(&l) || crate::interp::has_effects(&r) || self.in_template() {
+            return unk(ty);
+        }
+        // The value: less, equal (equivalent), greater, or unordered.
+        let member = |p: &mut P, n: &str| -> Option<Expr> {
+            let ids = p.lookup_member(cc, n)?;
+            let id = *ids.iter().find(|&&i| p.var(i).is_some())?;
+            let vt = p.var(id)?.ty.clone();
+            Some(Expr::new(EK::Var(id), vt, Cat::L, line))
+        };
+        let names: &[&str] = if floating { &["less", "equivalent", "greater", "unordered"] } else { &["less", "equal", "greater"] };
+        let mut ms = Vec::new();
+        for n in names {
+            match member(self, n) {
+                Some(e) => ms.push(e),
+                None => {
+                    // LSUP-2: each ordering class has its static members.
+                    self.error(line, "LSUP-2", format!("'std::{}' has no static data member '{}'", name, n));
+                    return Expr::unknown(line, "bad operand");
+                }
+            }
+        }
+        let (me, mu, mark) = (self.d.muted_errors, self.d.muted_unsup, self.d.list.len());
+        self.d.muted += 1;
+        let lt_e = self.build_binary(BOp::Lt, l.clone(), r.clone(), line);
+        let eq_e = self.build_binary(BOp::Eq, l.clone(), r.clone(), line);
+        let gt_e = self.build_binary(BOp::Gt, l, r, line);
+        self.d.muted -= 1;
+        let bad = self.d.muted_errors != me || self.d.muted_unsup != mu;
+        self.d.muted_errors = me;
+        self.d.muted_unsup = mu;
+        self.d.list.truncate(mark);
+        if bad {
+            return unk(ty);
+        }
+        let cond = |c: Expr, a: Expr, b: Expr| Expr::new(EK::Cond(Box::new(c), Box::new(a), Box::new(b)), ty.clone(), Cat::PR, line);
+        if floating {
+            let inner = cond(eq_e, ms[1].clone(), ms[3].clone());
+            let mid = cond(gt_e, ms[2].clone(), inner);
+            cond(lt_e, ms[0].clone(), mid)
+        } else {
+            let inner = cond(eq_e, ms[1].clone(), ms[2].clone());
+            cond(lt_e, ms[0].clone(), inner)
+        }
+    }
+
+    /// The class `std::name`, when the program declares it.    /// The class `std::name`, when the program declares it.
     pub fn std_class(&self, name: &str) -> Option<usize> {
         let ns = self.lookup_in_scope(self.global, "std", false)?;
         let DK::Namespace(s) = self.decls[*ns.first()?].k else { return None };
@@ -3656,6 +3906,43 @@ impl P {
         }
     }
 
+    /// A template-id of one function template whose explicit arguments
+    /// give every template argument names one specialization (DED-2,
+    /// OVL-20).
+    pub fn resolve_templ_id(&mut self, e: Expr, line: u32) -> Expr {
+        let EK::TemplId(None, fs, raw) = &e.k else { return e };
+        if self.in_template() {
+            return e;
+        }
+        let ts: Vec<DeclId> = fs.iter().copied().filter(|&f| self.is_func_templ(f)).collect();
+        if ts.len() != 1 || fs.iter().any(|&f| self.func(f).is_some_and(|x| !x.template)) {
+            return e;
+        }
+        let tid = self.decl_tid[&ts[0]];
+        let n = self.templs[tid].params.len();
+        let Ok(Some(mut args)) = self.targs_for(tid, (**raw).clone(), line, true) else { return e };
+        // The defaults and empty packs give the rest.
+        while args.len() < n {
+            let i = args.len();
+            if self.templs[tid].params[i].pack {
+                args.push(TArg::Pack(vec![]));
+                continue;
+            }
+            match self.default_arg(tid, i, &args) {
+                Some(a) if !a.is_dep() => args.push(a),
+                _ => return e,
+            }
+        }
+        match self.func_spec(tid, &args, line) {
+            crate::templ::SpecRes::Ok(s) => {
+                let ft = self.func(s).map(|f| QTy::new(Ty::Func(Box::new(f.fty.clone())))).unwrap_or(QTy::unknown());
+                self.use_fn(s);
+                Expr::new(EK::Func(s), ft, Cat::L, line)
+            }
+            _ => e,
+        }
+    }
+
     pub fn build_unary(&mut self, op: UOp, e: Expr, line: u32) -> Expr {
         let sp = match op {
             UOp::Plus => "+",
@@ -3675,6 +3962,22 @@ impl P {
         if matches!(e.k, EK::Overloads(_)) && op == UOp::AddrOf {
             // OVL-18: a target type chooses the function later.
             return Expr::new(EK::Unary(op, Box::new(e)), QTy::unknown(), Cat::PR, line);
+        }
+        let e = if op == UOp::AddrOf { self.resolve_templ_id(e, line) } else { e };
+        if op == UOp::AddrOf && !self.in_template() {
+            // CNS-12: the address of a function whose constraints are not
+            // satisfied.
+            let single = match &e.k {
+                EK::Func(f) => Some(*f),
+                EK::Overloads(v) if v.len() == 1 => Some(v[0]),
+                _ => None,
+            };
+            if let Some(f) = single {
+                if self.fn_cons.contains_key(&f) && self.fn_sat(f) == crate::cons::Sat::No {
+                    self.error(line, "CNS-12", format!("the address of '{}', whose constraints are not satisfied", self.decls[f].name));
+                    return Expr::unknown(line, "bad address");
+                }
+            }
         }
         if let EK::Func(f) = &e.k {
             if op == UOp::AddrOf && self.func(*f).is_some_and(|fi| fi.is_main) {
@@ -4246,7 +4549,7 @@ impl P {
                 x.ty = ty.unqual();
                 return x;
             }
-            if !braced && !items.is_empty() && !self.in_template() && self.classes[c].complete && !self.classes[c].ctors.is_empty() {
+            if !braced && !self.in_template() && self.classes[c].complete && !self.classes[c].ctors.is_empty() {
                 let items = items.clone();
                 let x = self.ctor_call(c, &items, &ty, line);
                 if matches!(x.k, EK::Construct(..)) {

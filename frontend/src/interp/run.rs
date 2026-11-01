@@ -81,13 +81,17 @@ impl<'a> Machine<'a> {
             let sc = &p.scopes[x];
             match sc.kind {
                 SK::Namespace if x != p.global => parts.push(if sc.name.is_empty() { "(unnamed)".into() } else { sc.name.clone() }),
-                SK::Class(c) => parts.push(p.classes[c].name.clone()),
+                SK::Class(c) => parts.push(p.class_label_of(c)),
                 _ => {}
             }
             s = sc.parent;
         }
         parts.reverse();
         let mut n = parts.join("::");
+        if let Some((_, args)) = p.spec_of.get(&id) {
+            // A specialization: its template arguments.
+            n.push_str(&format!("<{}>", p.show_targs(args)));
+        }
         if let Some(f) = p.func(id) {
             let ps: Vec<String> = f.fty.params.iter().map(|q| type_name(p, q)).collect();
             n.push_str(&format!("({}){}{}{}", ps.join(","), if f.fty.cv_c { " const" } else { "" }, if f.fty.cv_v { " volatile" } else { "" }, ["", " &", " &&"][f.fty.refq.min(2) as usize]));
@@ -328,7 +332,7 @@ impl<'a> Machine<'a> {
 fn type_name(p: &P, q: &QTy) -> String {
     let cv = format!("{}{}", if q.c { "const " } else { "" }, if q.v { "volatile " } else { "" });
     let t = match &q.t {
-        Ty::Class(c) => p.classes[*c].name.clone(),
+        Ty::Class(c) => p.class_label_of(*c),
         Ty::Enum(e) => p.enums[*e].name.clone(),
         Ty::Ptr(x) => format!("{}*", type_name(p, x)),
         Ty::LRef(x) => format!("{}&", type_name(p, x)),

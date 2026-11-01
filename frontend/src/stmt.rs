@@ -97,6 +97,13 @@ impl P {
     }
 
     pub fn parse_statement(&mut self) -> PR<Stmt> {
+        let mark = self.pack_uses.len();
+        let r = self.parse_statement_inner();
+        self.check_pack_uses(mark);
+        r
+    }
+
+    fn parse_statement_inner(&mut self) -> PR<Stmt> {
         self.pending_attrs.clear();
         self.skip_attributes();
         let attrs = std::mem::take(&mut self.pending_attrs);

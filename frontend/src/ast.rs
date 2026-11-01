@@ -160,11 +160,12 @@ pub enum EK {
     Throw(Option<Box<Expr>>),
     /// A constructor call: the constructor and its converted arguments.
     Construct(DeclId, Vec<Expr>),
-    /// A `new` expression with no placement and the global allocation
-    /// function: the type of the object or of each element, the number of
-    /// elements of an array `new`, and the converted initializer (none
-    /// for default-initialization).
-    New { ty: QTy, count: Option<Box<Expr>>, init: Option<Box<Expr>> },
+    /// A `new` expression with the global allocation function, or with the
+    /// non-allocating placement form and its argument as `void*` (STG-5):
+    /// the type of the object or of each element, the number of elements
+    /// of an array `new`, and the converted initializer (none for
+    /// default-initialization).
+    New { ty: QTy, count: Option<Box<Expr>>, init: Option<Box<Expr>>, place: Option<Box<Expr>> },
     /// A `delete` or `delete[]` expression.
     Delete(bool, Box<Expr>),
     /// A `dynamic_cast` whose checks passed; the type and category of the
@@ -178,6 +179,9 @@ pub enum EK {
     /// arguments, before the call: the object of a member call, the
     /// functions, and the arguments as written (DED-2).
     TemplId(Option<Box<Expr>>, Vec<DeclId>, Rc<Vec<crate::templ::RawArg>>),
+    /// An explicit destructor call `x.~T()` on the glvalue `x` (DTOR-8,
+    /// STG-6).
+    Destroy(Box<Expr>),
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
@@ -268,8 +272,11 @@ pub fn walk_expr(e: &Expr, f: &mut dyn FnMut(&Expr)) {
                 walk_expr(x, f);
             }
         }
-        EK::Throw(Some(a)) | EK::Delete(_, a) | EK::DynamicCast(a) => walk_expr(a, f),
-        EK::New { count, init, .. } => {
+        EK::Throw(Some(a)) | EK::Delete(_, a) | EK::DynamicCast(a) | EK::Destroy(a) => walk_expr(a, f),
+        EK::New { count, init, place, .. } => {
+            if let Some(p) = place {
+                walk_expr(p, f);
+            }
             if let Some(c) = count {
                 walk_expr(c, f);
             }
@@ -312,11 +319,12 @@ pub fn sexp(e: &Expr) -> String {
         EK::ZeroInit => "zero".into(),
         EK::Throw(a) => format!("throw {}", a.as_ref().map(|x| sexp(x)).unwrap_or_default()),
         EK::Construct(c, v) => format!("construct#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
-        EK::New { ty, count, init } => format!("new {} [{}] {}", crate::types::show(ty), count.as_ref().map(|c| sexp(c)).unwrap_or_default(), init.as_ref().map(|c| sexp(c)).unwrap_or_default()),
+        EK::New { ty, count, init, .. } => format!("new {} [{}] {}", crate::types::show(ty), count.as_ref().map(|c| sexp(c)).unwrap_or_default(), init.as_ref().map(|c| sexp(c)).unwrap_or_default()),
         EK::Delete(a, x) => format!("delete{} {}", if *a { "[]" } else { "" }, sexp(x)),
         EK::DynamicCast(x) => format!("dynamic_cast {}", sexp(x)),
         EK::Closure(c, v, _) => format!("closure#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
         EK::TemplId(_, v, _) => format!("templ-id{:?}", v),
+        EK::Destroy(x) => format!("destroy {}", sexp(x)),
         EK::Unknown(w) => format!("UNKNOWN({})", w),
     };
     format!("({}{}{}:{})", if e.qualified { "Q " } else { "" }, inner, if cat.is_empty() { String::new() } else { format!(" {}", cat) }, ty)

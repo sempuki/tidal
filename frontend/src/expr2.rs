@@ -12,6 +12,30 @@ impl P {
 
     pub fn build_call(&mut self, callee: Expr, args: Vec<Expr>, line: u32) -> Expr {
         let adl = std::mem::take(&mut self.call_adl);
+        if let EK::Unknown(w) = &callee.k {
+            if let Some(name) = w.strip_prefix("allocation function ") {
+                // STG-7, NEW-19: a call of a global allocation or
+                // deallocation function by name, when the program replaces
+                // none of the usual forms.
+                let usual_only = ["operatornew", "operatornew[]", "operatordelete", "operatordelete[]"].iter().all(|n| {
+                    self.scopes[self.global].names.get(*n).is_none_or(|v| v.iter().all(|&d| self.func(d).is_some_and(|f| f.fty.params.len() == 2 && matches!(&f.fty.params[1].t, Ty::Ptr(x) if x.t == Ty::Void))))
+                });
+                if usual_only && !self.in_template() && args.len() == 1 {
+                    let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
+                    let mark = self.d.list.len();
+                    let (a, rt) = if name.starts_with("operatornew") {
+                        (self.convert_init(args[0].clone(), &QTy::new(Ty::size_t()), InitForm::Copy, line), vp)
+                    } else {
+                        (self.convert_init(args[0].clone(), &vp, InitForm::Copy, line), QTy::new(Ty::Void))
+                    };
+                    if self.d.list.len() == mark && !matches!(a.k, EK::Unknown(_)) {
+                        return Expr::new(EK::Call(Box::new(callee), vec![a], None), rt, Cat::PR, line);
+                    }
+                    self.d.list.truncate(mark);
+                }
+                return Expr::unknown(line, "call of an allocation function");
+            }
+        }
         match callee.k.clone() {
             EK::Func(f) => {
                 self.call_adl = adl;
@@ -921,8 +945,12 @@ impl P {
                     }
                 }
                 if a.t == Ty::Void && b.t != Ty::Void {
-                    // CE-4: a pointer to void to a pointer to an object type.
-                    return Expr::new(EK::Unknown("CE-4: conversion from void*".into()), target, Cat::PR, line);
+                    // A pointer to void to a pointer to an object type; CE-4
+                    // in constant evaluation (the interpreter checks).
+                    if self.in_template() || matches!(b.t, Ty::Func(_)) {
+                        return Expr::new(EK::Unknown("CE-4: conversion from void*".into()), target, Cat::PR, line);
+                    }
+                    return self.conv(e, Conv::PtrConv, target);
                 }
                 if related && cv_ok && !func_obj {
                     return self.conv(e, Conv::PtrConv, target);
@@ -1711,6 +1739,25 @@ impl P {
     }
 
     /// Placeholder type deduction (AUTO-1 to AUTO-11).
+    /// LSUP-1: `std::initializer_list` is a class template with one type
+    /// parameter, two data members, and a constructor of two parameters.
+    pub fn init_list_shape_ok(&self) -> bool {
+        let Some(ns) = self.lookup_in_scope(self.global, "std", false) else { return false };
+        let DK::Namespace(s) = self.decls[ns[0]].k else { return false };
+        let Some(ids) = self.lookup_in_scope(s, "initializer_list", false) else { return false };
+        let Some(tid) = ids.iter().find_map(|&i| self.tid_of(i)) else { return false };
+        if self.templs[tid].kind != crate::templ::TKind::Class || self.templs[tid].params.len() != 1 {
+            return false;
+        }
+        let pc = match self.decls[self.templs[tid].decl].k {
+            DK::Template(TemplKind::Class(pc)) if pc != usize::MAX => pc,
+            _ => return false,
+        };
+        let ci = &self.classes[pc];
+        let nfields = ci.fields.iter().filter(|&&f| matches!(self.decls[f].k, DK::Field(_))).count();
+        nfields == 2 && ci.ctors.iter().any(|&c| self.func(c).is_some_and(|f| f.fty.params.len() == 2))
+    }
+
     pub fn deduce_auto(&mut self, ds: &DeclSpec, d: &Declarator, _ty: &QTy, e: &Expr, form: &InitForm, line: u32) -> Option<QTy> {
         let decltype_auto = ds.auto == Some(true);
         let mut init = e.clone();
@@ -1724,6 +1771,10 @@ impl P {
                 if let EK::InitList(v) = &e.k {
                     if v.is_empty() {
                         self.error(line, "AUTO-21", "auto deduced from an empty braced list");
+                    } else if !self.in_template() && !self.init_list_shape_ok() {
+                        // LSUP-1: the program declares std::initializer_list
+                        // with its shape first.
+                        self.error(line, "LSUP-1", "a braced list needs std::initializer_list, which is not declared as a class template of the needed shape");
                     }
                 }
                 return Some(QTy::unknown());

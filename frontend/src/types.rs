@@ -177,6 +177,16 @@ impl Ty {
             _ => false,
         }
     }
+    /// Contains a part the front end does not know, a dependent part
+    /// excepted.
+    pub fn has_plain_unknown(&self) -> bool {
+        match self {
+            Ty::Unknown => true,
+            Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) | Ty::MemPtr(_, q) => q.t.has_plain_unknown(),
+            Ty::Func(f) => f.ret.t.has_plain_unknown() || f.params.iter().any(|p| p.t.has_plain_unknown()),
+            _ => false,
+        }
+    }
     pub fn is_integral(&self) -> bool {
         matches!(
             self,

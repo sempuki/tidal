@@ -46,6 +46,7 @@ pub enum TKind {
     Func,
     Var,
     Alias,
+    Concept,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -84,8 +85,10 @@ pub struct Partial {
     pub line: u32,
     /// The pattern class of a partial specialization of a class template.
     pub class: Option<usize>,
-    /// The head has constraints, which the front end does not model.
+    /// The head has constraints that the front end does not model.
     pub constrained: bool,
+    /// The associated constraints (CNS-1).
+    pub cons: Option<Rc<crate::cons::CNorm>>,
 }
 
 /// A member of a class template defined outside the class (TPL-23,
@@ -123,9 +126,13 @@ pub struct TemplInfo {
     pub fn_pack: Option<usize>,
     /// Made at the start of its first declaration.
     pub fresh: bool,
-    /// Constraints, which the front end does not model (concepts are not
-    /// specified).
+    /// Constraints that the front end does not model.
     pub constrained: bool,
+    /// The associated constraints (CNS-1); for a concept, the normal
+    /// form of its expression.
+    pub cons: Option<Rc<crate::cons::CNorm>>,
+    /// The constraints of the head as written, for equivalence (CNS-26).
+    pub cons_key: String,
 }
 
 /// A template argument as written, before it is matched to a parameter.
@@ -264,6 +271,13 @@ pub struct Saved {
     member_replay: bool,
     lookup_limit: usize,
     tok_origin: (usize, usize),
+    abbrev: Option<crate::cons::Abbrev>,
+    param_nest: u32,
+    auto_param_k: usize,
+    cons_head: Option<(Rc<Vec<TParam>>, u32)>,
+    head_cons: Option<Rc<crate::cons::CNorm>>,
+    tparam_cons: Option<Rc<crate::cons::CNorm>>,
+    head_parts: (Option<Rc<crate::cons::CNorm>>, Option<Rc<crate::cons::CNorm>>),
 }
 
 impl P {
@@ -418,6 +432,8 @@ impl P {
             fn_pack: None,
             fresh: true,
             constrained: self.head_constrained,
+            cons: self.head_cons.clone(),
+            cons_key: self.head_key(None),
         };
         self.templs.push(info);
         let t = self.templs.len() - 1;
@@ -574,7 +590,7 @@ impl P {
         Some(out)
     }
 
-    fn pattern_arg(&mut self, r: RawArg, kind: Option<&TPK>) -> Option<TArg> {
+    pub fn pattern_arg(&mut self, r: RawArg, kind: Option<&TPK>) -> Option<TArg> {
         Some(match r {
             RawArg::Type(q) => match kind {
                 Some(TPK::Templ(_)) => match &q.t {
@@ -1226,6 +1242,13 @@ impl P {
             member_replay: std::mem::take(&mut self.member_replay),
             lookup_limit: self.lookup_limit,
             tok_origin: self.tok_origin,
+            abbrev: self.abbrev.take(),
+            param_nest: std::mem::take(&mut self.param_nest),
+            auto_param_k: std::mem::take(&mut self.auto_param_k),
+            cons_head: self.cons_head.take(),
+            head_cons: self.head_cons.take(),
+            tparam_cons: self.tparam_cons.take(),
+            head_parts: std::mem::take(&mut self.head_parts),
         }
     }
 
@@ -1264,6 +1287,13 @@ impl P {
         self.member_replay = s.member_replay;
         self.lookup_limit = s.lookup_limit;
         self.tok_origin = s.tok_origin;
+        self.abbrev = s.abbrev;
+        self.param_nest = s.param_nest;
+        self.auto_param_k = s.auto_param_k;
+        self.cons_head = s.cons_head;
+        self.head_cons = s.head_cons;
+        self.tparam_cons = s.tparam_cons;
+        self.head_parts = s.head_parts;
     }
 
     /// Parse the tokens of `src` again with `params` bound to `args`.
@@ -1391,6 +1421,10 @@ impl P {
                 _ => return QTy::unknown(),
             }
         }
+        if cached.is_none() && !self.cns13_ok(tid, &args, line) {
+            self.templs[tid].insts.push((args, Inst::Fail, None));
+            return QTy::unknown();
+        }
         let sel = match self.select_partial(tid, &args, line) {
             Ok(s) => s,
             Err(()) => return QTy::unknown(),
@@ -1436,6 +1470,7 @@ impl P {
         match r {
             Some((_, Some(InstOut::Class(c)))) => {
                 self.templs[tid].insts[k].1 = Inst::Class(c);
+                self.select_dtor(c, line);
                 self.replay_members(tid, c, &args, pidx);
                 QTy::new(Ty::Class(c))
             }
@@ -1473,6 +1508,10 @@ impl P {
                 Inst::Class(c) => QTy::new(Ty::Class(c)),
                 _ => QTy::unknown(),
             };
+        }
+        if !self.cns13_ok(tid, &args, line) {
+            self.templs[tid].insts.push((args, Inst::Fail, None));
+            return QTy::unknown();
         }
         let c = self.new_inst_class(tid, &args, line);
         self.templs[tid].insts.push((args, Inst::Class(c), None));
@@ -1599,8 +1638,7 @@ impl P {
     pub fn select_partial(&mut self, tid: usize, args: &[TArg], line: u32) -> Result<Option<(usize, Vec<TArg>)>, ()> {
         let parts = self.templs[tid].partials.clone();
         if parts.iter().any(|p| p.constrained) {
-            // Constraints decide among partial specializations; they are
-            // not modeled.
+            // Constraints that the front end does not model.
             return Err(());
         }
         let mut found: Vec<(usize, Vec<TArg>)> = Vec::new();
@@ -1623,6 +1661,14 @@ impl P {
                     }
                 }
                 if ok {
+                    // CNS-17: the constraints must be satisfied.
+                    if let Some(c) = pt.cons.clone() {
+                        match self.cons_check(&c, pt.depth, &vals) {
+                            crate::cons::Sat::Yes => {}
+                            crate::cons::Sat::Unknown => return Err(()),
+                            _ => continue,
+                        }
+                    }
                     found.push((k, vals));
                 }
             }
@@ -1637,7 +1683,7 @@ impl P {
                     return true;
                 }
                 let pj = parts[found[j].0].clone();
-                self.partial_at_least(&pi.params, &pi.pats, pi.depth, &pj.params, &pj.pats, pj.depth) && !self.partial_at_least(&pj.params, &pj.pats, pj.depth, &pi.params, &pi.pats, pi.depth)
+                self.partial_order(&pi, &pj) && !self.partial_order(&pj, &pi)
             });
             if best {
                 return Ok(Some(found.swap_remove(i)));
@@ -1646,6 +1692,36 @@ impl P {
         let name = self.templs[tid].name.clone();
         self.error(line, "TSP-16", format!("more than one partial specialization of '{}' matches, and none is more specialized than the others", name));
         Err(())
+    }
+
+    /// ORD-14: `a` is at least as specialized as `b`, with the
+    /// constraints when the patterns are equivalent (CNS-P4).
+    pub fn partial_order(&mut self, a: &Partial, b: &Partial) -> bool {
+        if !self.partial_at_least(&a.params, &a.pats, a.depth, &b.params, &b.pats, b.depth) {
+            return false;
+        }
+        if !self.partial_at_least(&b.params, &b.pats, b.depth, &a.params, &a.pats, a.depth) {
+            return true;
+        }
+        if a.cons.is_none() && b.cons.is_none() {
+            return true;
+        }
+        // The parameters of `b` in terms of the invented ones of `a`.
+        let inv: Vec<TArg> = a.pats.iter().map(|x| self.invent_targ(x, a.depth)).collect();
+        let mut bb = Binds::new(b.depth, &b.params);
+        if !b.pats.iter().zip(inv.iter()).all(|(p, x)| self.deduce_targ(p, x, &mut bb)) {
+            return false;
+        }
+        let bargs: Vec<TArg> = bb.vals.iter().map(|v| v.clone().unwrap_or(TArg::Pack(vec![]))).collect();
+        let aargs: Vec<TArg> = a.params.iter().enumerate().map(|(i, p)| {
+            let x = match &p.kind {
+                TPK::Type => TArg::Type(dep(Dep::Param(INV, i as u32))),
+                TPK::Templ(_) => TArg::Templ(TName::Param(INV, i as u32)),
+                _ => TArg::Val(TVal::Param(INV, i as u32)),
+            };
+            if p.pack { TArg::Expand(Box::new(x)) } else { x }
+        }).collect();
+        self.at_least_constrained(&a.cons, a.depth, &aargs, &b.cons, b.depth, &bargs)
     }
 
     /// ORD-14: the partial specialization `a` is at least as specialized
@@ -1845,6 +1921,10 @@ impl P {
                 _ => None,
             };
         }
+        if !self.cns13_ok(tid, &args, line) {
+            self.templs[tid].insts.push((args, Inst::Fail, None));
+            return None;
+        }
         let sel = self.select_partial(tid, &args, line).ok()?;
         let name = self.templs[tid].name.clone();
         let (src, params, bargs, pidx) = match sel {
@@ -1890,6 +1970,10 @@ impl P {
         }
         let Some(src) = self.templs[tid].src.clone() else { return QTy::unknown() };
         let params = self.templs[tid].params.clone();
+        if !self.cns13_ok(tid, &args, line) {
+            self.templs[tid].insts.push((args, Inst::Fail, None));
+            return QTy::unknown();
+        }
         self.templs[tid].insts.push((args.clone(), Inst::Busy, None));
         let ctx = src.ctx;
         let r = self.replay(&src, &params, &args, Some(InstReq::Alias), |p| {
@@ -2533,8 +2617,11 @@ impl P {
         } else if is_ref == 2 && a.cat == Cat::L {
             // DED-8: a forwarding reference with an lvalue gives `A&`.
             if let Ty::Dep(d) = &pp.t {
-                if let Dep::Param(dd, _) = &**d {
-                    if *dd == b.depth && !pp.c && !pp.v {
+                if let Dep::Param(dd, i) = &**d {
+                    // CTAD-8: a parameter of the class gives no forwarding
+                    // reference in a guide from a constructor.
+                    let class_param = self.no_fwd.is_some_and(|(nd, n)| nd == *dd && *i < n);
+                    if *dd == b.depth && !pp.c && !pp.v && !class_param {
                         aa = QTy::new(Ty::LRef(Box::new(at.clone())));
                     }
                 }
@@ -2800,6 +2887,16 @@ impl P {
                 _ => SpecRes::Unknown,
             };
         }
+        // CNS-11: the constraints are checked before the function type is
+        // formed.
+        match self.templ_sat(tid, args) {
+            crate::cons::Sat::Yes => {}
+            crate::cons::Sat::Unknown => return SpecRes::Unknown,
+            crate::cons::Sat::No | crate::cons::Sat::Error => {
+                self.templs[tid].insts.push((args.to_vec(), Inst::Fail, None));
+                return SpecRes::Fail;
+            }
+        }
         let Some(src) = self.templs[tid].src.clone() else { return SpecRes::Unknown };
         let params = self.templs[tid].params.clone();
         let name = self.decls[self.templs[tid].decl].name.clone();
@@ -3062,6 +3159,10 @@ impl P {
             if pk2 && !pk1 && f1.fty.params.len() <= k2.unwrap() {
                 return (true, false);
             }
+            // ORD-13: the more constrained template.
+            if let Some(x) = self.templ_cons_order(t1, t2) {
+                return x;
+            }
         }
         (a12, a21)
     }
@@ -3111,6 +3212,11 @@ impl P {
         let first = parse(self)?;
         if self.at("...") && !self.in_template() && self.pack_refs.len() > mark {
             let n = self.pack_refs[mark];
+            if self.pack_refs[mark..].iter().any(|&m| m != n) {
+                // PACK-6: the packs of one expansion have one length.
+                let line = self.line();
+                self.error(line, "PACK-6", "the packs of one expansion have different numbers of elements");
+            }
             self.pack_refs.truncate(mark);
             self.d.list.truncate(dmark);
             self.d.muted_errors = me;
@@ -3142,6 +3248,11 @@ impl P {
             return Ok((first, None));
         }
         let n = self.pack_refs[mark];
+        if self.pack_refs[mark..].iter().any(|&m| m != n) {
+            // PACK-6: the packs of one expansion have one length.
+            let line = self.line();
+            self.error(line, "PACK-6", "the packs of one expansion have different numbers of elements");
+        }
         self.pack_refs.truncate(mark);
         self.d.list.truncate(dmark);
         let end = self.pos;

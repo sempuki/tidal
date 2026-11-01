@@ -144,9 +144,27 @@ tests:
 
 The output then lists the unsupported constructs, with the number of tests each
 one affects, first for the interpreter and then for the check. `-v`
-also lists every test that did not pass. The lines for run tests start
-with `RUN`, so that `tools/frontend_check.py` reads only the check
-lines. `--out FILE` writes the tables and one line per test to FILE.
+also lists every test that did not pass. `--out FILE` writes the tables
+and one line per test to FILE.
+
+Each test line starts with a status. For a test that expects a run, the
+status gives the run's outcome when the check passed:
+
+| Status | Meaning |
+|---|---|
+| `pass` | the check matches the expectation, and a `run` or `run-fail` test also passed its run |
+| `EDG-ONLY` | the check differs from the EDG override and matches the base expectation |
+| `FALSE-REJECT` | the check rejected a valid program |
+| `MISSED-REJECT` | the check accepted a program that the test expects rejected |
+| `unsupported` | the check gave up on a construct and found no error |
+| `run-unsupported` | the check passed, and the interpreter met a construct it does not model |
+| `RUN-WRONG-RESULT` | the check passed; a `run` test ended with a nonzero status or terminated, or a `run-fail` test whose rules name no undefined behavior ended with status 0 |
+| `RUN-MISSED-UB` | the check passed; a `run-fail` test ended with status 0 |
+| `RUN-UNEXPECTED-UB` | the check passed; the run stopped at undefined behavior that the test does not expect |
+
+The run tests also have lines of their own that start with `RUN`, with
+the run status second (`run-pass`, the run statuses above, and
+`run-not-run` when the check did not accept a unit).
 
 ## Layout
 
@@ -160,9 +178,12 @@ lines. `--out FILE` writes the tables and one line per test to FILE.
 | `src/ics.rs` | implicit conversion sequences and their comparison (ICS rules), and overload resolution for calls (OVL-22 to OVL-25, OVL-34 to OVL-36) |
 | `src/ovl.rs` | overload resolution for operators, constructors, calls on a class object, and the address of an overload set (OVL rules) |
 | `src/templ.rs` | templates: the record of each template, template argument lists, specializations made by parsing a template's tokens again with its parameters bound, selection of explicit and partial specializations, deduction, partial ordering, packs, and the definitions that a use needs (TPL, TARG, TSP, DED, ORD, INST, DEP rules) |
+| `src/cons.rs` | concepts and constraints: normal forms, satisfaction, subsumption, requires expressions, abbreviated function templates, and the use checks of packs (CPT, CNS, DED-34, PACK-8) |
+| `src/ctad.rs` | deduction of class template arguments: the guides, their choice, and the sites (CTAD rules) |
+| `src/dcmp.rs` | the bodies of defaulted comparison operators, made at their first use (DCMP rules) |
 | `src/stmt.rs` | statements and jump checks |
 | `src/interp/mod.rs` | the interpreter's machine: values, objects, places, the objects that end with a block, a full expression, or the program, and the stops (decision 0048) |
-| `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, `new`, `delete`, `throw`, and `dynamic_cast` |
+| `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, `new` (also placement `new` in a byte array or in the place of an object, STG rules), allocation functions called by name, explicit destructor calls, `delete`, `throw`, and `dynamic_cast` |
 | `src/interp/stmt.rs` | statements, blocks, `goto`, `switch`, try blocks and handlers, and static locals |
 | `src/interp/run.rs` | a whole program: linking the units, static initialization, `main`, and the end of the static objects |
 | `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
@@ -181,9 +202,16 @@ function specialization at its first use if constant evaluation can call
 it, or else at the end of the unit (INST-31). Names in namespaces are
 looked up as at the template's definition (DEP-5), and argument-dependent
 lookup of a dependent call also sees later declarations (DEP-9).
-Constraints and requires-clauses are not modeled: a constrained template
-leaves its calls unknown.
+A constraint is kept as its normal form: conjunctions and disjunctions
+over atomic constraints, each with its tokens and its parameter mapping
+(CNS-P1). A check parses an atom's tokens again with the mapping bound,
+and an error in that parse makes the atom not satisfied (CNS-7).
+Subsumption compares atoms by their place in the source and their
+mapped arguments (CNS-4, CNS-22). A function with placeholder parameters
+becomes a template with invented parameters (DED-34). A class template
+named without arguments deduces them through its guides, each a hidden
+function template (CTAD-P1). Generic lambdas are not modeled.
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-8.md`.
+`report-9.md`.

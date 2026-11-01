@@ -226,6 +226,11 @@ impl<'a> Machine<'a> {
                             }
                         }
                         if !self.objs[p.obj].alive {
+                            if self.resident_holder(p.obj).is_some() {
+                                // STG-19: the old pointer does not reach the
+                                // object that took the storage.
+                                return ub("STG-19, OBJ-2", "indirection through a pointer to an object whose storage another object took");
+                            }
                             return ub(self.ended_rule(true), "indirection through a pointer to an object whose lifetime has ended");
                         }
                         Ok(p)
@@ -765,7 +770,37 @@ impl<'a> Machine<'a> {
                     _ => unsup("dynamic_cast operand"),
                 }
             }
-            EK::New { ty, count, init } => self.eval_new(ty, count.as_deref(), init.as_deref()),
+            EK::Destroy(x) => {
+                let mut p = self.lvalue(x)?;
+                if !self.objs[p.obj].alive {
+                    return ub("STG-22, OBJ-2", "destructor call on an object whose lifetime has ended");
+                }
+                let mut t = nonref(&x.ty);
+                // A virtual destructor called through a base ends the
+                // complete object.
+                if let Ty::Class(c) = t.t {
+                    let virt = self.p.classes[c].dtor.is_some_and(|d| self.is_virtual_fn(d));
+                    if virt && !p.path.is_empty() && !p.array {
+                        if let Some(ot) = self.obj_ty(p.obj) {
+                            if matches!(ot.t, Ty::Class(_)) {
+                                p = Ptr::whole(p.obj);
+                                t = ot;
+                            }
+                        }
+                    }
+                }
+                if self.constant && !self.objs[p.obj].own {
+                    // CE-5: only an object that the evaluation created.
+                    return limit("CE-5", "explicit destructor call on an object that the evaluation did not create");
+                }
+                self.destroy(&p, &t)?;
+                if p.path.is_empty() && !p.array {
+                    self.end_obj(p.obj);
+                }
+                Ok(Val::Void)
+            }
+            EK::New { ty, count, init, place: None } => self.eval_new(ty, count.as_deref(), init.as_deref()),
+            EK::New { ty, count, init, place: Some(pl) } => self.eval_placement_new(ty, count.as_deref(), init.as_deref(), pl),
             EK::Delete(arr, x) => {
                 self.eval_delete(*arr, x)?;
                 Ok(Val::Void)
@@ -849,6 +884,271 @@ impl<'a> Machine<'a> {
                 Ok(Val::Ptr(Ptr { obj: place.obj, path: vec![], off: 0, array: true }))
             }
         }
+    }
+
+    /// A global allocation or deallocation function called by name
+    /// (STG-7, NEW-5, NEW-19): storage of bytes with no object yet.
+    fn call_allocation(&mut self, name: &str, args: &[Expr]) -> R<Ret> {
+        if self.constant {
+            return limit("CE-2", "call of an allocation function");
+        }
+        if name.starts_with("operatornew") {
+            let n = match self.eval(&args[0])? {
+                Val::Int(v) => v,
+                _ => return unsup("allocation size"),
+            };
+            if !(0..=1 << 20).contains(&n) {
+                return unsup("allocation of a size the interpreter does not model");
+            }
+            let t = QTy::new(Ty::Array(Box::new(QTy::new(Ty::UChar)), Some(n.max(1) as u64)));
+            let p = self.alloc(&t)?;
+            self.objs[p.obj].heap = Heap::Raw;
+            self.residents.entry(p.obj).or_default();
+            return Ok(Ret::Val(Val::Ptr(Ptr { obj: p.obj, path: vec![], off: 0, array: true })));
+        }
+        let p = match self.eval(&args[0])? {
+            Val::Null => return Ok(Ret::Val(Val::Void)),
+            Val::Ptr(p) => p,
+            _ => return unsup("deallocation of a value that is not a pointer"),
+        };
+        let host = match self.resident_of.get(&p.obj) {
+            Some(&(h, 0)) => h,
+            _ => p.obj,
+        };
+        if self.objs[host].heap != Heap::Raw && self.objs[host].heap == Heap::No {
+            return ub("NEW-5", "deallocation of storage that an allocation function did not give");
+        }
+        if let Some(v) = self.residents.get(&host).cloned() {
+            for (_, _, o) in v {
+                self.objs[o].alive = false;
+            }
+        }
+        self.objs[host].alive = false;
+        Ok(Ret::Val(Val::Void))
+    }
+
+    /// STG-7, STG-18: an implicit-lifetime type, whose objects an
+    /// allocation function creates as the program needs them.
+    fn implicit_lifetime(&self, t: &Ty) -> bool {
+        match t {
+            Ty::Array(..) => true,
+            Ty::Class(c) => {
+                let ci = &self.p.classes[*c];
+                if ci.has_virtual || ci.bases.iter().any(|b| b.virt) {
+                    return false;
+                }
+                let dtor_ok = ci.dtor.is_none_or(|d| self.p.func(d).is_some_and(|f| f.defaulted));
+                let aggregate = ci.ctors.is_empty();
+                let trivial_ctor = ci.ctors.iter().any(|&k| self.p.func(k).is_some_and(|f| f.defaulted && f.params.is_empty()));
+                dtor_ok && (aggregate || trivial_ctor)
+            }
+            Ty::Void | Ty::Func(_) => false,
+            _ => true,
+        }
+    }
+
+    /// A pointer into storage, converted to a pointer to `to`: the object
+    /// of that type that lives there, or one that the storage creates
+    /// implicitly (STG-7).
+    pub fn storage_pointer(&mut self, p: Ptr, to: &QTy) -> R<Ptr> {
+        if !self.residents.contains_key(&p.obj) || !p.path.is_empty() || !p.array {
+            return Ok(p);
+        }
+        let off = p.off;
+        let t = to.unqual();
+        if let Some(v) = self.residents.get(&p.obj) {
+            if let Some(&(_, _, o)) = v.iter().rev().find(|r| r.0 == off && self.objs[r.2].alive) {
+                match self.obj_ty(o) {
+                    Some(q) if q.unqual().t == t.t => return Ok(Ptr::whole(o)),
+                    Some(QTy { t: Ty::Array(el, _), .. }) if el.unqual().t == t.t => return Ok(Ptr { obj: o, path: vec![], off: 0, array: true }),
+                    _ => return Ok(p),
+                }
+            }
+        }
+        if self.objs[p.obj].heap == Heap::Raw && off == 0 && self.implicit_lifetime(&t.t) {
+            // STG-8: the objects that give the program defined behavior.
+            // An array of the type that fills the storage serves both one
+            // object and arithmetic over several.
+            let host_n = match self.obj_ty(p.obj) {
+                Some(QTy { t: Ty::Array(_, Some(n)), .. }) => n,
+                _ => return Ok(p),
+            };
+            if let Some(size) = self.p.sizeof_ty(&t.t).filter(|&s| s > 0) {
+                let n = host_n / size;
+                if n >= 1 {
+                    let at = QTy::new(Ty::Array(Box::new(t.clone()), Some(n)));
+                    let r = self.alloc(&at)?;
+                    if !matches!(t.t, Ty::Class(_) | Ty::Array(..)) {
+                        self.objs[r.obj].val = Val::Agg(vec![Val::Uninit; n as usize]);
+                    }
+                    self.residents.entry(p.obj).or_default().push((0, (n * size) as i64, r.obj));
+                    self.resident_of.insert(r.obj, (p.obj, 0));
+                    return Ok(Ptr { obj: r.obj, path: vec![], off: 0, array: true });
+                }
+            }
+        }
+        Ok(p)
+    }
+
+    /// The object that lives in the storage of the object `o`.
+    pub fn resident_holder(&self, o: usize) -> Option<usize> {
+        self.residents.get(&o)?.iter().rev().find(|r| self.objs[r.2].alive).map(|r| r.2)
+    }
+
+    /// The host object and byte offset of a pointer into a byte array
+    /// that holds objects, or to such an object.
+    pub fn byte_address(&self, p: &Ptr) -> Option<(usize, i64)> {
+        if let Some(&(h, off)) = self.resident_of.get(&p.obj) {
+            if p.path.is_empty() {
+                let el = if p.array {
+                    match self.obj_ty(p.obj) {
+                        Some(QTy { t: Ty::Array(e, _), .. }) => self.p.sizeof_ty(&e.t)? as i64 * p.off,
+                        _ => return None,
+                    }
+                } else {
+                    0
+                };
+                return Some((h, off + el));
+            }
+            return None;
+        }
+        if self.residents.contains_key(&p.obj) && p.path.is_empty() && p.array {
+            return Some((p.obj, p.off));
+        }
+        None
+    }
+
+    /// Placement `new` with the non-allocating form (STG-4, STG-5,
+    /// STG-9, STG-17, STG-20).
+    fn eval_placement_new(&mut self, ty: &QTy, count: Option<&Expr>, init: Option<&Expr>, place: &Expr) -> R<Val> {
+        if self.constant {
+            return limit("CE-4", "placement new");
+        }
+        let p = match self.eval(place)? {
+            Val::Ptr(p) => p,
+            Val::Null => return unsup("placement new at a null pointer"),
+            _ => return unsup("placement new at a value that is not a pointer"),
+        };
+        let elem = ty.unqual();
+        let t = match count {
+            None => elem.clone(),
+            Some(n) => {
+                let n = match self.eval(n)? {
+                    Val::Int(v) => v,
+                    _ => return unsup("array size"),
+                };
+                if n < 0 {
+                    return unsup("negative array size in new (an exception)");
+                }
+                QTy::new(Ty::Array(Box::new(elem.clone()), Some(n as u64)))
+            }
+        };
+        let at = self.type_at(&p);
+        let host = self.type_at(&Ptr { obj: p.obj, path: p.path.clone(), off: 0, array: false });
+        let byte_host0 = matches!(&host, Some(QTy { t: Ty::Array(el, Some(_)), .. }) if matches!(el.t, Ty::UChar | Ty::Char) || matches!(&el.t, Ty::Enum(e) if self.p.enums[*e].name == "byte")) && p.array;
+        let (size, align) = match (self.p.sizeof_ty(&t.t), self.p.alignof_ty(&t.t)) {
+            (Some(s), Some(a)) => (s, a),
+            _ if !byte_host0 => (0, 1),
+            _ => return unsup("placement new of a type with a layout the interpreter does not compute"),
+        };
+        let byte_host = matches!(&host, Some(QTy { t: Ty::Array(el, Some(_)), .. }) if matches!(el.t, Ty::UChar | Ty::Char) || matches!(&el.t, Ty::Enum(e) if self.p.enums[*e].name == "byte")) && p.array;
+        if byte_host {
+            // STG-4, STG-17: the storage of a byte array, large enough and
+            // aligned for the type.
+            let Some(QTy { t: Ty::Array(_, Some(n)), .. }) = host else { return unsup("placement new") };
+            let avail = n as i64 - p.off;
+            if (size as i64) > avail {
+                return ub("STG-17", format!("placement new of {} bytes in storage of {} bytes", size, avail.max(0)));
+            }
+            if p.off % align as i64 != 0 {
+                return ub("STG-17", "placement new at an address that is not aligned for the type");
+            }
+            let r = self.alloc(&t)?;
+            if !matches!(t.t, Ty::Class(_) | Ty::Array(..)) {
+                self.objs[r.obj].val = Val::Uninit;
+            }
+            // A new object ends the objects whose storage it takes.
+            let (lo, hi) = (p.off, p.off + size as i64);
+            if let Some(v) = self.residents.get(&p.obj).cloned() {
+                for (o, s2, obj) in v {
+                    if o < hi && lo < o + s2 {
+                        self.objs[obj].alive = false;
+                    }
+                }
+            }
+            self.residents.entry(p.obj).or_default().push((lo, size as i64, r.obj));
+            self.resident_of.insert(r.obj, (p.obj, lo));
+            let target = if count.is_some() { r.clone() } else { r.clone() };
+            match init {
+                Some(e) => self.init_into(&target, e, &t)?,
+                None => self.default_init(&target, &t)?,
+            }
+            return Ok(Val::Ptr(if count.is_some() { Ptr { obj: r.obj, path: vec![], off: 0, array: true } } else { r }));
+        }
+        // STG-9: a new object of the same type in the place of an old one
+        // replaces it.
+        let Some(at) = at else { return unsup("placement new in storage of unknown type") };
+        let whole0 = p.path.is_empty() && !p.array;
+        if !p.path.is_empty() && !p.array && count.is_none() {
+            let parent = Ptr { obj: p.obj, path: p.path[..p.path.len() - 1].to_vec(), off: 0, array: false };
+            if let Some(QTy { t: Ty::Class(pc), .. }) = self.type_at(&parent) {
+                if *p.path.last().unwrap() < self.nbases(pc) {
+                    // STG-19: a new object in the place of a base subobject
+                    // replaces nothing, and the enclosing object ends.
+                    let r = self.alloc(&t)?;
+                    self.objs[p.obj].alive = false;
+                    self.residents.entry(p.obj).or_default().push((0, size as i64, r.obj));
+                    self.resident_of.insert(r.obj, (p.obj, 0));
+                    match init {
+                        Some(e) => self.init_into(&r, e, &t)?,
+                        None => self.default_init(&r, &t)?,
+                    }
+                    return Ok(Val::Ptr(r));
+                }
+            }
+        }
+        if whole0 && self.objs[p.obj].konst && self.objs[p.obj].heap == Heap::No {
+            return ub("STG-20", "placement new in the storage of a const complete object");
+        }
+        if at.unqual().t != t.t || count.is_some() {
+            if !whole0 || count.is_some() {
+                return unsup("placement new of another type in the storage of an object");
+            }
+            if self.p.sizeof_ty(&at.t).is_some_and(|h| h < size) {
+                return unsup("placement new of a larger type in the storage of an object");
+            }
+            // STG-19: a new object of another type; the old object ends and
+            // its names keep the old object.
+            let r = self.alloc(&t)?;
+            if !matches!(t.t, Ty::Class(_) | Ty::Array(..)) {
+                self.objs[r.obj].val = Val::Uninit;
+            }
+            self.objs[p.obj].alive = false;
+            self.residents.entry(p.obj).or_default().push((0, size as i64, r.obj));
+            self.resident_of.insert(r.obj, (p.obj, 0));
+            match init {
+                Some(e) => self.init_into(&r, e, &t)?,
+                None => self.default_init(&r, &t)?,
+            }
+            return Ok(Val::Ptr(r));
+        }
+        let whole = p.path.is_empty() && !p.array;
+        if whole && self.objs[p.obj].konst && self.objs[p.obj].heap == Heap::No {
+            // STG-20: no new object in the storage of a const complete
+            // object whose storage is not dynamic.
+            return ub("STG-20", "placement new in the storage of a const complete object");
+        }
+        if whole {
+            self.objs[p.obj].alive = true;
+        }
+        let blank = self.shape(&t)?;
+        let blank = if matches!(t.t, Ty::Class(_) | Ty::Array(..)) { blank } else { Val::Uninit };
+        self.write(&p, blank, true)?;
+        match init {
+            Some(e) => self.init_into(&p, e, &t)?,
+            None => self.default_init(&p, &t)?,
+        }
+        Ok(Val::Ptr(p))
     }
 
     /// A `delete` or `delete[]` expression (NEW-5, VIRT-12).
@@ -959,7 +1259,20 @@ impl<'a> Machine<'a> {
                 let v = self.eval(a)?;
                 if let (Ty::Ptr(f), Ty::Ptr(t), Val::Ptr(p)) = (&a.ty.t, &to.t, &v) {
                     if let (Ty::Class(_), Ty::Class(_)) = (&f.t, &t.t) {
+                        if !self.objs[p.obj].alive && !self.constant {
+                            // STG-22: no cast to a derived class outside the
+                            // lifetime.
+                            return ub("STG-22", "cast of a pointer to an object whose lifetime has ended");
+                        }
                         return Ok(Val::Ptr(self.class_cast(p.clone(), &f.t, &t.t)?));
+                    }
+                    if f.t == Ty::Void && t.t != Ty::Void {
+                        if self.constant {
+                            // CE-4: a pointer to void to a pointer to an
+                            // object type.
+                            return limit("CE-4", "conversion from void*");
+                        }
+                        return Ok(Val::Ptr(self.storage_pointer(p.clone(), t)?));
                     }
                 }
                 Ok(v)
@@ -1437,6 +1750,13 @@ impl<'a> Machine<'a> {
                             }
                             if !self.constant {
                                 self.choice("PRIM-9", "string literals with the same characters are one object");
+                            }
+                        }
+                        if let (Some(a), Some(b)) = (self.byte_address(p), self.byte_address(q)) {
+                            // STG-1: an object made in a byte array has the
+                            // address of the bytes it occupies.
+                            if self.residents.contains_key(&a.0) && (p.obj != q.obj) {
+                                return Ok(Val::Int((if op == BOp::Eq { a == b } else { a != b }) as i128));
                             }
                         }
                         if p.obj != q.obj {
@@ -2095,11 +2415,17 @@ impl<'a> Machine<'a> {
             // SEQ-1: the order of the arguments is unspecified.
             self.choice("SEQ-1", "arguments evaluated from left to right");
         }
-        if args.len() > f.params.len() {
-            return unsup("call with variadic arguments");
-        }
         let mut all: Vec<(DeclId, Expr)> = Vec::new();
         for (i, a) in args.iter().enumerate() {
+            if i >= f.params.len() {
+                // An argument for the ellipsis: the program cannot read it
+                // without the library, so only its evaluation counts.
+                if !f.fty.variadic || matches!(nonref(&a.ty).t, Ty::Class(_)) {
+                    return unsup("call with variadic arguments");
+                }
+                self.eval(a)?;
+                continue;
+            }
             all.push((f.params[i], a.clone()));
         }
         for i in args.len()..f.params.len() {
@@ -2206,6 +2532,11 @@ impl<'a> Machine<'a> {
     /// Call a function. `slot` is the object a class result initializes.
     pub fn call(&mut self, e: &Expr, slot: Option<Ptr>) -> R<Ret> {
         let EK::Call(callee, args, fid) = &e.k else { unreachable!() };
+        if let EK::Unknown(w) = &callee.k {
+            if let Some(name) = w.strip_prefix("allocation function ") {
+                return self.call_allocation(name, args);
+            }
+        }
         // SEQ-2: the function, with its object, before the arguments.
         let from_ptr = fid.is_none();
         let mut fid = match fid {
@@ -2261,12 +2592,22 @@ impl<'a> Machine<'a> {
                 if let Ty::Ptr(_) = callee.ty.t {
                     match self.eval(callee)? {
                         Val::Ptr(p) => p,
+                        // PFX-21: a member call through a null pointer.
+                        Val::Null => return ub("PFX-21, UN-7", "member function called through a null pointer"),
                         _ => return unsup("object of a member call"),
                     }
                 } else {
                     self.materialize(callee)?
                 }
             } else {
+                if let EK::Unary(UOp::Deref, x) = &callee.k {
+                    if matches!(x.ty.t, Ty::Ptr(_)) && !has_effects(x) {
+                        if let Val::Null = self.eval(x)? {
+                            // PFX-21: a member call through a null pointer.
+                            return ub("PFX-21, UN-7", "member function called through a null pointer");
+                        }
+                    }
+                }
                 self.lvalue(callee)?
             };
             // The object converts to the class of the member function.
@@ -2283,8 +2624,17 @@ impl<'a> Machine<'a> {
             None
         };
         if let Some(t) = &this {
+            if self.objs[t.obj].heap == Heap::Raw {
+                // STG-18, STG-22: the storage holds no object of the class.
+                return ub("STG-18, STG-22", "member function called on storage that holds no object of its class");
+            }
             if !self.objs[t.obj].alive {
-                return ub(self.ended_rule(false), "member function called on an object whose lifetime has ended");
+                if self.resident_holder(t.obj).is_some() {
+                    // STG-19: the old name does not reach the object that
+                    // took the storage.
+                    return ub("STG-19, STG-22", "member function called through a name of an object whose storage another object took");
+                }
+                return ub("STG-22, OBJ-2", "member function called on an object whose lifetime has ended");
             }
             let qualified = callee.qualified || matches!(&callee.k, EK::Unary(UOp::Deref, x) if x.qualified);
             if !qualified && self.is_virtual_fn(fid) {
@@ -2325,7 +2675,7 @@ impl<'a> Machine<'a> {
         if f.deleted {
             return unsup("deleted function");
         }
-        if f.defaulted {
+        if f.defaulted && f.body.is_none() {
             if ctu != self.tu {
                 return unsup("defaulted function of another translation unit");
             }

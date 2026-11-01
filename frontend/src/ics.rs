@@ -1077,9 +1077,15 @@ impl P {
         for &c in &cands {
             let Some(f) = self.func(c).cloned() else { return Err(()) };
             if f.template || f.opaque || f.constrained {
-                // Deduction, and the constraints of OVL-24 and OVL-30,
-                // are not modeled.
+                // Deduction is not modeled here.
                 return Err(());
+            }
+            // OVL-24: a function whose constraints are not satisfied is not
+            // viable.
+            match self.fn_sat(c) {
+                crate::cons::Sat::Yes => {}
+                crate::cons::Sat::Unknown => return Err(()),
+                _ => continue,
             }
             let mut all: Vec<Expr> = Vec::new();
             let mut seqs = Vec::new();
@@ -1154,6 +1160,29 @@ impl P {
                 }
             }
         }
+        // OVL-30: of two functions that are not templates, with the same
+        // parameters, the more constrained one.
+        let plain: Vec<DeclId> = viable.iter().map(|v| v.0).filter(|d| !self.spec_of.contains_key(d)).collect();
+        if plain.iter().any(|d| self.fn_cons.contains_key(d)) {
+            for &a in &plain {
+                for &b in &plain {
+                    if a == b {
+                        continue;
+                    }
+                    let (fa, fb) = (self.func(a).cloned().unwrap(), self.func(b).cloned().unwrap());
+                    if fa.fty.params != fb.fty.params || fa.fty.cv_c != fb.fty.cv_c || fa.fty.refq != fb.fty.refq {
+                        continue;
+                    }
+                    let (ca, cb) = (self.fn_cons.get(&a).cloned(), self.fn_cons.get(&b).cloned());
+                    if self.more_constrained(&ca, u32::MAX, &[], &cb, u32::MAX, &[]) {
+                        self.tie_more.push((a, b));
+                    }
+                }
+            }
+        }
+        // CTAD-19 to CTAD-22 (ctad.rs).
+        let extra = self.extra_ties.clone();
+        self.tie_more.extend(extra);
         let r = self.best_of(&viable).map(|i| viable[i].clone());
         self.tie_more.clear();
         Ok(r)

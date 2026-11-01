@@ -682,7 +682,10 @@ impl<'a> Machine<'a> {
             None => self.full(|m| m.default_init(&place, &v.ty))?,
         }
         self.objs[place.obj].konst = v.ty.c && crate::decl2::elem_class(&v.ty.t).is_none();
-        self.static_dtors.push(Cleanup { place, ty: v.ty.clone(), item: 0 });
+        // TPL-49: a template parameter object is never destroyed.
+        if !self.p.class_targ_objs.iter().any(|x| x.1 == id) {
+            self.static_dtors.push(Cleanup { place, ty: v.ty.clone(), item: 0 });
+        }
         Ok(())
     }
 }
