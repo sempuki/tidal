@@ -161,6 +161,8 @@ catalog counts as done.
 | X6 | done: 75 rule changes; findings X6-1 to X6-15 | `reports/clean-room/X6/` |
 | X7 | done: 69 rule changes; findings X7-1 to X7-12 | `reports/clean-room/X7/` |
 | X8 | done: 60 rule changes; findings X8-1 to X8-17 | `reports/clean-room/X8/` |
+| W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
+| W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | All others | planned | |
 
 ## 9. Prompts
