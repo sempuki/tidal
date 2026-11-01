@@ -1,0 +1,20 @@
+{
+ "prelude": "struct Has {\n  template <class U> static int make() { return sizeof(U); }\n  template <class U> int get() { return 1; }\n  template <class U> using ptr = U*;\n  template <class U> struct box { U v; };\n  static int plain() { return 0; }\n  int field = 0;\n};\ntemplate <template <class> class TT> struct Holder {};\n",
+ "template": "{col}\n{prelude}{row}\n",
+ "rows": {
+  "after T:: in a call": "template <class T> int run() { return T::K make<int>(); }\nint x = run<Has>();",
+  "after a dot": "template <class T> int run(T t) { return t.K get<int>(); }\nint x = run(Has{});",
+  "after an arrow": "template <class T> int run(T* t) { return t->K get<int>(); }\nHas h;\nint x = run(&h);",
+  "after typename T::": "template <class T> int run() { typename T::K box<int> b{1}; return b.v; }\nint x = run<Has>();",
+  "alias target": "template <class T> struct P { using A = typename T::K ptr<int>; };\nP<Has> p;",
+  "template template argument, no list": "template <class T> struct P { Holder<T::K box> h; };\nP<Has> p;",
+  "independent qualifier": "int run() { return Has::K make<int>(); }",
+  "independent object": "int run() { Has h; return h.K get<int>(); }",
+  "member that is not a template": "template <class T> int run() { return T::K plain(); }\nint x = run<Has>();",
+  "data member that is not a template": "template <class T> int run(T t) { return t.K field; }\nint x = run(Has{});"
+ },
+ "cols": {
+  "no keyword": "#define K",
+  "template": "#define K template"
+ }
+}

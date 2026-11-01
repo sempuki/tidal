@@ -42,7 +42,7 @@ current state only. The history of how the project got here is in
 | [Pointers to members](../specification/expressions/member-pointers.md) | 12 | 5 required, 5 reject, 1 undefined, 1 unspecified | 67 | 1 | 0 | 4 |  | 0 flagged |
 | [Postfix expressions](../specification/expressions/postfix.md) | 19 | 7 required, 7 reject, 4 undefined, 1 conditionally-supported | 54 | 7 | 5 | 28 | Q-0031, Q-0034, Q-0124, Q-0178 | 0 flagged |
 | [Casts](../specification/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 50 | 6 | 1 | 15 | Q-0017 | 0 flagged |
-| [New and delete](../specification/expressions/new-delete.md) | 20 | 9 required, 7 reject, 2 undefined, 2 unspecified | 57 | 5 | 4 | 40 | Q-0005, Q-0035, Q-0036, Q-0091 | 0 flagged |
+| [New and delete](../specification/expressions/new-delete.md) | 25 | 13 required, 8 reject, 2 undefined, 2 unspecified | 80 | 5 | 9 | 40 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0220, Q-0221, Q-0222 | 0 flagged |
 | [Lambda expressions](../specification/expressions/lambdas.md) | 28 | 16 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 60 | 15 | 2 | 27 | Q-0037, Q-0092 | 0 flagged |
 | [Placeholder types in variable declarations](../specification/declarations/auto.md) | 22 | 12 required, 10 reject | 49 | 9 | 0 | 5 | Q-0010 | 0 flagged |
 | [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 60 | 3 | 3 | 3 | Q-0066, Q-0067, Q-0093 | 0 flagged |
@@ -81,7 +81,7 @@ current state only. The history of how the project got here is in
 | [Throw expressions and the exception object](../specification/exceptions/throw.md) | 12 | 10 required, 1 reject | 28 | 5 | 0 | 37 |  | 0 flagged |
 | [Try blocks and handlers](../specification/exceptions/handlers.md) | 18 | 8 required, 6 reject, 1 undefined, 3 recommended | 78 | 6 | 2 | 33 |  | 0 flagged |
 | [Unwinding and termination](../specification/exceptions/unwinding.md) | 9 | 7 required, 1 impl-defined, 1 recommended | 34 | 2 | 1 | 46 | Q-0179 | 0 flagged |
-| [Glossary](../specification/glossary.md) | 72 terms | | | | | | | 0 flagged |
+| [Glossary](../specification/glossary.md) | 82 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds the site on every change and publishes it to
@@ -95,7 +95,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 4348/4348 tests pass on each. Two
+Eight compilers are baseline, and 4517/4517 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -116,8 +116,8 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Two hundred and eighteen questions are open for opinions, each with
-a provisional answer the specification follows. Fifteen of them have the status
+Two hundred and thirty-six questions are open for opinions, each
+with a provisional answer the specification follows. Fifteen of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
 Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213). Q-0009 (license) is settled. See `questions/README.md`.
@@ -126,15 +126,16 @@ Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213). Q-0009 
 
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
-- 35 *(referenced)* markers remain. Each names a topic with no page:
-  templates and concepts (23), the library (4), extended floating-point
-  types (3), class properties (2), coroutines (1), the memory model (1),
-  or the preprocessor (1). The templates markers name items N2, P, and
-  R of phase 4.
+- 37 *(referenced)* markers remain. Each names a topic with no page:
+  concepts (16), templates (8), the library (5), extended
+  floating-point types (3), class properties (2), coroutines (1), the
+  memory model (1), or the preprocessor (1). The templates markers name
+  item R of phase 4: packs, forwarding references, and class template
+  argument deduction.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 3476 of 4295 tests. The front end
+- The clean-room front end passes 3500 of 4348 tests. The front end
   has no preprocessor, so it rejects the valid tests that use
   `#include`.
   `tools/frontend_check.py` fails when a test that it passed no longer
@@ -169,13 +170,12 @@ forward-progress rule belongs with threads, which are out of scope.
 `documentation/roadmap.md` orders the work (decisions 0033 and 0039). Phases 1
 to 3 are done. Next:
 
-1. Phase 4, item N2 (dependent names and instantiation) is in
-   progress; then items P (concepts) and R (packs, forwarding, class
-   template argument deduction).
-2. A rule on `new-delete.md` for the deallocation function called when
-   the initializer of a `new` with placement arguments throws (DED-39
-   links it).
-3. Front end, round 8: the repaired pages and the template chapter.
+1. A gap review of item N2 by a source reader (decision 0044).
+2. Phase 4, items P (concepts and constraints) and R (packs,
+   forwarding references, class template argument deduction), each
+   after its inventory.
+3. Front end, round 8: the repaired pages and the template chapter
+   (in progress).
 
 Waiting on the maintainer:
 

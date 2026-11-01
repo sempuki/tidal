@@ -233,6 +233,21 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0220](Q-0220-placement-deallocation-function-before-template.md) | Does a placement deallocation function win over a template that also matches? | provisional | yes; GCC and EDG agree, Clang calls none |
 | [Q-0221](Q-0221-deleted-deallocation-function-in-new.md) | Is a `new` expression valid when its matching deallocation function is deleted? | provisional | no; Clang and EDG reject, GCC accepts |
 | [Q-0222](Q-0222-placement-deallocation-templates-unordered.md) | Is a `new` expression valid when two placement deallocation templates match and neither is preferred? | provisional | yes, and no deallocation function is called; Clang and GCC agree, EDG rejects |
+| [Q-0223](Q-0223-independent-errors-in-unused-templates.md) | Does an implementation diagnose an independent error in a template that is never instantiated? | provisional | no diagnostic required; Clang and EDG diagnose, GCC does not |
+| [Q-0224](Q-0224-dependent-name-read-as-value-yields-type.md) | Is a dependent qualified name without typename that becomes a type at instantiation an error? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0225](Q-0225-template-keyword-after-typename-qualifier.md) | Does a name after typename T:: need the template keyword before an argument list? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0226](Q-0226-template-keyword-without-argument-list.md) | Can the template keyword come before a member that has no argument list after it? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0227](Q-0227-template-keyword-in-declarator.md) | Can the template keyword follow the qualifier of a name that a declaration declares? | provisional | no; Clang only, GCC and EDG accept |
+| [Q-0228](Q-0228-missing-member-of-current-instantiation-unused.md) | Is a missing member of the current instantiation diagnosed in a template that is not used? | provisional | yes; GCC 14 differs, GCC 16 agrees |
+| [Q-0229](Q-0229-alias-template-as-current-instantiation.md) | Does an alias template specialization name the current instantiation? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0230](Q-0230-qualified-member-ambiguous-at-instantiation.md) | Is a qualified member name of the current instantiation looked up again at the instantiation? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0231](Q-0231-inline-static-member-initializer-with-class.md) | Is the initializer of an inline static data member instantiated with its class? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0232](Q-0232-scoped-enumeration-with-class.md) | Are the enumerators of a scoped member enumeration instantiated with the class? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0233](Q-0233-explicit-instantiation-storage-class-and-attribute.md) | Can an explicit instantiation have a storage class or an attribute after the keyword template? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0234](Q-0234-extern-template-internal-linkage.md) | Can an explicit instantiation declaration name a specialization with internal linkage? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0235](Q-0235-explicit-instantiation-unqualified-outside-namespace.md) | Can an explicit instantiation outside the template's namespace use an unqualified name? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0236](Q-0236-explicit-instantiation-array-bound.md) | Can an explicit instantiation of a variable leave out the array bound? | provisional | yes; GCC and EDG agree, Clang differs |
+| [Q-0237](Q-0237-explicit-specialization-after-extern-template.md) | Can an explicit specialization follow an explicit instantiation declaration? | provisional | no; Clang and GCC agree, EDG differs |
 
 ## Status values
 

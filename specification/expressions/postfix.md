@@ -66,7 +66,7 @@ prefix forms.
    postfix_expr: `primary`
                : | `postfix_expr` "[" [`expression_list`] "]"
                : | `postfix_expr` "(" [`expression_list`] ")"
-               : | `postfix_expr` ("." | "->") `id_expression`
+               : | `postfix_expr` ("." | "->") ["template"] `id_expression`
                : | `postfix_expr` ("++" | "--")
                : | `functional_cast` | `named_cast` | `dynamic_cast`
    expression_list: `argument` {"," `argument`}

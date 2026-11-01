@@ -1,0 +1,31 @@
+{
+ "prelude": "struct Has { using type = int; };\ntemplate <class U> struct Box { U v; };\n",
+ "template": "{col}\n{prelude}{row}\n",
+ "rows": {
+  "alias target": "template <class T> struct P { using A = Q; };\nP<Has> p;",
+  "data member": "template <class T> struct P { Q member; };\nP<Has> p;",
+  "member function return, in class": "template <class T> struct P { Q get() { return 0; } };\nint x = P<Has>{}.get();",
+  "member function parameter, in class": "template <class T> struct P { void set(Q) {} };\nvoid use() { P<Has>{}.set(1); }",
+  "member function return, outside class": "template <class T> struct P { typename T::type get(); };\ntemplate <class T> Q P<T>::get() { return 0; }\nint x = P<Has>{}.get();",
+  "member function parameter, outside class": "template <class T> struct P { void set(typename T::type); };\ntemplate <class T> void P<T>::set(Q) {}\nvoid use() { P<Has>{}.set(1); }",
+  "function template return": "template <class T> Q make() { return 0; }\nint x = make<Has>();",
+  "function template parameter": "template <class T> int take(Q) { return 0; }\nint x = take<Has>(1);",
+  "trailing return type": "template <class T> auto make() -> Q { return 0; }\nint x = make<Has>();",
+  "default type argument": "template <class T, class U = Q> struct P {};\nP<Has> p;",
+  "constant parameter type": "template <class T, Q N = 0> struct P {};\nP<Has> p;",
+  "static_cast type": "template <class T> int conv(long v) { return static_cast<Q>(v); }\nint x = conv<Has>(1);",
+  "new type": "template <class T> void make() { delete new Q; }\nvoid use() { make<Has>(); }",
+  "variable in a block": "template <class T> int read() { Q v = 0; return v; }\nint x = read<Has>();",
+  "sizeof operand": "template <class T> int size() { return sizeof(Q); }\nint x = size<Has>();",
+  "functional cast": "template <class T> int conv() { return Q(1); }\nint x = conv<Has>();",
+  "template argument": "template <class T> int size() { return sizeof(Box<Q>); }\nint x = size<Has>();",
+  "lambda parameter": "template <class T> int call() { return [](Q v) { return v; }(1); }\nint x = call<Has>();",
+  "function declared in a block": "template <class T> int read() { int local(Q); return 0; }\nint x = read<Has>();",
+  "variable template type": "template <class T> Q zero = 0;\nint x = zero<Has>;",
+  "friend function parameter": "template <class T> struct P { friend void touch(P, Q) {} };\nvoid use() { touch(P<Has>{}, 1); }"
+ },
+ "cols": {
+  "T::type": "#define Q T::type",
+  "typename T::type": "#define Q typename T::type"
+ }
+}

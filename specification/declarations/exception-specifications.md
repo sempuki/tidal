@@ -242,9 +242,8 @@ of 40 tests.
   ({question}`Q-0094`, {question}`Q-0095`).
 - EXS-9 and EXS-10: every compiler accepts a specialization whose
   operand is not valid while no use needs the specifier. Every compiler
-  rejects a call or a `noexcept` operator that needs the specifier. Tidal
-  does not yet say when the body of a specialization is checked
-  *(templates referenced)*.
+  rejects a call or a `noexcept` operator that needs the specifier. {rule}`INST-7`
+  says when the body of a specialization is instantiated.
 - EXS-6: Clang rejects an operand that depends on the function itself.
   GCC and EDG accept the operand ({question}`Q-0079`).
 

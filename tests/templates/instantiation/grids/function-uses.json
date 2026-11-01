@@ -1,0 +1,25 @@
+{
+ "prelude": "template <class T> int make() { static_assert(CHECK); return 1; }\ntemplate <class T> auto deduce() { static_assert(CHECK); return 1; }\ntemplate <class T> struct Box { int get() { static_assert(CHECK); return 1; } static int count; };\ntemplate <class T> int Box<T>::count = [] { static_assert(CHECK); return 1; }();\ntemplate <class T> int zero = [] { static_assert(CHECK); return 0; }();\n",
+ "template": "{col}\n{prelude}{row}\n",
+ "rows": {
+  "no use": "",
+  "decltype of a call": "using R = decltype(make<int>());",
+  "sizeof of a call": "int s = sizeof(make<int>());",
+  "noexcept of a call": "bool n = noexcept(make<int>());",
+  "decltype of a call, deduced return type": "using R = decltype(deduce<int>());",
+  "call": "int x = make<int>();",
+  "address": "int (*p)() = &make<int>;",
+  "discarded branch": "template <class U> int pick() { if constexpr (sizeof(U) == 0) return make<U>(); else return 0; }\nint x = pick<int>();",
+  "explicit instantiation declaration": "extern template int make<int>();",
+  "member function, class used": "Box<int> b;",
+  "member function, call": "int x = Box<int>{}.get();",
+  "static data member, class used": "Box<int> b;",
+  "static data member, read": "int x = Box<int>::count;",
+  "variable template, decltype": "using R = decltype(zero<int>);",
+  "variable template, read": "int x = zero<int>;"
+ },
+ "cols": {
+  "valid body": "#define CHECK true",
+  "failing body": "#define CHECK (sizeof(T) == 0)"
+ }
+}

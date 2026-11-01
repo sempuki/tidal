@@ -1,0 +1,24 @@
+{
+ "prelude": "template <class T> struct Box { static_assert(CHECK); int v; };\nstruct Root {};\ntemplate <class T> struct Child : Root { static_assert(CHECK); };\ntemplate <class X> struct Holder {};\n",
+ "template": "{col}\n{prelude}{row}\n",
+ "rows": {
+  "pointer variable": "Box<int>* p = nullptr;",
+  "reference parameter": "void take(Box<int>& r);",
+  "function returning the class, declared": "Box<int> make();",
+  "alias": "using Name = Box<int>;",
+  "template argument": "Holder<Box<int>> h;",
+  "pointer comparison": "bool same(Box<int>* p, Box<int>* q) { return p == q; }",
+  "cast from void pointer": "Box<int>* back(void* p) { return static_cast<Box<int>*>(p); }",
+  "object": "Box<int> b;",
+  "sizeof": "int s = sizeof(Box<int>);",
+  "member access through a pointer": "int read(Box<int>* p) { return p->v; }",
+  "pointer arithmetic": "Box<int>* next(Box<int>* p) { return p + 1; }",
+  "delete through a pointer": "void drop(Box<int>* p) { delete p; }",
+  "conversion to a base pointer": "Root* up(Child<int>* p) { return p; }",
+  "call with one void pointer parameter": "int take(void*);\nint x = take((Box<int>*)nullptr);"
+ },
+ "cols": {
+  "valid body": "#define CHECK true",
+  "failing body": "#define CHECK (sizeof(T) == 0)"
+ }
+}

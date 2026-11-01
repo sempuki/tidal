@@ -97,6 +97,11 @@ copy-initialization
   returning a value are also copy-initialization. An `explicit`
   constructor is not used in copy-initialization ({rule}`CTOR-9`).
 
+current instantiation
+  The specialization that a class template, or one of its members or
+  nested classes, is making. Names of the current instantiation are
+  looked up at the definition ({rule}`DEP-15`, {rule}`DEP-16`).
+
 cv-qualifier
   `const` or `volatile` applied to a type. A program cannot change a
   `const` object after its initialization. Each access to a `volatile`
@@ -123,6 +128,15 @@ default template argument
   none for it, written after `=` in the template head ({rule}`TPL-13`,
   {rule}`TARG-9`).
 
+dependent name
+  A name whose meaning can differ between specializations of a
+  template. Lookup of the name waits for the template arguments
+  ({rule}`DEP-7`, {rule}`DEP-8`).
+
+dependent type
+  A type in a template that can differ between specializations, such as
+  a template parameter or `Box<T>` ({rule}`DEP-1`).
+
 discarded statement
   The branch of an `if constexpr` statement that the condition does not
   select. These facts apply to a discarded statement:
@@ -136,6 +150,21 @@ discarded statement
 ellipsis conversion sequence
   The sequence of an argument that matches the `...` of a function. It is
   worse than every other sequence ({rule}`ICS-6`, {rule}`ICS-21`).
+
+explicit instantiation
+  A declaration that starts with `template` or `extern template` and no
+  `<`. It names a specialization to instantiate. See
+  {term}`explicit instantiation definition` and
+  {term}`explicit instantiation declaration`.
+
+explicit instantiation declaration
+  An explicit instantiation with `extern`. Another translation unit has
+  the definition of the named specialization ({rule}`INST-27`,
+  {rule}`INST-28`).
+
+explicit instantiation definition
+  An explicit instantiation without `extern`. The translation unit
+  instantiates and defines the named specialization ({rule}`INST-16`).
 
 explicit specialization
   A declaration that starts with `template <>` and defines one
@@ -191,6 +220,11 @@ injected class name
   The name that a class declares for itself inside its own scope. Inside
   `C`, the name `C` finds the class first ({rule}`NAM-33`). A derived
   class inherits the injected class name of each base ({rule}`NAM-35`).
+
+instantiation
+  The making of a specialization from its template, with the template
+  arguments in place of the parameters. A use that needs a definition
+  instantiates it ({principle}`INST-P1`).
 
 integer promotion
   The conversion of an integer operand that is narrower than `int`.
@@ -273,6 +307,11 @@ placeholder type
   `auto` or `decltype(auto)` in the position of a type. The actual type
   comes from an initializer or from `return` statements. A concept name
   can come before the placeholder to constrain the type.
+
+point of instantiation
+  The place in a translation unit where a specialization is made. The
+  specialization sees the declarations before the place
+  ({rule}`INST-30`, {rule}`INST-31`).
 
 primary template
   The declaration of a class template or variable template that is not
@@ -368,6 +407,10 @@ type parameter
   A template parameter that takes a type, declared with `class` or
   `typename` ({rule}`TPL-5`).
 
+type-dependent
+  Said of an expression in a template whose type can differ between
+  specializations ({rule}`DEP-2`).
+
 unordered
   The relation between two evaluations when the language does not set
   an order and the evaluations cannot overlap. One evaluation finishes
@@ -406,6 +449,10 @@ value category
     for example the result of `std::move`.
   - A *prvalue* computes a value, for example `a * b` or `42`. A prvalue
     has no identity.
+
+value-dependent
+  Said of an expression in a template whose value can differ between
+  specializations, while its type does not ({rule}`DEP-4`).
 
 variable template
   A template whose declaration declares a variable. Each specialization

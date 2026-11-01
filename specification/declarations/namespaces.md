@@ -68,7 +68,8 @@ Neither form belongs in a class.
                 :    "{" {`declaration`} "}"
    ns_path: ["inline"] `identifier` {"::" ["inline"] `identifier`}
    namespace_alias: "namespace" `identifier` "=" `qualified_name` ";"
-   using_decl: "using" `qualified_name` {"," `qualified_name`} ";"
+   using_decl: "using" ["typename"] `qualified_name`
+             : {"," ["typename"] `qualified_name`} ";"
    using_directive: "using" "namespace" `qualified_name` ";"
 ```
 

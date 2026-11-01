@@ -1,0 +1,743 @@
+# Dependent names
+
+A template body holds names whose meaning depends on the template
+arguments, and names whose meaning does not. The implementation reads
+the body once at the definition and again for each specialization. This
+page covers:
+
+- which types and expressions depend on the template parameters,
+- when a name is looked up, at the definition or at the instantiation,
+- the {term}`current instantiation` and lookup into it,
+- the keywords `typename` and `template` before a dependent name,
+- what an implementation checks before any instantiation.
+
+{doc}`instantiation` says when a specialization is made and from which
+declarations. Requires expressions and constraints are not specified yet
+*(concepts referenced)*. Modules are outside the charter.
+
+Depends on: template declarations, template arguments, name lookup,
+argument-dependent lookup, class members.
+
+## Principles
+
+:::{principle} DEP-P1
+:rules: DEP-5 DEP-6 DEP-7 DEP-8 DEP-9 DEP-10 DEP-28
+
+The implementation reads a template in two phases:
+
+```text
+definition                              each instantiation
+──────────                              ──────────────────
+parse the body                          put the arguments in place of
+look up each independent name   ──►     the parameters (DEP-7)
+  and bind it (DEP-5, DEP-6)            look up each dependent name
+check each independent construct        check each dependent construct
+  (DEP-30)                                (DEP-28)
+```
+
+A name that does not depend on a parameter means the same thing in
+every specialization, so the implementation binds the name once, at the
+definition. A later declaration does not change the binding. A
+{term}`dependent name` can mean something different for each argument
+list, so its lookup waits for the arguments.
+
+An unqualified call with a dependent argument uses both phases
+(DEP-8, DEP-9):
+
+| Lookup | Context | Finds a function declared after the template |
+|---|---|---|
+| ordinary unqualified lookup | the definition | no |
+| argument-dependent lookup | the definition and the {term}`point of instantiation` | yes, in an associated namespace |
+
+A call whose arguments are all of fundamental type has no associated
+namespace ({rule}`NAM-27`), so it finds only what the definition sees
+(DEP-10).
+:::
+
+:::{principle} DEP-P2
+:rules: DEP-1 DEP-2 DEP-3 DEP-4
+
+A construct depends on the template parameters in one of three ways:
+
+| Kind | Meaning | Examples |
+|---|---|---|
+| {term}`dependent type` | the type differs between specializations | `T`, `T*`, `Box<T>`, `T[N]`, `typename T::type`, `decltype(t.size())` |
+| {term}`type-dependent` expression | the type of the expression differs | `t`, `T(0)`, `t + 1`, `this` in a class template |
+| {term}`value-dependent` expression | the type is fixed, the value differs | `N`, `sizeof(T)`, `static_cast<int>(t)` |
+
+Some forms have a fixed type whatever their operands: `sizeof`,
+`alignof`, `noexcept`, a literal, and a cast to an independent type.
+A call with such an argument is not dependent on that argument, and
+the implementation chooses its function at the definition (DEP-3).
+:::
+
+:::{principle} DEP-P3
+:rules: DEP-11 DEP-12 DEP-14
+:exceptions: DEP-13
+
+A base class whose type is dependent is unknown at the definition. An
+explicit specialization can give the base any members, so the
+implementation does not search such a base for an unqualified name. A
+program reaches a member of a dependent base through `this->`, through
+the name of the class, or through the name of the base:
+
+| Written | Searches a dependent base | Rule |
+|---|---|---|
+| `count` | no | DEP-11, DEP-12 |
+| `this->count` | yes, at the instantiation | DEP-11 |
+| `Derived::count`, `Base<T>::count` | yes, at the instantiation | DEP-11, DEP-18 |
+
+An unqualified name that finds a member at the definition keeps that
+member (DEP-14). A qualified name into the current instantiation is
+looked up again at the instantiation, and an ambiguity then makes the
+program not valid (DEP-13).
+:::
+
+:::{principle} DEP-P4
+:rules: DEP-15 DEP-16 DEP-17 DEP-18
+
+Inside a class template, some names stand for the specialization that
+the implementation is making. That specialization is the
+{term}`current instantiation`. Its members are known at the definition,
+so the implementation looks them up there:
+
+| Inside | Names the current instantiation | Names another specialization |
+|---|---|---|
+| `template <class T> struct Box` | `Box`, `Box<T>`, `::Box<T>` | `Box<T*>`, `Box<const T>` |
+| a nested class `Box<T>::Inner` | `Inner`, `Box<T>::Inner` | `Box<T*>::Inner` |
+| `template <class T> struct Box<T*>` | `Box`, `Box<T*>` | `Box<T>` |
+
+A member of the current instantiation needs no `typename` (DEP-16). If
+the class has no dependent base, a name that the class does not declare
+is an error at the definition (DEP-17). With a dependent base, the
+lookup waits for the instantiation (DEP-18).
+:::
+
+:::{principle} DEP-P5
+:rules: DEP-19 DEP-20 DEP-21 DEP-22 DEP-23 DEP-24 DEP-25 DEP-26
+:exceptions: DEP-27
+
+The implementation parses a template before it knows the arguments. For
+a qualified name such as `T::type`, the parser must decide whether the
+name is a type, a template, or a value. The program states the choice:
+
+| Written | Read as | Checked at the instantiation |
+|---|---|---|
+| `T::name` | a value, except in a type-only position (DEP-20) | the name is not a type (DEP-19) |
+| `typename T::name` | a type | the name is a type (DEP-22) |
+| `T::name<...>`, `x.name<...>` | `name`, then the less-than operator | |
+| `T::template name<...>` | a template-id | the name is a template (DEP-26) |
+| `typename T::template name<...>` | a type | the name is a class template or alias template |
+
+In a type-only position, only a type can appear, so the parser reads a
+qualified name as a type without `typename` (DEP-20). Both keywords can
+also appear where the name is not dependent (DEP-21, DEP-25).
+:::
+
+:::{principle} DEP-P6
+:rules: DEP-29 DEP-30 DEP-31 DEP-32 DEP-33
+
+A template that is never instantiated still has to be a template that
+some arguments make valid. The implementation checks what it can at the
+definition:
+
+| Error in a template that is not instantiated | Requirement | Rule |
+|---|---|---|
+| a syntax error | rejects | DEP-29 |
+| an independent construct that is not valid | need not diagnose | DEP-30 |
+| an independent construct whose meaning changes before the instantiation | need not diagnose | DEP-31 |
+| a construct that no argument list makes valid | need not diagnose | DEP-32 |
+| a pack that every valid argument list leaves empty | need not diagnose | DEP-33 |
+| a dependent construct that some argument list makes valid | accepts | DEP-28 |
+
+The condition of a `static_assert` in a template is checked only at the
+instantiation, also when the condition is independent ({rule}`SA-5`).
+A discarded statement is not instantiated ({rule}`IF-13`).
+:::
+
+## Syntax
+
+```{eval-rst}
+.. productionlist:: tidal
+   typename_specifier: "typename" `nested_name` `identifier`
+                     : | "typename" `nested_name` ["template"] `template_id`
+```
+
+A `typename_specifier` is a type specifier. The keyword `template` can
+also come right after the `::` of a `nested_name`, and right after the
+`.` or `->` of a member access, when a `template_id` follows. The
+keyword `typename` can start the name of a using-declaration that
+names a member of a base.
+
+## Constraints
+
+### Dependent types and expressions
+
+:::{rule} DEP-1
+:kind: required
+:tests: templates/dependent-names/checked-at-instantiation.cpp
+
+A type is a {term}`dependent type` if the type is one of these:
+
+- a template parameter,
+- a pointer, reference, array, function, or member pointer type built
+  from a dependent type, or a dependent type with `const` or
+  `volatile`,
+- an array type whose bound is {term}`value-dependent`,
+- a template-id whose template is a template parameter or whose
+  arguments are dependent,
+- `decltype` of a {term}`type-dependent` expression,
+- a qualified name of a type whose qualifier is a dependent type other
+  than the current instantiation,
+- a nested class or enumeration of the {term}`current instantiation`.
+:::
+
+:::{rule} DEP-2
+:kind: required
+:tests: templates/dependent-names/dependent-call-late.cpp
+
+An expression is {term}`type-dependent` if one of these holds, and
+DEP-3 does not give a fixed type:
+
+- the expression is a name declared with a dependent type,
+- the expression is `this` in a member of a class template,
+- the expression is a cast or a `new` whose named type is dependent,
+- a member access names a member whose type is dependent,
+- an operand or subexpression is type-dependent.
+:::
+
+:::{rule} DEP-3
+:kind: required
+:tests: templates/dependent-names/independent-call-early.cpp
+
+These expressions are never type-dependent:
+
+- a literal,
+- `sizeof`, `alignof`, and the `noexcept` operator,
+- a `delete` expression and a `throw` expression,
+- a cast or a `new` whose named type is not dependent.
+:::
+
+:::{rule} DEP-4
+:kind: required
+:tests: templates/dependent-names/value-dependent-bound.cpp templates/dependent-names/value-dependent-bound-fails.cpp
+
+An expression is {term}`value-dependent` if one of these holds:
+
+- the expression names a constant template parameter,
+- the expression is type-dependent,
+- the expression is `sizeof`, `alignof`, or `noexcept` of a dependent
+  type or a type-dependent operand,
+- an operand is value-dependent.
+
+The value of such an expression is computed for each specialization.
+:::
+
+### Binding of names
+
+:::{rule} DEP-5
+:kind: required
+:tests: templates/dependent-names/independent-bound-early.cpp templates/dependent-names/independent-call-early.cpp
+
+A name that is not dependent is looked up at the definition of the
+template. Every specialization uses the declarations found there. A
+declaration after the definition does not change the result.
+:::
+
+:::{rule} DEP-6
+:kind: reject
+:tests: templates/dependent-names/independent-not-declared.cpp
+
+A name that is not dependent must be declared before the definition of
+the template. A declaration between the definition and the use does not
+make an instantiation valid.
+:::
+
+:::{rule} DEP-7
+:kind: required
+:tests: templates/dependent-names/per-specialization.cpp
+
+A {term}`dependent name` is looked up again for each specialization,
+with the template arguments in place of the parameters. Two
+specializations can find different declarations.
+:::
+
+:::{rule} DEP-8
+:kind: required
+:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/dependent-call-pack.cpp templates/dependent-names/dependent-call-template-arguments.cpp
+
+The function name of an unqualified call is a dependent name in these
+cases:
+
+- an argument is type-dependent,
+- an argument is a pack expansion,
+- the name has explicit template arguments that are dependent.
+:::
+
+:::{rule} DEP-9
+:kind: required
+:tests: templates/dependent-names/argument-lookup-later.cpp templates/dependent-names/argument-lookup-better-later.cpp templates/dependent-names/dependent-call-pack.cpp templates/dependent-names/dependent-call-template-arguments.cpp
+
+For a dependent unqualified call, ordinary lookup finds the declarations
+before the definition. {term}`Argument-dependent lookup
+<argument-dependent lookup>` finds the declarations before the
+definition and those before the {term}`point of instantiation`
+({rule}`INST-31`). Overload resolution chooses among all of them.
+:::
+
+:::{rule} DEP-10
+:kind: reject
+:tests: templates/dependent-names/ordinary-lookup-later-fundamental.cpp templates/dependent-names/ordinary-lookup-later-class.cpp
+
+A dependent call does not find a function that is declared after the
+definition, unless the function is in an associated namespace of an
+argument ({rule}`NAM-27`). Arguments of fundamental type add no
+namespace.
+:::
+
+:::{rule} DEP-11
+:kind: required
+:tests: templates/dependent-names/dependent-base-skipped.cpp templates/dependent-names/dependent-base-qualified.cpp templates/dependent-names/independent-base-searched.cpp
+
+Unqualified lookup in a class template does not search a base whose
+type is dependent. It searches a base whose type is not dependent. A
+member of a dependent base is found through `this->`, or through a
+qualified name with the class or the base.
+:::
+
+:::{rule} DEP-12
+:kind: reject
+:tests: templates/dependent-names/dependent-base-not-found.cpp templates/dependent-names/dependent-base-type-not-found.cpp templates/dependent-names/independent-error-unused-base-member.cpp
+
+An unqualified name that only a dependent base declares is not found
+(DEP-11). The program must not use such a name as a value or as a type.
+:::
+
+:::{rule} DEP-13
+:kind: reject
+:tests: templates/dependent-names/qualified-member-found-again.cpp
+
+A qualified name whose qualifier is the current instantiation is looked
+up at the definition and again at the instantiation. If the second
+lookup finds an ambiguous set, the program is not valid
+({question}`Q-0230`).
+:::
+
+:::{rule} DEP-14
+:kind: required
+:tests: templates/dependent-names/unqualified-member-kept.cpp
+
+An unqualified name that finds a member at the definition keeps that
+member in every specialization. A member of the same name in a
+dependent base does not make the name ambiguous.
+:::
+
+### The current instantiation
+
+:::{rule} DEP-15
+:kind: required
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp
+
+In a class template, its members, and its nested classes, these names
+name the {term}`current instantiation`:
+
+- the injected class name ({rule}`TARG-11`),
+- the template name with its own parameters in order, also after `::`,
+- in a partial specialization, the template name with that partial
+  specialization's argument list,
+- in a nested class, the nested class's name, also qualified with the
+  enclosing current instantiation,
+- an alias template specialization that gives one of the above
+  ({question}`Q-0229`).
+
+Any other argument list names another specialization, which is
+dependent.
+:::
+
+:::{rule} DEP-16
+:kind: required
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp
+
+A qualified name whose qualifier names the current instantiation is
+looked up at the definition. A member type found so needs no
+`typename`.
+:::
+
+:::{rule} DEP-17
+:kind: reject
+:tests: templates/dependent-names/current-member-missing.cpp
+
+If the current instantiation has no dependent base, a qualified name
+into the current instantiation must find a declaration at the
+definition. The rule holds even if no specialization is made
+({question}`Q-0228`).
+:::
+
+:::{rule} DEP-18
+:kind: required
+:tests: templates/dependent-names/current-member-dependent-base.cpp
+
+If the current instantiation has a dependent base, a qualified name into
+the current instantiation that finds nothing at the definition is
+dependent. The name is looked up at the instantiation, also in the
+bases.
+:::
+
+### The keywords typename and template
+
+:::{rule} DEP-19
+:kind: reject
+:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp
+
+Let `T` be dependent and not the current instantiation. Outside the
+positions of DEP-20, the parser reads `T::name` as a value. A
+specialization in which `T::name` is a type is then not valid
+({question}`Q-0224`). The keyword `typename` before `T::name` makes the
+name a type.
+:::
+
+:::{rule} DEP-20
+:kind: required
+:tests: templates/dependent-names/type-only-positions.cpp
+
+In these type-only positions, a qualified name with a dependent
+qualifier names a type without `typename`:
+
+- a base in a base list, and a name before `::`,
+- the type of an alias declaration,
+- the type of a variable and the return type of a function, declared
+  at namespace scope, and a trailing return type,
+- the type of a member, and the parameter types of a member function
+  or friend declared in a class,
+- the parameter types of a function declared with a qualified name,
+- a default type template argument, and the type of a constant
+  template parameter,
+- the type in a `new` expression and in a named cast,
+- the parameter types of a lambda expression.
+:::
+
+:::{rule} DEP-21
+:kind: required
+:tests: templates/dependent-names/typename-not-needed.cpp templates/dependent-names/typename-needs-qualified-name.cpp
+
+`typename` can come before a qualified name that is not dependent, also
+outside a template. The name after `typename` is always a qualified
+name.
+:::
+
+:::{rule} DEP-22
+:kind: reject
+:tests: templates/dependent-names/typename-finds-value.cpp templates/dependent-names/typename-finds-nothing.cpp
+
+At the instantiation, the name after `typename` must name a type. A
+specialization in which the name finds a value or nothing is not
+valid.
+:::
+
+:::{rule} DEP-23
+:kind: required
+:tests: templates/dependent-names/using-typename.cpp
+
+A using-declaration that names a member of a dependent base with
+`typename` declares a type name in the class.
+:::
+
+:::{rule} DEP-24
+:kind: reject
+:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp
+
+A member template must have the keyword `template` before its name in
+these places:
+
+- after `::` with a dependent qualifier that is not the current
+  instantiation,
+- after `.` or `->` with a type-dependent object.
+
+Without the keyword, a `<` after the name is the less-than operator
+({rule}`TARG-2`), and the name is not a template template argument
+({question}`Q-0225`).
+:::
+
+:::{rule} DEP-25
+:kind: required
+:tests: templates/dependent-names/template-keyword-forms.cpp
+
+The keyword `template` can come before a template name that lookup
+already finds, also outside a template. Before a template template
+argument, `template` needs no argument list after the name.
+:::
+
+:::{rule} DEP-26
+:kind: reject
+:tests: templates/dependent-names/template-keyword-not-template.cpp templates/dependent-names/template-keyword-not-template-unused.cpp templates/dependent-names/template-keyword-no-list.cpp
+
+At the instantiation, a name after the keyword `template` must name a
+template. Outside a template template argument, an argument list must
+follow the name ({question}`Q-0226`).
+:::
+
+:::{rule} DEP-27
+:kind: reject
+:tests: templates/dependent-names/template-keyword-in-declarator.cpp
+
+The keyword `template` must not come after the qualifier of the name
+that a declaration declares ({question}`Q-0227`).
+:::
+
+### Checking a template before instantiation
+
+:::{rule} DEP-28
+:kind: required
+:tests: templates/dependent-names/checked-at-instantiation.cpp templates/dependent-names/dependent-error-unused.cpp templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/template-keyword-not-template-unused.cpp
+
+A construct that depends on the template parameters is checked for each
+specialization. If some argument list makes the template valid, the
+implementation accepts the definition. An error in a dependent
+construct makes only the specializations with that error not valid.
+:::
+
+:::{rule} DEP-29
+:kind: reject
+:tests: templates/dependent-names/syntax-error-unused.cpp templates/dependent-names/typename-needs-qualified-name.cpp
+
+A template definition must follow the grammar, also when no
+specialization is made.
+:::
+
+## Implementation Requirements
+
+:::{rule} DEP-30
+:kind: no-diagnostic
+:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp
+
+A specialization made right after the definition must not fail because
+of a construct that does not depend on the parameters. An
+implementation need not diagnose such a template if no specialization
+is made ({question}`Q-0223`).
+:::
+
+:::{rule} DEP-31
+:kind: no-diagnostic
+:tests: templates/dependent-names/incomplete-then-complete.cpp
+
+A construct that does not depend on the parameters must have the same
+meaning right after the definition and at each instantiation. These
+changes break the rule:
+
+- a class that is incomplete at the definition is complete later,
+- an explicit or partial specialization is declared later,
+- a default argument is added later.
+
+An implementation need not diagnose a break of this rule.
+:::
+
+:::{rule} DEP-32
+:kind: no-diagnostic
+:tests: templates/dependent-names/no-valid-specialization.cpp
+
+A template must have at least one argument list that makes a valid
+specialization. The rule also applies to each discarded statement of
+`if constexpr` in a template. An implementation need not diagnose a
+template that breaks the rule. A `static_assert` does not count
+({rule}`SA-5`).
+:::
+
+:::{rule} DEP-33
+:kind: no-diagnostic
+:tests: templates/dependent-names/pack-always-empty.cpp
+
+A variadic template must have a valid specialization in which the pack
+has an element. An implementation need not diagnose a template whose
+every valid specialization has an empty pack.
+:::
+
+## Examples
+
+Two phases, and the lookup of a dependent call:
+
+```cpp
+int scale(double) { return 1; }
+namespace geo { struct Point {}; }
+
+template <class T> int measure(T value) {
+  return scale(2)               // independent: scale(double), bound here
+       + area(value);           // dependent: looked up again for each T
+}
+
+int scale(int) { return 2; }    // not seen by measure
+namespace geo { int area(Point) { return 10; } }   // found by argument lookup
+
+int x = measure(geo::Point{});  // 11
+int y = measure(1);             // rejected: area(int) is not found
+```
+
+A dependent base:
+
+```cpp
+template <class T> struct Base { int size = 0; };
+template <class T> struct List : Base<T> {
+  int a() { return size; }             // rejected: Base<T> is not searched
+  int b() { return this->size; }       // Base<T>::size
+  int c() { return List::size; }       // Base<T>::size
+};
+```
+
+The keywords:
+
+```cpp
+template <class C> int first(C& items) {
+  typename C::value_type* p = items.data();       // a type
+  C::value_type* q = nullptr;                     // rejected: read as a product
+  return items.template get<0>();                 // a member template
+}
+
+template <class C> struct View {
+  using value = C::value_type;                    // type-only: no typename
+  View::value top();                              // the current instantiation
+};
+```
+
+## Evidence
+
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 61 tests.
+
+The clean-room writer probed each rule with the eight baseline
+compilers and the two `-O2` report compilers, and wrote the grids
+below. The sanitized Clang lookup source returns "not found in the
+current instantiation" for a qualified lookup into a class with a
+dependent base (DEP-18). Its scope source treats the injected class
+name and a template-id with the class's own parameters as the current
+instantiation (DEP-15).
+
+- DEP-30: Clang and EDG reject an unused template whose body has an
+  invalid conversion or call with no dependent operand. GCC accepts the
+  template. Every compiler rejects an undeclared name and a name from
+  a dependent base. The rule needs no diagnostic, so both results are
+  allowed ({question}`Q-0223`).
+- DEP-19: EDG accepts `sizeof(T::type)`, a functional cast, and a
+  function declared in a block, when the instantiation makes `T::type`
+  a type. Clang and GCC reject them ({question}`Q-0224`).
+- DEP-24: GCC accepts `typename T::box<int>` without `template`. Clang
+  and EDG reject it ({question}`Q-0225`).
+- DEP-26: GCC accepts `object.template field` for a data member. Clang
+  and EDG reject it ({question}`Q-0226`).
+- DEP-27: GCC and EDG accept `template` after the qualifier of a
+  declared name. Clang rejects it ({question}`Q-0227`).
+- DEP-17: GCC 14 accepts an unused template whose qualified name into
+  the current instantiation finds nothing. GCC 16 and the other
+  compilers reject the template ({question}`Q-0228`).
+- DEP-15: EDG does not treat an alias template specialization as the
+  current instantiation. GCC treats the alias as the current
+  instantiation but rejects a name that only a dependent base declares
+  ({question}`Q-0229`).
+- DEP-13: Clang and EDG reject a qualified name into the current
+  instantiation that becomes ambiguous at the instantiation. GCC keeps
+  the member that the definition found ({question}`Q-0230`).
+- DEP-31: every compiler rejects `sizeof` of a class that is
+  incomplete at the definition, even if the class is complete before
+  the use. An explicit specialization declared after an instantiation
+  is rejected under {rule}`TSP-6`.
+- DEP-32 and DEP-33: every compiler accepts the templates, and no
+  compiler diagnoses them.
+
+Positions of a dependent qualified name (DEP-19, DEP-20). Each row
+writes `T::type` in one position and instantiates the template with a
+class whose `type` is `int`. The first column writes the name alone,
+the second with `typename`:
+
+| | T::type | typename T::type |
+|---|---|---|
+| alias target | accept | accept |
+| data member | accept | accept |
+| member function return, in class | accept | accept |
+| member function parameter, in class | accept | accept |
+| member function return, outside class | accept | accept |
+| member function parameter, outside class | accept | accept |
+| function template return | accept | accept |
+| function template parameter | reject | accept |
+| trailing return type | accept | accept |
+| default type argument | accept | accept |
+| constant parameter type | accept | accept |
+| static_cast type | accept | accept |
+| new type | accept | accept |
+| variable in a block | reject | accept |
+| sizeof operand | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, clang-host, gcc-14, gcc-16, clang-18, clang-22 | accept |
+| functional cast | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, clang-host, gcc-14, gcc-16, clang-18, clang-22 | accept |
+| template argument | reject | accept |
+| lambda parameter | accept | accept |
+| function declared in a block | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | accept |
+| variable template type | accept | accept |
+| friend function parameter | accept | accept |
+
+The keyword `template` (DEP-24 to DEP-26). Each row names a member of
+a class `Has` and instantiates the template where there is one:
+
+| | no keyword | template |
+|---|---|---|
+| after T:: in a call | reject | accept |
+| after a dot | reject | accept |
+| after an arrow | reject | accept |
+| after typename T:: | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept |
+| alias target | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept |
+| template template argument, no list | reject | accept |
+| independent qualifier | accept | accept |
+| independent object | accept | accept |
+| member that is not a template | accept | reject |
+| data member that is not a template | accept | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+
+The current instantiation (DEP-15 to DEP-18). Each row is a way to
+name `Box<T>` inside `Box`. The first column reads a member type
+without `typename`. The second reads a missing member in a class with
+no dependent base, and the template is not used. The third reads a
+member that only a dependent base declares:
+
+| | member type without typename | missing member, no dependent base | missing member, dependent base |
+|---|---|---|---|
+| Box | accept | accept: gcc-14; reject: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16, clang-host, clang-18, clang-22 | accept |
+| Box<T> | accept | accept: gcc-14; reject: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-host, clang-host, clang-18, clang-22 | accept |
+| ::Box<T> | accept | accept: gcc-14; reject: edg-7.0, edg-7.0-ilp32, gcc-host, clang-host, gcc-16, clang-18, clang-22 | accept |
+| Same<T> | accept: gcc-host, gcc-14, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | accept: edg-7.0, edg-7.0-ilp32, gcc-14; reject: gcc-host, clang-host, gcc-16, clang-18, clang-22 | accept: edg-7.0, edg-7.0-ilp32, gcc-14, clang-host, clang-18, clang-22; reject: gcc-host, gcc-16 |
+| Box<T*> | reject | accept | accept |
+| Pointer<T> | reject | accept | accept |
+| Box<const T> | reject | accept | accept |
+
+`Same<U>` is an alias for `Box<U>`, and `Pointer<U>` is an alias for
+`Box<U*>`.
+
+The probe grids are in `tests/templates/dependent-names/grids/`. This
+table gives the source of each rule. Inventory items have the numbers of
+`reports/review/2026-10-31-inventory-dependent-names-and-instantiation.md`:
+
+| Rule | Source |
+|---|---|
+| DEP-1 | probes; inventory E1, E2, E4 to E9 |
+| DEP-2, DEP-3 | probes; inventory D4, D9, D11, D14, D15 |
+| DEP-4 | probes; diagnostics; inventory D7, D16 to D18, E1 |
+| DEP-5, DEP-6 | probes; diagnostics; inventory A9, A10 |
+| DEP-7 | probes; inventory A7 |
+| DEP-8 to DEP-10 | probes; diagnostics; inventory A1, A5, A8, A13 |
+| DEP-11, DEP-12 | probes; diagnostics; clang-sema-lookup; inventory A4 |
+| DEP-13, DEP-14 | probes; inventory A14, A15 |
+| DEP-15, DEP-16 | grid current-instantiation; clang-sema-cxxscopespec; inventory C1, C3, C5, C6, C9 to C12 |
+| DEP-17, DEP-18 | grid current-instantiation; clang-sema-lookup; inventory C7, C8 |
+| DEP-19, DEP-20 | grid typename-positions; diagnostics; inventory F1 to F4 |
+| DEP-21 to DEP-23 | probes; clang-diag-sema; inventory F11, F14, F15 |
+| DEP-24 to DEP-27 | grid template-keyword; clang-diag-sema; clang-diag-parse; inventory F5 to F10, F13 |
+| DEP-28, DEP-29 | probes; inventory B2, B9, B10 |
+| DEP-30 to DEP-33 | probes; inventory B1, B3, B6 to B8 |
+
+Inventory items left out of this page:
+
+- A2, A6, A11, A12, C2, C13, D1 to D3, D5, D6, D8, D10, D12, D13, E3,
+  and F12 are details of the definitions in DEP-1 to DEP-4 and DEP-15.
+  The page has no probe for each of them.
+- C4: no compiler treats a constant member initialized with the
+  parameter as the parameter. A `constexpr` member has a `const` type,
+  which differs from the parameter's type, so the probes do not test
+  the item.
+- B4 belongs to constraints *(concepts referenced)*.
+- B5 is {rule}`INST-12`.
+- I9 and the module parts of I4 are outside the charter.
+
+Inputs: clang-diag-sema, clang-diag-parse, clang-sema-lookup, clang-sema-cxxscopespec.

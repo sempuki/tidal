@@ -39,6 +39,7 @@ Every rule ID starts with the prefix of its page.
 | `DCL` | `declarations/declarators.md` |
 | `DCMP` | `classes/comparisons.md` |
 | `DED` | `templates/deduction.md` |
+| `DEP` | `templates/dependent-names.md` |
 | `DEFARG` | `declarations/functions/default-arguments.md` |
 | `DEL` | `declarations/functions/deleted.md` |
 | `DER` | `classes/derived.md` |
@@ -52,6 +53,7 @@ Every rule ID starts with the prefix of its page.
 | `ILC` | `classes/initializer-lists.md` |
 | `INC` | `foundations/odr.md` |
 | `INIT` | `declarations/initialization/forms.md` |
+| `INST` | `templates/instantiation.md` |
 | `INL` | `declarations/inline.md` |
 | `JMP` | `statements/jumps.md` |
 | `KW` | `foundations/keywords.md` |

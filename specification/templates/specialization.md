@@ -24,7 +24,7 @@ Depends on: template declarations, template arguments.
 
 Without a specialization of its own, a specialization comes from the
 definition of the template, the {term}`primary template`, with the
-arguments in place of the parameters *(templates referenced)*. A program
+arguments in place of the parameters ({principle}`INST-P1`). A program
 can replace that definition:
 
 | Kind of template | Explicit specialization | Partial specialization |

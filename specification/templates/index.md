@@ -9,11 +9,13 @@ variable, or a type. The pages in this section give the rules for:
 - explicit and partial specializations, and how a specialization is
   selected,
 - deduction of template arguments,
-- partial ordering of templates.
+- partial ordering of templates,
+- dependent names, and the checks before instantiation,
+- implicit and explicit instantiation, and points of instantiation.
 
-Dependent names, instantiation, and packs beyond what deduction needs
-are not specified yet *(templates referenced)*. Constraints are not
-specified yet *(concepts referenced)*.
+Packs beyond what deduction needs are not specified yet
+*(templates referenced)*. Constraints are not specified yet
+*(concepts referenced)*.
 
 :::{tidal-pages}
 declarations
@@ -21,6 +23,8 @@ arguments
 specialization
 deduction
 ordering
+dependent-names
+instantiation
 :::
 
 :::{toctree}
@@ -32,4 +36,6 @@ arguments
 specialization
 deduction
 ordering
+dependent-names
+instantiation
 :::

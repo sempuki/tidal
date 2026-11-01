@@ -16,7 +16,8 @@ covers:
   candidates.
 
 Partial ordering of templates is on {doc}`ordering`. Dependent names
-and instantiation are not specified yet *(templates referenced)*.
+are on {doc}`dependent-names`, and instantiation is on
+{doc}`instantiation`.
 Constraints are not specified yet *(concepts referenced)*. Packs beyond
 what deduction needs, and the deduction of class template arguments, are
 not specified yet *(templates referenced)*.

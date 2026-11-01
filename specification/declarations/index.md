@@ -56,6 +56,7 @@ static-assert
               : | `linkage_spec`
               : | `template_decl`
               : | `explicit_specialization`
+              : | `explicit_instantiation`
               : | ";"
    block_decl: `simple_decl`
              : | `sb_decl`
@@ -82,6 +83,7 @@ static-assert
                  : | `enum_def`
                  : | `placeholder`
                  : | `decltype_spec`
+                 : | `typename_specifier`
    simple_type: "signed" | "unsigned" | "short" | "long" | "int"
               : | "char" | "wchar_t" | "char8_t" | "char16_t" | "char32_t"
               : | "bool" | "float" | "double" | "void"

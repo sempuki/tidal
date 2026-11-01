@@ -131,10 +131,10 @@ value is the obvious answer, so a fold of an empty pack needs `&&`,
                  : | `operator_function_id` | `literal_operator_id`
                  : | `conversion_function_id`
                  : | `template_id`
-   qualified_name: `nested_name` `unqualified_id`
+   qualified_name: `nested_name` ["template"] `unqualified_id`
    nested_name: "::"
               : | [`nested_name`] `identifier` "::"
-              : | [`nested_name`] `template_id` "::"
+              : | [`nested_name`] ["template"] `template_id` "::"
               : | `decltype_spec` "::"
    identifier: `id_start` {`id_start` | `digit`}
    id_start: `letter` | "_" | `ucn`

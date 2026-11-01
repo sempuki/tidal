@@ -12,9 +12,9 @@ the template gives arguments for the parameters and gets a
 
 Template arguments and template-ids are on {doc}`arguments`. Explicit
 and partial specializations are on {doc}`specialization`. Deduction of
-template arguments is on {doc}`deduction`. Dependent names,
-instantiation, and constraints are not specified yet
-*(templates referenced)*.
+template arguments is on {doc}`deduction`. Dependent names are on
+{doc}`dependent-names`, and instantiation is on {doc}`instantiation`.
+Constraints are not specified yet *(concepts referenced)*.
 
 Depends on: declarations, class definitions and members, function
 definitions, constant evaluation, name lookup.

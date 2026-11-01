@@ -1,0 +1,18 @@
+{
+ "prelude": "template <class T> struct Box;\ntemplate <class U> using Same = Box<U>;\ntemplate <class U> using Pointer = Box<U*>;\ntemplate <class U> struct Base { static constexpr int missing = 0; };\n",
+ "template": "{prelude}{row}\n{col}\n",
+ "rows": {
+  "Box": "#define SELF Box",
+  "Box<T>": "#define SELF Box<T>",
+  "::Box<T>": "#define SELF ::Box<T>",
+  "Same<T>": "#define SELF Same<T>",
+  "Box<T*>": "#define SELF Box<T*>",
+  "Pointer<T>": "#define SELF Pointer<T>",
+  "Box<const T>": "#define SELF Box<const T>"
+ },
+ "cols": {
+  "member type without typename": "template <class T> struct Box { using type = int; int f() { SELF::type v = 0; return v; } };",
+  "missing member, no dependent base": "template <class T> struct Box { int f() { return SELF::missing; } };",
+  "missing member, dependent base": "template <class T> struct Box : Base<T> { int f() { return SELF::missing; } };\nint x = Box<int>{}.f();"
+ }
+}
