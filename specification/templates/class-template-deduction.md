@@ -375,6 +375,8 @@ then gives a guide of the alias ({question}`Q-0240`):
 - The result of the guide is matched with the type of the alias.
 - The new guide has the alias parameters that the match uses, then the
   guide's parameters that the match leaves.
+- A guide parameter that the match fixes to a type is replaced by that
+  type in the function parameters of the new guide.
 - A guide whose result cannot match the type of the alias gives no
   guide.
 
@@ -570,6 +572,16 @@ Range r(data, data + 3);          // Range<int>: each pointer gives T = int
 
 template <class T = int> struct Tag {};
 Tag none;                         // Tag<int>: the guide with no parameters
+```
+
+An alias that fixes an argument gives a guide whose parameter has the
+fixed type (CTAD-14). The argument for that parameter converts, and
+deduction does not use it:
+
+```cpp
+template <class T, class U> struct Duo { Duo(T, U); };
+template <class U> using IntDuo = Duo<int, U>;
+IntDuo d(1L, 'c');                // Duo<int, char>: the guide is IntDuo(int, U)
 ```
 
 The guides from `Mark(T)` and from the constructor template tie for

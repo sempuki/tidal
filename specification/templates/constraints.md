@@ -66,7 +66,7 @@ atomic constraints.
 
 :::{principle} CNS-P2
 :rules: CNS-5 CNS-6 CNS-7 CNS-8
-:exceptions: CNS-9 CNS-10 CNS-33 CNS-35
+:exceptions: CNS-9 CNS-39 CNS-10 CNS-33 CNS-35
 
 The implementation checks a normal form against template arguments in
 these steps. A form that the check finds `true` is
@@ -253,14 +253,15 @@ each one atomic constraint, even if they contain `&&` or `||`.
 
 :::{rule} CNS-4
 :kind: required
-:tests: templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/named-negation.cpp templates/constraints/concept-expansion.cpp templates/constraints/inline-negation.cpp templates/constraints/mapping-unused-parameter.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/mapping-same-arguments.cpp
+:tests: templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/named-negation.cpp templates/constraints/concept-expansion.cpp templates/constraints/inline-negation.cpp templates/constraints/mapping-unused-parameter.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/mapping-same-arguments.cpp templates/constraints/mapping-different-argument-tokens.cpp
 
 An atomic constraint has an expression and a {term}`parameter mapping`,
 which maps each template parameter that the expression uses to an
-argument ({question}`Q-0284`). Two atomic constraints are identical only
-if both come from the same expression in the source and their mappings
-give equivalent arguments. Two expressions with the same text in
-different places give different atomic constraints.
+argument ({question}`Q-0284`). Two atomic constraints are identical
+only if both come from the same expression in the source and their
+mappings give equivalent arguments. Two arguments are equivalent under
+{rule}`CNS-27`, after each template parameter in them is replaced by
+its argument.
 :::
 
 ### Satisfaction
@@ -311,12 +312,22 @@ satisfied.
 
 :::{rule} CNS-9
 :kind: reject
-:tests: templates/constraints/atomic-not-bool.cpp templates/constraints/atomic-not-bool-class.cpp templates/constraints/atomic-not-bool-other-candidate.cpp templates/constraints/atomic-not-constant.cpp templates/constraints/atomic-not-bool-skipped.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp
+:tests: templates/constraints/atomic-not-bool.cpp templates/constraints/atomic-not-bool-class.cpp templates/constraints/atomic-not-bool-other-candidate.cpp templates/constraints/atomic-not-constant.cpp templates/constraints/atomic-not-bool-skipped.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp templates/constraints/atomic-not-bool-nondependent-clause.cpp templates/constraints/atomic-not-bool-nondependent-concept.cpp
 
 After substitution, the expression of an atomic constraint must be a
 constant expression of type `bool`. Another type is not valid, even
 one that converts to `bool`. The program is not valid even if another
 candidate would be chosen ({question}`Q-0263`).
+:::
+
+:::{rule} CNS-39
+:kind: reject
+:tests: templates/constraints/atomic-not-bool-skipped.cpp templates/constraints/atomic-not-bool-nondependent-clause.cpp templates/constraints/atomic-not-bool-nondependent-concept.cpp
+
+If the type of an atomic constraint's expression does not depend on a
+template parameter, the type must be `bool`. The implementation checks
+the type at the definition, even if satisfaction never reaches the
+expression ({question}`Q-0263`).
 :::
 
 :::{rule} CNS-33
@@ -513,7 +524,7 @@ not compared ({rule}`ORD-13`).
 
 :::{rule} CNS-24
 :kind: reject
-:tests: templates/constraints/negation-atomic.cpp templates/constraints/fold-atomic.cpp templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/inline-negation.cpp templates/constraints/normal-forms-equivalent.cpp templates/constraints/identity-only.cpp templates/constraints/same-constraints-both-ways.cpp templates/constraints/different-spellings.cpp templates/constraints/parameter-correspondence.cpp templates/constraints/lambda-overload.cpp templates/constraints/friend-distinct-from-namespace.cpp templates/concepts/type-constraint-pack-one-atom.cpp
+:tests: templates/constraints/negation-atomic.cpp templates/constraints/fold-atomic.cpp templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/inline-negation.cpp templates/constraints/normal-forms-equivalent.cpp templates/constraints/identity-only.cpp templates/constraints/same-constraints-both-ways.cpp templates/constraints/different-spellings.cpp templates/constraints/parameter-correspondence.cpp templates/constraints/lambda-overload.cpp templates/constraints/friend-distinct-from-namespace.cpp templates/concepts/type-constraint-pack-one-atom.cpp templates/constraints/mapping-different-argument-tokens.cpp
 
 A use can need the more constrained of two declarations, by one of the
 rules in {principle}`CNS-P4`. If neither is more constrained, and no
@@ -704,8 +715,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 94
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 96
+of 122 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the
@@ -732,9 +743,11 @@ compiler's own words, for example "atomic constraint must be of type
   so two concept-ids that differ in an unused argument give two atomic
   constraints. EDG and Clang 18 also substitute an unused argument.
   Clang 22 and GCC do neither ({question}`Q-0284`).
-- CNS-9: Clang and EDG reject an atomic constraint whose type is never
-  `bool`, such as `sizeof(T)`, even if a short circuit skips it. GCC
-  accepts it ({question}`Q-0263`). Every compiler accepts a skipped
+- CNS-9, CNS-39: Clang and EDG reject an atomic constraint whose type is never
+  `bool`, such as `sizeof(T)`, at the definition, even if a short circuit skips it. GCC
+  rejects such an atomic constraint in the requires clause of a function
+  template at the definition, and accepts it in a concept until a check
+  reaches it ({question}`Q-0263`). Every compiler accepts a skipped
   atomic constraint whose type depends on the argument, such as
   `T::value` for a class whose `value` is an `int`
   (`or-short-circuit.cpp`).
@@ -829,7 +842,7 @@ of `reports/review/2026-10-31-inventory-concepts-and-constraints.md`:
 | CNS-2 to CNS-4 | grid subsumption; probes; clang-diag-sema (similar constraint expressions not equivalent); inventory E1, E2, E5, E6, E8, H4, H5 |
 | CNS-5, CNS-6 | probes; inventory F3, F4, D6 |
 | CNS-7, CNS-8 | probes; clang-diag-sema (substituted constraint expression is ill-formed); inventory E4, F5, F6, F8, F9 |
-| CNS-9 | probes; clang-diag-sema (atomic constraint must be of type bool, non-constant expression); inventory F1, F2 |
+| CNS-9, CNS-39 | probes; clang-diag-sema (atomic constraint must be of type bool, non-constant expression); inventory F1, F2 |
 | CNS-10 | probes; GCC diagnostic (satisfaction value changed); inventory F7 |
 | CNS-11 | probes; inventory G4, G5 |
 | CNS-12 | probes; clang-diag-sema (invalid reference to function, constraints not satisfied); inventory G1, G15 |

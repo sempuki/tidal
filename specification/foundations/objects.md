@@ -258,5 +258,8 @@ only that the programs are valid.
 - OBJ-2: an implicit copy of an object with a part that has no value is
   a read of that part ({question}`Q-0115`). No sanitizer in the matrix
   reports the copy at run time.
+- OBJ-10: the `vptr` sanitizer of GCC stops a read of a member through
+  a reference to an object whose storage another object reuses. The
+  Clang sanitizers do not, so no run test covers the rule.
 
 Inputs: clang-ast-exprconstant, clang-diag-ast, clang-sema-decl.

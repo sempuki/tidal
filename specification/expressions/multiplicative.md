@@ -432,5 +432,10 @@ All eight compilers agree on 47 of 52 tests.
   evaluation, so `1.0 + 0x1p-53 != 1.0` holds there. Clang and EDG give
   `1.0` for the sum. A cast, an initializer, and a return value round
   the sum to `1.0` on every compiler. MUL-17 allows both results.
+- MUL-12: no sanitizer of GCC or Clang stops a floating-point `*` whose
+  result is outside the range of its type.
+- MUL-14: no sanitizer of GCC or Clang stops an unsequenced
+  modification. The compilers warn at translation instead
+  (`unsequenced-modification.cpp`).
 
 Inputs: clang-sema-expr.

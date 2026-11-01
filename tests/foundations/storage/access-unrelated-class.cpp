@@ -1,8 +1,6 @@
 // tidal-rules: STG-23
-// tidal-expect: run
-// tidal-expect-gcc-16-o2: run-fail
-// tidal-expect-clang-22-o2: run-fail
-// tidal-note: At -O2, GCC and Clang assume that a write through a Right does not change a Left and return 1. STG-23 allows any result.
+// tidal-expect: accept
+// tidal-note: STG-23 makes the write through a Right undefined, so the test checks only that the program compiles. Only the type sanitizer of Clang 22 (-fsanitize=type) reports the access, and the run goes on with exit status 0.
 struct Left { int value; };
 struct Right { int value; };
 int store(Left* left, Right* right) {

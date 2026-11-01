@@ -473,7 +473,7 @@ A fold expression must obey these rules:
 
 :::{rule} PRIM-8
 :kind: undefined
-:tests: expressions/primary/string-modify-constant.cpp
+:tests: expressions/primary/string-modify-constant.cpp expressions/primary/string-modify-sanitizer.cpp
 
 The characters of a string literal are constant. If a program writes to
 one of them, for example through a pointer from `const_cast`, the
@@ -578,8 +578,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 100
-of 105 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 106 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

@@ -212,11 +212,10 @@ All eight compilers agree on 30 of 31 tests. The results are in
   read during constant evaluation. EDG 7.0 accepts the read. The
   provisional answer is that INIT-1 applies to array elements and that
   EDG has a possible defect. See {question}`Q-0013`.
-- **INIT-1 at run time.** INIT-1 allows any result for a run-time read.
-  A function writes 5 to a local on one path and returns the local on
-  every path. When the program takes the other path, the six compilers
-  that run programs return a value left in the storage at `-O0`, and 5
-  at `-O2`. The tests observe INIT-1 only in constant evaluation.
+- **INIT-1 at run time.** No sanitizer of GCC or Clang stops a read
+  of an automatic variable with no value, under `-fsanitize=undefined`
+  or `-fsanitize=address`. The tests observe INIT-1 only in constant
+  evaluation.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

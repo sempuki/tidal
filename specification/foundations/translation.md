@@ -246,7 +246,7 @@ observable behavior does not depend on can be removed.
 
 :::{rule} TR-8
 :kind: undefined
-:tests: foundations/translation/undefined-taints-whole-evaluation.cpp foundations/translation/undefined-on-taken-path-only.cpp
+:tests: foundations/translation/undefined-taints-whole-evaluation.cpp foundations/translation/undefined-on-taken-path-only.cpp foundations/translation/undefined-on-taken-path-sanitizer.cpp
 
 If an execution reaches an operation that has undefined behavior, this
 specification sets no requirement on the whole execution, before or
@@ -304,8 +304,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 29
-of 30 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
+of 31 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 

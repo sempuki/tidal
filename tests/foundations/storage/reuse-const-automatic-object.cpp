@@ -1,6 +1,6 @@
 // tidal-rules: STG-20
-// tidal-expect: run
-// tidal-note: Every compiler in the matrix reads 1, the value of the const object, at -O0 and -O2. STG-20 allows any result.
+// tidal-expect: accept
+// tidal-note: STG-20 makes the run undefined, so the test checks only that the program compiles. No sanitizer in the matrix stops the run, and constant evaluation does not reject the new object (Q-0307).
 #include "placement.h"
 int main() {
   const int limit = 1;

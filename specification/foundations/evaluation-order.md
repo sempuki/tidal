@@ -247,5 +247,7 @@ All eight compilers agree on all 33 tests. The results are in
   compiler warns about two bit-fields of one memory location or two
   reads of a volatile object; those tests only show the programs
   compile.
+- SEQ-4: no sanitizer of GCC or Clang stops two unsequenced
+  modifications at run time.
 
 Inputs: clang-sema-expr, clang-diag-sema.

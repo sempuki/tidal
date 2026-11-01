@@ -286,7 +286,7 @@ These types are
 
 :::{rule} STG-8
 :kind: required
-:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-object-in-byte-array.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp
+:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-object-in-byte-array.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp
 
 These operations create objects implicitly in the storage that they
 name:
@@ -570,6 +570,24 @@ auto* byte = reinterpret_cast<unsigned char*>(&v);
 byte + sizeof v;                      // one past the last byte of v
 ```
 
+The set of implicitly created objects depends on every use of the
+storage, later ones included (STG-8):
+
+```cpp
+void* raw = ::operator new(4 * sizeof(int));
+int* one = static_cast<int*>(raw);
+*one = 1;                             // fine: the set holds an int[4]
+one[3] = 4;                           // fine: the same int[4]
+
+struct Duo { int first, second; };
+void* place = ::operator new(sizeof(Duo));
+*static_cast<int*>(place) = 1;        // the member first of a Duo
+static_cast<Duo*>(place)->second = 2; // fine: the set holds a Duo
+```
+
+In the second part, an array of `int` would make the use of `Duo`
+undefined. So the set holds a `Duo`, though the first use names `int`.
+
 A class that builds an object in its own bytes keeps the pointer that
 placement `new` returns, and reaches the object only through that
 pointer (STG-5):
@@ -598,8 +616,8 @@ functions ({rule}`CPY-8`).
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 61 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 62 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -626,18 +644,24 @@ only that the programs are valid.
   is too large. GCC also warns about the second case when it compiles
   the program.
 - STG-18, STG-23: the type sanitizer of Clang 22 (`-fsanitize=type`)
-  reports a read of an `int` object through a `float` glvalue. The
-  sanitizer does not report access through `signed char`, `std::byte`,
-  or the unsigned type of the object. GCC and Clang 18 have no such
-  sanitizer, so the tests do not use it.
+  reports a read of an `int` object through a `float` glvalue, and a
+  write through a class with the same members. The program goes on
+  after the report. The sanitizer does not report access through
+  `signed char`, `std::byte`, or the unsigned type of the object. GCC
+  and Clang 18 have no such sanitizer. No configuration in the matrix
+  stops these programs, so their tests check only that the programs
+  compile.
 - STG-19: the `vptr` sanitizer of GCC and Clang reports a call through
-  the old name after a replacement by another type. At `-O2`, GCC
-  calls the old function through a pointer to a replaced base
-  subobject, and Clang calls the new one. STG-19 allows both results.
+  the old name after a replacement by another type. No sanitizer
+  reports a call through a pointer to a replaced base subobject, so
+  `replace-base-old-pointer.cpp` checks only that the program compiles.
   During constant evaluation every compiler accepts a read through
   such a pointer ({question}`Q-0307`).
 - STG-20: a `const` object with static storage duration is in storage
-  that cannot be written, and the write faults. During constant
+  that cannot be written, and the write faults. No sanitizer reports a
+  new object in a `const` automatic object, so
+  `reuse-const-automatic-object.cpp` checks only that the program
+  compiles. During constant
   evaluation no compiler rejects the new object. GCC 14 and Clang 18
   then read the new value, and GCC 16, Clang 22, and EDG read the old
   one ({question}`Q-0307`). A placement `new` with a pointer to `const`
@@ -647,10 +671,9 @@ only that the programs are valid.
   Clang sanitizer reports neither. Both report a member call on
   storage with no object. Every compiler rejects a member call outside
   a lifetime during constant evaluation.
-- STG-23: at `-O2`, GCC and Clang keep the value of an `int` across a
-  write through a `float` glvalue or through a class with the same
-  members. Every compiler lets a write through `signed char` change an
-  `int` ({question}`Q-0306`).
+- STG-23: `signed char` is outside the list of STG-14
+  ({question}`Q-0306`). Constant evaluation cannot form the glvalues
+  of the tests ({rule}`CAST-8`).
 - STG-24: no program can observe the chosen set, so the test shows only
   that each use of the storage is valid.
 - STG-25: GCC, Clang, and EDG give the derived class of the test the

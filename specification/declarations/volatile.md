@@ -124,7 +124,7 @@ A constructor or a destructor must not be declared `volatile`.
 
 :::{rule} VOL-8
 :kind: reject
-:tests: declarations/volatile/constant-read-rejected.cpp
+:tests: declarations/volatile/constant-read-rejected.cpp declarations/volatile/constant-read-through-plain.cpp
 
 Constant evaluation cannot read a volatile object (VOL-1).
 :::
@@ -158,7 +158,7 @@ before the program runs and are not accesses ({question}`Q-0176`).
 
 :::{rule} VOL-6
 :kind: undefined
-:tests: declarations/volatile/nonvolatile-access-to-volatile-constant.cpp
+:tests: declarations/volatile/nonvolatile-access-to-volatile-constant.cpp declarations/volatile/constant-read-through-plain.cpp
 
 If a program accesses a volatile object through a glvalue that is not
 volatile, the behavior is undefined.
@@ -201,7 +201,7 @@ void send(volatile Uart& u, unsigned c) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 33
-of 34 tests.
+of 35 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
@@ -216,5 +216,9 @@ of 34 tests.
   ({question}`Q-0080`).
 - VOL-5: Clang and GCC warn under `-Wall` for each listed use, and not
   for compound assignment.
+- VOL-6: no sanitizer of GCC or Clang reports a read of a volatile
+  object through an `int*`, so `nonvolatile-access-to-volatile-constant.cpp`
+  checks only that the program compiles. During constant evaluation Clang rejects the read,
+  and GCC and EDG accept it ({question}`Q-0320`).
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

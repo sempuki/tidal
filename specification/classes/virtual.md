@@ -337,7 +337,7 @@ during constant evaluation.
 
 :::{rule} VIRT-12
 :kind: undefined
-:tests: classes/virtual/delete-array-through-base-constant.cpp classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp
+:tests: classes/virtual/delete-array-through-base-constant.cpp classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp classes/virtual/pure-call-in-ctor-sanitizer.cpp classes/virtual/nonvirtual-dtor-delete-sanitizer.cpp classes/virtual/delete-array-through-base-sanitizer.cpp
 
 The behavior is undefined in these cases:
 
@@ -441,8 +441,8 @@ struct MoreConst : Maker {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 117 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the

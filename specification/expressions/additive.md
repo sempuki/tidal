@@ -188,7 +188,7 @@ difference of two null pointers is zero.
 
 :::{rule} ADD-9
 :kind: undefined
-:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp expressions/additive/signed-overflow-add-sanitizer.cpp foundations/types/int-max-overflow.cpp
+:tests: expressions/additive/signed-overflow-add.cpp expressions/additive/signed-overflow-subtract.cpp expressions/additive/signed-overflow-add-sanitizer.cpp foundations/types/int-max-overflow.cpp foundations/translation/undefined-on-taken-path-sanitizer.cpp
 
 If the common type is a signed integer type and the mathematical result
 does not fit in it, the behavior is undefined.
@@ -305,8 +305,8 @@ first + 2;                // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 47
-of 55 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 48
+of 56 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
@@ -345,5 +345,16 @@ of 55 tests.
   position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`
   bytes, so no difference into one array overflows there
   ({question}`Q-0298`).
+- ADD-11: the address sanitizer of GCC and Clang stops a difference of
+  pointers into two arrays only under `-fsanitize=pointer-subtract`
+  and a run-time option that a test cannot set. No other configuration
+  stops it.
+- ADD-14: no sanitizer of GCC or Clang stops a step of a base pointer
+  through an array of derived objects.
+- ADD-17: no sanitizer of GCC or Clang stops a floating-point `+` whose
+  result is outside the range of its type.
+- ADD-18: no configuration in the matrix runs a 32-bit program, and a
+  64-bit object is too small for the difference to overflow. No run
+  test covers the rule.
 
 Inputs: clang-sema-expr, clang-diag-sema.

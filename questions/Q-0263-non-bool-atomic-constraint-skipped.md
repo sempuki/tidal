@@ -1,7 +1,7 @@
 # Q-0263: Is an atomic constraint whose type is never bool an error when a short circuit skips it?
 
 **Status:** provisional
-**Affects:** CNS-9, `tests/templates/constraints/atomic-not-bool-skipped.cpp`
+**Affects:** CNS-9, CNS-39, `tests/templates/constraints/atomic-not-bool-skipped.cpp`, `tests/templates/constraints/atomic-not-bool-nondependent-concept.cpp`
 
 ## Context
 
@@ -18,6 +18,12 @@ false, so satisfaction never substitutes into the right operand.
 ## Evidence
 
 The test above. Every compiler rejects the same operand when the check reaches it (`atomic-not-bool.cpp`).
+
+With no use of the template at all, Clang and EDG reject the concept
+(`atomic-not-bool-nondependent-concept.cpp`). GCC accepts the concept,
+and rejects the same operand in the requires clause of a function
+template at its definition (`atomic-not-bool-nondependent-clause.cpp`).
+CNS-39 states the check at the definition.
 
 ## Options
 

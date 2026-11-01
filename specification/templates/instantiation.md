@@ -705,6 +705,8 @@ bullets below say so.
 - INST-11: every compiler instantiates an unused virtual function when
   the program defines an object of the class, and none does for
   `sizeof`. The rule allows either result.
+- INST-15: the behavior happens during translation, so no run test
+  covers the rule.
 - INST-14: Clang stops at a depth of 1024, GCC at 900, and EDG at 64
   nested class instantiations. INST-15 allows any result for an endless
   chain, and every compiler rejects the test.

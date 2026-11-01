@@ -229,7 +229,7 @@ comparisons that are valid.
 
 :::{rule} MPTR-6
 :kind: undefined
-:tests: expressions/member-pointers/dynamic-type-lacks-member-constant.cpp expressions/member-pointers/null-use-constant.cpp
+:tests: expressions/member-pointers/dynamic-type-lacks-member-constant.cpp expressions/member-pointers/null-use-constant.cpp expressions/member-pointers/null-data-member-sanitizer.cpp expressions/member-pointers/dynamic-type-lacks-member-sanitizer.cpp
 
 The behavior is undefined in these cases:
 
@@ -268,6 +268,6 @@ int Point3::* any = &Point::x;     // base to derived: implicit
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-68 tests.
+70 tests.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

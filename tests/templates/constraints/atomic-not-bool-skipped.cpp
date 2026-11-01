@@ -1,4 +1,4 @@
-// tidal-rules: CNS-9
+// tidal-rules: CNS-39 CNS-9
 // tidal-expect: reject
 // tidal-expect-gcc: accept
 // tidal-error-clang: atomic constraint must be of type 'bool'

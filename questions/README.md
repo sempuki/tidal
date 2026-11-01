@@ -330,6 +330,8 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0317](Q-0317-explicit-object-default-argument.md) | Can an explicit object parameter have a default argument? | provisional | no (CLS-14); EDG accepts |
 | [Q-0318](Q-0318-member-call-null-pointer-constant.md) | Must constant evaluation reject a member function call through a null pointer? | provisional | yes, undefined (PFX-21); EDG accepts |
 | [Q-0319](Q-0319-explicit-object-initialization-order.md) | When is an explicit object parameter initialized, relative to the other arguments? | provisional | in an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang |
+| [Q-0320](Q-0320-volatile-object-read-through-plain-constant.md) | Must constant evaluation reject a read of a volatile object through a glvalue that is not volatile? | provisional | yes, undefined (VOL-6); GCC and EDG accept |
+| [Q-0321](Q-0321-initializer-list-when-needed.md) | When does a program need the class `std::initializer_list`? | provisional | where a braced list initializes an object of that type or `auto` deduces it (LSUP-1); GCC checks every definition |
 
 ## Status values
 

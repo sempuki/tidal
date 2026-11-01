@@ -248,7 +248,7 @@ The result of `const_cast` refers to the same object as its operand.
 
 :::{rule} CAST-5
 :kind: undefined
-:tests: expressions/casts/const-cast-write-const-object.cpp
+:tests: expressions/casts/const-cast-write-const-object.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp
 
 A write through the result of `const_cast` to an object that is `const`
 is undefined (CV-5).
@@ -306,7 +306,7 @@ int{2.5};                       // rejected: narrowing
 
 ## Evidence
 
-All eight compilers agree on 49 of 50 tests. The results are in
+All eight compilers agree on 50 of 51 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

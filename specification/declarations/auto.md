@@ -188,7 +188,7 @@ permitted.
 
 :::{rule} AUTO-7
 :kind: required
-:tests: declarations/auto/copy-list-deduces-initializer-list.cpp
+:tests: declarations/auto/copy-list-deduces-initializer-list.cpp foundations/language-support/initializer-list-auto-deduction.cpp
 
 `auto x = { ... };` gives `x` the type `std::initializer_list<T>`.
 AUTO-21 lists what is not valid.
@@ -381,7 +381,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 54 tests. The results are in `tests/RESULTS.md`.
+agree on all 55 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list`, because tests include no headers. Without that

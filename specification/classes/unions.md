@@ -377,7 +377,7 @@ through the other struct. The read gives the stored value.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp
+:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/read-inactive-bool-sanitizer.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. During constant evaluation, {rule}`CE-6` rejects the read.
@@ -500,8 +500,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 116 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 117 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -533,6 +533,9 @@ of 116 tests.
   assignment did not write. For a member whose default constructor is
   not trivial, Clang and GCC reject the assignment, and EDG accepts it
   ({question}`Q-0213`).
+- UNI-6: the undefined sanitizer of GCC and Clang stops a read of an
+  inactive `bool` member whose bytes hold no valid `bool` value. No
+  sanitizer stops a read whose bytes give a valid value.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

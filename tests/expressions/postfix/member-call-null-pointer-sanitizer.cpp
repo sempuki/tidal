@@ -1,4 +1,4 @@
-// tidal-rules: PFX-21
+// tidal-rules: PFX-21 UN-7
 // tidal-expect: run-fail
 // tidal-flags: -O0 -fsanitize=undefined -fno-sanitize-recover=undefined
 // tidal-error: member call on null pointer

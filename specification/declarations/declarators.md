@@ -475,7 +475,7 @@ reference is a use of that object or function.
 
 :::{rule} CV-5
 :kind: undefined
-:tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp
+:tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp declarations/declarators/modify-const-object-sanitizer.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp
 
 If a program changes an object that is defined `const`, the behavior is
 undefined. The behavior is also undefined when a cast removes `const`. A
@@ -555,7 +555,7 @@ const_cast<int&>(cr) = 2;      // v is 2
 
 ## Evidence
 
-All eight compilers agree on 84 of 87 tests. The results are in
+All eight compilers agree on 86 of 89 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
@@ -577,6 +577,10 @@ All eight compilers agree on 84 of 87 tests. The results are in
 - **DCL-16.** EDG 7.0 accepts a reference parameter to a function type
   with a ref-qualifier. Clang and GCC reject the parameter
   ({question}`Q-0106`).
+- **CV-5.** The address sanitizer of GCC and Clang stops a write to a
+  `const` object with static storage duration, because the object is
+  in storage that cannot be written. No sanitizer stops a write to a
+  `const` automatic object.
 
 Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema
 (see `inputs/MANIFEST.md`).

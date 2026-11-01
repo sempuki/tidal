@@ -475,7 +475,7 @@ this sequence:
 
 :::{rule} ICS-16
 :kind: required
-:tests: foundations/conversion-sequences/list-initializer-list.cpp foundations/conversion-sequences/list-initializer-list-designated.cpp
+:tests: foundations/conversion-sequences/list-initializer-list.cpp foundations/conversion-sequences/list-initializer-list-designated.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
 
 For a parameter of type `std::initializer_list<E>` ({rule}`LSUP-1`), a
 braced list has a sequence if each element converts to `E`. An element
@@ -809,7 +809,7 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 91
-of 113 tests.
+of 114 tests.
 
 - ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
   share one model, the table of {principle}`REF-P3`.

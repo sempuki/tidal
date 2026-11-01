@@ -247,7 +247,7 @@ A later change to the source expression does not change the temporary.
 
 :::{rule} REF-5
 :kind: undefined
-:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp declarations/initialization/references/new-aggregate-member-not-extended.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp
+:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp declarations/initialization/references/new-aggregate-member-not-extended.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp
 
 Only the bindings in REF-4 extend the life of a temporary. These
 bindings do not extend the life of a temporary ({question}`Q-0040`):
@@ -326,7 +326,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 47 of 61 tests. The results are in
+All eight compilers agree on 48 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during

@@ -403,6 +403,9 @@ program only as a nonzero exit.
 - TRY-18: Clang and GCC end the program when the copy into a by-value
   handler parameter throws, also when an enclosing try block has a
   matching handler.
+- TRY-11: the `vptr` sanitizer of GCC stops a call of a member function
+  of a destroyed member in the handler. The Clang sanitizers and the
+  address sanitizers do not, so no run test covers the rule.
 
 Inputs: clang-sema-stmt, clang-diag-sema, clang-diag-parse,
 edg-statements.

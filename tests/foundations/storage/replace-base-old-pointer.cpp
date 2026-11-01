@@ -1,7 +1,6 @@
 // tidal-rules: STG-19
-// tidal-expect: run
-// tidal-expect-gcc-16-o2: run-fail
-// tidal-note: At -O2, GCC calls Derived::id through the old pointer to the base subobject, so the program exits 1. STG-19 allows any result.
+// tidal-expect: accept
+// tidal-note: STG-19 makes the call through the old pointer undefined, so the test checks only that the program compiles. No sanitizer in the matrix stops the run.
 #include "placement.h"
 struct Base { virtual int id() { return 1; } };
 struct Derived : Base { int id() override { return 2; } };

@@ -517,7 +517,7 @@ is also undefined.
 
 :::{rule} DTOR-7
 :kind: undefined
-:tests: classes/constructors/double-destroy-constant.cpp foundations/storage/member-call-after-end-constant.cpp
+:tests: classes/constructors/double-destroy-constant.cpp foundations/storage/member-call-after-end-constant.cpp classes/constructors/double-destroy-sanitizer.cpp
 
 If a program destroys an object a second time, or calls a member
 function of the object, after its destructor runs, the behavior is
@@ -587,8 +587,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 155
-of 165 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 156
+of 166 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -632,6 +632,12 @@ of 165 tests.
   through the implicit copy or move constructor. All reject a braced
   list for which two constructors tie, also as the argument of another
   constructor.
+- CTOR-12: no sanitizer of GCC or Clang stops a read of a member that
+  has no value yet, under `-fsanitize=undefined` or `-fsanitize=address`.
+- DTOR-7: the address sanitizer of GCC and Clang stops a second
+  destruction whose destructor frees storage. The `vptr` sanitizer of
+  GCC stops a member call after the destructor, and the Clang
+  sanitizer does not.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.

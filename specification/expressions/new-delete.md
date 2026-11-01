@@ -733,5 +733,8 @@ of 116 tests.
   deleted one in the same cases. GCC accepts the deleted function
   ({question}`Q-0221`). All three reject a placement form whose match
   is a usual form.
+- NEW-3: no sanitizer of GCC or Clang stops a read of an object that
+  `new T` left with no value, under `-fsanitize=undefined` or
+  `-fsanitize=address`.
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -221,7 +221,8 @@ both.
 A use of a pack must be in the pattern of an expansion, or be the
 operand of `sizeof...` (PACK-19). The pattern of an expansion must hold
 a pack that no inner expansion expands. `sizeof...` and a fold
-({rule}`PRIM-27`) count as inner expansions for this rule.
+({rule}`PRIM-27`) count as inner expansions, and the `...` of a
+variable argument part (PACK-3) expands nothing.
 :::
 
 :::{rule} PACK-9
@@ -473,7 +474,7 @@ template <class... T> auto keep(T... x) {
 }
 
 template <class... R> int calls(R (*... fp)());   // a named pack can have its ... in parentheses
-template <class... T> void take(T x...);   // rejected: x has a name, so T is not expanded
+template <class... T> void take(T x...);   // rejected: x has a name, so the ... expands nothing (PACK-8)
 void first(auto x...);                     // one parameter, then the variable argument part
 template <class... T> void call(T...);
 call<void>();                              // rejected: a parameter of type void

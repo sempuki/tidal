@@ -1,4 +1,4 @@
-// tidal-rules: PFX-21 CE-9
+// tidal-rules: PFX-21 UN-7 CE-9
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-gcc: dereferencing a null pointer|non-constant condition

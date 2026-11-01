@@ -81,10 +81,12 @@ includes no header declares both names itself.
 
 :::{rule} LSUP-1
 :kind: reject
-:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp
+:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp foundations/language-support/initializer-list-auto-deduction.cpp foundations/language-support/initializer-list-parameter-not-needed.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
 
-A program that needs an `std::initializer_list<E>` must declare
-`std::initializer_list` first, with this shape:
+A program needs an `std::initializer_list<E>` where a braced list
+initializes an object of that type, or where {rule}`AUTO-7` deduces
+that type ({question}`Q-0321`). Before that point, the program must
+declare `std::initializer_list` with this shape:
 
 - a class template with one type parameter `E`,
 - two non-static data members, a pointer to `const E` and a count of
@@ -94,7 +96,7 @@ A program that needs an `std::initializer_list<E>` must declare
 
 :::{rule} LSUP-2
 :kind: reject
-:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp
+:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp
 
 A program that uses `<=>` on built-in operands, or a defaulted `<=>`,
 must declare the three ordering classes in namespace `std` first. Each
@@ -283,14 +285,20 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 28
-of 38 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
+of 42 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
   place of the count. GCC compares the class with the one in its own
   header and rejects the two-pointer form. EDG looks for the
   constructor. The rule gives the shape that all three accept.
+- LSUP-1: Clang and EDG check the shape where a braced list initializes
+  an `std::initializer_list` object or `auto` deduces one. GCC checks
+  the shape of every definition of `std::initializer_list`, so GCC also
+  rejects a program that only declares a parameter of that type, or
+  whose candidate with such a parameter has no conversion sequence
+  ({question}`Q-0321`).
 - LSUP-2: EDG needs all three classes declared before it accepts `<=>`
   on any built-in operand. Clang and GCC need only the class that the
   operation yields.

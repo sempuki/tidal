@@ -80,7 +80,7 @@ that follows IEEE 754 ({rule}`MUL-11`).
 :::
 
 :::{principle} CMP-P5
-:rules: CMP-12 CMP-13 CMP-17 CMP-18 CMP-25
+:rules: CMP-12 CMP-13 CMP-17 CMP-27 CMP-18 CMP-25
 
 `<=>` compares once and gives an ordering value.
 
@@ -315,13 +315,22 @@ to a class object and a pointer to its first member, after conversion to
 
 :::{rule} CMP-17
 :kind: required
-:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp expressions/comparison/three-way-negative-zero.cpp expressions/comparison/three-way-mixed-types.cpp
+:tests: expressions/comparison/three-way-integers.cpp expressions/comparison/three-way-floating.cpp expressions/comparison/three-way-negative-zero.cpp expressions/comparison/three-way-mixed-types.cpp expressions/comparison/three-way-result-copies-member.cpp
 
 For integer and pointer operands, `a <=> b` gives `less`, `equal`, or
 `greater` as `a` is less than, equal to, or greater than `b`. For
 floating-point operands, equal values give `equivalent`, and `-0.0` and
 `0.0` are equal. If a floating-point operand is a NaN, the result is
 `std::partial_ordering::unordered`.
+:::
+
+:::{rule} CMP-27
+:kind: required
+:tests: expressions/comparison/three-way-result-copies-member.cpp
+
+The result of a built-in `<=>` is a prvalue. The prvalue is initialized
+from the static data member of the result type that {rule}`CMP-17`
+names ({rule}`LSUP-2`).
 :::
 
 :::{rule} CMP-22
@@ -424,8 +433,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 84 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 75
+of 85 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.

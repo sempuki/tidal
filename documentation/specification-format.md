@@ -83,6 +83,19 @@ header of `//` directives at the top of the file controls the runner:
 | `tidal-sources` | file names | Extra translation units for this test, named `*.tu.cpp` and kept next to it. Each unit is compiled on its own, then all are linked together. |
 | `tidal-note` | text | Free text, such as the question ID (`Q-0001`) behind an override. |
 
+A test whose program has undefined behavior at run time must not
+expect `run`. A `run` test asserts an outcome, and undefined behavior
+promises none (decision 0047). The test expects one of these:
+
+| Case | Expectation |
+|---|---|
+| A sanitizer configuration stops the behavior. | `run-fail`, with the flags of decisions 0028 and 0043. |
+| No sanitizer configuration stops the behavior. | `accept`. The program compiles, and the test does not check its run. |
+
+If constant evaluation can reach the behavior, a separate test expects
+`reject`. The notes and the rule's Evidence describe which
+configurations stop the behavior, and give no run result.
+
 A `tidal-error` pattern names the reason for the rejection in words that
 the compiler's message uses, without its quote characters. The host GCC
 quotes with `‘’` and the container GCCs with `''`. Write one pattern per

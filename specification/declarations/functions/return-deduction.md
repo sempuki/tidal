@@ -103,7 +103,7 @@ A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 
 :::{rule} RET-6
 :kind: undefined
-:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp
 
 If a function with `decltype(auto)` returns a parenthesized local
 variable, the return type of the function is an rvalue reference to that
@@ -133,7 +133,11 @@ constexpr auto fact(int n) {
 
 ## Evidence
 
-All eight compilers agree on all 22 tests. The results are in
+All eight compilers agree on all 23 tests. The results are in
 `tests/RESULTS.md`.
+
+- RET-6: the address sanitizer stops the use of the result on GCC and
+  Clang. Clang reports a use after return. GCC gives a null reference
+  for the address of the local variable, and the read faults.
 
 Inputs: clang-sema-stmt, clang-sema-decl, clang-diag-sema, edg-func-def.

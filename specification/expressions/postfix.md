@@ -244,7 +244,7 @@ past the end is also undefined.
 
 :::{rule} PFX-8
 :kind: undefined
-:tests: expressions/postfix/call-null-pointer.cpp
+:tests: expressions/postfix/call-null-pointer.cpp expressions/postfix/call-null-pointer-sanitizer.cpp
 
 A call through a null function pointer is undefined.
 :::
@@ -254,8 +254,9 @@ A call through a null function pointer is undefined.
 :tests: expressions/postfix/member-call-null-pointer-sanitizer.cpp expressions/postfix/member-call-null-pointer-constant.cpp
 
 A call of a non-static member function through a null pointer, as in
-`p->f()`, is undefined. This holds also when the function reads no
-member. The call `(*p).f()` is the same call ({rule}`UN-7`).
+`p->f()` or `(*p).f()`, is undefined. PFX-21 is the case of
+{rule}`UN-7` for a member call. PFX-21 holds also when the function
+reads no member.
 :::
 
 :::{rule} PFX-19
@@ -323,8 +324,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 67 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 68 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
