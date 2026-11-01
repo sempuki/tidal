@@ -6,14 +6,14 @@ Then the operator evaluates its right operand, which gives the result.
 ## Principles
 
 :::{principle} COMMA-P1
-:rules: COMMA-1 COMMA-2 COMMA-3 COMMA-7
+:rules: COMMA-1 COMMA-2 COMMA-3 COMMA-7 COMMA-9
 
 The comma operator runs two expressions in order and keeps the second.
 The left operand is evaluated first, with all its side effects, and its
 value is dropped, so the left operand can even be `void`. The right
-operand gives the result, with its own type and value category. The
-overloaded operator keeps the same order. The operator groups to the
-left and is allowed in a constant expression.
+operand gives the result unchanged, with its own type and value
+category. The overloaded operator keeps the same order. The operator
+groups to the left and is allowed in a constant expression.
 :::
 
 :::{principle} COMMA-P2
@@ -51,15 +51,16 @@ operand is intended.
 
 :::{rule} COMMA-2
 :kind: required
-:tests: expressions/comma/result-category.cpp expressions/comma/left-void.cpp
+:tests: expressions/comma/result-category.cpp expressions/comma/left-void.cpp expressions/comma/result-not-converted.cpp expressions/comma/result-lvalue-address.cpp
 
 The result has the type and {term}`value category` of the right operand.
-The left operand can have type `void`.
+The right operand is not converted, so an array stays an array and a
+function stays a function. The left operand can have type `void`.
 :::
 
 :::{rule} COMMA-3
 :kind: required
-:tests: expressions/comma/grouping.cpp expressions/comma/constant-expression.cpp
+:tests: expressions/comma/grouping.cpp expressions/comma/constant-expression.cpp expressions/comma/template-argument.cpp
 
 The operator groups from left to right and can occur in a constant
 expression.
@@ -97,23 +98,33 @@ Where the syntax asks for a constant expression, such as an array bound
 or a `case` label, a comma operator must be in parentheses.
 :::
 
+:::{rule} COMMA-9
+:kind: reject
+:tests: expressions/comma/braced-list-operand.cpp
+
+Each operand of the comma operator must be an expression. A braced list
+is not an operand.
+:::
+
 ## Runtime Behavior
 
 :::{rule} COMMA-1
 :kind: required
-:tests: expressions/comma/left-before-right.cpp expressions/comma/left-side-effects-complete.cpp
+:tests: expressions/comma/left-before-right.cpp expressions/comma/left-side-effects-complete.cpp expressions/comma/temporaries-end-with-full-expression.cpp expressions/comma/in-loop-and-condition.cpp
 
 The left operand is evaluated first, and its value is discarded. All
 side effects of the left operand complete before the right operand is
-evaluated.
+evaluated. A temporary that the left operand creates lives to the end
+of the full expression ({rule}`VC-6`).
 :::
 
 :::{rule} COMMA-7
 :kind: required
-:tests: expressions/comma/overloaded-comma-order.cpp
+:tests: expressions/comma/overloaded-comma-order.cpp expressions/comma/overloaded-void-operand-built-in.cpp
 
 An overloaded comma operator ({rule}`OPR-7`) evaluates its left operand
-before its right operand.
+before its right operand. A parameter cannot have type `void`, so if an
+operand has type `void`, the built-in comma operator applies.
 :::
 
 ## Recommended Practice
@@ -135,11 +146,13 @@ count(1, 2);               // two arguments
 count((1, 2));             // one argument, the value 2
 arr[i, j];                 // rejected for a built-in array
 arr[(i, j)];               // fine: the comma operator, the value j
+sizeof((0, arr));          // sizeof(arr): the array is not converted
+return (1, {2});           // rejected: a braced list is not an operand
 ```
 
 ## Evidence
 
-All eight compilers agree on all 17 tests. The results are in
+All eight compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no

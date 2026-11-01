@@ -5,7 +5,16 @@
 
 ## Context
 
-A class definition has several `alignas` specifiers with different values. Clang and EDG use the strictest. GCC uses the last one.
+A class definition has several `alignas` specifiers with different values. Clang and EDG use the strictest. GCC 14, 16, and the host GCC 16.2 use the last one.
+
+On a variable and on a non-static data member, GCC uses the strictest
+of several `alignas`, as Clang and EDG do. `alignas(16) alignas(8)` on
+either gives an alignment of 16 with every compiler.
+
+## Evidence
+
+`tests/declarations/alignment/strictest-wins.cpp`, with an override for
+GCC.
 
 ## Options
 
@@ -14,6 +23,7 @@ A class definition has several `alignas` specifiers with different values. Clang
 
 ## Provisional answer
 
-Option 1. Clang and EDG agree, and the same rule applies to variables.
+Option 1. Clang and EDG agree, and every compiler, GCC included, uses
+the strictest on variables and data members.
 
 ## Opinions

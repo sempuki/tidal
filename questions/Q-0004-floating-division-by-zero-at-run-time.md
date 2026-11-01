@@ -1,6 +1,6 @@
 # Q-0004: Should floating division by zero be implementation-defined on IEEE 754 targets?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** MUL-11, MUL-20, CE-28, CMP-5, CMP-17, CONV-3,
 `tests/expressions/multiplicative/floating-divide-by-zero-infinity.cpp`,
 `tests/expressions/multiplicative/floating-zero-by-zero-nan.cpp`,
@@ -36,6 +36,14 @@ results on every configuration, including `-O2`. A test of
 `__STDC_IEC_559__` and of the library's report of IEEE 754 types passed
 on every Clang and GCC configuration.
 
+A second probe on every compiler in the matrix gave the same results.
+`-fsanitize=float-divide-by-zero` stops `1.0 / 0.0` on every Clang and
+GCC configuration, and `-fsanitize=undefined` lets it run. With `-m32`,
+GCC keeps `float` and `double` intermediates in the x87 format during
+constant evaluation, so a copy of `ieee-types.cpp` with `-m32` fails on
+GCC at its digit checks. The types still follow IEEE 754, and MUL-17
+allows the extra precision.
+
 ## Options
 
 1. `undefined` everywhere. The NaN tests have no valid program, and
@@ -49,7 +57,7 @@ on every Clang and GCC configuration.
    run time on every implementation. Tidal would then require IEEE 754
    of every implementation.
 
-## Provisional answer
+## Answer
 
 Option 2. The choice is a property of the implementation, which the
 matrix implementations make and report the same way at every
@@ -58,9 +66,14 @@ the division as undefined. Constant evaluation rejects the division on
 Clang and GCC, so CE-28 states that limit apart from the run-time
 result.
 
+Every result in the matrix lies within option 2. The one exception is
+EDG's acceptance during constant evaluation, which Q-0002 records as a
+defect. The run-time rule is MUL-11, the choice of each type is MUL-20,
+and the limit on constant evaluation is CE-28.
+
 MUL-12 keeps floating overflow `undefined` (Q-0001). The same argument
-can apply to an overflow at run time in a type that follows IEEE 754,
-and a later change can extend MUL-20 to it.
+can apply to an overflow at run time in a type that follows IEEE 754.
+Q-0001 records that option.
 
 ## Opinions
 

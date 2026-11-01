@@ -9,6 +9,10 @@ A member function `f` has the specifier `noexcept(noexcept(f()))`. The
 value of the specifier depends on itself. Clang rejects a use of
 `noexcept(S{}.f())`. GCC and EDG accept it.
 
+GCC 14 and 16 give the same result, and so do Clang 18 and 22. The host
+GCC 16.2 and Clang 22.1 agree with them. No newer version settles the
+split.
+
 ## Options
 
 1. The program is not valid, and an implementation need not diagnose it

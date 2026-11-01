@@ -7,7 +7,7 @@ are set at run time, in an order that this page gives.
 ## Principles
 
 :::{principle} SINIT-P1
-:rules: SINIT-1 SINIT-2
+:rules: SINIT-1 SINIT-2 SINIT-7
 
 Static storage is initialized in two steps.
 
@@ -47,16 +47,19 @@ wait for its first use.
 
 :::{rule} SINIT-1
 :kind: required
-:tests: declarations/initialization/static/constant-before-dynamic.cpp declarations/initialization/static/constexpr-constant-initialized.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp
+:tests: declarations/initialization/static/constant-before-dynamic.cpp declarations/initialization/static/constexpr-constant-initialized.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp declarations/initialization/static/constexpr-constructor-constant-initialized.cpp declarations/initialization/static/const-variable-in-initializer.cpp declarations/initialization/static/reference-constant-initialized.cpp
 
 A variable with static or thread storage is *constant-initialized* if
 its initializer is a constant expression. Such a variable has its value
 before any code runs, including the initializers of other variables.
+The initializer can call a `constexpr` constructor, read a `const`
+integer variable with a constant initializer, or bind a reference to a
+variable with static storage.
 :::
 
 :::{rule} SINIT-2
 :kind: required
-:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp declarations/initialization/static/inline-variables-ordered.cpp
+:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp declarations/initialization/static/inline-variables-ordered.cpp declarations/initialization/static/dynamic-reads-zero-other-scalars.cpp
 
 Other namespace-scope variables are *dynamically initialized*. In one
 {term}`translation unit`, they are initialized in the order of their
@@ -64,9 +67,19 @@ definitions. An `inline` variable is ordered only after an earlier
 `inline` variable that comes first in every translation unit that
 defines both. The order of an `inline` variable with other variables is
 unspecified (SINIT-3). Before its initializer runs, a variable of
-scalar type holds zero (STO-3). A member of a class object has no value
+scalar type holds zero, so a pointer is null and a `bool` is `false`
+(STO-3). A member of a class object has no value
 until the initialization of the object gives the member one
 ({rule}`OBJ-2`, {question}`Q-0175`).
+:::
+
+:::{rule} SINIT-7
+:kind: required
+:tests: declarations/initialization/static/static-member-in-order.cpp
+
+A static data member that is defined outside its class takes its place
+in the order of SINIT-2 at its definition. The place of the class
+definition does not matter.
 :::
 
 ## Implementation Requirements
@@ -84,7 +97,7 @@ unit can initialize the `inline` variable first.
 
 :::{rule} SINIT-4
 :kind: unspecified
-:tests: declarations/initialization/static/maybe-static.cpp
+:tests: declarations/initialization/static/maybe-static.cpp declarations/initialization/static/maybe-static-non-const-read.cpp
 
 An implementation can do a dynamic initialization before the program
 starts, if the variable gets the same value. Whether the early
@@ -138,11 +151,17 @@ constexpr int mode() {
 int offset = 0;
 int fixed = mode();         // 1: constant-initialized
 int moved = mode() + offset;  // 2: offset is not a constant
+
+const int limit = 4;
+int twice = limit * 2;      // constant-initialized: limit is const
+int next();
+struct Registry { static int id; };
+int Registry::id = next();  // ordered here, at its definition
 ```
 
 ## Evidence
 
-All eight compilers agree on all 12 tests. The results are in
+All eight compilers agree on all 18 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
@@ -152,7 +171,11 @@ All eight compilers agree on all 12 tests. The results are in
   `int b = three();` at run time. `three` is an `inline` function that
   is not `constexpr`. An earlier reader gets 0. With
   `-fimplicit-constexpr`, GCC initializes `b` before the program starts,
-  and the earlier reader gets 3. See {question}`Q-0014`.
+  and the earlier reader gets 3. See {question}`Q-0014`. Every compiler
+  at `-O0` and `-O2` initializes `int v = base * 2;` at run time when
+  `base` is not `const`, and an earlier reader gets 0. With a `const`
+  `base`, `v` is constant-initialized (SINIT-1), and the earlier reader
+  gets 8.
 - **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.

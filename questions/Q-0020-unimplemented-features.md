@@ -1,14 +1,15 @@
 # Q-0020: How should tests record a compiler that doesn't implement a feature yet?
 
 **Status:** provisional
-**Affects:** `documentation/specification-format.md`, tests that use `[[assume]]`
+**Affects:** `documentation/specification-format.md`, ATTR-10, ATTR-13, tests that use `[[assume]]`
 
 ## Context
 
 Clang 18 doesn't implement `[[assume]]`. Clang 18 treats the attribute as
 an unknown attribute and ignores it, so tests that expect a rejection get an
 acceptance. The compiler predates the feature, so the difference says
-nothing about the language.
+nothing about the language. Clang 22 implements the attribute and agrees
+with GCC and EDG on every `assume` test.
 
 ## Options
 

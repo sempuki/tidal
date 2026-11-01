@@ -243,6 +243,7 @@ A name must not be declared twice in one scope, except by declarations
 that refer to one entity, such as two declarations of one function. The
 outermost block of a function is one scope with its parameter list. A
 variable and a function with one name in one scope are not valid.
+{rule}`STMT-8` names the specific case of a block (decision 0042).
 :::
 
 :::{rule} NAM-4

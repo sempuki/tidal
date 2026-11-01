@@ -382,27 +382,46 @@ of 72 tests. EDG skips the tests that use `-Werror`.
 - ATTR-7: Clang warns for a missing `[[fallthrough]];` only under
   `-Wimplicit-fallthrough`. GCC also warns under `-Wextra`. Both agree
   on the cases where control falls through.
-- For ATTR-10, all compilers reject a false assumption during
-  {term}`constant evaluation` ("assumption evaluated to false", "failed
-  'assume' attribute assumption", "assumption failed"). Clang 18 does
-  not implement `assume` ({question}`Q-0020`).
+- ATTR-3 and ATTR-10 are undefined. Every compiler except Clang 18
+  rejects a false assumption during {term}`constant evaluation`
+  ("assumption evaluated to false", "failed 'assume' attribute
+  assumption", "assumption failed"). At run time, the undefined
+  behavior sanitizers of Clang and GCC 16 stop a program whose
+  `noreturn` function returns. The same program built by GCC 14
+  crashes. The sanitizers also stop a program whose assumption is
+  false.
+- ATTR-9 is implementation-defined because the layout of a class is the
+  implementation's choice. Every compiler in the matrix gives an empty
+  member with `no_unique_address` no storage of its own.
+- ATTR-10 and ATTR-13: Clang 18 does not implement `assume`. Clang 18
+  ignores the attribute as unknown. So Clang 18 accepts each program
+  that the tests expect to be rejected, including a comma in an
+  assumption, and its sanitizer does not stop at a false assumption.
+  Clang 22 implements `assume` and agrees with GCC and EDG. The tests
+  record Clang 18 as a compiler without the feature
+  ({question}`Q-0020`).
 - ATTR-19: every compiler accepts an attribute with an unknown namespace
   in each position of the table, and warns that the attribute is
   ignored. GCC 14 rejects the position before a base class and the
   position after the array bound of a `new` expression. GCC 16 accepts
-  both ({question}`Q-0177`).
-- Divergence ATTR-D1 is about `[[noreturn]] int x;`. GCC accepts it with
-  a warning. Clang and EDG reject it. The provisional answer is that the
-  declaration is rejected ({question}`Q-0021`).
-- ATTR-2 has these divergences:
+  both, so GCC 14 has a defect that GCC 16 fixes ({question}`Q-0177`).
+- ATTR-18: GCC and EDG accept an attribute after the cv-qualifiers of a
+  `*` and reject one before them. Clang does the reverse
+  ({question}`Q-0123`).
+- ATTR-2 has these divergences. In each, the compilers that accept the
+  program ignore the attribute with a warning, also under
+  `-pedantic-errors`.
 
-  - `carries_dependency`: GCC accepts the attribute added on a
-    redeclaration, because GCC ignores the attribute. Clang and EDG
-    reject the redeclaration ({question}`Q-0108`).
-  - GCC also ignores `no_unique_address` on a bit-field
-    ({question}`Q-0021`).
-  - Clang 18 ignores `assume`, so Clang 18 accepts a comma in an
-    assumption ({question}`Q-0020`).
+  | Program | Accepts | Rejects | Question |
+  |---|---|---|---|
+  | `[[noreturn]]` on a variable | GCC | Clang, EDG | {question}`Q-0021` |
+  | `[[nodiscard]]` on a variable | Clang, GCC | EDG | {question}`Q-0021` |
+  | `[[no_unique_address]]` on a bit-field | GCC | Clang, EDG | {question}`Q-0021` |
+  | `[[likely]]` and `[[unlikely]]` on one statement | GCC | Clang, EDG | {question}`Q-0046` |
+  | `carries_dependency` added on a redeclaration | GCC | Clang, EDG | {question}`Q-0108` |
+
+  Each row holds for GCC 14 and 16 and for Clang 18 and 22. The
+  provisional answer for each row is that the program is rejected.
 
 Inputs: clang-sema-declattr, clang-sema-stmtattr, edg-attribute,
 clang-diag-sema (see `inputs/MANIFEST.md`).

@@ -15,8 +15,8 @@ The logical operators work on truth values. Each operand is converted to
 `bool` by contextual conversion, the same conversion a condition uses.
 So each of these is a valid operand:
 
-- any arithmetic value,
-- a pointer,
+- any arithmetic value or unscoped enumeration value,
+- a pointer, or an array or a function, which converts to a pointer,
 - a pointer to member,
 - `nullptr`,
 - a class with an `explicit operator bool`.
@@ -71,38 +71,41 @@ comparison. In both forms, precedence suggests a mistake.
 
 :::{rule} LOG-1
 :kind: required
-:tests: expressions/logical/result-type.cpp
+:tests: expressions/logical/result-type.cpp expressions/logical/result-prvalue.cpp
 
 The result of `&&`, `||`, and `!` has type `bool` and is a prvalue.
 :::
 
 :::{rule} LOG-2
 :kind: required
-:tests: expressions/logical/contextual-conversion.cpp
+:tests: expressions/logical/contextual-conversion.cpp expressions/logical/operand-enum-and-conversion.cpp expressions/logical/operand-array-and-function.cpp
 
 Each operand is converted to `bool` by {term}`contextual conversion`.
 These are valid operands:
 
-- arithmetic values,
-- pointers,
-- classes with an `explicit operator bool`.
+- arithmetic values and values of unscoped enumerations,
+- pointers, and arrays and functions, which convert to pointers,
+- classes with a conversion function to `bool` or to one of these
+  types, including an `explicit operator bool`.
 :::
 
 :::{rule} LOG-3
 :kind: reject
-:tests: expressions/logical/operand-not-convertible.cpp expressions/logical/operand-scoped-enum.cpp expressions/logical/operand-void.cpp
+:tests: expressions/logical/operand-not-convertible.cpp expressions/logical/operand-scoped-enum.cpp expressions/logical/operand-void.cpp expressions/logical/operand-ambiguous-conversion.cpp expressions/logical/operand-throw.cpp
 
 Each operand must be convertible to `bool` by contextual conversion.
 These are not valid operands:
 
 - a class without a suitable conversion,
+- a class whose conversion to `bool` is ambiguous,
 - a scoped enumeration,
-- `void`.
+- an expression of type `void`, such as a call or a `throw`
+  expression.
 :::
 
 :::{rule} LOG-6
 :kind: required
-:tests: expressions/logical/precedence.cpp
+:tests: expressions/logical/precedence.cpp expressions/logical/alternative-tokens-precedence.cpp
 
 `!` is a unary operator and binds more tightly than `==`. `&&` binds
 more tightly than `||`. Both bind less tightly than `|` and group from
@@ -120,7 +123,7 @@ operation that constant evaluation does not permit.
 
 :::{rule} LOG-14
 :kind: reject
-:tests: expressions/logical/constant-evaluated-call.cpp
+:tests: expressions/logical/constant-evaluated-call.cpp expressions/logical/constant-evaluated-division.cpp
 
 During {term}`constant evaluation`, if the right operand is evaluated,
 an operation that constant evaluation does not permit makes the
@@ -139,10 +142,12 @@ so `nullptr` and a null pointer to member give `false`
 
 :::{rule} LOG-13
 :kind: required
-:tests: expressions/logical/alternative-tokens.cpp
+:tests: expressions/logical/alternative-tokens.cpp expressions/logical/alternative-tokens-precedence.cpp expressions/logical/alternative-tokens-in-declarators.cpp
 
-Each of these words is another spelling of an operator. No header is
-needed:
+Each word in the table is another spelling of an operator, and no
+header is needed ({rule}`KW-2`). A word is the same token as its
+operator in every context, so `int and r = f();` declares an rvalue
+reference.
 
 | Word | Operator | Word | Operator |
 |---|---|---|---|
@@ -158,7 +163,7 @@ needed:
 
 :::{rule} LOG-10
 :kind: required
-:tests: expressions/logical/values.cpp
+:tests: expressions/logical/values.cpp expressions/logical/values-at-run-time.cpp
 
 - `a && b` is `true` if both operands are `true`.
 - `a || b` is `true` if one or both operands are `true`.
@@ -167,7 +172,7 @@ needed:
 
 :::{rule} LOG-4
 :kind: required
-:tests: expressions/logical/short-circuit-and.cpp expressions/logical/short-circuit-or.cpp
+:tests: expressions/logical/short-circuit-and.cpp expressions/logical/short-circuit-or.cpp expressions/logical/short-circuit-chain.cpp
 
 If the left operand of `&&` is `false`, the right operand is not
 evaluated. If the left operand of `||` is `true`, the right operand is
@@ -176,15 +181,16 @@ not evaluated.
 
 :::{rule} LOG-5
 :kind: required
-:tests: expressions/logical/left-before-right.cpp
+:tests: expressions/logical/left-before-right.cpp expressions/logical/temporaries-end-with-full-expression.cpp
 
 The left operand is evaluated completely, with all its side effects,
-before the right operand starts.
+before the right operand starts. A temporary that the left operand
+creates lives to the end of the full expression ({rule}`VC-6`).
 :::
 
 :::{rule} LOG-11
 :kind: required
-:tests: expressions/logical/overloaded-and-evaluates-both.cpp
+:tests: expressions/logical/overloaded-and-evaluates-both.cpp expressions/logical/overloaded-or-evaluates-both.cpp expressions/logical/overloaded-left-first.cpp
 
 An overloaded `&&` or `||` ({rule}`OPR-7`) evaluates both operands. The
 left operand is evaluated before the right operand.
@@ -222,11 +228,15 @@ int i = 0;
 
 a || b && c                     // a || (b && c); compilers warn
 !a == b                         // (!a) == b; compilers warn
+
+if (Lock(m).held() && ready())  // the Lock lives to the end of the condition
+  run();
+int and moved = make();         // int&& moved: and is the token &&
 ```
 
 ## Evidence
 
-All eight compilers agree on 20 of 21 tests. The results are in
+All eight compilers agree on 33 of 34 tests. The results are in
 `tests/RESULTS.md`.
 
 - LOG-8: Clang warns under `-Wlogical-op-parentheses` and GCC under
@@ -235,6 +245,11 @@ All eight compilers agree on 20 of 21 tests. The results are in
 - EDG doesn't take these warning flags and skips the
   recommended-practice tests.
 - LOG-12: GCC 14 rejects `nullptr` as an operand. GCC 16, Clang, and EDG
-  accept it ({question}`Q-0101`).
+  accept it. GCC 14 has a defect that GCC 16 fixes ({question}`Q-0101`).
+- LOG-2: Clang warns that an array or a function as an operand always
+  converts to `true`, and GCC warns under `-Waddress`. Every compiler
+  accepts the program.
+- LOG-5: every compiler destroys the temporaries of both operands after
+  the right operand, in the reverse order of their creation.
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -15,7 +15,7 @@ For other operands the order is not fixed.
 ## Principles
 
 :::{principle} SEQ-P1
-:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9
+:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9 SEQ-10
 
 The language fixes the order of evaluation only where meaning needs it.
 A full expression finishes, with all its side effects, before the next
@@ -25,6 +25,7 @@ level. Within a full expression, these orders are fixed:
 | Construct | Evaluated first | Evaluated after |
 |---|---|---|
 | Call | The function | Its arguments |
+| Call | Its arguments, with their side effects | The body of the function |
 | Assignment | The right side, complete | The left side |
 | Subscript | The array | Its index |
 | Member pointer | The object | The member pointer applied to the object |
@@ -82,7 +83,7 @@ A program calls a function without naming it in these places:
 
 :::{rule} SEQ-3
 :kind: required
-:tests: expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp
+:tests: expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp expressions/sequencing/chained-assignment-order.cpp expressions/sequencing/assignment-right-before-left-index.cpp
 
 These operands are evaluated in a fixed order:
 
@@ -105,7 +106,7 @@ that they create, belong to the full expression that contains the call.
 
 :::{rule} SEQ-6
 :kind: required
-:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp
+:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp expressions/sequencing/overloaded-subscript-order.cpp expressions/sequencing/overloaded-compound-assignment-order.cpp expressions/sequencing/overloaded-member-pointer-order.cpp
 
 An overloaded operator ({rule}`OPR-7`) keeps the order of the built-in
 operator for these operators:
@@ -118,6 +119,14 @@ operator for these operators:
 
 An overloaded `&&` or `||` evaluates both operands, the left one first
 (OPR-7).
+:::
+
+:::{rule} SEQ-10
+:kind: required
+:tests: expressions/sequencing/arguments-before-body.cpp
+
+The arguments of a call, with all their side effects, are complete
+before the body of the called function starts.
 :::
 
 ## Undefined Behavior
@@ -137,12 +146,14 @@ same volatile object are undefined too.
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp
+:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp
 
 The arguments of a function call, including its default arguments, are
 evaluated in an unspecified order. Each argument is evaluated completely
-before the evaluation of another argument starts. The body of a called
-function also does not overlap with other evaluations in the caller.
+before the evaluation of another argument starts, so a write in one
+argument and a read of the same object in another argument are not
+undefined. The body of a called function also does not overlap with
+other evaluations in the caller.
 :::
 
 :::{rule} SEQ-8
@@ -189,6 +200,9 @@ i = i++ + 1;          // fine: i is 2
 i++ + i++;            // undefined
 i + i++;              // undefined: a read and a write
 pair(i++, i++);       // fine: the order is unspecified
+pair(i++, i);         // fine: pair(1, 2) or pair(1, 1) when i is 1
+cells[i++] = i;       // fine: the right side is read first
+show(g++);            // show's body sees the new value of g
 
 struct Flags { unsigned on : 1, dirty : 1; } f;
 (f.on = 1) + (f.dirty = 1);   // undefined: one memory location
@@ -196,7 +210,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 25 tests. The results are in
+All eight compilers agree on all 32 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1 and SEQ-8: the table gives the order that each compiler takes.
@@ -214,6 +228,13 @@ All eight compilers agree on all 25 tests. The results are in
 
   Clang gives the same order at run time and in constant evaluation. The
   built-in operators in constant evaluation were checked with `+` only.
+- SEQ-1: when `i` is 0, every compiler calls `pair(0, 1)` for
+  `pair(i++, i)`, at `-O0` and `-O2`. GCC gives this result although
+  GCC evaluates the arguments of `f(a(), b())` from right to left. The
+  test accepts `pair(0, 0)` too, because the rule allows it.
+- SEQ-4: during constant evaluation, no compiler rejects two
+  unsequenced modifications of one object, such as `i++ + i++`.
+  {rule}`CE-26` allows this.
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
   "operation may be undefined". The test makes these warnings errors. No
   compiler warns about two bit-fields of one memory location or two

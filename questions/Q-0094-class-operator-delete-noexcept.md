@@ -9,6 +9,10 @@ A class declares a static `operator delete(void*, size)` with no
 `noexcept` specifier. Clang and EDG treat a direct call of it as
 non-throwing. GCC treats the call as potentially throwing.
 
+GCC 14 and 16 give the same result, and so do Clang 18 and 22. The host
+GCC 16.2 and Clang 22.1 agree with them. No newer version settles the
+split.
+
 ## Options
 
 1. A deallocation function is non-throwing without the keyword.

@@ -1,15 +1,31 @@
 # Q-0029: Is a chained comparison such as `3 > 2 > 1` valid?
 
 **Status:** provisional
-**Affects:** CMP-1 and the chained-comparison warning rule, `tests/expressions/comparison/chained-comparison.cpp`, `tests/expressions/comparison/chained-comparison-warns.cpp`
+**Affects:** CMP-1, CMP-14, `tests/expressions/comparison/chained-comparison.cpp`, `tests/expressions/comparison/chained-comparison-warns.cpp`, `tests/expressions/comparison/chained-less-equal-warns.cpp`
 
 ## Context
 
 `3 > 2 > 1` groups as `(3 > 2) > 1`, which compares a `bool` with `1`.
-Clang 22 rejects the expression by default, through a `-Wparentheses`
-diagnostic that is an error unless disabled. Clang 18, GCC 16 and 14, and
-EDG 7.0 accept it. Clang 18 also gives no warning for a chained comparison
-of variables.
+
+| Compiler | `3 > 2 > 1` with no warning flags | `a < b < c` with `-Werror -Wparentheses` |
+|---|---|---|
+| Clang 22 (host and container) | rejects | rejects |
+| Clang 18 | accepts | accepts, with no warning |
+| GCC 16 and 14 | accepts | rejects |
+| EDG 7.0 | accepts | not run; EDG has no such flag |
+
+Clang 22's rejection comes from a `-Wparentheses` warning whose default
+severity is an error. With `-Wno-error=parentheses`, Clang 22 gives the
+warning and accepts the program. With `-Wno-parentheses`, Clang 22 gives
+nothing. Clang 22 accepts the same expression with parentheses,
+`(3 > 2) > 1`. GCC also warns about `a == b == c` and `a < b == c`, and
+Clang 22 does not.
+
+## Evidence
+
+The tests in Affects, and probes of the flags and forms above on every
+compiler in the matrix. The newest Clang is the one that rejects, so no
+newer version settles the split.
 
 ## Options
 
@@ -20,6 +36,8 @@ of variables.
 ## Provisional answer
 
 Option 1. The grouping and result are well defined, and four of five
-compiler versions accept the expression.
+compiler versions accept the expression. Clang 22 treats the rejection
+as a warning that a flag turns back into a warning, which matches
+option 1 with a strict default.
 
 ## Opinions

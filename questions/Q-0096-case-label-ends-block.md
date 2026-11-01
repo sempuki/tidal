@@ -5,7 +5,7 @@
 
 ## Context
 
-A switch body ends with a case label or a default label, with no statement after it. Clang and EDG accept the program. GCC 14 and 16 reject it, though they accept an identifier label in that place.
+A switch body ends with a case label or a default label, with no statement after it. Clang and EDG accept the program. GCC 14 and 16 reject it, though they accept an identifier label in that place. The host GCC 16.2 rejects it too, so no newer GCC settles the split.
 
 ## Options
 

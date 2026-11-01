@@ -165,15 +165,26 @@ alignas(2) int bad;              // rejected: weaker than alignof(int)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 18
-of 31 tests. Each divergence has a question.
+of 31 tests. Each divergence has a question, except the
+implementation-defined limit of ALN-5.
 
-- ALN-1: GCC uses the last of several `alignas` on a class
-  ({question}`Q-0071`). EDG and GCC 14 accept `alignas` on an
-  enumeration ({question}`Q-0073`).
-- ALN-2: GCC accepts `alignas` weaker than the natural alignment
-  ({question}`Q-0069`). GCC 14 accepts `alignas` on a function, a type
-  alias, and a bit-field ({question}`Q-0072`).
+- ALN-1: GCC uses the last of several `alignas` on a class. On a
+  variable and on a data member, GCC uses the strictest, as Clang and
+  EDG do on all three ({question}`Q-0071`).
+- ALN-7: EDG 7.0 and GCC 14 accept `alignas` on an enumeration. Clang
+  and GCC 16 reject it ({question}`Q-0073`).
+- ALN-2: GCC accepts `alignas` weaker than the natural alignment, with
+  no warning, and keeps the natural alignment ({question}`Q-0069`).
+  GCC 14 accepts `alignas` on a function, a `typedef`, an alias
+  declaration, and a bit-field. GCC 16, Clang, and EDG reject all four, so GCC 14 has a
+  defect that GCC 16 fixes ({question}`Q-0072`).
 - ALN-3: GCC accepts declarations of a variable or a class with
   different `alignas` ({question}`Q-0070`).
+- ALN-5 is implementation-defined because the alignments come from the
+  target's conventions. EDG 7.0 rejects an alignment of 2^28 ("invalid
+  alignment value"), which Clang and GCC accept.
+- ALN-6 needs no diagnostic because each translation unit is checked
+  alone. Every compiler accepts two units whose declarations of one
+  variable have different `alignas`.
 
 Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.

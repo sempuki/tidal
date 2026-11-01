@@ -6,9 +6,9 @@
 ## Context
 
 An attribute specifier can follow the `*` of a pointer declarator. With
-a cv-qualifier there too, the compilers disagree on the order. GCC and
-EDG accept `* const [[]]` and reject `* [[]] const`. Clang accepts
-`* [[]] const` and rejects `* const [[]]`. All three accept `* [[]]`
+a cv-qualifier there too, the compilers disagree on the order. GCC 14 and 16 and
+EDG 7.0 accept `* const [[]]` and reject `* [[]] const`. Clang 18 and 22
+accept `* [[]] const` and reject `* const [[]]`. All three accept `* [[]]`
 with no qualifier.
 
 ## Evidence

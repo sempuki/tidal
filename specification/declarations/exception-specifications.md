@@ -232,19 +232,25 @@ struct File : Base { void close() override; };  // rejected: throwing override
 The results are in `tests/RESULTS.md`. All eight compilers agree on 34
 of 40 tests.
 
-- EXS-1: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
+- EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
-- EXS-5: Clang and GCC accept `throw()`. EDG rejects it
-  ({question}`Q-0077`).
 - EXS-4: GCC treats a class-specific `operator delete` without a
-  specifier as potentially throwing. EDG treats a defaulted `==` as
-  non-throwing even if a member `==` is potentially throwing
-  ({question}`Q-0094`, {question}`Q-0095`).
+  specifier as potentially throwing. Clang and EDG treat it as
+  non-throwing ({question}`Q-0094`). EDG treats a defaulted `==` as
+  non-throwing even if a member `==` is potentially throwing. Clang and
+  GCC treat it as potentially throwing ({question}`Q-0095`).
 - EXS-9 and EXS-10: every compiler accepts a specialization whose
   operand is not valid while no use needs the specifier. Every compiler
   rejects a call or a `noexcept` operator that needs the specifier. {rule}`INST-7`
   says when the body of a specialization is instantiated.
-- EXS-6: Clang rejects an operand that depends on the function itself.
-  GCC and EDG accept the operand ({question}`Q-0079`).
+- EXS-5 is implementation-defined because the compilers split on
+  `throw()`. Clang and GCC accept the form as `noexcept`, and EDG
+  rejects it ({question}`Q-0077`).
+- EXS-6 needs no diagnostic because GCC and EDG accept an operand that
+  depends on the function itself, and Clang rejects it
+  ({question}`Q-0079`). The test records both outcomes.
+- Each split above holds on the newest compiler of each family in the
+  matrix: GCC 16, Clang 22, and EDG 7.0. The older GCC 14 and Clang 18
+  give the same results as the newer versions.
 
 Inputs: clang-sema-declcxx, clang-sema-type, clang-diag-sema, edg-decls.

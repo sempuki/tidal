@@ -5,25 +5,32 @@
 
 ## Context
 
-Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` during constant evaluation.
-EDG 7.0 accepts both. EDG rejects floating overflow (Q-0001), so it treats
-some floating-point results as errors and not others.
+CE-28 rejects a floating-point `/` with a zero right operand during
+constant evaluation, also in a type that follows IEEE 754. Clang 22 and
+18 and GCC 16 and 14 reject `1.0 / 0.0` and `0.0 / 0.0` during constant
+evaluation. EDG 7.0 accepts both, and gives an infinity and a NaN: a
+`static_assert` that the first value exceeds `1e308` and that the
+second value differs from itself passes. EDG rejects floating overflow
+(Q-0001), so EDG treats some floating-point results as errors and not
+others.
 
 ## Evidence
 
 `tests/RESULTS.md`, rows `floating-divide-by-zero.cpp` and
-`floating-zero-by-zero.cpp`.
+`floating-zero-by-zero.cpp`. A probe of the two values in `constexpr`
+initializers on every compiler in the matrix. EDG 7.0 is the only EDG
+version in the matrix.
 
 ## Options
 
-1. Keep MUL-11 as `undefined`, and report EDG's behavior to the EDG project
-   as a possible defect.
-2. Make floating division by zero `impl-defined`, with EDG's acceptance as
-   one permitted outcome.
+1. Keep CE-28, and report EDG's behavior to the EDG project as a
+   possible defect.
+2. Allow constant evaluation to give the IEEE 754 result, with EDG's
+   acceptance as one permitted outcome.
 
 ## Provisional answer
 
-Option 1. Two of three implementations reject, and EDG's own handling is
-inconsistent with its rejection of overflow.
+Option 1. Two of three implementations reject, and EDG's own handling
+is inconsistent with its rejection of overflow.
 
 ## Opinions
