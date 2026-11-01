@@ -230,6 +230,9 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0217](Q-0217-qualifiers-on-references-of-two-kinds.md) | Does the qualifier tie-breaker of partial ordering apply to an lvalue reference against an rvalue reference? | provisional | yes; Clang, GCC and EDG differ |
 | [Q-0218](Q-0218-object-parameter-before-reversal.md) | Is the object parameter of a swapped member candidate added before its parameters are reversed? | provisional | yes; Clang, GCC and EDG differ |
 | [Q-0219](Q-0219-placement-deallocation-templates-ordered.md) | Does partial ordering choose among placement deallocation function templates? | provisional | yes; GCC and EDG agree, Clang calls none |
+| [Q-0220](Q-0220-placement-deallocation-function-before-template.md) | Does a placement deallocation function win over a template that also matches? | provisional | yes; GCC and EDG agree, Clang calls none |
+| [Q-0221](Q-0221-deleted-deallocation-function-in-new.md) | Is a `new` expression valid when its matching deallocation function is deleted? | provisional | no; Clang and EDG reject, GCC accepts |
+| [Q-0222](Q-0222-placement-deallocation-templates-unordered.md) | Is a `new` expression valid when two placement deallocation templates match and neither is preferred? | provisional | yes, and no deallocation function is called; Clang and GCC agree, EDG rejects |
 
 ## Status values
 

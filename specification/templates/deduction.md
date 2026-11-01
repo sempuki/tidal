@@ -602,10 +602,10 @@ arguments can give the invented parameters.
 
 :::{rule} DED-39
 :kind: required
-:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp
+:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
 
 A `new` expression with placement arguments can need a placement
-deallocation function ({doc}`/expressions/new-delete`). A deallocation
+deallocation function ({doc}`/expressions/new-delete`, {rule}`NEW-23`). A deallocation
 function template matches if deduction makes its parameter types after
 the first the same as those of the allocation function. If several
 templates match, partial ordering ({rule}`ORD-9`) chooses one
@@ -658,8 +658,8 @@ size(1);                        // int::size_type is not valid; size(...)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 85
-of 89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 86
+of 92 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight baseline compilers. The compilers agree on every

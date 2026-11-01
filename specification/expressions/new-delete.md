@@ -45,7 +45,7 @@ run.
 :::
 
 :::{principle} NEW-P3
-:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20
+:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25
 
 The storage comes from an allocation function. The global allocation
 and deallocation functions exist in every program without a
@@ -59,6 +59,19 @@ exception of a type that is *(library referenced)*, and the deallocation
 functions never throw. The implementation chooses how often the global functions
 are called, because a program only ever sees the objects. So two `new`
 expressions may share one allocation.
+
+If the initialization throws, the storage goes back through the
+deallocation function that pairs with the allocation function. The
+extra parameters make the pair, so a placement form needs an
+`operator delete` with the same extra parameters. Only that function
+knows how to free storage that the placement form obtained. Without the
+function, the storage stays allocated.
+
+| Allocation | Deallocation function after a throw | Rules |
+|---|---|---|
+| no placement arguments | a usual form, with a `void*` parameter and an optional size | NEW-22 |
+| placement arguments | the form with the same parameters after the first | NEW-23, {rule}`DED-39` |
+| either, when no single function matches | none, and the storage is not freed | NEW-24 |
 :::
 
 :::{principle} NEW-P4
@@ -220,6 +233,17 @@ call ({rule}`PFX-6`). The functions of NEW-19 accept no placement
 arguments.
 :::
 
+:::{rule} NEW-25
+:kind: reject
+:tests: expressions/new-delete/deallocation-private.cpp expressions/new-delete/deallocation-private-no-throw.cpp expressions/new-delete/deallocation-deleted.cpp expressions/new-delete/deallocation-deleted-no-throw.cpp expressions/new-delete/deallocation-placement-deleted.cpp expressions/new-delete/placement-matches-usual-form.cpp
+
+The deallocation function that NEW-21 to NEW-23 choose must be
+accessible and must not be deleted ({question}`Q-0221`). The
+requirement holds also when the initialization cannot throw. With
+placement arguments, the chosen function must not be a usual form
+(NEW-22).
+:::
+
 :::{rule} NEW-15
 :kind: required
 :tests: expressions/new-delete/delete-class-converting-to-pointer.cpp
@@ -249,11 +273,71 @@ destroys the elements of an array from the last element to the first.
 
 :::{rule} NEW-12
 :kind: required
-:tests: expressions/new-delete/allocation-before-initializer.cpp expressions/sequencing/new-placement-and-bound-order.cpp
+:tests: expressions/new-delete/allocation-before-initializer.cpp expressions/sequencing/new-placement-and-bound-order.cpp expressions/new-delete/throw-in-initializer-argument.cpp
 
 The allocation function is called after the placement arguments and
 the array bound are evaluated, and before the arguments of the
 initializer are evaluated.
+:::
+
+:::{rule} NEW-21
+:kind: required
+:tests: expressions/new-delete/throw-in-initializer-argument.cpp expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp
+
+If the initialization in a `new` expression throws, a deallocation
+function frees the storage before the exception leaves the expression
+({rule}`UNW-3`). The initialization includes the evaluation of the
+initializer's arguments. The function is an `operator delete`, or an
+`operator delete[]` for an array, that this search finds:
+
+- If the type is a class and the expression does not start with `::`,
+  the search looks in the class and its bases.
+- If that search finds no function with the name, the search uses the
+  global functions.
+:::
+
+:::{rule} NEW-22
+:kind: required
+:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp
+
+Without placement arguments, the deallocation function is a usual form.
+A usual form has a `void*` parameter, and can have a second parameter
+of the type of `sizeof 0`. The forms that the search finds decide the
+call:
+
+- If a class declares both usual forms, the form with one parameter is
+  called.
+- If a class declares one usual form, that form is called.
+- For the global functions, either form can be called ({rule}`UNW-3`).
+:::
+
+:::{rule} NEW-23
+:kind: required
+:tests: expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/throw-placement-two-parameters.cpp expressions/new-delete/throw-placement-default-argument.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp
+
+With placement arguments, the deallocation function is the one that
+matches the allocation function. The two match if their parameters after the first
+have the same types in the same order. These conditions also apply:
+
+- A parameter with a default argument counts, also when the `new`
+  expression gives no argument for the parameter.
+- A function template matches as {rule}`DED-39` says.
+- If a function and a function template both match, the function is
+  called ({question}`Q-0220`).
+:::
+
+:::{rule} NEW-24
+:kind: required
+:tests: expressions/new-delete/throw-placement-converting-type-no-match.cpp expressions/new-delete/throw-placement-reference-type-no-match.cpp expressions/new-delete/throw-placement-ellipsis-no-match.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
+
+The implementation calls no deallocation function, and the storage is
+not freed, in these cases:
+
+- No function that the search finds matches. A function with an
+  ellipsis does not match, and a usual form or a global function is
+  not called in place of the match.
+- Two or more functions match, and neither NEW-23 nor {rule}`ORD-9`
+  chooses one ({question}`Q-0222`).
 :::
 
 ## Undefined Behavior
@@ -327,8 +411,8 @@ new (&x) int(3);                // rejected without a declared placement form
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 53
-of 57 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 71
+of 80 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -353,5 +437,22 @@ of 57 tests.
 - NEW-19: all compilers give `noexcept` the value `false` for a call of
   the global `operator new` forms and `true` for the `operator delete`
   forms.
+- NEW-21 to NEW-24: Clang, GCC, and EDG agree on the search in the
+  class and its bases, on the choice between the usual forms of a class,
+  and on the placement forms with no match. EDG runs no programs, so
+  its results say only that these programs are valid.
+- NEW-23: GCC calls a function in preference to a function template
+  when both match. EDG chooses the same function. A probe with a failing
+  `static_assert` in the template shows that EDG does not instantiate
+  the template. Clang warns that two functions match and calls neither
+  ({question}`Q-0220`).
+- NEW-24: Clang and GCC call no deallocation function when two
+  templates match and partial ordering prefers neither. Clang warns.
+  EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).
+- NEW-25: Clang, GCC, and EDG reject a private deallocation function,
+  also when the initialization cannot throw. Clang and EDG reject a
+  deleted one in the same cases. GCC accepts the deleted function
+  ({question}`Q-0221`). All three reject a placement form whose match
+  is a usual form.
 
 Inputs: clang-sema-expr, clang-diag-sema.
