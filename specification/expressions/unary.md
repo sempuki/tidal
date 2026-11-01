@@ -104,10 +104,13 @@ implicit calls that `e` makes, and answers with a `bool` constant. Like
              : | ("+" | "-" | "*" | "&" | "!" | "~") `cast_expr`
              : | ("++" | "--") `unary_expr`
              : | "sizeof" `unary_expr` | "sizeof" "(" `type_id` ")"
+             : | "sizeof" "..." "(" `identifier` ")"
              : | "alignof" "(" `type_id` ")"
              : | "noexcept" "(" `expression` ")"
              : | `new_expr` | `delete_expr`
 ```
+
+`sizeof...` counts the elements of a pack ({rule}`PACK-19`).
 
 ## Constraints
 

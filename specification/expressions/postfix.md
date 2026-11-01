@@ -69,9 +69,11 @@ prefix forms.
                : | `postfix_expr` ("." | "->") ["template"] `id_expression`
                : | `postfix_expr` ("++" | "--")
                : | `functional_cast` | `named_cast` | `dynamic_cast`
-   expression_list: `argument` {"," `argument`}
+   expression_list: `argument` ["..."] {"," `argument` ["..."]}
    argument: `assignment_expr` | `braced_init`
 ```
+
+An `argument` with `...` is a pack expansion ({rule}`PACK-13`).
 
 ## Constraints
 

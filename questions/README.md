@@ -236,18 +236,51 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0223](Q-0223-independent-errors-in-unused-templates.md) | Does an implementation diagnose an independent error in a template that is never instantiated? | provisional | no diagnostic required; Clang and EDG diagnose, GCC does not |
 | [Q-0224](Q-0224-dependent-name-read-as-value-yields-type.md) | Is a dependent qualified name without typename that becomes a type at instantiation an error? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0225](Q-0225-template-keyword-after-typename-qualifier.md) | Does a name after typename T:: need the template keyword before an argument list? | provisional | yes; Clang and EDG agree, GCC differs |
-| [Q-0226](Q-0226-template-keyword-without-argument-list.md) | Can the template keyword come before a member that has no argument list after it? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0226](Q-0226-template-keyword-without-argument-list.md) | Can the template keyword come before a member that has no argument list after it? | provisional | only before a template template argument or a class or alias template; Clang and GCC each differ on one case |
 | [Q-0227](Q-0227-template-keyword-in-declarator.md) | Can the template keyword follow the qualifier of a name that a declaration declares? | provisional | no; Clang only, GCC and EDG accept |
-| [Q-0228](Q-0228-missing-member-of-current-instantiation-unused.md) | Is a missing member of the current instantiation diagnosed in a template that is not used? | provisional | yes; GCC 14 differs, GCC 16 agrees |
+| [Q-0228](Q-0228-missing-member-of-current-instantiation-unused.md) | Is a missing member of the current instantiation diagnosed in a template that is not used? | provisional | no diagnostic required while unused; GCC 14 accepts, others reject |
 | [Q-0229](Q-0229-alias-template-as-current-instantiation.md) | Does an alias template specialization name the current instantiation? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0230](Q-0230-qualified-member-ambiguous-at-instantiation.md) | Is a qualified member name of the current instantiation looked up again at the instantiation? | provisional | yes; Clang and EDG agree, GCC differs |
 | [Q-0231](Q-0231-inline-static-member-initializer-with-class.md) | Is the initializer of an inline static data member instantiated with its class? | provisional | no; Clang and GCC agree, EDG differs |
 | [Q-0232](Q-0232-scoped-enumeration-with-class.md) | Are the enumerators of a scoped member enumeration instantiated with the class? | provisional | no; Clang and EDG agree, GCC differs |
-| [Q-0233](Q-0233-explicit-instantiation-storage-class-and-attribute.md) | Can an explicit instantiation have a storage class or an attribute after the keyword template? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0233](Q-0233-explicit-instantiation-storage-class-and-attribute.md) | Can an explicit instantiation have a storage class or an attribute after the keyword template? | provisional | no, except thread_local; Clang agrees, GCC and EDG each differ |
 | [Q-0234](Q-0234-extern-template-internal-linkage.md) | Can an explicit instantiation declaration name a specialization with internal linkage? | provisional | no; Clang and EDG agree, GCC differs |
 | [Q-0235](Q-0235-explicit-instantiation-unqualified-outside-namespace.md) | Can an explicit instantiation outside the template's namespace use an unqualified name? | provisional | no; Clang and GCC agree, EDG differs |
 | [Q-0236](Q-0236-explicit-instantiation-array-bound.md) | Can an explicit instantiation of a variable leave out the array bound? | provisional | yes; GCC and EDG agree, Clang differs |
 | [Q-0237](Q-0237-explicit-specialization-after-extern-template.md) | Can an explicit specialization follow an explicit instantiation declaration? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0238](Q-0238-alignas-pack-on-class.md) | Does `alignas(T...)` on a class take the strictest alignment of the elements? | compiler defect | yes; GCC takes the last element on a class |
+| [Q-0239](Q-0239-deduction-through-inherited-constructors.md) | Does a class template that inherits constructors get the deduction guides of its base? | provisional | yes; GCC and EDG agree, Clang differs |
+| [Q-0240](Q-0240-deduction-through-alias-templates.md) | Can a program deduce the arguments of a class template through an alias template? | provisional | yes; Clang 22 and GCC agree, Clang 18 and EDG 7.0 differ |
+| [Q-0241](Q-0241-guide-parameter-not-deducible.md) | Must an implementation diagnose a deduction guide whose template parameter cannot be deduced? | provisional | no; no-diagnostic, Clang rejects |
+| [Q-0242](Q-0242-guide-result-with-cv-qualifier.md) | Can the result of a deduction guide have a cv-qualifier? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0243](Q-0243-deduced-name-after-dependent-qualifier.md) | Can a deduced class template name follow a dependent qualifier? | provisional | yes; every compiler accepts |
+| [Q-0244](Q-0244-aggregate-candidate-in-new-expression.md) | Does a parenthesized list in a `new` expression form the aggregate deduction candidate? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0245](Q-0245-template-keyword-before-destructor.md) | Can the keyword template come before a destructor name? | provisional | no; Clang and GCC agree, EDG differs |
+| [Q-0246](Q-0246-current-instantiation-member-changes-at-instantiation.md) | Is a member of the current instantiation that names another single member at the instantiation an error? | provisional | yes, no diagnostic required; every compiler accepts |
+| [Q-0247](Q-0247-pack-expanded-twice-in-base-list.md) | Is a base list that expands the same pack twice diagnosed before instantiation? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0248](Q-0248-conversion-function-of-dependent-base.md) | Does an unqualified conversion function name find a conversion function of a dependent base? | provisional | no; GCC and EDG agree, Clang differs |
+| [Q-0249](Q-0249-later-default-argument-for-qualified-call.md) | Does a qualified call in a template use a default argument that a later declaration adds? | provisional | no diagnostic required; GCC uses it, Clang and EDG reject |
+| [Q-0250](Q-0250-constant-function-defined-after-template.md) | Can a template's independent constant use a constexpr function that is defined after the template? | provisional | no diagnostic required; GCC and EDG accept, Clang rejects |
+| [Q-0251](Q-0251-member-partial-specializations-become-same.md) | Is a class instantiation not valid when two member partial specializations become the same? | provisional | yes; Clang only, GCC and EDG accept |
+| [Q-0252](Q-0252-constexpr-function-in-unevaluated-operand.md) | When does an unevaluated operand instantiate a constexpr function template? | provisional | in a braced initializer; EDG and GCC differ on single rows |
+| [Q-0253](Q-0253-local-class-default-argument-instantiated.md) | Is the default argument of a local class's member function instantiated with the enclosing function? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0254](Q-0254-variable-template-defined-after-explicit-instantiation.md) | Can a variable template's definition follow its explicit instantiation definition? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0255](Q-0255-explicit-instantiation-exception-specification.md) | Must the exception specification of an explicit instantiation match the template? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0256](Q-0256-explicit-instantiation-of-placeholder-variable.md) | How does an explicit instantiation name a variable template declared with auto? | provisional | with the deduced type; Clang and GCC agree, EDG differs |
+| [Q-0257](Q-0257-constant-evaluation-after-first-point.md) | Must an implementation reject a constant evaluation that needs a declaration after the first point of instantiation? | provisional | yes; every compiler rejects |
+| [Q-0258](Q-0258-virtual-function-trailing-clause.md) | Can a virtual function have a trailing requires clause? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0259](Q-0259-requires-expression-parameter-default-and-ellipsis.md) | Can a parameter of a requires expression have a default argument, or the list end in an ellipsis? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0260](Q-0260-trailing-clause-in-function-template.md) | Can a lambda or a member of a local class inside a function template have a trailing requires clause? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0261](Q-0261-constraints-before-return-type.md) | Are the constraints of a function template checked before its return type is formed? | provisional | yes; every current compiler agrees, Clang 18 differs |
+| [Q-0262](Q-0262-order-of-placeholder-constraints.md) | Is the requires clause after the template parameter list checked before the constraints of placeholder parameters? | provisional | yes; GCC and EDG agree, Clang differs |
+| [Q-0263](Q-0263-non-bool-atomic-constraint-skipped.md) | Is an atomic constraint whose type is never bool an error when a short circuit skips it? | provisional | yes; Clang and EDG agree, GCC differs |
+| [Q-0264](Q-0264-satisfaction-changes-between-checks.md) | Does an implementation diagnose an atomic constraint whose result changes between two checks? | provisional | no diagnostic required; GCC 16 diagnoses |
+| [Q-0265](Q-0265-template-template-argument-more-constrained.md) | Can a template template argument be more constrained than its parameter? | provisional | no; Clang 22 and GCC agree, Clang 18 and EDG differ |
+| [Q-0266](Q-0266-eligible-constrained-special-members.md) | Do the constraints of special member functions decide which ones make a class trivial? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0267](Q-0267-constrained-friend-template-declaration.md) | Must a friend template whose constraint uses the enclosing class's template parameter be a definition? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0268](Q-0268-constrained-friend-definitions-distinct.md) | Are the constrained friend definitions of two class specializations two functions? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0269](Q-0269-placeholder-parameter-redeclares-template.md) | Does a function with a placeholder parameter redeclare the function template with the same invented head? | provisional | yes, following DED-34 and TPL-20; Clang agrees, GCC and EDG differ |
+| [Q-0270](Q-0270-attribute-on-concept.md) | Can a concept definition have an attribute after the concept's name? | provisional | yes; every current compiler agrees, Clang 18 differs |
 
 ## Status values
 

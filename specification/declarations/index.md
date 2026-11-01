@@ -57,6 +57,8 @@ static-assert
               : | `template_decl`
               : | `explicit_specialization`
               : | `explicit_instantiation`
+              : | `deduction_guide`
+              : | `concept_definition`
               : | ";"
    block_decl: `simple_decl`
              : | `sb_decl`
@@ -69,6 +71,7 @@ static-assert
    simple_decl: {`attribute_spec` | `alignment_specifier`} `decl_specifiers`
               :    [`init_declarator` {"," `init_declarator`}] ";"
    init_declarator: `declarator` [`init`]
+                  : | `declarator` `requires_clause`
    decl_specifiers: `decl_specifier` {`decl_specifier`}
    decl_specifier: `type_specifier`
                  : | `storage_class`

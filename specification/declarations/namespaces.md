@@ -68,10 +68,12 @@ Neither form belongs in a class.
                 :    "{" {`declaration`} "}"
    ns_path: ["inline"] `identifier` {"::" ["inline"] `identifier`}
    namespace_alias: "namespace" `identifier` "=" `qualified_name` ";"
-   using_decl: "using" ["typename"] `qualified_name`
-             : {"," ["typename"] `qualified_name`} ";"
+   using_decl: "using" ["typename"] `qualified_name` ["..."]
+             : {"," ["typename"] `qualified_name` ["..."]} ";"
    using_directive: "using" "namespace" `qualified_name` ";"
 ```
+
+A `using_decl` with `...` expands a pack of bases ({rule}`PACK-21`).
 
 ## Constraints
 

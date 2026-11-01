@@ -56,23 +56,23 @@ In scope:
   (roadmap phase 3, items H, L, and M).
 - Templates: declarations and parameters, template-ids and template
   arguments, explicit and partial specialization, variable templates,
-  alias templates, deduction, partial ordering, dependent names, and
-  instantiation (roadmap phase 4, items N1, O, and N2).
+  alias templates, deduction, partial ordering, dependent names,
+  instantiation, packs, forwarding references, class template argument
+  deduction, concepts, and constraints (roadmap phase 4, items N1, O,
+  N2, R, and P).
 
 Referenced but not specified:
 
-The in-scope topics depend on the rest of templates and on concepts:
-constraints, packs, forwarding references, and class template argument
-deduction. Tidal sections refer to them by name, mark each use
-*(templates referenced)* or *(concepts referenced)*, and list them in a
-"Depends on" block. Phase 4 of the roadmap brings them into scope
-(decision 0033, Q-0113).
+A few topics that the in-scope rules mention have no page: the library
+beyond the language-support types, coroutines, the memory model,
+extended floating-point types, the full lists of class properties, and
+the preprocessor beyond `#include "file"`. Tidal sections mark each use
+with a *(topic referenced)* marker.
 
 Out of scope:
 
 - The preprocessor other than `#include "file"` and include guards,
   lexical structure, modules.
-- The parts of templates that phase 4 has not brought in yet.
 - The standard library, except the language-support types that the core
   rules name (decision 0041).
 - Coroutines (`co_await`, `co_yield`, `co_return`).

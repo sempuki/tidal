@@ -28,10 +28,13 @@ Every rule ID starts with the prefix of its page.
 | `CINIT` | `declarations/constexpr.md` |
 | `CLS` | `classes/members.md` |
 | `CMP` | `expressions/comparison.md` |
+| `CNS` | `templates/constraints.md` |
 | `COMMA` | `expressions/comma.md` |
 | `COND` | `expressions/conditional.md` |
 | `CONV` | `foundations/conversions.md` |
+| `CPT` | `templates/concepts.md` |
 | `CPY` | `classes/copy-move.md` |
+| `CTAD` | `templates/class-template-deduction.md` |
 | `CTOR` | `classes/constructors.md` |
 | `CV` | `declarations/declarators.md` |
 | `CVF` | `classes/conversion-functions.md` |
@@ -74,6 +77,7 @@ Every rule ID starts with the prefix of its page.
 | `OPR` | `classes/operators.md` |
 | `ORD` | `templates/ordering.md` |
 | `OVL` | `foundations/overload-resolution.md` |
+| `PACK` | `templates/packs.md` |
 | `PFX` | `expressions/postfix.md` |
 | `PRIM` | `expressions/primary.md` |
 | `REF` | `declarations/initialization/references.md` |

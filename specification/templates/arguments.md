@@ -108,9 +108,11 @@ argument.
 .. productionlist:: tidal
    template_id: `template_name` "<" [`template_args`] ">"
    template_name: `identifier`
-   template_args: `template_arg` {"," `template_arg`}
+   template_args: `template_arg` ["..."] {"," `template_arg` ["..."]}
    template_arg: `type_id` | `constant_expr` | [`nested_name`] `template_name`
 ```
+
+A `template_arg` with `...` is a pack expansion ({rule}`PACK-10`).
 
 A `template_id` is an `unqualified_id` ({doc}`../expressions/primary`),
 and it can name a class in a `simple_type`. A `template_name` is an
@@ -264,9 +266,12 @@ all belong with deduction:
 - the name of a function template, whose arguments a call or a target
   type can supply ({rule}`DED-1`, {rule}`DED-30`),
 - a class template as the type of a variable with an initializer
-  *(templates referenced)*,
+  ({rule}`CTAD-1`),
 - a class template as the type of a constant parameter
   ({rule}`TPL-11`).
+
+{rule}`CTAD-2` is the specific rule for a class template name in other
+places (decision 0042).
 :::
 
 :::{rule} TARG-11

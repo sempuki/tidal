@@ -5,6 +5,11 @@ term to its entry here. A marker such as *(library referenced)* names a
 topic that Tidal does not specify yet.
 
 :::{glossary}
+aggregate candidate
+  A deduction guide that an aggregate class template gets for one
+  initializer list. Its parameters are the types of the members that the
+  elements initialize ({rule}`CTAD-9`).
+
 alias template
   A template whose declaration is a `using` alias. A specialization of an
   alias template is the type that the alias gives, and no new type
@@ -27,10 +32,20 @@ associated class
   example the argument's own class and its bases. The friends of an
   associated class are found ({rule}`NAM-27`, {rule}`NAM-29`).
 
+associated constraints
+  The constraints of a declaration, joined into one conjunction in a
+  fixed order ({rule}`CNS-1`).
+
 associated namespace
   A namespace that an argument type adds to argument-dependent lookup,
   for example the namespace that declares the argument's class
   ({rule}`NAM-27`).
+
+atomic constraint
+  A part of a constraint that normalization does not split: an
+  expression, with a mapping of template parameters to arguments. Two
+  atomic constraints are identical only if they come from the same
+  expression in the source ({rule}`CNS-3`, {rule}`CNS-4`).
 
 automatic storage
   Storage that exists while the block of an object runs, until the end
@@ -53,6 +68,19 @@ candidate function
 class template
   A template whose declaration declares a class. Each specialization is a
   class ({rule}`TPL-1`).
+
+class template argument deduction
+  The deduction of the template arguments of a class template from an
+  initializer, when the program writes the template name with no
+  argument list ({rule}`CTAD-1`).
+
+concept
+  A named constraint on template arguments, defined with `concept` at
+  namespace scope ({rule}`CPT-1`).
+
+concept-id
+  The name of a concept with a template argument list. A concept-id is
+  a constant of type `bool` ({rule}`CPT-1`).
 
 constant evaluation
   Evaluation of an expression during translation, before the program
@@ -79,6 +107,11 @@ constant parameter
   ({rule}`TPL-6`), and its argument is a constant expression
   ({rule}`TARG-12`).
 
+constraint
+  A condition on template arguments that the implementation checks at
+  compile time. See {term}`concept`, {term}`requires clause`, and
+  {term}`type constraint`.
+
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
   necessary, for example in an `if` condition. The value `e` is
@@ -90,6 +123,11 @@ converting constructor
   A constructor that is not `explicit`. An implicit conversion can use a
   converting constructor to make an object of its class from the
   constructor's arguments ({rule}`CTOR-10`).
+
+copy candidate
+  The deduction guide of every class template that takes a
+  specialization of the template and gives the same specialization, so a
+  copy keeps its type ({rule}`CTAD-7`).
 
 copy-initialization
   The initialization of an object from an initializer after `=`
@@ -107,15 +145,21 @@ cv-qualifier
   `const` object after its initialization. Each access to a `volatile`
   object is an observable effect ({rule}`TR-7`).
 
+declarator
+  The part of a declaration that gives one name and makes its type. A
+  declarator adds pointers, references, arrays, and function parameters
+  to the base type.
+
 deduction
   The step that finds the template arguments of a function template from
   a use, such as the argument types of a call ({rule}`DED-1`,
   {principle}`DED-P2`).
 
-declarator
-  The part of a declaration that gives one name and makes its type. A
-  declarator adds pointers, references, arrays, and function parameters
-  to the base type.
+deduction guide
+  A function template that takes the arguments of an initializer and
+  gives a specialization of a class template. The implementation makes
+  guides from the constructors, and a program can declare more
+  ({rule}`CTAD-5`, {rule}`CTAD-11`).
 
 default initialization
   The initialization of an object that nothing initializes. A scalar
@@ -146,6 +190,11 @@ discarded statement
   - A function or variable that only a discarded statement uses needs no
     definition.
   - In a template, a discarded statement is not instantiated.
+
+eligible
+  Said of a special member function that is not deleted, whose
+  constraints are satisfied, and that no special member of the same
+  kind beats by being more constrained ({rule}`CNS-21`).
 
 ellipsis conversion sequence
   The sequence of an argument that matches the `...` of a function. It is
@@ -180,6 +229,11 @@ full expression
   An expression that is not part of a larger expression, such as the
   expression of an expression statement or a condition. The temporaries
   of a full expression end with the full expression ({rule}`VC-9`).
+
+function parameter pack
+  A function parameter declared with `...`. It stands for zero or more
+  parameters, one for each element of the pack in its type
+  ({rule}`PACK-1`).
 
 function template
   A template whose declaration declares a function. Each specialization
@@ -270,6 +324,10 @@ member template
   function, a nested class, or a static variable with a head of its own
   ({rule}`TPL-24`).
 
+more constrained
+  The relation that orders two declarations by their constraints
+  ({rule}`CNS-23`).
+
 more specialized
   One template is more specialized than another when deduction finds the
   other's parameters from its invented types, and not the reverse
@@ -279,6 +337,10 @@ non-deduced position
   A place in a parameter type where a template parameter takes no value
   from the argument, such as the part before `::` in a qualified name
   ({rule}`DED-13`).
+
+normal form
+  A constraint written as conjunctions and disjunctions of atomic
+  constraints ({rule}`CNS-2`).
 
 observable behavior
   The part of an execution that an implementation must reproduce:
@@ -293,6 +355,16 @@ operator function
   A function whose name is `operator` followed by an operator, such as
   `operator+`. An expression that uses the operator can call the
   operator function ({rule}`OPR-1`).
+
+pack
+  A name for a list of zero or more elements. Template parameters,
+  function parameters, and init captures can be packs
+  ({principle}`PACK-P1`).
+
+pack expansion
+  A pattern followed by `...`. The expansion stands for a list with one
+  copy of the pattern for each element of the packs in it
+  ({rule}`PACK-5`).
 
 partial ordering
   The comparison that decides which of two templates is more
@@ -323,10 +395,29 @@ promoted arithmetic type
   {term}`integer promotion` leaves unchanged, such as `int` and `long`
   ({principle}`OVL-P4`).
 
+prospective destructor
+  One of several destructors that a class declares with different
+  constraints. At the end of the class, the destructor is chosen from
+  them ({rule}`CNS-19`).
+
+requires clause
+  The keyword `requires` and a constraint, after a template parameter
+  list or after the declarator of a function ({rule}`CPT-8`,
+  {rule}`CPT-11`).
+
+requires expression
+  An expression that tests whether types and expressions are valid for
+  template arguments. Its value is a constant of type `bool`
+  ({rule}`CPT-24`).
+
 rewritten candidate
   A candidate for a comparison that uses another comparison operator,
   such as `!(x == y)` for `x != y`, or the same operator with the
   operands swapped ({rule}`DCMP-6`, {rule}`OVL-13`).
+
+satisfied
+  Said of a constraint that is true for the given template arguments
+  ({rule}`CNS-5` to {rule}`CNS-7`).
 
 sequence rank
   The rank of a {term}`standard conversion sequence`: exact match,
@@ -356,6 +447,10 @@ structural type
   A type that a constant parameter can have. Scalar types and lvalue
   references are structural. A literal class is structural when its bases
   and members are public, not `mutable`, and structural ({rule}`TPL-6`).
+
+subsume
+  A constraint subsumes another if each way to satisfy the first shares
+  an atomic constraint with each part of the second ({rule}`CNS-22`).
 
 surrogate candidate
   A candidate for a call on a class object that a conversion function to
@@ -392,16 +487,24 @@ temporary object
   temporary object ends with its full expression unless a rule makes
   its life longer ({rule}`VC-5`, {rule}`VC-8`, {rule}`VC-6`).
 
+translation unit
+  One source file after preprocessing, with all the files that it
+  includes. Each translation unit is compiled separately. Then the
+  translation units are linked into one program.
+
 trivial
   A special member function that is not user-provided and does only
   the work of the class's parts, so that nothing virtual and no default
   member initializer is involved ({rule}`CTOR-23`, {rule}`DTOR-9`,
   {rule}`CPY-27`).
 
-translation unit
-  One source file after preprocessing, with all the files that it
-  includes. Each translation unit is compiled separately. Then the
-  translation units are linked into one program.
+type concept
+  A concept whose first template parameter is a type parameter. Only a
+  type concept can be used in a type constraint ({rule}`CPT-18`).
+
+type constraint
+  A concept name, with optional template arguments, before a type
+  parameter or a placeholder ({rule}`CPT-17`, {rule}`CPT-20`).
 
 type parameter
   A template parameter that takes a type, declared with `class` or

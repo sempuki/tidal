@@ -93,13 +93,16 @@ initialization. A signature that two bases both offer is ambiguous.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   base_clause: ":" `base_spec` {"," `base_spec`}
+   base_clause: ":" `base_spec` ["..."] {"," `base_spec` ["..."]}
    base_spec: [`access_specifier`] ["virtual"] [`nested_name`] `class_name`
             : | "virtual" `access_specifier` [`nested_name`] `class_name`
    class_head: ("class" | "struct") {`attribute_spec` | `alignment_specifier`}
              :    [[`nested_name`] (`class_name` | `template_id`) ["final"]] [`base_clause`]
-   inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ";"
+   inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ["..."] ";"
 ```
+
+A `base_spec` or an `inheriting_decl` with `...` expands a pack of bases
+({rule}`PACK-14`, {rule}`PACK-21`).
 
 A *direct base* is a class in the base list. An *indirect base* is a base
 of a base. A *virtual base* is a base named with `virtual`. The *most

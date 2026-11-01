@@ -17,10 +17,9 @@ covers:
 
 Partial ordering of templates is on {doc}`ordering`. Dependent names
 are on {doc}`dependent-names`, and instantiation is on
-{doc}`instantiation`.
-Constraints are not specified yet *(concepts referenced)*. Packs beyond
-what deduction needs, and the deduction of class template arguments, are
-not specified yet *(templates referenced)*.
+{doc}`instantiation`. Packs are on {doc}`packs`, and the deduction of
+the arguments of a class template is on {doc}`class-template-deduction`.
+Constraints are on {doc}`concepts` and {doc}`constraints`.
 
 Depends on: template declarations, template arguments, implicit
 conversion sequences, overload resolution, placeholder types.
@@ -598,7 +597,8 @@ case with no matching template.
 A function parameter whose type has the placeholder `auto` makes the
 function a function template. Each `auto` adds an invented type
 parameter after those of the template head, in order. Explicit template
-arguments can give the invented parameters.
+arguments can give the invented parameters. A type constraint before
+`auto` constrains the invented parameter ({rule}`CPT-20`).
 :::
 
 :::{rule} DED-39
@@ -617,7 +617,7 @@ templates match, partial ordering ({rule}`ORD-9`) chooses one
 
 :::{rule} DED-35
 :kind: reject
-:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp
+:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp templates/packs/nondeduced-before-end-call.cpp
 
 A use of a function template name must have a function after
 deduction. These uses are not valid:
@@ -659,8 +659,8 @@ size(1);                        // int::size_type is not valid; size(...)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 86
-of 92 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 93 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight baseline compilers. The compilers agree on every
@@ -798,10 +798,10 @@ items those of
 Inventory items left out of this page:
 
 - J3, packs of different lengths expanded together, and H6, a pack
-  expansion before the end of a class template's argument list, belong
-  to packs *(templates referenced)*.
-- Q2, constraints checked after deduction, belongs to constraints
-  *(concepts referenced)*. {rule}`OVL-24` removes such a candidate.
+  expansion before the end of a class template's argument list, are
+  {rule}`PACK-6` and {rule}`PACK-12`.
+- Q2, constraints checked after deduction, is {rule}`CNS-11`.
+  {rule}`OVL-24` removes such a candidate.
 - K7, a placeholder return type at the address of a template, belongs
   to return type deduction, which is not specified yet.
 - K9 is {rule}`TSP-14`. P1, P2, and P4 are on

@@ -158,8 +158,8 @@ such as the body of another `consteval` function.
 
 These functions take on `consteval` from their bodies:
 
-- a `constexpr` function produced from a template *(templates
-  referenced)*,
+- a `constexpr` function produced from a template
+  ({doc}`/templates/instantiation`),
 - a lambda without `consteval` on it,
 - a special member function that the class defaults.
 

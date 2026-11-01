@@ -11,9 +11,8 @@ it. This page covers:
 - each tie-breaker after those steps,
 - partial specializations of class templates and variable templates.
 
-Deduction is on {doc}`deduction`. Constraints are not specified yet
-*(concepts referenced)*. This page states only how they break a tie in
-partial ordering.
+Deduction is on {doc}`deduction`. Constraints are on {doc}`constraints`.
+This page states only how they break a tie in partial ordering.
 
 Depends on: template declarations, explicit and partial
 specialization, template argument deduction, overload resolution.
@@ -247,8 +246,8 @@ parameter at that position ({question}`Q-0216`).
 :kind: required
 :tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp
 
-If no earlier step decides, the more constrained template is more
-specialized *(concepts referenced)*. The rule applies only if these
+If no earlier step decides, the more constrained template
+({rule}`CNS-23`) is more specialized. The rule applies only if these
 conditions hold ({question}`Q-0210`, {question}`Q-0146`):
 
 - The template heads are equivalent by {rule}`TPL-20`, which leaves out
@@ -271,7 +270,7 @@ templates. Each has the template head and constraints of its partial
 specialization, and one parameter. The parameter's type is the class
 template specialization with the partial specialization's argument list.
 The primary template compares in the same way, with its own parameters
-as its argument list.
+as its argument list. Constraints compare by {rule}`CNS-23`.
 :::
 
 ### No order
@@ -446,7 +445,6 @@ items those of
 | ORD-16 | probes; gap review O9 |
 
 Inventory item M10, constraints between a swapped candidate and another
-template, is left out. It belongs to constraints *(concepts
-referenced)*.
+template, is left out. It belongs to {doc}`constraints`.
 
 Inputs: clang-sema-deduction.

@@ -11,11 +11,11 @@ variable, or a type. The pages in this section give the rules for:
 - deduction of template arguments,
 - partial ordering of templates,
 - dependent names, and the checks before instantiation,
-- implicit and explicit instantiation, and points of instantiation.
-
-Packs beyond what deduction needs are not specified yet
-*(templates referenced)*. Constraints are not specified yet
-*(concepts referenced)*.
+- implicit and explicit instantiation, and points of instantiation,
+- concepts, requires clauses, and requires expressions,
+- normalization, satisfaction, and subsumption of constraints,
+- packs and their expansion, and forwarding references,
+- deduction of the arguments of a class template from an initializer.
 
 :::{tidal-pages}
 declarations
@@ -25,6 +25,10 @@ deduction
 ordering
 dependent-names
 instantiation
+concepts
+constraints
+packs
+class-template-deduction
 :::
 
 :::{toctree}
@@ -38,4 +42,8 @@ deduction
 ordering
 dependent-names
 instantiation
+concepts
+constraints
+packs
+class-template-deduction
 :::

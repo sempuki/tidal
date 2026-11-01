@@ -46,9 +46,11 @@ can be asked for depend on the target.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   alignment_specifier: "alignas" "(" `constant_expr` ")"
-                      : | "alignas" "(" `type_id` ")"
+   alignment_specifier: "alignas" "(" `constant_expr` ["..."] ")"
+                      : | "alignas" "(" `type_id` ["..."] ")"
 ```
+
+An `alignment_specifier` with `...` expands a pack ({rule}`PACK-16`).
 
 An `alignment_specifier` occurs before a variable or member declaration,
 or after the class key of a class definition, as in

@@ -491,11 +491,11 @@ The matching functions of OVL-18 are reduced in these steps:
 
 1. Each function template adds the specialization that deduction from
    the target gives ({rule}`DED-30`).
-2. Functions whose constraints are not satisfied are removed
-   *(concepts referenced)*.
+2. Functions whose constraints are not satisfied ({rule}`CNS-7`) are
+   removed.
 3. If a plain function remains, the specializations are removed.
 4. A plain function is removed if another plain function is more
-   constrained.
+   constrained ({rule}`CNS-23`).
 5. A specialization is removed if another comes from a more specialized
    template ({rule}`ORD-9`).
 :::
@@ -577,8 +577,9 @@ cv-qualifiers and ref-qualifier ({question}`Q-0187`).
 :kind: required
 :tests: foundations/overload-resolution/viable-constraints.cpp
 
-A candidate whose constraints are not satisfied is not viable
-*(concepts referenced)*.
+A candidate whose constraints are not satisfied ({rule}`CNS-7`) is not
+viable. {rule}`CNS-11` says when a function template's constraints are
+checked.
 :::
 
 ### The best viable function
@@ -642,9 +643,8 @@ Of two specializations, the one from the more specialized template wins
 
 Of two specializations from templates with the same function
 parameters, the one from the more constrained template wins
-({rule}`ORD-13`, *(concepts referenced)*). Templates with different
-function parameters do not compare by their constraints
-({question}`Q-0146`).
+({rule}`ORD-13`, {rule}`CNS-23`). Templates with different function
+parameters do not compare by their constraints ({question}`Q-0146`).
 :::
 
 :::{rule} OVL-29
@@ -663,10 +663,9 @@ The rule comes after OVL-26 and before OVL-27 and OVL-28
 :tests: foundations/overload-resolution/tie-more-constrained.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp
 
 Of two functions that are not specializations and have the same
-parameter list, the more constrained one wins *(concepts referenced)*.
-The parameter list includes the parameters with default arguments and
-the ellipsis ({question}`Q-0162`). The rule comes after OVL-26 and
-OVL-29.
+parameter list, the more constrained one ({rule}`CNS-23`) wins. The
+parameter list includes the parameters with default arguments and the
+ellipsis ({question}`Q-0162`). The rule comes after OVL-26 and OVL-29.
 :::
 
 :::{rule} OVL-31
@@ -713,7 +712,7 @@ order of the declarations.
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
-{rule}`CTOR-25`, OVL-43, and {rule}`DED-35`.
+{rule}`CTOR-25`, OVL-43, {rule}`DED-35`, and {rule}`CTAD-24`.
 :::
 
 :::{rule} OVL-36
@@ -726,7 +725,9 @@ is not valid. Such a use is ambiguous. These rules name specific cases
 
 - {rule}`OPR-15` for operators,
 - {rule}`CTOR-25` for constructors,
-- {rule}`ORD-15` for templates that partial ordering does not order.
+- {rule}`ORD-15` for templates that partial ordering does not order,
+- {rule}`CTAD-24` for the guides of a class template,
+- {rule}`CNS-24` for declarations that their constraints do not order.
 :::
 
 :::{rule} OVL-37
@@ -874,8 +875,7 @@ of 149 tests.
   form (inventory RK-16). Every compiler rejects the comparison in
   strict mode, and {rule}`DCMP-7` recommends a warning.
 - Class template argument deduction and its deduction-guide steps
-  (inventory RK-11) are left out. They belong to the templates phase of
-  the roadmap.
+  (inventory RK-11) are on {doc}`/templates/class-template-deduction`.
 - Inventory AF-8, a usable result of resolution, has no rule. No rule on
   this page uses the notion, and {rule}`CPY-7` states its own
   conditions.

@@ -89,15 +89,22 @@ warn about the implicit capture.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   lambda_expr: "[" [`captures`] "]" ["(" `parameters` ")"] {`lambda_specifier`}
-              : [`noexcept_specifier`] ["->" `type_id`] `compound_stmt`
+   lambda_expr: "[" [`captures`] "]" [`lambda_template`]
+              :    ["(" `parameters` ")"] {`lambda_specifier`}
+              :    [`noexcept_specifier`] ["->" `type_id`] [`requires_clause`]
+              :    `compound_stmt`
+   lambda_template: "<" `template_params` ">" [`requires_clause`] {`attribute_spec`}
    captures: `capture_default` {"," `capture`}
            : | `capture` {"," `capture`}
    capture_default: "=" | "&"
-   capture: ["&"] `identifier` [`init`]
+   capture: ["&"] `identifier` ["..."]
+          : | ["&"] ["..."] `identifier` `init`
           : | "this" | "*" "this"
    lambda_specifier: "mutable" | "static" | "constexpr" | "consteval"
 ```
+
+A `capture` with `...` captures a pack ({rule}`PACK-17`,
+{rule}`PACK-18`).
 
 ## Constraints
 

@@ -81,7 +81,7 @@ current state only. The history of how the project got here is in
 | [Throw expressions and the exception object](../specification/exceptions/throw.md) | 12 | 10 required, 1 reject | 28 | 5 | 0 | 37 |  | 0 flagged |
 | [Try blocks and handlers](../specification/exceptions/handlers.md) | 18 | 8 required, 6 reject, 1 undefined, 3 recommended | 78 | 6 | 2 | 33 |  | 0 flagged |
 | [Unwinding and termination](../specification/exceptions/unwinding.md) | 9 | 7 required, 1 impl-defined, 1 recommended | 34 | 2 | 1 | 46 | Q-0179 | 0 flagged |
-| [Glossary](../specification/glossary.md) | 82 terms | | | | | | | 0 flagged |
+| [Glossary](../specification/glossary.md) | 104 terms | | | | | | | 0 flagged |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds the site on every change and publishes it to
@@ -95,7 +95,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 4517/4517 tests pass on each. Two
+Eight compilers are baseline, and 4825/4825 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -116,22 +116,19 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-Two hundred and thirty-six questions are open for opinions, each
-with a provisional answer the specification follows. Fifteen of them have the status
+Two hundred and sixty-nine questions are open for opinions, each
+with a provisional answer the specification follows. Sixteen of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
-Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213). Q-0009 (license) is settled. See `questions/README.md`.
+Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213, Q-0238). Q-0009 (license) is settled. See `questions/README.md`.
 
 ## Known limits of the specification text
 
 - The glossary covers the terms used so far. Terms marked *(referenced)*
   belong to topics that Tidal does not specify yet.
-- 37 *(referenced)* markers remain. Each names a topic with no page:
-  concepts (16), templates (8), the library (5), extended
-  floating-point types (3), class properties (2), coroutines (1), the
-  memory model (1), or the preprocessor (1). The templates markers name
-  item R of phase 4: packs, forwarding references, and class template
-  argument deduction.
+- 13 *(referenced)* markers remain. Each names a topic with no page:
+  the library (5), extended floating-point types (3), class properties
+  (2), coroutines (1), the memory model (1), or the preprocessor (1).
 
 ## Known limits of the tooling
 
@@ -167,15 +164,14 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-`documentation/roadmap.md` orders the work (decisions 0033 and 0039). Phases 1
-to 3 are done. Next:
+`documentation/roadmap.md` orders the work (decisions 0033 and 0039).
+Phases 1 to 4 are drafted. Next:
 
-1. A gap review of item N2 by a source reader (decision 0044).
-2. Phase 4, items P (concepts and constraints) and R (packs,
-   forwarding references, class template argument deduction), each
-   after its inventory.
-3. Front end, round 8: the repaired pages and the template chapter
-   (in progress).
+1. Gap reviews of items R and P by a source reader (decision 0044),
+   and their repairs.
+2. Front end, round 8: templates in the front end (in progress).
+3. A pass over the roadmap's parallel lanes and deferred items, and a
+   plan for what follows phase 4.
 
 Waiting on the maintainer:
 

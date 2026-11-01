@@ -108,7 +108,7 @@ deprecated.
            : | `nested_name` "*" {`cv`} {`attribute_spec`}
            : | "&" {`attribute_spec`}
            : | "&&" {`attribute_spec`}
-   direct_declarator: `declarator_id` {`attribute_spec`}
+   direct_declarator: ["..."] `declarator_id` {`attribute_spec`}
                     : | "(" `declarator` ")"
                     : | `direct_declarator` `array_suffix`
                     : | `direct_declarator` `function_suffix`
@@ -128,10 +128,15 @@ deprecated.
    type_id: `type_specifiers` [`abstract_declarator`]
    abstract_declarator: `ptr_part` [`abstract_declarator`]
                       : | `abstract_direct`
+                      : | "..."
    abstract_direct: "(" `abstract_declarator` ")"
                   : | [`abstract_direct`] `array_suffix`
                   : | [`abstract_direct`] `function_suffix`
 ```
+
+A `...` before the `declarator_id`, or as the last part of an
+`abstract_declarator`, declares a function parameter pack
+({rule}`PACK-1`).
 
 ## Constraints
 

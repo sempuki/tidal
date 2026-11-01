@@ -59,6 +59,8 @@ function's name, in a form the implementation chooses.
 .. productionlist:: tidal
    function_definition: {`attribute_spec`} [`decl_specifiers`] `declarator`
                       :    [`virt_specifiers`] `function_body`
+                      : | {`attribute_spec`} [`decl_specifiers`] `declarator`
+                      :    `requires_clause` `function_body`
    function_body: [`ctor_init`] `compound_stmt`
                 : | `function_try_block`
                 : | "=" "delete" ";"

@@ -58,12 +58,14 @@ literal also initializes arrays of some other one-byte character types.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   braced_init: "{" [`init_clause` {"," `init_clause`} [","]] "}"
+   braced_init: "{" [`init_clause` ["..."] {"," `init_clause` ["..."]} [","]] "}"
    init_clause: `assignment_expr` | `braced_init`
               : | `designator` "=" (`assignment_expr` | `braced_init`)
               : | `designator` `braced_init`
    designator: "." `identifier`
 ```
+
+An `init_clause` with `...` is a pack expansion ({rule}`PACK-13`).
 
 ## Constraints
 

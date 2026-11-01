@@ -153,13 +153,11 @@ def parse_spec():
 # remove it here, and the check lists every marker to replace with a link.
 REFERENCED_TOPICS = {
     "class properties",      # the full trivial and standard-layout lists
-    "concepts",
     "coroutines",
     "extended floating-point types",
     "library",
     "memory model",
     "preprocessor",          # #if evaluation and macro replacement
-    "templates",
     "threads",
 }
 MARKER = re.compile(r"\*\(([^()*]*?)\breferenced\)\*")

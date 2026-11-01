@@ -114,13 +114,15 @@ the program names the type.
    ctor_specifier: "constexpr" | "consteval" | "inline" | `explicit_spec`
    explicit_spec: "explicit" ["(" `constant_expr` ")"]
    ctor_def: `ctor_decl` [`ctor_init`] `function_body`
-   ctor_init: ":" `mem_init` {"," `mem_init`}
+   ctor_init: ":" `mem_init` ["..."] {"," `mem_init` ["..."]}
    mem_init: `mem_init_id` ("(" [`expression_list`] ")" | `braced_init`)
    mem_init_id: `identifier` | [`nested_name`] `class_name`
    dtor_decl: {`dtor_specifier`} "~" `class_name` "(" ["void"] ")" [`noexcept_specifier`]
    dtor_specifier: "constexpr" | "inline" | "virtual"
    dtor_call: `postfix_expr` ("." | "->") [`nested_name`] "~" `identifier` "(" ")"
 ```
+
+A `mem_init` with `...` expands a pack of bases ({rule}`PACK-14`).
 
 A *member initializer list* is the list of `mem_init` after the colon. A
 *delegating constructor* has a `mem_init` that names its own class.

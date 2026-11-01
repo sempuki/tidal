@@ -14,7 +14,7 @@ Template arguments and template-ids are on {doc}`arguments`. Explicit
 and partial specializations are on {doc}`specialization`. Deduction of
 template arguments is on {doc}`deduction`. Dependent names are on
 {doc}`dependent-names`, and instantiation is on {doc}`instantiation`.
-Constraints are not specified yet *(concepts referenced)*.
+Constraints are on {doc}`concepts` and {doc}`constraints`.
 
 Depends on: declarations, class definitions and members, function
 definitions, constant evaluation, name lookup.
@@ -120,11 +120,13 @@ not local:
 ```{eval-rst}
 .. productionlist:: tidal
    template_decl: `template_head` `declaration`
-   template_head: "template" "<" `template_params` ">"
+   template_head: "template" "<" `template_params` ">" [`requires_clause`]
    template_params: `template_param` {"," `template_param`}
    template_param: `type_param` | `constant_param` | `template_template_param`
    type_param: `type_key` ["..."] [`identifier`]
              : | `type_key` [`identifier`] "=" `type_id`
+             : | `type_constraint` ["..."] [`identifier`]
+             : | `type_constraint` [`identifier`] "=" `type_id`
    type_key: "class" | "typename"
    constant_param: `parameter`
                  : | `decl_specifiers` {`ptr_part`} "..." [`identifier`]
@@ -323,7 +325,7 @@ The type of a constant parameter can be one of these:
 
 The parameter then gets its type from its argument, as a variable
 declared with that type gets its type from its initializer
-({rule}`AUTO-1`, *(templates referenced)*).
+({rule}`AUTO-1`, {rule}`CTAD-1`).
 :::
 
 :::{rule} TPL-12
@@ -496,7 +498,8 @@ parameters at one position has:
 - for template template parameters, equivalent heads, by this rule.
 
 For function templates, a declaration whose head is not equivalent
-declares another template (TPL-22).
+declares another template (TPL-22). The constraints must also be
+equivalent ({rule}`CNS-26`, {rule}`CNS-27`).
 :::
 
 :::{rule} TPL-21
@@ -637,7 +640,7 @@ must not use itself through a member of a class template.
 
 In a function template, each parameter after a pack must have a default
 or be found by deduction from the function parameters
-*(templates referenced)*. An implementation need not diagnose a
+({rule}`DED-20`). An implementation need not diagnose a
 parameter that breaks this rule ({question}`Q-0195`).
 :::
 

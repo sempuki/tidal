@@ -7,7 +7,7 @@ then comes from its initializer.
 This page covers variables, including variables in conditions and
 initializer statements. A placeholder in a function parameter makes a
 function template ({rule}`DED-34`). Placeholders in return types are on
-other pages *(templates referenced)*. A placeholder in a template
+{doc}`/declarations/functions/return-deduction`. A placeholder in a template
 parameter is on the template pages ({rule}`TPL-11`). The deduction of a
 placeholder follows the deduction of a template argument from a call
 argument ({principle}`DED-P1`).
@@ -88,7 +88,6 @@ A placeholder means the same thing wherever a variable is declared:
 ```{eval-rst}
 .. productionlist:: tidal
    placeholder: [`type_constraint`] ("auto" | "decltype" "(" "auto" ")")
-   type_constraint: [`nested_name`] `identifier`
    auto_var_decl: {`decl_specifier`} `placeholder` {`decl_specifier`}
                 :    `auto_declarator` {"," `auto_declarator`} ";"
    auto_declarator: `declarator` `auto_init`
@@ -100,7 +99,7 @@ A placeholder means the same thing wherever a variable is declared:
 
 `decl_specifier` includes `const`, `volatile`, `static`, `constexpr`,
 and the other declaration specifiers. `type_constraint` names a concept
-*(concepts referenced)*.
+({doc}`/templates/concepts`).
 
 ## Constraints
 
@@ -286,7 +285,7 @@ The rules on this page also apply to variables in the conditions of
 :tests: declarations/auto/constrained-satisfied.cpp
 
 A concept name can come before `auto` or `decltype(auto)`
-*(concepts referenced)*. AUTO-16 states the constraint on the concept.
+({rule}`CPT-18`). AUTO-16 states the constraint on the concept.
 :::
 
 :::{rule} AUTO-16
@@ -294,7 +293,9 @@ A concept name can come before `auto` or `decltype(auto)`
 :tests: declarations/auto/constrained-not-satisfied.cpp
 
 If a concept name comes before `auto` or `decltype(auto)` (AUTO-13), the
-deduced type must satisfy the concept.
+deduced type must satisfy the concept. {rule}`CPT-23` says which type
+the concept checks, and {rule}`CPT-22` covers return types and constant
+parameters.
 :::
 
 :::{rule} AUTO-14

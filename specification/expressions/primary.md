@@ -17,8 +17,8 @@ This page covers:
 - fold expressions.
 
 Lambda expressions and requires expressions are primary expressions too.
-Lambdas have their own page. Requires expressions belong with templates
-*(templates referenced)*.
+Lambdas have their own page. Requires expressions are on
+{doc}`/templates/concepts`.
 
 Depends on: value categories, standard conversions.
 
@@ -119,7 +119,7 @@ value is the obvious answer, so a fold of an empty pack needs `&&`,
 ```{eval-rst}
 .. productionlist:: tidal
    primary: `literal` | "this" | "(" `expression` ")" | `id_expression`
-          : | `lambda_expr` | `fold_expr`
+          : | `lambda_expr` | `fold_expr` | `requires_expression`
    fold_expr: "(" `cast_expr` `fold_op` "..." ")"
             : | "(" "..." `fold_op` `cast_expr` ")"
             : | "(" `cast_expr` `fold_op` "..." `fold_op` `cast_expr` ")"

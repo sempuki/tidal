@@ -93,7 +93,9 @@ the layout of such a class.
               : | `static_assert_decl`
               : | `template_decl`
               : | `explicit_specialization`
+              : | `deduction_guide`
    member_declarator: `declarator` [`virt_specifiers`] [`pure_specifier` | `member_init`]
+                    : | `declarator` `requires_clause`
                     : | `bitfield`
    member_init: "=" `assignment_expr` | "=" `braced_init` | `braced_init`
 ```

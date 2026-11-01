@@ -71,8 +71,8 @@ each item starts.
 | N1 | Done: template declarations, parameters, template-ids, explicit and partial specialization, variable and alias templates (`specification/templates/`) | F notation |
 | O | Done: deduction, function templates, partial ordering (`specification/templates/deduction.md`, `ordering.md`) | M, N1 |
 | N2 | Done: dependent names, two-phase checking, instantiation (`specification/templates/dependent-names.md`, `instantiation.md`) | runner outcome sets |
-| P | Concepts and constraints | M, N1, N2 |
-| R | Packs, forwarding, class template argument deduction (alias templates are in N1) | O |
+| P | Done: concepts and constraints (`specification/templates/concepts.md`, `constraints.md`) | M, N1, N2 |
+| R | Done: packs, forwarding references, class template argument deduction (`specification/templates/packs.md`, `class-template-deduction.md`) | O |
 
 ## Front end
 
