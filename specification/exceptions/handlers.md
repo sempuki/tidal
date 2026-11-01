@@ -158,20 +158,19 @@ the last handler of its try block.
 
 :::{rule} TRY-5
 :kind: reject
-:tests: exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-storage-class.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
+:tests: exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-storage-class.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
 
-The handler parameter must have a complete type that an object or a
-pointer can have. The handler parameter must not:
+The handler parameter must not:
 
-- be an abstract class by value, or an incomplete class by value or by
-  pointer,
+- be an abstract class by value,
+- be an incomplete class by value, by pointer, or by reference,
 - have an rvalue reference type, a reference to an array of unknown
   bound, or the type `void`,
 - have a storage class, a default argument, a qualified name, or
   `auto`.
 
-An array type decays to a pointer, as in a function parameter. The
-parameter can have no name.
+An array type or a function type decays to a pointer, as in a function
+parameter. A pointer to `void` is valid. The parameter can have no name.
 :::
 
 :::{rule} TRY-14
@@ -384,8 +383,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 78 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 78
+of 80 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -398,6 +397,9 @@ program only as a nonzero exit.
   pointer to `void` that has at least the same cv-qualifiers. A pointer
   to `const int` does not match `void*`, and a pointer to a function
   does not match `const void*`.
+- TRY-5: GCC rejects a qualified name in a handler parameter as a
+  syntax error, where it expects a name without a qualifier. Clang and
+  EDG say that the name cannot be qualified.
 - TRY-18: Clang and GCC end the program when the copy into a by-value
   handler parameter throws, also when an enclosing try block has a
   matching handler.

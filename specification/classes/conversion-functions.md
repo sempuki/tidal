@@ -158,7 +158,9 @@ Contextual conversion occurs in:
 :tests: classes/conversion-functions/explicit-argument.cpp classes/conversion-functions/explicit-arithmetic.cpp classes/conversion-functions/explicit-bool-comparison.cpp classes/conversion-functions/explicit-bool-copy-init.cpp classes/conversion-functions/explicit-bool-return.cpp classes/conversion-functions/explicit-copy-init.cpp classes/conversion-functions/explicit-int-in-if.cpp
 
 The uses that CVF-3 lists are the only uses of an `explicit` conversion
-function. Other conversions must not use the function.
+function. Other conversions must not use the function. An operand of a
+built-in operator other than `!`, `&&`, and `||` is such a conversion,
+so the built-in candidates of {rule}`OVL-9` cannot use the function.
 :::
 
 :::{rule} CVF-4
@@ -177,10 +179,12 @@ conversion. A call by name still calls such a function.
 :kind: reject
 :tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp foundations/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
 
-An ambiguous conversion is not valid. If a converting constructor and a
-conversion function are equally good, the conversion is ambiguous.
-{rule}`ICS-7` gives the sequence of such an argument, and {rule}`ICS-8`
-says when a call with that sequence is not valid.
+A conversion is ambiguous if two or more converting constructors or
+conversion functions can do the conversion and none is better
+({rule}`ICS-7`). A program must not use an ambiguous conversion. In a
+call, the implementation rejects an ambiguous conversion only if
+overload resolution chooses the function that needs the conversion
+({rule}`ICS-8`).
 :::
 
 :::{rule} CVF-5
@@ -246,6 +250,38 @@ const int& r = Cell{5};  // binds to v of a temporary Cell
                          // the Cell ends here, so r dangles (REF-5)
 ```
 
+An ambiguous conversion stops a call only when overload resolution
+chooses the function that needs the conversion (CVF-12):
+
+```cpp
+struct Number { operator int(); operator long(); };
+int scale(double);
+long scale(...);
+long n = scale(Number{});  // rejected: scale(double) wins over the
+                           // ellipsis (ICS-21), and the conversion
+                           // from Number to double is ambiguous
+```
+
+A converting constructor and a conversion function tie when the
+argument binds to their parameters in the same way:
+
+```cpp
+struct Target;
+struct Source { operator Target(); };
+struct Target { Target(); Target(Source&); };
+Source s;
+Target t = s;            // rejected: both bind s to Source&, and
+                         // no rule of ICS-7 breaks the tie
+
+struct Reading;
+struct Sensor { operator Reading() const; };
+struct Reading { Reading(); Reading(Sensor&); };
+Sensor live;
+Reading r = live;        // valid: the constructor binds Sensor&, which
+                         // has fewer cv-qualifiers than the
+                         // const Sensor& of the function (ICS-30)
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 63
@@ -254,6 +290,9 @@ of 64 tests.
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).
 - CVF-6: Clang and GCC give these warnings by default.
+- CVF-11: Clang, GCC, and EDG report a built-in operator whose operand
+  needs an `explicit` conversion function as an operator with no match
+  for its operands. The messages do not name the conversion function.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-overload.

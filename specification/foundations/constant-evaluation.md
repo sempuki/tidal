@@ -169,7 +169,8 @@ created.
 :tests: expressions/constant-expressions/inactive-union-member.cpp expressions/constant-expressions/active-union-member.cpp
 
 Constant evaluation must not read a union member that is not the active
-member. An assignment to a member makes that member active.
+member ({rule}`UNI-6`). An assignment to a member makes that member
+active ({rule}`UNI-5`).
 :::
 
 :::{rule} CE-7

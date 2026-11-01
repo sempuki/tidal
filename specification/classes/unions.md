@@ -296,7 +296,7 @@ narrowing uses the declared type, not the width.
 :tests: classes/unions/bitfield-narrowing-init.cpp
 
 A braced initializer for a bit-field must not need a narrowing
-conversion from the declared type of the bit-field.
+conversion to the declared type of the bit-field.
 :::
 
 :::{rule} UNI-12
@@ -330,9 +330,11 @@ assignment operator, each union member in the chain that is not active
 becomes active. These conditions
 apply:
 
-- A member becomes active only if its default constructor is trivial.
+- A member becomes active only if its default constructor is trivial
+  ({rule}`CTOR-23`). A default member initializer in the member's class
+  makes the default constructor non-trivial.
 - The parts of a new active member that the assignment does not write
-  have no value.
+  have no value. A read of such a part is undefined ({rule}`OBJ-2`).
 
 Constant evaluation follows this rule.
 :::
@@ -362,7 +364,8 @@ through the other struct. The read gives the stored value.
 :tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
-undefined. A compound assignment to a member that is not active reads
+undefined. During constant evaluation, {rule}`CE-6` rejects the read.
+A compound assignment to a member that is not active reads
 that member. An assignment to a member that is not active, through an
 assignment operator that is user-provided, uses an object that does not
 exist yet ({question}`Q-0088`). An assignment through a chain of member
@@ -427,6 +430,28 @@ struct Pixel {
 Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 ```
 
+An assignment through a chain makes a member active only if the
+member's default constructor is trivial (UNI-13):
+
+```cpp
+struct Pair { int key; int value; };
+struct Counter { int n = 0; };   // the default constructor is not trivial
+union Cell {
+  Pair pair;
+  Counter counter;
+  int raw;
+  constexpr Cell() : raw(0) {}
+};
+constexpr int use() {
+  Cell cell;
+  cell.pair.key = 1;             // pair becomes active
+  int k = cell.pair.key;         // 1
+  int v = cell.pair.value;       // undefined: value has no value
+  cell.counter.n = 2;            // undefined: counter does not become active
+  return k + v;
+}
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 103
@@ -440,6 +465,11 @@ of 107 tests.
 - UNI-6: EDG accepts the assignment through a user-provided operator to
   a member that is not active during constant evaluation. Clang and GCC
   reject the assignment ({question}`Q-0088`).
+- UNI-6: for a read from a union with no active member, GCC and EDG
+  call the member uninitialized. Clang says that the union has no
+  active member. For an assignment through a chain that does not make
+  the member active (UNI-13), GCC says that the program accesses the
+  member instead of the member that is active.
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the

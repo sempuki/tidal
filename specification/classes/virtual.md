@@ -32,7 +32,7 @@ run time, so every virtual function needs a definition, called or not.
 :::
 
 :::{principle} VIRT-P2
-:rules: VIRT-2 VIRT-3 VIRT-4 VIRT-14 VIRT-15 VIRT-19
+:rules: VIRT-2 VIRT-3 VIRT-4 VIRT-14 VIRT-15 VIRT-19 VIRT-21
 
 An override replaces a function, so the override must fit where the
 original stood:
@@ -106,7 +106,7 @@ a virtual function.
 
 :::{rule} VIRT-2
 :kind: reject
-:tests: classes/virtual/explicit-object-virtual.cpp classes/virtual/static-overrides-virtual.cpp classes/virtual/virtual-auto-return.cpp classes/virtual/virtual-data-member.cpp classes/virtual/virtual-in-union.cpp classes/virtual/virtual-nonmember.cpp classes/virtual/virtual-out-of-class.cpp classes/virtual/virtual-static.cpp classes/virtual/virtual-template.cpp classes/virtual/virtual-trailing-return.cpp
+:tests: classes/virtual/explicit-object-virtual.cpp classes/virtual/virtual-auto-return.cpp classes/virtual/virtual-data-member.cpp classes/virtual/virtual-in-union.cpp classes/virtual/virtual-nonmember.cpp classes/virtual/virtual-out-of-class.cpp classes/virtual/virtual-static.cpp classes/virtual/virtual-template.cpp classes/virtual/virtual-trailing-return.cpp
 
 `virtual` can only occur on a declaration of a non-static member function
 in its class definition. A program must not declare these as virtual:
@@ -118,8 +118,17 @@ in its class definition. A program must not declare these as virtual:
 - a member of a union,
 - a member function with an explicit object parameter.
 
+A trailing return type is valid. {rule}`VIRT-21` gives the limit on a
+static member function in a derived class.
+:::
+
+:::{rule} VIRT-21
+:kind: reject
+:tests: classes/virtual/static-overrides-virtual.cpp
+
 A static member function must not have the name and parameters of a
-virtual function in a base. A trailing return type is valid.
+virtual function of a base. The rule applies also when the static
+function does not use the keyword `virtual`.
 :::
 
 :::{rule} VIRT-3
@@ -162,7 +171,7 @@ overridden function.
 :tests: classes/virtual/covariant-ambiguous-base.cpp classes/virtual/covariant-by-value-rejected.cpp classes/virtual/covariant-incomplete.cpp classes/virtual/covariant-more-cv-rejected.cpp classes/virtual/covariant-private-base-other.cpp classes/virtual/covariant-unrelated.cpp classes/virtual/return-type-mismatch.cpp
 
 An override must not have a return type that is different and not
-covariant. A return by value of a derived class is not covariant. The
+covariant ({rule}`VIRT-4`). A return by value of a derived class is not covariant. The
 class in a covariant pointer or reference must be complete at the
 declaration of the override, unless that class declares the override.
 :::
@@ -320,8 +329,8 @@ fails for a reference, the cast throws `std::bad_cast`
 ({rule}`LSUP-8`). A null pointer converts to a null pointer.
 During a constructor or destructor of class `C`, the object counts as a
 `C`, so a cast to a class derived from `C` fails. Constant evaluation
-can do these casts, and a failed cast of a reference there is not a
-constant expression.
+can do these casts. {rule}`CE-8` rejects a failed cast of a reference
+during constant evaluation.
 :::
 
 ## Undefined Behavior
@@ -395,6 +404,41 @@ Circle* c = dynamic_cast<Circle*>(p);  // points to the Circle
 delete p;                          // calls ~Circle, then ~Shape
 ```
 
+A static member function cannot take the place of a virtual function
+(VIRT-21):
+
+```cpp
+struct Base { virtual void reset(); };
+struct Derived : Base {
+  static void reset();             // rejected: Base::reset is virtual
+};
+```
+
+Each failed condition of VIRT-4 makes the return type of an override
+not covariant (VIRT-15):
+
+```cpp
+struct Node { };
+struct Leaf : private Node { };
+struct Left : Node { };
+struct Right : Node { };
+struct Twice : Left, Right { };
+
+struct Maker {
+  virtual Node* make();
+  virtual const Node* view();
+};
+struct HiddenBase : Maker {
+  Leaf* make() override;           // rejected: Node is a private base of Leaf
+};
+struct TwoBases : Maker {
+  Twice* make() override;          // rejected: Twice has two Node bases
+};
+struct MoreConst : Maker {
+  const volatile Left* view() override;  // rejected: adds volatile
+};
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 110
@@ -415,6 +459,20 @@ of 114 tests.
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
 - VIRT-13: Clang and GCC give both warnings under `-Wall`.
+- VIRT-12: during constant evaluation, GCC reports a call of a pure
+  virtual function from a constructor as a call to a function that is
+  not `constexpr` (compare {rule}`CE-2`). The function that GCC names is
+  the run-time support function that a pure call reaches. Clang names
+  the pure virtual call.
+- VIRT-12: during constant evaluation, GCC reports `delete[]` of an
+  array of derived objects through a pointer to a base as a change to
+  allocated storage from outside the evaluation (compare
+  {rule}`CE-5`). Clang reports a `delete` of a subobject.
+- VIRT-9: GCC calls a misplaced pure specifier `= 0` an initializer of
+  the function. Clang calls the specifier a pure specifier.
+- VIRT-21: GCC reports a static member function with the name and
+  parameters of a base virtual function in two lines. The second line
+  points at the virtual function in the base.
 - VIRT-10: every Clang and GCC configuration gives a null pointer for a
   cast from a private base, to the derived class or across to another
   base. A cast from the same subobject to a class that has it as a
