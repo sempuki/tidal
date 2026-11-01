@@ -120,7 +120,7 @@ not be literal types.
 
 :::{rule} CX-6
 :kind: reject
-:tests: declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-static-local-evaluated.cpp
+:tests: declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/static-local-usable-reached.cpp
 
 During {term}`constant evaluation`, a call to a `constexpr` function
 (CX-3) must not evaluate an operation that constant evaluation does not
@@ -128,7 +128,7 @@ permit. Such operations include:
 
 - a call to a function that is not `constexpr`,
 - the definition of a `static` or `thread_local` variable that is not
-  `constexpr`,
+  usable in constant expressions ({rule}`CE-20`, {rule}`CE-3`),
 - a `goto`.
 :::
 
@@ -238,9 +238,14 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 65 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 66 tests.
 
+- CX-6: every compiler accepts a constant evaluation that reaches the
+  definition of a `static const int` with a constant initializer, as
+  {rule}`CE-20` allows (`static-local-usable-reached.cpp`). Every
+  compiler rejects one that reaches a `static int`
+  (`function-static-local-evaluated.cpp`).
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both
   ({question}`Q-0020`).

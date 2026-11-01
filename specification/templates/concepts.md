@@ -408,7 +408,7 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
@@ -418,7 +418,7 @@ happens is not valid in this sense ({question}`Q-0288`).
 
 :::{rule} CPT-27
 :kind: reject
-:tests: templates/concepts/requires-expression-outside-template.cpp templates/concepts/requirement-independent-in-template.cpp templates/concepts/requirement-independent-with-parameters.cpp
+:tests: templates/concepts/requires-expression-outside-template.cpp templates/concepts/requirement-independent-in-template.cpp templates/concepts/requirement-independent-with-parameters.cpp templates/concepts/type-requirement-independent-constraints.cpp
 
 A requirement that does not depend on template parameters must form
 only valid types and expressions. The rule applies inside a template
@@ -463,14 +463,15 @@ A simple requirement holds if its expression is valid.
 
 :::{rule} CPT-32
 :kind: required
-:tests: templates/concepts/type-requirement.cpp templates/concepts/type-requirement-not-instantiated.cpp templates/concepts/type-requirement-constraints.cpp
+:tests: templates/concepts/type-requirement.cpp templates/concepts/type-requirement-not-instantiated.cpp templates/concepts/type-requirement-constraints.cpp templates/concepts/type-requirement-independent-constraints.cpp
 
 A type requirement holds if its name forms a valid type. The name can
 be a member type, a member template specialization, a class template
 specialization, or an alias template specialization. A class template
 specialization is not instantiated, so the class can be incomplete. A
 specialization whose arguments fail the template's constraints or its
-default arguments is not valid.
+default arguments is not valid. If those arguments depend on no
+template parameter, CPT-27 applies.
 :::
 
 :::{rule} CPT-33
@@ -499,7 +500,7 @@ type requirement must not name a keyword type such as `int`.
 
 :::{rule} CPT-35
 :kind: required
-:tests: templates/concepts/nested-requirement.cpp templates/concepts/nested-requirement-parameter-unevaluated.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp
+:tests: templates/concepts/nested-requirement.cpp templates/concepts/nested-requirement-parameter-unevaluated.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp templates/concepts/requirement-false-outside-template.cpp
 
 A nested requirement holds if its constraint expression is satisfied
 ({rule}`CNS-5` to {rule}`CNS-7`). The parameters of the requires
@@ -530,6 +531,36 @@ template <class T> requires !Sized<T> int bad(T);        // rejected: needs (!Si
 constexpr bool b = requires (int n) { n.size(); };        // rejected: depends on no template parameter
 ```
 
+Outside a template, a requirement that is not valid makes the program
+not valid (CPT-27). Two forms test such a requirement and give `false`
+instead. A nested requirement holds a concept-id, which is valid and
+only has the value `false` (CPT-35). A concept gives the requirement a
+template parameter (CPT-26).
+
+```cpp
+struct Label {};
+template <class T> concept Shape = requires (const T& s) { s.area(); };
+static_assert(!requires (const Label& l) { l.area(); });   // rejected: depends on no template parameter
+static_assert(!requires { requires Shape<Label>; });        // valid: the concept-id is false
+static_assert(!Shape<Label>);                               // valid: the requirement depends on T
+
+template <class T, int N> requires (N > 0) struct Stack {};
+static_assert(!requires { typename Stack<int, 0>; });      // rejected: Stack<int, 0> is not valid
+template <class T, int N> concept Makes = requires { typename Stack<T, N>; };
+static_assert(!Makes<int, 0>);                             // valid
+```
+
+A concept cannot be a template argument ({rule}`TARG-7`). A class
+template that holds the value of the concept-id can be one:
+
+```cpp
+template <class T> concept Integral = T(1) / 2 == 0;
+template <class T> struct IsIntegral { static constexpr bool value = Integral<T>; };
+template <template <class> class P, class... T> constexpr bool all = (P<T>::value && ...);
+all<Integral, int>;                        // rejected: Integral is a concept
+all<IsIntegral, int, long>;                // true
+```
+
 ```cpp
 template <class T> concept Wide = sizeof(T) >= 4;
 static_assert(Wide<int> && !Wide<char>);   // a concept-id is a bool constant
@@ -558,12 +589,12 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 115 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 117 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the
-same compilers. The rejections name the reason in each compiler's own
+same compilers, the eight {ref}`baseline compilers <baseline-compilers>`. The rejections name the reason in each compiler's own
 words, for example "concept cannot have associated constraints" and
 "non-templated function cannot have a requires clause"
 (clang-diag-sema, clang-diag-parse).
@@ -583,9 +614,13 @@ words, for example "concept cannot have associated constraints" and
 - CPT-21: every compiler drops a function template whose constant
   argument fails the placeholder's constraint, and chooses another
   candidate.
-- CPT-26: GCC 14 finds a requires expression in a member of the class
-  `false` when it names a private member. The other compilers find it
-  `true` ({question}`Q-0288`). Every compiler judges access from the
+- CPT-26: in `requirement-access-member.cpp`, a static member function
+  of the class `Box` returns a requires expression that names a private
+  member. `Box` is not a template, so the requirement depends on no
+  template parameter, and CPT-27 applies to it. The member is
+  accessible there, so the requirement is valid, and the other
+  compilers give `true`. GCC 14 gives `false` and does not reject, so
+  the `static_assert` of the test fails ({question}`Q-0288`). Every compiler judges access from the
   place of the check, also for a concept-id first checked inside a
   member. The gap review expected a concept to be checked in its own
   context (item 21). No compiler does this, and the rule follows the
@@ -599,7 +634,12 @@ words, for example "concept cannot have associated constraints" and
 - CPT-33: Clang substitutes the extra arguments of the type constraint
   before it checks the expression and `noexcept`. GCC never substitutes
   an extra argument that the concept does not use. EDG follows the
-  order of the rule in both cases ({question}`Q-0287`).
+  order of the rule in both cases ({question}`Q-0287`). If the early
+  substitution instantiates a class whose body has an error, the error
+  is an error of the program ({rule}`CNS-33`). In
+  `compound-requirement-order.cpp` and
+  `compound-requirement-order-noexcept.cpp`, Clang therefore rejects a
+  program that GCC and EDG accept.
 - CPT-35: Clang 18 gives `false` for a nested requirement that reads a
   parameter. The other compilers reject the program
   ({question}`Q-0289`).

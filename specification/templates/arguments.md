@@ -196,7 +196,8 @@ of argument that each kind of parameter takes.
 A template-id must not have more arguments than the template has
 parameters, unless the template has a pack. Each parameter without an
 argument must have a default, except in the cases that TARG-20 lists
-for function templates.
+for function templates. {rule}`TPL-40` gives the defaults of a
+template template parameter.
 :::
 
 :::{rule} TARG-24
@@ -211,15 +212,15 @@ is not valid.
 
 :::{rule} TARG-7
 :kind: reject
-:tests: templates/arguments/expression-for-type.cpp templates/arguments/type-for-constant.cpp templates/arguments/class-for-template.cpp templates/arguments/variable-template-for-class-template.cpp templates/arguments/type-or-expression-constant.cpp
+:tests: templates/arguments/expression-for-type.cpp templates/arguments/type-for-constant.cpp templates/arguments/class-for-template.cpp templates/arguments/variable-template-for-class-template.cpp templates/arguments/type-or-expression-constant.cpp templates/arguments/concept-for-template.cpp
 
 An argument must be of the kind that its parameter takes. These
 arguments are not valid:
 
 - an expression for a type parameter,
 - a type for a constant parameter,
-- a class, or a variable template, for a template template parameter
-  that takes a class template.
+- a class, a variable template, or a concept, for a template template
+  parameter that takes a class template.
 :::
 
 :::{rule} TARG-25
@@ -355,8 +356,9 @@ and a test cites this rule as the specific one (decision 0042).
 
 A pointer argument is a null pointer, such as `nullptr`, or the address
 of a function or of an object with static storage duration. A reference
-argument names such a function or object. The object can be a member or
-an array element of a larger object, and the entity can have internal
+argument names such a function or object, also through a reference
+variable that {rule}`CE-29` allows. The object can be a member or an
+array element of a larger object, and the entity can have internal
 linkage.
 :::
 
@@ -394,7 +396,7 @@ to `const char`.
 
 :::{rule} TARG-17
 :kind: required
-:tests: templates/arguments/template-template-arguments.cpp templates/arguments/template-template-defaults.cpp templates/arguments/template-template-pack.cpp templates/arguments/template-template-partial.cpp templates/arguments/template-template-auto.cpp templates/arguments/template-template-constant-type.cpp
+:tests: templates/arguments/template-template-arguments.cpp templates/arguments/template-template-defaults.cpp templates/arguments/template-template-pack.cpp templates/arguments/template-template-partial.cpp templates/arguments/template-template-auto.cpp templates/arguments/template-template-constant-type.cpp templates/arguments/concept-wrapped-for-template.cpp
 
 A template template parameter takes, as its argument, a class template
 or an alias template, named without arguments. The argument is valid
@@ -469,6 +471,7 @@ template <class T> struct Box { };
 Bits<(8 > 4)> a;               // the > is in parentheses
 Bits<8 > 4> b;                 // rejected: the list ends at the >
 Box<Box<int>> c;               // >> closes both lists
+auto q = static_cast<Box<Box<int>>>(c);   // >> and >: the tokens close two lists and the cast
 
 template <unsigned char C> struct Byte { };
 Byte<'x'> d;                   // char to unsigned char, value kept
@@ -486,6 +489,16 @@ void run() {
   int local;
   At<&local> h;                // rejected: automatic storage
 }
+```
+
+A reference variable with a constant initializer names its object
+({rule}`CE-29`):
+
+```cpp
+template <int& R> struct Ref { };
+int value = 0;
+int& alias = value;
+Ref<alias> k;                  // the same type as Ref<value>
 ```
 
 Conversions that keep the address are valid. Others are not:
@@ -509,14 +522,24 @@ class Owner {
 Box<Owner::Secret> theirs;     // rejected: Secret is private
 ```
 
+A template template parameter takes a class template or an alias
+template:
+
+```cpp
+template <class T> concept Small = sizeof(T) < 4;
+template <template <class> class C> struct Use { };
+Use<Box> l;                    // a class template
+Use<Small> m;                  // rejected: Small is a concept
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 77
-of 83 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 85 tests.
 
 The clean-room writer probed template-ids, argument kinds, and constant
 arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on
-the eight baseline compilers. The gap review of the chapter
+the eight {ref}`baseline compilers <baseline-compilers>`. The gap review of the chapter
 (`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
 probes for TARG-23 to TARG-27 and for the additions to the older rules.
 

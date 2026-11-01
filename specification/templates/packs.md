@@ -268,15 +268,17 @@ must not give an argument to a parameter that is not a pack
 :kind: required
 :tests: templates/packs/nondeduced-before-end.cpp templates/packs/nondeduced-before-end-call.cpp templates/packs/nondeduced-before-end-partial.cpp templates/packs/nondeduced-before-end-function-type.cpp
 
-A list with an expansion before its end is a {term}`non-deduced
-position` ({rule}`DED-13`) in each of these:
+In every deduction from a type, also in the match of a partial
+specialization ({rule}`TSP-14`, {question}`Q-0273`), a list with an
+expansion before its end is a {term}`non-deduced position`
+({rule}`DED-13`). The list is one of these:
 
 - a template argument list in a type,
 - the parameter list of a function type.
 
-The rule holds in every deduction from a type, also in the match of a
-partial specialization ({rule}`TSP-14`, {question}`Q-0273`). An
-expansion at the end deduces as {rule}`DED-37` gives.
+A pack that appears only in such a list is empty unless explicit
+arguments give it elements. An expansion at the end deduces as
+{rule}`DED-37` gives.
 :::
 
 ### Places of an expansion
@@ -470,10 +472,29 @@ template <class... T> auto keep(T... x) {
   return [...c = x] { return (c + ...); }; // one member per element
 }
 
+template <class... R> int calls(R (*... fp)());   // a named pack can have its ... in parentheses
 template <class... T> void take(T x...);   // rejected: x has a name, so T is not expanded
 void first(auto x...);                     // one parameter, then the variable argument part
 template <class... T> void call(T...);
 call<void>();                              // rejected: a parameter of type void
+```
+
+```cpp
+template <class... T> struct List {};
+template <class... T> void put(List<T..., int>);
+put<char>(List<char, int>{});              // T = char from the explicit argument
+put(List<char, int>{});                    // rejected: T is empty, and List<int> does not match
+
+struct Flags { const int on : 1; };
+template <class T> void pass(T&& x);
+const Flags flags{0};
+pass(flags.on);                            // T = const int&: the reference binds to a temporary
+
+template <class... B> struct Merge : B... {
+  using B::f...;
+  int f(double);
+};
+Merge<>{}.f(1);                            // f(double): the using-declaration declares nothing
 ```
 
 ```cpp
@@ -510,8 +531,8 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 64
 of 68 tests.
 
 The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
-7.0, and checked the tests and the grid on the eight baseline
-compilers.
+7.0, and checked the tests and the grid on the eight
+{ref}`baseline compilers <baseline-compilers>`.
 
 - PACK-16: on a class declaration, GCC takes the alignment of the last
   element of `alignas(T...)`. Clang and EDG take the strictest. On a
@@ -533,16 +554,22 @@ compilers.
 - PACK-12: for a partial specialization with a parameter that appears
   only in a list with an expansion before its end, Clang rejects the
   declaration. GCC and EDG accept it, and the specialization never
-  matches. For a function type with such a list, an explicit argument
-  for the pack splits GCC from Clang and EDG, and a deduced empty pack
-  splits EDG from Clang and GCC ({question}`Q-0273`). The tests cover
-  the cases where every compiler agrees.
+  matches. For the parameter `void (*)(T..., int)` and a fallback
+  `take(...)`, the compilers differ in two calls ({question}`Q-0273`).
+  For `void h(int)`, Clang and GCC deduce an empty `T` and call the
+  template, and EDG calls the fallback. For `take<char>(f)` with
+  `void f(char, int)`, Clang and EDG call the template, and GCC finds
+  no match. Every compiler calls the fallback for `take(f)`, as
+  `nondeduced-before-end-function-type.cpp` tests.
 - PACK-27: in each test of the rule, every compiler removes the
   template and calls the other overload.
 - PACK-30 is `no-diagnostic`. In the probe, `f` in a member function
   finds `using B::f...;` at the definition. For an empty pack, GCC and
-  EDG call the `f` of the namespace, and Clang rejects the
-  using-declaration that expands to nothing ({question}`Q-0274`). The
+  EDG call the `f` of the namespace ({question}`Q-0274`). Clang rejects
+  the use of `f` in the class, and its message names the
+  using-declaration that expands to nothing. Clang rejects only such a
+  use. A call from outside the class that finds the class's own `f` is
+  valid on every compiler (`using-declaration-empty-pack.cpp`). The
   gap review (item 15) gives the program no meaning and requires no
   diagnostic, and the class allows both results.
 - PACK-18: the gap review (item 13) predicted a rejection for an init

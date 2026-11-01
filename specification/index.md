@@ -11,6 +11,30 @@ fixed segments. A principle names the rules that are its evidence. Each
 rule has an ID, a class, and links to the tests that support it.
 `documentation/style-guide.md` in the repository describes the format.
 
+(baseline-compilers)=
+## Baseline compilers
+
+The Evidence segment of each page reports the results of eight
+baseline compilers. Each test runs on each compiler that supports its
+flags:
+
+| Compiler | Family | Notes |
+|---|---|---|
+| Clang 18 | Clang | |
+| Clang 22 | Clang | |
+| host Clang | Clang | Clang 22 |
+| GCC 14 | GCC | |
+| GCC 16 | GCC | |
+| host GCC | GCC | GCC 16 |
+| EDG 7.0 | EDG | a front end only, so EDG translates each program and runs none |
+| EDG 7.0, ILP32 | EDG | the same front end for a target with 32-bit `long` and pointers; runs only the tests for such a target |
+
+"Clang" in an Evidence segment means every Clang compiler in the
+table, and the same holds for "GCC" and "EDG". A version number names
+one compiler. A result on any baseline compiler counts, also on an
+older version such as Clang 18 or GCC 14. `tests/RESULTS.md` gives the
+exact version of each compiler.
+
 ## Acknowledgements
 
 The page structure of Tidal follows the

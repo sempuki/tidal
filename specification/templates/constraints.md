@@ -285,10 +285,12 @@ right operand is not substituted or checked.
 
 :::{rule} CNS-7
 :kind: required
-:tests: templates/constraints/substitution-failure.cpp templates/constraints/atomic-value.cpp templates/constraints/constant-evaluation-context.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp
+:tests: templates/constraints/substitution-failure.cpp templates/constraints/atomic-value.cpp templates/constraints/constant-evaluation-context.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/lookup-at-check.cpp
 
 To check an atomic constraint, the implementation substitutes the
-arguments of its mapping, and no others, into its expression. Then:
+arguments of its mapping, and no others, into its expression. Names
+are looked up as in a template ({rule}`DEP-9`), and the point of the
+check acts as the point of instantiation. Then:
 
 - If the substitution forms a type or an expression that is not valid,
   the constraint is not satisfied.
@@ -669,6 +671,25 @@ int any(T);                      // T::flag is not checked when the left operand
 any(1);                          // valid
 ```
 
+Subsumption compares the two normal forms of CNS-22. Take the concepts
+`A`, `B`, and `C`, and these two clauses:
+
+```cpp
+template <class T> int f() requires (A<T> || B<T>) && C<T>;        // P
+template <class T> int f() requires (A<T> && C<T>) || (B<T> && C<T>); // Q
+f<int>();                       // rejected: each clause subsumes the other
+```
+
+| Clause | Disjunction of conjunctions | Conjunction of disjunctions |
+|---|---|---|
+| P | (A and C) or (B and C) | (A or B) and C |
+| Q | (A and C) or (B and C) | (A or B) and (A or C) and (C or B) and C |
+
+P subsumes Q. Each conjunction of P, {A, C} and {B, C}, shares an atom
+with each disjunction of Q: {A, B}, {A, C}, {C, B}, and {C}. Q subsumes
+P in the same way, with the disjunctions {A, B} and {C} of P. Neither
+is more constrained (CNS-23), so the call is ambiguous (CNS-24).
+
 ```cpp
 template <class T> struct Box {
   Box() requires (sizeof(T) > 100) {}   // declared, even where it is not satisfied
@@ -683,12 +704,12 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 93
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 94
+of 119 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the
-grids on the same compilers. The rejections name the reason in each
+grids on the same compilers, the eight {ref}`baseline compilers <baseline-compilers>`. The rejections name the reason in each
 compiler's own words, for example "atomic constraint must be of type
 'bool'" and "requires clause differs in template redeclaration"
 (clang-diag-sema).
@@ -711,13 +732,18 @@ compiler's own words, for example "atomic constraint must be of type
   so two concept-ids that differ in an unused argument give two atomic
   constraints. EDG and Clang 18 also substitute an unused argument.
   Clang 22 and GCC do neither ({question}`Q-0284`).
-- CNS-9: Clang and EDG reject an atomic constraint whose type is not
-  `bool` for any argument, even if a short circuit skips it. GCC
-  accepts it ({question}`Q-0263`).
+- CNS-9: Clang and EDG reject an atomic constraint whose type is never
+  `bool`, such as `sizeof(T)`, even if a short circuit skips it. GCC
+  accepts it ({question}`Q-0263`). Every compiler accepts a skipped
+  atomic constraint whose type depends on the argument, such as
+  `T::value` for a class whose `value` is an `int`
+  (`or-short-circuit.cpp`).
 - CNS-10: GCC 16 diagnoses a result that changes after a class is
   completed. Clang, EDG, and GCC 14 keep the first result. The rule is
   `no-diagnostic` because the change shows only against an earlier
   check, which an implementation need not keep ({question}`Q-0264`).
+  For a function declared between two checks, every compiler keeps the
+  first result, GCC 16 included (`satisfaction-changes-declaration.cpp`).
 - CNS-11: Clang 18 forms the return type of a function template before
   it checks the constraints. The other compilers check the constraints
   first ({question}`Q-0261`). Every compiler forms the default template
@@ -753,9 +779,13 @@ compiler's own words, for example "atomic constraint must be of type
 - CNS-32: EDG reports two definitions of a constrained friend from two
   specializations. EDG also treats the friend and a namespace template
   of the same form as one template ({question}`Q-0268`).
-- CNS-36: EDG accepts a partial specialization that repeats the primary
-  template's parameters and is not more constrained. Clang and GCC
-  reject it ({question}`Q-0292`).
+- CNS-36: the primary template has the constraint `A` and the partial
+  specialization `B`, and neither subsumes the other. EDG accepts such
+  a partial specialization, and Clang and GCC reject it
+  ({question}`Q-0292`). Every compiler rejects a partial specialization
+  with the same constraint as the primary template
+  (`partial-specialization-same-constraints.cpp`). EDG reports that a
+  primary template cannot have a template argument list.
 - CNS-38: the rule is `no-diagnostic`. A use that fails the parameter's
   own constraints can never be valid, and the compilers differ only in
   whether they diagnose it. EDG rejects the definition. Clang and GCC

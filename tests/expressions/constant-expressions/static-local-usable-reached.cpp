@@ -1,4 +1,4 @@
-// tidal-rules: CE-20
+// tidal-rules: CE-20 CX-6
 // tidal-expect: accept
 // tidal-note: The evaluations reach a static constexpr variable, a static const int with a constant initializer, and a thread_local constexpr variable. Each is usable in constant expressions, so CE-20 allows it.
 constexpr int fixed() { static constexpr int kept = 3; return kept; }

@@ -29,7 +29,7 @@ destroy.
 :::
 
 :::{principle} CE-P2
-:rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16 CE-21 CE-24
+:rules: CE-2 CE-3 CE-5 CE-7 CE-14 CE-16 CE-21 CE-24 CE-29
 
 An evaluation is closed and can use only what translation already
 knows:
@@ -145,6 +145,18 @@ variable is not usable. A function parameter is usable only during an
 evaluation that called the function. A temporary that the initializer of
 a `constexpr` reference extends (CE-14) is usable if the type of the
 temporary is `const` ({question}`Q-0193`).
+:::
+
+:::{rule} CE-29
+:kind: reject
+:tests: expressions/constant-expressions/reference-runtime-initializer.cpp expressions/constant-expressions/reference-constant-initializer.cpp
+
+A reference variable with a {term}`constant initializer` is usable in
+constant expressions, also if the reference is not `constexpr`.
+Constant evaluation must not use a reference variable to name its
+object if the reference is not usable and the evaluation did not
+initialize it. {rule}`CE-18` gives the case of a reference that the
+evaluation does not read through.
 :::
 
 :::{rule} CE-4
@@ -463,8 +475,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 77
-of 90 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 92 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -482,6 +494,11 @@ of 90 tests.
   ({question}`Q-0078`).
 - CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
   EDG accept it ({question}`Q-0090`).
+- CE-29: every compiler accepts `&alias` in a constant expression and
+  `alias` as a template argument, where `alias` is a reference to a
+  global with a constant initializer and is not `constexpr`. Every
+  compiler rejects a reference whose initializer calls a function that
+  is not `constexpr`.
 - CE-20: every compiler accepts an evaluation that reaches a `static`
   or `thread_local` variable that is usable in constant expressions:
   a `constexpr` variable, or a `const` integer with a constant

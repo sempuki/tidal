@@ -314,6 +314,20 @@ template <class T> int bind(T&&);
 bind(n);                                 // bind(T&): an lvalue reference wins
 ```
 
+In ORD-10 and ORD-11, the template with the lvalue reference, or with
+the more qualified reference, is more specialized. For two conversion
+function templates, only the result types take part (ORD-8). Each row
+gives a pair of results, and the template that the initialization
+`int x = Source{};` calls:
+
+| First result | Second result | Chosen | Rule |
+|---|---|---|---|
+| `T&` | `T&&` | `T&` | ORD-10 |
+| `T&` | `const T&` | `const T&` | ORD-11 |
+| `const T&` | `T&&` | `const T&` | ORD-10, ORD-11 |
+| `T&&` | `const T&&` | `const T&&` | ORD-11 |
+| `T&` | `const T&&` | Clang: neither; GCC and EDG: `T&` | ORD-10 against ORD-11 ({question}`Q-0217`) |
+
 Partial specializations compare by their patterns:
 
 ```cpp
@@ -333,7 +347,7 @@ of 41 tests.
 
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight
-baseline compilers. The compilers agree on every
+{ref}`baseline compilers <baseline-compilers>`. The compilers agree on every
 cell of the grids below.
 
 - ORD-7: Clang and EDG reverse the parameters of a swapped candidate
@@ -342,10 +356,13 @@ cell of the grids below.
   reverse them and chooses the written candidate ({question}`Q-0211`).
   The test also shows that partial ordering ({rule}`OVL-28`) comes
   before the preference for a written candidate ({rule}`OVL-32`).
-- ORD-13: EDG lets a constraint decide between templates whose heads
-  differ in length, and between conversion function templates whose
-  results differ. Clang and GCC find both calls ambiguous
-  ({question}`Q-0146`).
+- ORD-13: EDG lets a constraint decide in three cases where Clang and
+  GCC find the call ambiguous ({question}`Q-0146`). The cases are
+  templates whose heads differ in length
+  (`constraints-different-heads.cpp`), conversion function templates
+  whose results differ (`constraints-conversion-results-differ.cpp`),
+  and parameter lists that differ in length by a parameter with a
+  default argument (`constraints-default-parameter.cpp`).
 - ORD-13: two templates that differ only in an ellipsis tie in ordering
   by types on every compiler. Clang and EDG then let the constraint
   decide, and GCC finds the call ambiguous ({question}`Q-0293`). For
@@ -374,9 +391,6 @@ cell of the grids below.
 - ORD-12: a parameter with a default argument at the position of the
   pack makes the call ambiguous on Clang. GCC and EDG choose the
   template with no pack ({question}`Q-0216`).
-- ORD-13: EDG lets a constraint decide between parameter lists of
-  different lengths. Clang and GCC find the call ambiguous
-  ({question}`Q-0146`).
 - ORD-16: the gap review (item O9) expected the compilers to differ on
   a non-deduced position in partial ordering. Every compiler gives the
   same result in both calls of `nondeduced-position.cpp`.

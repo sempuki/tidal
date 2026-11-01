@@ -136,6 +136,7 @@ user code:
 | a qualification adjustment of a pointer | `const T* const*` | `int**` | DED-14 |
 | a function pointer without `noexcept` | `R (*)()` | `int (*)() noexcept` | DED-14 |
 | a base class that is a specialization | `Base<T>&`, `Base<T>*` | a class derived from `Base<int>` | DED-15 |
+| a base class and more `const` | `const Base<T>*` | a pointer to a class derived from `Base<int>` | DED-14, DED-15 |
 
 The arguments that have no type of their own deduce in their own ways:
 a braced list (DED-16 to DED-18), an overload set (DED-19), and the
@@ -358,9 +359,10 @@ substituted type can differ in these ways:
 A parameter type can be a template name with arguments, such as
 `Base<T>` or `TT<T>`, or a pointer to one. If the argument does not
 match such a parameter exactly, a class derived from a matching
-specialization matches. If two bases match with different values, the
-pair fails, and a base derived from another matching base wins over
-that base.
+specialization matches, also with the qualifiers that DED-14 lets a
+parameter add. If two bases match with different values, the pair
+fails, and a base derived from another matching base wins over that
+base.
 :::
 
 ### Braced lists, overload sets, and packs
@@ -556,7 +558,7 @@ matched with an lvalue reference type `A&` gives `T` the type `A&`.
 
 :::{rule} DED-31
 :kind: required
-:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp templates/deduction/context-conversion-reference-qualifiers.cpp
+:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp templates/deduction/context-conversion-reference-qualifiers.cpp templates/deduction/context-conversion-qualification-place.cpp
 
 A conversion function template takes its template arguments from the
 type that the initialization needs ({rule}`ICS-4`). Before the match:
@@ -568,7 +570,9 @@ type that the initialization needs ({rule}`ICS-4`). Before the match:
   types were references. Then the qualifiers of the needed type stay.
 
 If no exact match exists, the result type can reach the needed type by
-a qualification adjustment or by dropping `noexcept`.
+a qualification adjustment or by dropping `noexcept`. Each template
+parameter then takes the type at its own place in the needed type, with
+the qualifiers of that type.
 :::
 
 :::{rule} DED-32
@@ -615,7 +619,9 @@ deallocation function ({doc}`/expressions/new-delete`, {rule}`NEW-23`). A deallo
 function template matches if deduction makes its parameter types after
 the first the same as those of the allocation function. If several
 templates match, partial ordering ({rule}`ORD-9`) chooses one
-({question}`Q-0219`).
+({question}`Q-0219`). If a function that is not a template also
+matches, the template is not chosen, and its body is not instantiated
+({question}`Q-0220`).
 :::
 
 ### No candidate
@@ -662,6 +668,33 @@ int size(...);
 size(1);                        // int::size_type is not valid; size(...)
 ```
 
+An error in the function type removes the template, also a call of a
+lambda with no viable function there (DED-24). An error in the body of
+a lambda is an error of the program (DED-29):
+
+```cpp
+template <class T>
+auto first(T t) -> decltype([](auto x) -> decltype(x.size()) { return x.size(); }(t), 1);
+int first(...);
+first(1);                       // the lambda call has no viable function; first(...)
+
+template <class T> int second(T, decltype([] { typename T::type v; }) * = nullptr);
+int second(...);
+second(1);                      // rejected: the error is in the body of the lambda
+```
+
+A braced list for a reference to an array deduces from each element
+(DED-17). A narrowing conversion of an element still forms a
+conversion sequence, which then ranks as usual ({rule}`ICS-8`,
+{rule}`ICS-2`):
+
+```cpp
+template <class T, int N> int len(const T (&)[N]);   // 1
+int len(const long (&)[2]);                          // 2
+len({1.5, 2.5});                // 1: T = double is an exact match, and 2 needs a conversion
+len({1, 2L});                   // 2: T is int and long, so 1 is not viable
+```
+
 Explicit arguments fill the template parameters from the left, and a
 parameter that they fix converts its argument:
 
@@ -676,12 +709,13 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 115 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
-7.0, and checked the tests and grids on the eight baseline compilers. The compilers agree on every
-cell of the grids below.
+7.0, and checked the tests and grids on the eight
+{ref}`baseline compilers <baseline-compilers>`. The compilers agree on every cell of the
+grids below.
 
 - DED-11: EDG gives a `bool` constant parameter no value from the
   `noexcept` of a function type, and the call has no match. Clang and
@@ -711,6 +745,12 @@ cell of the grids below.
   deallocation templates. EDG instantiates the same template, which a
   probe with a failing `static_assert` in each body shows. Clang warns
   that two functions match and calls neither ({question}`Q-0219`).
+- DED-39: when a function and a template both match, no compiler
+  instantiates the template. The body of the template in
+  `throw-placement-function-before-template-instantiation.cpp` fails
+  if it is instantiated, and every compiler accepts the test. GCC and
+  EDG choose the function. Clang chooses neither and calls no
+  deallocation function ({question}`Q-0220`).
 - DED-20: the gap review (item E3) predicted that a later parameter
   `List<A...>` gives elements to a pack before the end. Every compiler
   keeps the pack empty and rejects the call

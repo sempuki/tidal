@@ -1,6 +1,6 @@
 // tidal-rules: CTAD-11
 // tidal-expect: accept
-// tidal-note: The guide comes after the definitions of make and fixed and before their first instantiations, so each deduction in them uses the guide, even the deduction from 1 that does not depend on U. later is instantiated before its guide, so its deduction does not use the guide.
+// tidal-note: The guide comes after the definitions of make and fixed and before their first instantiations, so each deduction in them uses the guide, even the deduction from 1 that does not depend on U. later<int> is instantiated before its guide, so its deduction does not use the guide. The end of the unit is a second point of instantiation of later<int>, after the guide, so INST-32 allows any result for later. Every compiler uses the first point.
 template <class A, class B> constexpr bool same = false;
 template <class A> constexpr bool same<A, A> = true;
 template <class T> struct Box { constexpr Box(T) {} };
