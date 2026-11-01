@@ -5,6 +5,11 @@ term to its entry here. A marker such as *(library referenced)* names a
 topic that Tidal does not specify yet.
 
 :::{glossary}
+alias template
+  A template whose declaration is a `using` alias. A specialization of an
+  alias template is the type that the alias gives, and no new type
+  ({rule}`TPL-28`).
+
 ambiguous conversion sequence
   The sequence of an argument that two or more user-defined conversions
   can convert equally well. The sequence counts as user-defined, and a
@@ -45,6 +50,10 @@ candidate function
   A function that overload resolution considers for a use. The context
   of the use decides the candidates ({rule}`OVL-1`, {principle}`OVL-P2`).
 
+class template
+  A template whose declaration declares a class. Each specialization is a
+  class ({rule}`TPL-1`).
+
 constant evaluation
   Evaluation of an expression during translation, before the program
   runs. Constant evaluation occurs where translation needs a value, for
@@ -63,6 +72,12 @@ constant initializer
   An initializer whose whole initialization of the variable is a
   constant expression. Such a variable's value is known during
   translation (CE-24).
+
+constant parameter
+  A template parameter that takes a value, such as `N` in
+  `template <int N>`. Its type is a {term}`structural type`
+  ({rule}`TPL-6`), and its argument is a constant expression
+  ({rule}`TARG-12`).
 
 contextual conversion
   The conversion of a value to `bool` where a true or false value is
@@ -95,7 +110,13 @@ declarator
 default initialization
   The initialization of an object that nothing initializes. A scalar
   keeps no value, and a class object runs its default constructor
-  ({rule}`INIT-9`).
+  ({rule}`INIT-9`). A union with no default member initializer gets no
+  active member ({rule}`UNI-4`).
+
+default template argument
+  The argument that a template parameter takes when a template-id gives
+  none for it, written after `=` in the template head ({rule}`TPL-13`,
+  {rule}`TARG-9`).
 
 discarded statement
   The branch of an `if constexpr` statement that the condition does not
@@ -111,10 +132,19 @@ ellipsis conversion sequence
   The sequence of an argument that matches the `...` of a function. It is
   worse than every other sequence ({rule}`ICS-6`, {rule}`ICS-21`).
 
+explicit specialization
+  A declaration that starts with `template <>` and defines one
+  specialization of a template for one argument list ({rule}`TSP-1`,
+  {rule}`TSP-2`).
+
 full expression
   An expression that is not part of a larger expression, such as the
   expression of an expression statement or a condition. The temporaries
   of a full expression end with the full expression ({rule}`VC-9`).
+
+function template
+  A template whose declaration declares a function. Each specialization
+  is a function ({rule}`TPL-1`).
 
 header
   A file that holds declarations for several translation units to
@@ -191,6 +221,11 @@ literal type
 
   {rule}`CE-23` gives the full rule.
 
+member template
+  A template declared in a class body. Such a template declares a
+  function, a nested class, or a static variable with a head of its own
+  ({rule}`TPL-24`).
+
 observable behavior
   The part of an execution that an implementation must reproduce:
 
@@ -205,10 +240,20 @@ operator function
   `operator+`. An expression that uses the operator can call the
   operator function ({rule}`OPR-1`).
 
+partial specialization
+  A declaration with its own template head that defines the
+  specializations of a class template or variable template whose
+  arguments match a pattern ({rule}`TSP-9`, {rule}`TSP-14`).
+
 placeholder type
   `auto` or `decltype(auto)` in the position of a type. The actual type
   comes from an initializer or from `return` statements. A concept name
   can come before the placeholder to constrain the type.
+
+primary template
+  The declaration of a class template or variable template that is not
+  an explicit or partial specialization. A specialization that no other
+  declaration covers comes from it ({rule}`TSP-13`).
 
 promoted arithmetic type
   A floating-point type, or an integer type that
@@ -225,6 +270,11 @@ sequence rank
   promotion, or conversion. The worst conversion in the sequence gives
   the rank ({rule}`ICS-2`).
 
+specialization
+  The class, function, variable, or type that a template and one list
+  of template arguments give. Two template-ids with the same template
+  and the same arguments name one specialization ({rule}`TARG-19`).
+
 standard conversion sequence
   An {term}`implicit conversion sequence` of at most three standard
   conversions, in a fixed order ({rule}`ICS-1`).
@@ -239,10 +289,40 @@ storage duration
   - *Dynamic* storage comes from `new` and goes back with `delete`
     ({rule}`NEW-9`).
 
+structural type
+  A type that a constant parameter can have. Scalar types and lvalue
+  references are structural. A literal class is structural when its bases
+  and members are public, not `mutable`, and structural ({rule}`TPL-6`).
+
 surrogate candidate
   A candidate for a call on a class object that a conversion function to
   a pointer or reference to function gives. The call converts the object
   and then calls the result ({rule}`OVL-6`).
+
+template
+  A declaration with a template head. Each argument list for its
+  parameters names one {term}`specialization` ({principle}`TPL-P1`).
+
+template argument
+  A type, a constant expression, or a template, given in a template-id
+  for one template parameter ({rule}`TARG-5`).
+
+template head
+  The part `template <...>` that starts a template declaration and
+  lists its parameters ({rule}`TPL-1`).
+
+template parameter pack
+  A template parameter declared with `...`. It takes zero or more
+  arguments of its kind ({rule}`TPL-30`, {rule}`TARG-21`).
+
+template template parameter
+  A template parameter that takes a class template or alias template,
+  declared with a template head of its own ({rule}`TPL-12`,
+  {rule}`TARG-17`).
+
+template-id
+  The name of a template followed by a template argument list in angle
+  brackets, such as `Box<int>` ({rule}`TARG-1`).
 
 temporary object
   An object that the program makes from a prvalue, without a name. A
@@ -260,10 +340,22 @@ translation unit
   includes. Each translation unit is compiled separately. Then the
   translation units are linked into one program.
 
+type parameter
+  A template parameter that takes a type, declared with `class` or
+  `typename` ({rule}`TPL-5`).
+
+unordered
+  The relation between two evaluations when the language does not set
+  an order and the evaluations cannot overlap. One evaluation finishes
+  before the other starts, and the implementation picks the order each
+  time. Two arguments of a call ({rule}`SEQ-1`), and a call against the
+  rest of its expression ({rule}`SEQ-8`, {rule}`ASN-11`), are unordered.
+
 unsequenced
   The relation between two evaluations when the language does not set an
-  order and the evaluations can overlap. The operands of most binary
-  operators are unsequenced. A function call in one operand does not
+  order and the evaluations can overlap. The operands of a built-in
+  operator are unsequenced, unless a rule fixes their order
+  ({rule}`SEQ-8`). A function call in one operand does not
   overlap with work in the other operand. The call and the other work
   can still occur in either order.
 
@@ -290,6 +382,10 @@ value category
     for example the result of `std::move`.
   - A *prvalue* computes a value, for example `a * b` or `42`. A prvalue
     has no identity.
+
+variable template
+  A template whose declaration declares a variable. Each specialization
+  is a variable ({rule}`TPL-26`).
 
 viable function
   A candidate function whose parameters fit the arguments and whose

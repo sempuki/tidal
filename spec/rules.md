@@ -59,8 +59,8 @@ Every rule ID starts with the prefix of its page.
 | `LNK` | `declarations/storage-linkage.md` |
 | `LOG` | `expressions/logical.md` |
 | `LOOP` | `statements/loops.md` |
-| `LSUP` | `foundations/language-support.md` |
 | `LSP` | `declarations/linkage-specifications.md` |
+| `LSUP` | `foundations/language-support.md` |
 | `MPTR` | `expressions/member-pointers.md` |
 | `MUL` | `expressions/multiplicative.md` |
 | `NAM` | `foundations/names.md` |
@@ -83,9 +83,12 @@ Every rule ID starts with the prefix of its page.
 | `STMT` | `statements/blocks.md` |
 | `STO` | `declarations/storage-linkage.md` |
 | `SW` | `statements/switch.md` |
+| `TARG` | `templates/arguments.md` |
 | `THR` | `exceptions/throw.md` |
+| `TPL` | `templates/declarations.md` |
 | `TR` | `foundations/translation.md` |
 | `TRY` | `exceptions/handlers.md` |
+| `TSP` | `templates/specialization.md` |
 | `TYN` | `declarations/type-names.md` |
 | `TYP` | `foundations/types.md` |
 | `UN` | `expressions/unary.md` |

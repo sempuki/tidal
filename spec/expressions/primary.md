@@ -100,9 +100,11 @@ An implementation should warn where such a literal is likely a mistake.
    unqualified_id: `identifier` | "~" `class_name`
                  : | `operator_function_id` | `literal_operator_id`
                  : | `conversion_function_id`
+                 : | `template_id`
    qualified_name: `nested_name` `unqualified_id`
    nested_name: "::"
               : | [`nested_name`] `identifier` "::"
+              : | [`nested_name`] `template_id` "::"
               : | `decltype_spec` "::"
    identifier: `id_start` {`id_start` | `digit`}
    id_start: `letter` | "_" | `ucn`

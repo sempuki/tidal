@@ -213,7 +213,7 @@ exception (IF-16). The same condition applies to:
 
 - the condition of `explicit(...)`,
 - the operand of a `noexcept` specifier (EXS-1),
-- a non-type template argument *(templates referenced)*.
+- a template argument for a constant parameter ({rule}`TARG-13`).
 :::
 
 :::{rule} CE-25

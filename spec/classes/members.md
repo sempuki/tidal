@@ -91,6 +91,8 @@ the layout of such a class.
               : | `alias_decl`
               : | `using_decl`
               : | `static_assert_decl`
+              : | `template_decl`
+              : | `explicit_specialization`
    member_declarator: `declarator` [`virt_specifiers`] [`pure_specifier` | `member_init`]
                     : | `bitfield`
    member_init: "=" `assignment_expr` | "=" `braced_init` | `braced_init`
@@ -290,11 +292,13 @@ variables of the function, except as CLS-12 allows.
 
 :::{rule} CLS-13
 :kind: required
-:tests: classes/members/explicit-object-parameter.cpp
+:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp
 
 A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that
-parameter.
+parameter. If the parameter has class type and the object is a prvalue
+of that type, the prvalue initializes the parameter directly, with no
+temporary ({rule}`VC-4`, {question}`Q-0181`).
 :::
 
 :::{rule} CLS-14
@@ -419,7 +423,7 @@ struct Text {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 84 tests.
+of 85 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
@@ -430,6 +434,10 @@ of 84 tests.
 - CLS-11: the size is 1 on every compiler in the matrix.
 - CLS-19: the tests check the consequence for a simple standard-layout
   class. They do not check each condition of the definition.
+- CLS-13: Clang 18 rejects a class prvalue for a by-value explicit
+  object parameter when the class has no usable copy or move
+  constructor. The other compilers initialize the parameter directly
+  ({question}`Q-0181`).
 
 Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, edg-class-
 decl.

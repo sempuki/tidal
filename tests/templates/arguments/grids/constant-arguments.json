@@ -1,0 +1,37 @@
+{
+ "prelude": "enum Plain { plain_one = 1 };\nenum class Scoped { one = 1 };\nstruct Wrap { int v; constexpr operator int() const { return v; } };\nconstexpr Wrap wrapped{1};\nconstexpr int fixed = 1;\nint changing = 1;\nint object = 1;\nconst int const_object = 1;\nint function() { return 1; }\nusing FunctionPointer = int (*)();\n",
+ "template": "{prelude}template <{col} P> struct Take {{}};\n{row}",
+ "rows": {
+  "1": "Take<1> t;",
+  "300": "Take<300> t;",
+  "'a'": "Take<'a'> t;",
+  "true": "Take<true> t;",
+  "2.0": "Take<2.0> t;",
+  "unscoped enumerator": "Take<plain_one> t;",
+  "scoped enumerator": "Take<Scoped::one> t;",
+  "class with conversion to int": "Take<wrapped> t;",
+  "constexpr int variable": "Take<fixed> t;",
+  "int variable": "Take<changing> t;",
+  "nullptr": "Take<nullptr> t;",
+  "0": "Take<0> t;",
+  "&object": "Take<&object> t;",
+  "object": "Take<object> t;",
+  "const_object": "Take<const_object> t;",
+  "string literal": "Take<\"ab\"> t;",
+  "function": "Take<function> t;"
+ },
+ "cols": {
+  "int": "int",
+  "unsigned char": "unsigned char",
+  "bool": "bool",
+  "long": "long",
+  "double": "double",
+  "Plain": "Plain",
+  "int*": "int*",
+  "const int*": "const int*",
+  "int&": "int&",
+  "const int&": "const int&",
+  "int (*)()": "FunctionPointer",
+  "auto": "auto"
+ }
+}

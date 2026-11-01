@@ -71,7 +71,7 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
 .. productionlist:: tidal
    typedef_decl: "typedef" `decl_specifiers` `declarator` {"," `declarator`} ";"
    alias_decl: "using" `identifier` {`attribute_spec`} "=" `type_id` ";"
-   elaborated_type: `class_key` [`nested_name`] `identifier`
+   elaborated_type: `class_key` [`nested_name`] (`identifier` | `template_id`)
                   : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
    forward_class: `class_key` `identifier` ";"

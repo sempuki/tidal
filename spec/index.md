@@ -31,6 +31,7 @@ statements/index
 expressions/index
 declarations/index
 classes/index
+templates/index
 exceptions/index
 glossary
 rules

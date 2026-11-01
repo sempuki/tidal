@@ -68,11 +68,11 @@ each item starts.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| N1 | Template declarations, parameters, template-ids, explicit and partial specialization, variable templates | F notation |
+| N1 | Done: template declarations, parameters, template-ids, explicit and partial specialization, variable and alias templates (`spec/templates/`) | F notation |
 | O | Deduction, function templates, partial ordering | M, N1 |
 | N2 | Dependent names, two-phase checking, instantiation | runner outcome sets |
 | P | Concepts and constraints | M, N1, N2 |
-| R | Packs, forwarding, alias templates, class template argument deduction | O |
+| R | Packs, forwarding, class template argument deduction (alias templates are in N1) | O |
 
 ## Front end
 

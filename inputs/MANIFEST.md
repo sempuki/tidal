@@ -19,8 +19,8 @@ sanitized copies in `inputs/clean/`. Neither directory is tracked.
 | clang-sema-stmt | llvm | `clang/lib/Sema/SemaStmt.cpp` | sanitized | `(not fetched)` |
 | clang-sema-expr | llvm | `clang/lib/Sema/SemaExpr.cpp` | sanitized | `a644acb7cbeadf71a57c6061348168eec9a8b9c0459eb26d6877787cffa631c1` |
 | clang-diag-sema | llvm | `clang/include/clang/Basic/DiagnosticSemaKinds.td` | sanitized | `e57a3ba7476665663ffc3d3961540a06bb062dcbecca92a1a293d74bf9baa5a6` |
-| clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `(not fetched)` |
-| clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `(not fetched)` |
+| clang-diag-parse | llvm | `clang/include/clang/Basic/DiagnosticParseKinds.td` | sanitized | `da146d0a392bc261867828d7da6eeb1a6247a01351dacef710b6b2541855fdd0` |
+| clang-sema-deduction | llvm | `clang/lib/Sema/SemaTemplateDeduction.cpp` | sanitized | `1509b492df7bed0c7d4e5a1f15a9e7e478b5fd913ffa50c4a07475aba2152e70` |
 | clang-sema-decl | llvm | `clang/lib/Sema/SemaDecl.cpp` | sanitized | `73871a91bb6d5348e5ec42dbec031890f7c38ce64bd82c647a2a7893e9cffdcc` |
 | edg-overload | edg | `src/overload.c` | sanitized | `62c8b3971d169872985b6855871488690c971455a0ef07773e6f78f335a1c67e` |
 | edg-decls | edg | `src/decls.c` | sanitized | `1b362f931dd532b477c272d4cc4481baa822660ffb278c00475ae2da51b8fdc0` |

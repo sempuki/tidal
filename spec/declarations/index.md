@@ -54,6 +54,8 @@ static-assert
               : | `function_definition`
               : | `namespace_def`
               : | `linkage_spec`
+              : | `template_decl`
+              : | `explicit_specialization`
               : | ";"
    block_decl: `simple_decl`
              : | `sb_decl`
@@ -84,4 +86,5 @@ static-assert
               : | "char" | "wchar_t" | "char8_t" | "char16_t" | "char32_t"
               : | "bool" | "float" | "double" | "void"
               : | [`nested_name`] `identifier`
+              : | [`nested_name`] `template_id`
 ```

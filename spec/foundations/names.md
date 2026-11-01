@@ -475,7 +475,7 @@ classes of all the arguments (NAM-29).
 | A pointer to `T`, an array of `T`, a reference to `T` | What `T` adds |
 | A function, or a pointer to a function | What the parameter types and the return type add |
 | A pointer to a member of `C` of type `T` | What `C` adds and what `T` adds |
-| A specialization of a class template *(templates referenced)* | Also the namespace of the template, what each type argument adds, and the namespace of each template argument that is a template |
+| A specialization of a class template ({rule}`TARG-19`) | Also the namespace of the template, what each type argument adds, and the namespace of each template argument that is a template |
 | A lambda's closure type | The innermost namespace that contains the lambda, and the class whose body contains the lambda |
 | A class or enumeration declared in a function | The innermost namespace that contains the function |
 | A function name with overloads | What the type of each function adds |

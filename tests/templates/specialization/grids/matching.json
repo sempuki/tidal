@@ -1,0 +1,39 @@
+{
+ "prelude": "template <class T> struct Box {};\ntemplate <class T, class U> struct Pair {};\nstruct Owner {};\n",
+ "template": "{prelude}template <class X> struct Match {{ static constexpr bool value = false; }};\n{col}\nstatic_assert(Match<{row}>::value);",
+ "rows": {
+  "int": "int",
+  "const int": "const int",
+  "int*": "int*",
+  "const int*": "const int*",
+  "int* const": "int* const",
+  "int&": "int&",
+  "int&&": "int&&",
+  "int[3]": "int[3]",
+  "int[]": "int[]",
+  "int()": "int()",
+  "int(char)": "int(char)",
+  "int(*)(char)": "int(*)(char)",
+  "int Owner::*": "int Owner::*",
+  "Box<int>": "Box<int>",
+  "Box<int*>": "Box<int*>",
+  "Pair<int, int>": "Pair<int, int>",
+  "Pair<int, char>": "Pair<int, char>"
+ },
+ "cols": {
+  "T*": "template <class T> struct Match<T*> { static constexpr bool value = true; };",
+  "const T": "template <class T> struct Match<const T> { static constexpr bool value = true; };",
+  "const T*": "template <class T> struct Match<const T*> { static constexpr bool value = true; };",
+  "T&": "template <class T> struct Match<T&> { static constexpr bool value = true; };",
+  "T&&": "template <class T> struct Match<T&&> { static constexpr bool value = true; };",
+  "T[N]": "template <class T, int N> struct Match<T[N]> { static constexpr bool value = true; };",
+  "T[]": "template <class T> struct Match<T[]> { static constexpr bool value = true; };",
+  "R(A)": "template <class R, class A> struct Match<R(A)> { static constexpr bool value = true; };",
+  "R(*)(A)": "template <class R, class A> struct Match<R(*)(A)> { static constexpr bool value = true; };",
+  "T C::*": "template <class T, class C> struct Match<T C::*> { static constexpr bool value = true; };",
+  "Box<T>": "template <class T> struct Match<Box<T>> { static constexpr bool value = true; };",
+  "Box<T*>": "template <class T> struct Match<Box<T*>> { static constexpr bool value = true; };",
+  "C<T>": "template <template <class> class C, class T> struct Match<C<T>> { static constexpr bool value = true; };",
+  "Pair<T, T>": "template <class T> struct Match<Pair<T, T>> { static constexpr bool value = true; };"
+ }
+}

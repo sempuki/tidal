@@ -5,12 +5,9 @@ A variable declaration can use a {term}`placeholder type`, `auto` or
 then comes from its initializer.
 
 This page covers variables, including variables in conditions and
-initializer statements. Placeholders in these positions are on other
-pages *(templates referenced)*:
-
-- return types,
-- parameters,
-- template parameters.
+initializer statements. Placeholders in return types and parameters
+are on other pages *(templates referenced)*. A placeholder in a
+template parameter is on the template pages ({rule}`TPL-11`).
 
 ## Principles
 

@@ -54,20 +54,25 @@ In scope:
   guards (roadmap phase 3, items I and J).
 - Name lookup, implicit conversion sequences, and overload resolution
   (roadmap phase 3, items H, L, and M).
+- Templates: declarations and parameters, template-ids and template
+  arguments, explicit and partial specialization, variable templates,
+  and alias templates (roadmap phase 4, item N1).
 
 Referenced but not specified:
 
-The in-scope topics depend on templates and concepts. Tidal sections
-refer to them by name, mark each use *(templates referenced)* or
-*(concepts referenced)*, and list them in a "Depends on" block. Phase 4
-of the roadmap brings them into scope (decision 0033, Q-0113).
+The in-scope topics depend on the rest of templates and on concepts:
+deduction and partial ordering, dependent names and instantiation,
+constraints, packs, forwarding references, and class template argument
+deduction. Tidal sections refer to them by name, mark each use
+*(templates referenced)* or *(concepts referenced)*, and list them in a
+"Depends on" block. Phase 4 of the roadmap brings them into scope
+(decision 0033, Q-0113).
 
 Out of scope:
 
 - The preprocessor other than `#include "file"` and include guards,
   lexical structure, modules.
-- Templates as a topic of its own, until phase 4 of the roadmap brings
-  it in.
+- The parts of templates that phase 4 has not brought in yet.
 - The standard library, except the language-support types that the core
   rules name (decision 0041).
 - Coroutines (`co_await`, `co_yield`, `co_return`).

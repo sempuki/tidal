@@ -97,7 +97,7 @@ initialization. A signature that two bases both offer is ambiguous.
    base_spec: [`access_specifier`] ["virtual"] [`nested_name`] `class_name`
             : | "virtual" `access_specifier` [`nested_name`] `class_name`
    class_head: ("class" | "struct") {`attribute_spec` | `alignment_specifier`}
-             :    [[`nested_name`] `class_name` ["final"]] [`base_clause`]
+             :    [[`nested_name`] (`class_name` | `template_id`) ["final"]] [`base_clause`]
    inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ";"
 ```
 
