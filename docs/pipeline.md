@@ -68,11 +68,15 @@ for `undefined`:
 - **Sanitizers.** `-fsanitize=undefined` with recovery off, or
   `-fsanitize=address`, stops the program and names the error. The test
   expects `run-fail` and matches the report with `tidal-error` (decision 0028).
-- **Optimizer assumptions.** Code after the construct is removed or folded
-  at `-O2`.
+- **Optimizer assumptions.** A configuration such as `-O2` removes or
+  folds code after the construct. The result supports the class but
+  never decides it, because the standard says nothing about
+  optimization (decision 0047).
 
 Evidence for `unspecified` and `impl-defined` is variation across
-compilers, optimization levels, or targets. A second target such as `-m32` is a cheap
+implementations: compilers, their configurations, or targets. Each
+configuration of a compiler is an implementation, and its result must
+lie within what the rules allow. A second target such as `-m32` is a cheap
 way to show behavior that depends on type sizes.
 
 ## 6. Draft

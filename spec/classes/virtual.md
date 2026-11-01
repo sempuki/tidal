@@ -404,8 +404,8 @@ of 107 tests.
   function ({question}`Q-0087`).
 - VIRT-20: Clang and GCC report the missing definition at link time.
   At `-O2` they emit no reference to the virtual table, and the program
-  links. The outcome depends on the optimization level, so the rule
-  needs no diagnostic.
+  links. VIRT-20 allows both results, because the rule needs no
+  diagnostic.
 - VIRT-13: Clang and GCC give both warnings under `-Wall`.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,

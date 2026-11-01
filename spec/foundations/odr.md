@@ -358,9 +358,8 @@ the units are valid.
 - ODR-8: Each translation unit compiles without a diagnostic, and only
   the linker reports a missing or extra definition. At `-O2`, the
   report compilers `gcc-16-o2` and `clang-22-o2` link four of the
-  programs that fail to link at the default level. The optimizer
-  removes every reference to the missing definition, so ODR-8 needs no
-  diagnostic (decision 0043). The four tests are `constant-address-is-use.cpp`,
+  programs that fail to link at the default level. ODR-8 allows both
+  results, because the rule needs no diagnostic (decision 0047). The four tests are `constant-address-is-use.cpp`,
   `function-address-is-use.cpp`,
   `virtual-destructor-uses-deallocation-function.cpp`, and
   `virtual-function-not-called-is-used.cpp`.

@@ -1,13 +1,14 @@
 # 0043. Optimization-level variants in the matrix
 
 Date: 2026-10-31
-Status: Accepted. Extends 0008 and 0028.
+Status: Accepted. Extends 0008 and 0028. Amended by 0047.
 
 ## Context
 
 Roadmap items I and J (use of an entity and the one-definition rule)
 have many `no-diagnostic` and `unspecified` rules. Whether a program
-with such a fault links or runs can depend on the optimization level.
+with such a fault links or runs can differ between configurations of
+one compiler.
 The baseline compilers build every test at the default level, so the
 matrix shows one outcome.
 
@@ -22,7 +23,7 @@ matrix shows one outcome.
   none for the variant itself.
 - A test gives the variant's outcome with `tidal-expect-<variant id>`
   when the outcome differs at `-O2`. The test's note names the rule
-  that lets the outcome vary.
+  that allows both outcomes.
 - A sanitizer test passes `-O0` first in `tidal-flags`. The later flag
   wins, so the variants build the test without optimization.
 
@@ -40,5 +41,5 @@ matrix shows one outcome.
   The first two tests have overrides for the variants. The third test
   accepts the omitted pair, as NEW-14 requires. The sanitizer tests
   pass `-O0`.
-- Pages for items I and J can cite a variant's outcome as Evidence for
-  a rule that needs no diagnostic.
+- A page can cite a variant's outcome in Evidence as one more
+  implementation result that its rules must allow (decision 0047).

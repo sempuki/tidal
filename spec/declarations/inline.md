@@ -195,7 +195,7 @@ of 34 tests.
 - INL-7: the test with two different definitions accepts either body.
   The test with `inline` in one unit runs at `-O0`. At `-O2`, GCC and
   Clang emit no out-of-line definition, and the other unit's call does
-  not link.
+  not link. INL-7 allows both results.
 - INL-6: EDG reports a used inline function with no definition during
   translation. Clang and GCC report the missing definition when linking.
   All three report a used inline variable with no definition during
