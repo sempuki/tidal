@@ -34,7 +34,7 @@ reference binds to the temporary.
 :::
 
 :::{principle} REF-P2
-:rules: REF-4 REF-7 REF-5
+:rules: REF-4 REF-7 REF-5 REF-15
 
 A temporary made for a reference holds the converted value and lives as
 long as the reference variable, because a reference to nothing would be
@@ -47,7 +47,8 @@ bindings through:
 
 The extension does not reach a function parameter or a returned
 reference. A reference used after its object has ended, or bound through
-a null pointer, has no defined meaning.
+a null pointer, has no defined meaning, and an implementation should warn
+where it can see such a reference.
 :::
 
 ## Constraints
@@ -214,19 +215,33 @@ A later change to the source expression does not change the temporary.
 
 :::{rule} REF-5
 :kind: undefined
-:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp
+:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp declarations/initialization/references/new-aggregate-member-not-extended.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp
 
 Only the bindings in REF-4 extend the life of a temporary. These
 bindings do not extend the life of a temporary ({question}`Q-0040`):
 
 - a binding to a function parameter,
-- a binding to a returned reference,
+- a binding to a returned reference, also one that a conversion
+  function returns,
 - a binding to a reference member of an aggregate initialized with
-  parentheses.
+  parentheses,
+- a binding to a reference member of an object that a `new` expression
+  initializes, with braces or parentheses.
 
 Use of a reference after the life of its object ends is undefined.
 Binding a reference to `*p` where `p` is a null pointer is undefined,
 and constant evaluation rejects such a binding ({question}`Q-0110`).
+:::
+
+## Recommended Practice
+
+:::{rule} REF-15
+:kind: recommended
+:tests: declarations/initialization/references/dangling-new-member-warns.cpp
+
+An implementation should warn when a reference outlives the temporary
+that it binds to (REF-5). An example is a reference member of an object
+that `new` makes, bound to a temporary ({question}`Q-0180`).
 :::
 
 ## Examples
@@ -253,6 +268,13 @@ int&& v = x;                 // rejected: lvalue of the same type
 const int& pass(const int& v) { return v; }
 const int& w = pass(1);      // the temporary ends here; w dangles
 
+struct Box {
+  int v;
+  const int& get() const { return v; }
+};
+const int& kept = Box{1}.v;      // the Box lives as long as kept
+const int& lost = Box{2}.get();  // the Box ends here; lost dangles
+
 struct Point { int x, y; };
 const int (&row)[3]{1, 2};   // row refers to a temporary {1, 2, 0}
 const Point& corner{0, 4};   // corner refers to a temporary Point
@@ -272,7 +294,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 43 of 56 tests. The results are in
+All eight compilers agree on 45 of 59 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
@@ -280,6 +302,14 @@ All eight compilers agree on 43 of 56 tests. The results are in
   "accessing ... outside its lifetime", "attempt to access expired
   storage"). Clang, GCC, and EDG also warn when a function returns a
   reference to a local variable.
+- **REF-5.** Clang and GCC end a temporary bound to a reference member
+  of an object from `new` at the end of the full expression, with braces
+  and with parentheses. A class temporary whose conversion function
+  returns a reference to its member also ends there.
+- **REF-15.** Clang warns about a temporary bound to a reference member
+  of an object from `new`. GCC does not. Each compiler warns about some
+  other dangling cases, and the cases differ by version
+  ({question}`Q-0180`).
 - **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
   of an array member of a temporary. Clang and GCC accept the binding
   and extend the temporary ({question}`Q-0109`).

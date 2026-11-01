@@ -241,17 +241,20 @@ The operand must not be one of these:
 
 :::{rule} UN-18
 :kind: required
-:tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp
+:tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp expressions/unary/noexcept-dynamic-cast-to-base.cpp expressions/unary/noexcept-temporary-destructor-false.cpp expressions/unary/noexcept-rewritten-comparison-false.cpp expressions/new-delete/global-functions-specifiers.cpp
 
 `noexcept(e)` is a constant of type `bool`. The constant is `false` if
 `e` contains:
 
 - a call to a function that is not `noexcept`, also an implicit call
-  from the list in {rule}`SEQ-9`, such as the constructor of a
-  temporary or a conversion function,
+  from the list in {rule}`SEQ-9`, such as the constructor or the
+  destructor of a temporary, a conversion function, or a rewritten
+  comparison,
 - a `new` expression whose allocation function is not `noexcept`, such
   as the default one,
-- a `dynamic_cast` to a reference type that can fail,
+- a `dynamic_cast` to a reference type that checks at run time
+  ({rule}`VIRT-10`). A cast to a reference to the class of the operand,
+  or to an accessible unambiguous base of that class, makes no check.
 - a throw-expression ({rule}`THR-5`).
 
 Otherwise the constant is `true`.
@@ -370,7 +373,7 @@ alignof(char);          // 1
 
 ## Evidence
 
-All eight compilers agree on 61 of 64 tests. The results are in
+All eight compilers agree on 65 of 68 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-20: Clang and GCC accept `++` and `--` on a `short` or

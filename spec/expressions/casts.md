@@ -228,13 +228,16 @@ The result of `const_cast` refers to the same object as its operand.
 
 :::{rule} CAST-6
 :kind: required
-:tests: expressions/casts/reinterpret-round-trip.cpp expressions/casts/reinterpret-unrelated-pointer.cpp expressions/casts/reinterpret-reference.cpp expressions/casts/reinterpret-nullptr-to-integer.cpp
+:tests: expressions/casts/reinterpret-round-trip.cpp expressions/casts/reinterpret-unrelated-pointer.cpp expressions/casts/reinterpret-reference.cpp expressions/casts/reinterpret-nullptr-to-integer.cpp expressions/casts/reinterpret-function-pointer-round-trip.cpp
 
 `reinterpret_cast` can do these conversions:
 
 - a pointer to a large enough integer type. Converting that integer
   back gives the original pointer.
 - between unrelated pointer types.
+- between two pointer to function types. Converting back gives the
+  original pointer. A call through the converted pointer follows
+  {rule}`PFX-19`.
 - to a reference type `T&`. The result is an lvalue that refers to the
   operand as type `T`.
 - a null pointer value of type `std::nullptr_t` to an integer type.
@@ -302,7 +305,7 @@ int{2.5};                       // rejected: narrowing
 
 ## Evidence
 
-All eight compilers agree on 48 of 49 tests. The results are in
+All eight compilers agree on 49 of 50 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

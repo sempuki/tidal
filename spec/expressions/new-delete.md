@@ -54,7 +54,9 @@ placement arguments exists only where a declaration gives it. A program can supp
 own allocation functions for one class, through the member
 `operator new` and `operator delete` of the class, or with extra
 placement arguments. `::new` reaches past a class's own functions to the
-global ones. The implementation chooses how often the global functions
+global ones. A global allocation function that fails throws an
+exception of a type that is *(library referenced)*, and the deallocation
+functions never throw. The implementation chooses how often the global functions
 are called, because a program only ever sees the objects. So two `new`
 expressions may share one allocation.
 :::
@@ -189,7 +191,7 @@ A class can declare its own `operator new` and `operator delete`. A
 
 :::{rule} NEW-19
 :kind: required
-:tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp
+:tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp expressions/new-delete/global-functions-specifiers.cpp
 
 Every translation unit has these global functions without a
 declaration in the program:
@@ -201,7 +203,9 @@ declaration in the program:
   and a parameter of the type of `sizeof 0`.
 
 A program can call these functions by name, also when it declares its
-own forms of `operator new` or `operator delete`.
+own forms of `operator new` or `operator delete`. The `operator new`
+forms are potentially throwing, and the `operator delete` forms are
+non-throwing ({rule}`EXS-4`).
 :::
 
 :::{rule} NEW-20
@@ -321,8 +325,8 @@ new (&x) int(3);                // rejected without a declared placement form
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 56 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 53
+of 57 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -344,5 +348,8 @@ of 56 tests.
 - NEW-8: GCC accepts `delete` of a `void*` with a warning that the
   deletion is undefined. Clang (pedantic) and EDG reject it
   ({question}`Q-0035`).
+- NEW-19: all compilers give `noexcept` the value `false` for a call of
+  the global `operator new` forms and `true` for the `operator delete`
+  forms.
 
 Inputs: clang-sema-expr, clang-diag-sema.

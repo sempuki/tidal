@@ -49,7 +49,7 @@ nothing, so such a try block is not valid.
 :::
 
 :::{principle} TRY-P2
-:rules: TRY-2 TRY-5
+:rules: TRY-2 TRY-5 TRY-18
 
 A handler accepts an exception by its type, with only the conversions
 that keep the exception object what it is:
@@ -67,6 +67,8 @@ handler receives:
 |---|---|
 | By value | A copy, which slices a derived exception to the base |
 | By reference | The exception object itself, which the handler can change before passing the object on |
+
+If the copy for a by-value handler throws, the program ends.
 
 The handler's parameter is a declaration of a narrow kind. The parameter
 has:
@@ -297,6 +299,14 @@ the exception is rethrown. A handler can throw a new exception instead.
 A function try block on a destructor rethrows the same way.
 :::
 
+:::{rule} TRY-18
+:kind: required
+:tests: exceptions/handlers/handler-copy-throws-terminates.cpp
+
+If the copy that initializes a handler parameter by value throws, the
+program ends. No handler catches the new exception.
+:::
+
 ## Undefined Behavior
 
 :::{rule} TRY-11
@@ -368,8 +378,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 74 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 75 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -377,6 +387,9 @@ program only as a nonzero exit.
   for either. EDG rejects the function that flows off the end of its
   handler without any flag.
 - TRY-11: the test only shows that the program compiles.
+- TRY-18: Clang and GCC end the program when the copy into a by-value
+  handler parameter throws, also when an enclosing try block has a
+  matching handler.
 
 Inputs: clang-sema-stmt, clang-diag-sema, clang-diag-parse,
 edg-statements.

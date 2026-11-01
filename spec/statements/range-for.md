@@ -15,8 +15,10 @@ a range. A range is one of these:
 A range-based `for` is an ordinary loop that the language writes for
 you.
 
-1. The loop evaluates the range one time and keeps the result, so a
-   temporary in the range expression lives as long as the loop.
+1. The loop evaluates the range one time and binds the result to a
+   hidden reference variable, as `auto&&` would. The range object is
+   never copied, and a temporary in the range expression lives as long
+   as the loop.
 2. The loop finds `begin` and `end` one time, as members if the class
    has both names as members of any kind, and otherwise as free
    functions found through the argument's namespace
@@ -118,9 +120,11 @@ element initializes the loop variable. A braced list gives a
 
 :::{rule} RFOR-3
 :kind: required
-:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp statements/range-for/empty-init-statement.cpp
+:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp statements/range-for/empty-init-statement.cpp statements/range-for/range-held-by-reference.cpp
 
 The range expression is evaluated one time, before the first iteration.
+The loop binds the result to a hidden variable declared with `auto&&`,
+and calls `begin` and `end` on that variable as an lvalue.
 The loop variable is not yet in scope there, so a name in the range
 expression refers to the outer entity, also when the loop variable has
 the same name.
@@ -168,6 +172,8 @@ The results are in `tests/RESULTS.md`.
   the use of free `begin` and `end` on any compiler. With members of both
   names, Clang and GCC use the member form for data members too. EDG
   uses the member form only for member functions ({question}`Q-0098`).
+- RFOR-3: every compiler accepts a prvalue range of a class with no
+  move constructor and with `begin` and `end` callable only on lvalues.
 - RFOR-5: GCC 14 accepts a storage class on the loop variable. GCC 16,
   Clang, and EDG reject the storage class ({question}`Q-0026`).
 

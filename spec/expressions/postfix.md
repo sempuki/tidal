@@ -22,7 +22,7 @@ dereferences a pointer to nothing, which is undefined (ADD-P3).
 :::
 
 :::{principle} PFX-P2
-:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16 PFX-17
+:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16 PFX-17 PFX-19
 
 A call passes one argument to each parameter, so the counts must match,
 with default arguments filling in and an ellipsis taking any extra. Each
@@ -31,7 +31,8 @@ parameter is a new object that its argument copy-initializes, so an
 category of what the function returns. A reference gives an lvalue or an
 xvalue, and a value gives a prvalue. Calling through a pointer calls the
 function that the pointer points at, with or without `*`. A null
-function pointer points at no function, so the call is undefined. Each
+function pointer points at no function, so the call is undefined. A
+call through a pointer of another function type is undefined too. Each
 implementation chooses whether a class with its own copy or destruction
 can go through an ellipsis.
 :::
@@ -232,6 +233,16 @@ past the end is also undefined.
 A call through a null function pointer is undefined.
 :::
 
+:::{rule} PFX-19
+:kind: undefined
+:tests: expressions/postfix/call-wrong-function-type-sanitizer.cpp
+
+If a call reaches a function through a pointer or reference whose
+function type is not the type of that function, the behavior is
+undefined ({rule}`CAST-6`). Two types that differ only in `noexcept`
+are different here too ({question}`Q-0178`).
+:::
+
 :::{rule} PFX-18
 :kind: undefined
 :tests: expressions/postfix/postfix-increment-overflow-constant.cpp expressions/postfix/postfix-decrement-overflow-constant.cpp expressions/postfix/postfix-increment-overflow-sanitizer.cpp expressions/postfix/postfix-pointer-past-end-constant.cpp
@@ -288,7 +299,7 @@ top++;            // undefined
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 53 tests.
+of 54 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
@@ -305,5 +316,9 @@ of 53 tests.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
   conditional.
+- PFX-19: the Clang sanitizer stops a call through a pointer whose
+  parameter types differ from the function's. GCC has no such check, and
+  the undefined rule allows its result. No implementation checks a
+  difference in `noexcept` alone ({question}`Q-0178`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

@@ -105,7 +105,7 @@ function needs a type alias.
 
 :::{rule} CVF-2
 :kind: required
-:tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/call-through-function-reference.cpp classes/conversion-functions/delete-class-operand.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp
+:tests: classes/conversion-functions/array-bound-new.cpp classes/conversion-functions/builtin-operator.cpp classes/conversion-functions/call-through-function-reference.cpp classes/conversion-functions/delete-class-operand.cpp classes/conversion-functions/function-argument.cpp classes/conversion-functions/return-statement.cpp classes/conversion-functions/switch-condition.cpp classes/conversion-functions/then-standard-conversion.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp
 
 An implicit conversion can call a conversion function that is not
 `explicit`. Such implicit conversions occur in:
@@ -237,12 +237,19 @@ struct Celsius { double v; operator double() const { return v; } };
 struct Kelvin { Kelvin(double) {} };
 void store(Kelvin);
 store(Celsius{});        // rejected: two user-defined conversions
+
+struct Cell {
+  int v;
+  operator const int&() const { return v; }
+};
+const int& r = Cell{5};  // binds to v of a temporary Cell
+                         // the Cell ends here, so r dangles (REF-5)
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 62
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 63
+of 64 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

@@ -37,8 +37,9 @@ function must agree on it.
 - its initializer is a constant expression,
 - its type can be evaluated at translation time.
 
-A constant that is a pointer or reference must refer to a function or
-an object with static storage duration, never an automatic variable.
+A pointer or reference in a constant, also one in a member, must refer
+to a function or an object with static storage duration, never an
+automatic variable or a temporary that lives only as long as one.
 The target must exist at translation time and still exist at run time.
 :::
 
@@ -71,7 +72,7 @@ which.
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp declarations/constexpr/variable-implicit-constructor-member-initializers.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp declarations/constexpr/variable-implicit-constructor-member-initializers.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp
 
 A `constexpr` variable is `const`, and it must obey these rules:
 
@@ -81,7 +82,7 @@ A `constexpr` variable is `const`, and it must obey these rules:
 - Its initialization must be a constant expression.
 - Its type must be a {term}`literal type` (CE-23).
 - A `constexpr` reference in a block, without `static`, must not bind
-  to a temporary.
+  to a temporary (CX-2).
 
 A `constexpr` reference at namespace scope can bind to a temporary,
 because that temporary has static storage.
@@ -89,18 +90,19 @@ because that temporary has static storage.
 
 :::{rule} CX-2
 :kind: reject
-:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp
+:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp declarations/constexpr/aggregate-reference-member-temporary-namespace.cpp
 
-A `constexpr` reference, or a `constexpr` pointer that is not null, must
-refer to one of these:
+A `constexpr` variable holds references and pointers in itself and in its
+members. Each such reference, and each such pointer that is not null,
+must refer to one of these:
 
 - a function,
 - an object with static {term}`storage duration`,
 - for a pointer only, the place one past the end of such an object.
 
-A static local variable can refer to another static local variable. A
-`constexpr` pointer or reference must not refer to an automatic
-variable.
+A temporary that the initializer extends ({rule}`REF-4`) has the storage
+duration of the variable. So a `constexpr` variable in a block without
+`static` must not refer to an automatic variable or to such a temporary.
 :::
 
 :::{rule} CX-3
@@ -234,8 +236,8 @@ void bump() { ++counter; }
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 65 tests.
 
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
   constant, and a non-literal parameter type. Newer versions accept both
@@ -245,5 +247,8 @@ of 63 tests.
   (pedantic) and EDG reject `constinit` that is only on an earlier
   declaration. GCC accepts the earlier `constinit`
   ({question}`Q-0025`).
+- CX-2: all compilers reject a `constexpr` aggregate in a block whose
+  reference member binds to a temporary, and accept the same aggregate
+  at namespace scope.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

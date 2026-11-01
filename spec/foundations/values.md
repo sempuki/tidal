@@ -52,6 +52,7 @@ from where full expressions begin and end. Each of the following is a
 separate full expression:
 
 - the initializer of a declarator,
+- the initializer of a member,
 - a condition,
 - a `return` expression,
 - the initialization of each array element.
@@ -62,10 +63,11 @@ alive longer (REF-4).
 :::
 
 :::{principle} VC-P4
-:rules: VC-7 VC-10 VC-15
+:rules: VC-7 VC-10 VC-15 VC-16
 
 The implementation keeps some freedom when a program passes or returns
-by value. The implementation can make an extra copy of a trivially
+by value. The caller makes and ends each parameter object, so an
+exception from either step belongs to the caller. The implementation can make an extra copy of a trivially
 copyable argument or return value, and it chooses when a parameter
 object ends. A program must not depend on the address of such an object
 or on the point where the object is destroyed.
@@ -211,7 +213,7 @@ Constant evaluation creates temporaries in the same cases.
 
 :::{rule} VC-9
 :kind: required
-:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp expressions/sequencing/full-expression-statement.cpp expressions/sequencing/full-expression-for-clauses.cpp expressions/sequencing/full-expression-subexpression-not.cpp
+:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp expressions/sequencing/full-expression-statement.cpp expressions/sequencing/full-expression-for-clauses.cpp expressions/sequencing/full-expression-subexpression-not.cpp expressions/value-categories/member-initializer-full-expression.cpp expressions/value-categories/init-capture-temporary.cpp
 
 A *full expression* is an expression that is not part of a larger
 expression. The temporaries of a full expression end with the full
@@ -219,6 +221,8 @@ expression. The following are full expressions:
 
 - the expression of an expression statement,
 - the initializer of one declarator, in a declaration with several,
+- the initializer of one member, in a member initializer list or as a
+  default member initializer,
 - a condition,
 - each of the three clauses of a `for` statement,
 - the expression of a `return` statement. The temporaries of this
@@ -228,7 +232,19 @@ A temporary in a function argument or a default argument lives until
 the end of the full expression that contains the call. All initializers
 of one aggregate are one full expression. If a constructor with a
 default argument initializes each element of an array, the temporaries
-of one element end before the next element is initialized.
+of one element end before the next element is initialized. The
+initializer of an init capture belongs to the full expression that
+contains the lambda expression.
+:::
+
+:::{rule} VC-16
+:kind: required
+:tests: expressions/value-categories/parameter-belongs-to-caller.cpp
+
+The caller initializes and destroys the parameter objects of a call. An
+exception from either step leaves the call expression in the caller and
+does not leave the called function. So a non-throwing called function
+does not end the program ({rule}`UNW-5`).
 :::
 
 ## Implementation Requirements
@@ -281,7 +297,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 52 of 53 tests. The results are in
+All eight compilers agree on 55 of 56 tests. The results are in
 `tests/RESULTS.md`.
 
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC
@@ -291,5 +307,11 @@ All eight compilers agree on 52 of 53 tests. The results are in
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the
   parameter at the end of the full expression.
+- VC-16: on Clang and GCC, the caller catches an exception from the copy
+  into a parameter and from the parameter's destructor, also when the
+  called function is non-throwing.
+- VC-9: on Clang and GCC, the temporaries of a member initializer end
+  before the next member is initialized. The temporaries of an init
+  capture end with the full expression that contains the lambda.
 
 Inputs: clang-sema-expr, clang-diag-sema.

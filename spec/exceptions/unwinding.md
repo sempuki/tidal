@@ -22,7 +22,7 @@ exception specifications, new and delete.
 ## Principles
 
 :::{principle} UNW-P1
-:rules: UNW-1 UNW-4
+:rules: UNW-1 UNW-4 UNW-9
 
 A throw is a way of leaving a block, and leaving a block ends the
 block's automatic objects in the reverse of their construction order
@@ -43,10 +43,13 @@ catch (...) {                4. the handler runs
 }
 ```
 
-Objects that the throw did not reach are never created. Static objects
-are not part of any of those blocks, so unwinding leaves them alone, and
-an exception that leaves the initialization of a static local variable
-leaves the variable not yet initialized, so the next call tries again.
+The temporaries of the full expression that threw end first, in the
+reverse of their creation, and the rest of that full expression never
+runs. Objects that the throw did not reach are never created. Static
+objects are not part of any of those blocks, so unwinding leaves them
+alone, and an exception that leaves the initialization of a static local
+variable leaves the variable not yet initialized, so the next call tries
+again.
 :::
 
 :::{principle} UNW-P2
@@ -165,6 +168,17 @@ is being unwound, and a handler outside the destructor catches the
 exception after the destructor's object has ended.
 :::
 
+:::{rule} UNW-9
+:kind: required
+:tests: exceptions/unwinding/full-expression-temporaries-unwound.cpp
+
+When an exception leaves a full expression, the temporaries and
+parameter objects of that full expression that still exist
+({rule}`VC-10`) end, last created first. These objects end before the
+automatic objects of the block. No later part of the full expression
+runs.
+:::
+
 ## Implementation Requirements
 
 :::{rule} UNW-7
@@ -180,12 +194,19 @@ destroyed before the program ends.
 
 :::{rule} UNW-8
 :kind: recommended
-:tests: exceptions/unwinding/throw-in-noexcept-warns.cpp exceptions/unwinding/call-in-noexcept-no-warning.cpp exceptions/throw/throw-in-noexcept-warns.cpp
+:tests: exceptions/unwinding/throw-in-noexcept-warns.cpp exceptions/unwinding/call-in-noexcept-no-warning.cpp exceptions/throw/throw-in-noexcept-warns.cpp exceptions/unwinding/rethrow-in-noexcept-warns.cpp exceptions/unwinding/throw-caught-in-noexcept-no-warning.cpp exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp
 
-An implementation should warn about a `throw` expression written
-directly in a `noexcept` function outside any try block that can catch
-the exception. A call to a function that might throw does not need a
-warning.
+An implementation should warn about a `throw` expression in a
+non-throwing function if no enclosing try block in the function can
+catch the exception. An enclosing try block can catch:
+
+- a `throw` with an operand, if one of its handlers is `catch (...)` or
+  matches the static type of the operand ({rule}`TRY-2`, {rule}`THR-4`),
+- a rethrow, if one of its handlers is `catch (...)`. A rethrow in a
+  handler is not enclosed by the try block of that handler
+  ({rule}`TRY-8`).
+
+A call to a function that might throw does not need a warning.
 :::
 
 ## Examples
@@ -216,8 +237,8 @@ void closed() noexcept { throw 2; }   // ends the program
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on all
-30 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 33
+of 34 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
@@ -228,7 +249,14 @@ programs are valid.
 - UNW-3: the global deallocation test replaces both the sized and the
   unsized `operator delete`. Clang 18 calls the unsized form after a
   failed `new`, and the other compilers call the sized form.
-- UNW-8: Clang and GCC warn under `-Wall`.
+- UNW-8: Clang and GCC warn under `-Wall`. Clang warns when no handler
+  matches the static type of the operand, and GCC does not. GCC warns
+  about a rethrow in a handler whose try block holds no direct `throw`,
+  and Clang does not ({question}`Q-0179`).
+- UNW-9: Clang and GCC destroy the temporaries of the full expression,
+  then the parameter object, then the block's objects, before the
+  handler runs. The test also accepts a parameter that ends at the
+  return of its function ({rule}`VC-10`).
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-decls.

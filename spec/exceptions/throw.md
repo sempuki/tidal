@@ -35,7 +35,7 @@ exception object.
 :::
 
 :::{principle} THR-P2
-:rules: THR-4 THR-6 THR-8
+:rules: THR-4 THR-6 THR-8 THR-12
 
 The exception object belongs to no scope ({principle}`OBJ-P2` does not
 apply to the exception object). The object:
@@ -43,6 +43,9 @@ apply to the exception object). The object:
 - begins at the `throw`,
 - outlives every block that the exception leaves,
 - ends when the last handler for it ends.
+
+A destructor of the exception object that throws at that end starts a
+new exception at the end of the handler.
 
 The type of the exception object is fixed at the `throw` as the static
 type of the operand, so a derived object thrown through a base reference
@@ -191,6 +194,16 @@ This includes a function that is non-throwing without a written
 specifier ({rule}`EXS-4`). No handler in a caller catches the exception.
 :::
 
+:::{rule} THR-12
+:kind: required
+:tests: exceptions/throw/exception-object-destructor-throws.cpp
+
+If the destructor of the exception object throws when the last handler
+for the object ends, the new exception leaves from the end of that
+handler. A try block that encloses the handler's try block can catch the
+new exception.
+:::
+
 ## Recommended Practice
 
 :::{rule} THR-11
@@ -222,10 +235,13 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-27 tests. EDG runs no programs, so its results for the run and run-fail
+28 tests. EDG runs no programs, so its results for the run and run-fail
 tests say only that the programs are valid. A `run-fail` test shows that
 the program ended with a nonzero status or a signal; the harness cannot
 see that termination was the reason.
 
+- THR-12: Clang and GCC propagate the exception from the destructor of
+  the exception object to the enclosing try block. No compiler ends the
+  program there.
 
 Inputs: clang-sema-expr, clang-diag-sema, clang-diag-ast, edg-statements.
