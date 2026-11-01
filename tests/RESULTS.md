@@ -301,8 +301,8 @@ compilers affect the Status column.
 | `classes/constructors/trivial-destructor-member-nontrivial.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/trivial-destructor-user-provided.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/trivial-destructor-virtual-destructor.cpp` | DTOR-9 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `classes/constructors/use-after-delete-sanitizer.cpp` | DTOR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
-| `classes/constructors/use-after-dtor-constant.cpp` | DTOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/use-after-delete-sanitizer.cpp` | OBJ-2 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `classes/constructors/use-after-dtor-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/user-dtor-noexcept.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/conversion-functions/alias-same-type-hides.cpp` | CVF-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/conversion-functions/ambiguous-ctor-and-conversion.cpp` | CVF-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -802,8 +802,11 @@ compilers affect the Status column.
 | `classes/unions/bitfield-zero-named.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-zero-unnamed.cpp` | BF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/bitfield-zero-width-splits.cpp` | BF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/chain-assign-activates.cpp` | UNI-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/chain-assign-nontrivial-constant.cpp` | UNI-6 UNI-13 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/chain-assign-other-part-no-value-constant.cpp` | UNI-13 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/common-initial-sequence-constant.cpp` | UNI-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `classes/unions/common-initial-sequence.cpp` | UNI-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/common-initial-sequence.cpp` | UNI-10 UNI-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/compound-assign-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/constructor-leaves-union-read-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/default-init-no-active-member.cpp` | UNI-4 UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -878,7 +881,10 @@ compilers affect the Status column.
 | `classes/virtual/dynamic-cast-ambiguous-target.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-casts-away-const.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/dynamic-cast-constant.cpp` | VIRT-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/dynamic-cast-cross-from-private-base.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-cross-to-private-base.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-cross.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-down-inside-private-base.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-down.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-during-construction.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-from-nonpointer.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -887,7 +893,10 @@ compilers affect the Status column.
 | `classes/virtual/dynamic-cast-nonpolymorphic.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/dynamic-cast-not-pointer.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/dynamic-cast-null.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-private-base-constant.cpp` | VIRT-10 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/virtual/dynamic-cast-private-base.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/virtual/dynamic-cast-reference-fails-constant.cpp` | CE-8 VIRT-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/dynamic-cast-reference-fails-throws.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-reference.cpp` | VIRT-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/dynamic-cast-to-nonclass.cpp` | VIRT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/dynamic-cast-upcast-nonpolymorphic.cpp` | VIRT-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1958,6 +1967,7 @@ compilers affect the Status column.
 | `exceptions/handlers/match-base-by-value-slices.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-cv-qualified.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-function-decays.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/match-function-pointer-not-void.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-no-arithmetic-conversion.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-no-user-conversion.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-nonconst-reference-to-exception-object.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1965,6 +1975,8 @@ compilers affect the Status column.
 | `exceptions/handlers/match-pointer-qualification.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-pointer-to-base.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-private-base-no.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/match-void-pointer-keeps-const.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-void-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/nested-block-redeclares-param-ok.cpp` | TRY-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/nested-try-in-handler.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2562,7 +2574,7 @@ compilers affect the Status column.
 | `expressions/lambdas/reference-default-explicit-this.cpp` | LAM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/return-deduction.cpp` | LAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/static-and-global-no-capture.cpp` | LAM-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/lambdas/static-call-operator.cpp` | LAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/static-call-operator.cpp` | LAM-13 OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/static-with-capture.cpp` | LAM-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/syntax-forms.cpp` | LAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/this-outside-member.cpp` | LAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2663,11 +2675,14 @@ compilers affect the Status column.
 | `expressions/multiplicative/division-truncates.cpp` | MUL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/enum-float-warns.cpp` | MUL-16 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/excess-precision-either.cpp` | MUL-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp` | MUL-11 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
-| `expressions/multiplicative/floating-divide-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/floating-divide-by-zero-infinity.cpp` | MUL-11 MUL-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp` | MUL-11 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
+| `expressions/multiplicative/floating-divide-by-zero.cpp` | CE-28 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/floating-overflow-constant.cpp` | MUL-12 | clang: accept, gcc: reject, edg: reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
-| `expressions/multiplicative/floating-zero-by-zero.cpp` | MUL-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/multiplicative/floating-zero-by-zero-nan.cpp` | MUL-11 MUL-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/multiplicative/floating-zero-by-zero.cpp` | CE-28 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/grouping.cpp` | MUL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/multiplicative/ieee-types.cpp` | MUL-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/multiplicative/member-pointer-operand.cpp` | MUL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/multiplicative/mixed-long-unsigned-ilp32.cpp` | MUL-15 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `expressions/multiplicative/mixed-long-unsigned-lp64.cpp` | MUL-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2984,7 +2999,7 @@ compilers affect the Status column.
 | `expressions/unary/increment-overflow-sanitizer.cpp` | UN-21 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/unary/increment-pointer-past-end-constant.cpp` | UN-21 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/unary/increment-rvalue.cpp` | UN-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/unary/indirection-dangling-constant.cpp` | UN-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/unary/indirection-dangling-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/indirection-function.cpp` | UN-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/unary/indirection-incomplete-lvalue.cpp` | UN-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/indirection-incomplete-value.cpp` | UN-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3474,7 +3489,7 @@ compilers affect the Status column.
 | `foundations/objects/loop-body-each-iteration.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/nested-block-ends-first.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 UN-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/objects/read-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/read-before-init-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/reference-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3488,6 +3503,7 @@ compilers affect the Status column.
 | `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/objects/write-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/class-constant-copy-in-lambda.cpp` | ODR-2 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
 | `foundations/odr/class-differs-across-units.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/constant-address-is-use.cpp` | ODR-3 ODR-8 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
@@ -3644,6 +3660,8 @@ compilers affect the Status column.
 | `foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/rewritten-three-way-result.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/rewritten-three-way-reversed.cpp` | OVL-13 DCMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/static-call-operator-over-surrogate.cpp` | OVL-25 OVL-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` | OVL-36 OVL-25 OVL-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/static-slot-no-part.cpp` | OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/surrogate-explicit-not-candidate.cpp` | OVL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/surrogate-forms.cpp` | OVL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3698,6 +3716,9 @@ compilers affect the Status column.
 | `foundations/translation/main-nonzero-status.cpp` | TR-2 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/translation/main-program-name.cpp` | TR-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/main-return-type-not-int.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/main-status-low-bits-nonzero.cpp` | TR-11 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/translation/main-status-low-bits.cpp` | TR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/translation/main-status-negative.cpp` | TR-11 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/translation/main-template.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-with-args.cpp` | TR-2 TR-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/main-wrong-parameter-types.cpp` | TR-3 FN-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4156,16 +4177,20 @@ compilers affect the Status column.
 | `templates/deduction/combine-conflict-one-pair.cpp` | DED-21 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/combine-conflict.cpp` | DED-21 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/combine-defaults.cpp` | DED-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/combine-leading-pack-empty.cpp` | DED-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/combine-missing.cpp` | DED-23 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/context-address-mismatch.cpp` | DED-30 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/context-address.cpp` | DED-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/context-conversion-differences.cpp` | DED-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/context-conversion-exact.cpp` | DED-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/context-conversion.cpp` | DED-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/declaration-ambiguous.cpp` | DED-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/declaration-specialization.cpp` | DED-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/default-argument-not-deduced.cpp` | DED-9 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/default-argument-passed.cpp` | DED-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-derived-exact-first.cpp` | DED-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/difference-derived-nearest.cpp` | DED-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-derived-template-template.cpp` | DED-15 DED-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/difference-derived-two-bases.cpp` | DED-15 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/difference-derived.cpp` | DED-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/difference-exact-first.cpp` | DED-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4177,34 +4202,51 @@ compilers affect the Status column.
 | `templates/deduction/explicit-leading.cpp` | DED-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/forwarding-class-parameter-not.cpp` | DED-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/forwarding-const-not.cpp` | DED-8 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/forwarding-nested-not.cpp` | DED-8 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/forwarding-nested-rvalue.cpp` | DED-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/forwarding-reference.cpp` | DED-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/match-bound-type.cpp` | DED-11 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/deduction/match-compound-types.cpp` | DED-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/match-constant-parameters.cpp` | DED-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-constant-placeholder-type.cpp` | DED-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/match-constant-type-differs.cpp` | DED-12 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/match-constant-type-same.cpp` | DED-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/match-noexcept.cpp` | DED-11 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/match-shape-mismatch.cpp` | DED-10 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/match-template-template.cpp` | DED-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/nondeduced-array-by-value.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/nondeduced-decltype.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/nondeduced-explicit.cpp` | DED-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/nondeduced-expression.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-member-template-arguments.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-member-template-explicit.cpp` | DED-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/nondeduced-qualified-name.cpp` | DED-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/nondeduced-qualified-only.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/overload-set-later.cpp` | DED-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/overload-set-one-match.cpp` | DED-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/overload-set-template.cpp` | DED-19 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/overload-set-two-match.cpp` | DED-19 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/pack-class-arguments.cpp` | DED-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/pack-function-type.cpp` | DED-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/pack-not-last-call.cpp` | DED-20 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/pack-not-last-other-position.cpp` | DED-20 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/pack-not-last.cpp` | DED-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/pack-trailing.cpp` | DED-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/placeholder-parameter.cpp` | DED-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/placement-deallocation-match.cpp` | DED-39 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/deduction/placement-deallocation-ordered.cpp` | DED-39 ORD-9 | run | run-fail | run | accept | skip | run | run-fail | run | run | run-fail | run-fail | pass |
+| `templates/deduction/specialization-distinct-functions.cpp` | DED-38 DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-access.cpp` | DED-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-adjusted-type.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-deduced-result-body.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-default-before-check.cpp` | DED-28 DED-29 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-explicit-specifier.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-failure-forms.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-failure-removes.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-hard-error.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/substitution-lambda-body.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-lambda-call-fails.cpp` | DED-29 DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-lambda-default.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/substitution-noexcept-later.cpp` | DED-27 DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/deduction/substitution-nondependent-first.cpp` | DED-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/substitution-order.cpp` | DED-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4213,23 +4255,34 @@ compilers affect the Status column.
 | `templates/ordering/call-defaults-tie.cpp` | ORD-5 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/constraints-conversion-results-differ.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/constraints-conversion.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/constraints-default-parameter.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/constraints-different-heads.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/constraints-partial.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/constraints-placeholder-parameter.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/constraints-type-constraint.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/conversion-result.cpp` | ORD-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/lvalue-over-rvalue-reference.cpp` | ORD-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/member-object-rvalue.cpp` | ORD-6 ORD-15 | reject | reject | reject | accept | skip | reject | accept | reject | reject | reject | reject | pass |
 | `templates/ordering/member-object.cpp` | ORD-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/more-qualified-reference.cpp` | ORD-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/more-specialized.cpp` | ORD-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/neither.cpp` | ORD-1 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/non-variadic.cpp` | ORD-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/nondeduced-position.cpp` | ORD-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/pack-against-single.cpp` | ORD-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/pack-class-arguments.cpp` | ORD-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/pack-default-parameter.cpp` | ORD-12 ORD-15 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/ordering/partial-specializations-placeholder.cpp` | ORD-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/partial-specializations.cpp` | ORD-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/reference-and-cv-removed.cpp` | ORD-2 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/reference-before-variadic.cpp` | ORD-10 ORD-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/reference-kind-and-qualifiers.cpp` | ORD-11 ORD-15 ORD-8 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/ordering/reference-kinds-conversion.cpp` | ORD-10 ORD-11 ORD-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/reference-pairs-disagree.cpp` | ORD-10 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/reference-pairs-one-way.cpp` | ORD-10 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/ordering/repeated-parameter.cpp` | ORD-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/ordering/reversed-candidate.cpp` | ORD-7 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/ordering/reversed-member-object.cpp` | ORD-7 ORD-6 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/ordering/unused-parameter.cpp` | ORD-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/alias-explicit.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/alias-partial.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4313,7 +4366,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-explicit.cpp` | TSP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-4295/4295 tests pass on baseline compilers.
+4348/4348 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -7702,6 +7755,23 @@ check that the rejection has the intended cause.
 - `classes/unions/bitfield-zero-named.cpp` (gcc-16-o2): error: zero width for bit-field 'S::x'
 - `classes/unions/bitfield-zero-named.cpp` (clang-22): error: named bit-field 'x' has zero width
 - `classes/unions/bitfield-zero-named.cpp` (clang-22-o2): error: named bit-field 'x' has zero width
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assignment to member 'n' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘W::n’ member instead of initialized ‘W::i’ member in constant expression / note: ‘W::n’ does not implicitly begin its lifetime because ‘N’ does not have a non-deleted trivial default constructor, use ‘std::construct_at’ instead
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'W::n' member instead of initialized 'W::i' member in constant expression / note: 'W::n' does not implicitly begin its lifetime because 'N' does not have a non-deleted trivial default constructor, use 'std::construct_at' instead
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: assignment to member 'n' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'W::n' member instead of initialized 'W::i' member in constant expression / note: 'W::n' does not implicitly begin its lifetime because 'N' does not have a non-deleted trivial default constructor, use 'std::construct_at' instead
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'W::n' member instead of initialized 'W::i' member in constant expression / note: 'W::n' does not implicitly begin its lifetime because 'N' does not have a non-deleted trivial default constructor, use 'std::construct_at' instead
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: assignment to member 'n' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/chain-assign-nontrivial-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: assignment to member 'n' of union with active member 'i' is not allowed in a constant expression
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized member ‘A::a’
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing uninitialized member 'A::a'
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing uninitialized member 'A::a'
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing uninitialized member 'A::a'
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/unions/chain-assign-other-part-no-value-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `classes/unions/common-initial-sequence-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
 - `classes/unions/common-initial-sequence-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::b’ member instead of active ‘U::a’ member in constant expression
 - `classes/unions/common-initial-sequence-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::b" of union (member "U::a" is active)
@@ -8083,6 +8153,16 @@ check that the rejection has the intended cause.
 - `classes/virtual/dynamic-cast-not-pointer.cpp` (gcc-16-o2): error: cannot 'dynamic_cast' 'b' (of type 'struct B') to type 'struct D' (target is not pointer or reference)
 - `classes/virtual/dynamic-cast-not-pointer.cpp` (clang-22): error: invalid target type 'D' for dynamic_cast; target type must be a reference or pointer type to a defined class
 - `classes/virtual/dynamic-cast-not-pointer.cpp` (clang-22-o2): error: invalid target type 'D' for dynamic_cast; target type must be a reference or pointer type to a defined class
+- `classes/virtual/dynamic-cast-private-base-constant.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: reference dynamic_cast failed: dynamic type 'A' of operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: reference ‘dynamic_cast’ failed / note: dynamic type ‘A’ of its operand does not have a base class of type ‘D’
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (edg-7.0): error: expression must have a constant value / note: dynamic_cast to subobject of type "D" is invalid (most-derived type is "A")
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: reference 'dynamic_cast' failed / note: dynamic type 'A' of its operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: reference dynamic_cast failed: dynamic type 'A' of operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: reference 'dynamic_cast' failed / note: dynamic type 'A' of its operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: reference 'dynamic_cast' failed / note: dynamic type 'A' of its operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: reference dynamic_cast failed: dynamic type 'A' of operand does not have a base class of type 'D'
+- `classes/virtual/dynamic-cast-reference-fails-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: reference dynamic_cast failed: dynamic type 'A' of operand does not have a base class of type 'D'
 - `classes/virtual/dynamic-cast-to-nonclass.cpp` (clang-host): error: 'int' is not a class type
 - `classes/virtual/dynamic-cast-to-nonclass.cpp` (gcc-host): error: cannot ‘dynamic_cast’ ‘p’ (of type ‘struct B*’) to type ‘int*’ (target is not pointer or reference to class)
 - `classes/virtual/dynamic-cast-to-nonclass.cpp` (edg-7.0): error: the type in a dynamic_cast must be a pointer or reference to a complete class type, or void *
@@ -18360,6 +18440,15 @@ check that the rejection has the intended cause.
 - `foundations/objects/uninitialized-member-read-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing uninitialized member 'P::y'
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assignment to object outside its lifetime is not allowed in a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: modification of ‘x’ outside its lifetime is not a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access expired storage
+- `foundations/objects/write-after-end-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: modification of 'x' outside its lifetime is not a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: assignment to object outside its lifetime is not allowed in a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: modification of 'x' outside its lifetime is not a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: modification of 'x' outside its lifetime is not a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: assignment to object outside its lifetime is not allowed in a constant expression
+- `foundations/objects/write-after-end-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: assignment to object outside its lifetime is not allowed in a constant expression
 - `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-host): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
 - `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-18): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
 - `foundations/odr/class-constant-copy-in-lambda.cpp` (clang-22): error: variable 'size' cannot be implicitly captured in a lambda with no capture-default specified / note: lambda expression begins here / note: capture 'size' by value / note: capture 'size' by reference / note: default capture by value / note: default capture by reference
@@ -18963,6 +19052,15 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'Left' and 'Maker')
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-22): error: invalid operands to binary expression ('Left' and 'Maker')
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-22-o2): error: invalid operands to binary expression ('Left' and 'Maker')
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (clang-host): error: call to object of type 'Wide' is ambiguous / note: candidate function / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (gcc-host): error: call of ‘(Wide) (int)’ is ambiguous
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (edg-7.0): error: there is more than one way an object of type "Wide" can be called for the argument list:
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (gcc-14): error: call of '(Wide) (int)' is ambiguous / note: candidate: 'Wide::Pointer' {aka 'int (*)(int)'} (conversion) / note: candidate: 'static constexpr int Wide::operator()(long int)'
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (clang-18): error: call to object of type 'Wide' is ambiguous / note: candidate function / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (gcc-16): error: call of '(Wide) (int)' is ambiguous
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (gcc-16-o2): error: call of '(Wide) (int)' is ambiguous
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (clang-22): error: call to object of type 'Wide' is ambiguous / note: candidate function / note: conversion candidate of type 'int (*)(int)'
+- `foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp` (clang-22-o2): error: call to object of type 'Wide' is ambiguous / note: candidate function / note: conversion candidate of type 'int (*)(int)'
 - `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-host): error: call of ‘(const Thing) (int)’ is ambiguous / error: call of ‘(const Thing) (int)’ is ambiguous / error: template argument 1 is invalid
 - `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-14): error: call of '(const Thing) (int)' is ambiguous / note: candidate: 'Fn' {aka 'One (*)(int)'} (conversion) / note: candidate: 'Two Thing::operator()(long int) const' / error: call of '(const Thing) (int)' is ambiguous / note: candidate: 'Fn' {aka 'One (*)(int)'} (conversion) / note: candidate: 'Two Thing::operator()(long int) const' / error: template argument 1 is invalid
 - `foundations/overload-resolution/surrogate-qualifiers.cpp` (gcc-16): error: call of '(const Thing) (int)' is ambiguous / error: call of '(const Thing) (int)' is ambiguous / error: template argument 1 is invalid
@@ -21147,6 +21245,15 @@ check that the rejection has the intended cause.
 - `templates/deduction/forwarding-const-not.cpp` (gcc-16-o2): error: cannot bind rvalue reference of type 'const int&&' to lvalue of type 'int' / note: initializing argument 1 of 'void take(const T&&) [with T = int]'
 - `templates/deduction/forwarding-const-not.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
 - `templates/deduction/forwarding-const-not.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
+- `templates/deduction/forwarding-nested-not.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'T &&' against 'int &'
+- `templates/deduction/forwarding-nested-not.cpp` (gcc-host): error: no matching function for call to ‘take(void (&)(int&))’
+- `templates/deduction/forwarding-nested-not.cpp` (edg-7.0): error: no instance of function template "take" matches the argument list / note: candidate function template "take" failed deduction
+- `templates/deduction/forwarding-nested-not.cpp` (gcc-14): error: invalid conversion from 'void (*)(int&)' to 'void (*)(int&&)' [-fpermissive] / note:   initializing argument 1 of 'void take(void (*)(T&&)) [with T = int]'
+- `templates/deduction/forwarding-nested-not.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'T &&' against 'int &'
+- `templates/deduction/forwarding-nested-not.cpp` (gcc-16): error: no matching function for call to 'take(void (&)(int&))'
+- `templates/deduction/forwarding-nested-not.cpp` (gcc-16-o2): error: no matching function for call to 'take(void (&)(int&))'
+- `templates/deduction/forwarding-nested-not.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'T &&' against 'int &'
+- `templates/deduction/forwarding-nested-not.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'T &&' against 'int &'
 - `templates/deduction/match-bound-type.cpp` (gcc-host): error: static assertion failed
 - `templates/deduction/match-bound-type.cpp` (gcc-14): error: static assertion failed
 - `templates/deduction/match-bound-type.cpp` (gcc-16): error: static assertion failed
@@ -21197,6 +21304,15 @@ check that the rejection has the intended cause.
 - `templates/deduction/nondeduced-expression.cpp` (gcc-16-o2): error: no matching function for call to 'next(Fixed<3>)'
 - `templates/deduction/nondeduced-expression.cpp` (clang-22): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
 - `templates/deduction/nondeduced-expression.cpp` (clang-22-o2): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (gcc-host): error: no matching function for call to ‘take(int, Outer<int>::In<char>)’
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (edg-7.0): error: no instance of function template "take" matches the argument list / note: candidate function template "take" failed deduction
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (gcc-14): error: no matching function for call to 'take(int, Outer<int>::In<char>)' / note: candidate: 'template<class T, class U> void take(T, typename Outer<T>::In<U>)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'U'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (gcc-16): error: no matching function for call to 'take(int, Outer<int>::In<char>)'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (gcc-16-o2): error: no matching function for call to 'take(int, Outer<int>::In<char>)'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/nondeduced-member-template-arguments.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate template ignored: couldn't infer template argument 'U'
 - `templates/deduction/nondeduced-qualified-only.cpp` (clang-host): error: no matching function for call to 'only' / note: candidate template ignored: couldn't infer template argument 'T'
 - `templates/deduction/nondeduced-qualified-only.cpp` (gcc-host): error: no matching function for call to ‘only(int)’
 - `templates/deduction/nondeduced-qualified-only.cpp` (edg-7.0): error: no instance of function template "only" matches the argument list / note: candidate function template "only" failed deduction
@@ -21233,6 +21349,32 @@ check that the rejection has the intended cause.
 - `templates/deduction/pack-not-last-call.cpp` (gcc-16-o2): error: no matching function for call to 'lead(int, int)'
 - `templates/deduction/pack-not-last-call.cpp` (clang-22): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
 - `templates/deduction/pack-not-last-call.cpp` (clang-22-o2): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
+- `templates/deduction/pack-not-last-other-position.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'List<A...>' against 'int'
+- `templates/deduction/pack-not-last-other-position.cpp` (gcc-host): error: no matching function for call to ‘take(int, int, List<int, int>)’
+- `templates/deduction/pack-not-last-other-position.cpp` (edg-7.0): error: no instance of function template "take" matches the argument list / note: candidate function template "take" failed deduction
+- `templates/deduction/pack-not-last-other-position.cpp` (gcc-14): error: no matching function for call to 'take(int, int, List<int, int>)' / note: candidate: 'template<class ... A> void take(A ..., List<A ...>)' / note:   template argument deduction/substitution failed: / note:   mismatched types 'List<A ...>' and 'int'
+- `templates/deduction/pack-not-last-other-position.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'List<A...>' against 'int'
+- `templates/deduction/pack-not-last-other-position.cpp` (gcc-16): error: no matching function for call to 'take(int, int, List<int, int>)'
+- `templates/deduction/pack-not-last-other-position.cpp` (gcc-16-o2): error: no matching function for call to 'take(int, int, List<int, int>)'
+- `templates/deduction/pack-not-last-other-position.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'List<A...>' against 'int'
+- `templates/deduction/pack-not-last-other-position.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate template ignored: could not match 'List<A...>' against 'int'
+- `templates/deduction/substitution-deduced-result-body.cpp` (clang-host): error: member reference base type 'int' is not a structure or union / note: in instantiation of function template specialization 'field<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-deduced-result-body.cpp` (gcc-host): error: request for member ‘missing’ in ‘t’, which is of non-class type ‘int’
+- `templates/deduction/substitution-deduced-result-body.cpp` (edg-7.0): error: expression must have class type but it has type "int"
+- `templates/deduction/substitution-deduced-result-body.cpp` (gcc-14): error: request for member 'missing' in 't', which is of non-class type 'int'
+- `templates/deduction/substitution-deduced-result-body.cpp` (clang-18): error: member reference base type 'int' is not a structure or union / note: in instantiation of function template specialization 'field<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-deduced-result-body.cpp` (gcc-16): error: request for member 'missing' in 't', which is of non-class type 'int'
+- `templates/deduction/substitution-deduced-result-body.cpp` (gcc-16-o2): error: request for member 'missing' in 't', which is of non-class type 'int'
+- `templates/deduction/substitution-deduced-result-body.cpp` (clang-22): error: member reference base type 'int' is not a structure or union / note: in instantiation of function template specialization 'field<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-deduced-result-body.cpp` (clang-22-o2): error: member reference base type 'int' is not a structure or union / note: in instantiation of function template specialization 'field<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-default-before-check.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Bad<int>' requested here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, U = (no value)]
+- `templates/deduction/substitution-default-before-check.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
+- `templates/deduction/substitution-default-before-check.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-default-before-check.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Bad<int>' requested here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, U = (no value)]
+- `templates/deduction/substitution-default-before-check.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-default-before-check.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-default-before-check.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Bad<int>' requested here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, U = (no value)]
+- `templates/deduction/substitution-default-before-check.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Bad<int>' requested here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, U = (no value)]
 - `templates/deduction/substitution-hard-error.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Hard<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
 - `templates/deduction/substitution-hard-error.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
 - `templates/deduction/substitution-hard-error.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
@@ -21251,6 +21393,15 @@ check that the rejection has the intended cause.
 - `templates/deduction/substitution-lambda-body.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type / error: 'int' is not a class, struct, or union type / error: 'One pick(T, decltype (<lambda>)*) [with T = int; decltype (<lambda>) = <lambda()>]', declared using local type '<lambda()>', is used but never defined [-fpermissive]
 - `templates/deduction/substitution-lambda-body.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
 - `templates/deduction/substitution-lambda-body.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-lambda-default.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, $1 = (no value)]
+- `templates/deduction/substitution-lambda-default.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
+- `templates/deduction/substitution-lambda-default.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `templates/deduction/substitution-lambda-default.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-lambda-default.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, $1 = (no value)]
+- `templates/deduction/substitution-lambda-default.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-lambda-default.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-lambda-default.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, $1 = (no value)]
+- `templates/deduction/substitution-lambda-default.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: in instantiation of default argument for 'pick<int>' required here / note: while substituting deduced template arguments into function template 'pick' [with T = int, $1 = (no value)]
 - `templates/deduction/substitution-noexcept-later.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'act<int>' requested here
 - `templates/deduction/substitution-noexcept-later.cpp` (gcc-host): error: ‘value’ is not a member of ‘int’
 - `templates/deduction/substitution-noexcept-later.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
@@ -21277,6 +21428,14 @@ check that the rejection has the intended cause.
 - `templates/ordering/constraints-conversion-results-differ.cpp` (gcc-16-o2): error: conversion from 'Source' to 'int*' is ambiguous
 - `templates/ordering/constraints-conversion-results-differ.cpp` (clang-22): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/constraints-conversion-results-differ.cpp` (clang-22-o2): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-default-parameter.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-default-parameter.cpp` (gcc-host): error: call of overloaded ‘f(int)’ is ambiguous
+- `templates/ordering/constraints-default-parameter.cpp` (gcc-14): error: call of overloaded 'f(int)' is ambiguous / note: candidate: 'void f(T, int) requires  sizeof (T) > 1 [with T = int]' / note: candidate: 'void f(T) [with T = int]'
+- `templates/ordering/constraints-default-parameter.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-default-parameter.cpp` (gcc-16): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/constraints-default-parameter.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/constraints-default-parameter.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-default-parameter.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/constraints-different-heads.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
 - `templates/ordering/constraints-different-heads.cpp` (gcc-host): error: call of overloaded ‘f(int)’ is ambiguous
 - `templates/ordering/constraints-different-heads.cpp` (gcc-14): error: call of overloaded 'f(int)' is ambiguous / note: candidate: 'void f(T) [with T = int]' / note: candidate: 'void f(T) [with T = int; U = int]'
@@ -21285,6 +21444,13 @@ check that the rejection has the intended cause.
 - `templates/ordering/constraints-different-heads.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
 - `templates/ordering/constraints-different-heads.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
 - `templates/ordering/constraints-different-heads.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/member-object-rvalue.cpp` (clang-host): error: use of overloaded operator '+' is ambiguous (with operand types 'X' and 'int') / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/member-object-rvalue.cpp` (gcc-host): error: ambiguous overload for ‘operator+’ (operand types are ‘X’ and ‘int’)
+- `templates/ordering/member-object-rvalue.cpp` (gcc-14): error: ambiguous overload for 'operator+' (operand types are 'X' and 'int') / note: candidate: 'One X::operator+(T) [with T = int]' / note: candidate: 'Two operator+(X&&, T) [with T = int]'
+- `templates/ordering/member-object-rvalue.cpp` (gcc-16): error: ambiguous overload for 'operator+' (operand types are 'X' and 'int')
+- `templates/ordering/member-object-rvalue.cpp` (gcc-16-o2): error: ambiguous overload for 'operator+' (operand types are 'X' and 'int')
+- `templates/ordering/member-object-rvalue.cpp` (clang-22): error: use of overloaded operator '+' is ambiguous (with operand types 'X' and 'int') / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/member-object-rvalue.cpp` (clang-22-o2): error: use of overloaded operator '+' is ambiguous (with operand types 'X' and 'int') / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/neither.cpp` (clang-host): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/neither.cpp` (gcc-host): error: call of overloaded ‘put(int, int)’ is ambiguous
 - `templates/ordering/neither.cpp` (edg-7.0): error: more than one instance of overloaded function "put" matches the argument list:
@@ -21294,6 +21460,10 @@ check that the rejection has the intended cause.
 - `templates/ordering/neither.cpp` (gcc-16-o2): error: call of overloaded 'put(int, int)' is ambiguous
 - `templates/ordering/neither.cpp` (clang-22): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/neither.cpp` (clang-22-o2): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/pack-default-parameter.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = <>]
+- `templates/ordering/pack-default-parameter.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = <>]
+- `templates/ordering/pack-default-parameter.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = <>]
+- `templates/ordering/pack-default-parameter.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = <>]
 - `templates/ordering/reference-and-cv-removed.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/reference-and-cv-removed.cpp` (gcc-host): error: call of overloaded ‘take(int&)’ is ambiguous
 - `templates/ordering/reference-and-cv-removed.cpp` (edg-7.0): error: more than one instance of overloaded function "take" matches the argument list:
@@ -21303,6 +21473,10 @@ check that the rejection has the intended cause.
 - `templates/ordering/reference-and-cv-removed.cpp` (gcc-16-o2): error: call of overloaded 'take(int&)' is ambiguous
 - `templates/ordering/reference-and-cv-removed.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/reference-and-cv-removed.cpp` (clang-22-o2): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-kind-and-qualifiers.cpp` (clang-host): error: conversion from 'Source' to 'int' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-kind-and-qualifiers.cpp` (clang-18): error: conversion from 'Source' to 'int' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-kind-and-qualifiers.cpp` (clang-22): error: conversion from 'Source' to 'int' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-kind-and-qualifiers.cpp` (clang-22-o2): error: conversion from 'Source' to 'int' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
 - `templates/ordering/reference-pairs-disagree.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
 - `templates/ordering/reference-pairs-disagree.cpp` (gcc-host): error: call of overloaded ‘f(int&, int&)’ is ambiguous
 - `templates/ordering/reference-pairs-disagree.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
@@ -21312,10 +21486,24 @@ check that the rejection has the intended cause.
 - `templates/ordering/reference-pairs-disagree.cpp` (gcc-16-o2): error: call of overloaded 'f(int&, int&)' is ambiguous
 - `templates/ordering/reference-pairs-disagree.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
 - `templates/ordering/reference-pairs-disagree.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
+- `templates/ordering/reference-pairs-one-way.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int &, U = int] / note: candidate function [with T = int, U = int *]
+- `templates/ordering/reference-pairs-one-way.cpp` (gcc-host): error: call of overloaded ‘f(int&, int*&)’ is ambiguous
+- `templates/ordering/reference-pairs-one-way.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `templates/ordering/reference-pairs-one-way.cpp` (gcc-14): error: call of overloaded 'f(int&, int*&)' is ambiguous / note: candidate: 'void f(T&&, U*) [with T = int&; U = int]' / note: candidate: 'void f(T&, U) [with T = int; U = int*]'
+- `templates/ordering/reference-pairs-one-way.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int &, U = int] / note: candidate function [with T = int, U = int *]
+- `templates/ordering/reference-pairs-one-way.cpp` (gcc-16): error: call of overloaded 'f(int&, int*&)' is ambiguous
+- `templates/ordering/reference-pairs-one-way.cpp` (gcc-16-o2): error: call of overloaded 'f(int&, int*&)' is ambiguous
+- `templates/ordering/reference-pairs-one-way.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int &, U = int] / note: candidate function [with T = int, U = int *]
+- `templates/ordering/reference-pairs-one-way.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int &, U = int] / note: candidate function [with T = int, U = int *]
 - `templates/ordering/reversed-candidate.cpp` (gcc-host): error: static assertion failed
 - `templates/ordering/reversed-candidate.cpp` (gcc-14): error: static assertion failed
 - `templates/ordering/reversed-candidate.cpp` (gcc-16): error: static assertion failed
 - `templates/ordering/reversed-candidate.cpp` (gcc-16-o2): error: static assertion failed
+- `templates/ordering/reversed-member-object.cpp` (gcc-host): error: static assertion failed
+- `templates/ordering/reversed-member-object.cpp` (edg-7.0): error: static assertion failed
+- `templates/ordering/reversed-member-object.cpp` (gcc-14): error: static assertion failed
+- `templates/ordering/reversed-member-object.cpp` (gcc-16): error: static assertion failed
+- `templates/ordering/reversed-member-object.cpp` (gcc-16-o2): error: static assertion failed
 - `templates/specialization/alias-explicit.cpp` (clang-host): error: explicit specialization of alias templates is not permitted
 - `templates/specialization/alias-explicit.cpp` (gcc-host): error: expected unqualified-id before ‘using’
 - `templates/specialization/alias-explicit.cpp` (edg-7.0): error: an alias template cannot be explicitly specialized
