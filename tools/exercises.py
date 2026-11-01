@@ -143,8 +143,8 @@ def predict(page: str, out: Path) -> int:
         "",
         f"Read specification/{page}.md and any other page under specification/. For each program",
         "below, predict what happens when it is built with",
-        "`-std=c++23 -pedantic-errors` and, if it compiles and links, run.",
-        "Do not compile the programs.",
+        "`-std=c++23 -pedantic-errors` and no `-O` flag, and, if it compiles",
+        "and links, run. Do not compile the programs.",
         "",
         "| Program | Files and flags |",
         "|---|---|",
@@ -161,7 +161,12 @@ def predict(page: str, out: Path) -> int:
         "`rules` lists the Tidal rule IDs that decide the outcome. When the",
         "specification does not settle a program, say so in `why` and give your best",
         "guess. Where the specification records that compilers differ on a program,",
-        "answer `depends`, or the outcome of any one of them.",
+        "answer `depends`, or the outcome of any one of them. The compilers",
+        "are the eight baseline compilers, old versions included.",
+        "",
+        "Some programs break a rule that needs no diagnostic, or a rule whose",
+        "behavior is undefined during translation. For these, answer with",
+        "what the compilers do, and cite the rule.",
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)
