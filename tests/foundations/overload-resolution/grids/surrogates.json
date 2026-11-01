@@ -1,0 +1,18 @@
+{
+ "prelude": "using F = int (*)(int);\n",
+ "template": "{prelude}struct S {{ {col} }};\nvoid use() {{\n  S s;\n  const S cs{{}};\n  {row}\n}}",
+ "rows": {
+  "S lvalue": "int a = s(1);",
+  "const S lvalue": "int a = cs(1);",
+  "S prvalue": "int a = S{}(1);"
+ },
+ "cols": {
+  "plain": "operator F();",
+  "const": "operator F() const;",
+  "lref qualified": "operator F() &;",
+  "const lref qualified": "operator F() const&;",
+  "rref qualified": "operator F() &&;",
+  "explicit": "explicit operator F() const;",
+  "template": "template <class T> operator T*() const;"
+ }
+}

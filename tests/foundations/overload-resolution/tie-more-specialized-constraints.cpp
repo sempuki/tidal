@@ -1,4 +1,4 @@
-// tidal-rules: OVL-28
+// tidal-rules: OVL-41
 // tidal-expect: accept
 // tidal-note: Both templates have the parameter T and give the same specialization type, so the sequences tie and both are templates. The constrained template is the more specialized one.
 template <class T, class U> constexpr bool same = false;

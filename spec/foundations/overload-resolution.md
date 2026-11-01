@@ -42,7 +42,7 @@ a function can win and then make the program not valid.
 :::
 
 :::{principle} OVL-P2
-:rules: OVL-1 OVL-2 OVL-4 OVL-5 OVL-6 OVL-7 OVL-8 OVL-9 OVL-10 OVL-11 OVL-12 OVL-13 OVL-14 OVL-15 OVL-16 OVL-17 OVL-18 OVL-19 OVL-20 OVL-21
+:rules: OVL-1 OVL-2 OVL-4 OVL-5 OVL-6 OVL-7 OVL-8 OVL-9 OVL-10 OVL-11 OVL-12 OVL-13 OVL-14 OVL-15 OVL-16 OVL-17 OVL-18 OVL-19 OVL-20 OVL-21 OVL-39 OVL-40 OVL-42 OVL-43 OVL-44
 
 The context decides the candidates and the arguments. A member function
 gets one more argument, the {term}`implied object argument`, which meets
@@ -50,21 +50,28 @@ its object parameter ({rule}`ICS-13`):
 
 | Context | Candidates | Implied object argument | Rules |
 |---|---|---|---|
-| `f(a)`, `N::f(a)` | the functions that lookup finds | the current object, if lookup finds members | OVL-1 to OVL-3 |
+| `f(a)`, `N::f(a)`, `(f)(a)` | the functions that lookup finds | `*this`, if lookup finds members of its class or of a base | OVL-1 to OVL-3, OVL-21 |
 | `x.f(a)`, `p->f(a)` | the members that member lookup finds | `x`, or `*p` | OVL-4 |
 | `c(a)`, for a class object `c` | call operators and {term}`surrogate candidates <surrogate candidate>` | `c` | OVL-5, OVL-6 |
-| `x @ y`, `@x` | members, non-members, {term}`built-in candidates <built-in candidate>`, {term}`rewritten candidates <rewritten candidate>` | the left operand, for a member | OVL-7 to OVL-13 |
-| initialization of a class | constructors, and conversion functions of the initializer | the initializer, for a conversion function | OVL-14, OVL-16, OVL-17, {rule}`ILC-3` |
+| `x @ y`, `@x` | members, non-members, {term}`built-in candidates <built-in candidate>`, {term}`rewritten candidates <rewritten candidate>` | the left operand, for a member | OVL-7 to OVL-13, OVL-43 |
+| initialization of a class | constructors, and conversion functions of the initializer | the initializer, for a conversion function | OVL-14, OVL-16, OVL-17, OVL-40, {rule}`ILC-3` |
 | initialization of a reference or a non-class object from a class | conversion functions of the initializer | the initializer | OVL-15, {rule}`ICS-4` |
 | `&f` and `f` with a target type | the functions that `f` names | none | OVL-18 to OVL-20 |
-| `(&f)(a)` | the functions that `f` names | none | OVL-21 |
+| `(&f)(a)` | the functions that `f` names | none | OVL-21, OVL-44 |
+| an argument that names an overload set | each function of the set, with each candidate of the call | | OVL-39 |
 
 Each function template that lookup finds adds at most one
-specialization, by deduction *(templates referenced)*.
+specialization, by deduction *(templates referenced)*. Two kinds of
+function are never candidates:
+
+- an inherited constructor that has the shape of a copy or move
+  constructor, in a call with one argument (OVL-17),
+- a defaulted move constructor or move assignment operator that is
+  deleted (OVL-42).
 :::
 
 :::{principle} OVL-P3
-:rules: OVL-25 OVL-26 OVL-27 OVL-28 OVL-29 OVL-30 OVL-31 OVL-32 OVL-33 OVL-34
+:rules: OVL-25 OVL-26 OVL-27 OVL-28 OVL-29 OVL-30 OVL-31 OVL-32 OVL-33 OVL-34 OVL-41
 
 One viable function `F1` is better than another, `F2`, by these steps.
 The first step that tells them apart decides:
@@ -80,16 +87,19 @@ viable functions F1 and F2
 2. tie-breakers, the first one that applies:
    a. result      the result of a conversion function converts     OVL-26
                   better to the target
-   b. template    a plain function beats a template                OVL-27
-                  specialization
-   c. template    the more specialized template wins               OVL-28
-   d. reference   the conversion function returns the kind of      OVL-29
+   b. reference   the conversion function returns the kind of      OVL-29
                   function reference that the target is
-   e. concepts    the more constrained plain function wins         OVL-30
-   f. inherited   a constructor of the derived class beats an      OVL-31
+   c. template    a plain function or a built-in candidate         OVL-27
+                  beats a template specialization
+   d. template    the more specialized template wins               OVL-28
+   e. template    of two templates with the same parameters,       OVL-41
+                  the more constrained one wins
+   f. concepts    of two plain functions with the same parameter   OVL-30
+                  list, the more constrained one wins
+   g. inherited   a constructor of the derived class beats an      OVL-31
                   inherited constructor
-   g. rewritten   a written candidate beats a rewritten one        OVL-32
-   h. swapped     a rewritten candidate in the written order       OVL-33
+   h. rewritten   a written candidate beats a rewritten one        OVL-32
+   i. swapped     a rewritten candidate in the written order       OVL-33
                   beats a swapped one
    |
    v
@@ -101,23 +111,34 @@ the functions are declared, and last at how the expression was written.
 The best function must be better than each other viable function
 (OVL-34).
 
-Tests observe these orders: 2a before 2b and 2e, 2b before 2d, 2f,
-and 2g, and 2d before 2e. The order of 2b and 2d is provisional
-({question}`Q-0148`). These pairs never decide the same case, so their
-order is not observable:
+Tests observe these orders:
 
-- 2b, 2c, and 2e compare a plain function with a template, two
-  templates, and two plain functions.
-- 2a and 2d apply to conversion functions, 2f to constructors, and 2g
-  and 2h to operators.
-- 2a looks at results whose sequences differ, and 2d at two results
-  that both bind with the identity. 2a also never separates two
-  templates, whose results match exactly ({rule}`ICS-5`).
-- 2g compares a written candidate with a rewritten one, and 2h compares
+| Earlier | Later | Test |
+|---|---|---|
+| 2a | 2c | `tie-conversion-result-before-template.cpp` |
+| 2a | 2f | `tie-conversion-result-before-constraints.cpp` |
+| 2b | 2c, 2d | `tie-reference-kind-before-template.cpp`, `tie-reference-kind-before-more-specialized.cpp` ({question}`Q-0148`) |
+| 2b | 2f | `tie-reference-kind-before-constraints.cpp` |
+| 2c | 2g, 2h, 2i | `tie-template-before-inherited.cpp`, `tie-template-before-rewritten.cpp`, `tie-template-before-swapped.cpp` |
+| 2d | 2e | 2e applies only when 2d does not decide |
+
+These pairs never decide the same case, so their order is not
+observable:
+
+- 2c, 2d, 2e, and 2f compare a plain function with a template, two
+  templates, two templates, and two plain functions. 2d and 2e
+  together order two templates.
+- 2a and 2b apply to conversion functions, 2g to constructors, and 2h
+  and 2i to operators.
+- 2a looks at results whose sequences differ, and 2b at two results
+  that both bind with the identity.
+- 2h compares a written candidate with a rewritten one, and 2i compares
   two rewritten candidates.
 
-No test decides the order of 2c and 2d, or of 2c and 2e against 2f to
-2h.
+2a can separate two templates whose results differ by a function
+pointer conversion (`tie-conversion-result-templates.cpp`). No test
+decides the order of 2a against 2d and 2e, or of 2d to 2f against 2g
+to 2i.
 :::
 
 :::{principle} OVL-P4
@@ -132,7 +153,9 @@ the table, these letters stand for sets of types:
   type or an integer type that promotion leaves unchanged
   ({rule}`CONV-1`),
 - `I`: a promoted integer type,
-- `X`: an arithmetic type, and `J`: an integer type,
+- `X`: an arithmetic type,
+- `J`: an integral type, which is an integer type, `bool`, or a
+  character type,
 - `T`: an object type,
 - `E`: an enumeration type,
 - `P`: a pointer type,
@@ -150,7 +173,7 @@ the table, these letters stand for sets of types:
 | `!`, `&&`, `\|\|` | `(bool)`, `(bool, bool)` | `bool` | {doc}`/expressions/logical` |
 | `==`, `!=`, `<`, `>`, `<=`, `>=` | `(A, A)` for every pair; `(P, P)` and `(E, E)` for one type | `bool` | {doc}`/expressions/comparison` |
 | `==`, `!=` only | `(M, M)` for one member pointer type `M`; `(std::nullptr_t, std::nullptr_t)` | `bool` | {doc}`/expressions/comparison` |
-| `<=>` | `(J, J)` for one integer type; `(A, A)` for every pair of floating-point types; `(P, P)` and `(E, E)` for one type | an ordering type | {doc}`/expressions/comparison` |
+| `<=>` | `(A, A)` for every pair; `(P, P)` and `(E, E)` for one type | an ordering type | {doc}`/expressions/comparison` |
 | `->*` | `(C*, M C2::*)` where `C2` is `C` or a base of `C` | a reference to `M` | {doc}`/expressions/member-pointers` |
 | `++`, `--` | `(VX&)` for every `X` except `bool`; `(T* V&)` | prefix: the operand; postfix: its old value | {doc}`/expressions/unary`, {doc}`/expressions/postfix` |
 | `=` | `(VX&, A)` for every `X`; `(P V&, P)`, `(E V&, E)`, `(M V&, M)` | the left operand | {doc}`/expressions/assignment` |
@@ -161,7 +184,10 @@ the table, these letters stand for sets of types:
 
 The left operand of a built-in assignment gets no user-defined
 conversion ({rule}`ICS-10`). After a built-in candidate wins, the
-operator's own page decides what the expression does (OVL-11).
+operator's own page decides what the expression does (OVL-11). For
+example, `<=>` between a class that converts to `char` and a class that
+converts to `bool` chooses `(int, int)`. The built-in `<=>` then rejects
+the `char` and the `bool`.
 :::
 
 ## Constraints
@@ -181,17 +207,24 @@ candidate.
 
 :::{rule} OVL-2
 :kind: required
-:tests: foundations/overload-resolution/current-object-argument.cpp foundations/overload-resolution/current-object-explicit-parameter.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp
+:tests: foundations/overload-resolution/current-object-argument.cpp foundations/overload-resolution/current-object-explicit-parameter.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/current-object-default-member-init.cpp foundations/overload-resolution/current-object-other-class.cpp foundations/overload-resolution/call-parenthesized-name.cpp
 
-If a call by name finds members and appears in a non-static member
-function, `*this` is the implied object argument. `*this` meets the
-implicit object parameter ({rule}`ICS-13`), or the explicit object
-parameter ({rule}`ICS-41`).
+A call by name that finds members of a class `C` has `*this` as the
+implied object argument if these conditions hold:
+
+- `this` can be used at the call, as in a non-static member function or
+  a default member initializer.
+- The class of `*this` is `C` or a class derived from `C`
+  ({question}`Q-0159`).
+
+`*this` meets the implicit object parameter ({rule}`ICS-13`), or the
+explicit object parameter ({rule}`ICS-41`). Otherwise the call has no
+object (OVL-3).
 :::
 
 :::{rule} OVL-3
 :kind: reject
-:tests: foundations/overload-resolution/no-object-nonstatic-chosen.cpp foundations/overload-resolution/no-object-static-chosen.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp
+:tests: foundations/overload-resolution/no-object-nonstatic-chosen.cpp foundations/overload-resolution/no-object-static-chosen.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/current-object-other-class.cpp
 
 A call with no object can still have members as candidates, for example
 a call by name in a static member function. If such a call chooses a
@@ -221,15 +254,17 @@ The candidates of `c(a)`, for an object `c` of class type, are these:
 
 :::{rule} OVL-6
 :kind: required
-:tests: foundations/overload-resolution/surrogate-forms.cpp foundations/overload-resolution/surrogate-from-base.cpp foundations/overload-resolution/surrogate-qualifiers.cpp foundations/overload-resolution/surrogate-explicit-not-candidate.cpp foundations/overload-resolution/surrogate-same-parameters.cpp
+:tests: foundations/overload-resolution/surrogate-forms.cpp foundations/overload-resolution/surrogate-from-base.cpp foundations/overload-resolution/surrogate-qualifiers.cpp foundations/overload-resolution/surrogate-explicit-not-candidate.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp
 
 A conversion function gives a {term}`surrogate candidate` for `c(a)` if
 these conditions hold:
 
 - The function converts to a pointer to function, a reference to such a
   pointer, or a reference to function.
-- The function is not `explicit`.
+- The function is not `explicit`, and the function is not a template.
 - The function's cv-qualifiers include those of `c`.
+- The function's ref-qualifier, if any, takes the value category of
+  `c`. `&` takes an lvalue, `&&` an rvalue, and `const&` both.
 - A declaration in the class of `c` does not hide the function.
 
 The surrogate's first parameter is the conversion's result type, and
@@ -267,11 +302,12 @@ enumeration operand. A reference to that type also counts.
 
 :::{rule} OVL-9
 :kind: required
-:tests: foundations/overload-resolution/builtin-arithmetic.cpp foundations/overload-resolution/builtin-pointer.cpp foundations/overload-resolution/builtin-assignment.cpp foundations/overload-resolution/builtin-enumeration.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-three-way.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-equality.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp
+:tests: foundations/overload-resolution/builtin-arithmetic.cpp foundations/overload-resolution/builtin-pointer.cpp foundations/overload-resolution/builtin-assignment.cpp foundations/overload-resolution/builtin-enumeration.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-three-way.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-equality.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-integral-compound.cpp foundations/overload-resolution/builtin-three-way-mixed.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/builtin-over-template.cpp
 
 An operator has the {term}`built-in candidates <built-in candidate>` that
 the table of OVL-P4 lists. Each candidate is a function with the
-parameter types of its row.
+parameter types of its row. A call by the operator function's name,
+such as `operator+(1, 2)`, has no built-in candidates.
 :::
 
 :::{rule} OVL-10
@@ -285,7 +321,7 @@ also removes the built-in candidate ({question}`Q-0147`).
 
 :::{rule} OVL-11
 :kind: reject
-:tests: foundations/overload-resolution/builtin-chosen-then-checked.cpp foundations/overload-resolution/builtin-chosen-other-operand.cpp
+:tests: foundations/overload-resolution/builtin-chosen-then-checked.cpp foundations/overload-resolution/builtin-chosen-other-operand.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp
 
 If a built-in candidate wins, each class operand converts by the
 conversion function of its sequence. The standard conversions after the
@@ -305,7 +341,7 @@ meaning.
 
 :::{rule} OVL-13
 :kind: required
-:tests: foundations/overload-resolution/rewritten-three-way-result.cpp foundations/overload-resolution/rewritten-not-equal-result.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp
+:tests: foundations/overload-resolution/rewritten-three-way-result.cpp foundations/overload-resolution/rewritten-not-equal-result.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp
 
 A rewritten candidate of {rule}`DCMP-6` evaluates as this table gives:
 
@@ -313,6 +349,7 @@ A rewritten candidate of {rule}`DCMP-6` evaluates as this table gives:
 |---|---|---|
 | `x < y` and the other relational operators | `x <=> y` | `(x <=> y) < 0` |
 | | swapped `y <=> x` | `0 < (y <=> x)` |
+| `x <=> y` | swapped `y <=> x` | `0 <=> (y <=> x)` |
 | `x != y` | `x == y`, or swapped `y == x` | `!(x == y)`, `!(y == x)` |
 | `x == y` | swapped `y == x` | `y == x` |
 
@@ -320,11 +357,20 @@ A swapped candidate from a member function takes the right operand as
 its object, which no user-defined conversion can reach.
 :::
 
+:::{rule} OVL-43
+:kind: reject
+:tests: foundations/overload-resolution/rewritten-inner-no-rewrite.cpp
+
+In a rewritten candidate, the comparison of the `<=>` result with `0`
+has no rewritten candidates. If that comparison has no viable function,
+the program is not valid.
+:::
+
 ### Initialization
 
 :::{rule} OVL-14
 :kind: required
-:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-direct-explicit-conversion.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp
+:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -337,16 +383,12 @@ has these candidates:
 | list initialization | {rule}`ILC-3` |
 
 The argument is `v`. A conversion function that returns a cv-qualified
-`T`, or a reference to `T`, counts as a conversion to `T`. In direct
-initialization, an `explicit` conversion function can make the temporary
-for the parameter of a copy or move constructor. In
-copy-list-initialization, the `explicit` conversion function cannot
-make that temporary ({question}`Q-0145`).
+`T`, or a reference to `T`, counts as a conversion to `T`.
 :::
 
 :::{rule} OVL-15
 :kind: required
-:tests: foundations/overload-resolution/reference-conversion-kind.cpp
+:tests: foundations/overload-resolution/reference-conversion-kind.cpp foundations/overload-resolution/reference-function-both-kinds.cpp foundations/overload-resolution/reference-conversion-not-compatible.cpp foundations/overload-resolution/reference-explicit-direct.cpp foundations/overload-resolution/reference-explicit-copy.cpp
 
 When a reference binds directly to the result of a conversion function
 ({rule}`ICS-4`), the reference decides the candidates:
@@ -355,7 +397,13 @@ When a reference binds directly to the result of a conversion function
   lvalue reference.
 - An rvalue reference takes the conversion functions that return a
   value or an rvalue reference.
-- A reference to function takes both kinds.
+- A reference to function takes both kinds ({question}`Q-0138`).
+- The result type must be the referenced type or a class derived from
+  it, apart from cv-qualifiers that the reference adds.
+- Direct initialization also takes the `explicit` conversion functions
+  that {rule}`ICS-45` allows.
+
+Without such a candidate, the reference binds to a temporary.
 :::
 
 :::{rule} OVL-16
@@ -368,21 +416,40 @@ template depends on a template parameter, deduction comes first
 are not `explicit` then removes an `explicit` specialization.
 :::
 
+:::{rule} OVL-40
+:kind: required
+:tests: foundations/overload-resolution/init-direct-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp
+
+In direct initialization of a class `T`, an `explicit` conversion
+function can make the temporary for the parameter of a copy or move
+constructor of `T`. In copy-list-initialization, the `explicit`
+conversion function cannot make that temporary ({question}`Q-0145`).
+:::
+
 :::{rule} OVL-17
 :kind: required
-:tests: foundations/overload-resolution/inherited-copy-shape-excluded.cpp
+:tests: foundations/overload-resolution/inherited-copy-shape-excluded.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp foundations/overload-resolution/inherited-copy-shape-two-arguments.cpp
 
-Some inherited constructors are removed when an object of the derived
-class `D` is initialized from one argument of type `D`. A constructor
-inherited from a base `B` is removed if its first parameter is a
-reference to `B`, `D`, or a class between them.
+A constructor that the derived class `D` inherits from a base `B` is
+removed from the candidates of a call with exactly one argument, of any
+type. The rule applies if the constructor's first parameter is a
+reference to `B`, to `D`, or to a class between them.
+:::
+
+:::{rule} OVL-42
+:kind: required
+:tests: foundations/overload-resolution/deleted-defaulted-move-not-candidate.cpp foundations/overload-resolution/user-deleted-move-candidate.cpp
+
+A defaulted move constructor or move assignment operator that is
+deleted ({rule}`CPY-7`) is not a candidate. A move function that is
+declared deleted is a candidate, and OVL-37 applies when it wins.
 :::
 
 ### The address of an overload set
 
 :::{rule} OVL-18
 :kind: required
-:tests: foundations/overload-resolution/address-targets.cpp foundations/overload-resolution/address-exact-type.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-member-kinds.cpp
+:tests: foundations/overload-resolution/address-targets.cpp foundations/overload-resolution/address-exact-type.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-member-kinds.cpp foundations/overload-resolution/address-base-member.cpp
 
 The name of an overload set, with or without `&`, takes its function
 from a target type. These contexts give a target type:
@@ -396,8 +463,8 @@ from a target type. These contexts give a target type:
 
 A function matches if its type is the target's function type. The
 function can be `noexcept` when the target is not. Members with an
-implicit object parameter match only pointers to member
-({rule}`MPTR-2`).
+implicit object parameter match only pointers to member ({rule}`MPTR-2`),
+and the class of the pointer to member takes no part ({rule}`MPTR-4`).
 :::
 
 :::{rule} OVL-19
@@ -419,20 +486,44 @@ The matching functions of OVL-18 are reduced in these steps:
 
 :::{rule} OVL-20
 :kind: reject
-:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp
+:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp
 
 After OVL-19, exactly one function must remain. Without a target type,
-for example with `auto` or `decltype`, the overload set must have
-exactly one function, which is not a template.
+for example with `auto` or `decltype`, these steps apply:
+
+1. A function template adds the specialization that its explicit
+   template arguments fix, if they fix every template parameter. Any
+   other template makes the program not valid.
+2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0160`).
+3. Exactly one function must remain.
 :::
 
 :::{rule} OVL-21
 :kind: required
-:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/overload-set-argument.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp
+:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp
 
-A call `(&f)(a)` or `(f)(a)` resolves `f` as a call by name, with no
-implied object argument. If an argument is itself an overload set, each
-of its functions is tried with each candidate, and one pairing must win.
+A call `(&f)(a)` resolves `f` as a call by name, with no implied object
+argument. A call `(f)(a)` is the same call as `f(a)`, and keeps the
+implied object argument of OVL-2.
+:::
+
+:::{rule} OVL-44
+:kind: reject
+:tests: foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp
+
+In a call `(&f)(a)`, if the set `f` holds a member with an implicit
+object parameter, the operand of `&` must be a qualified name without
+parentheses ({rule}`MPTR-2`). The rule holds even when a static member
+of the set would win ({question}`Q-0161`).
+:::
+
+:::{rule} OVL-39
+:kind: required
+:tests: foundations/overload-resolution/overload-set-argument.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/overload-set-argument-with-other.cpp
+
+If an argument of a call names an overload set, each function of the
+set is tried with each candidate. The candidate's parameter is the
+target type of OVL-18. One pairing must win (OVL-36).
 :::
 
 ### Viable functions
@@ -480,8 +571,8 @@ worse than the sequence of `F2` for the same argument
 ({rule}`ICS-21`), and one of these holds:
 
 - Some sequence of `F1` is better.
-- Every sequence ties, and a tie-breaker of OVL-26 to OVL-33 prefers
-  `F1`.
+- Every sequence ties, and a tie-breaker of OVL-26 to OVL-33 or OVL-41
+  prefers `F1`.
 
 Parameters that take default arguments, and the object slot of a static
 member ({rule}`ICS-14`), take no part.
@@ -489,50 +580,62 @@ member ({rule}`ICS-14`), take no part.
 
 :::{rule} OVL-26
 :kind: required
-:tests: foundations/overload-resolution/tie-conversion-result.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp
+:tests: foundations/overload-resolution/tie-conversion-result.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-conversion-result-templates.cpp foundations/overload-resolution/tie-conversion-result-noexcept.cpp
 
 In an initialization by a conversion function, the function whose result
 has the better sequence to the target wins ({rule}`ICS-37`, with
-{rule}`ICS-42` to {rule}`ICS-44` for results from different sources). No other
-tie-breaker comes before this one.
+{rule}`ICS-42` to {rule}`ICS-44` for results from different sources). The
+identity is better than a function pointer conversion ({question}`Q-0163`).
+No other tie-breaker comes before this one.
 :::
 
 :::{rule} OVL-27
 :kind: required
-:tests: foundations/overload-resolution/tie-plain-over-template.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-template-before-inherited.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp foundations/overload-resolution/tie-template-before-reference-kind.cpp
+:tests: foundations/overload-resolution/tie-plain-over-template.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-template-before-inherited.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp foundations/overload-resolution/tie-reference-kind-before-template.cpp foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp foundations/overload-resolution/builtin-over-template.cpp
 
 A function that is not a template specialization wins over a
-specialization *(templates referenced)*. The rule comes after OVL-26.
+specialization *(templates referenced)*. A built-in candidate counts as
+such a function. The rule comes after OVL-26 and OVL-29.
 :::
 
 :::{rule} OVL-28
 :kind: required
-:tests: foundations/overload-resolution/tie-more-specialized.cpp foundations/overload-resolution/tie-more-specialized-constraints.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
+:tests: foundations/overload-resolution/tie-more-specialized.cpp foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp
 
 Of two specializations, the one from the more specialized template wins
-*(templates referenced)*. Of two templates with the same function
-parameters, the more constrained one is more specialized
-*(concepts referenced)*. OVL-27 and this rule never decide the same
-case.
+*(templates referenced)*.
+:::
+
+:::{rule} OVL-41
+:kind: required
+:tests: foundations/overload-resolution/tie-more-specialized-constraints.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
+
+Of two specializations from templates with the same function
+parameters, the one from the more constrained template wins
+*(concepts referenced)*. Templates with different function parameters
+do not compare by their constraints ({question}`Q-0146`).
 :::
 
 :::{rule} OVL-29
 :kind: required
-:tests: foundations/overload-resolution/tie-function-reference-kind.cpp foundations/overload-resolution/tie-template-before-reference-kind.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp
+:tests: foundations/overload-resolution/tie-function-reference-kind.cpp foundations/overload-resolution/tie-reference-kind-before-template.cpp foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp
 
 If a reference to function binds directly to the result of either of
 two conversion functions, the one that returns the same kind of
 reference wins. An lvalue reference prefers an lvalue reference result.
-The rule comes after OVL-27 ({question}`Q-0148`).
+The rule comes after OVL-26 and before OVL-27 and OVL-28
+({question}`Q-0148`).
 :::
 
 :::{rule} OVL-30
 :kind: required
-:tests: foundations/overload-resolution/tie-more-constrained.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp
+:tests: foundations/overload-resolution/tie-more-constrained.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp
 
 Of two functions that are not specializations and have the same
-parameter types, the more constrained one wins *(concepts referenced)*.
-The rule comes after OVL-26 and OVL-29.
+parameter list, the more constrained one wins *(concepts referenced)*.
+The parameter list includes the parameters with default arguments and
+the ellipsis ({question}`Q-0162`). The rule comes after OVL-26 and
+OVL-29.
 :::
 
 :::{rule} OVL-31
@@ -575,16 +678,16 @@ order of the declarations.
 
 :::{rule} OVL-35
 :kind: reject
-:tests: foundations/overload-resolution/no-viable-function.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp
+:tests: foundations/overload-resolution/no-viable-function.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/reference-explicit-copy.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp
 
 If a use has no viable function, the program is not valid. These rules
-name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`, and
-{rule}`CTOR-25`.
+name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
+{rule}`CTOR-25`, and OVL-43.
 :::
 
 :::{rule} OVL-36
 :kind: reject
-:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
+:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. Two rules name specific cases
@@ -594,7 +697,7 @@ constructors.
 
 :::{rule} OVL-37
 :kind: reject
-:tests: foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/chosen-not-accessible.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp
+:tests: foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/chosen-not-accessible.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp foundations/overload-resolution/user-deleted-move-candidate.cpp
 
 The best viable function must pass these checks. A worse viable function
 never takes its place. Each check has its own rule (decision 0042):
@@ -645,16 +748,22 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 89
-of 100 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 137 tests.
 
-- OVL-27, OVL-29: when a plain conversion function and a conversion
-  function template both bind an rvalue function reference, Clang and
-  EDG choose the plain function. GCC chooses the template, which returns
-  the target's kind of reference ({question}`Q-0148`).
-- OVL-29: GCC and EDG choose the conversion that returns the target's
-  kind of function reference. Clang finds the binding of an rvalue
-  reference ambiguous ({question}`Q-0138`).
+- OVL-27, OVL-28, OVL-29: the kind of function reference prefers one
+  conversion function, and a template tie-breaker prefers the other.
+  GCC follows the kind of reference, and EDG the template tie-breaker.
+  Clang does not apply the kind of reference ({question}`Q-0148`).
+- OVL-15, OVL-29: GCC and EDG choose the conversion that returns the
+  target's kind of function reference. Clang finds the binding of an
+  rvalue reference ambiguous. Clang also gives an lvalue reference to
+  function no conversion that returns an rvalue reference
+  ({question}`Q-0138`).
+- OVL-2, OVL-3: a member function of a nested class calls a name that
+  finds members of the enclosing class. GCC gives the call no object.
+  Clang and EDG take the current object and choose a static member
+  ({question}`Q-0159`).
 - OVL-6, OVL-36: Clang and EDG find two surrogates that differ only in
   the qualifiers of their conversion functions ambiguous. GCC accepts
   the call ({question}`Q-0139`).
@@ -667,22 +776,42 @@ of 100 tests.
 - OVL-11: EDG converts a class operand to the parameter type of the
   winning built-in candidate. Clang and GCC stop after the conversion
   function ({question}`Q-0141`).
-- OVL-14: Clang uses an `explicit` conversion function for the copy
+- OVL-40: Clang uses an `explicit` conversion function for the copy
   constructor's parameter in copy-list-initialization. GCC and EDG do
   not ({question}`Q-0145`).
 - OVL-19: Clang 22 and GCC 16 keep the more constrained function when a
   target type selects from a set. EDG, Clang 18, and GCC 14 find the set
   ambiguous ({question}`Q-0142`).
+- OVL-20: without a target type, Clang 22 and GCC 16 remove the
+  functions whose constraints fail, and the less constrained function.
+  GCC 16 does so for `auto` only. GCC 14 and EDG do not reduce the set,
+  and Clang 18 does not compare constraints ({question}`Q-0160`).
 - OVL-21: Clang 22 calls a static member through the address of a set of
   members. Clang 18 and GCC reject the call, and EDG stops with an
   internal error ({question}`Q-0143`).
-- OVL-28: EDG lets a constraint decide between templates with different
+- OVL-44: GCC rejects a call through `&(C::f)` or `&f` on a set with a
+  non-static member. Clang rejects the parenthesized form, and Clang 22
+  accepts `&f`. EDG accepts both forms with no argument
+  ({question}`Q-0161`).
+- OVL-26: EDG finds two conversion results ambiguous when they differ
+  only by a function pointer conversion. Clang and GCC prefer the
+  identity ({question}`Q-0163`).
+- OVL-30: EDG lets a constraint decide between plain functions whose
+  parameter lists differ in a defaulted parameter or an ellipsis. Clang
+  18 does so for an ellipsis. Clang 22 and GCC find the call ambiguous
+  ({question}`Q-0162`).
+- OVL-41: EDG lets a constraint decide between templates with different
   function parameters. Clang and GCC find the call ambiguous
   ({question}`Q-0146`).
 - OVL-38: GCC rejects a call that uses different default arguments from
-  two scopes. Clang and EDG accept it ({question}`Q-0140`).
+  two scopes. Clang and EDG accept it ({question}`Q-0140`). Every
+  compiler accepts equal default arguments, which item E-4 of the gap
+  review describes as not valid.
 - OVL-9: for `ToDouble{} % 2`, Clang reports that the integer candidates
   are ambiguous, and GCC and EDG report no match. All reject.
+- OVL-9, OVL-11: in the three-way grid, `unsigned` against `long` is
+  rejected on the ILP32 target only. There `long` cannot hold every
+  `unsigned` value, and the built-in `<=>` rejects the narrowing.
 - OVL-20: gap G-11 of the inventory expects that a set of one plain
   function and one template keeps the plain function when no target
   type exists. Every compiler rejects such a set with `auto`,
@@ -778,16 +907,81 @@ Initialization (OVL-14). Each column declares how `Src` converts to
 The address of an overload set (OVL-18 to OVL-20). Each column declares
 an overload set `f`, and each row takes its address for one target:
 
-| | one plain | two plain | noexcept plain | plain and template | two templates |
+| | one plain | two plain | noexcept plain | plain and template | two templates | one template |
+|---|---|---|---|---|---|---|
+| pointer to One(int) | accept | accept | accept | accept | accept | accept |
+| noexcept pointer to One(int) | reject | reject | accept | reject | reject | reject |
+| reference to One(int) | accept | accept | accept | accept | accept | accept |
+| pointer to Two(long) | reject | accept | accept | accept | reject | reject |
+| pointer to Two(int pointer) | reject | reject | reject | accept | accept | reject |
+| pointer to Two(double) | reject | reject | reject | accept | reject | reject |
+| cast to pointer to One(int) | accept | accept | accept | accept | accept | accept |
+| no target | accept | reject | reject | reject | reject | reject |
+
+Explicit template arguments with no target type (OVL-20). Each column
+declares an overload set `f`, and each row takes the address of
+`f<int>`:
+
+| | one template | two templates | plain and template | template of two parameters |
+|---|---|---|---|---|
+| pointer to One(int) | accept | accept | reject | reject |
+| no target | accept | reject | accept | reject |
+| decltype | accept | reject | accept | reject |
+
+Surrogates (OVL-6). Each column declares one conversion function to the
+pointer type `F`, and each row calls an object of the class with one
+argument. An `accept` means that the conversion function gives a
+surrogate for that object:
+
+| | plain | const | lref qualified | const lref qualified | rref qualified | explicit | template |
+|---|---|---|---|---|---|---|---|
+| S lvalue | accept | accept | accept | accept | reject | reject | reject |
+| const S lvalue | reject | accept | reject | accept | reject | reject | reject |
+| S prvalue | accept | accept | reject | accept | accept | reject | reject |
+
+Function references (OVL-15, OVL-27 to OVL-29). Each column declares two
+conversion functions of `Source`. The first returns a function that
+gives 1, and the second one that gives 2. Each row binds a reference to
+function to a `Source` prvalue and checks which function it refers to.
+A `reject` in both rows of a target means that the binding is
+ambiguous or has no candidate:
+
+| | plain lref / plain rref | plain lref / template lref | plain lref / template rref | plain rref / template lref | plain rref / template rref | template lref / template rref |
+|---|---|---|---|---|---|---|
+| lref target → first | accept | accept | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-16, gcc-14, clang-18, gcc-host, clang-host, clang-22 | accept: gcc-16, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-host; reject: clang-host, clang-18, clang-22 | accept |
+| lref target → second | reject | reject | reject | accept: gcc-host, gcc-16, gcc-14, clang-18, clang-host, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject | reject |
+| rref target → first | reject | accept | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-16, gcc-host, gcc-14 | accept | accept | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-14, gcc-host, gcc-16 |
+| rref target → second | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 | reject | accept: gcc-16, gcc-host, gcc-14; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 | reject | reject | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
+
+Compound assignment (OVL-9). Each row declares `x` of one type, and each
+column applies one operator to `x` and a class that converts to `int`:
+
+| | plus assign | remainder assign | and assign | or assign | shift assign |
 |---|---|---|---|---|---|
-| pointer to One(int) | accept | accept | accept | accept | accept |
-| noexcept pointer to One(int) | reject | reject | accept | reject | reject |
-| reference to One(int) | accept | accept | accept | accept | accept |
-| pointer to Two(long) | reject | accept | accept | accept | reject |
-| pointer to Two(int pointer) | reject | reject | reject | accept | accept |
-| pointer to Two(double) | reject | reject | reject | accept | reject |
-| cast to pointer to One(int) | accept | accept | accept | accept | accept |
-| no target | accept | reject | reject | reject | reject |
+| bool | accept | accept | accept | accept | accept |
+| char | accept | accept | accept | accept | accept |
+| signed char | accept | accept | accept | accept | accept |
+| unsigned char | accept | accept | accept | accept | accept |
+| wchar_t | accept | accept | accept | accept | accept |
+| char8_t | accept | accept | accept | accept | accept |
+| char16_t | accept | accept | accept | accept | accept |
+| short | accept | accept | accept | accept | accept |
+| int | accept | accept | accept | accept | accept |
+| unsigned long | accept | accept | accept | accept | accept |
+
+Three-way comparison (OVL-9, OVL-11). The row's class is the left
+operand and the column's class the right operand of `<=>`. Each class
+converts to the type in its label:
+
+| | To bool | To char | To short | To int | To unsigned | To long | To double |
+|---|---|---|---|---|---|---|---|
+| To bool | accept | reject | reject | reject | reject | reject | reject |
+| To char | reject | accept | accept | accept | reject | accept | accept |
+| To short | reject | accept | accept | accept | reject | accept | accept |
+| To int | reject | accept | accept | accept | reject | accept | accept |
+| To unsigned | reject | reject | reject | reject | accept | accept: edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32 | accept |
+| To long | reject | accept | accept | accept | accept: edg-7.0, gcc-host, gcc-14, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0-ilp32 | accept | accept |
+| To double | reject | accept | accept | accept | accept | accept | accept |
 
 Plain functions and templates (OVL-25, OVL-27, OVL-28). Each column
 declares two functions `f`, in two namespaces that a using-declaration
@@ -804,33 +998,38 @@ merges. The first returns `One` and the second `Two`:
 | int pointer → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | accept | accept | accept | accept | reject | accept | accept |
 | int pointer → second | reject | reject | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | reject | accept | reject | accept | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject |
 
-The source of each rule:
+This table gives the source of each rule. A gap review item has the
+number that `reports/review/2026-10-31-gap-review-overload-resolution.md`
+gives it:
 
 | Rule | Source |
 |---|---|
 | OVL-1 | probes; inventory CC-6, CC-11 |
-| OVL-2, OVL-3 | grid contexts; diagnostics for a call without an object; inventory CC-3 to CC-5, gap G-1 |
+| OVL-2, OVL-3 | grid contexts; diagnostics for a call without an object; inventory CC-3 to CC-5, gap G-1; gap review M-4, E-2 |
 | OVL-4 | grid contexts; inventory CC-1, CC-7 |
-| OVL-5, OVL-6 | grids contexts, object-call; edg-overload (the surrogate candidates); inventory CC-2, CC-8 to CC-10, AF-7, gap G-10 |
+| OVL-5, OVL-6 | grids contexts, object-call, surrogates; edg-overload (the surrogate candidates); inventory CC-2, CC-8 to CC-10, AF-7, gap G-10; gap review M-5, M-6 |
 | OVL-7 | grid operators; inventory CO-1, CO-4 to CO-7, CO-14 |
 | OVL-8 | probes; inventory CO-2, CO-3 |
-| OVL-9 | probes; inventory BI-1 to BI-4, BI-6 to BI-8, BI-10 to BI-12, BI-14, BI-15, BI-17, BI-18 |
+| OVL-9 | probes; grids compound-integral, three-way; inventory BI-1 to BI-4, BI-6 to BI-8, BI-10 to BI-12, BI-14, BI-15, BI-17, BI-18; gap review M-8, E-8 |
 | OVL-10 | probes; edg-overload (the removal of a built-in candidate with the signature of a function); inventory BI-5, gap G-9 |
 | OVL-11 | diagnostics; inventory BI-16 |
 | OVL-12 | probes; inventory BI-13, gap G-13 |
-| OVL-13 | probes; inventory CO-9, CO-10, CO-12, CO-13 |
-| OVL-14 | grid initialization; inventory CI-1, CI-2, CI-4, CI-8, CI-9 |
-| OVL-15 | probes; inventory CI-7, CI-10 |
+| OVL-13 | probes; inventory CO-9, CO-10, CO-12, CO-13; gap review M-1 |
+| OVL-43 | diagnostics; gap review M-2 |
+| OVL-14, OVL-40 | grid initialization; inventory CI-1, CI-2, CI-4, CI-8, CI-9; gap review S-2 |
+| OVL-15 | probes; grid reference-kind; inventory CI-7, CI-10; gap review M-10 |
 | OVL-16 | probe; inventory CI-3, gap G-12 |
-| OVL-17 | probe; inventory DE-3, gap G-7 |
-| OVL-18 to OVL-20 | grid address; diagnostics; inventory AO-2 to AO-6, AO-9 to AO-12, gap G-11 |
-| OVL-21 | probes; inventory AO-1, AO-7, gap G-2 |
+| OVL-17 | probes; inventory DE-3, gap G-7; gap review E-3 |
+| OVL-42 | probes; {rule}`CPY-7`; gap review S-4 |
+| OVL-18 to OVL-20 | grids address, address-explicit; diagnostics; inventory AO-2 to AO-6, AO-9 to AO-12, gap G-11; gap review M-7, E-5, E-6 |
+| OVL-21, OVL-44 | probes; diagnostics; inventory AO-1, AO-7, gap G-2; gap review E-1, E-7 |
+| OVL-39 | probes; gap review S-1 |
 | OVL-22 to OVL-24 | grid viability; inventory VI-1 to VI-9 |
 | OVL-25 | grid templates; edg-overload (the argument loop of the comparison); inventory RK-1, RK-2, RK-12 to RK-14, RK-17, AF-3 |
-| OVL-26 to OVL-33 | grids templates, operators; edg-overload (the tie-breakers after the argument comparison); inventory RK-3 to RK-10, RK-16, gaps G-4 to G-6, G-15 |
+| OVL-26 to OVL-33, OVL-41 | grids templates, operators, reference-kind; edg-overload (the tie-breakers after the argument comparison); inventory RK-3 to RK-10, RK-16, gaps G-4 to G-6, G-15; gap review M-9, O-1 to O-3, S-3 |
 | OVL-34 | probes; edg-overload (the best-match set); inventory RK-15, AF-2 |
 | OVL-35, OVL-36 | diagnostics; inventory AF-2, AF-5, AF-7 |
 | OVL-37 | diagnostics; inventory AF-1, AF-6, DE-1, VI-6 |
-| OVL-38 | diagnostics; inventory AF-4, gap G-8 |
+| OVL-38 | diagnostics; inventory AF-4, gap G-8; gap review E-4 |
 
 Inputs: edg-overload, clang-diag-sema.

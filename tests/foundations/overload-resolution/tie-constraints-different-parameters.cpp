@@ -1,4 +1,4 @@
-// tidal-rules: OVL-36 OVL-28
+// tidal-rules: OVL-36 OVL-41
 // tidal-expect: reject
 // tidal-expect-edg: accept
 // tidal-error-clang: call to .f. is ambiguous

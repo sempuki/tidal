@@ -16,6 +16,7 @@
   "two plain": "One f(int);\nTwo f(long);",
   "noexcept plain": "One f(int) noexcept;\nTwo f(long) noexcept;",
   "plain and template": "One f(int);\ntemplate <class T> Two f(T);",
-  "two templates": "template <class T> One f(T);\ntemplate <class T> Two f(T*);"
+  "two templates": "template <class T> One f(T);\ntemplate <class T> Two f(T*);",
+  "one template": "template <class T> One f(T);"
  }
 }

@@ -1,4 +1,4 @@
-// tidal-rules: OVL-14 OVL-35
+// tidal-rules: OVL-40 OVL-35
 // tidal-expect: reject
 // tidal-expect-clang: accept
 // tidal-error-gcc: could not convert

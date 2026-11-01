@@ -1,4 +1,4 @@
-// tidal-rules: OVL-14
+// tidal-rules: OVL-40
 // tidal-expect: accept
 // tidal-note: Direct-initialization of Target from Source takes the constructors of Target. The explicit conversion function makes the temporary that the copy constructor's parameter binds.
 struct Target {

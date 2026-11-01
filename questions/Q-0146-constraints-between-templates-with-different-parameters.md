@@ -1,7 +1,7 @@
 # Q-0146: Do constraints decide between two templates whose function parameters differ?
 
 **Status:** provisional
-**Affects:** OVL-28, `tests/foundations/overload-resolution/tie-constraints-different-parameters.cpp`
+**Affects:** OVL-41, `tests/foundations/overload-resolution/tie-constraints-different-parameters.cpp`
 
 ## Context
 

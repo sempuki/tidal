@@ -1,0 +1,23 @@
+{
+ "prelude": "struct ToInt { constexpr operator int() const { return 1; } };\n",
+ "template": "{prelude}void use() {{\n  {row} x = {{}};\n  x {col} ToInt{{}};\n}}",
+ "rows": {
+  "bool": "bool",
+  "char": "char",
+  "signed char": "signed char",
+  "unsigned char": "unsigned char",
+  "wchar_t": "wchar_t",
+  "char8_t": "char8_t",
+  "char16_t": "char16_t",
+  "short": "short",
+  "int": "int",
+  "unsigned long": "unsigned long"
+ },
+ "cols": {
+  "plus assign": "+=",
+  "remainder assign": "%=",
+  "and assign": "&=",
+  "or assign": "|=",
+  "shift assign": "<<="
+ }
+}

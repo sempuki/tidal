@@ -1,0 +1,15 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\n",
+ "template": "{prelude}{col}\n{row}",
+ "rows": {
+  "pointer to One(int)": "One (*p)(int) = &f<int>;",
+  "no target": "auto p = &f<int>;",
+  "decltype": "using P = decltype(&f<int>);"
+ },
+ "cols": {
+  "one template": "template <class T> One f(T);",
+  "two templates": "template <class T> One f(T);\ntemplate <class T> Two f(T*);",
+  "plain and template": "One f(int);\ntemplate <class T> Two f(T);",
+  "template of two parameters": "template <class T, class U> One f(T, U = U());"
+ }
+}

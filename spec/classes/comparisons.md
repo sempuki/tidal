@@ -33,7 +33,8 @@ defaulted `==` with it.
 The other comparison operators are spelled from `==` and `<=>`. An
 expression with `!=` or a relational operator also tries `==` or `<=>`,
 with the operands in either order, so a class need write only `==` and
-`<=>`.
+`<=>`. An expression with `<=>` also tries `<=>` with the operands
+reversed.
 A declared operator wins over a rewritten one, and an implementation
 should warn when the rewrites make a comparison ambiguous.
 :::
@@ -165,16 +166,17 @@ DCMP-5 deletes.
 
 :::{rule} DCMP-6
 :kind: required
-:tests: classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp
+:tests: classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp
 
-An expression with `==`, `!=`, `<`, `>`, `<=`, `>=` also considers these
-candidates:
+An expression with `==`, `!=`, `<`, `>`, `<=`, `>=`, or `<=>` also
+considers these candidates:
 
 - for `x != y`, the candidate `!(x == y)`,
 - for `x < y` and the other relational operators, `(x <=> y) < 0` and
   similar,
 - each of these candidates with the operands reversed, such as `y == x`
-  for `x == y`.
+  for `x == y`,
+- for `x <=> y`, the candidate `y <=> x` with the operands reversed.
 
 `<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
 before a rewritten one. If the scope of an `==` declares a matching
@@ -185,10 +187,12 @@ before a rewritten one. If the scope of an `==` declares a matching
 
 :::{rule} DCMP-12
 :kind: reject
-:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp
+:tests: classes/comparisons/ne-declared-blocks-reversed.cpp classes/comparisons/ne-needs-bool-eq.cpp classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp classes/comparisons/reversed-eq-needs-bool.cpp classes/comparisons/eq-cv-bool-result.cpp classes/comparisons/eq-reference-to-bool-result.cpp
 
-An `==` used to rewrite `!=` must return `bool`. A comparison that needs
-a candidate that DCMP-6 excludes is not valid.
+An `==` used to rewrite `!=` must return `bool`. A reversed `==` that wins
+for `==` must also return `bool`, which can be cv-qualified
+({question}`Q-0158`). A comparison that needs a candidate that DCMP-6
+excludes is not valid.
 :::
 
 ## Implementation Requirements
@@ -238,14 +242,21 @@ bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 63 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 67 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
 - DCMP-8: Clang rejects the definition. GCC and EDG accept it
   ({question}`Q-0062`).
 - DCMP-7: Clang and GCC warn under `-Wall`.
+- DCMP-12: a reversed or rewritten `==` that returns `bool&` or
+  `bool&&` is rejected by Clang and EDG. GCC accepts it
+  ({question}`Q-0158`). Every compiler accepts a cv-qualified `bool`.
+- DCMP-6, DCMP-12: the reversed `<=>` candidate and the `bool` result of
+  a reversed `==` come from items M-1 and M-3 of the gap review
+  `reports/review/2026-10-31-gap-review-overload-resolution.md`, and from
+  probes.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl, edg-overload.

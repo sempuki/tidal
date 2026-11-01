@@ -1,4 +1,4 @@
-// tidal-rules: OVL-21
+// tidal-rules: OVL-39
 // tidal-expect: accept
 // tidal-note: Each g takes a pointer to function. Only the pairing of g(void (*)(int)) with f(int) matches, so that g wins.
 template <class T, class U> constexpr bool same = false;

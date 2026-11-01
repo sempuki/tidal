@@ -1,0 +1,16 @@
+{
+ "prelude": "using F = int();\ntemplate <int N> constexpr int pick() { return N; }\n",
+ "template": "{prelude}struct Source {{\n#define R 1\n{a}\n#undef R\n#define R 2\n{b}\n#undef R\n}};\n{row}",
+ "rows": {
+  "lref target → first": "constexpr F& r = Source{};\nstatic_assert(r() == 1);",
+  "lref target → second": "constexpr F& r = Source{};\nstatic_assert(r() == 2);",
+  "rref target → first": "constexpr F&& r = Source{};\nstatic_assert(r() == 1);",
+  "rref target → second": "constexpr F&& r = Source{};\nstatic_assert(r() == 2);"
+ },
+ "pairs": {
+  "plain lref": "constexpr operator F&() const { return pick<R>; }",
+  "plain rref": "constexpr operator F&&() const { return pick<R>; }",
+  "template lref": "template <class T> constexpr operator T&() const { return pick<R>; }",
+  "template rref": "template <class T> constexpr operator T&&() const { return pick<R>; }"
+ }
+}

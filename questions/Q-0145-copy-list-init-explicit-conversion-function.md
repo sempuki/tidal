@@ -1,7 +1,7 @@
 # Q-0145: Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter?
 
 **Status:** provisional
-**Affects:** OVL-14, `tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`
+**Affects:** OVL-40, `tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`
 
 ## Context
 

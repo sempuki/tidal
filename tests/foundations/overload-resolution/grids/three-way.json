@@ -1,0 +1,22 @@
+{
+ "prelude": "namespace std {\nstruct strong_ordering { signed char v; static const strong_ordering less, equal, equivalent, greater; };\ninline constexpr strong_ordering strong_ordering::less{-1};\ninline constexpr strong_ordering strong_ordering::equal{0};\ninline constexpr strong_ordering strong_ordering::equivalent{0};\ninline constexpr strong_ordering strong_ordering::greater{1};\nstruct partial_ordering { signed char v; static const partial_ordering less, equivalent, greater, unordered; };\ninline constexpr partial_ordering partial_ordering::less{-1};\ninline constexpr partial_ordering partial_ordering::equivalent{0};\ninline constexpr partial_ordering partial_ordering::greater{1};\ninline constexpr partial_ordering partial_ordering::unordered{2};\n}\nstruct To_bool { operator bool() const; };\nstruct To_char { operator char() const; };\nstruct To_short { operator short() const; };\nstruct To_int { operator int() const; };\nstruct To_unsigned { operator unsigned() const; };\nstruct To_long { operator long() const; };\nstruct To_double { operator double() const; };\n",
+ "template": "{prelude}auto r = {row}{{}} <=> {col}{{}};",
+ "rows": {
+  "To bool": "To_bool",
+  "To char": "To_char",
+  "To short": "To_short",
+  "To int": "To_int",
+  "To unsigned": "To_unsigned",
+  "To long": "To_long",
+  "To double": "To_double"
+ },
+ "cols": {
+  "To bool": "To_bool",
+  "To char": "To_char",
+  "To short": "To_short",
+  "To int": "To_int",
+  "To unsigned": "To_unsigned",
+  "To long": "To_long",
+  "To double": "To_double"
+ }
+}
