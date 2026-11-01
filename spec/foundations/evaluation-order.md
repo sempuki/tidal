@@ -187,7 +187,11 @@ base()[index()];      // base() is called before index()
 int i = 1;
 i = i++ + 1;          // fine: i is 2
 i++ + i++;            // undefined
+i + i++;              // undefined: a read and a write
 pair(i++, i++);       // fine: the order is unspecified
+
+struct Flags { unsigned on : 1, dirty : 1; } f;
+(f.on = 1) + (f.dirty = 1);   // undefined: one memory location
 ```
 
 ## Evidence
@@ -195,13 +199,21 @@ pair(i++, i++);       // fine: the order is unspecified
 All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
-- SEQ-1: Clang 22 evaluates function arguments from left to right and
-  GCC 16 from right to left, at `-O0` and `-O2`. Clang evaluates an
-  explicit argument before a default argument, and GCC the default
-  first.
-- SEQ-8: for a member `operator-`, Clang 22 evaluates the left operand
-  first and GCC 16 the right. For a reversed `==` candidate, Clang
-  evaluates the right operand first and GCC the left.
+- SEQ-1 and SEQ-8: the table gives the order that each compiler takes.
+  Each operand is a call that records its turn. The run-time results are
+  the same at `-O0` and `-O2`. EDG 7.0 generates no code, so its column
+  comes from constant evaluation only.
+
+  | Construct | Clang 18, Clang 22 | GCC 14, GCC 16 at run time | GCC in constant evaluation | EDG 7.0 |
+  |---|---|---|---|---|
+  | `f(a(), b())` (SEQ-1) | Left to right | Right to left | Left to right | Left to right |
+  | An explicit argument and a default argument (SEQ-1) | The explicit argument first | The default argument first | Not observed | Not observed |
+  | Built-in `+`, `*`, `<`, `&` (SEQ-8) | The left operand first | The left operand first | The left operand first | The left operand first |
+  | A member `operator-` (SEQ-8) | The left operand first | The right operand first | The left operand first | The left operand first |
+  | A reversed `==` candidate, `x == y` called as `y == x` (SEQ-8) | `y` first | `x` first | `y` first | `x` first |
+
+  Clang gives the same order at run time and in constant evaluation. The
+  built-in operators in constant evaluation were checked with `+` only.
 - SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
   "operation may be undefined". The test makes these warnings errors. No
   compiler warns about two bit-fields of one memory location or two

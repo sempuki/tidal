@@ -39,8 +39,11 @@ for most classes. Declaring any constructor says that default
 construction needs thought, so the declaration removes the implicit
 default constructor. When a part cannot be default-constructed or
 destroyed, the synthesized function is deleted and only a use fails. A
-`const` object with no initializer needs a class that gives every part a
-value, because nothing can give the object a value later. The `noexcept`
+`const` object must state its value where the object is defined,
+because nothing can change the object later. So a `const` object with
+no initializer needs a class that gives every part a value. The zero
+that static storage gets first ({rule}`STO-3`) does not count, so
+CTOR-4 holds at namespace scope too. The `noexcept`
 of a destructor follows from the parts of the class. A synthesized
 function that does nothing beyond the parts' own trivial work is
 *trivial*, and some rules permit more for a trivial function, such as a

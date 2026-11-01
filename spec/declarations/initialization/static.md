@@ -47,7 +47,7 @@ wait for its first use.
 
 :::{rule} SINIT-1
 :kind: required
-:tests: declarations/initialization/static/constant-before-dynamic.cpp declarations/initialization/static/constexpr-constant-initialized.cpp
+:tests: declarations/initialization/static/constant-before-dynamic.cpp declarations/initialization/static/constexpr-constant-initialized.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp
 
 A variable with static or thread storage is *constant-initialized* if
 its initializer is a constant expression. Such a variable has its value
@@ -63,8 +63,10 @@ Other namespace-scope variables are *dynamically initialized*. In one
 definitions. An `inline` variable is ordered only after an earlier
 `inline` variable that comes first in every translation unit that
 defines both. The order of an `inline` variable with other variables is
-unspecified (SINIT-3). Before its initializer runs, a variable holds
-zero (STO-3).
+unspecified (SINIT-3). Before its initializer runs, a variable of
+scalar type holds zero (STO-3). A member of a class object has no value
+until the initialization of the object gives the member one
+({rule}`OBJ-2`, {question}`Q-0175`).
 :::
 
 ## Implementation Requirements
@@ -123,11 +125,24 @@ int read_y();
 int first = read_y();       // 0: y is not initialized yet
 int y = source;             // dynamic initialization
 int read_y() { return y; }
+
+struct Point { int x; Point() : x(5) {} };
+int read_p();
+int early_x = read_p();     // undefined: p.x has no value yet
+Point p;
+int read_p() { return p.x; }
+
+constexpr int mode() {
+  if consteval { return 1; } else { return 2; }
+}
+int offset = 0;
+int fixed = mode();         // 1: constant-initialized
+int moved = mode() + offset;  // 2: offset is not a constant
 ```
 
 ## Evidence
 
-All eight compilers agree on all 11 tests. The results are in
+All eight compilers agree on all 12 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
@@ -141,6 +156,18 @@ All eight compilers agree on all 11 tests. The results are in
 - **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.
+
+- **SINIT-2, class members.** A dynamic initializer that reads a member
+  of a later class-type variable gets 0 at run time with Clang 22 and
+  GCC 16, at `-O0` and `-O2`, and with the address and undefined
+  behavior sanitizers. OBJ-2 allows this result. In constant
+  evaluation, every compiler rejects the same read of a member before
+  its constructor runs ({question}`Q-0175`).
+- **SINIT-1 and `if consteval`.** The meaning of an initializer that
+  contains `if consteval` depends on its constant evaluation. If the
+  evaluation succeeds, the constant branch gives the value. If the
+  evaluation fails, the initializer runs at run time and takes the other
+  branch. With every compiler, `fixed` is 1 and `moved` is 2.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

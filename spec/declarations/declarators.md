@@ -83,7 +83,9 @@ members, and for nothing else.
 `const` is a promise that an object does not change after
 initialization. Three rules keep the promise:
 
-- a `const` scalar must get its value when it is defined,
+- a `const` scalar must state its value in its definition, also at
+  namespace scope, where the storage is zero before any initializer
+  runs,
 - no assignment goes through a `const` path,
 - a conversion can add `const` to what a pointer reaches but never
   remove it.

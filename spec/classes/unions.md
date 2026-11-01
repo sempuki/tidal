@@ -154,7 +154,7 @@ union must then declare that function itself.
 
 :::{rule} UNI-4
 :kind: required
-:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp
+:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp classes/unions/default-init-no-active-member.cpp
 
 A union is initialized as one of its members:
 
@@ -164,8 +164,13 @@ A union is initialized as one of its members:
   other initializer.
 - Value initialization `{}` initializes the first member to zero, if no
   member has a default member initializer.
+- If no member has a default member initializer,
+  {term}`default initialization` initializes no member. The union then
+  has no active member until an assignment makes one active (UNI-5).
 
-The initialized member is then active.
+The initialized member is then active. Default initialization also
+applies to a union member that a constructor does not initialize
+({rule}`INIT-9`).
 :::
 
 :::{rule} UNI-8
@@ -302,7 +307,7 @@ UNI-10 describes.
 
 :::{rule} UNI-5
 :kind: required
-:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp
+:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
@@ -332,7 +337,7 @@ through the other struct. The read gives the stored value.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp
+:tests: classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. A compound assignment to a member that is not active reads
@@ -399,8 +404,8 @@ Pixel p{31, 70, 0};              // 70 is reduced modulo 64
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 101 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 104 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0057`).

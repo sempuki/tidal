@@ -15,7 +15,7 @@ conversions, copy and move.
 ## Principles
 
 :::{principle} VOL-P1
-:rules: VOL-1 VOL-8 VOL-6
+:rules: VOL-1 VOL-8 VOL-6 VOL-12
 
 `volatile` marks an object whose accesses the program can observe, so
 each read and each write through a volatile path is performed as
@@ -143,6 +143,17 @@ volatile` variable at namespace scope has external linkage, so all
 translation units share the variable.
 :::
 
+:::{rule} VOL-12
+:kind: required
+:tests: declarations/volatile/initialization-write.cpp
+
+An initializer that gives a volatile object its value at run time writes
+the object. The write is an observable effect ({rule}`TR-7`).
+Zero-initialization
+({rule}`STO-3`) and constant initialization ({rule}`SINIT-1`) happen
+before the program runs and are not accesses ({question}`Q-0176`).
+:::
+
 ## Undefined Behavior
 
 :::{rule} VOL-6
@@ -189,11 +200,17 @@ void send(volatile Uart& u, unsigned c) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 32
-of 33 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 33
+of 34 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
+- VOL-12: at `-O2`, Clang 22 and GCC 16 keep the store of an initializer
+  to a volatile local that the program never reads. The store of a
+  dynamic initializer of a volatile namespace-scope variable is also
+  kept. A constant or zero initial value is in the program's data, with
+  no store. An initializer of a volatile class object can be written
+  with one wide store for several members ({question}`Q-0176`).
 - VOL-2: Clang rejects an in-class initializer for a `static const
   volatile` member. GCC and EDG accept the initializer
   ({question}`Q-0080`).

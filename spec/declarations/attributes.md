@@ -20,7 +20,7 @@ This page covers these standard attributes:
 ## Principles
 
 :::{principle} ATTR-P1
-:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13 ATTR-18
+:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13 ATTR-18 ATTR-19
 
 An attribute attaches information to a declaration, a statement, or a
 type, in a form that an implementation can skip. The double brackets
@@ -84,7 +84,7 @@ ignores the attributes stays valid.
 
 An attribute specifier comes before the declaration or statement that it
 applies to. An attribute specifier can also come after the name of an
-entity in a {term}`declarator`.
+entity in a {term}`declarator`. ATTR-19 lists every position.
 
 ## Constraints
 
@@ -181,6 +181,31 @@ specifier, so each of those attributes must not have its own namespace.
 
 In a pointer declarator, an attribute specifier comes after the
 cv-qualifiers of the `*` ({question}`Q-0123`).
+:::
+
+:::{rule} ATTR-19
+:kind: required
+:tests: declarations/attributes/attribute-positions.cpp declarations/attributes/attribute-positions-base-and-new-bound.cpp
+
+An attribute specifier can be written in each position in the table.
+The specifier applies to the entity in the last column.
+
+| Position | Example | Applies to |
+|---|---|---|
+| Before a declaration | `[[a]] int x;` | Each entity that the declaration declares |
+| After the name in a declarator | `int x [[a]];` | The entity with that name |
+| After the type specifiers of a declaration | `int [[a]] x;` | The type |
+| After `*` and its cv-qualifiers, or after `&` | `int* [[a]] p;` | The pointer or reference type |
+| After an array bound in a declarator | `int list[3] [[a]];` | The array type |
+| After the parameter list of a function | `void f() [[a]];` | The function type |
+| Before a parameter | `void f([[a]] int x);` | The parameter |
+| After `struct`, `class`, `union`, or `enum` | `struct [[a]] S {};` | The class or enumeration |
+| After the name of an enumerator | `enum E { red [[a]] };` | The enumerator |
+| After `namespace` | `namespace [[a]] tools {}` | The namespace |
+| After the name in an alias declaration | `using Count [[a]] = int;` | The alias |
+| Before a base class | `struct D : [[a]] Base {};` | The base class |
+| After the type in a `new` expression, or after its array bound | `new int [[a]]` | The type |
+| Before a statement or a label | `[[a]] return 0;` | The statement or the label |
 :::
 
 ## Runtime Behavior
@@ -336,8 +361,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 70 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 72 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -361,6 +386,11 @@ of 70 tests. EDG skips the tests that use `-Werror`.
   {term}`constant evaluation` ("assumption evaluated to false", "failed
   'assume' attribute assumption", "assumption failed"). Clang 18 does
   not implement `assume` ({question}`Q-0020`).
+- ATTR-19: every compiler accepts an attribute with an unknown namespace
+  in each position of the table, and warns that the attribute is
+  ignored. GCC 14 rejects the position before a base class and the
+  position after the array bound of a `new` expression. GCC 16 accepts
+  both ({question}`Q-0177`).
 - Divergence ATTR-D1 is about `[[noreturn]] int x;`. GCC accepts it with
   a warning. Clang and EDG reject it. The provisional answer is that the
   declaration is rejected ({question}`Q-0021`).

@@ -357,7 +357,7 @@ over initialization apply ({rule}`JMP-6`).
 
 :::{rule} IF-18
 :kind: required
-:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp
+:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp
 
 The `if consteval` form executes its then branch during constant
 evaluation and its else branch at other times. The `if !consteval` form
@@ -396,4 +396,4 @@ static_assert(where() == 1);   // at run time, where() returns 2
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on all 65 tests. The results are in `tests/RESULTS.md`.
+agree on all 66 tests. The results are in `tests/RESULTS.md`.

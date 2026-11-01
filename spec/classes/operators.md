@@ -242,7 +242,7 @@ have two different suffixes.
 
 :::{rule} OPR-7
 :kind: required
-:tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp
+:tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp classes/operators/subscript-multi-order.cpp
 
 An expression that selects an operator function calls the operator
 function with the operands as arguments. Both operands of an overloaded
@@ -254,6 +254,9 @@ operands are evaluated in the order of the built-in operator:
 - `[]`,
 - `->*`,
 - `,`.
+
+In `a[x, y]`, `a` is evaluated first, then the arguments from left to
+right. Each argument is evaluated completely before the next one starts.
 :::
 
 ## Implementation Requirements
@@ -299,12 +302,17 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 94
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 95
+of 96 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).
 - OPR-9: Clang and GCC warn without extra flags.
+- OPR-7: for `a[x, y]`, every compiler evaluates `a` first and then the
+  arguments from left to right, at run time and in constant evaluation.
+  At run time, GCC 14 and GCC 16 evaluate the arguments of the call
+  `a.operator[](x, y)` from right to left, and those of `a[x, y]` from
+  left to right.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-overload, edg-class-decl.
