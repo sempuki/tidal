@@ -6,7 +6,8 @@ leave it. The specifier is part of the function type. This page covers:
 - the forms of the specifier,
 - its place in function and pointer types,
 - overriding,
-- the functions that are `noexcept` without the keyword.
+- the functions that are `noexcept` without the keyword,
+- operands that depend on template parameters.
 
 The rules for exception handling give the behavior when an exception
 does leave a `noexcept` function ({rule}`THR-9`). DCL-14 and CONV-10
@@ -65,6 +66,18 @@ functions that it calls.
 An implementation can accept the old `throw()` form as `noexcept`. An
 operand that refers to the function that the specifier qualifies is a
 cycle that an implementation need not detect.
+:::
+
+:::{principle} EXS-P5
+:rules: EXS-9 EXS-10
+
+A template can make the specifier depend on its template arguments, so
+that each {term}`specialization` makes its own promise. A copy of a
+container, for example, can be non-throwing exactly when the copy of an
+element is. The implementation works out the specifier of a
+specialization only when a use needs it. So a class template can
+declare a member whose operand is not valid for some arguments, and the
+program stays valid while no use needs that specifier.
 :::
 
 ## Syntax
@@ -157,6 +170,26 @@ make a function non-throwing, and a lambda is non-throwing only with
 `noexcept`.
 :::
 
+:::{rule} EXS-9
+:kind: required
+:tests: declarations/exception-specifications/dependent-operand-per-specialization.cpp declarations/exception-specifications/dependent-operand-not-needed.cpp
+
+In a template, the operand of `noexcept` can depend on the template
+parameters. Each {term}`specialization` gets its specifier from the
+operand with its own arguments ({principle}`TSP-P1`). The operand is
+evaluated only when a use needs the specifier, such as a call, an
+address, or the `noexcept` operator.
+:::
+
+:::{rule} EXS-10
+:kind: reject
+:tests: declarations/exception-specifications/dependent-operand-needed-by-call.cpp declarations/exception-specifications/dependent-operand-needed-by-noexcept.cpp
+
+When a use needs the specifier of a specialization (EXS-9), the operand
+with the arguments of the specialization must be valid. The operand
+must also obey EXS-7.
+:::
+
 ## Implementation Requirements
 
 :::{rule} EXS-5
@@ -196,8 +229,8 @@ struct File : Base { void close() override; };  // rejected: throwing override
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 36 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 34
+of 40 tests.
 
 - EXS-1: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
@@ -207,6 +240,11 @@ of 36 tests.
   specifier as potentially throwing. EDG treats a defaulted `==` as
   non-throwing even if a member `==` is potentially throwing
   ({question}`Q-0094`, {question}`Q-0095`).
+- EXS-9 and EXS-10: every compiler accepts a specialization whose
+  operand is not valid while no use needs the specifier. Every compiler
+  rejects a call or a `noexcept` operator that needs the specifier. Tidal
+  does not yet say when the body of a specialization is checked
+  *(templates referenced)*.
 - EXS-6: Clang rejects an operand that depends on the function itself.
   GCC and EDG accept the operand ({question}`Q-0079`).
 

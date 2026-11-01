@@ -193,8 +193,10 @@ on `consteval`.
 :kind: reject
 :tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp
 
-A `constinit` variable must have a {term}`constant initializer`.
-`constinit` does not make the variable `const`, so the program can
+A `constinit` variable must have a {term}`constant initializer`. For a
+variable with no initializer, {rule}`CE-24` and {rule}`CE-21` say when
+the default initialization is one. `constinit` does not make the
+variable `const`, so the program can
 change the variable. `constinit` does not require a `constexpr`
 destructor.
 :::

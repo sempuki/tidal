@@ -38,6 +38,7 @@ knows:
   evaluation,
 - variables whose values are fixed at translation time because they
   have a {term}`constant initializer`,
+- `const` temporaries that such a variable keeps alive,
 - objects that the evaluation itself created.
 
 The evaluation can change only its own objects, because anything else
@@ -49,11 +50,11 @@ every part.
 :::
 
 :::{principle} CE-P3
-:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27
+:exceptions: CE-26
 
-An evaluation must give one answer that every implementation can agree
-on. So an evaluation rejects every operation whose result depends on the
-machine or on an order the language does not fix:
+An evaluation must not depend on the machine or on where objects are
+placed in memory. So an evaluation rejects these operations:
 
 - reinterpreting a pointer,
 - reading a volatile object,
@@ -66,6 +67,13 @@ Copying an object reads each of its parts, so a copy of an object with
 a part that has no value is undefined too. An exception has no handler
 at translation time, so a `throw` that the evaluation reaches ends the
 evaluation.
+
+Where the language leaves an order of evaluation to the implementation,
+an evaluation picks an order, as a run does. The order of an evaluation
+need not match the order of a run. So two implementations can give
+different values to one constant, and so can one implementation at
+translation time and at run time. An implementation need not detect two
+unsequenced accesses to one object, which are undefined.
 :::
 
 :::{principle} CE-P4
@@ -125,14 +133,16 @@ During constant evaluation, the program can call only `constexpr` and
 
 :::{rule} CE-3
 :kind: reject
-:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp
+:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp
 
 Constant evaluation must not read the value of a variable that is not
 usable in constant expressions. A variable is usable if it is
 `constexpr`, or if it is a `const` variable of integer or enumeration
 type with a {term}`constant initializer` (CV-8). A `const volatile`
 variable is not usable. A function parameter is usable only during an
-evaluation that called the function.
+evaluation that called the function. A temporary that the initializer of
+a `constexpr` reference extends (CE-14) is usable if the type of the
+temporary is `const` ({question}`Q-0193`).
 :::
 
 :::{rule} CE-4
@@ -186,7 +196,8 @@ throw-expression on a path that the evaluation does not take is valid.
 :tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
-behavior. Each rule of class `undefined` gives such an operation. The
+behavior. Each rule of class `undefined` gives such an operation. CE-26
+gives the operations that an implementation need not detect. The
 Evidence segment lists the `undefined` rules and the compilers that
 reject each rule during constant evaluation.
 :::
@@ -248,14 +259,14 @@ the choice is unspecified.
 
 :::{rule} CE-14
 :kind: reject
-:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp expressions/constant-expressions/result-refers-to-static-temporary.cpp
+:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp expressions/constant-expressions/result-refers-to-static-temporary.cpp expressions/constant-expressions/extended-temporary-through-cast.cpp expressions/constant-expressions/extended-temporary-static-local.cpp expressions/constant-expressions/extended-temporary-member.cpp expressions/constant-expressions/extended-temporary-nested.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp
 
 A pointer or reference that is the value of a constant expression must
 not refer to an object with automatic storage duration or to a temporary
-object. It can refer to an object with static storage duration. A
-temporary bound to a reference at namespace scope lives until the
-program ends (REF-4) and counts as static, so such a reference can be
-a constant.
+object. The pointer or reference can refer to an object with static
+storage duration. A temporary that a reference with static storage
+duration extends, by any form of binding in {rule}`REF-4`, counts as
+static ({question}`Q-0193`).
 :::
 
 :::{rule} CE-15
@@ -312,6 +323,9 @@ value to each of its scalar parts. These conditions apply:
   member is valid ({question}`Q-0117`).
 - The result of a {term}`constant initializer` must meet the same
   condition.
+- For a variable with static storage, the zero that {rule}`STO-3`
+  writes first does not count. A part that the initialization leaves
+  without a value has no value.
 :::
 
 :::{rule} CE-22
@@ -343,13 +357,15 @@ A *literal type* is one of these types:
 
 :::{rule} CE-24
 :kind: required
-:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp
+:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-scalar.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp
 
 A *constant initializer* is an initializer whose whole initialization of
 the variable, with each conversion and constructor call in it, is a
 constant expression. For a variable with no initializer, the default
 initialization of the variable is the initialization that this rule and
-CE-21 judge.
+CE-21 judge. A default initialization that calls no constructor, or only
+a {term}`trivial` one, leaves the zero of {rule}`STO-3` as a constant
+initializer ({question}`Q-0192`).
 :::
 
 :::{rule} CE-18
@@ -373,6 +389,25 @@ number of steps in one constant evaluation. The implementation rejects
 an evaluation that exceeds a limit. The limits are
 implementation-defined. Every matrix compiler accepts a recursion depth
 of 400, and rejects a depth of 100000 and a loop of 100000000 steps.
+:::
+
+:::{rule} CE-26
+:kind: no-diagnostic
+:tests: expressions/constant-expressions/unsequenced-not-detected.cpp
+
+Constant evaluation must not evaluate two {term}`unsequenced` accesses
+to one memory location where one access writes ({rule}`SEQ-4`,
+{rule}`MUL-14`). An implementation need not diagnose such a pair.
+:::
+
+:::{rule} CE-27
+:kind: unspecified
+:tests: expressions/constant-expressions/order-may-differ-from-run.cpp
+
+Where the order of evaluation is unspecified ({rule}`SEQ-1`,
+{rule}`SEQ-8`, {rule}`ASN-11`), constant evaluation also uses an
+unspecified order. The order need not be the one that the same
+implementation uses at run time for the same expression.
 :::
 
 ## Examples
@@ -408,12 +443,14 @@ constexpr const int& t = 4;           // fine: the temporary is static
 void use() {
   constexpr const int& u = 4;         // rejected: the temporary is local
 }
+constexpr int&& m = 4;                // fine: the temporary is static
+static_assert(m == 4);                // rejected: the temporary is not const
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 68
-of 74 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 85 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -438,6 +475,26 @@ of 74 tests.
 - CE-22: Clang and EDG reject a copy of an object that has a part with
   no value, and name the part in a note. GCC 14 and 16 accept the copy
   ({question}`Q-0115`).
+- CE-3 and CE-14: the compilers split on temporaries that a namespace
+  `constexpr` reference extends ({question}`Q-0193`).
+  - EDG rejects the reference when the temporary is extended through a
+    member access or through a reference member of a braced aggregate.
+    Clang and GCC accept both references.
+  - GCC rejects a read of a `const` temporary of class type. Clang and
+    EDG accept the read. Every compiler accepts the read of a `const`
+    scalar temporary and rejects the read of a temporary that is not
+    `const`.
+- CE-24: every compiler accepts `constinit` on a scalar or an array of
+  scalars with no initializer. For a class with a trivial default
+  constructor, GCC and EDG accept it, and Clang rejects it
+  ({question}`Q-0192`).
+- CE-26: all eight compilers accept constant evaluation of
+  `i++ + i++`, `i + i++`, and `i++ * i`. CE-26 is class `no-diagnostic`
+  because no compiler detects the pair. So the table below shows "no
+  test" for SEQ-4 and MUL-14.
+- CE-27: Clang and EDG evaluate the arguments of a call left to right in
+  constant evaluation. GCC also evaluates them left to right in constant
+  evaluation, and right to left at run time. CE-27 allows both results.
 - CE-23: Clang and GCC reject a `constexpr` variable of a type that is
   not literal and name the condition that fails. EDG rejects the same
   programs, reporting the call of a destructor that is not `constexpr`

@@ -27,7 +27,7 @@ happens.
 :::
 
 :::{principle} LAM-P2
-:rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-18 LAM-24
+:rules: LAM-5 LAM-7 LAM-8 LAM-4 LAM-28 LAM-18 LAM-24
 
 The closure reaches the automatic variables of the enclosing function
 through its captures.
@@ -40,9 +40,10 @@ through its captures.
 | `this` | A pointer |
 | `*this` | A copy of the object |
 
-The captures exist before the call operator is declared, so the
-parameter list and return type of the call operator can see the
-captures.
+The evaluation of the lambda expression initializes the captures. The
+explicit captures go in the order of the capture list. The captures
+exist before the call operator is declared, so the parameter list and
+return type of the call operator can see the captures.
 :::
 
 :::{principle} LAM-P3
@@ -175,13 +176,16 @@ A capture list must obey these rules:
 
 :::{rule} LAM-7
 :kind: required
-:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
+:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
 
 An init capture `[x = e]` declares a new member `x` that `e`
 initializes, and `[&r = v]` declares a reference to `v`. These rules
 apply:
 
-- Init captures are initialized in the order they are written.
+- Init captures are initialized in order with the other explicit
+  captures (LAM-28).
+- The temporaries of the initializer end with the full expression that
+  contains the lambda expression ({rule}`VC-9`).
 - An init capture by reference that binds to a temporary makes the
   temporary live as long as the closure object.
 - A structured binding can be captured.
@@ -338,6 +342,15 @@ these:
 - the object that the reference refers to, for a reference.
 :::
 
+:::{rule} LAM-28
+:kind: required
+:tests: expressions/lambdas/explicit-capture-order.cpp
+
+The explicit captures by copy and the init captures are initialized in
+the order of the capture list. LAM-20 gives the order of the implicit
+captures.
+:::
+
 ## Undefined Behavior
 
 :::{rule} LAM-19
@@ -353,13 +366,15 @@ is undefined.
 
 :::{rule} LAM-20
 :kind: unspecified
-:tests: expressions/lambdas/closure-size-unspecified.cpp
+:tests: expressions/lambdas/closure-size-unspecified.cpp expressions/lambdas/implicit-capture-order.cpp
 
 These properties of a closure type are unspecified:
 
 - the order of its members,
 - its size,
-- whether a capture by reference adds a member.
+- whether a capture by reference adds a member,
+- the order in which the implicit captures are initialized, among
+  themselves and relative to the explicit captures.
 :::
 
 ## Recommended Practice
@@ -391,13 +406,16 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 56
-of 58 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 60 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
 - LAM-13 and LAM-16: all seven compilers accept static lambdas and
   explicit object parameters in C++23 mode.
+- LAM-20: every compiler initializes the explicit captures first. The
+  implicit captures follow, in the order of their first use in the body.
+  LAM-20 allows this order.
 - LAM-18: GCC 16 and EDG find the capture in the trailing return type.
   Clang and GCC 14 find the outer variable ({question}`Q-0092`).
 

@@ -13,11 +13,12 @@ This page covers:
 - the types and values of literals,
 - the meaning of `this`,
 - the value category of names,
-- qualified names.
+- qualified names,
+- fold expressions.
 
-Lambda expressions, fold expressions, and requires expressions are
-primary expressions too. Lambdas have their own page. Fold and requires
-expressions belong with templates *(templates referenced)*.
+Lambda expressions and requires expressions are primary expressions too.
+Lambdas have their own page. Requires expressions belong with templates
+*(templates referenced)*.
 
 Depends on: value categories, standard conversions.
 
@@ -90,12 +91,41 @@ implementation-defined. The implementation-defined parts are these:
 An implementation should warn where such a literal is likely a mistake.
 :::
 
+:::{principle} PRIM-P6
+:rules: PRIM-27 PRIM-28 PRIM-29
+
+A fold expression applies one binary operator across the elements of a
+pack ({term}`template parameter pack`). The fold stands for the
+expression that a program would write out by hand. The side of the
+`...` sets how the parentheses nest. For a pack `p` with the elements
+`p1`, `p2`, and `p3`:
+
+```text
+(p - ...)        p1 - (p2 - p3)            right fold
+(... - p)        (p1 - p2) - p3            left fold
+(p - ... - 10)   p1 - (p2 - (p3 - 10))     right fold with a last operand
+(10 - ... - p)   ((10 - p1) - p2) - p3     left fold with a first operand
+```
+
+The written-out expression follows the rules of its operator, also for
+the order of evaluation. A fold over `&&` or `||` stops as early as the
+written-out expression does. An empty pack has a value only where one
+value is the obvious answer, so a fold of an empty pack needs `&&`,
+`||`, the comma, or an extra operand.
+:::
+
 ## Syntax
 
 ```{eval-rst}
 .. productionlist:: tidal
    primary: `literal` | "this" | "(" `expression` ")" | `id_expression`
-          : | `lambda_expr`
+          : | `lambda_expr` | `fold_expr`
+   fold_expr: "(" `cast_expr` `fold_op` "..." ")"
+            : | "(" "..." `fold_op` `cast_expr` ")"
+            : | "(" `cast_expr` `fold_op` "..." `fold_op` `cast_expr` ")"
+   fold_op: "+" | "-" | "*" | "/" | "%" | "^" | "&" | "|" | "<<" | ">>"
+          : | "+=" | "-=" | "*=" | "/=" | "%=" | "^=" | "&=" | "|=" | "<<=" | ">>=" | "="
+          : | "==" | "!=" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "," | ".*" | "->*"
    id_expression: `unqualified_id` | `qualified_name`
    unqualified_id: `identifier` | "~" `class_name`
                  : | `operator_function_id` | `literal_operator_id`
@@ -400,6 +430,45 @@ An expression in parentheses has the same type, value, and value
 category as the expression.
 :::
 
+:::{rule} PRIM-27
+:kind: required
+:tests: expressions/primary/fold-expansion.cpp
+
+A fold expression stands for an expression with one copy of the pack
+operand for each element, in the order of the pack. A right fold, with
+`...` after the pack operand, nests to the right. A left fold nests to
+the left, and an extra operand goes at the outer end.
+:::
+
+:::{rule} PRIM-28
+:kind: required
+:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-order.cpp
+
+A fold expression is evaluated as the expression that PRIM-27 gives, so
+the rules of its operator give the order of evaluation ({rule}`LOG-5`,
+{rule}`COMMA-1`, {rule}`SEQ-8`). If the pack is empty, the fold has
+these values:
+
+- `true` for `&&`, and `false` for `||`,
+- a `void` expression for the comma,
+- the extra operand, if the fold has one.
+:::
+
+:::{rule} PRIM-29
+:kind: reject
+:tests: expressions/primary/fold-empty-pack.cpp expressions/primary/fold-operand-binary.cpp expressions/primary/fold-mismatched-operators.cpp expressions/primary/fold-two-packs.cpp expressions/primary/fold-no-pack.cpp expressions/primary/fold-without-parentheses.cpp expressions/primary/fold-three-way-operator.cpp
+
+A fold expression must obey these rules:
+
+- The fold is in parentheses, and its operator is a `fold_op`.
+- An operand is a cast expression. A binary operator in an operand needs
+  its own parentheses ({question}`Q-0194`).
+- Exactly one operand names a pack that is not yet expanded.
+- In a fold with an extra operand, the two operators are the same.
+- A fold without an extra operand over an operator other than `&&`,
+  `||`, and the comma has a pack with at least one element.
+:::
+
 ## Undefined Behavior
 
 :::{rule} PRIM-8
@@ -499,12 +568,18 @@ struct Counter {
   int n = 0;
   void bump() { ++n; }    // means ++this->n
 };
+
+template <class... T> int total(T... v) { return (0 + ... + v); }
+template <class... T> bool all(T... v) { return (v && ...); }
+total();                  // 0
+all();                    // true
+total(1, 2, 3);           // ((0 + 1) + 2) + 3
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 92
-of 96 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 105 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -513,6 +588,11 @@ of 96 tests.
   infinity. EDG rejects it ({question}`Q-0063`).
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
   rejects them. Support is conditional.
+- PRIM-29: Clang and GCC reject a fold whose operand holds a binary
+  operator without parentheses. EDG accepts it ({question}`Q-0194`).
+- PRIM-28: every compiler evaluates a comma fold from the first element
+  to the last, and stops a fold over `&&` or `||` at the first operand
+  that decides the result.
 - PRIM-9: Clang rejects a comparison of the addresses of two string
   literals during constant evaluation. GCC and EDG accept it and fold it
   ({question}`Q-0033`).
