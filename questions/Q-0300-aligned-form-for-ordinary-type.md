@@ -1,6 +1,6 @@
 # Q-0300: Does a `new` expression for a type of ordinary alignment fall back to an aligned allocation function?
 
-**Status:** settled
+**Status:** provisional
 **Affects:** NEW-29, NEW-30, `tests/expressions/new-delete/aligned-form-only-for-ordinary-type.cpp`
 
 ## Context
@@ -29,11 +29,11 @@ EDG says the function "cannot be called".
    the matrix supports it in C++23 mode. The inventory may describe a
    later version of the language (Q-0007).
 
-## Answer
+## Provisional answer
 
 No; there is no reverse step, and the program is rejected (NEW-30, option 1). Every implementation in the matrix behaves this way.
 
-Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. No older version differs.
+Reopened on 2026-11-01. The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as having the reverse step, so the program would be valid. A probe of 2026-11-01 with the implementation's own `<new>` header gives the same rejection on GCC 16 and Clang 22, so the self-declared `std::align_val_t` of the test is not the cause. The specification follows the matrix until the maintainer decides between the matrix and the review's reading.
 
 ## Opinions
 

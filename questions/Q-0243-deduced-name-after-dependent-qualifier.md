@@ -51,4 +51,8 @@ The question stays open under decision 0051 (2026-11-01). Clang 22 rejects the f
 
 ## Opinions
 
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 2. A writer weighs the change to the provisional answer with its rules and tests.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

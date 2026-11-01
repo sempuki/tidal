@@ -47,3 +47,7 @@ destroys the variable before the body during constant evaluation, and
 the matrix has no run-time result for EDG.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 1, the provisional answer. EDG's order in constant evaluation differs from it.
