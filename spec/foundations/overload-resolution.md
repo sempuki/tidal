@@ -73,7 +73,7 @@ The first step that tells them apart decides:
 viable functions F1 and F2
    |
    v
-1. arguments     no sequence of F1 is worse (ICS-21 to ICS-37),   OVL-25
+1. arguments     no sequence of F1 is worse (ICS-P5),             OVL-25
    |             and some sequence of F1 is better
    |  every sequence ties
    v
@@ -185,8 +185,8 @@ candidate.
 
 If a call by name finds members and appears in a non-static member
 function, `*this` is the implied object argument. `*this` meets the
-implicit object parameter, or the explicit object parameter
-({rule}`ICS-13`).
+implicit object parameter ({rule}`ICS-13`), or the explicit object
+parameter ({rule}`ICS-41`).
 :::
 
 :::{rule} OVL-3
@@ -492,7 +492,8 @@ member ({rule}`ICS-14`), take no part.
 :tests: foundations/overload-resolution/tie-conversion-result.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp
 
 In an initialization by a conversion function, the function whose result
-has the better sequence to the target wins ({rule}`ICS-37`). No other
+has the better sequence to the target wins ({rule}`ICS-37`, with
+{rule}`ICS-42` to {rule}`ICS-44` for results from different sources). No other
 tie-breaker comes before this one.
 :::
 
@@ -586,8 +587,9 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`, and
 :tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
 
 If no viable function is better than each of the others, the program
-is not valid. Such a use is ambiguous. {rule}`OPR-15` names the case
-for operators.
+is not valid. Such a use is ambiguous. Two rules name specific cases
+(decision 0042): {rule}`OPR-15` for operators, and {rule}`CTOR-25` for
+constructors.
 :::
 
 :::{rule} OVL-37

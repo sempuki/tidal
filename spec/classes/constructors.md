@@ -301,16 +301,31 @@ An implicit conversion uses at most one converting constructor.
 
 :::{rule} CTOR-25
 :kind: reject
-:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp
+:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp classes/constructors/ctor-no-match-list-ctor-not-viable.cpp classes/constructors/ctor-no-match-other-class.cpp classes/constructors/ctor-no-match-nested-braces.cpp classes/constructors/ctor-implicit-copy-move.cpp classes/constructors/ctor-ambiguous-braces.cpp classes/constructors/ctor-ambiguous-copy-list.cpp classes/constructors/ctor-ambiguous-argument-braces.cpp foundations/conversion-sequences/chosen-list-ambiguous.cpp
 
-An initialization of a class object by a constructor must find a
-constructor that accepts its arguments. A constructor accepts the
-arguments if their number fits its parameters ({rule}`PFX-5`) and each
-argument converts implicitly to its parameter type. If more than one
-constructor accepts them, overload resolution picks one ({rule}`OVL-34`). The rule is a
-specific case of {rule}`OVL-35`.
+An initialization of a class object by a constructor must find one best
+constructor for its arguments ({rule}`OVL-34`). A constructor accepts
+the arguments if these conditions are true:
 
-These rules name specific cases of this rule (decision 0042):
+- The number of arguments fits its parameters ({rule}`PFX-5`).
+- Each argument converts implicitly to its parameter type.
+
+The candidates include the implicit copy and move constructors. In list
+initialization, {rule}`ILC-2` and {rule}`ILC-3` first try the
+initializer-list constructors. If those rules choose none, the arguments are
+the elements of the list.
+
+The program is not valid in each of these cases:
+
+- No constructor accepts the arguments ({rule}`OVL-35`).
+- More than one constructor accepts the arguments, and none is best
+  ({rule}`OVL-36`).
+- A braced list initializes a parameter of class type, and no
+  constructor is best for the list. {rule}`ICS-19` gives the ambiguous
+  sequence, and {rule}`ICS-8` rejects the chosen function.
+
+CTOR-25 is a specific case of {rule}`OVL-35` and {rule}`OVL-36`. These
+rules name specific cases of CTOR-25 (decision 0042):
 
 - {rule}`CTOR-19`, an initialization that needs a default constructor
   that the class does not have,
@@ -347,7 +362,7 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/private-dtor-sizeof.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/deleted-dtor-decltype-comma-left.cpp classes/constructors/private-dtor-sizeof.cpp
 
 If the destructor of a class is deleted or not accessible, a program
 must not:
@@ -360,7 +375,8 @@ must not:
 
 The prvalue rule also covers the operands of `sizeof`, `noexcept`, and
 `typeid`. The one exception is a function call that is the operand of
-`decltype`, also in parentheses or as the right operand of a comma.
+`decltype`, also in parentheses or as the right operand of a comma. A
+prvalue of the class as the left operand of the comma is not exempt.
 
 A `new` expression for the class is valid, also for an array
 ({question}`Q-0082`). The implicit destructor is deleted if a base or
@@ -561,8 +577,8 @@ const Counter d{};               // valid
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 147
-of 157 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 156
+of 166 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -595,10 +611,17 @@ of 157 tests.
 - DTOR-3: all compilers reject each prvalue of the class, also where no
   temporary is made, as in `return S{};`. All reject the prvalue in the
   operand of `sizeof`, `noexcept`, and `typeid`, and in `decltype(S{})`.
-  All accept a function call as the operand of `decltype`.
+  All accept a function call as the operand of `decltype`, also as the
+  right operand of a comma. All reject the call as the left operand of
+  the comma.
 - CTOR-25: all compilers reject a direct initialization, a functional
   cast, a member initializer, and a `new` initializer whose arguments
-  fit no constructor.
+  fit no constructor. In list initialization, all compilers fall back to
+  the elements when no initializer-list constructor is viable. All
+  accept an element of the class, or of a class that converts to it,
+  through the implicit copy or move constructor. All reject a braced
+  list for which two constructors tie, also as the argument of another
+  constructor.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.
