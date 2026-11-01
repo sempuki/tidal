@@ -12,7 +12,7 @@ A label names a statement that `goto` can transfer control to.
 ## Principles
 
 :::{principle} JMP-P1
-:rules: JMP-1 JMP-2 JMP-5 JMP-7 JMP-8 JMP-14
+:rules: JMP-1 JMP-2 JMP-5 JMP-7 JMP-8 JMP-14 JMP-17
 
 A jump statement names a place and goes there, and the place must exist
 in the same function.
@@ -25,6 +25,16 @@ in the same function.
 
 The loops are `while`, `do`, `for`, and the range-based `for`
 ({doc}`/statements/range-for`).
+
+`break` and `continue` take no label, so each one acts on one loop. A
+program leaves two or more loops at once in one of these ways:
+
+- `goto` a label after the outer loop, under the limits of JMP-6,
+- `return` from a function that holds the loops,
+- a flag that every loop condition tests.
+
+A `constexpr` function can contain `goto`, but constant evaluation
+rejects a `goto` that it reaches ({rule}`CX-6`).
 
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,
@@ -185,11 +195,19 @@ In a constructor or a destructor, `return` must have no expression,
 including an expression of type `void`.
 :::
 
+:::{rule} JMP-17
+:kind: reject
+:tests: statements/jumps/break-with-label.cpp statements/jumps/continue-with-label.cpp
+
+A `break` or `continue` statement must not name a label. The statement
+always acts on the innermost loop or `switch` (JMP-1, JMP-2).
+:::
+
 ## Runtime Behavior
 
 :::{rule} JMP-1
 :kind: required
-:tests: statements/jumps/break-innermost.cpp statements/jumps/break-range-for.cpp
+:tests: statements/jumps/break-innermost.cpp statements/jumps/break-range-for.cpp statements/jumps/leave-two-loops.cpp
 
 `break` ends the innermost loop or `switch` that contains it.
 :::
@@ -216,7 +234,7 @@ destroyed first.
 
 :::{rule} JMP-8
 :kind: required
-:tests: statements/jumps/goto-forward-backward.cpp
+:tests: statements/jumps/goto-forward-backward.cpp statements/jumps/leave-two-loops.cpp
 
 `goto` transfers control to the statement that has the label.
 :::
@@ -252,6 +270,31 @@ for (int i = 0; i < 3; ++i) {
   }
 }
 
+// Three ways to leave two loops when a cell matches.
+bool find_goto(int target) {
+  for (int r = 0; r < 3; ++r)
+    for (int c = 0; c < 3; ++c)
+      if (grid[r][c] == target) goto found;
+  return false;
+found:                           // JMP-6: no declaration skipped
+  return true;
+}
+
+bool find_return(int target) {
+  for (int r = 0; r < 3; ++r)
+    for (int c = 0; c < 3; ++c)
+      if (grid[r][c] == target) return true;   // ends both loops
+  return false;
+}
+
+bool find_flag(int target) {
+  bool found = false;
+  for (int r = 0; r < 3 && !found; ++r)
+    for (int c = 0; c < 3 && !found; ++c)
+      found = grid[r][c] == target;
+  return found;
+}
+
 for (int i = 0; i < 4; ++i) {
   if (i % 2) continue;           // next: ++i, then i < 4
   sum += i;
@@ -270,13 +313,16 @@ skip:
 
 ## Evidence
 
-All eight compilers agree on 51 of 54 tests. The results are in
+All eight compilers agree on 54 of 57 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
   whose destructor is not trivial. Clang and EDG reject the `goto`, so a
   class type whose destructor is not trivial is not an exception
   ({question}`Q-0041`).
+
+- JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
+  form "named break" and accepts it only in a later C mode.
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
   accepts zero or one copy.

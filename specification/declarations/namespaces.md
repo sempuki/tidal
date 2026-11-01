@@ -176,10 +176,11 @@ the namespace that `L` names.
 
 :::{rule} NS-6
 :kind: required
-:tests: declarations/namespaces/out-of-namespace-definition.cpp
+:tests: declarations/namespaces/out-of-namespace-definition.cpp declarations/namespaces/qualified-definition-storage-class.cpp declarations/storage-linkage/qualified-static-after-extern.cpp
 
 A program can define a member of `N` outside `N` with a qualified name.
-NS-15 lists what is not valid.
+The definition can have `extern` or `static`, and {rule}`LNK-10` applies
+as to any later declaration. NS-15 lists what is not valid.
 :::
 
 :::{rule} NS-15
@@ -271,6 +272,8 @@ f(1.5);                  // calls N::f(int)
 
 namespace L = Long::Nested::Name;
 int N::x = 7;            // N must declare x first
+namespace M { extern const int build; }
+extern const int M::build = 2026;  // extern on a qualified definition
 
 namespace A { int x; }
 namespace B { int x; }
@@ -281,8 +284,8 @@ int y = x;               // rejected: x is ambiguous
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 40
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 42
+of 43 tests.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and

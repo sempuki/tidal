@@ -16,6 +16,7 @@ nothing else about the library (decision 0041):
 | `std::exception`, `std::bad_alloc`, `std::bad_array_new_length`, `std::bad_cast` | {rule}`NEW-35`, {rule}`NEW-38`, {rule}`VIRT-10` |
 | `std::byte` | {rule}`STG-4`, {rule}`STG-13`, {rule}`STG-14` |
 | `std::construct_at` | {rule}`STG-5`, {rule}`NEW-37` |
+| `std::allocator` | {rule}`NEW-37`, {rule}`STG-28` |
 
 The type that `typeid` gives and the exception that a failed `typeid`
 throws stay with the library *(library referenced)*. So do the new
@@ -62,19 +63,21 @@ definitions when the program is linked.
 :::
 
 :::{principle} LSUP-P3
-:rules: LSUP-9 LSUP-10
+:rules: LSUP-9 LSUP-10 LSUP-11
 
-Two library names give a program direct use of raw storage:
+Three library names give a program direct use of raw storage:
 
 | Name | Job |
 |---|---|
 | `std::byte` | a byte type with no arithmetic, which hosts objects and reads any object, as `unsigned char` does |
 | `std::construct_at` | the placement `new` that constant evaluation runs |
+| `std::allocator` | the call of an allocation function by name that constant evaluation runs |
 
 Constant evaluation runs no placement form that the program defines
-({rule}`NEW-37`). The implementation recognizes `std::construct_at` by
-its name and runs the placement `new` inside it. A program that
-includes no header declares both names itself.
+({rule}`NEW-37`), and no call of an allocation function by name. The
+implementation recognizes `std::construct_at` and `std::allocator` by
+their names and runs the operations inside them. A program that
+includes no header declares these names itself.
 :::
 
 ## Constraints
@@ -166,7 +169,7 @@ this shape:
 
 :::{rule} LSUP-7
 :kind: required
-:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp
+:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-array-needs-array-form.cpp
 
 A program that includes no header defines the non-allocating placement
 forms itself. Each form is an `inline` function with `noexcept`:
@@ -175,6 +178,9 @@ forms itself. Each form is an `inline` function with `noexcept`:
 |---|---|---|
 | `operator new`, `operator new[]` | `std::size_t`, `void*` | returns the `void*` argument |
 | `operator delete`, `operator delete[]` | `void*`, `void*` | none |
+
+An array placement `new`, such as `new (p) T[n]`, calls the
+`operator new[]` form ({rule}`NEW-20`).
 :::
 
 :::{rule} LSUP-8
@@ -223,6 +229,17 @@ placement `new` in any other function is not valid there
 ({rule}`NEW-37`).
 :::
 
+:::{rule} LSUP-11
+:kind: required
+:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp
+
+A program that includes no header can declare `std::allocator` as a
+class template with the member functions `allocate` and `deallocate`.
+These members call `::operator new` and `::operator delete` by name. During
+{term}`constant evaluation`, such a call is valid only inside these
+members ({rule}`NEW-37`, {rule}`STG-28`).
+:::
+
 ## Examples
 
 ```cpp
@@ -257,11 +274,22 @@ struct nothrow_t { explicit nothrow_t() = default; };
 inline constexpr nothrow_t nothrow{};
 }
 void* operator new(std::size_t, const std::nothrow_t&) noexcept;
-inline void* operator new(std::size_t, void* at) noexcept { return at; }
 
 int* p = new (std::nothrow) int(1); // null if the allocation fails
-alignas(int) unsigned char cell[sizeof(int)];
-int* q = new (cell) int(2);         // the int is in cell
+```
+
+The four non-allocating placement forms, as a program that includes no
+header defines them (LSUP-7):
+
+```cpp
+inline void* operator new(std::size_t, void* at) noexcept { return at; }
+inline void* operator new[](std::size_t, void* at) noexcept { return at; }
+inline void operator delete(void*, void*) noexcept {}
+inline void operator delete[](void*, void*) noexcept {}
+
+alignas(int) unsigned char cells[4 * sizeof(int)];
+int* q = new (cells) int(2);        // operator new: the int is in cells
+int* r = new (cells) int[4]();      // operator new[]: four zeros in cells
 ```
 
 ```cpp
@@ -285,8 +313,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 42 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 34
+of 46 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -331,6 +359,17 @@ of 42 tests.
   need not be `constexpr`. Every compiler rejects the same template in
   another namespace. With no placement form declared, every compiler
   rejects the template's placement `new` ({rule}`NEW-20`).
+- LSUP-7: with only the single-object placement form declared, Clang,
+  GCC, and EDG reject an array placement `new` and name
+  `operator new[]`.
+- LSUP-11: Clang, GCC, and EDG run the calls of `::operator new` and
+  `::operator delete` inside an `std::allocator` that the program
+  declares, during constant evaluation. Each rejects the same class
+  template in another namespace. Clang rejects an assignment to an
+  element of the allocated array before `std::construct_at` builds the
+  element, and GCC and EDG accept the assignment
+  ({question}`Q-0323`). The test builds
+  each element with `std::construct_at`.
 - Scope: the page covers the names that a `new` expression and
   `dynamic_cast` use. `typeid` and its exception wait for roadmap item
   T. The new handler and the launder operation are library facilities

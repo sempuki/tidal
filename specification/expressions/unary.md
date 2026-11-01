@@ -375,6 +375,15 @@ bool b = false;
 void may_throw();
 noexcept(may_throw());  // false
 alignof(char);          // 1
+
+int data[6];
+sizeof(data) / sizeof(data[0]);  // 6: the element count
+void fill(int a[6]) {
+  sizeof(a);                     // size of int*: should warn (UN-19)
+}
+template <class T, decltype(sizeof 0) N>
+constexpr auto count(const T (&)[N]) { return N; }
+count(data);                     // 6: a reference keeps the length
 ```
 
 ## Evidence

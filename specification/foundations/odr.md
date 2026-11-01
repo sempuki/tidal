@@ -1,4 +1,4 @@
-# Use and the one-definition rule
+# Use, headers, and the one-definition rule
 
 A program *uses* a variable or a function when the program needs the
 entity itself at run time, and not only its type or its constant value.
@@ -97,7 +97,16 @@ square.h                       unit a.cpp                 unit b.cpp
 The class has one definition in each unit, with the same tokens, which
 ODR-10 requires. The function has one definition in the program, which
 ODR-8 requires. A header that holds a definition of a function that is
-not `inline` breaks ODR-8 as soon as two units include it.
+not `inline` breaks ODR-8 as soon as two units include it. The same
+holds for a variable that is neither `inline` nor `const`.
+
+A constant that several units share has three common forms:
+
+| The header holds | Objects in the program | A constant in each unit |
+|---|---|---|
+| `inline constexpr int limit = 8;` | one ({rule}`INL-1`) | yes |
+| `constexpr int limit = 8;` | one in each unit ({rule}`LNK-3`) | yes |
+| `extern const int limit;`, and one unit defines `limit` | one | only in the defining unit ({rule}`CE-3`) |
 
 A unit that includes a header twice, often through two other headers,
 would define the header's classes twice. An {term}`include guard`, or
@@ -282,7 +291,7 @@ counts as an ordinary function, variable, or class:
 
 :::{rule} INC-1
 :kind: required
-:tests: foundations/odr/include-replaces-line.cpp foundations/odr/include-searches-own-directory.cpp foundations/odr/header-included-twice.cpp foundations/odr/header-function-in-two-units.cpp
+:tests: foundations/odr/include-replaces-line.cpp foundations/odr/include-searches-own-directory.cpp foundations/odr/header-included-twice.cpp foundations/odr/header-function-in-two-units.cpp foundations/odr/header-constant-three-forms.cpp
 
 An `include_directive` is replaced by the whole text of the named file.
 The text can contain further `include_directive` lines, which are
@@ -430,7 +439,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 61 of 67 tests. EDG checks each unit and
+All eight compilers agree on 62 of 68 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 

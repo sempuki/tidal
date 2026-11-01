@@ -100,6 +100,10 @@ So the following facts hold:
 - A name with internal linkage is a different entity in each unit.
 - A name that is used but defined nowhere is found out only when the
   program is linked.
+
+Units share declarations through {term}`header` files. Each unit
+includes the headers it needs, and an {term}`include guard` keeps a
+header from entering one unit twice ({principle}`ODR-P3`).
 :::
 
 :::{principle} TR-P3
@@ -200,9 +204,9 @@ program there.
 
 Execution begins with a call to `main`. The value that `main` returns is
 the exit status of the program, and zero means success. If control
-reaches the end of `main`, the status is zero. With two parameters, the
-first is the number of arguments and the second is an array of that
-many strings followed by a null pointer.
+reaches the end of `main`, the status is zero. With two parameters,
+`int` and `char**` ({rule}`FN-6`), the first is the number of arguments.
+The second is an array of that many strings followed by a null pointer.
 :::
 
 :::{rule} TR-4

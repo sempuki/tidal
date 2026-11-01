@@ -253,6 +253,14 @@ function template
   A template whose declaration declares a function. Each specialization
   is a function ({rule}`TPL-1`).
 
+fundamental alignment
+  An alignment that the implementation supports for objects in every
+  kind of storage. The alignment of each fundamental type is a
+  fundamental alignment. An alignment above the largest fundamental
+  alignment is an *extended alignment*, which `new` also supports
+  ({rule}`ALN-4`). The largest fundamental alignment is 16 on the x86-64
+  targets ({rule}`ALN-5`).
+
 header
   A file that holds declarations for several translation units to
   share. Each unit that names the file in `#include "file"` gets the
@@ -392,6 +400,12 @@ operator function
   A function whose name is `operator` followed by an operator, such as
   `operator+`. An expression that uses the operator can call the
   operator function ({rule}`OPR-1`).
+
+ordinary encoding
+  The encoding of character and string literals with no prefix. The
+  encoding maps each character to one or more `char` code units
+  ({rule}`PRIM-30`). The implementation chooses the encoding, and the
+  matrix targets use UTF-8 ({rule}`PRIM-32`).
 
 overload set
   The functions and function templates that one name finds where the

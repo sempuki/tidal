@@ -229,12 +229,14 @@ The result of `const_cast` refers to the same object as its operand.
 
 :::{rule} CAST-6
 :kind: required
-:tests: expressions/casts/reinterpret-round-trip.cpp expressions/casts/reinterpret-unrelated-pointer.cpp expressions/casts/reinterpret-reference.cpp expressions/casts/reinterpret-nullptr-to-integer.cpp expressions/casts/reinterpret-function-pointer-round-trip.cpp
+:tests: expressions/casts/reinterpret-round-trip.cpp expressions/casts/reinterpret-unrelated-pointer.cpp expressions/casts/reinterpret-reference.cpp expressions/casts/reinterpret-nullptr-to-integer.cpp expressions/casts/reinterpret-function-pointer-round-trip.cpp expressions/casts/integer-to-pointer-address.cpp
 
 `reinterpret_cast` can do these conversions:
 
 - a pointer to a large enough integer type. Converting that integer
   back gives the original pointer.
+- an integer or an unscoped enumeration to a pointer. CAST-16 gives the
+  address of the result.
 - between unrelated pointer types.
 - between two pointer to function types. Converting back gives the
   original pointer. A call through the converted pointer follows
@@ -278,11 +280,17 @@ pointer to a function into a pointer to an object type, and back.
 
 :::{rule} CAST-16
 :kind: impl-defined
-:tests: expressions/casts/reinterpret-pointer-integer-mapping.cpp
+:tests: expressions/casts/reinterpret-pointer-integer-mapping.cpp expressions/casts/integer-to-pointer-address.cpp expressions/casts/pointer-sized-integer.cpp expressions/casts/pointer-sized-integer-ilp32.cpp
 
-The integer value that `reinterpret_cast` gives for a pointer is
-implementation-defined. On the x86-64 Linux targets in the matrix, the
-integer is the address, and the round trip gives the original pointer.
+The integer that `reinterpret_cast` gives for a pointer, and the pointer
+that it gives for an integer, are implementation-defined. On the x86-64
+Linux targets in the matrix, the integer is the address in both
+directions. The integer types that hold a pointer are these:
+
+| Target | Size of a pointer | Integer types of that size |
+|---|---|---|
+| x86-64 | 8 | `std::size_t` ({rule}`LSUP-4`), `unsigned long`, `long` |
+| `-m32` | 4 | `std::size_t`, `unsigned long`, `long`, `unsigned`, `int` |
 :::
 
 ## Examples
@@ -302,11 +310,16 @@ int* p = const_cast<int*>(&c);
 const int* cp = &x;
 unsigned* u = (unsigned*)cp;    // reinterpret_cast, then const_cast
 int{2.5};                       // rejected: narrowing
+
+using size_t = decltype(sizeof 0);
+size_t at = reinterpret_cast<size_t>(&x);  // holds the address on every target
+bool aligned = at % alignof(int) == 0;     // true
+auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 ```
 
 ## Evidence
 
-All eight compilers agree on 50 of 51 tests. The results are in
+All eight compilers agree on 53 of 54 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during
@@ -315,5 +328,10 @@ All eight compilers agree on 50 of 51 tests. The results are in
   evaluation.
 - CAST-12: every compiler in the matrix accepts the conversion and the
   round trip works.
+- CAST-16: the library names integer types for a pointer value
+  *(library referenced)*. The table gives the core types of the same
+  size. Whether an object exists at an address that the program did
+  not obtain from an object is a question for the platform
+  ({question}`Q-0325`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

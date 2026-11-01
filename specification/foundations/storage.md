@@ -47,7 +47,7 @@ does not fit in `std::size_t` cannot exist.
 :::
 
 :::{principle} STG-P2
-:rules: STG-4 STG-5 STG-6 STG-17
+:rules: STG-4 STG-5 STG-6 STG-17 STG-29
 
 Storage can outlive the objects in it. A byte array, or the storage
 that an allocation function returns, holds one object after another:
@@ -64,10 +64,12 @@ Placement `new` creates an object at a given address, in storage that
 is large enough and aligned for the type. A new object ends each object
 whose storage it takes, and no destructor runs. The byte array that
 hosts the new object goes on, because the new object is nested in it.
+A program reaches the new object through the pointer that placement
+`new` returns. A cast of the array's address still points to a byte.
 :::
 
 :::{principle} STG-P3
-:rules: STG-7 STG-8 STG-18 STG-24
+:rules: STG-7 STG-8 STG-18 STG-24 STG-28
 
 Some types need no constructor call to exist. Scalars, arrays, and
 simple classes are such
@@ -85,6 +87,19 @@ The implementation chooses the objects that give the program defined
 behavior, looking ahead to the program's later use of the storage. If
 no choice works, the behavior is undefined. If several choices work,
 the program cannot observe which one the implementation made.
+
+An allocation for a growable array creates an array of the element
+type. The elements of the array exist at once, and each element begins
+its lifetime when the program constructs it. So the program can step
+through the positions of the elements before it builds them:
+
+```text
+  T* items = static_cast<T*>(::operator new(4 * sizeof(T)));
+
+  [ element 0 ][ element 1 ][ element 2 ][ element 3 ]   an array of 4 T
+    built         built       not built    not built
+    ^items                    ^items + 2
+```
 :::
 
 :::{principle} STG-P4
@@ -251,27 +266,29 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp
 
-`new (p) T(args)` with the library's non-allocating placement form
-*(library referenced)* creates an object of type `T` at the address
-`p`. The result points to the new object. The array form `new (p) T[n]`
-creates an array at `p` in the same way.
+`new (p) T(args)` creates an object of type `T` at the address `p`, with
+a {term}`non-allocating placement form` ({rule}`LSUP-7`). The result
+points to the new object. The array form `new (p) T[n]` calls the
+`operator new[]` form and creates an array at `p` ({rule}`NEW-11`).
 :::
 
 :::{rule} STG-6
 :kind: required
-:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp
+:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp
 
 If a new object takes storage that another object occupies, the
 lifetime of the other object ends, and its destructor does not run.
 An object that the new object is nested in keeps its lifetime, such as
-the byte array that hosts the new object ({rule}`OBJ-10`).
+the byte array that hosts the new object ({rule}`OBJ-10`). After the
+new object ends, its bytes hold no object until the program creates
+one there.
 :::
 
 :::{rule} STG-7
 :kind: required
-:tests: foundations/storage/implicit-lifetime-trivial-class.cpp foundations/storage/implicit-lifetime-aggregate.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-object-in-byte-array.cpp
+:tests: foundations/storage/implicit-lifetime-trivial-class.cpp foundations/storage/implicit-lifetime-aggregate.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/allocation-array-class-elements.cpp
 
 These types are
 {term}`implicit-lifetime types <implicit-lifetime type>`:
@@ -286,7 +303,7 @@ These types are
 
 :::{rule} STG-8
 :kind: required
-:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-object-in-byte-array.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp
+:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp
 
 These operations create objects implicitly in the storage that they
 name:
@@ -297,8 +314,9 @@ name:
 
 The implementation creates the set of objects that gives the program
 defined behavior, and the result of an allocation function points to
-one of them. Each created object has an implicit-lifetime type, and
-its subobjects of other types are not created.
+one of them. Each created object has an implicit-lifetime type. STG-28
+gives the elements of a created array whose element type is not an
+implicit-lifetime type.
 :::
 
 :::{rule} STG-9
@@ -324,12 +342,14 @@ member that holds no object.
 
 :::{rule} STG-10
 :kind: required
-:tests: foundations/storage/outside-lifetime-allowed-uses.cpp
+:tests: foundations/storage/outside-lifetime-allowed-uses.cpp foundations/storage/allocation-array-class-elements.cpp
 
 Before the lifetime of an object begins, or after it ends, while its
 storage exists, a program can do these things:
 
 - copy or compare a pointer to the storage,
+- step a pointer over the elements of an array that exists
+  ({rule}`STG-28`),
 - convert the pointer to `void*`, and then to a pointer to
   `std::byte`, `unsigned char`, or `char`,
 - take the address of a glvalue that refers to the storage, or bind a
@@ -419,6 +439,28 @@ convert it to `void*`, for example to give the address to placement
 `new`.
 :::
 
+:::{rule} STG-28
+:kind: required
+:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp
+
+If an allocation function creates an array of `T`, a `T*` from its
+result points to element 0 ({question}`Q-0323`).
+The elements exist also when `T` is not an implicit-lifetime type, and
+their lifetimes begin when the program constructs them. Pointer
+arithmetic over the elements ({rule}`ADD-6`) is valid before then.
+:::
+
+:::{rule} STG-29
+:kind: required
+:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp
+
+A cast of a pointer into a byte array gives a pointer to a byte
+(STG-16). The result does not reach an object that the array hosts,
+also an object that STG-8 created ({question}`Q-0324`).
+A program reaches such an object through the pointer that placement
+`new` returns, or through the launder operation *(library referenced)*.
+:::
+
 ## Undefined Behavior
 
 :::{rule} STG-17
@@ -491,12 +533,13 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar.cpp foundations/storage/access-unrelated-class.cpp foundations/storage/access-signed-char.cpp
+:tests: foundations/storage/access-unrelated-scalar.cpp foundations/storage/access-unrelated-class.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. `signed char` is
 such a type ({question}`Q-0306`). So is a class with the same members
-as the class of the object.
+as the class of the object. A glvalue from a cast of a byte array's
+address refers to a byte (STG-29).
 :::
 
 ## Implementation Requirements
@@ -614,10 +657,80 @@ The implicit copy of `Maybe` copies `held`, which then points into the
 bytes of the other object. So `Maybe` must write its own copy and move
 functions ({rule}`CPY-8`).
 
+A growable array of a class type gets raw storage from the allocation
+function and builds each element in place. `items + count` is valid
+before the element exists (STG-28):
+
+```cpp
+inline void* operator new(decltype(sizeof 0), void* at) noexcept { return at; }
+
+template <class T>
+class Stack {                          // T needs only a copy constructor
+  T* items = nullptr;                  // element 0 of the allocated array
+  int count = 0;
+  int capacity = 0;
+public:
+  Stack() = default;
+  Stack(const Stack&) = delete;        // one owner for the storage (CPY-P2)
+  Stack& operator=(const Stack&) = delete;
+  void push(const T& value) {
+    if (count == capacity) grow();
+    new (items + count) T(value);      // element count begins its lifetime
+    ++count;
+  }
+  void pop() { items[--count].~T(); }  // the element ends; the storage stays
+  ~Stack() {
+    while (count > 0) pop();
+    ::operator delete(items);          // a null pointer does nothing
+  }
+private:
+  void grow() {
+    int bigger = capacity == 0 ? 4 : 2 * capacity;
+    void* raw = ::operator new(sizeof(T) * bigger);
+    T* fresh = static_cast<T*>(raw);   // element 0 of an array of T
+    for (int i = 0; i != count; ++i) {
+      new (fresh + i) T(items[i]);
+      items[i].~T();
+    }
+    ::operator delete(items);
+    items = fresh;
+    capacity = bigger;
+  }
+};
+```
+
+`grow` loses the new storage if a copy throws. The unwinding page shows
+a growth step that a throw leaves unchanged
+({doc}`/exceptions/unwinding`).
+
+An arena hands out the bytes of one byte array and takes them back all
+at once. A cast of the array's address points to a byte (STG-29), and
+after a reset the bytes hold no objects (STG-6). So the arena creates
+each object with placement `new` and returns that pointer:
+
+```cpp
+class Arena {
+  alignas(16) unsigned char bytes[256];
+  decltype(sizeof 0) used = 0;
+public:
+  template <class T> T* make_array(int n) {  // needs a default constructor (NEW-11)
+    used = (used + alignof(T) - 1) & ~(alignof(T) - 1);  // round up
+    T* first = new (bytes + used) T[n]();    // needs operator new[] (LSUP-7)
+    used += sizeof(T) * n;
+    return first;
+  }
+  void reset() { used = 0; }           // the caller has ended each object
+};
+
+template <class T> void destroy_all(T* first, int n) {
+  while (n > 0) first[--n].~T();       // valid for a scalar T too
+}
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 59
-of 62 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 67 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -632,6 +745,19 @@ only that the programs are valid.
   smaller limit too, as {rule}`DCL-10` allows.
 - STG-4: no compiler treats an array of `char` differently from a byte
   array ({question}`Q-0305`).
+- STG-28: Clang and GCC, at `-O0`, at `-O2`, and with the address and
+  undefined sanitizers, run a program that steps over the elements of
+  an allocated array of a class type before it builds them. During
+  constant evaluation, an `std::allocator` that the program declares
+  ({rule}`LSUP-11`) gives such an array. Clang, GCC, and EDG accept
+  placement `new` at `p + 3` before element 3 exists, and reject a read
+  of an element that the program has not built
+  ({question}`Q-0323`).
+- STG-29: every configuration runs a program that writes through a
+  cast of a byte array's address. No sanitizer reports the write, and
+  constant evaluation cannot form the cast ({rule}`CAST-8`). The rule
+  follows STG-16 and is provisional
+  ({question}`Q-0324`).
 - STG-9: every compiler gives the new values through the old names at
   `-O0` and at `-O2`, also for a class with a `const` member, and
   accepts the constant tests.

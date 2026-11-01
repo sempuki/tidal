@@ -63,9 +63,13 @@ function is `inline` for the same reason as a `constexpr` function.
 whole program or the whole thread, and its initializer must be a
 constant, so that the variable already has its value before any other
 static object can look at the variable. The specifier does not make the
-variable `const` and asks nothing of the destructor. A variable is
-either `constinit` or `constexpr`, and every declaration of it says
-which.
+variable `const` and asks nothing of the destructor. A declaration can
+have `constinit` or `constexpr`, and at most one of them.
+
+The declaration that initializes a `constinit` variable carries
+`constinit`, so the check happens where the initializer is. An earlier
+declaration, such as an `extern` declaration in a header, can carry
+`constinit` or leave it out.
 :::
 
 ## Constraints
@@ -204,7 +208,7 @@ destructor.
 
 :::{rule} CINIT-2
 :kind: reject
-:tests: declarations/constexpr/constinit-automatic.cpp declarations/constexpr/constinit-block-static.cpp declarations/constexpr/constinit-with-constexpr.cpp declarations/constexpr/constinit-extern-declaration.cpp declarations/constexpr/constinit-on-function.cpp declarations/constexpr/constinit-added-late.cpp declarations/constexpr/constinit-on-declaration-only.cpp
+:tests: declarations/constexpr/constinit-automatic.cpp declarations/constexpr/constinit-block-static.cpp declarations/constexpr/constinit-with-constexpr.cpp declarations/constexpr/constinit-extern-declaration.cpp declarations/constexpr/constinit-only-on-definition.cpp declarations/constexpr/constinit-on-function.cpp declarations/constexpr/constinit-added-late.cpp declarations/constexpr/constinit-on-declaration-only.cpp
 
 A `constinit` variable must have static or thread {term}`storage
 duration`. A declaration must not have both `constinit` and `constexpr`.
@@ -235,12 +239,17 @@ int b(int n) { return cube(n); }  // rejected: n is not a constant
 
 constinit int counter = 5;        // constant initializer, not const
 void bump() { ++counter; }
+
+// header
+extern constinit int first_ticket;  // constinit here is optional
+// one source file
+constinit int first_ticket = 100;   // constinit here is required
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 63
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 69 tests.
 
 - CX-6: every compiler accepts a constant evaluation that reaches the
   definition of a `static const int` with a constant initializer, as

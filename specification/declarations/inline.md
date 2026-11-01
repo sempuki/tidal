@@ -67,7 +67,7 @@ before the declarator.
 
 :::{rule} INL-1
 :kind: required
-:tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp declarations/inline/constexpr-variable-internal.cpp declarations/inline/inline-friend-declaration-not-definition.cpp
+:tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp declarations/inline/constexpr-variable-internal.cpp declarations/inline/inline-friend-declaration-not-definition.cpp foundations/odr/header-constant-three-forms.cpp
 
 `inline` applies to functions and to variables with static storage
 duration. These rules apply:
@@ -185,8 +185,8 @@ struct Config {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 32
-of 34 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 33
+of 35 tests.
 
 - INL-2: GCC accepts `inline` on a declaration after the definition.
   Clang and EDG reject the declaration ({question}`Q-0068`).

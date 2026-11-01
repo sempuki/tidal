@@ -117,7 +117,7 @@ An array must not be initialized from another array.
 
 :::{rule} INIT-2
 :kind: required
-:tests: declarations/initialization/forms/value-init-forms.cpp declarations/initialization/forms/zero-of-other-scalars.cpp
+:tests: declarations/initialization/forms/value-init-forms.cpp declarations/initialization/forms/zero-of-other-scalars.cpp declarations/initialization/forms/array-member-empty-braces.cpp
 
 Empty braces, `= {}`, and `T()` give a scalar the value zero. Zero is:
 
@@ -198,11 +198,17 @@ int c(1, 2);         // rejected
 int d[4] = {1, 2};   // 1, 2, 0, 0
 int e[3](1, 2);      // 1, 2, 0
 int f[2] = d;        // rejected
+int g[4] = {};       // 0, 0, 0, 0
+
+struct Bits {
+  unsigned words[4];
+  Bits() : words{} {}  // every element is 0
+};
 ```
 
 ## Evidence
 
-All eight compilers agree on 30 of 31 tests. The results are in
+All eight compilers agree on 31 of 32 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

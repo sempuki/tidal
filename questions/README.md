@@ -336,6 +336,10 @@ status, and the first sentence of its answer section.
 | [Q-0320](Q-0320-volatile-object-read-through-plain-constant.md) | Must constant evaluation reject a read of a volatile object through a glvalue that is not volatile? | provisional | Yes, undefined (VOL-6); GCC and EDG accept |
 | [Q-0321](Q-0321-initializer-list-when-needed.md) | When does a program need the class `std::initializer_list`? | provisional | Where a braced list initializes an object of that type or `auto` deduces it (LSUP-1); GCC checks every definition |
 | [Q-0322](Q-0322-implementation-operations-without-headers.md) | How do tests reach the operations that only the implementation can provide? | provisional | Keep them referenced; tests use no standard header (decision 0051) |
+| [Q-0323](Q-0323-allocation-array-element-pointer.md) | Does a `T*` from an allocation function's result point to element 0 of an array of `T` whose elements are not built yet? | provisional | Yes; `p + i` is valid before element `i` exists |
+| [Q-0324](Q-0324-byte-array-cast-implicit-object.md) | Does a cast of a byte array's address reach an object that the array created implicitly? | provisional | No; the cast points to a byte |
+| [Q-0325](Q-0325-objects-at-fixed-addresses.md) | Does an object exist at an address that a program gets from an integer, such as a device register? | provisional | The platform decides |
+| [Q-0326](Q-0326-volatile-access-width.md) | What size of memory access does a volatile read or write use, and can an implementation merge or split volatile accesses? | provisional | Implementation-defined |
 
 ## Status values
 

@@ -264,6 +264,21 @@ long short broken = 0;                  // rejected: two sizes
 auto mixed = 1L + 1u;                   // long on x86-64,
                                         // unsigned long on -m32
 static_assert(char(200) < 0);           // char is signed on both targets
+
+// The bounds of int, written without a header (TYP-4).
+constexpr unsigned umax = ~0u;                     // 2^32 - 1 (BIT-5)
+constexpr int imax = static_cast<int>(umax >> 1);  // 2^31 - 1
+constexpr int imin = -imax - 1;                    // -2^31
+auto wrong = -2147483648;               // long, or long long on -m32:
+                                        // the minus is an operator (PRIM-1)
+// With the library: std::numeric_limits<int>::max()
+
+// Fixed-width aliases, checked on each target (TYP-1).
+using u8 = unsigned char;
+using u16 = unsigned short;
+using u32 = unsigned int;
+using u64 = unsigned long long;         // unsigned long is 4 bytes on -m32
+static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 ```
 
 ## Evidence

@@ -22,8 +22,9 @@ Depends on: declarators, class definitions and members, unary operators,
 Every type has an alignment, and every object of the type sits at an
 address that is a multiple of the alignment, in every kind of storage.
 `alignas` can make the alignment stricter and never weaker, because the
-natural alignment is the type's own need. A power of two is the only
-shape an alignment can have, and the strictest requirement wins. A class
+natural alignment is the type's own need. Every alignment is a power of
+two, and the strictest requirement wins. So a program rounds an offset
+up to an alignment `a` with the mask `~(a - 1)`. A class
 is as aligned as its most demanding part, and its size is a multiple of
 its alignment so that an array of the class keeps every element aligned.
 :::
@@ -132,7 +133,7 @@ applies to objects in:
 - static storage,
 - automatic storage,
 - dynamic storage, including objects and arrays that `new` creates with
-  an alignment larger than the largest fundamental alignment.
+  an alignment larger than the largest {term}`fundamental alignment`.
 :::
 
 ## Implementation Requirements
@@ -141,10 +142,11 @@ applies to objects in:
 :kind: impl-defined
 :tests: declarations/alignment/extended-huge.cpp declarations/alignment/max-fundamental.cpp
 
-The alignments of the fundamental types and the largest extended
-alignment that an implementation supports are implementation-defined. On
-the x86-64 Linux targets in the matrix, `long double` has alignment 16.
-EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
+The alignments of the fundamental types, the largest
+{term}`fundamental alignment`, and the largest extended alignment are
+implementation-defined. On the x86-64 Linux targets in the matrix,
+`long double` has alignment 16, and 16 is the largest fundamental
+alignment. EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
 :::
 
 :::{rule} ALN-6
@@ -170,6 +172,12 @@ struct Packet {
 
 alignas(16) unsigned char buffer[256];
 alignas(2) int bad;              // rejected: weaker than alignof(int)
+
+using size_t = decltype(sizeof 0);
+constexpr size_t round_up(size_t offset, size_t a) {
+  return (offset + a - 1) & ~(a - 1);  // a is a power of two (ALN-2)
+}
+static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 ```
 
 ## Evidence
@@ -195,6 +203,11 @@ implementation-defined limit of ALN-5.
   rejects it ({question}`Q-0314`).
 - ALN-3: GCC accepts declarations of a variable or a class with
   different `alignas` ({question}`Q-0070`).
+- ALN-5: the largest fundamental alignment is the alignment of a
+  library type *(library referenced)*. With that type, Clang and GCC
+  give 16 on x86-64. With `-m32`, GCC 14 gives 16, and Clang 18 and 22
+  give 8, which is also the default new alignment of Clang there
+  ({rule}`NEW-27`).
 - ALN-5 is implementation-defined because the alignments come from the
   target's conventions. EDG 7.0 rejects an alignment of 2^28 ("invalid
   alignment value"), which Clang and GCC accept.

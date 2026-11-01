@@ -39,7 +39,7 @@ types.
 :::
 
 :::{principle} PRIM-P5
-:rules: PRIM-4 PRIM-17 PRIM-5 PRIM-18
+:rules: PRIM-4 PRIM-17 PRIM-5 PRIM-18 PRIM-30 PRIM-31 PRIM-33
 
 A floating literal is `double` unless a suffix says otherwise, and a
 hexadecimal one needs an exponent, because without the exponent the
@@ -47,6 +47,12 @@ spelling could be an integer. A character literal's prefix sets its
 type, and the literal must hold one character of that type. A literal
 with no character, or with one that does not fit a single code unit, is
 rejected.
+
+The prefix also names an encoding. The value of a one-character literal
+is the code unit of its character in that encoding. Every encoding
+gives the ten digits consecutive values, so `c - '0'` is the value of a
+digit `c` on every implementation. The values of letters and other
+characters depend on the encoding.
 :::
 
 :::{principle} PRIM-P2
@@ -75,12 +81,13 @@ else.
 :::
 
 :::{principle} PRIM-P4
-:rules: PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
+:rules: PRIM-32 PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
 
 The character sets and the floating-point formats of a target belong to
 the implementation, so the parts of a literal that depend on them are
 implementation-defined. The implementation-defined parts are these:
 
+- the ordinary encoding and the wide encoding,
 - the value of a multi-character literal,
 - the signedness of `char`,
 - the rounding of a floating value with no exact representation,
@@ -337,6 +344,51 @@ must not have:
 - a named escape with a name that Unicode does not define.
 :::
 
+:::{rule} PRIM-30
+:kind: required
+:tests: expressions/primary/char-value-code-unit.cpp
+
+A character literal with one character has the value of that
+character's code unit in the encoding that the prefix names:
+
+| Prefix | Encoding |
+|---|---|
+| none | the {term}`ordinary encoding` |
+| `L` | the wide encoding (PRIM-32) |
+| `u8` | UTF-8 |
+| `u` | UTF-16 |
+| `U` | UTF-32 |
+
+An octal or hexadecimal escape gives its number as the code unit. The
+number converts to the type of the literal ({rule}`CONV-2`).
+:::
+
+:::{rule} PRIM-31
+:kind: required
+:tests: expressions/primary/char-digits-consecutive.cpp
+
+In each encoding of PRIM-30, the digits `0` to `9` have consecutive code
+units in increasing order.
+:::
+
+:::{rule} PRIM-33
+:kind: required
+:tests: expressions/primary/char-simple-escape-values.cpp
+
+Each simple escape stands for one character, and its value is the code
+unit of that character (PRIM-30):
+
+| Escape | Character | Escape | Character |
+|---|---|---|---|
+| `\'` | single quote | `\a` | alert |
+| `\"` | double quote | `\b` | backspace |
+| `\?` | question mark | `\f` | form feed |
+| `\\` | backslash | `\n` | new-line |
+| | | `\r` | carriage return |
+| | | `\t` | horizontal tab |
+| | | `\v` | vertical tab |
+:::
+
 :::{rule} PRIM-7
 :kind: required
 :tests: expressions/primary/string-concat.cpp expressions/primary/string-escape-in-string.cpp expressions/primary/string-index-constant.cpp expressions/primary/string-lvalue.cpp expressions/primary/string-raw-long-delimiter.cpp expressions/primary/string-raw.cpp expressions/primary/string-type.cpp
@@ -488,6 +540,36 @@ behavior is undefined.
 
 ## Implementation Requirements
 
+:::{rule} PRIM-32
+:kind: impl-defined
+:tests: expressions/primary/char-encoding-lp64.cpp expressions/primary/char-encoding-ilp32.cpp
+
+The ordinary encoding and the wide encoding are implementation-defined.
+The matrix targets choose these encodings:
+
+| Encoding | x86-64 Linux | `-m32` |
+|---|---|---|
+| ordinary, for `char` | UTF-8 | UTF-8 |
+| wide, for `wchar_t` | UTF-32 | UTF-32 |
+
+In both encodings, each ASCII character has one code unit with its ASCII
+value. Each row of the table gives characters with consecutive values,
+in the order shown:
+
+| Characters | Values |
+|---|---|
+| null | 0 |
+| alert, backspace, horizontal tab, new-line, vertical tab, form feed, carriage return | 7 to 13 |
+| space | 32 |
+| `!` `"` `#` `$` `%` `&` `'` `(` `)` `*` `+` `,` `-` `.` `/` | 33 to 47 |
+| `0` to `9` | 48 to 57 |
+| `:` `;` `<` `=` `>` `?` `@` | 58 to 64 |
+| `A` to `Z` | 65 to 90 |
+| `[` `\` `]` `^` `_` `` ` `` | 91 to 96 |
+| `a` to `z` | 97 to 122 |
+| `{` `\|` `}` `~` | 123 to 126 |
+:::
+
 :::{rule} PRIM-6
 :kind: impl-defined
 :tests: expressions/primary/char-multichar.cpp expressions/primary/char-plain-signedness.cpp
@@ -570,6 +652,11 @@ auto f = u"ab" "cd";      // const char16_t[5]
 auto g = R"(C:\path)";    // backslash kept
 int* p = nullptr;
 
+constexpr int digit(char c) { return c - '0'; }
+static_assert(digit('7') == 7);   // every implementation (PRIM-31)
+static_assert('a' == 97);         // the matrix targets (PRIM-32)
+char h = '\xff';                  // -1 where char is signed
+
 struct Counter {
   int n = 0;
   void bump() { ++n; }    // means ++this->n
@@ -584,8 +671,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 104
-of 109 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 114 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -596,9 +683,21 @@ of 109 tests.
   rejects them. Support is conditional.
 - PRIM-29: Clang and GCC reject a fold whose operand holds a binary
   operator without parentheses. EDG accepts it ({question}`Q-0194`).
+- PRIM-32: EDG, as the matrix configures it, rejects `"é"` because one
+  `char` cannot hold the character. Its ordinary encoding is not UTF-8,
+  which PRIM-32 allows. EDG agrees on every ASCII value.
 - PRIM-28: every compiler evaluates a comma fold from the first element
   to the last, and stops a fold over `&&` or `||` at the first operand
   that decides the result.
+- PRIM-30 to PRIM-33: GCC and Clang give every ASCII character its
+  ASCII value in `char` and `wchar_t` literals, on both targets. A
+  string literal with U+00E9 has two `char` code units and one
+  `wchar_t` code unit.
+- PRIM-31, PRIM-32: GCC can choose another ordinary encoding with
+  `-fexec-charset`. With the EBCDIC code page IBM1047, the digits keep
+  consecutive values from 0xF0 to 0xF9, and `'j' - 'a'` is 16. So only
+  the digits are consecutive in every encoding, and the order of the
+  letters belongs to the encoding. Clang accepts only UTF-8.
 - PRIM-9: Clang rejects a comparison of the addresses of two string
   literals during constant evaluation. GCC and EDG accept it and fold it
   ({question}`Q-0033`).

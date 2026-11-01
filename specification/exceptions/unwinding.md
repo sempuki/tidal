@@ -63,6 +63,7 @@ the parts that exist can be ended ({principle}`OBJ-P1`).
 |---|---|
 | A constructor | The bases and members that it completed are destroyed, in reverse. The object's own destructor never runs, because the object never existed. |
 | The construction of an array | The same holds for the elements built so far. |
+| One placement `new` in a loop that builds elements one at a time | Only that element's parts are destroyed. The elements that earlier iterations built stay, and the program's own handler must destroy them. |
 | A delegating constructor whose target completed | The object is complete, so its destructor does run. |
 | The constructor in a `new` expression | The object never existed, but its storage does. The storage goes back through the deallocation function that matches the allocation function, placement arguments included, and only if such a match exists. |
 :::
@@ -102,7 +103,7 @@ that enclose the try block are not affected.
 
 :::{rule} UNW-2
 :kind: required
-:tests: exceptions/unwinding/constructor-throws-parts-destroyed.cpp exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp exceptions/unwinding/base-built-before-member-throws.cpp exceptions/unwinding/array-element-throws-built-destroyed.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp exceptions/unwinding/delegating-target-throws-no-destructor.cpp
+:tests: exceptions/unwinding/constructor-throws-parts-destroyed.cpp exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp exceptions/unwinding/base-built-before-member-throws.cpp exceptions/unwinding/array-element-throws-built-destroyed.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp exceptions/unwinding/delegating-target-throws-no-destructor.cpp exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp
 
 These rules apply:
 
@@ -114,6 +115,10 @@ These rules apply:
 - If the target of a delegating constructor completed, the object is
   complete, and its destructor runs when the delegating constructor
   throws.
+
+The second rule covers an array that one declaration or one `new`
+expression builds. Objects that a program builds one at a time, for
+example with placement `new` in a loop, get no such cleanup.
 :::
 
 :::{rule} UNW-3
@@ -236,10 +241,32 @@ struct Pair {
 void closed() noexcept { throw 2; }   // ends the program
 ```
 
+A growable array builds its elements in new storage with placement
+`new` ({doc}`/foundations/storage`). If a copy throws, the handler
+destroys the elements built so far, frees the storage, and rethrows.
+The old storage is not touched, so the array keeps its elements:
+
+```cpp
+template <class T>
+T* copy_into_new_storage(const T* from, int count, int capacity) {
+  T* fresh = static_cast<T*>(::operator new(sizeof(T) * capacity));
+  int built = 0;
+  try {
+    for (; built != count; ++built)
+      new (fresh + built) T(from[built]);  // can throw
+  } catch (...) {
+    while (built > 0) fresh[--built].~T(); // no automatic cleanup (UNW-2)
+    ::operator delete(fresh);
+    throw;                                 // the caller keeps from
+  }
+  return fresh;                            // the caller then ends the old elements
+}
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 33
-of 34 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 34
+of 35 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a

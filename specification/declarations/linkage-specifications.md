@@ -20,8 +20,11 @@ A linkage specification labels declarations with the language whose
 calling and naming conventions they use. The specification does not
 make a scope, so its braces hide nothing, and a declaration inside the
 braces means what the declaration would mean outside. A linkage
-specification labels functions and variables at namespace scope, and
-nothing else. The form without braces behaves as `extern` does.
+specification labels the functions and variables that it declares at
+namespace scope. It also labels each function type in its declarations,
+such as the type of a callback parameter or a type alias. Classes and
+other types get no label. The form without braces behaves as `extern`
+does.
 :::
 
 :::{principle} LSP-P2
@@ -41,6 +44,8 @@ The implementation chooses the set of languages beyond C and C++ that it
 can link with. The implementation also chooses whether a function's type
 records the language that the function is linked as. A program that must
 work everywhere treats a pointer to a C function as a type of its own.
+Such a program names the type with an alias in an `extern "C"` block,
+and passes only C functions where the type is expected.
 :::
 
 ## Syntax
@@ -59,11 +64,13 @@ name* is a function or variable that has C language linkage.
 
 :::{rule} LSP-1
 :kind: required
-:tests: declarations/linkage-specifications/block-form.cpp declarations/linkage-specifications/cpp-linkage.cpp declarations/linkage-specifications/linkage-in-namespace.cpp declarations/linkage-specifications/members-cpp-linkage.cpp declarations/linkage-specifications/nested-innermost.cpp declarations/linkage-specifications/single-form.cpp declarations/linkage-specifications/static-in-c-block.cpp declarations/linkage-specifications/block-form-no-scope.cpp
+:tests: declarations/linkage-specifications/block-form.cpp declarations/linkage-specifications/cpp-linkage.cpp declarations/linkage-specifications/linkage-in-namespace.cpp declarations/linkage-specifications/members-cpp-linkage.cpp declarations/linkage-specifications/nested-innermost.cpp declarations/linkage-specifications/single-form.cpp declarations/linkage-specifications/static-in-c-block.cpp declarations/linkage-specifications/block-form-no-scope.cpp declarations/linkage-specifications/c-callback-alias.cpp declarations/linkage-specifications/c-callback-c-function.cpp declarations/linkage-specifications/c-parameter-type-linkage.cpp
 
 A linkage specification gives its language linkage to the functions and
-variables that it declares. In nested linkage specifications, the
-innermost applies. These rules apply:
+variables that it declares. It also gives the linkage to each function
+type in its declarations, such as a parameter type or a type alias
+(LSP-6). In nested linkage specifications, the innermost applies. These
+rules apply:
 
 - A linkage specification can occur in a namespace. The braces of a
   linkage specification do not make a scope, so names declared in the
@@ -140,7 +147,7 @@ support no others, and they reject an unknown language.
 
 :::{rule} LSP-6
 :kind: impl-defined
-:tests: declarations/linkage-specifications/c-function-pointer-assign.cpp declarations/linkage-specifications/function-type-linkage-overload.cpp
+:tests: declarations/linkage-specifications/c-function-pointer-assign.cpp declarations/linkage-specifications/function-type-linkage-overload.cpp declarations/linkage-specifications/c-callback-alias.cpp declarations/linkage-specifications/c-parameter-type-linkage.cpp
 
 Each implementation chooses if a function type records its language
 linkage ({question}`Q-0074`). If the implementation does, a pointer to a
@@ -163,13 +170,31 @@ namespace io {
 extern "C" int c_add(double, double);  // rejected: C functions cannot overload
 ```
 
+A C function that takes a callback expects a C function. An alias in
+the `extern "C"` block names that type:
+
+```cpp
+extern "C" {
+  using callback = int(int);     // a function type with C language linkage
+  int apply(callback* f, int v); // defined in C
+  int triple(int v) { return 3 * v; }
+}
+int twice(int v) { return 2 * v; }
+
+apply(triple, 2);                // 6 on every implementation
+apply(twice, 2);                 // rejected where the type records the linkage (LSP-6)
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 25
-of 29 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 26
+of 32 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
-  Clang and GCC do not ({question}`Q-0074`).
+  Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a
+  function type in a parameter and in a type alias inside an
+  `extern "C"` block, and rejects a C++ function as the argument for
+  either. Clang and GCC accept both calls.
 - LSP-4: GCC accepts a C language linkage name that matches a global
   variable ({question}`Q-0075`).
 - LSP-2, LSP-4: GCC 14 and Clang 18 accept C language linkage on `main`

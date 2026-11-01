@@ -102,6 +102,12 @@ source:
 
 A `return` of a local variable or a parameter treats the name as an
 rvalue, because the object is about to end.
+
+A program moves from a named object by casting it to an rvalue
+reference. `static_cast<T&&>(x)` is an xvalue ({rule}`VC-3`), so the
+move function is chosen. The library's `std::move` *(library
+referenced)* does the same cast, and a program that includes no header
+writes the cast itself.
 :::
 
 :::{principle} CPY-P5
@@ -546,6 +552,39 @@ Without the two functions, `b.cursor` would point into `a.text`. A class
 that keeps the result of placement `new` into its own bytes has the same
 need ({doc}`/foundations/storage`).
 
+The parameter of an assignment operator can refer to `*this`. A read
+through the parameter after a change to `*this` then sees the change. A
+counted owner saves what it needs from the source before it releases
+its own resource:
+
+```cpp
+struct Block { int count; int value; };
+struct Shared {
+  Block* block;
+  explicit Shared(int v) : block(new Block{1, v}) {}
+  Shared(const Shared& o) : block(o.block) { ++block->count; }
+  Shared& operator=(const Shared& o) {
+    Block* next = o.block;         // saved first: o can be *this
+    ++next->count;
+    release();                     // can delete the block of *this
+    block = next;
+    return *this;
+  }
+  ~Shared() { release(); }
+  void release() { if (--block->count == 0) delete block; }
+};
+Shared a(5);
+a = a;                             // count goes up, then down; a keeps its block
+
+struct Unique {
+  int* p = nullptr;
+  Unique& operator=(Unique&& o) noexcept {
+    if (this != &o) { delete p; p = o.p; o.p = nullptr; }  // a self-move keeps p
+    return *this;
+  }
+};
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 101
@@ -560,6 +599,11 @@ of 103 tests.
   second under `-Wall`. Both warn for a call of a function named
   `std::move`, also when the function is not a template. Neither warns
   for `static_cast` or for a call of a function with another name.
+- CPY-13: Clang 22 warns under `-Wall` (`-Wself-move`) when a program
+  assigns `static_cast<T&&>(x)` to `x` itself, for a class and for an
+  `int`. GCC 16 gives no warning under `-Wall -Wextra`. The warning is
+  outside CPY-13, and a move assignment that the class writes must
+  still work for a source that is the object itself.
 - CPY-7: all compilers accept an assignment of a class whose member has a
   deleted or private destructor, and reject a copy or move construction.
   All compilers move a union whose move constructor UNI-3 deletes by its

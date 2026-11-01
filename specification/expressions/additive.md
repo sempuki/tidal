@@ -225,7 +225,9 @@ If two pointers do not point into the same array, `p - q` is undefined.
 Arithmetic on a pointer whose type differs from the array's element
 type counts the object as an array of one. Cv-qualifiers do not count
 as a difference. A pointer to `std::byte`, `unsigned char`, or `char`
-counts the bytes instead (ADD-6). These operations on any other such
+counts the bytes instead (ADD-6). A `T*` into an array of `T` that an
+allocation function created points to an element of that array
+({rule}`STG-28`), so this rule does not apply to it. These operations on any other such
 pointer are undefined ({question}`Q-0049`):
 
 - a move to a position other than the object or one past it,
@@ -301,6 +303,13 @@ Item items[3];
 Base* first = items;
 first + 1;                // fine: one past the Base subobject
 first + 2;                // undefined
+
+// Test before adding, so that no step overflows (ADD-9).
+constexpr int imax = static_cast<int>(~0u >> 1);
+constexpr int imin = -imax - 1;
+bool add_fits(int a, int b) {
+  return b > 0 ? a <= imax - b : a >= imin - b;
+}
 ```
 
 ## Evidence
@@ -345,6 +354,9 @@ of 56 tests.
   position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`
   bytes, so no difference into one array overflows there
   ({question}`Q-0298`).
+- ADD-9: `-fsanitize=undefined` in Clang and GCC stops a signed `+`
+  whose result does not fit, at run time
+  (`signed-overflow-add-sanitizer.cpp`).
 - ADD-11: the address sanitizer of GCC and Clang stops a difference of
   pointers into two arrays only under `-fsanitize=pointer-subtract`
   and a run-time option that a test cannot set. No other configuration

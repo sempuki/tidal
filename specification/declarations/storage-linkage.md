@@ -180,7 +180,7 @@ entity. Other translation units cannot refer to that entity.
 
 :::{rule} LNK-3
 :kind: required
-:tests: declarations/storage-linkage/const-internal.cpp declarations/storage-linkage/extern-const-external.cpp declarations/storage-linkage/volatile-const-external.cpp declarations/storage-linkage/extern-then-const.cpp
+:tests: declarations/storage-linkage/const-internal.cpp declarations/storage-linkage/extern-const-external.cpp declarations/storage-linkage/volatile-const-external.cpp declarations/storage-linkage/extern-then-const.cpp foundations/odr/header-constant-three-forms.cpp
 
 A `const` variable at namespace scope has internal linkage. The rule
 includes a `constexpr` variable, but does not apply if the variable is
@@ -222,7 +222,7 @@ class also keeps the internal linkage. LNK-10 lists what is not valid.
 
 :::{rule} LNK-10
 :kind: reject
-:tests: declarations/storage-linkage/extern-then-static.cpp declarations/storage-linkage/function-then-static.cpp
+:tests: declarations/storage-linkage/extern-then-static.cpp declarations/storage-linkage/function-then-static.cpp declarations/storage-linkage/qualified-static-after-extern.cpp
 
 A `static` declaration must not follow a declaration with external
 linkage (LNK-8).
@@ -266,7 +266,7 @@ block, the object that is created last ends first.
 
 :::{rule} STO-2
 :kind: required
-:tests: declarations/storage-linkage/block-static-once.cpp declarations/storage-linkage/block-static-not-reached.cpp
+:tests: declarations/storage-linkage/block-static-once.cpp declarations/storage-linkage/block-static-not-reached.cpp declarations/initialization/static/accessor-across-units.cpp
 
 A block-scope `static` variable has static storage, with one object for
 the program run. Its initialization occurs the first time control
@@ -361,7 +361,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 52 of 54 tests. The results are in
+All eight compilers agree on 55 of 57 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

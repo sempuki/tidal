@@ -102,9 +102,10 @@ of the right operand has no effect on the result type.
 :kind: required
 :tests: expressions/shift/left-shift-values.cpp expressions/shift/left-shift-negative.cpp expressions/shift/left-shift-overflow-signed.cpp
 
-`a << n` is `a` times two to the power `n`, reduced modulo two to the
-power of the width of the result type. The rule applies also to
-negative values and to results that change the sign.
+`a << n` is `a` times two to the power `n`, converted to the result
+type as {rule}`CONV-2` converts an integer. So the result keeps the low
+N bits of the product, where N is the width of the result type. The
+rule applies also to negative values and to results that change the sign.
 :::
 
 :::{rule} SHF-6

@@ -35,12 +35,22 @@ get its final value.
 :rules: SINIT-3 SINIT-4 SINIT-5 SINIT-6
 
 Across translation units there is no order, so an initializer that reads
-a variable from another unit may get its final value or zero. An
+a variable from another unit can get its final value or zero. An
 `inline` variable is defined in several units, so its place in any one
-unit's order is only partly known. An implementation may do a dynamic
+unit's order is only partly known. An implementation can do a dynamic
 initialization early, when the value is the same, or late, up to the
-first use of something in that unit, and a `thread_local` variable may
-wait for its first use.
+first use of something in that unit. A `thread_local` variable can wait
+for its first use.
+
+Two forms make a variable safe to read from another unit's initializer:
+
+| Form | Why the order does not matter |
+|---|---|
+| a constant initializer, checked with `constinit` | The variable has its value before any code runs (SINIT-1, {rule}`CINIT-1`). |
+| a block-scope `static` variable in a function that returns a reference to it | The first call initializes the variable ({rule}`STO-2`), so every caller gets a finished object. |
+
+The initializer of such a block-scope variable must not call its own
+function again ({rule}`STO-9`).
 :::
 
 ## Runtime Behavior
@@ -86,7 +96,7 @@ definition does not matter.
 
 :::{rule} SINIT-3
 :kind: unspecified
-:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp
+:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp declarations/initialization/static/accessor-across-units.cpp
 
 The order of dynamic initialization between translation units is
 unspecified. An initializer that reads a variable from another unit gets
@@ -107,12 +117,14 @@ the variable gets zero or that value.
 
 :::{rule} SINIT-5
 :kind: impl-defined
-:tests: declarations/initialization/static/before-main-observed.cpp declarations/initialization/static/deferred-initialization.cpp
+:tests: declarations/initialization/static/before-main-observed.cpp declarations/initialization/static/deferred-initialization.cpp declarations/initialization/static/unit-not-named.cpp
 
 Whether the dynamic initialization of a namespace-scope variable is
 complete before the first statement of `main` is implementation-defined.
 An implementation can defer the initialization until the first use of a
-function or variable of the same translation unit.
+function or variable of the same translation unit. Clang and GCC finish
+every such initialization before `main` starts, also in a unit that no
+other unit names.
 :::
 
 :::{rule} SINIT-6
@@ -159,9 +171,27 @@ struct Registry { static int id; };
 int Registry::id = next();  // ordered here, at its definition
 ```
 
+A variable that initializers in other units read, in two safe forms:
+
+```cpp
+// table.cpp
+int load_size();
+int& table_size() {
+  static int size = load_size();  // runs at the first call (STO-2)
+  return size;
+}
+constinit int table_limit = 64;   // set before any code runs
+
+// user.cpp
+int& table_size();
+extern constinit int table_limit;
+int slots = table_size() * 2;     // the final value, in any unit order
+int cap = table_limit;            // 64, in any unit order
+```
+
 ## Evidence
 
-All eight compilers agree on all 18 tests. The results are in
+All eight compilers agree on all 20 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
@@ -176,6 +206,13 @@ All eight compilers agree on all 18 tests. The results are in
   `base` is not `const`, and an earlier reader gets 0. With a `const`
   `base`, `v` is constant-initialized (SINIT-1), and the earlier reader
   gets 8.
+- **SINIT-3, safe forms.** A block-scope `static` behind a function and
+  a `constinit` variable give the final value to an initializer in
+  another unit. Clang 22 and GCC 16 give the same result in both link
+  orders, at `-O0` and `-O2` (`accessor-across-units.cpp`).
+- **SINIT-5.** Clang 22 and GCC 16 run the dynamic initializer of a
+  unit that `main` never names before `main` starts, in both link
+  orders (`unit-not-named.cpp`).
 - **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.

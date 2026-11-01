@@ -1,4 +1,4 @@
-// tidal-rules: STG-16 STG-5
+// tidal-rules: STG-16 STG-5 STG-29
 // tidal-expect: run
 // tidal-flags: -O0 -fsanitize=undefined -fno-sanitize-recover=undefined
 // tidal-note: The cast gives a Point* that still points to the bytes (STG-16). The program converts that pointer to void* for placement new and uses only the pointer that placement new returns.

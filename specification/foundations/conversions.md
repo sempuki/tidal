@@ -346,6 +346,11 @@ bool c(nullptr);           // false
 
 decltype(1u + -1) w;       // unsigned: step 4 of CONV-19
 decltype('a' + 'b') x;     // int: step 2 of CONV-19
+
+unsigned char byte = 200;
+unsigned total = 4000000000u;
+decltype(total + byte) y;  // unsigned: byte becomes int, then step 4
+total += byte;             // 4000000200, with no signed step
 ```
 
 ## Evidence

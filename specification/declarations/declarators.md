@@ -70,7 +70,9 @@ A function type is made of:
 
 Parameters are passed as values, so an array or a function parameter is
 a pointer, and a top-level qualifier on a parameter is the function
-body's business and not part of the type. `noexcept` is part of the
+body's business and not part of the type. A parameter of type
+reference to array keeps the length, and a template can deduce the
+length from it ({doc}`/templates/deduction`). `noexcept` is part of the
 type, so all declarations agree on it. A function type with a
 cv-qualifier or a ref-qualifier describes a member function, so such a
 type can be named and used for member functions and pointers to

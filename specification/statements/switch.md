@@ -101,7 +101,7 @@ must not be declared again in the outermost block of the body (SW-4).
 
 :::{rule} SW-5
 :kind: reject
-:tests: statements/switch/jump-past-initialization.cpp statements/switch/jump-past-block.cpp statements/switch/jump-past-uninitialized.cpp statements/switch/case-skips-trivial-struct.cpp statements/switch/case-skips-nontrivial-destructor.cpp
+:tests: statements/switch/jump-past-initialization.cpp statements/switch/jump-past-block.cpp statements/switch/block-holds-case-declaration.cpp statements/switch/jump-past-uninitialized.cpp statements/switch/case-skips-trivial-struct.cpp statements/switch/case-skips-nontrivial-destructor.cpp
 
 A transfer to a `case` or `default` label must not skip the
 initialization of a variable that is in scope at the label. A transfer
@@ -113,7 +113,7 @@ type {rule}`JMP-6` lists ({question}`Q-0041`).
 
 :::{rule} SW-1
 :kind: required
-:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp statements/switch/case-inside-loop.cpp statements/switch/nested-switch-labels.cpp
+:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp statements/switch/case-inside-loop.cpp statements/switch/nested-switch-labels.cpp statements/switch/enum-value-outside-cases.cpp
 
 The condition is evaluated one time. Control goes to the first of these
 that exists:
@@ -168,9 +168,30 @@ void g(int v) {
   }
 }
 
+void g2(int v) {
+  switch (v) {
+    case 1: {
+      int x = 1;                      // valid: the block ends before case 2
+      use(x);
+      break;
+    }
+    case 2:
+      break;
+  }
+}
+
 enum Light { red, amber, green };
 void h(Light l) {
   switch (l) { case red: break; }     // should warn: no case for amber or green
+}
+
+enum class State { idle, busy };
+int code(State s) {
+  switch (s) {                        // no default, so SW-7 still checks
+    case State::idle: return 0;
+    case State::busy: return 1;
+  }
+  return -1;                          // State(7) matches no case (SW-1)
 }
 ```
 
@@ -183,6 +204,12 @@ question is noted. The results are in `tests/RESULTS.md`.
   enumerator without a label. EDG gives no warning, even with remarks
   on. The warning is recommended practice, so the rule is in the
   recommended class.
+- SW-1, FN-3: a `switch` with a `return` for every enumerator can
+  still reach its end, because a scoped enumeration holds every value
+  of its underlying type ({principle}`ENUM-P3`). Without the last
+  `return`, GCC warns under `-Wall` (`-Wreturn-type`) and Clang gives
+  no warning. A `return` after the `switch` keeps the SW-7 warning,
+  which a `default` label would turn off.
 - SW-5: GCC accepts a `case` label that skips a variable whose destructor
   is not trivial. Clang and EDG reject the label ({question}`Q-0041`).
 

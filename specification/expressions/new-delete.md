@@ -42,16 +42,23 @@ A null pointer has no object, so deleting it does nothing. The operand
 needs a pointer to an object type, or a class object that converts to
 such a pointer, so that the implementation knows which destructor to
 run.
+
+A class that keeps the result of `new` and deletes it in its destructor
+owns the object. The implicit copy functions copy the pointer, and then
+two objects delete one object. So such a class writes or deletes its
+copy functions ({principle}`CPY-P2`, {rule}`CPY-8`).
 :::
 
 :::{principle} NEW-P3
-:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25 NEW-26
+:rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25 NEW-26 NEW-40 NEW-41
 
 The storage comes from an allocation function. A call of an allocation
 function also creates objects of implicit-lifetime types in the storage
 that the call returns, so the program can use the storage at once
 ({rule}`STG-8`). The global allocation and deallocation functions exist in every program without a declaration, so
-a program can also call them by name. A form with placement arguments
+a program can also call them by name. A program that calls them by name
+pairs each deallocation with its allocation, as a `new` and a `delete`
+expression do. A form with placement arguments
 exists only where a declaration gives it. A program can supply its own
 allocation functions for one class, through the member `operator new`
 and `operator delete` of the class, or with extra placement arguments.
@@ -169,7 +176,7 @@ array in `new`.
 
 :::{rule} NEW-2
 :kind: required
-:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp expressions/new-delete/array-floating-size-exact.cpp expressions/new-delete/array-scoped-enumeration-size.cpp expressions/new-delete/array-class-size.cpp
+:tests: expressions/new-delete/array-forms.cpp expressions/new-delete/array-non-integral-size.cpp expressions/new-delete/array-paren-init.cpp expressions/new-delete/array-paren-init-runtime-bound.cpp expressions/new-delete/array-runtime-size.cpp expressions/new-delete/array-size-from-initializer.cpp expressions/new-delete/array-zero.cpp expressions/new-delete/zero-length-non-null.cpp expressions/new-delete/multi-dimension-type.cpp expressions/new-delete/array-floating-size-exact.cpp expressions/new-delete/array-scoped-enumeration-size.cpp expressions/new-delete/array-class-size.cpp
 
 `new T[n]` creates an array of `n` elements. These rules apply:
 
@@ -178,6 +185,8 @@ array in `new`.
 - The result points to the first element, which is itself an array for
   a multi-dimensional `new`.
 - If `n` is absent, the initializer gives the number of elements.
+- `new T[n]()` value-initializes each element, so each `int` element
+  is 0.
 - `n` is converted to the type of `sizeof`. `n` can have an integral,
   unscoped enumeration, or floating-point type ({question}`Q-0036`), or
   a class type that converts to one of these. A scoped enumeration does
@@ -211,7 +220,7 @@ be deleted before the evaluation ends.
 
 :::{rule} NEW-37
 :kind: reject
-:tests: expressions/new-delete/constant-evaluation-class-allocation.cpp expressions/new-delete/constant-evaluation-placement.cpp expressions/new-delete/constant-evaluation-nothrow.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/construct-at-other-namespace-constant.cpp
+:tests: expressions/new-delete/constant-evaluation-class-allocation.cpp expressions/new-delete/constant-evaluation-placement.cpp expressions/new-delete/constant-evaluation-nothrow.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp
 
 During constant evaluation, a `new` expression must call a global
 allocation function of the implementation. These functions are the
@@ -259,9 +268,10 @@ pointer to a `const` object are valid.
 
 A `new` expression can pass placement arguments in parentheses before
 the type, as in `new (a) T`. The placement arguments become extra
-arguments of the allocation function. With the non-allocating placement
-form, `new (p) T` creates the object at the address `p` ({rule}`STG-5`).
-The type can also be in parentheses, as in `new (int)`.
+arguments of the allocation function. With a {term}`non-allocating
+placement form` ({rule}`LSUP-7`), `new (p) T` creates the object at the
+address `p` ({rule}`STG-5`). The type can also be in parentheses, as in
+`new (int)`.
 :::
 
 :::{rule} NEW-11
@@ -287,7 +297,7 @@ A class can declare its own `operator new` and `operator delete`. A
 
 :::{rule} NEW-19
 :kind: required
-:tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp expressions/new-delete/global-functions-specifiers.cpp
+:tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp expressions/new-delete/global-functions-specifiers.cpp expressions/new-delete/deallocate-by-name-partner.cpp
 
 Every translation unit has these global functions without a
 declaration in the program:
@@ -308,7 +318,7 @@ potentially throwing, and the `operator delete` forms are non-throwing
 
 :::{rule} NEW-26
 :kind: required
-:tests: expressions/new-delete/aligned-forms-by-name.cpp expressions/new-delete/aligned-forms-specifiers.cpp foundations/language-support/alignment-enumeration-with-enumerator.cpp
+:tests: expressions/new-delete/aligned-forms-by-name.cpp expressions/new-delete/aligned-forms-specifiers.cpp foundations/language-support/alignment-enumeration-with-enumerator.cpp expressions/new-delete/deallocate-by-name-partner.cpp
 
 Every translation unit also has the aligned forms of the functions of
 NEW-19. Each aligned form adds a last parameter of type
@@ -318,7 +328,7 @@ storage aligned to the value of that argument.
 
 :::{rule} NEW-20
 :kind: reject
-:tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp expressions/new-delete/placement-pointer-to-const.cpp
+:tests: expressions/new-delete/placement-form-undeclared.cpp expressions/new-delete/placement-form-wrong-type.cpp expressions/new-delete/placement-form-wrong-count.cpp expressions/new-delete/placement-argument-converts.cpp expressions/new-delete/placement-pointer-to-const.cpp foundations/language-support/placement-array-needs-array-form.cpp
 
 A `new` expression with placement arguments must find a declared
 allocation function that accepts them. The function accepts them if
@@ -511,6 +521,14 @@ non-throwing, the `new` expression gives a null pointer and throws
 nothing ({question}`Q-0302`).
 :::
 
+:::{rule} NEW-41
+:kind: required
+:tests: expressions/new-delete/deallocate-by-name-null.cpp
+
+A call by name of a global `operator delete` or `operator delete[]`
+with a null pointer does nothing ({rule}`NEW-4`).
+:::
+
 :::{rule} NEW-38
 :kind: required
 :tests: foundations/language-support/exception-classes-allocation.cpp
@@ -547,6 +565,25 @@ The behavior is undefined if the program:
 A read or write of a dynamic object after `delete` breaks {rule}`OBJ-2`.
 :::
 
+:::{rule} NEW-40
+:kind: undefined
+:tests: expressions/new-delete/deallocate-by-name-alignment-mismatch-sanitizer.cpp expressions/new-delete/deallocate-by-name-array-mismatch-sanitizer.cpp expressions/new-delete/deallocate-by-name-partner.cpp
+
+If a program calls a global deallocation function by name with a
+pointer that its partner allocation function did not return, the
+behavior is undefined. The partners of NEW-19 and NEW-26 match in these
+ways:
+
+- `operator delete` with `operator new`, and `operator delete[]` with
+  `operator new[]`,
+- an aligned form with an aligned form, with the same alignment value,
+- a sized form with a size equal to the size that the allocation asked
+  for.
+
+A second call for the same storage is undefined too. NEW-41 gives a
+null pointer.
+:::
+
 :::{rule} NEW-32
 :kind: undefined
 :tests: expressions/new-delete/null-result-throwing-form-sanitizer.cpp
@@ -577,7 +614,7 @@ replaces these functions and counts calls must accept a lower count.
 
 :::{rule} NEW-27
 :kind: impl-defined
-:tests: expressions/new-delete/default-new-alignment.cpp expressions/new-delete/aligned-new-passes-alignment.cpp
+:tests: expressions/new-delete/default-new-alignment.cpp expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/default-new-alignment-ilp32.cpp expressions/new-delete/default-new-alignment-ilp32-clang.cpp
 
 The {term}`default new alignment` is implementation-defined. The
 predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
@@ -586,7 +623,8 @@ predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
 | Target | Default new alignment |
 |---|---|
 | x86-64, Clang, GCC, and EDG | 16 |
-| EDG with 32-bit `int`, `long`, and pointers | 16 |
+| `-m32`, GCC and EDG | 16 |
+| `-m32`, Clang | 8 |
 :::
 
 :::{rule} NEW-34
@@ -617,6 +655,9 @@ delete n;                       // does nothing
 
 void* raw = ::operator new(16); // implicit objects, as later uses need
 ::operator delete(raw);
+::operator delete(nullptr);     // does nothing
+int* zeros = new int[2 * 3]();  // six elements, each 0
+delete[] zeros;
 int x;
 new (&x) int(3);                // rejected without a declared placement form
 ```
@@ -626,6 +667,11 @@ struct alignas(64) Block { int v; };
 Block* b = new Block;           // operator new(sizeof(Block), std::align_val_t(64))
 delete b;                       // operator delete(b, std::align_val_t(64)), or the sized form
 
+void* wide = ::operator new(256, std::align_val_t(64));
+::operator delete(wide, std::align_val_t(64));  // the aligned partner
+void* other = ::operator new(256, std::align_val_t(64));
+::operator delete(other);       // undefined: the partner takes the alignment
+
 long count = -1;
 int* g = new int[count];        // throws std::bad_array_new_length
 int* h = new (std::nothrow) int[count];  // null
@@ -633,8 +679,8 @@ int* h = new (std::nothrow) int[count];  // null
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 116 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 105
+of 125 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
@@ -686,10 +732,16 @@ of 116 tests.
   object, an array, a placement form, and a deallocation after a throw.
   A type whose alignment equals the default new alignment gets no
   alignment argument.
-- NEW-27: the targets in the matrix give 16. The host Clang with
-  `-m32` gives 8, and the host GCC with `-m32` gives 16. Neither is a
-  matrix target, so the table leaves them out. The value is the
-  implementation's choice, so the rule is `impl-defined`.
+- NEW-27: every compiler gives 16 on x86-64. With `-m32`, Clang 18, 22,
+  and the host Clang give 8, and GCC 14, the host GCC, and EDG in its
+  i686 configuration give 16. The value is the implementation's choice,
+  so the rule is `impl-defined`.
+- NEW-40: the address sanitizer of Clang and GCC stops a call of the
+  form without an alignment for storage from the aligned form
+  ("new-delete-type-mismatch"). It also stops `operator delete` for
+  storage from `operator new[]` ("alloc-dealloc-mismatch").
+- NEW-41: Clang and GCC return from each call with a null pointer, and
+  no sanitizer reports the call.
 - NEW-29, NEW-30: every compiler drops the alignment when a class
   declares only the forms without alignment. Every compiler rejects
   the reverse case, a class of ordinary alignment whose only

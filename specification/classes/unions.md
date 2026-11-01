@@ -67,7 +67,7 @@ have no name to link by.
 :::
 
 :::{principle} UNI-P4
-:rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7 BF-11
+:rules: BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7 BF-11 BF-12
 
 A bit-field is a member with a width in bits. The width and the
 declared type each decide part of its behavior:
@@ -80,7 +80,9 @@ declared type each decide part of its behavior:
 | Its treatment in initialization | The declared type |
 
 A bit-field need not start on a byte, so a bit-field has no address. A
-program cannot point to a bit-field or bind a plain reference to it.
+program cannot point to a bit-field or bind a plain reference to it. An
+unnamed bit-field only reserves bits. The bits are padding, and no
+operation on the class reads or writes them.
 :::
 
 :::{principle} UNI-P5
@@ -288,7 +290,7 @@ The type of the bit-field for `auto` deduction is the declared type.
 
 :::{rule} BF-7
 :kind: required
-:tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp
+:tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp classes/unions/bitfield-unnamed-not-member.cpp
 
 A named bit-field can have a default member initializer, with `=` or
 braces. Aggregate initialization skips unnamed bit-fields. The test for
@@ -301,6 +303,18 @@ narrowing uses the declared type, not the width.
 
 A braced initializer for a bit-field must not need a narrowing
 conversion to the declared type of the bit-field.
+:::
+
+:::{rule} BF-12
+:kind: required
+:tests: classes/unions/bitfield-unnamed-not-member.cpp classes/unions/bitfield-unnamed-value-init-copy.cpp classes/unions/bitfield-aggregate-skips-unnamed.cpp
+
+An unnamed bit-field reserves bits of padding ({rule}`STG-11`) and
+declares no member. These operations skip it:
+
+- aggregate initialization (BF-7) and structured bindings,
+- the implicit copy and move functions ({rule}`CPY-8`),
+- a defaulted comparison.
 :::
 
 :::{rule} UNI-12
@@ -347,8 +361,8 @@ Constant evaluation follows this rule.
 :kind: required
 :tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp
 
-If placement `new` ({rule}`STG-5`) or `std::construct_at`
-({rule}`LSUP-10`) creates an object of a member's type at the address of
+If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
+gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
 the member, the new object is that member, and the member becomes
 active. The rule holds when the union has no active member, and when
 another member is active. An explicit destructor call on the active
@@ -394,11 +408,18 @@ not trivial also uses an object that does not exist
 
 :::{rule} BF-9
 :kind: impl-defined
-:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-zero-width-splits.cpp
+:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-zero-width-splits.cpp classes/unions/bitfield-low-order-first.cpp classes/unions/bitfield-next-unit-lp64.cpp classes/unions/bitfield-next-unit-ilp32.cpp
 
-The allocation of bit-fields in an object is implementation-defined. On
-the x86-64 Linux targets in the matrix, adjacent bit-fields of the same
-type share one unit of that type while they fit.
+The allocation of bit-fields in an object is implementation-defined. The
+matrix targets, x86-64 and `-m32`, place a bit-field of type `T` in this
+way:
+
+- Bit-fields fill the bits from the lowest-order bit up, in the order
+  of their declarations, and other members share the bytes.
+- The bit-field takes the next free bits if they lie in one run of
+  `sizeof(T)` bytes that starts at a multiple of `alignof(T)`
+  ({rule}`TYP-2`, {question}`Q-0120`).
+- If not, the bit-field starts at the next multiple of `alignof(T)`.
 :::
 
 :::{rule} BF-10
@@ -444,6 +465,21 @@ struct Pixel {
   unsigned blue : 5;             // one 32-bit unit on x86-64
 };
 Pixel p{31, 70, 0};              // 70 is reduced modulo 64
+
+struct Header {
+  unsigned version : 4;          // bits 0-3: the low half of byte 0
+  unsigned length : 4;           // bits 4-7
+  unsigned short id : 12;        // bits 16-27: bits 8-19 would cross
+};                               // a 2-byte run of unsigned short
+Header h{3, 5, 1};               // byte 0 is 0x53, and byte 2 is 0x01
+
+struct Status {
+  unsigned ready : 1;
+  unsigned : 3;                  // three bits of padding
+  unsigned mode : 4;
+};
+Status s{1, 2};                  // ready = 1, mode = 2 (BF-12)
+auto [ready, mode] = s;          // two names for two members
 ```
 
 An assignment through a chain makes a member active only if the
@@ -500,8 +536,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 122 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -513,6 +549,14 @@ of 117 tests.
   of a class type with a `constexpr` conversion to `int`, and GCC
   rejects it ({question}`Q-0314`).
 - BF-8: Clang and GCC warn under `-Wall` for both cases.
+- BF-9: Clang and GCC give the same layouts on x86-64 and with `-m32`.
+  On `-m32` an `unsigned long long` bit-field can start at any multiple
+  of 4 bytes, so a field of 30 bits after 40 bits starts at bit 40. EDG
+  in its i686 configuration aligns `long long` to 8 and starts such a
+  field at bit 64 ({question}`Q-0120`).
+- BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
+  and compares a class with an unnamed bit-field, and a structured
+  binding that has one name for each named bit-field.
 - UNI-6: EDG accepts the assignment through a user-provided operator to
   a member that is not active during constant evaluation. Clang and GCC
   reject the assignment ({question}`Q-0088`).

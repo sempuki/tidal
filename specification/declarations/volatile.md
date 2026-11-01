@@ -15,15 +15,23 @@ conversions, copy and move.
 ## Principles
 
 :::{principle} VOL-P1
-:rules: VOL-1 VOL-8 VOL-6 VOL-12
+:rules: VOL-1 VOL-8 VOL-6 VOL-12 VOL-13
 
-`volatile` marks an object whose accesses the program can observe, so
-each read and each write through a volatile path is performed as
-written. The mark holds only on volatile paths, so an access through a
-path that is not volatile has no defined meaning. The value read from
-such an object is an ordinary value, so arithmetic on the value is not
-volatile. Constant evaluation cannot read a volatile object, because
-the read is an observable effect.
+`volatile` marks an access that the program can observe, so each read
+and each write through a volatile glvalue is performed as written. The
+object itself need not be volatile. A volatile object promises that
+every access is observable, so an access to a volatile object through a
+glvalue that is not volatile is undefined. The value read is an
+ordinary value, so arithmetic on the value is not volatile. Constant
+evaluation cannot read a volatile object, because the read is an
+observable effect.
+
+| Object | Glvalue | Access |
+|---|---|---|
+| volatile | volatile | observable (VOL-1) |
+| not volatile | volatile | observable (VOL-1) |
+| not volatile | not volatile | ordinary |
+| volatile | not volatile | undefined (VOL-6) |
 :::
 
 :::{principle} VOL-P2
@@ -133,12 +141,13 @@ Constant evaluation cannot read a volatile object (VOL-1).
 
 :::{rule} VOL-1
 :kind: required
-:tests: declarations/volatile/access-run.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp
+:tests: declarations/volatile/access-run.cpp declarations/volatile/volatile-in-type-traits.cpp declarations/volatile/volatile-local-loop.cpp declarations/volatile/const-volatile-external.cpp declarations/volatile/volatile-path-to-plain-object.cpp
 
 Each read and each write of an object through a volatile lvalue is an
-observable effect ({rule}`TR-7`), and the implementation performs each
-such access. The type of a volatile variable keeps `volatile`, but the
-result of an arithmetic operation on its value does not. A `const
+observable effect ({rule}`TR-7`) that the implementation performs, also
+when the object is not volatile. The type of a volatile variable keeps
+`volatile`, but the result of an arithmetic operation on its value does
+not. A `const
 volatile` variable at namespace scope has external linkage, so all
 translation units share the variable.
 :::
@@ -162,6 +171,22 @@ before the program runs and are not accesses ({question}`Q-0176`).
 
 If a program accesses a volatile object through a glvalue that is not
 volatile, the behavior is undefined.
+:::
+
+## Implementation Requirements
+
+:::{rule} VOL-13
+:kind: impl-defined
+:tests: declarations/volatile/bitfield-write-keeps-neighbors.cpp
+
+The size of the memory access for a volatile read or write is
+implementation-defined ({question}`Q-0326`). On the
+x86-64 targets in the matrix, these sizes apply:
+
+| Access | Memory access |
+|---|---|
+| a read or write of a volatile scalar | one access of the size of the scalar |
+| a write to a volatile bit-field | a read and a write of the whole unit that holds the bit-field ({rule}`BF-9`) |
 :::
 
 ## Recommended Practice
@@ -189,7 +214,9 @@ struct Uart {
   unsigned data;
   unsigned read() volatile { return data; }
 };
-volatile Uart* const port = nullptr;   // address set by the platform
+using address = decltype(sizeof 0);
+auto* const port =                     // the address from the data sheet
+    reinterpret_cast<volatile Uart*>(address{0x4000'1000});
 
 void send(volatile Uart& u, unsigned c) {
   while ((u.status & 1) == 0) {}       // each test reads status again
@@ -198,10 +225,26 @@ void send(volatile Uart& u, unsigned c) {
 }
 ```
 
+A program that simulates a device in its own memory creates the
+registers with placement `new` in a byte array and keeps that pointer
+({rule}`STG-29`). A cast of the array's address would point to a byte:
+
+```cpp
+inline void* operator new[](decltype(sizeof 0), void* at) noexcept { return at; }
+
+alignas(Uart) unsigned char device[2 * sizeof(Uart)];
+volatile Uart* bank = new (device) Uart[2]();  // two Uart objects
+bank[1].data = 7;                              // an observable write
+
+struct Control { unsigned enable : 1; unsigned mode : 3; };
+volatile Control* control = nullptr;           // set to the device address
+// control->mode = 5 reads and writes the 32-bit unit (VOL-13)
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 33
-of 35 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 35
+of 37 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
@@ -211,6 +254,15 @@ of 35 tests.
   kept. A constant or zero initial value is in the program's data, with
   no store. An initializer of a volatile class object can be written
   with one wide store for several members ({question}`Q-0176`).
+- VOL-1: Clang and GCC run a program that writes a plain object through
+  a pointer to volatile and reads it through its name.
+- VOL-13: at `-O2`, Clang 22 and GCC 16 write a volatile `unsigned
+  short` member with one 2-byte store. For a write to a volatile
+  bit-field, both load the 4-byte unit, change the bits, and store the
+  4-byte unit. The harness cannot observe the size of an access, so the
+  test checks only that the other bit-fields keep their values. Whether
+  an implementation can merge or split volatile accesses is open
+  ({question}`Q-0326`).
 - VOL-2: Clang rejects an in-class initializer for a `static const
   volatile` member. GCC and EDG accept the initializer
   ({question}`Q-0080`).
