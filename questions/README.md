@@ -319,6 +319,7 @@ answer**, and the specification follows it until a pull request changes it.
 | [Q-0306](Q-0306-signed-char-access.md) | Can a program read or write another object through a `signed char` glvalue? | provisional | no, undefined (STG-23); every compiler allows it in practice |
 | [Q-0307](Q-0307-constant-evaluation-replacement.md) | Must constant evaluation reject a use of an old pointer after a replacement that STG-9 does not allow? | provisional | yes, undefined (STG-19, STG-20); every constant evaluator in the matrix accepts |
 | [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | compiler defect | yes (STG-1); Clang 18 accepts |
+| [Q-0309](Q-0309-union-member-read-after-destructor-constant.md) | Must constant evaluation reject a read of a union member after an explicit destructor call ends it? | compiler defect | yes, undefined (UNI-14, OBJ-2); GCC 16 accepts |
 
 ## Status values
 

@@ -27,6 +27,14 @@ argument-dependent lookup
   lookup happens, and {rule}`NAM-29` says what the lookup finds. See
   {term}`associated namespace`.
 
+arithmetic type
+  An {term}`integral type` or a floating-point type. The floating-point
+  types are `float`, `double`, `long double`, and the extended
+  floating-point types *(extended floating-point types referenced)*.
+  {doc}`/foundations/types` lists the fundamental types. An enumeration
+  is a separate kind of type, and an unscoped enumeration promotes to an
+  integral type ({rule}`CONV-1`).
+
 associated class
   A class that an argument type adds to argument-dependent lookup, for
   example the argument's own class and its bases. The friends of an
@@ -306,6 +314,11 @@ integer promotion
   type that can hold all their values. The candidates are tried by rank
   from `int` upward, the signed type of each rank before the unsigned
   type. Unscoped enumerations and bit-fields also promote (CONV-1).
+
+integral type
+  `bool`, a character type, or a signed or unsigned integer type. The
+  character types are `char`, `signed char`, `unsigned char`, `wchar_t`,
+  `char8_t`, `char16_t`, and `char32_t` ({doc}`/foundations/types`).
 
 linkage
   The property that controls if two declarations of a name refer to the

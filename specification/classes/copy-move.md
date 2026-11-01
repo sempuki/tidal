@@ -411,7 +411,7 @@ initializers play no part.
 
 :::{rule} CPY-8
 :kind: required
-:tests: classes/copy-move/implicit-copy-constexpr.cpp classes/copy-move/memberwise-array.cpp classes/copy-move/memberwise-assign-order.cpp classes/copy-move/memberwise-order.cpp
+:tests: classes/copy-move/implicit-copy-constexpr.cpp classes/copy-move/self-pointer-copy.cpp classes/copy-move/memberwise-array.cpp classes/copy-move/memberwise-assign-order.cpp classes/copy-move/memberwise-order.cpp
 
 An implicit copy or move function copies or moves each part of the
 object in this order:
@@ -520,10 +520,36 @@ struct Owner {                     // owns an array, so it writes its copies
 };
 ```
 
+A member that points into the object's own storage needs copy functions
+that the class writes. The implicit copy copies the pointer, so the copy
+points into the source object (CPY-8):
+
+```cpp
+struct Line {
+  char text[16] = {};
+  char* cursor = text;             // points into this object's text
+  Line() = default;
+  Line(const Line& o) : cursor(text + (o.cursor - o.text)) {
+    for (int i = 0; i < 16; ++i) text[i] = o.text[i];
+  }
+  Line& operator=(const Line& o) {
+    for (int i = 0; i < 16; ++i) text[i] = o.text[i];
+    cursor = text + (o.cursor - o.text);
+    return *this;
+  }
+};
+Line a;
+Line b = a;                        // b.cursor points into b.text
+```
+
+Without the two functions, `b.cursor` would point into `a.text`. A class
+that keeps the result of placement `new` into its own bytes has the same
+need ({doc}`/foundations/storage`).
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 100
-of 102 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 103 tests.
 
 - CPY-14: GCC 14 rejects a defaulted constructor whose parameter type
   differs from the implicit one. GCC 16, Clang, and EDG accept it and

@@ -104,7 +104,9 @@ fact about the old object:
 | a base subobject, or a `[[no_unique_address]]` member | any object | no (STG-19) |
 | a `const` complete object that is not dynamic | any object | creating the new object is undefined (STG-20) |
 
-Where the old names do not reach the new object, the launder operation
+The pointer that placement `new` returns always reaches the new object
+(STG-5), so a program that keeps that pointer needs nothing else. Where
+the old names do not reach the new object, the launder operation
 *(library referenced)* gives a pointer that does. The end of a block
 still destroys each variable as its declared type, so the storage must
 hold an object of that type at that point (STG-21).
@@ -249,7 +251,7 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp
 
 `new (p) T(args)` with the library's non-allocating placement form
 *(library referenced)* creates an object of type `T` at the address
@@ -316,7 +318,8 @@ if these conditions hold:
 
 The names, pointers, and references to the old object then refer to
 the new object. A new object in the place of a member or an array
-element becomes that member or element.
+element becomes that member or element. {rule}`UNI-14` gives a union
+member that holds no object.
 :::
 
 :::{rule} STG-10
@@ -398,7 +401,7 @@ starts at that address ({rule}`ADD-10`).
 
 :::{rule} STG-16
 :kind: required
-:tests: foundations/storage/interconvertible-union-member.cpp foundations/storage/interconvertible-chain.cpp foundations/storage/interconvertible-standard-layout-base.cpp
+:tests: foundations/storage/interconvertible-union-member.cpp foundations/storage/interconvertible-chain.cpp foundations/storage/interconvertible-standard-layout-base.cpp foundations/storage/cast-to-target-then-construct.cpp
 
 Two objects are {term}`pointer-interconvertible` in these cases:
 
@@ -411,7 +414,9 @@ Two objects are {term}`pointer-interconvertible` in these cases:
 A `reinterpret_cast`, or a `static_cast` through `void*`, turns a
 pointer to one into a pointer to the other ({rule}`CLS-19`). For other
 objects at one address, such as an array and its first element, the
-result points to the original object.
+result points to the original object. A program can copy that result and
+convert it to `void*`, for example to give the address to placement
+`new`.
 :::
 
 ## Undefined Behavior
@@ -565,10 +570,36 @@ auto* byte = reinterpret_cast<unsigned char*>(&v);
 byte + sizeof v;                      // one past the last byte of v
 ```
 
+A class that builds an object in its own bytes keeps the pointer that
+placement `new` returns, and reaches the object only through that
+pointer (STG-5):
+
+```cpp
+template <class T>
+class Maybe {
+  alignas(T) unsigned char storage[sizeof(T)];
+  T* held = nullptr;                  // null, or the result of placement new
+public:
+  template <class... Args>
+  void emplace(Args&&... args) {
+    reset();
+    held = new (storage) T(static_cast<Args&&>(args)...);
+  }
+  void reset() { if (held) { held->~T(); held = nullptr; } }
+  T* get() const { return held; }     // reaches the T
+  T* bytes() { return reinterpret_cast<T*>(storage); }  // points to the
+  ~Maybe() { reset(); }                                   // bytes (STG-16)
+};
+```
+
+The implicit copy of `Maybe` copies `held`, which then points into the
+bytes of the other object. So `Maybe` must write its own copy and move
+functions ({rule}`CPY-8`).
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 56
-of 59 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 61 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

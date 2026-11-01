@@ -126,7 +126,7 @@ function.
 
 :::{rule} DTY-2
 :kind: required
-:tests: expressions/decltype/conditional.cpp expressions/decltype/paren-lvalue.cpp expressions/decltype/prvalue-const-class.cpp expressions/decltype/prvalue.cpp expressions/decltype/string-literal.cpp expressions/decltype/xvalue.cpp
+:tests: expressions/decltype/arithmetic-common-type.cpp expressions/decltype/conditional.cpp expressions/decltype/paren-lvalue.cpp expressions/decltype/prvalue-const-class.cpp expressions/decltype/prvalue.cpp expressions/decltype/string-literal.cpp expressions/decltype/xvalue.cpp
 
 For any other operand of type `T`, the value category sets the result:
 
@@ -264,10 +264,28 @@ auto n = sizeof(log_once()); // log_once is not called
 (void)log_once();            // called; result discarded
 ```
 
+`decltype` of a built-in arithmetic expression names the common type of
+the {term}`usual arithmetic conversions` ({rule}`CONV-19`). A
+conditional expression whose operands are lvalues of one type is an
+lvalue, so `decltype` of it gives a reference:
+
+```cpp
+int i = 0;
+short h = 1;
+unsigned u = 2;
+float x = 1.0f;
+
+decltype(h + h)        g;      // int: both operands promote
+decltype(u + -1)       k;      // unsigned
+decltype(i + x)        m;      // float
+decltype(true ? i : i) r = i;  // int&
+decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 46
-of 49 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 47
+of 50 tests.
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject such a use ({question}`Q-0065`).

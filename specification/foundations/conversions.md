@@ -4,7 +4,7 @@ A standard conversion changes a value to another type where an operator,
 an initialization, or a call needs that type. This page covers these
 conversions:
 
-- between arithmetic types,
+- between {term}`arithmetic types <arithmetic type>`,
 - to `bool`,
 - between pointer types.
 
@@ -96,7 +96,7 @@ A `float` operand does not change to `double` in arithmetic.
 
 :::{rule} CONV-19
 :kind: required
-:tests: expressions/conversions/uac-floating.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp
+:tests: expressions/conversions/uac-floating.cpp expressions/decltype/arithmetic-common-type.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp
 
 The {term}`usual arithmetic conversions` give the two operands of a
 binary arithmetic operator one common type. The first step that applies
@@ -336,6 +336,9 @@ int zero = 0;
 int* q = zero;             // rejected
 bool b = nullptr;          // rejected
 bool c(nullptr);           // false
+
+decltype(1u + -1) w;       // unsigned: step 4 of CONV-19
+decltype('a' + 'b') x;     // int: step 2 of CONV-19
 ```
 
 ## Evidence

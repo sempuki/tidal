@@ -20,7 +20,9 @@ nothing else about the library (decision 0041):
 The type that `typeid` gives and the exception that a failed `typeid`
 throws stay with the library *(library referenced)*. So do the new
 handler *(library referenced)* and the launder operation *(library
-referenced)*.
+referenced)*. A program that includes no header has no usable
+declaration of the launder operation. Such a program keeps the pointer
+that placement `new` returns ({rule}`STG-5`, {principle}`STG-P4`).
 
 Depends on: fundamental types; list initialization of classes;
 comparison operators; structured bindings; new and delete; virtual
@@ -324,7 +326,10 @@ of 38 tests.
 - Scope: the page covers the names that a `new` expression and
   `dynamic_cast` use. `typeid` and its exception wait for roadmap item
   T. The new handler and the launder operation are library facilities
-  that no core rule on a Tidal page uses yet. The text that each
+  that no core rule on a Tidal page uses yet. A program that declares
+  `std::launder` itself as a function template compiles on Clang and
+  GCC and fails to link, because the library defines the function in
+  its header. The text that each
   exception class gives through its member functions is
   implementation-defined, and the page leaves those members to the
   library.

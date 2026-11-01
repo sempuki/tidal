@@ -15,7 +15,7 @@ copy and move, list initialization and aggregates, standard conversions.
 ## Principles
 
 :::{principle} UNI-P1
-:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8 UNI-13
+:rules: UNI-1 UNI-2 UNI-4 UNI-5 UNI-6 UNI-8 UNI-13 UNI-14
 :exceptions: UNI-10 UNI-12
 
 A union is one piece of storage with several views. All members of the
@@ -34,8 +34,9 @@ first byte
 +----+
 ```
 
-The initializer picks the first active member, and a plain assignment to
-another member makes that member active instead. The assignment can
+The initializer picks the first active member. A plain assignment to
+another member, or the construction of an object of the member's type at
+the member's address, makes that member active instead. The assignment can
 also reach a part of the member, as in `u.a.tag = 7`. Reading a member that
 is not active reads an object that is not there, so the behavior is
 undefined ({principle}`OBJ-P4`). A reference is not an object with
@@ -339,6 +340,18 @@ apply:
 Constant evaluation follows this rule.
 :::
 
+:::{rule} UNI-14
+:kind: required
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp
+
+If placement `new` ({rule}`STG-5`) or `std::construct_at`
+({rule}`LSUP-10`) creates an object of a member's type at the address of
+the member, the new object is that member, and the member becomes
+active. The rule holds when the union has no active member, and when
+another member is active. An explicit destructor call on the active
+member ({rule}`DTOR-6`) leaves the union with no active member.
+:::
+
 :::{rule} BF-5
 :kind: required
 :tests: classes/unions/bitfield-plain-int-signed.cpp
@@ -361,7 +374,7 @@ through the other struct. The read gives the stored value.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp
+:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. During constant evaluation, {rule}`CE-6` rejects the read.
@@ -452,10 +465,40 @@ constexpr int use() {
 }
 ```
 
+A union slot holds an object of a type that has no default
+constructor. The slot starts with no active member, `std::construct_at`
+fills it, and an explicit destructor call empties it (UNI-14):
+
+```cpp
+template <class T, int Capacity>
+class FixedStack {
+  union Slot {                   // T can lack a default constructor
+    T value;
+    constexpr Slot() {}          // no active member
+    constexpr ~Slot() {}         // does not destroy value
+  };
+  Slot slots[Capacity];
+  int count = 0;
+public:
+  constexpr FixedStack() {}
+  constexpr ~FixedStack() { while (count > 0) pop(); }
+  template <class... Args>
+  constexpr void push(Args&&... args) {
+    std::construct_at(&slots[count].value, static_cast<Args&&>(args)...);
+    ++count;                     // value is now the active member
+  }
+  constexpr void pop() { --count; slots[count].value.~T(); }
+  constexpr T& top() { return slots[count - 1].value; }
+};
+```
+
+`std::construct_at` is declared as {rule}`LSUP-10` gives. A plain array
+`T items[Capacity]` would need a default constructor for `T`.
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 107 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 112 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -470,6 +513,12 @@ of 107 tests.
   active member. For an assignment through a chain that does not make
   the member active (UNI-13), GCC says that the program accesses the
   member instead of the member that is active.
+- UNI-14: Clang and GCC accept the constant evaluations in which
+  `std::construct_at` makes a member active, and run the placement
+  `new` form with no sanitizer report. After an explicit destructor
+  call on the member, Clang rejects a read of the member during
+  constant evaluation, and GCC accepts the read and gives 0
+  ({question}`Q-0309`).
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the
