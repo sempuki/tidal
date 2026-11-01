@@ -168,14 +168,14 @@ forward-progress rule belongs with threads, which are out of scope.
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, and
 0050). Phases 1 to 4 are drafted, and phase 5 is provisional. Next:
 
-1. Phase 5, items C2 (thicken the templates chapter), F3 (templates
-   across translation units), and L (lanes U, V, X). Item C1 is done:
-   duplicates merged, moot questions closed, one constraint tie-breaker
-   model in ORD-13, and the braced-list model in REF-P3 (Q-0294).
-2. Repairs from front-end round 8, findings G68 to G75
-   (`reports/clean-room/rust-frontend/report-8.md`).
-3. Inventories for phase 5 items F1 (objects in raw storage) and F2
-   (language-support types, round 2).
+1. Phase 5, item FE: front-end round 9 on the pages since round 8
+   (templates, storage, language support), then templates in the
+   interpreter, run outcomes in the regression baseline, and a
+   `run-fail` test for every `undefined` rule.
+2. Phase 5, item E: Write suites for generic code, Predict batches for
+   the template pages, a Diagnose batch on missed rejects, and Propose
+   round 2 (X5 to X8).
+Items T0, C1, C2, F1, F2, F3, and L of phase 5 are done.
 
 Waiting on the maintainer:
 
