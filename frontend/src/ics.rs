@@ -1,6 +1,6 @@
 // Implicit conversion sequences and their comparison
-// (spec/foundations/conversion-sequences.md, ICS-1 to ICS-45), and
-// overload resolution for calls (spec/foundations/overload-resolution.md,
+// (specification/foundations/conversion-sequences.md, ICS-1 to ICS-45), and
+// overload resolution for calls (specification/foundations/overload-resolution.md,
 // OVL-22 to OVL-25, OVL-34 to OVL-36).
 //
 // A sequence is formed for one argument and one parameter. Two sequences
@@ -1043,7 +1043,7 @@ impl P {
                 if i >= np {
                     if is_list(a) {
                         // A braced list matches no `...` (outside the
-                        // spec; the classes grid of the conversion
+                        // specification; the classes grid of the conversion
                         // sequences page shows it).
                         ok = false;
                         break;

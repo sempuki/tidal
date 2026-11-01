@@ -2,7 +2,7 @@
 """Build the Tidal specification as an HTML site.
 
 The site publishes the specification alone (decision 0046). It uses
-Sphinx with the configuration in site/ and the sources in spec/. The
+Sphinx with the configuration in site/ and the sources in specification/. The
 site is written to build/site. Install the pinned packages first:
 
     python3 -m venv build/venv
@@ -27,7 +27,7 @@ def main() -> int:
     venv = ROOT / "build" / "venv" / "bin" / "sphinx-build"
     sphinx = str(venv) if venv.exists() else "sphinx-build"
     cmd = [sphinx, "-q", "-b", "html", "-c", str(ROOT / "site"),
-           str(ROOT / "spec"), str(ROOT / "build" / "site")]
+           str(ROOT / "specification"), str(ROOT / "build" / "site")]
     if args.strict:
         cmd.insert(1, "-W")
     result = subprocess.run(cmd).returncode

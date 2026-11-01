@@ -5,7 +5,7 @@ Each page says how many of its tests the baseline compilers agree on:
 when it carries no per-compiler expectation (tidal-expect-<x>) other
 than one for a report compiler. A compiler that skips a test, as EDG
 skips -Werror tests, does not disagree. tools/status_table.py rewrites
-the sentences, and tools/check_spec.py fails when one is out of date.
+the sentences, and tools/check_specification.py fails when one is out of date.
 """
 
 import re

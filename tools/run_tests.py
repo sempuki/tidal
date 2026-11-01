@@ -2,7 +2,7 @@
 """Run Tidal conformance tests across the compiler matrix.
 
 Each test is a .cpp file under tests/ with directive comments at the top
-(see docs/spec-format.md). Compilers come from tools/compilers.json (see
+(see documentation/specification-format.md). Compilers come from tools/compilers.json (see
 tools/matrix.py). Each test is compiled with every selected compiler, run
 if it expects `run` and the compiler can build executables, and compared
 with its expectation.

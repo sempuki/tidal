@@ -1,4 +1,4 @@
-// Constant evaluation (spec/foundations/constant-evaluation.md) as a client
+// Constant evaluation (specification/foundations/constant-evaluation.md) as a client
 // of the interpreter (decision 0048). It runs the abstract machine of
 // src/interp with `constant` set. The machine then stops at each
 // operation that CE-2 to CE-25 forbid (`Stop::Limit`), and at each

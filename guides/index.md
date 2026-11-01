@@ -7,13 +7,13 @@ Where a guide and a rule disagree, the rule decides.
 
 | Kind | Guide |
 |---|---|
-| Tutorial | {doc}`reading-the-spec` |
+| Tutorial | {doc}`reading-the-specification` |
 | How-to | {doc}`resource-owner`, {doc}`error-handling`, {doc}`safe-arithmetic`, {doc}`enum-switch` |
 
 :::{toctree}
 :maxdepth: 1
 
-reading-the-spec
+reading-the-specification
 resource-owner
 error-handling
 safe-arithmetic

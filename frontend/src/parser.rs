@@ -1,6 +1,6 @@
 // Parser state, entities, scopes, and name lookup.
 //
-// Name lookup follows spec/foundations/names.md: scopes nest, a use
+// Name lookup follows specification/foundations/names.md: scopes nest, a use
 // searches outward and stops at the first scope that declares the name
 // (NAM-2), class member bodies see the whole class (NAM-6), and labels
 // have their own function-wide name space (NAM-7). Using directives act
@@ -390,7 +390,7 @@ pub struct P {
     pub cx_branches: Vec<usize>,
     pub cx_counter: usize,
     /// Attributes parsed since the start of the current statement or
-    /// declaration (spec/declarations/attributes.md).
+    /// declaration (specification/declarations/attributes.md).
     pub pending_attrs: Vec<Attr>,
     /// The standard attributes of each entity, over all its declarations
     /// (ATTR-4, ATTR-5, ATTR-14).

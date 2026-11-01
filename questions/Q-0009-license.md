@@ -11,7 +11,7 @@ repository owner chooses the license.
 
 The project mixes three kinds of material:
 
-- specification prose (`spec/`, `docs/`, `questions/`),
+- specification prose (`specification/`, `documentation/`, `questions/`),
 - test programs (`tests/`),
 - tools (`tools/`, `docker/`).
 

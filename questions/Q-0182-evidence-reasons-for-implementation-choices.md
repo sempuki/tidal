@@ -1,7 +1,7 @@
 # Q-0182: May Evidence give the reason for an implementation's choice?
 
 **Status:** provisional
-**Affects:** `docs/spec-format.md` (Evidence), Evidence segments that describe orders and layouts
+**Affects:** `documentation/specification-format.md` (Evidence), Evidence segments that describe orders and layouts
 
 ## Context
 
@@ -14,7 +14,7 @@ choice and not the reason.
 ## Evidence
 
 Finding X1-14 in `reports/clean-room/X1/report.md`. The order tables in
-the Evidence of `spec/foundations/evaluation-order.md`.
+the Evidence of `specification/foundations/evaluation-order.md`.
 
 ## Options
 

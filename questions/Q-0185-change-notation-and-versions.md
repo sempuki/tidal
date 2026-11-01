@@ -1,7 +1,7 @@
 # Q-0185: How does Tidal mark a change to a rule and the language version a rule holds for?
 
 **Status:** provisional
-**Affects:** `docs/spec-format.md`, Q-0007, RFOR-4
+**Affects:** `documentation/specification-format.md`, Q-0007, RFOR-4
 
 ## Context
 

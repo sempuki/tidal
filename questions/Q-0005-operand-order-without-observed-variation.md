@@ -1,7 +1,7 @@
 # Q-0005: Can operand order be `unspecified` when no compiler varies it?
 
 **Status:** provisional
-**Affects:** MUL-13, `docs/pipeline.md` step 5
+**Affects:** MUL-13, `documentation/pipeline.md` step 5
 
 ## Context
 

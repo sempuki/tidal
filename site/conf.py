@@ -1,5 +1,5 @@
 # Sphinx configuration for the Tidal specification site.
-# Build with tools/build_site.py. Sources are the MyST Markdown files in spec/.
+# Build with tools/build_site.py. Sources are the MyST Markdown files in specification/.
 
 import os
 import subprocess
@@ -32,7 +32,7 @@ html_show_sourcelink = False
 html_theme_options = {
     "source_repository": "https://github.com/sempuki/tidal",
     "source_branch": "main",
-    "source_directory": "spec/",
+    "source_directory": "specification/",
 }
 
 tidal_repository = "https://github.com/sempuki/tidal"

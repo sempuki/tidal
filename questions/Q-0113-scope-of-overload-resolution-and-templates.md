@@ -1,7 +1,7 @@
 # Q-0113: Should Tidal specify overload resolution and templates in full?
 
 **Status:** provisional
-**Affects:** `docs/roadmap.md` phases 3 and 4, `docs/charter.md`
+**Affects:** `documentation/roadmap.md` phases 3 and 4, `documentation/charter.md`
 
 ## Context
 

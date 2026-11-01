@@ -106,7 +106,7 @@ struct Cond {
 
 /// The value of the expression of an `#if` or `#elif` line, with object-like
 /// names replaced and `defined` applied. Preprocessing beyond the include
-/// slice is outside the spec; this covers integer expressions only.
+/// slice is outside the specification; this covers integer expressions only.
 fn eval_if(text: &str, pp: &Pp) -> Option<i128> {
     // Tokens: numbers, names, and operators.
     let mut toks: Vec<String> = Vec::new();
@@ -275,7 +275,7 @@ fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diag
     match word {
         "include" => {
             if !(rest.starts_with('"') && rest.len() >= 2 && rest[1..].contains('"')) {
-                d.unsupported(line, "#include form other than \"file\" (outside the spec)");
+                d.unsupported(line, "#include form other than \"file\" (outside the specification)");
                 return vec![];
             }
             let name = &rest[1..1 + rest[1..].find('"').unwrap()];
@@ -313,7 +313,7 @@ fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diag
             let k = rest.find(|c: char| !(c.is_alphanumeric() || c == '_')).unwrap_or(rest.len());
             let (name, value) = (&rest[..k], &rest[k..]);
             if name.is_empty() || value.starts_with('(') {
-                d.unsupported(line, "#define of a function-like macro (outside the spec)");
+                d.unsupported(line, "#define of a function-like macro (outside the specification)");
                 return vec![];
             }
             // INC-4: a guard_value does not change the guard.
@@ -325,7 +325,7 @@ fn directive(text: &str, line: u32, path: Option<&std::path::Path>, d: &mut Diag
             vec![]
         }
         _ => {
-            d.unsupported(line, "preprocessor directive (outside the spec)");
+            d.unsupported(line, "preprocessor directive (outside the specification)");
             vec![]
         }
     }
@@ -397,14 +397,14 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
                         _ => eval_if(&rest, pp).map(|x| x != 0),
                     };
                     let v = v.unwrap_or_else(|| {
-                        d.unsupported(line, "#if expression (outside the spec)");
+                        d.unsupported(line, "#if expression (outside the specification)");
                         false
                     });
                     conds.push(Cond { active: outer && v, taken: v, outer });
                 }
                 "elif" | "elifdef" | "elifndef" | "else" => {
                     let Some(top) = conds.last() else {
-                        d.unsupported(line, "#else without #if (outside the spec)");
+                        d.unsupported(line, "#else without #if (outside the specification)");
                         continue;
                     };
                     let outer = top.outer;
@@ -417,7 +417,7 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
                         _ => eval_if(&rest, pp).map(|x| x != 0),
                     };
                     let v = v.unwrap_or_else(|| {
-                        d.unsupported(line, "#elif expression (outside the spec)");
+                        d.unsupported(line, "#elif expression (outside the specification)");
                         false
                     });
                     let top = conds.last_mut().unwrap();
@@ -426,7 +426,7 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
                 }
                 "endif" => {
                     if conds.pop().is_none() {
-                        d.unsupported(line, "#endif without #if (outside the spec)");
+                        d.unsupported(line, "#endif without #if (outside the specification)");
                     }
                 }
                 _ if outer => {
@@ -472,7 +472,7 @@ fn lex_in(src: &str, path: Option<&std::path::Path>, d: &mut Diags, pp: &mut Pp)
             }
             if let Some(v) = pp.defines.get(&word).filter(|v| !v.is_empty()).cloned() {
                 // An object-like name from `#define` with a value
-                // (outside the spec).
+                // (outside the specification).
                 if pp.expanding < 16 {
                     pp.expanding += 1;
                     let mut toks = lex_in(&v, None, d, pp);

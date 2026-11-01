@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Compare Tidal spec text with a reference corpus, printing only Tidal text.
+"""Compare Tidal specification text with a reference corpus, printing only Tidal text.
 
-Run by the checker (see docs/clean-room.md). The reference corpus is a
+Run by the checker (see documentation/clean-room.md). The reference corpus is a
 directory of .tex, .md, .txt, or .html files kept outside this repository.
 The report names Tidal rules and quotes Tidal text only. It never prints
 reference text, so it can be handed to the writer.
@@ -96,8 +96,8 @@ def longest_shared(ws: list[str], big: set, n: int) -> tuple[int, int]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--reference", type=Path, required=True)
-    ap.add_argument("--spec", type=Path, nargs="+", default=[ROOT / "spec", ROOT / "guides"],
-                    help="directories of Markdown text to check (default: spec and guides)")
+    ap.add_argument("--spec", type=Path, nargs="+", default=[ROOT / "specification", ROOT / "guides"],
+                    help="directories of Markdown text to check (default: specification and guides)")
     ap.add_argument("--run", type=int, default=8)
     ap.add_argument("--overlap", type=float, default=0.25)
     ap.add_argument("--out", type=Path)
@@ -114,7 +114,7 @@ def main() -> int:
         "",
     ]
     flagged = 0
-    checked = [(label if d.name == "spec" else f"{d.name}/{label}", text)
+    checked = [(label if d.name == "specification" else f"{d.name}/{label}", text)
                for d in args.spec for label, text in units(d)]
     for label, text in checked:
         ws = words(text)

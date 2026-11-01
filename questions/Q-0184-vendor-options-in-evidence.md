@@ -1,7 +1,7 @@
 # Q-0184: Should Evidence record vendor options that change behavior?
 
 **Status:** provisional
-**Affects:** `docs/spec-format.md` (Evidence), INIT-1 and other rules of undefined or indeterminate values
+**Affects:** `documentation/specification-format.md` (Evidence), INIT-1 and other rules of undefined or indeterminate values
 
 ## Context
 

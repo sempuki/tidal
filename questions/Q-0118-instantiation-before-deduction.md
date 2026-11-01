@@ -1,7 +1,7 @@
 # Q-0118: Should instantiation (N2) come before deduction (O) in phase 4?
 
 **Status:** provisional
-**Affects:** `docs/roadmap.md`, phase 4
+**Affects:** `documentation/roadmap.md`, phase 4
 
 ## Context
 

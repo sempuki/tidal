@@ -4,8 +4,8 @@ Every question the project raises gets a file here: classification calls,
 compiler divergences, process choices. Anyone can weigh in by opening a pull
 request.
 
-The spec never waits on a question. Each question has a **provisional
-answer**, and the spec follows it until a pull request changes it.
+The specification never waits on a question. Each question has a **provisional
+answer**, and the specification follows it until a pull request changes it.
 
 ## Index
 
@@ -225,10 +225,10 @@ answer**, and the spec follows it until a pull request changes it.
 
 ## Status values
 
-- **open**: no provisional answer yet. The spec marks affected rules as open.
-- **provisional**: the spec follows the provisional answer. Opinions welcome.
+- **open**: no provisional answer yet. The specification marks affected rules as open.
+- **provisional**: the specification follows the provisional answer. Opinions welcome.
 - **compiler defect**: the provisional answer is that one compiler, or an
-  older version of one, is wrong, and the spec follows the others. The
+  older version of one, is wrong, and the specification follows the others. The
   affected tests carry an override for that compiler with a note naming
   the question. The question could be reported to that compiler's
   project.
@@ -250,7 +250,7 @@ implementation source.
 ```
 
 **Propose a change of answer.** In the same pull request, update the
-"Provisional answer" section, the index above, and the affected spec rules
+"Provisional answer" section, the index above, and the affected specification rules
 and tests. The test suite must still pass on baseline compilers.
 
 **Raise a new question.** Copy `TEMPLATE.md` to the next free number and add
@@ -262,5 +262,5 @@ it to the index.
   and implementation source.
 - Don't quote, paste, or paraphrase the ISO standard, its drafts, WG21
   papers, or cppreference. Pull requests that do will be closed. The
-  project's input rules are in `docs/clean-room.md`.
+  project's input rules are in `documentation/clean-room.md`.
 - One question per file. Keep opinions in the file they answer.

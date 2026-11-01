@@ -1,5 +1,5 @@
 // Overload resolution for operator expressions
-// (spec/foundations/overload-resolution.md, OVL-7 to OVL-13, OVL-25,
+// (specification/foundations/overload-resolution.md, OVL-7 to OVL-13, OVL-25,
 // OVL-32, OVL-33, OVL-35, OVL-36; classes/operators.md, OPR-6, OPR-15;
 // classes/comparisons.md, DCMP-6).
 //

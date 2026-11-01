@@ -1,5 +1,5 @@
 {
-  "comment": "Compiler matrix for tools/run_tests.py. See docs/decisions/0008.",
+  "comment": "Compiler matrix for tools/run_tests.py. See documentation/decisions/0008.",
   "compilers": [
     {
       "id": "clang-host",

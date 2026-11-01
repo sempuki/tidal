@@ -12,8 +12,8 @@ read.
 
 | Role | Has read | Can do |
 |---|---|---|
-| **Clean-room writer** | No ISO text, WG21 papers, cppreference, or unsanitized implementation sources | Write and change specification text, tests, tools, and docs |
-| **Clean-room reader** | Only Tidal's own files, while taking part | Use the spec as its audience would (write programs, predict test outcomes, extend `frontend/`, plan what to specify next) and report findings by rule ID. Write only in your exercise's directories |
+| **Clean-room writer** | No ISO text, WG21 papers, cppreference, or unsanitized implementation sources | Write and change specification text, tests, tools, and documentation |
+| **Clean-room reader** | Only Tidal's own files, while taking part | Use the specification as its audience would (write programs, predict test outcomes, extend `frontend/`, plan what to specify next) and report findings by rule ID. Write only in your exercise's directories |
 | **Source reader** | Any of the above | Give clean-room writers summaries in prose: gaps, doubts, behaviors to probe. No code, no quotes, no stable names. Never change a file |
 | **Contributor** | Anything | Argue for an answer to a question in `questions/` from evidence anyone can check |
 
@@ -30,10 +30,10 @@ reader.
 - **Report a gap.** As a source reader, write a summary under the rules
   in `AGENTS.md`. A clean-room writer checks it with `tools/similarity.py` and
   triages it into probes (decision 0019).
-- **Use the spec on its own.** As a clean-room reader, write programs,
+- **Use the specification on its own.** As a clean-room reader, write programs,
   predict test outcomes, or extend the front end in `frontend/` from the
-  spec pages alone, and report where the text was not enough
-  (`docs/exercises.md`).
+  specification pages alone, and report where the text was not enough
+  (`documentation/exercises.md`).
 - **Draft or extend a page.** As a clean-room writer, follow the pipeline below.
 - **Improve the tooling.** The runner, the checks, and the site build are
   in `tools/` and `site/`.
@@ -47,7 +47,7 @@ commit; one integrator numbers questions and commits (decision 0018).
 
 ## 4. The pipeline for a page
 
-`docs/pipeline.md` gives every step. In short:
+`documentation/pipeline.md` gives every step. In short:
 
 1. **Topic card.** The page file with a title, a summary, and a
    "Depends on" line.
@@ -57,31 +57,31 @@ commit; one integrator numbers questions and commits (decision 0018).
    `tidal-expect`. Run them on the matrix. The compilers decide.
 4. **Source reading.** Read the sanitized diagnostics and code for
    conditions the probes missed, and probe those.
-5. **Classify** each behavior (`docs/spec-format.md`).
+5. **Classify** each behavior (`documentation/specification-format.md`).
 6. **Draft.** Principles first, then syntax, then rules in their
-   segments (`docs/style-guide.md`). Every rule names its tests, and
+   segments (`documentation/style-guide.md`). Every rule names its tests, and
    every rule is cited by a principle.
 7. **Questions.** Each divergence between compilers gets a file in
    `questions/` with a provisional answer.
 8. **Similarity.** Run `tools/similarity.py` against the reference
    corpus. Nothing may be flagged.
 9. **Rewrite** any flagged unit and check again.
-10. **Status.** Update `docs/status.md` and `tests/RESULTS.md`.
+10. **Status.** Update `documentation/status.md` and `tests/RESULTS.md`.
 
 Each step ends in its own commit, so the history shows how the page was
 built.
 
 ## 5. Before you push
 
-Run `tools/check_all.sh`. It runs the spec cross-reference check, the
+Run `tools/check_all.sh`. It runs the specification cross-reference check, the
 full test matrix, and the site build. The similarity check needs a local
 copy of the reference corpus outside the repository; see
-`docs/clean-room.md`. CI runs all of these on every push and pull
+`documentation/clean-room.md`. CI runs all of these on every push and pull
 request.
 
 A change is ready to merge when:
 
-- `tools/check_spec.py` reports no problems,
+- `tools/check_specification.py` reports no problems,
 - every test passes on the baseline compilers, or carries a per-compiler
   expectation with a note that names its question,
 - the similarity check flags nothing,
@@ -90,7 +90,7 @@ A change is ready to merge when:
 
 ## 6. Writing
 
-Write in the plain style of `docs/style-guide.md`: one statement per
+Write in the plain style of `documentation/style-guide.md`: one statement per
 sentence, the active voice, the word list for requirements, and no
 cleft sentences, colon reveals, or dashes for asides. Write each
 principle and rule from the tests and the compilers' behavior. Do not

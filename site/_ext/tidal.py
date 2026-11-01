@@ -9,7 +9,7 @@ Provides:
 - the `tidal-undefined-index` directive, which lists the `undefined` rules and
   the compilers whose constant evaluation rejects each one.
 
-See docs/style-guide.md for how rules are written.
+See documentation/style-guide.md for how rules are written.
 """
 
 import fnmatch
@@ -110,7 +110,7 @@ class PrincipleDirective(SphinxDirective):
 
 
 def page_facts(path: Path):
-    """Return (title, summary, rule count) from a spec page's source."""
+    """Return (title, summary, rule count) from a specification page's source."""
     text = path.read_text()
     lines = text.splitlines()
     title = next((l[2:].strip() for l in lines if l.startswith("# ")), path.stem)
@@ -383,7 +383,7 @@ class UndefinedIndexDirective(SphinxDirective):
 
 
 def in_progress_notice(app, docname, source):
-    """Put a notice at the top of a spec page that has no rules yet."""
+    """Put a notice at the top of a specification page that has no rules yet."""
     text = source[0]
     if (docname.endswith("index") or docname in ("glossary", "rules")
             or ":::{rule}" in text):

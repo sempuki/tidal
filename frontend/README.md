@@ -44,7 +44,7 @@ evaluation broke. The conformance count of matching rules accepts either.
 `--m32` switches the target from LP64 (x86-64 Linux) to ILP32.
 `--werror` turns the warnings for `recommended` rules into errors.
 Some warnings run only when a `-W` flag asks for them, following the
-warning-flag table in the Evidence of `spec/foundations/translation.md`:
+warning-flag table in the Evidence of `specification/foundations/translation.md`:
 ATTR-6 with `-Wall`, `-Wunused`, `-Wunused-variable`, or
 `-Wunused-but-set-variable`, SEQ-7 with `-Wall`, ATTR-7 with
 `-Wimplicit-fallthrough` or `-Wextra`, CTOR-13 with `-Wall`, the

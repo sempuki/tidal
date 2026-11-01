@@ -15,8 +15,8 @@ Specification site: https://sempuki.github.io/tidal/
 
 **Status:** statements, expressions, declarations, classes, exceptions,
 name lookup, overload resolution, and the core of templates are specified.
-The rest of templates is in progress. [docs/charter.md](docs/charter.md)
-gives the scope, and [docs/status.md](docs/status.md) gives the current
+The rest of templates is in progress. [documentation/charter.md](documentation/charter.md)
+gives the scope, and [documentation/status.md](documentation/status.md) gives the current
 counts and next steps.
 
 ## Layout
@@ -25,20 +25,20 @@ counts and next steps.
 |---|---|
 | `CONTRIBUTING.md` | Roles, how to claim work, the pipeline in short, and what a change needs before merge |
 | `AGENTS.md` | Rules for all agents: source readers give clean-room writers summaries only |
-| `docs/charter.md` | Goals, scope, and non-goals |
-| `docs/setup.md` | What a machine needs to run every check |
-| `docs/clean-room.md` | Who may read what, and how contamination is checked |
-| `docs/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
-| `docs/spec-format.md` | Rule classes and test directives |
-| `docs/pipeline.md` | The step-by-step process for producing a section |
-| `docs/exercises.md` | Clean-room exercises that check the specification by using it |
-| `docs/decisions/` | One file per design decision, numbered in order |
-| `docs/status.md` | Where the project stands and what comes next |
-| `docs/roadmap.md` | The order of the work ahead, from four clean-room views |
-| `spec/` | The Tidal specification text; `spec/index.md` is the site front page and table of contents |
+| `documentation/charter.md` | Goals, scope, and non-goals |
+| `documentation/setup.md` | What a machine needs to run every check |
+| `documentation/clean-room.md` | Who may read what, and how contamination is checked |
+| `documentation/style-guide.md` | How to write specification text: writing rules, page structure, rule format |
+| `documentation/specification-format.md` | Rule classes and test directives |
+| `documentation/pipeline.md` | The step-by-step process for producing a section |
+| `documentation/exercises.md` | Clean-room exercises that check the specification by using it |
+| `documentation/decisions/` | One file per design decision, numbered in order |
+| `documentation/status.md` | Where the project stands and what comes next |
+| `documentation/roadmap.md` | The order of the work ahead, from four clean-room views |
+| `specification/` | The Tidal specification text; `specification/index.md` is the site front page and table of contents |
 | `docker/` | Container images for the compiler matrix |
 | `tests/` | Conformance tests, each tied to one or more rules |
-| `questions/` | Open questions where the compilers disagree or a rule is unclear, each with the provisional answer the spec follows |
+| `questions/` | Open questions where the compilers disagree or a rule is unclear, each with the provisional answer the specification follows |
 | `frontend/` | `tidal-fe`, a C++ compiler front end in Rust, written only from the specification to test it. It checks programs, names the rule each error breaks, and runs the conformance tests (`frontend/README.md`) |
 | `guides/` | A tutorial and how-to guides written from the specification, kept apart from it and unpublished (decisions 0045, 0046) |
 | `tools/` | Test runner and compiler matrix, input fetcher, similarity checker, site build |
@@ -51,7 +51,7 @@ counts and next steps.
     tools/containers.py build               # build matrix images (docker or podman)
     tools/run_tests.py --report tests/RESULTS.md   # full matrix
     tools/run_tests.py --compilers clang-host,gcc-host   # host only, no containers
-    tools/check_spec.py                     # rules and tests refer to each other
+    tools/check_specification.py                     # rules and tests refer to each other
     tools/build_site.py                     # build/site (HTML, searchable)
     tools/frontend_check.py                 # the compiler front end against its baseline
     tools/check_all.sh                      # all of the above; run before pushing

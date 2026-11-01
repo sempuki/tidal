@@ -2,7 +2,7 @@
 """Strip comments and standard citations from implementation source.
 
 Implementations quote the C++ standard in comments, so writers read only
-sanitized copies (see docs/clean-room.md). This script:
+sanitized copies (see documentation/clean-room.md). This script:
 
 1. removes // and /* */ comments, keeping string and character literals
    (including raw strings) intact, and keeping line numbers stable;

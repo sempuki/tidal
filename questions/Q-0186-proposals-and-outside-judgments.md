@@ -1,7 +1,7 @@
 # Q-0186: May a proposal rest on judgments from outside Tidal?
 
 **Status:** provisional
-**Affects:** `docs/exercises.md` (Propose)
+**Affects:** `documentation/exercises.md` (Propose)
 
 ## Context
 

@@ -105,7 +105,7 @@ impl P {
         args
     }
 
-    /// Overload resolution is outside the spec. This picks the single
+    /// Overload resolution is outside the specification. This picks the single
     /// viable candidate by arity and implicit convertibility, or the
     /// candidate with the best conversion ranks; anything harder gives
     /// an unknown result.

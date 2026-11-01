@@ -1,7 +1,7 @@
 # Q-0119: Should diagrams use a renderer such as Mermaid, or plain text?
 
 **Status:** provisional
-**Affects:** `docs/style-guide.md`, `site/conf.py`, `tools/requirements-site.txt`
+**Affects:** `documentation/style-guide.md`, `site/conf.py`, `tools/requirements-site.txt`
 
 ## Context
 

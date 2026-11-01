@@ -121,7 +121,7 @@ impl P {
                 return Ok(None);
             }
             "export" | "module" | "import" => {
-                return Err(self.err("modules (outside the spec)"));
+                return Err(self.err("modules (outside the specification)"));
             }
             "asm" => {
                 return Err(self.err("asm declaration"));
@@ -784,7 +784,7 @@ impl P {
         Ok(ids)
     }
 
-    /// Structured bindings (spec/declarations/structured-bindings.md).
+    /// Structured bindings (specification/declarations/structured-bindings.md).
     fn parse_structured_binding(&mut self, ds: &DeclSpec, ctx: Ctx, line: u32) -> PR<Vec<DeclId>> {
         let is_ref = if self.eat("&") {
             Some(true)

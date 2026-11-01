@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the specification table in docs/status.md from the pages.
+"""Regenerate the specification table in documentation/status.md from the pages.
 
 It also rewrites the agreement sentence in each page's Evidence segment
 (tools/agreement.py).
@@ -21,9 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agreement  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = ROOT / "spec"
+SPEC = ROOT / "specification"
 TESTS = ROOT / "tests"
-STATUS = ROOT / "docs" / "status.md"
+STATUS = ROOT / "documentation" / "status.md"
 KINDS = ["required", "reject", "undefined", "unspecified", "impl-defined",
          "no-diagnostic", "conditionally-supported", "recommended"]
 HEADER = ("| Section | Rules | Classes | Tests | Single-test rules | Overrides "
@@ -77,7 +77,7 @@ def main() -> int:
             rows.append(row(p))
     glossary = (SPEC / "glossary.md").read_text()
     terms = len(re.findall(r"^\S.*$", glossary.split(":::{glossary}")[1].split(":::")[0], flags=re.M))
-    rows.append(f"| [Glossary](../spec/glossary.md) | {terms} terms | | | | | | | 0 flagged |")
+    rows.append(f"| [Glossary](../specification/glossary.md) | {terms} terms | | | | | | | 0 flagged |")
     lines = STATUS.read_text().split("\n")
     start = lines.index(HEADER) + 2
     end = next(i for i in range(start, len(lines)) if not lines[i].startswith("|"))

@@ -5,7 +5,7 @@ Usage:
     tools/exercises.py predict PAGE OUT     # e.g. expressions/additive build/exercises/R-additive
     tools/exercises.py score OUT ANSWERS    # ANSWERS is JSON written by the reader
 
-`predict` takes the tests that the rules on spec/PAGE.md cite, removes
+`predict` takes the tests that the rules on specification/PAGE.md cite, removes
 their tidal- directives, and writes them to OUT as p01.cpp, p02.cpp, and
 so on, in a shuffled order, with a README.md that tells the reader what
 to answer. The key goes to build/exercise-keys/<name of OUT>.json, away
@@ -30,7 +30,7 @@ import matrix  # noqa: E402
 import run_tests  # noqa: E402
 
 ROOT = matrix.ROOT
-SPEC = ROOT / "spec"
+SPEC = ROOT / "specification"
 TESTS = ROOT / "tests"
 KEYS = ROOT / "build" / "exercise-keys"
 
@@ -41,7 +41,7 @@ OUTCOMES = {
     "runs": "compiles, runs, and exits with status 0",
     "run-fail": "compiles, but the run ends with a nonzero status",
     "undefined": "compiles, but running it has undefined behavior, so no outcome is promised",
-    "depends": "the compilers differ, as the spec records; say which in `why`",
+    "depends": "the compilers differ, as the specification records; say which in `why`",
 }
 # A test expectation and the answers that match it.
 MATCHES = {
@@ -58,7 +58,7 @@ MAIN = re.compile(r"\bint\s+main\s*\(")
 
 
 def rule_classes() -> dict[str, str]:
-    """The class of every rule in the spec."""
+    """The class of every rule in the specification."""
     classes, rule = {}, None
     for f in SPEC.rglob("*.md"):
         for line in f.read_text().splitlines():
@@ -74,7 +74,7 @@ RULE_CLASS = rule_classes()
 
 
 def page_tests(page: str) -> list[str]:
-    """Test names cited by the rules on one spec page, in page order."""
+    """Test names cited by the rules on one specification page, in page order."""
     names, in_rule = [], False
     for line in (SPEC / f"{page}.md").read_text().splitlines():
         if RULE.match(line):
@@ -129,7 +129,7 @@ def predict(page: str, out: Path) -> int:
     readme = [
         f"# Predict batch for {page}",
         "",
-        f"Read spec/{page}.md and any other page under spec/. For each program",
+        f"Read specification/{page}.md and any other page under specification/. For each program",
         "below, predict what happens when it is built with",
         "`-std=c++23 -pedantic-errors` and, if it compiles and links, run.",
         "Do not compile the programs.",
@@ -147,8 +147,8 @@ def predict(page: str, out: Path) -> int:
         *[f"- `{k}`: {v}" for k, v in OUTCOMES.items()],
         "",
         "`rules` lists the Tidal rule IDs that decide the outcome. When the",
-        "spec does not settle a program, say so in `why` and give your best",
-        "guess. Where the spec records that compilers differ on a program,",
+        "specification does not settle a program, say so in `why` and give your best",
+        "guess. Where the specification records that compilers differ on a program,",
         "answer `depends`, or the outcome of any one of them.",
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")

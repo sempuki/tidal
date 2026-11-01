@@ -81,7 +81,7 @@ def main() -> int:
     args = ap.parse_args()
     cargo_bin = cargo()
     if not cargo_bin:
-        print("frontend: skipped (cargo not found, see docs/setup.md)")
+        print("frontend: skipped (cargo not found, see documentation/setup.md)")
         return 0
     now = results(cargo_bin)
     if args.update or not BASELINE.exists():

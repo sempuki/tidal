@@ -13,7 +13,7 @@ protected specification text. This material includes:
 - WG21 papers,
 - cppreference,
 - implementation sources and test suites that have not been sanitized
-  (`docs/clean-room.md` lists them),
+  (`documentation/clean-room.md` lists them),
 - implementation sources that are not under a permissive license, such
   as GCC, sanitized or not,
 - posts and answers that quote any of the above.
@@ -69,14 +69,14 @@ in that session.
 
 A clean-room writer can compile and run programs on any implementation, read
 compiler diagnostics, read the sanitized sources, and read every file in
-this repository. `docs/clean-room.md` gives the full input rules, and
-`docs/style-guide.md` gives the rules for writing specification text.
+this repository. `documentation/clean-room.md` gives the full input rules, and
+`documentation/style-guide.md` gives the rules for writing specification text.
 
 ## Working practices
 
 These practices apply to every agent that changes the repository.
 
-- **Keep going.** Work through `docs/status.md` next steps in order.
+- **Keep going.** Work through `documentation/status.md` next steps in order.
   When a step ends, start the next one.
 - **Do not wait for decisions.** When the compilers disagree or a
   classification is unclear, adopt the clean-room writer's answer as provisional,

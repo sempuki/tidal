@@ -1,4 +1,4 @@
-// Statements: spec/statements/*.md.
+// Statements: specification/statements/*.md.
 
 use crate::ast::*;
 use crate::decl2::{Ctx, InitForm};
@@ -169,7 +169,7 @@ impl P {
                     let hs = self.parse_handlers()?;
                     return Ok(Stmt::Try(Box::new(body), hs));
                 }
-                "co_return" => return Err(self.err("coroutines (outside the spec)")),
+                "co_return" => return Err(self.err("coroutines (outside the specification)")),
                 _ => {}
             }
             // label
@@ -605,7 +605,7 @@ impl P {
             }
         }
         if f.deduce {
-            // return type deduction (spec/declarations/functions/return-deduction.md)
+            // return type deduction (specification/declarations/functions/return-deduction.md)
             if let Some(x) = &e {
                 if matches!(x.k, EK::InitList(_)) {
                     self.error(line, "RET-7", "return type deduced from a braced list");

@@ -1,7 +1,7 @@
 # Q-0183: Should Tidal give proposals a way to state implementation cost?
 
 **Status:** provisional
-**Affects:** `docs/exercises.md` (Propose), designer finding D32
+**Affects:** `documentation/exercises.md` (Propose), designer finding D32
 
 ## Context
 

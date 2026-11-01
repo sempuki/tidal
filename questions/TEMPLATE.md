@@ -18,7 +18,7 @@ Test files, compiler output, implementation source locations.
 
 ## Provisional answer
 
-The option the spec follows now, and the reason.
+The option the specification follows now, and the reason.
 
 ## Opinions
 

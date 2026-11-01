@@ -18,8 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Spec cross-references
-        run: python3 -I tools/check_spec.py
+      - name: Specification cross-references
+        run: python3 -I tools/check_specification.py
 
       # Compiler images are rebuilt from the layer cache, so only changed
       # Dockerfiles cost real build time.

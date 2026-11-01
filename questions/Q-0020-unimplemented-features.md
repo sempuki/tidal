@@ -1,7 +1,7 @@
 # Q-0020: How should tests record a compiler that doesn't implement a feature yet?
 
 **Status:** provisional
-**Affects:** `docs/spec-format.md`, tests that use `[[assume]]`
+**Affects:** `documentation/specification-format.md`, tests that use `[[assume]]`
 
 ## Context
 

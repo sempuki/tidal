@@ -57,7 +57,7 @@ impl P {
             return Ok(Expr::new(EK::Throw(Some(Box::new(e))), QTy::new(Ty::Void), Cat::PR, line));
         }
         if self.at("co_yield") {
-            return Err(self.err("coroutines (outside the spec)"));
+            return Err(self.err("coroutines (outside the specification)"));
         }
         let lhs = self.parse_conditional()?;
         let t = self.tok().clone();
@@ -275,7 +275,7 @@ impl P {
                     }
                     return Ok(Expr::new(EK::Delete(arr, Box::new(e)), QTy::new(Ty::Void), Cat::PR, line));
                 }
-                "co_await" => return Err(self.err("coroutines (outside the spec)")),
+                "co_await" => return Err(self.err("coroutines (outside the specification)")),
                 _ => {}
             }
         }
@@ -1112,7 +1112,7 @@ impl P {
                 let ty = QTy { t: Ty::Array(Box::new(QTy { t: Ty::Char, c: true, v: false }), Some(n)), c: true, v: false };
                 return Ok(Expr::new(EK::Str(Rc::new(name)), ty, Cat::L, line));
             }
-            "co_await" | "co_yield" | "co_return" => return Err(self.err("coroutines (outside the spec)")),
+            "co_await" | "co_yield" | "co_return" => return Err(self.err("coroutines (outside the specification)")),
             "operator" => {
                 // an operator function named in an expression (OPR)
                 let mut d = crate::decl::Declarator {
@@ -1369,7 +1369,7 @@ impl P {
     fn parse_lambda(&mut self) -> PR<Expr> {
         let line = self.line();
         self.expect("[")?;
-        // captures (spec/expressions/lambdas.md grammar)
+        // captures (specification/expressions/lambdas.md grammar)
         let in_fn = !self.fns.is_empty();
         let cap_scope = self.push_scope(SK::Params);
         let r = self.parse_captures(in_fn, line);

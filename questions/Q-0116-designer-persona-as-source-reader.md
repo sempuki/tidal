@@ -1,7 +1,7 @@
 # Q-0116: Should a designer persona that knows WG21 papers also run, as a source reader?
 
 **Status:** provisional
-**Affects:** decision 0037, `docs/exercises.md`
+**Affects:** decision 0037, `documentation/exercises.md`
 
 ## Context
 

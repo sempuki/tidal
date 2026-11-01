@@ -1,6 +1,6 @@
 // Declarations: decl-specifiers, declarators, and type-ids.
 //
-// The Tidal grammar for declarators (spec/declarations/declarators.md)
+// The Tidal grammar for declarators (specification/declarations/declarators.md)
 // gives `declarator`, `ptr_part`, `direct`, and `params`, but no
 // production for `decl_specifiers`, `type`, `type_id`, or
 // `simple_declaration`. Those follow general knowledge and are logged in
@@ -291,7 +291,7 @@ impl P {
         }
     }
 
-    /// Attributes (spec/declarations/attributes.md). The front end parses
+    /// Attributes (specification/declarations/attributes.md). The front end parses
     /// each attribute, checks its arguments (ATTR-2, ATTR-13, ATTR-17),
     /// and records it in `pending_attrs` for the statement or declaration.
     fn check_attributes(&mut self) {
@@ -977,7 +977,7 @@ impl P {
         }
     }
 
-    /// `decltype(expr)` after the keyword (spec/expressions/decltype.md).
+    /// `decltype(expr)` after the keyword (specification/expressions/decltype.md).
     pub fn parse_decltype(&mut self) -> PR<QTy> {
         self.expect("(")?;
         // An unparenthesized id-expression or member access gives the

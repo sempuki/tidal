@@ -1,5 +1,5 @@
 // The interpreter (decision 0048). It runs a checked program on the
-// abstract machine of the specification (spec/foundations/translation.md,
+// abstract machine of the specification (specification/foundations/translation.md,
 // objects.md, values.md, evaluation-order.md).
 //
 // A run ends in one of three ways:
@@ -13,7 +13,7 @@
 //
 // Constant evaluation is a client (src/consteval.rs). It runs the same
 // machine with `constant` set, which adds the limits of
-// spec/foundations/constant-evaluation.md. An operation that constant
+// specification/foundations/constant-evaluation.md. An operation that constant
 // evaluation does not allow stops the run with `Stop::Limit` and the rule
 // that forbids it.
 
