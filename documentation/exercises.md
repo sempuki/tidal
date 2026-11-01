@@ -75,6 +75,7 @@ needs a language-support type declares the shape that its page gives
 | W12 | Callbacks | Haskell | lambdas, member-pointers, auto, decltype | an event dispatcher; a sort that takes a comparator; a function that composes two functions; a counter captured by a lambda |
 | W13 | Low level | Ada | volatile, alignment, unions (bit-fields), casts, attributes, linkage-specifications | a device-register map; a packed header with bit-fields; a function with C linkage; a buffer aligned for a wider type |
 | W14 | Program structure | Ada | storage-linkage, namespaces, inline, static initialization, names, type-names, translation | a program in three translation units; a namespace with internal helpers; a shared constant across units; a counter whose initialization order matters |
+| W15 | Generic code | Haskell | templates (declarations, arguments, deduction, packs, concepts, constraints, specialization), storage, language-support | a fixed-capacity stack; the largest of any number of arguments; a concept for shapes with a more specific overload; a compile-time type list; an optional that keeps its value in raw storage |
 
 Port suites (P1 to P8) follow one per persona after the Write suites.
 Each suite gives three short programs in the persona's language that
@@ -87,7 +88,9 @@ Each exercise takes one proposal from the designer's portfolio
 proposal's design and impact sections, cites the rules the proposal
 changes, and lists each
 change in a table: rule ID, kind of change, old class, new class, and
-the tests affected. Together the four reach 47 of the 68 pages.
+the tests affected. Round 1 (X1 to X4) reaches 47 of the 68 pages that
+existed then. Round 2 (X5 to X8) takes the proposals that phases 3 and
+4 unblocked.
 
 | ID | Proposal | Changes existing behavior |
 |---|---|---|
@@ -95,6 +98,10 @@ the tests affected. Together the four reach 47 of the 68 pages.
 | X2 | P13, checked `noexcept` | yes |
 | X3 | P5, automatic objects start at zero | yes |
 | X4 | P7, temporaries live through reference-returning chains | yes |
+| X5 | P9, overload sets as values | no |
+| X6 | P10, expansion over the elements of an object | no |
+| X7 | P12, value-specialized parameters | no |
+| X8 | P16, member call syntax for free functions | no |
 
 ## 5. Predict and Diagnose batches
 
@@ -110,8 +117,13 @@ pattern, and shows the reader the matching compiler message.
 
 `tools/exercises.py predict PAGE build/exercises/R-<name>` builds a
 Predict batch in a shuffled order and keeps its key in
-`build/exercise-keys/`. `tools/exercises.py score build/exercises/R-<name>
-ANSWERS` scores the reader's answers and lists the wrong ones.
+`build/exercise-keys/`. `tools/exercises.py diagnose PAGE
+build/exercises/D-<name>` builds a Diagnose batch from the page's
+single-file tests that carry a GCC error pattern, with the host `g++`
+message that matches the pattern. `tools/exercises.py score
+build/exercises/<batch> ANSWERS` scores either kind and lists the wrong
+answers. For a Diagnose batch the score also builds each fix with `g++`
+and runs it when it has `main`.
 
 ## 6. Order
 
@@ -120,7 +132,7 @@ ANSWERS` scores the reader's answers and lists the wrong ones.
 2. W8 and W1, which target the areas where the pilot found the most
    problems.
 3. The other Write suites in table order.
-4. Diagnose batches, after the tool that builds them exists.
+4. Diagnose batches.
 5. Port suites.
 
 ## 7. Coverage
@@ -150,7 +162,7 @@ Fill in the angle brackets.
 ### Shared rules (every prompt)
 
 > Your only documentation is the Tidal specification under
-> ~/Development/tidal/specification/ (start with specification/index.md, specification/glossary.md,
+> the repository's specification/ (start with specification/index.md, specification/glossary.md,
 > and specification/foundations/translation.md). Read only files under specification/,
 > documentation/, and <the exercise's own directories>. Do not read tests/,
 > build/exercise-keys/, questions/, reports/, or inputs/, and do not use

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Build and score Predict batches for clean-room exercises (decision 0030).
+"""Build and score Predict and Diagnose batches for clean-room exercises (decision 0030).
 
 Usage:
     tools/exercises.py predict PAGE OUT     # e.g. expressions/additive build/exercises/R-additive
+    tools/exercises.py diagnose PAGE OUT    # e.g. classes/virtual build/exercises/D-virtual
     tools/exercises.py score OUT ANSWERS    # ANSWERS is JSON written by the reader
 
 `predict` takes the tests that the rules on specification/PAGE.md cite, removes
@@ -17,11 +18,22 @@ The reader answers with a JSON object, one entry per program:
 
 `outcome` is one of the OUTCOMES below. `score` compares the answers
 with the key and prints a Markdown table of the wrong ones.
+
+`diagnose` takes the page's single-file tests that GCC is expected to
+reject and that carry a GCC error pattern. Each program comes with the
+host g++ message that matches the pattern. The reader names the rule
+and writes a fixed program pNN-fix.cpp:
+
+    {"p01": {"rules": ["VIRT-3"], "why": "..."}}
+
+`score` on a D- batch counts a rule as right when it is one the test
+cites, and builds each fix with g++ (and runs it when it has a main).
 """
 
 import json
 import random
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -158,8 +170,108 @@ def predict(page: str, out: Path) -> int:
     return 0
 
 
+GCC_FLAGS = ["-std=c++23", "-pedantic-errors"]
+
+
+def gcc_message(source: Path, pattern: str) -> str | None:
+    """The first g++ error line that matches the test's pattern."""
+    r = subprocess.run(["g++", *GCC_FLAGS, "-fsyntax-only", source.name], cwd=source.parent,
+                       capture_output=True, text=True)
+    for line in r.stderr.splitlines():
+        if re.search(pattern, line):
+            return line
+    return None
+
+
+def diagnose(page: str, out: Path) -> int:
+    chosen = []
+    for name in page_tests(page):
+        test = run_tests.parse_test(TESTS / name)
+        pattern = test.errors.get("gcc") or test.errors.get("")
+        expect = test.overrides.get("gcc-host") or test.overrides.get("gcc") or test.default
+        if pattern and expect == "reject" and not test.sources and not test.flags:
+            chosen.append((name, test, pattern))
+    if not chosen:
+        print(f"no tests with a GCC error pattern for {page}")
+        return 1
+    random.Random(page).shuffle(chosen)
+    out.mkdir(parents=True, exist_ok=False)
+    key, lines, n = {}, [], 0
+    for name, test, pattern in chosen:
+        pid = f"p{n + 1:02d}"
+        src = out / f"{pid}.cpp"
+        src.write_text(strip(test.path.read_text()))
+        message = gcc_message(src, pattern)
+        if message is None:  # the stripped program no longer gives the message
+            src.unlink()
+            continue
+        n += 1
+        key[pid] = {"test": name, "rules": test.rules, "main": bool(MAIN.search(src.read_text()))}
+        lines += [f"## {pid}", "", "```", message, "```", ""]
+    readme = [
+        f"# Diagnose batch for {page}",
+        "",
+        f"Read specification/{page}.md and any other page under specification/. Each program",
+        "below fails to compile with `g++ -std=c++23 -pedantic-errors`, and the",
+        "message under its name is the first matching line g++ prints.",
+        "",
+        "For each program, name the Tidal rule that the program breaks, and",
+        "write a fixed program `pNN-fix.cpp` beside it that keeps the program's",
+        "intent and compiles. A fix of a program with `main` must also run and",
+        "exit with status 0. You may compile and run your fixes.",
+        "",
+        "Answer with one JSON object, one entry per program:",
+        "",
+        '    {"p01": {"rules": ["VIRT-3"], "why": "one sentence"}}',
+        "",
+        *lines,
+    ]
+    (out / "README.md").write_text("\n".join(readme))
+    KEYS.mkdir(parents=True, exist_ok=True)
+    (KEYS / f"{out.name}.json").write_text(json.dumps(key, indent=1) + "\n")
+    print(f"{n} programs in {out}; key in {KEYS / out.name}.json")
+    return 0
+
+
+def fix_works(fix: Path, has_main: bool) -> bool:
+    exe = fix.with_suffix("")
+    build = subprocess.run(["g++", *GCC_FLAGS, fix.name, "-o", exe.name] if has_main
+                           else ["g++", *GCC_FLAGS, "-c", fix.name, "-o", exe.name + ".o"],
+                           cwd=fix.parent, capture_output=True)
+    if build.returncode or not has_main:
+        return build.returncode == 0
+    try:
+        return subprocess.run([str(exe)], capture_output=True, timeout=10).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
+
+
+def score_diagnose(out: Path, key: dict, answers: dict) -> int:
+    right, fixed, rows = 0, 0, []
+    for pid, k in key.items():
+        a = answers.get(pid, {})
+        ok = bool(set(a.get("rules", [])) & set(k["rules"]))
+        fix = out / f"{pid}-fix.cpp"
+        works = fix.exists() and fix_works(fix, k["main"])
+        right += ok
+        fixed += works
+        if not (ok and works):
+            rows.append(f"| {pid} | {k['test']} | {' '.join(k['rules'])} | "
+                        f"{' '.join(a.get('rules', []))} | {'yes' if works else 'no'} | "
+                        f"{a.get('why', '').replace('|', '/')} |")
+    print(f"{right}/{len(key)} rules match the tests; {fixed}/{len(key)} fixes build and run")
+    if rows:
+        print()
+        print("| Program | Test | Rules of the test | Rules cited | Fix works | Reason given |")
+        print("|---|---|---|---|---|---|")
+        print("\n".join(rows))
+    return 0
+
+
 def score(out: Path, answers_path: Path) -> int:
     key = json.loads((KEYS / f"{out.name}.json").read_text())
+    if out.name.startswith("D-"):
+        return score_diagnose(out, key, json.loads(answers_path.read_text()))
     answers = json.loads(answers_path.read_text())
     right, rows = 0, []
     for pid, k in key.items():
@@ -192,11 +304,13 @@ def score(out: Path, answers_path: Path) -> int:
 
 
 def main() -> int:
-    if len(sys.argv) != 4 or sys.argv[1] not in {"predict", "score"}:
+    if len(sys.argv) != 4 or sys.argv[1] not in {"predict", "diagnose", "score"}:
         print(__doc__)
         return 2
     if sys.argv[1] == "predict":
         return predict(sys.argv[2], Path(sys.argv[3]))
+    if sys.argv[1] == "diagnose":
+        return diagnose(sys.argv[2], Path(sys.argv[3]))
     return score(Path(sys.argv[2]), Path(sys.argv[3]))
 
 
