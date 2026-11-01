@@ -159,6 +159,7 @@ catalog counts as done.
 | X5 | done: 41 rule changes; findings X5-1 to X5-20 | `reports/clean-room/X5/` |
 | R-declarations, R-specialization, R-dependent-names, R-instantiation | done, 445/445; findings RC-1 to RC-25 | `reports/clean-room/R-templates/` |
 | X6 | done: 75 rule changes; findings X6-1 to X6-15 | `reports/clean-room/X6/` |
+| X7 | done: 69 rule changes; findings X7-1 to X7-12 | `reports/clean-room/X7/` |
 | All others | planned | |
 
 ## 9. Prompts
