@@ -146,9 +146,9 @@ Q-0009 (license) among them. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 4439 of 5408 tests. The front end
-  has no preprocessor, so it rejects the valid tests that use
-  `#include`.
+- The clean-room front end passes 4439 of 5408 tests, and 4675 pass
+  their check. The front end reads `#include "file"` and no standard
+  header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
@@ -178,20 +178,15 @@ forward-progress rule belongs with threads, which are out of scope.
 
 ## Next steps
 
-`documentation/roadmap.md` orders the work (decisions 0033, 0039, and
-0050). Phases 1 to 5 are done. Next:
+`documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
+and 0051). Phases 1 to 5 are done, and phase 6 is provisional. Next:
 
-1. Roadmap round 3. Clean-room views (programmer, implementer, editor,
-   clean-room writer, language designer) rank what comes after phase 5,
-   in `reports/clean-room/roadmap-3/`. A provisional decision then sets
-   phase 6.
-2. Follow-ups that no phase item holds:
-   - a Clang `-fsanitize=type` configuration for STG-18 and STG-23
-     (Clang 22 reports these accesses but does not stop the run),
-   - the copy-move triviality split, where Clang copies a union member
-     whose class has two copy constructors,
-   - a namespace-scope rule that a class and a variable can share a
-     name (`names.md`).
+1. Phase 6, items R0, G, W (first wave), and D, which need nothing
+   before them. Then Q, P, C, O, and FE (decision 0051).
+2. A Clang `-fsanitize=type` configuration for STG-18 and STG-23
+   (Clang 22 reports these accesses but does not stop the run). The
+   copy-move triviality split goes with item O, and the rule that a
+   class and a variable can share a name goes with item C.
 
 Waiting on the maintainer:
 
@@ -199,6 +194,12 @@ Waiting on the maintainer:
   Foundations chapter and two topic pages (decision 0024).
 - Approve reporting the EDG behavior in Q-0002 and Q-0003 to the EDG
   project.
+- Confirm or change the provisional choices of decision 0051: settling
+  a question when the newest version of each family agrees, and
+  keeping the implementation-only operations referenced (Q-0322).
+- Decide whether to probe which C++23 rejections later language
+  versions accept, as an index with no rules (designer view, item 4;
+  Q-0007).
 
 ## Size estimate
 

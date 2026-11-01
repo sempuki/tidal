@@ -97,6 +97,23 @@ clean-room roadmaps (`reports/clean-room/roadmap-2/`). All items are done.
 | E | Write suites for generic code, Predict batches for templates, a Diagnose batch, Propose round 2 | C2 |
 | FE | Templates in the interpreter, run outcomes in the baseline, `run-fail` tests for `undefined` rules | T0 |
 
+## Phase 6: settle, cover by use, and check the object model
+
+Decision 0051 (provisional) adopts this phase from the third round of
+clean-room roadmaps (`reports/clean-room/roadmap-3/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| R0 | Records from tools: status counts, question numbering and index, similarity column, Predict format and scoring | none |
+| Q | Settle question clusters, each with a gap review | R0 (index) |
+| G | Grammar-validity rule; `undefined` overlap convention and an interpreter-only expectation | none |
+| W | Write suites W1 to W14, programs run in the interpreter and become run tests | none |
+| P | Predict batches for expressions, statements, declarations, classes | R0 (format) |
+| D | Designer repair batch, then Propose X9 to X12 | none |
+| C | Overloading chapter, hotspot pages, consistency pass, second tests, character values, implementation limits | Q for the overload pages |
+| O | Class properties and per-target class layout, with method controls | an inventory |
+| FE | Front-end round 10: byte memory, parse failures as rejects, interpreter coverage, choice exploration | G |
+
 ## Parallel lanes
 
 These lanes run beside the phases when a phase waits for review.
