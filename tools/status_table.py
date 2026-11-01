@@ -72,7 +72,7 @@ def row(page: Path) -> str:
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.split("\n")[0]).parse_args()
     rows = []
-    for section in ["foundations", "statements", "expressions", "declarations", "classes", "exceptions"]:
+    for section in ["foundations", "statements", "expressions", "declarations", "classes", "templates", "exceptions"]:
         for p in pages(SPEC / section / "index.md"):
             if agreement.rewrite(p):
                 print(f"agreement sentence updated: {p.relative_to(ROOT)}")
