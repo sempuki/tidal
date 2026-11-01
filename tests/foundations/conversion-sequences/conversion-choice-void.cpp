@@ -1,4 +1,4 @@
-// tidal-rules: ICS-37
+// tidal-rules: ICS-43
 // tidal-expect: accept
 // tidal-note: Both results convert to void* by conversion rank. Only the base-to-void preference decides.
 template <class T, class U> constexpr bool same = false;

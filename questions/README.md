@@ -162,6 +162,12 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0149](Q-0149-list-for-reference-to-unknown-bound-array.md) | What type does a braced list give a reference to an array of unknown bound? | provisional | the reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces |
 | [Q-0150](Q-0150-explicit-constructor-for-reference-temporary.md) | Can a braced list for a reference use an explicit constructor to make the temporary? | provisional | no; GCC and EDG agree, Clang differs |
 | [Q-0151](Q-0151-parenthesized-list-for-reference.md) | Can a parenthesized list of several values initialize a reference to an aggregate? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0152](Q-0152-same-rank-tie-breakers-before-rvalue-reference.md) | Do the same-rank tie-breakers come before the rvalue-reference preference, and does that preference come before the qualification step? | provisional | yes to both; Clang agrees, GCC and EDG differ in part |
+| [Q-0153](Q-0153-qualification-step-edges.md) | Does the qualification step compare array bounds, and does it compare a reference that binds a temporary? | provisional | no for bounds, yes for temporaries; Clang differs on bounds, EDG on temporaries |
+| [Q-0154](Q-0154-list-element-nearest-base.md) | Does the nearest-base tie-breaker apply to a braced list with one element of a derived class? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0155](Q-0155-braced-string-literal-for-array-reference.md) | When does one braced string literal have a sequence to a reference to a character array? | provisional | when the literal can initialize the array; GCC differs on UTF-8, Clang on size and bound |
+| [Q-0156](Q-0156-explicit-conversion-value-for-reference.md) | Can direct initialization of a reference use an explicit conversion function that returns a value? | provisional | no; GCC and EDG agree, Clang differs |
+| [Q-0157](Q-0157-list-class-element-for-reference.md) | Does a braced list with one class element bind a reference through the element's conversion function? | provisional | as REF-6 and REF-14 say; GCC agrees for non-class references, Clang and EDG for class references |
 
 ## Status values
 

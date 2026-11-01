@@ -175,7 +175,7 @@ conversion. A call by name still calls such a function.
 
 :::{rule} CVF-12
 :kind: reject
-:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp
+:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp foundations/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
 
 An ambiguous conversion is not valid. If a converting constructor and a
 conversion function are equally good, the conversion is ambiguous.
@@ -241,8 +241,8 @@ store(Celsius{});        // rejected: two user-defined conversions
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 62 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 62
+of 63 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

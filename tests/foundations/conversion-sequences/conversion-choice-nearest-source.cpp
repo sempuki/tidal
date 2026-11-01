@@ -1,4 +1,4 @@
-// tidal-rules: ICS-37
+// tidal-rules: ICS-42
 // tidal-expect: accept
 // tidal-note: Each class has two conversion functions whose results both convert to the target by conversion rank. Only the nearest source decides.
 template <class T, class U> constexpr bool same = false;

@@ -29,7 +29,7 @@ because the implementation knows how to write them.
 
 :::{rule} DEL-1
 :kind: reject
-:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp
+:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp foundations/conversion-sequences/chosen-deleted-constructor.cpp foundations/conversion-sequences/chosen-deleted-conversion-function.cpp
 
 A program must not refer to a deleted function, also in an operand that
 is not evaluated, such as `decltype` or `sizeof`. A deleted function

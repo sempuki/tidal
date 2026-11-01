@@ -1,4 +1,4 @@
-// tidal-rules: ICS-17
+// tidal-rules: ICS-17 ICS-38
 // tidal-expect: accept
 // tidal-note: Each element converts to int by the identity, an extra element of a known bound comes from empty braces, and two elements do not fit a bound of one.
 template <class T, class U> constexpr bool same = false;

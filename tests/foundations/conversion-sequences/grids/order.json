@@ -1,0 +1,28 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nstruct Base { int x; };\nstruct Middle : Base {};\nstruct Derived : Middle {};\nenum Level : short { low };\nint n = 0;\nDerived d;\n",
+ "template": "{prelude}\n{col}\n{row}",
+ "rows": {
+  "low (enum : short) → first": "static_assert(same<decltype(f(low)), One>);",
+  "low (enum : short) → second": "static_assert(same<decltype(f(low)), Two>);",
+  "&n (int*) → first": "static_assert(same<decltype(f(&n)), One>);",
+  "&n (int*) → second": "static_assert(same<decltype(f(&n)), Two>);",
+  "Derived{} → first": "static_assert(same<decltype(f(Derived{})), One>);",
+  "Derived{} → second": "static_assert(same<decltype(f(Derived{})), Two>);",
+  "&d (Derived*) → first": "static_assert(same<decltype(f(&d)), One>);",
+  "&d (Derived*) → second": "static_assert(same<decltype(f(&d)), Two>);",
+  "&Base::x → first": "static_assert(same<decltype(f(&Base::x)), One>);",
+  "&Base::x → second": "static_assert(same<decltype(f(&Base::x)), Two>);",
+  "1.0f64 → first": "static_assert(same<decltype(f(1.0f64)), One>);",
+  "1.0f64 → second": "static_assert(same<decltype(f(1.0f64)), Two>);"
+ },
+ "cols": {
+  "const short lref / int rref": "One f(const short&);\nTwo f(int&&);",
+  "void* const lref / bool rref": "One f(void* const&);\nTwo f(bool&&);",
+  "const Middle lref / Base rref": "One f(const Middle&);\nTwo f(Base&&);",
+  "Base* const lref / void* rref": "One f(Base* const&);\nTwo f(void*&&);",
+  "Middle* const lref / Base* rref": "One f(Middle* const&);\nTwo f(Base*&&);",
+  "int Middle::* const lref / int Derived::* rref": "One f(int Middle::* const&);\nTwo f(int Derived::*&&);",
+  "const double lref / long double rref": "One f(const double&);\nTwo f(long double&&);",
+  "const int* const lref / const volatile int* rref": "One f(const int* const&);\nTwo f(const volatile int*&&);"
+ }
+}

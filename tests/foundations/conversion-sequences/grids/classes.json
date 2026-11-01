@@ -13,7 +13,9 @@
   "ToMiddle → first": "static_assert(same<decltype(f(ToMiddle{})), One>);",
   "ToMiddle → second": "static_assert(same<decltype(f(ToMiddle{})), Two>);",
   "ToInt → first": "static_assert(same<decltype(f(ToInt{})), One>);",
-  "ToInt → second": "static_assert(same<decltype(f(ToInt{})), Two>);"
+  "ToInt → second": "static_assert(same<decltype(f(ToInt{})), Two>);",
+  "braced {d} → first": "static_assert(same<decltype(f({d})), One>);",
+  "braced {d} → second": "static_assert(same<decltype(f({d})), Two>);"
  },
  "pairs": {
   "Base": "Base",

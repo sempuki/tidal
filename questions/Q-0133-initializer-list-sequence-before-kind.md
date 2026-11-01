@@ -21,11 +21,19 @@ against a better rank (`initializer-list-over-rank.cpp`).
 | EDG 7.0 | chooses `std::initializer_list<Num>` |
 | Clang 18, Clang 22 | chooses `int` |
 
+The split is the same against `long`, a conversion, in place of `int`.
+When the list sequence to the initializer list is the identity, as for
+`std::initializer_list<int>` against a class `Box` with a converting
+constructor, every compiler chooses the initializer list.
+
 ## Evidence
 
 `tests/foundations/conversion-sequences/initializer-list-over-kind.cpp`.
 The sanitized EDG source (`edg-overload`) checks for an initializer-list
-target before it compares the kinds of the two sequences.
+target before it compares the kinds of the two sequences. A source reader's
+gap review (item O3 of
+`reports/review/2026-10-31-gap-review-conversion-sequences.md`) reports
+that the source compares the kinds first, which is Clang's result.
 
 ## Options
 
@@ -37,7 +45,8 @@ target before it compares the kinds of the two sequences.
 ## Provisional answer
 
 Option 1. Two of three implementations agree, and the rule then has one
-place in the order of ICS-P5 for every kind.
+place in the order of ICS-P5 for every kind. The gap review supports
+option 2.
 
 ## Opinions
 

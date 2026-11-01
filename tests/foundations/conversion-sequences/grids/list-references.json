@@ -1,0 +1,22 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nstruct One {};\nstruct Two {};\nint i = 0;\nconst int ci = 0;\nshort s = 0;\n",
+ "template": "{prelude}\nOne f({a});\nTwo f({b});\n{row}",
+ "rows": {
+  "{i} int lvalue → first": "static_assert(same<decltype(f({i})), One>);",
+  "{i} int lvalue → second": "static_assert(same<decltype(f({i})), Two>);",
+  "{ci} const int lvalue → first": "static_assert(same<decltype(f({ci})), One>);",
+  "{ci} const int lvalue → second": "static_assert(same<decltype(f({ci})), Two>);",
+  "{1} prvalue → first": "static_assert(same<decltype(f({1})), One>);",
+  "{1} prvalue → second": "static_assert(same<decltype(f({1})), Two>);",
+  "{s} short lvalue → first": "static_assert(same<decltype(f({s})), One>);",
+  "{s} short lvalue → second": "static_assert(same<decltype(f({s})), Two>);"
+ },
+ "pairs": {
+  "int lref": "int&",
+  "const int lref": "const int&",
+  "int rref": "int&&",
+  "const int rref": "const int&&",
+  "const long lref": "const long&",
+  "long": "long"
+ }
+}
