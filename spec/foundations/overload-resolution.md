@@ -61,8 +61,8 @@ its object parameter ({rule}`ICS-13`):
 | an argument that names an overload set | each function of the set, with each candidate of the call | | OVL-39 |
 
 Each function template that lookup finds adds at most one
-specialization, by deduction *(templates referenced)*. Two kinds of
-function are never candidates:
+specialization, by deduction ({rule}`DED-1`). Two kinds of function are
+never candidates:
 
 - an inherited constructor that has the shape of a copy or move
   constructor, in a call with one argument (OVL-17),
@@ -121,6 +121,7 @@ Tests observe these orders:
 | 2b | 2f | `tie-reference-kind-before-constraints.cpp` |
 | 2c | 2g, 2h, 2i | `tie-template-before-inherited.cpp`, `tie-template-before-rewritten.cpp`, `tie-template-before-swapped.cpp` |
 | 2d | 2e | 2e applies only when 2d does not decide |
+| 2d | 2h | `templates/ordering/reversed-candidate.cpp` ({question}`Q-0211`) |
 
 These pairs never decide the same case, so their order is not
 observable:
@@ -138,8 +139,11 @@ observable:
 
 2a can separate two templates whose results differ by a function
 pointer conversion (`tie-conversion-result-templates.cpp`). No test
-decides the order of 2a against 2d and 2e, or of 2d to 2f against 2g
-to 2i.
+decides the order of these pairs:
+
+- 2a against 2d and 2e,
+- 2d against 2g and 2i,
+- 2e and 2f against 2g to 2i.
 :::
 
 :::{principle} OVL-P4
@@ -209,8 +213,8 @@ are the functions that name lookup finds ({rule}`NAM-5`):
 - A member that a using-declaration brings from a base is a candidate
   unless a member of the derived class hides it ({rule}`DER-3`).
 - Each function template found adds the specialization that deduction
-  gives *(templates referenced)*. A template whose deduction fails adds
-  no candidate.
+  gives ({rule}`DED-1`). A template whose deduction fails adds no
+  candidate ({rule}`DED-35`).
 :::
 
 :::{rule} OVL-2
@@ -424,8 +428,8 @@ Without such a candidate, the reference binds to a temporary.
 
 If the `explicit` condition of a constructor or conversion function
 template depends on a template parameter, deduction comes first
-*(templates referenced)*. A context that takes only functions that
-are not `explicit` then removes an `explicit` specialization.
+({rule}`DED-24`). A context that takes only functions that are not
+`explicit` then removes an `explicit` specialization.
 :::
 
 :::{rule} OVL-40
@@ -486,14 +490,14 @@ and the class of the pointer to member takes no part ({rule}`MPTR-4`).
 The matching functions of OVL-18 are reduced in these steps:
 
 1. Each function template adds the specialization that deduction from
-   the target gives *(templates referenced)*.
+   the target gives ({rule}`DED-30`).
 2. Functions whose constraints are not satisfied are removed
    *(concepts referenced)*.
 3. If a plain function remains, the specializations are removed.
 4. A plain function is removed if another plain function is more
    constrained.
 5. A specialization is removed if another comes from a more specialized
-   template.
+   template ({rule}`ORD-9`).
 :::
 
 :::{rule} OVL-20
@@ -508,6 +512,9 @@ for example with `auto` or `decltype`, these steps apply:
    other template makes the program not valid.
 2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0160`).
 3. Exactly one function must remain.
+
+{rule}`DED-35` names the case of a target type that no specialization
+of a function template matches (decision 0042).
 :::
 
 :::{rule} OVL-21
@@ -551,7 +558,7 @@ arguments ({rule}`PFX-5`):
 - fewer parameters, and an ellipsis for the other arguments,
 - more parameters, each of the others with a default argument,
 - for a template with a parameter pack, the parameters that deduction
-  gives *(templates referenced)*.
+  gives ({rule}`DED-20`).
 :::
 
 :::{rule} OVL-23
@@ -615,8 +622,8 @@ The identity is better than a function pointer conversion
 :tests: foundations/overload-resolution/tie-plain-over-template.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-template-before-inherited.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp foundations/overload-resolution/tie-reference-kind-before-template.cpp foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp foundations/overload-resolution/builtin-over-template.cpp
 
 A function that is not a template specialization wins over a
-specialization *(templates referenced)*. A built-in candidate counts as
-such a function. The rule comes after OVL-26 and OVL-29.
+specialization. A built-in candidate counts as such a function. The
+rule comes after OVL-26 and OVL-29.
 :::
 
 :::{rule} OVL-28
@@ -624,7 +631,7 @@ such a function. The rule comes after OVL-26 and OVL-29.
 :tests: foundations/overload-resolution/tie-more-specialized.cpp foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp
 
 Of two specializations, the one from the more specialized template wins
-*(templates referenced)*.
+({rule}`ORD-1`, {rule}`ORD-5`).
 :::
 
 :::{rule} OVL-41
@@ -633,8 +640,9 @@ Of two specializations, the one from the more specialized template wins
 
 Of two specializations from templates with the same function
 parameters, the one from the more constrained template wins
-*(concepts referenced)*. Templates with different function parameters
-do not compare by their constraints ({question}`Q-0146`).
+({rule}`ORD-13`, *(concepts referenced)*). Templates with different
+function parameters do not compare by their constraints
+({question}`Q-0146`).
 :::
 
 :::{rule} OVL-29
@@ -703,7 +711,7 @@ order of the declarations.
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
-{rule}`CTOR-25`, and OVL-43.
+{rule}`CTOR-25`, OVL-43, and {rule}`DED-35`.
 :::
 
 :::{rule} OVL-36
@@ -711,9 +719,12 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 :tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp
 
 If no viable function is better than each of the others, the program
-is not valid. Such a use is ambiguous. Two rules name specific cases
-(decision 0042): {rule}`OPR-15` for operators, and {rule}`CTOR-25` for
-constructors.
+is not valid. Such a use is ambiguous. These rules name specific cases
+(decision 0042):
+
+- {rule}`OPR-15` for operators,
+- {rule}`CTOR-25` for constructors,
+- {rule}`ORD-15` for templates that partial ordering does not order.
 :::
 
 :::{rule} OVL-37

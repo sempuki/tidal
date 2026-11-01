@@ -69,7 +69,7 @@ each item starts.
 | Item | Work | Prerequisites |
 |---|---|---|
 | N1 | Done: template declarations, parameters, template-ids, explicit and partial specialization, variable and alias templates (`spec/templates/`) | F notation |
-| O | Deduction, function templates, partial ordering | M, N1 |
+| O | Done: deduction, function templates, partial ordering (`spec/templates/deduction.md`, `ordering.md`) | M, N1 |
 | N2 | Dependent names, two-phase checking, instantiation | runner outcome sets |
 | P | Concepts and constraints | M, N1, N2 |
 | R | Packs, forwarding, class template argument deduction (alias templates are in N1) | O |

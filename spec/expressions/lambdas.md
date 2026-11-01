@@ -290,7 +290,7 @@ operand of `decltype` or `sizeof`.
 :tests: expressions/lambdas/generic.cpp
 
 A parameter of type `auto` makes the call operator a template
-*(templates referenced)*. Each call deduces the parameter type.
+({rule}`DED-34`). Each call deduces the parameter type.
 :::
 
 :::{rule} LAM-16

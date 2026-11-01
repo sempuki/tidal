@@ -1,0 +1,28 @@
+{
+ "prelude": "template <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\nstruct One {};\nstruct Two {};\ntemplate <class T> struct Box {};\nint n = 0;\nconst int c = 1;\nint* p = nullptr;\nconst int* cp = nullptr;\nBox<int> b;\n",
+ "template": "{prelude}namespace first {{\nusing R = One;\n{a}\n}}\nnamespace second {{\nusing R = Two;\n{b}\n}}\nusing first::f;\nusing second::f;\n{row}",
+ "rows": {
+  "int lvalue → first": "static_assert(same<decltype(f(n)), One>);",
+  "int lvalue → second": "static_assert(same<decltype(f(n)), Two>);",
+  "const int lvalue → first": "static_assert(same<decltype(f(c)), One>);",
+  "const int lvalue → second": "static_assert(same<decltype(f(c)), Two>);",
+  "int prvalue → first": "static_assert(same<decltype(f(1)), One>);",
+  "int prvalue → second": "static_assert(same<decltype(f(1)), Two>);",
+  "int pointer → first": "static_assert(same<decltype(f(p)), One>);",
+  "int pointer → second": "static_assert(same<decltype(f(p)), Two>);",
+  "const int pointer → first": "static_assert(same<decltype(f(cp)), One>);",
+  "const int pointer → second": "static_assert(same<decltype(f(cp)), Two>);",
+  "Box lvalue → first": "static_assert(same<decltype(f(b)), One>);",
+  "Box lvalue → second": "static_assert(same<decltype(f(b)), Two>);"
+ },
+ "pairs": {
+  "T": "template <class T> R f(T);",
+  "T pointer": "template <class T> R f(T*);",
+  "const T pointer": "template <class T> R f(const T*);",
+  "T lref": "template <class T> R f(T&);",
+  "const T lref": "template <class T> R f(const T&);",
+  "T rref": "template <class T> R f(T&&);",
+  "Box of T": "template <class T> R f(Box<T>);",
+  "pack": "template <class... Ts> R f(Ts...);"
+ }
+}

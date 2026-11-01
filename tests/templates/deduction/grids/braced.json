@@ -1,0 +1,24 @@
+{
+ "prelude": "namespace std {\ntemplate <class E> class initializer_list {\n  const E* b_;\n  decltype(sizeof 0) n_;\n  constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {}\npublic:\n  constexpr initializer_list() : b_(nullptr), n_(0) {}\n};\n}\ntemplate <class T> struct Box { T value; };\n",
+ "template": "{prelude}{col}\nvoid use() {{ f({row}); }}",
+ "rows": {
+  "empty": "{}",
+  "one int": "{1}",
+  "two ints": "{1, 2}",
+  "three ints": "{1, 2, 3}",
+  "int and long": "{1, 2L}",
+  "two chars": "{'a', 'b'}",
+  "nested pairs": "{{1, 2}, {3, 4}}"
+ },
+ "cols": {
+  "T": "template <class T> void f(T);",
+  "initializer_list of T": "template <class T> void f(std::initializer_list<T>);",
+  "const initializer_list of T lref": "template <class T> void f(const std::initializer_list<T>&);",
+  "T array of N rref": "template <class T, int N> void f(T (&&)[N]);",
+  "const T array of N lref": "template <class T, int N> void f(const T (&)[N]);",
+  "const T array of 2 lref": "template <class T> void f(const T (&)[2]);",
+  "const T array of M by N lref": "template <class T, int M, int N> void f(const T (&)[M][N]);",
+  "Box of T": "template <class T> void f(Box<T>);",
+  "initializer_list of int and T": "template <class T> void f(std::initializer_list<int>, T = 0);"
+ }
+}

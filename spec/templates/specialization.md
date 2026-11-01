@@ -11,9 +11,8 @@ This page covers:
 - how a specialization of a class template or variable template is
   selected from the template and its partial specializations.
 
-The order between two partial specializations that both match belongs
-with deduction and partial ordering *(templates referenced)*. The page
-gives the selection up to that point.
+{doc}`ordering` gives the order between two partial specializations
+that both match ({rule}`ORD-14`).
 
 Depends on: template declarations, template arguments.
 
@@ -66,8 +65,8 @@ argument list, with defaults added (TARG-9)
 A partial specialization matches when some values for its own
 parameters make its argument list the same as the given list. The
 values come from the given arguments by deduction
-*(templates referenced)*. The grid in Evidence shows which argument
-types match which patterns.
+({principle}`DED-P1`). The grid in Evidence shows which argument types
+match which patterns.
 :::
 
 :::{principle} TSP-P3
@@ -145,7 +144,7 @@ it or access its members. {rule}`TYN-7` is the general rule.
 A function template or a variable template can have explicit
 specializations. In an explicit specialization of a function template,
 arguments that deduction finds from the function's type can be left out
-*(templates referenced)*.
+({rule}`DED-32`).
 :::
 
 :::{rule} TSP-4
@@ -381,7 +380,7 @@ these conditions:
   it. A constant argument that is an expression of a parameter, such as
   `N + 1`, gives no value for `N`.
 - The partial specialization is more specialized than the primary
-  template *(templates referenced)* ({question}`Q-0174`).
+  template ({rule}`ORD-14`, {question}`Q-0174`).
 - A constant argument whose parameter type in the primary template uses
   another parameter is not a fixed value, while that other parameter
   stays a parameter of the partial specialization.
@@ -446,7 +445,7 @@ also finds partial specializations declared after it.
 :tests: templates/specialization/select-most-specialized.cpp
 
 If two or more partial specializations match, the selected one is more
-specialized than each of the others *(templates referenced)*.
+specialized than each of the others ({rule}`ORD-14`).
 :::
 
 :::{rule} TSP-16

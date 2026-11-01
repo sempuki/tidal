@@ -3965,6 +3965,80 @@ compilers affect the Status column.
 | `statements/switch/skipped-declaration-read-first.cpp` | JMP-16 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `statements/switch/two-defaults.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/argument-gives-no-access.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/argument-makes-parameter-invalid.cpp` | TARG-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/argument-private-type-inside.cpp` | TARG-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/argument-private-type.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/class-argument-reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/class-argument-string-literal.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/class-arguments.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/class-for-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/closing-angles-cast.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/closing-angles.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/constant-converted.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/constant-floating-to-integer.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-int-to-bool.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-integer-to-floating.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-narrowing.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-not-constant.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-overloaded-function.cpp` | TARG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/arguments/constant-pointer-conversions.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/constant-pointer-to-base.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-pointer-to-void.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/constant-scoped-enum.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/defaults-fill.cpp` | TARG-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/empty-list-needs-angles.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/expression-for-type.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/floating-arguments.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/function-explicit-arguments.cpp` | TARG-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/function-explicit-too-many.cpp` | TARG-6 TARG-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/greater-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/injected-name-as-template.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-specialization.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-two-bases-arguments.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/injected-name-two-bases-template.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/injected-name-two-bases.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/injected-name.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/less-after-qualified-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/less-after-template-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/less-after-variable.cpp` | TARG-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/less-function-found.cpp` | TARG-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/arguments/match-in-order.cpp` | TARG-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/name-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/pack-takes-rest.cpp` | TARG-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/pointer-arguments.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/pointer-function-name.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/pointer-local.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/pointer-string-literal.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/pointer-subobject.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/pointer-zero.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/qualified-name-in-class.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/reference-arguments.cpp` | TARG-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/arguments/reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/same-specialization-alias-template.cpp` | TARG-22 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/arguments/same-specialization-class.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-floating.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-kinds.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-pointers.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/same-specialization-union-empty.cpp` | TARG-19 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/arguments/same-specialization.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/shift-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/template-template-arguments.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-auto.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-constant-type.cpp` | TARG-17 | accept | accept | accept | reject | skip | accept | reject | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-defaults.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-mismatch.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/template-template-pack.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-partial.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/template-template-too-many.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/too-few.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/too-many.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/type-argument-kinds.cpp` | TARG-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/type-for-constant.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/type-or-expression-constant.cpp` | TARG-7 TARG-8 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/type-or-expression.cpp` | TARG-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/arguments/variable-template-for-class-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/arguments/variable-template-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/alias-template-lambda-same.cpp` | TPL-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/declarations/alias-template-lambda.cpp` | TPL-46 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/alias-template-self-through-class.cpp` | TPL-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4066,80 +4140,97 @@ compilers affect the Status column.
 | `templates/declarations/unnamed-class.cpp` | TPL-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/variable-template-non-static.cpp` | TPL-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/variable-template.cpp` | TPL-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/arguments/argument-gives-no-access.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/argument-makes-parameter-invalid.cpp` | TARG-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/argument-private-type-inside.cpp` | TARG-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/argument-private-type.cpp` | TARG-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/class-argument-reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/class-argument-string-literal.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/class-arguments.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/class-for-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/closing-angles-cast.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/closing-angles.cpp` | TARG-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/constant-converted.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/constant-floating-to-integer.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-int-to-bool.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-integer-to-floating.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-narrowing.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-not-constant.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-overloaded-function.cpp` | TARG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/arguments/constant-pointer-conversions.cpp` | TARG-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/constant-pointer-to-base.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-pointer-to-void.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/constant-scoped-enum.cpp` | TARG-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/defaults-fill.cpp` | TARG-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/empty-list-needs-angles.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/expression-for-type.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/floating-arguments.cpp` | TARG-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/function-explicit-arguments.cpp` | TARG-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/function-explicit-too-many.cpp` | TARG-6 TARG-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/greater-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/injected-name-as-template.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/injected-name-specialization.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/injected-name-two-bases-arguments.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/injected-name-two-bases-template.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/injected-name-two-bases.cpp` | TARG-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/injected-name.cpp` | TARG-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/less-after-qualified-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/less-after-template-name.cpp` | TARG-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/less-after-variable.cpp` | TARG-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/less-function-found.cpp` | TARG-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/arguments/match-in-order.cpp` | TARG-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/name-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/pack-takes-rest.cpp` | TARG-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/pointer-arguments.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/pointer-function-name.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/pointer-local.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/pointer-string-literal.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/pointer-subobject.cpp` | TARG-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/pointer-zero.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/qualified-name-in-class.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/reference-arguments.cpp` | TARG-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/arguments/reference-temporary.cpp` | TARG-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/same-specialization-alias-template.cpp` | TARG-22 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
-| `templates/arguments/same-specialization-class.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/same-specialization-floating.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/same-specialization-kinds.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/same-specialization-pointers.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/same-specialization-union-empty.cpp` | TARG-19 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
-| `templates/arguments/same-specialization.cpp` | TARG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/shift-ends-list.cpp` | TARG-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/template-template-arguments.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-auto.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-constant-type.cpp` | TARG-17 | accept | accept | accept | reject | skip | accept | reject | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-defaults.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-mismatch.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/template-template-pack.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-partial.cpp` | TARG-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/template-template-too-many.cpp` | TARG-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/too-few.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/too-many.cpp` | TARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/type-argument-kinds.cpp` | TARG-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/type-for-constant.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/type-or-expression-constant.cpp` | TARG-7 TARG-8 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/type-or-expression.cpp` | TARG-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/arguments/variable-template-for-class-template.cpp` | TARG-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/arguments/variable-template-without-arguments.cpp` | TARG-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/adjust-reference-parameter.cpp` | DED-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/adjust-reference-rvalue.cpp` | DED-7 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/adjust-value-parameter.cpp` | DED-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/braced-array-reference.cpp` | DED-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/braced-elements-differ.cpp` | DED-16 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/braced-empty.cpp` | DED-16 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/braced-initializer-list.cpp` | DED-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/braced-other-parameter-fixed.cpp` | DED-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/braced-other-parameter.cpp` | DED-18 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/braced-overload-set-element.cpp` | DED-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/call-each-argument.cpp` | DED-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/combine-agree.cpp` | DED-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/combine-bound-yields.cpp` | DED-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/combine-conflict-one-pair.cpp` | DED-21 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/combine-conflict.cpp` | DED-21 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/combine-defaults.cpp` | DED-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/combine-missing.cpp` | DED-23 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/context-address-mismatch.cpp` | DED-30 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/context-address.cpp` | DED-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/context-conversion-differences.cpp` | DED-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/context-conversion.cpp` | DED-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/declaration-ambiguous.cpp` | DED-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/declaration-specialization.cpp` | DED-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/default-argument-not-deduced.cpp` | DED-9 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/default-argument-passed.cpp` | DED-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-derived-nearest.cpp` | DED-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-derived-two-bases.cpp` | DED-15 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/difference-derived.cpp` | DED-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-exact-first.cpp` | DED-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/difference-qualification.cpp` | DED-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/explicit-empty-list.cpp` | DED-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/explicit-fixed-not-deduced.cpp` | DED-3 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/explicit-fixed-parameter-converts.cpp` | DED-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/explicit-invalid-removes.cpp` | DED-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/explicit-leading.cpp` | DED-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/forwarding-class-parameter-not.cpp` | DED-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/forwarding-const-not.cpp` | DED-8 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/forwarding-reference.cpp` | DED-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-bound-type.cpp` | DED-11 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/deduction/match-compound-types.cpp` | DED-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-constant-parameters.cpp` | DED-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-constant-type-differs.cpp` | DED-12 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/match-constant-type-same.cpp` | DED-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-noexcept.cpp` | DED-11 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/match-shape-mismatch.cpp` | DED-10 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-array-by-value.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-decltype.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-explicit.cpp` | DED-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/nondeduced-expression.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/nondeduced-qualified-name.cpp` | DED-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/nondeduced-qualified-only.cpp` | DED-13 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/overload-set-later.cpp` | DED-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/overload-set-one-match.cpp` | DED-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/overload-set-template.cpp` | DED-19 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/overload-set-two-match.cpp` | DED-19 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/pack-not-last-call.cpp` | DED-20 DED-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/pack-not-last.cpp` | DED-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/pack-trailing.cpp` | DED-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/placeholder-parameter.cpp` | DED-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-access.cpp` | DED-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-adjusted-type.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-failure-forms.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-failure-removes.cpp` | DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-hard-error.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-lambda-body.cpp` | DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-noexcept-later.cpp` | DED-27 DED-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/deduction/substitution-nondependent-first.cpp` | DED-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/deduction/substitution-order.cpp` | DED-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/address-function-type.cpp` | ORD-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/call-arguments-only.cpp` | ORD-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/call-defaults-tie.cpp` | ORD-5 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/constraints-conversion-results-differ.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/constraints-conversion.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/constraints-different-heads.cpp` | ORD-13 ORD-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/constraints-partial.cpp` | ORD-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/conversion-result.cpp` | ORD-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/lvalue-over-rvalue-reference.cpp` | ORD-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/member-object.cpp` | ORD-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/more-qualified-reference.cpp` | ORD-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/more-specialized.cpp` | ORD-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/neither.cpp` | ORD-1 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/non-variadic.cpp` | ORD-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/pack-against-single.cpp` | ORD-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/partial-specializations-placeholder.cpp` | ORD-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/partial-specializations.cpp` | ORD-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/reference-and-cv-removed.cpp` | ORD-2 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/reference-before-variadic.cpp` | ORD-10 ORD-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/reference-pairs-disagree.cpp` | ORD-10 ORD-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/ordering/repeated-parameter.cpp` | ORD-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/ordering/reversed-candidate.cpp` | ORD-7 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/ordering/unused-parameter.cpp` | ORD-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/alias-explicit.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/alias-partial.cpp` | TSP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/specialization/class-explicit-declared-only.cpp` | TSP-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4222,7 +4313,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-explicit.cpp` | TSP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-4204/4204 tests pass on baseline compilers.
+4295/4295 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -20076,6 +20167,332 @@ check that the rejection has the intended cause.
 - `statements/switch/two-defaults.cpp` (gcc-16-o2): error: multiple default labels in one switch / note: this is the first default label
 - `statements/switch/two-defaults.cpp` (clang-22): error: multiple default labels in one switch / note: previous case defined here
 - `statements/switch/two-defaults.cpp` (clang-22-o2): error: multiple default labels in one switch / note: previous case defined here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 8) is inaccessible
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-gives-no-access.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
+- `templates/arguments/argument-private-type.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 7) is inaccessible
+- `templates/arguments/argument-private-type.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/argument-private-type.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-host): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-host): error: ‘Ref{((const int&)(&<anonymous>.Pair::a))}’ is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-14): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-18): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16-o2): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22-o2): error: reference to subobject of temporary object is not allowed in a template argument
+- `templates/arguments/class-for-template.cpp` (clang-host): error: template argument for template template parameter must be a class template or type alias template
+- `templates/arguments/class-for-template.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Use’ / note:   expected a class template, got ‘Plain’
+- `templates/arguments/class-for-template.cpp` (edg-7.0): error: class "Plain" is not a class template
+- `templates/arguments/class-for-template.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
+- `templates/arguments/class-for-template.cpp` (clang-18): error: template argument for template template parameter must be a class template or type alias template
+- `templates/arguments/class-for-template.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
+- `templates/arguments/class-for-template.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
+- `templates/arguments/class-for-template.cpp` (clang-22): error: template argument for template template parameter must be a class template or type alias template
+- `templates/arguments/class-for-template.cpp` (clang-22-o2): error: template argument for template template parameter must be a class template or type alias template
+- `templates/arguments/constant-floating-to-integer.cpp` (clang-host): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `templates/arguments/constant-floating-to-integer.cpp` (gcc-host): error: conversion from ‘double’ to ‘int’ in a converted constant expression / error: could not convert ‘2.0e+0’ from ‘double’ to ‘int’
+- `templates/arguments/constant-floating-to-integer.cpp` (edg-7.0): error: argument of type "double" is incompatible with template parameter of type "int"
+- `templates/arguments/constant-floating-to-integer.cpp` (gcc-14): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
+- `templates/arguments/constant-floating-to-integer.cpp` (clang-18): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `templates/arguments/constant-floating-to-integer.cpp` (gcc-16): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
+- `templates/arguments/constant-floating-to-integer.cpp` (gcc-16-o2): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
+- `templates/arguments/constant-floating-to-integer.cpp` (clang-22): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `templates/arguments/constant-floating-to-integer.cpp` (clang-22-o2): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
+- `templates/arguments/constant-int-to-bool.cpp` (clang-host): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (gcc-host): error: narrowing conversion of ‘2’ from ‘int’ to ‘bool’ [-Wnarrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "bool": constant value does not fit in destination type
+- `templates/arguments/constant-int-to-bool.cpp` (gcc-14): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (clang-18): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (gcc-16): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (gcc-16-o2): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (clang-22): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `templates/arguments/constant-int-to-bool.cpp` (clang-22-o2): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
+- `templates/arguments/constant-integer-to-floating.cpp` (clang-host): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
+- `templates/arguments/constant-integer-to-floating.cpp` (gcc-host): error: conversion from ‘int’ to ‘double’ in a converted constant expression / error: could not convert ‘1’ from ‘int’ to ‘double’
+- `templates/arguments/constant-integer-to-floating.cpp` (edg-7.0): error: argument of type "int" is incompatible with template parameter of type "double"
+- `templates/arguments/constant-integer-to-floating.cpp` (gcc-14): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
+- `templates/arguments/constant-integer-to-floating.cpp` (clang-18): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
+- `templates/arguments/constant-integer-to-floating.cpp` (gcc-16): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
+- `templates/arguments/constant-integer-to-floating.cpp` (gcc-16-o2): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
+- `templates/arguments/constant-integer-to-floating.cpp` (clang-22): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
+- `templates/arguments/constant-integer-to-floating.cpp` (clang-22-o2): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
+- `templates/arguments/constant-narrowing.cpp` (clang-host): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `templates/arguments/constant-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘unsigned char’ [-Wnarrowing]
+- `templates/arguments/constant-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned char": constant value does not fit in destination type
+- `templates/arguments/constant-narrowing.cpp` (gcc-14): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
+- `templates/arguments/constant-narrowing.cpp` (clang-18): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `templates/arguments/constant-narrowing.cpp` (gcc-16): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
+- `templates/arguments/constant-narrowing.cpp` (gcc-16-o2): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
+- `templates/arguments/constant-narrowing.cpp` (clang-22): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `templates/arguments/constant-narrowing.cpp` (clang-22-o2): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
+- `templates/arguments/constant-not-constant.cpp` (clang-host): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
+- `templates/arguments/constant-not-constant.cpp` (gcc-host): error: the value of ‘count’ is not usable in a constant expression / note: ‘int count’ is not const / note: in template argument for type ‘int’
+- `templates/arguments/constant-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "count" (declared at line 7) cannot be used as a constant
+- `templates/arguments/constant-not-constant.cpp` (gcc-14): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
+- `templates/arguments/constant-not-constant.cpp` (clang-18): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
+- `templates/arguments/constant-not-constant.cpp` (gcc-16): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
+- `templates/arguments/constant-not-constant.cpp` (gcc-16-o2): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
+- `templates/arguments/constant-not-constant.cpp` (clang-22): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
+- `templates/arguments/constant-not-constant.cpp` (clang-22-o2): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-host): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-host): error: conversion from ‘Derived*’ to ‘Base*’ in a converted constant expression / error: could not convert ‘& object’ from ‘Derived*’ to ‘Base*’
+- `templates/arguments/constant-pointer-to-base.cpp` (edg-7.0): error: argument of type "Derived *" is incompatible with template parameter of type "Base *"
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-14): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-18): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16-o2): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-22): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-base.cpp` (clang-22-o2): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-host): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-host): error: conversion from ‘int*’ to ‘void*’ in a converted constant expression / error: could not convert ‘& global’ from ‘int*’ to ‘void*’
+- `templates/arguments/constant-pointer-to-void.cpp` (edg-7.0): error: argument of type "int *" is incompatible with template parameter of type "void *"
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-14): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-18): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16-o2): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-22): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-pointer-to-void.cpp` (clang-22-o2): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
+- `templates/arguments/constant-scoped-enum.cpp` (clang-host): error: value of type 'Level' is not implicitly convertible to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (gcc-host): error: could not convert ‘Level::low’ from ‘Level’ to ‘int’
+- `templates/arguments/constant-scoped-enum.cpp` (edg-7.0): error: argument of type "Level" is incompatible with template parameter of type "int"
+- `templates/arguments/constant-scoped-enum.cpp` (gcc-14): error: could not convert 'Level::low' from 'Level' to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (clang-18): error: value of type 'Level' is not implicitly convertible to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (gcc-16): error: could not convert 'Level::low' from 'Level' to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (gcc-16-o2): error: could not convert 'Level::low' from 'Level' to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (clang-22): error: value of type 'Level' is not implicitly convertible to 'int'
+- `templates/arguments/constant-scoped-enum.cpp` (clang-22-o2): error: value of type 'Level' is not implicitly convertible to 'int'
+- `templates/arguments/empty-list-needs-angles.cpp` (clang-host): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/empty-list-needs-angles.cpp` (gcc-host): error: missing template argument list after ‘Box’; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/empty-list-needs-angles.cpp` (edg-7.0): error: cannot deduce class template arguments
+- `templates/arguments/empty-list-needs-angles.cpp` (gcc-14): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/empty-list-needs-angles.cpp` (clang-18): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/empty-list-needs-angles.cpp` (gcc-16): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/empty-list-needs-angles.cpp` (gcc-16-o2): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/empty-list-needs-angles.cpp` (clang-22): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/empty-list-needs-angles.cpp` (clang-22-o2): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/expression-for-type.cpp` (clang-host): error: template argument for template type parameter must be a type
+- `templates/arguments/expression-for-type.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<class T> struct Box’ / note:   expected a type, got ‘1’
+- `templates/arguments/expression-for-type.cpp` (edg-7.0): error: expected a type specifier
+- `templates/arguments/expression-for-type.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
+- `templates/arguments/expression-for-type.cpp` (clang-18): error: template argument for template type parameter must be a type
+- `templates/arguments/expression-for-type.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
+- `templates/arguments/expression-for-type.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
+- `templates/arguments/expression-for-type.cpp` (clang-22): error: template argument for template type parameter must be a type
+- `templates/arguments/expression-for-type.cpp` (clang-22-o2): error: template argument for template type parameter must be a type
+- `templates/arguments/function-explicit-too-many.cpp` (clang-host): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
+- `templates/arguments/function-explicit-too-many.cpp` (gcc-host): error: no matching function for call to ‘identity<int, int>(int)’
+- `templates/arguments/function-explicit-too-many.cpp` (edg-7.0): error: no instance of function template "identity" matches the argument list / note: substituting explicit template arguments "<int, int>" for function template "identity" failed
+- `templates/arguments/function-explicit-too-many.cpp` (gcc-14): error: no matching function for call to 'identity<int, int>(int)' / note: candidate: 'template<class T> T identity(T)' / note:   template argument deduction/substitution failed: / error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> T identity(T)'
+- `templates/arguments/function-explicit-too-many.cpp` (clang-18): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
+- `templates/arguments/function-explicit-too-many.cpp` (gcc-16): error: no matching function for call to 'identity<int, int>(int)'
+- `templates/arguments/function-explicit-too-many.cpp` (gcc-16-o2): error: no matching function for call to 'identity<int, int>(int)'
+- `templates/arguments/function-explicit-too-many.cpp` (clang-22): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
+- `templates/arguments/function-explicit-too-many.cpp` (clang-22-o2): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
+- `templates/arguments/greater-ends-list.cpp` (clang-host): error: expected unqualified-id
+- `templates/arguments/greater-ends-list.cpp` (gcc-host): error: expected unqualified-id before numeric constant
+- `templates/arguments/greater-ends-list.cpp` (edg-7.0): error: expected an identifier
+- `templates/arguments/greater-ends-list.cpp` (gcc-14): error: expected unqualified-id before numeric constant
+- `templates/arguments/greater-ends-list.cpp` (clang-18): error: expected unqualified-id
+- `templates/arguments/greater-ends-list.cpp` (gcc-16): error: expected unqualified-id before numeric constant
+- `templates/arguments/greater-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before numeric constant
+- `templates/arguments/greater-ends-list.cpp` (clang-22): error: expected unqualified-id
+- `templates/arguments/greater-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-host): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (edg-7.0): error: "Both::Base" is ambiguous
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-14): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16-o2): error: template argument 1 is invalid
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-host): error: reference to ‘Base’ is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (edg-7.0): error: "Both::Base" is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-14): error: reference to 'Base' is ambiguous / note: candidates are: 'struct Base<char> Base<char>::Base' / note:                 'struct Base<int> Base<int>::Base'
+- `templates/arguments/injected-name-two-bases.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-16): error: reference to 'Base' is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (gcc-16-o2): error: reference to 'Base' is ambiguous
+- `templates/arguments/injected-name-two-bases.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/injected-name-two-bases.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
+- `templates/arguments/name-without-arguments.cpp` (clang-host): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/name-without-arguments.cpp` (gcc-host): error: missing template argument list after ‘Box’; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/name-without-arguments.cpp` (edg-7.0): error: cannot deduce class template arguments
+- `templates/arguments/name-without-arguments.cpp` (gcc-14): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/name-without-arguments.cpp` (clang-18): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/name-without-arguments.cpp` (gcc-16): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/name-without-arguments.cpp` (gcc-16-o2): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/name-without-arguments.cpp` (clang-22): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/name-without-arguments.cpp` (clang-22-o2): error: cannot form pointer to deduced class template specialization type
+- `templates/arguments/pointer-function-name.cpp` (clang-host): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (gcc-host): error: ‘"use"’ is not a valid template argument of type ‘const char*’ because ‘"use"’ is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (edg-7.0): error: a template argument may not reference a non-external entity
+- `templates/arguments/pointer-function-name.cpp` (gcc-14): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (clang-18): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (gcc-16): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (gcc-16-o2): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
+- `templates/arguments/pointer-function-name.cpp` (clang-22): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-function-name.cpp` (clang-22-o2): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
+- `templates/arguments/pointer-local.cpp` (clang-host): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
+- `templates/arguments/pointer-local.cpp` (gcc-host): error: the address of ‘local’ is not a valid template argument because it does not have static storage duration
+- `templates/arguments/pointer-local.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 8) cannot be used as a constant
+- `templates/arguments/pointer-local.cpp` (gcc-14): error: the address of 'local' is not a valid template argument because it does not have static storage duration
+- `templates/arguments/pointer-local.cpp` (clang-18): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
+- `templates/arguments/pointer-local.cpp` (gcc-16): error: the address of 'local' is not a valid template argument because it does not have static storage duration
+- `templates/arguments/pointer-local.cpp` (gcc-16-o2): error: the address of 'local' is not a valid template argument because it does not have static storage duration
+- `templates/arguments/pointer-local.cpp` (clang-22): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
+- `templates/arguments/pointer-local.cpp` (clang-22-o2): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
+- `templates/arguments/pointer-string-literal.cpp` (clang-host): error: pointer to subobject of string literal is not allowed in a template argument
+- `templates/arguments/pointer-string-literal.cpp` (gcc-host): error: ‘"text"’ is not a valid template argument for type ‘const char*’ because string literals can never be used in this context
+- `templates/arguments/pointer-string-literal.cpp` (edg-7.0): error: invalid nontype template argument of type "const char *"
+- `templates/arguments/pointer-string-literal.cpp` (gcc-14): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
+- `templates/arguments/pointer-string-literal.cpp` (clang-18): error: pointer to subobject of string literal is not allowed in a template argument
+- `templates/arguments/pointer-string-literal.cpp` (gcc-16): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
+- `templates/arguments/pointer-string-literal.cpp` (gcc-16-o2): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
+- `templates/arguments/pointer-string-literal.cpp` (clang-22): error: pointer to subobject of string literal is not allowed in a template argument
+- `templates/arguments/pointer-string-literal.cpp` (clang-22-o2): error: pointer to subobject of string literal is not allowed in a template argument
+- `templates/arguments/pointer-zero.cpp` (clang-host): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
+- `templates/arguments/pointer-zero.cpp` (gcc-host): error: conversion from ‘int’ to ‘int*’ in a converted constant expression / error: could not convert ‘0’ from ‘int’ to ‘int*’
+- `templates/arguments/pointer-zero.cpp` (edg-7.0): error: argument of type "int" is incompatible with template parameter of type "int *"
+- `templates/arguments/pointer-zero.cpp` (gcc-14): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
+- `templates/arguments/pointer-zero.cpp` (clang-18): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
+- `templates/arguments/pointer-zero.cpp` (gcc-16): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
+- `templates/arguments/pointer-zero.cpp` (gcc-16-o2): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
+- `templates/arguments/pointer-zero.cpp` (clang-22): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
+- `templates/arguments/pointer-zero.cpp` (clang-22-o2): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
+- `templates/arguments/qualified-name-in-class.cpp` (clang-host): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-host): error: missing template argument list after ‘lib::Box’; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (edg-7.0): error: argument list for class template "lib::Box" is missing
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-14): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id
+- `templates/arguments/qualified-name-in-class.cpp` (clang-18): error: use of class template 'Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-16): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (gcc-16-o2): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
+- `templates/arguments/qualified-name-in-class.cpp` (clang-22): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/qualified-name-in-class.cpp` (clang-22-o2): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
+- `templates/arguments/reference-temporary.cpp` (clang-host): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
+- `templates/arguments/reference-temporary.cpp` (gcc-host): error: initializing ‘const int&’ with ‘int’ in converted constant expression does not bind directly / error: could not convert ‘5’ from ‘int’ to ‘const int&’
+- `templates/arguments/reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
+- `templates/arguments/reference-temporary.cpp` (gcc-14): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
+- `templates/arguments/reference-temporary.cpp` (clang-18): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
+- `templates/arguments/reference-temporary.cpp` (gcc-16): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
+- `templates/arguments/reference-temporary.cpp` (gcc-16-o2): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
+- `templates/arguments/reference-temporary.cpp` (clang-22): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
+- `templates/arguments/reference-temporary.cpp` (clang-22-o2): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
+- `templates/arguments/same-specialization-alias-template.cpp` (gcc-host): error: static assertion failed
+- `templates/arguments/same-specialization-alias-template.cpp` (edg-7.0): error: static assertion failed
+- `templates/arguments/same-specialization-alias-template.cpp` (gcc-14): error: static assertion failed
+- `templates/arguments/same-specialization-alias-template.cpp` (gcc-16): error: static assertion failed
+- `templates/arguments/same-specialization-alias-template.cpp` (gcc-16-o2): error: static assertion failed
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-host): error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-14): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16-o2): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
+- `templates/arguments/shift-ends-list.cpp` (clang-host): error: expected unqualified-id
+- `templates/arguments/shift-ends-list.cpp` (gcc-host): error: expected unqualified-id before ‘>’ token
+- `templates/arguments/shift-ends-list.cpp` (edg-7.0): error: expected an identifier
+- `templates/arguments/shift-ends-list.cpp` (gcc-14): error: expected unqualified-id before '>' token
+- `templates/arguments/shift-ends-list.cpp` (clang-18): error: expected unqualified-id
+- `templates/arguments/shift-ends-list.cpp` (gcc-16): error: expected unqualified-id before '>' token
+- `templates/arguments/shift-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before '>' token
+- `templates/arguments/shift-ends-list.cpp` (clang-22): error: expected unqualified-id
+- `templates/arguments/shift-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
+- `templates/arguments/template-template-constant-type.cpp` (edg-7.0): error: class template "Long" is not compatible with template template parameter "C"
+- `templates/arguments/template-template-constant-type.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: template non-type parameter has a different type 'long' in template argument / note: previous non-type template parameter with type 'int' is here
+- `templates/arguments/template-template-defaults.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: too many template parameters in template template argument / note: previous template template parameter is here / error: expected expression
+- `templates/arguments/template-template-mismatch.cpp` (clang-host): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/template-template-mismatch.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Apply’ / note:   expected a template of type ‘template<class> class C’, got ‘template<int N> struct Num’
+- `templates/arguments/template-template-mismatch.cpp` (edg-7.0): error: class template "Num" is not compatible with template template parameter "C"
+- `templates/arguments/template-template-mismatch.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
+- `templates/arguments/template-template-mismatch.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: template parameter has a different kind in template argument / note: previous template template parameter is here
+- `templates/arguments/template-template-mismatch.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
+- `templates/arguments/template-template-mismatch.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
+- `templates/arguments/template-template-mismatch.cpp` (clang-22): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/template-template-mismatch.cpp` (clang-22-o2): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/template-template-too-many.cpp` (clang-host): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/template-template-too-many.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Apply’ / note:   expected a template of type ‘template<class> class C’, got ‘template<class T, class U> struct Pair’
+- `templates/arguments/template-template-too-many.cpp` (edg-7.0): error: class template "Pair" is not compatible with template template parameter "C"
+- `templates/arguments/template-template-too-many.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
+- `templates/arguments/template-template-too-many.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: too many template parameters in template template argument / note: previous template template parameter is here
+- `templates/arguments/template-template-too-many.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
+- `templates/arguments/template-template-too-many.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
+- `templates/arguments/template-template-too-many.cpp` (clang-22): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/template-template-too-many.cpp` (clang-22-o2): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
+- `templates/arguments/too-few.cpp` (clang-host): error: too few template arguments for class template 'Pair'
+- `templates/arguments/too-few.cpp` (gcc-host): error: wrong number of template arguments (1, should be 2) / note: provided for ‘template<class T, class U> struct Pair’
+- `templates/arguments/too-few.cpp` (edg-7.0): error: too few arguments for class template "Pair"
+- `templates/arguments/too-few.cpp` (gcc-14): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
+- `templates/arguments/too-few.cpp` (clang-18): error: too few template arguments for class template 'Pair'
+- `templates/arguments/too-few.cpp` (gcc-16): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
+- `templates/arguments/too-few.cpp` (gcc-16-o2): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
+- `templates/arguments/too-few.cpp` (clang-22): error: too few template arguments for class template 'Pair'
+- `templates/arguments/too-few.cpp` (clang-22-o2): error: too few template arguments for class template 'Pair'
+- `templates/arguments/too-many.cpp` (clang-host): error: too many template arguments for class template 'Box'
+- `templates/arguments/too-many.cpp` (gcc-host): error: wrong number of template arguments (2, should be 1) / note: provided for ‘template<class T> struct Box’
+- `templates/arguments/too-many.cpp` (edg-7.0): error: too many arguments for class template "Box"
+- `templates/arguments/too-many.cpp` (gcc-14): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
+- `templates/arguments/too-many.cpp` (clang-18): error: too many template arguments for class template 'Box'
+- `templates/arguments/too-many.cpp` (gcc-16): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
+- `templates/arguments/too-many.cpp` (gcc-16-o2): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
+- `templates/arguments/too-many.cpp` (clang-22): error: too many template arguments for class template 'Box'
+- `templates/arguments/too-many.cpp` (clang-22-o2): error: too many template arguments for class template 'Box'
+- `templates/arguments/type-for-constant.cpp` (clang-host): error: template argument for non-type template parameter must be an expression
+- `templates/arguments/type-for-constant.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<int N> struct Num’ / note:   expected a constant of type ‘int’, got ‘int’
+- `templates/arguments/type-for-constant.cpp` (edg-7.0): error: type name is not allowed
+- `templates/arguments/type-for-constant.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
+- `templates/arguments/type-for-constant.cpp` (clang-18): error: template argument for non-type template parameter must be an expression
+- `templates/arguments/type-for-constant.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
+- `templates/arguments/type-for-constant.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
+- `templates/arguments/type-for-constant.cpp` (clang-22): error: template argument for non-type template parameter must be an expression
+- `templates/arguments/type-for-constant.cpp` (clang-22-o2): error: template argument for non-type template parameter must be an expression
+- `templates/arguments/type-or-expression-constant.cpp` (clang-host): error: template argument for non-type template parameter is treated as function type 'int ()'
+- `templates/arguments/type-or-expression-constant.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<int N> struct Num’ / note:   expected a constant of type ‘int’, got ‘int()’ / note:   ambiguous template argument for non-type template parameter is treated as function type
+- `templates/arguments/type-or-expression-constant.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
+- `templates/arguments/type-or-expression-constant.cpp` (clang-18): error: template argument for non-type template parameter is treated as function type 'int ()'
+- `templates/arguments/type-or-expression-constant.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
+- `templates/arguments/type-or-expression-constant.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
+- `templates/arguments/type-or-expression-constant.cpp` (clang-22): error: template argument for non-type template parameter is treated as function type 'int ()'
+- `templates/arguments/type-or-expression-constant.cpp` (clang-22-o2): error: template argument for non-type template parameter is treated as function type 'int ()'
+- `templates/arguments/variable-template-for-class-template.cpp` (clang-host): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
+- `templates/arguments/variable-template-for-class-template.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Use’ / note:   expected a class template, got ‘width<T>’
+- `templates/arguments/variable-template-for-class-template.cpp` (edg-7.0): error: variable template "width" is not a class template
+- `templates/arguments/variable-template-for-class-template.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
+- `templates/arguments/variable-template-for-class-template.cpp` (clang-18): error: use of variable template 'width' requires template arguments
+- `templates/arguments/variable-template-for-class-template.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
+- `templates/arguments/variable-template-for-class-template.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
+- `templates/arguments/variable-template-for-class-template.cpp` (clang-22): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
+- `templates/arguments/variable-template-for-class-template.cpp` (clang-22-o2): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
+- `templates/arguments/variable-template-without-arguments.cpp` (clang-host): error: use of variable template 'width' requires template arguments
+- `templates/arguments/variable-template-without-arguments.cpp` (gcc-host): error: missing template arguments before ‘;’ token
+- `templates/arguments/variable-template-without-arguments.cpp` (edg-7.0): error: argument list for variable template "width" is missing
+- `templates/arguments/variable-template-without-arguments.cpp` (gcc-14): error: missing template arguments before ';' token
+- `templates/arguments/variable-template-without-arguments.cpp` (clang-18): error: use of variable template 'width' requires template arguments
+- `templates/arguments/variable-template-without-arguments.cpp` (gcc-16): error: missing template arguments before ';' token
+- `templates/arguments/variable-template-without-arguments.cpp` (gcc-16-o2): error: missing template arguments before ';' token
+- `templates/arguments/variable-template-without-arguments.cpp` (clang-22): error: use of variable template 'width' requires template arguments
+- `templates/arguments/variable-template-without-arguments.cpp` (clang-22-o2): error: use of variable template 'width' requires template arguments
 - `templates/declarations/alias-template-lambda-same.cpp` (clang-host): error: static assertion failed due to requirement 'same<(lambda at /home/ryanm/Code/tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /home/ryanm/Code/tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
 - `templates/declarations/alias-template-lambda-same.cpp` (clang-18): error: static assertion failed due to requirement 'same<(lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
 - `templates/declarations/alias-template-lambda-same.cpp` (clang-22): error: static assertion failed due to requirement 'same<(lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45), (lambda at /tidal/tests/templates/declarations/alias-template-lambda-same.cpp:8:45)>'
@@ -20613,332 +21030,292 @@ check that the rejection has the intended cause.
 - `templates/declarations/variable-template-non-static.cpp` (gcc-16-o2): error: data member 'cell' cannot be a member template
 - `templates/declarations/variable-template-non-static.cpp` (clang-22): error: non-static data member 'cell' cannot be declared as a template
 - `templates/declarations/variable-template-non-static.cpp` (clang-22-o2): error: non-static data member 'cell' cannot be declared as a template
-- `templates/arguments/argument-gives-no-access.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 8) is inaccessible
-- `templates/arguments/argument-gives-no-access.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
-- `templates/arguments/argument-gives-no-access.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: in instantiation of static data member 'Peek<Owner>::size' requested here / note: implicitly declared private here
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
-- `templates/arguments/argument-makes-parameter-invalid.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting prior template arguments into non-type template parameter 'N' [with T = int]
-- `templates/arguments/argument-private-type.cpp` (clang-host): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
-- `templates/arguments/argument-private-type.cpp` (gcc-host): error: ‘struct Owner::Hidden’ is private within this context / note: declared private here
-- `templates/arguments/argument-private-type.cpp` (edg-7.0): error: class "Owner::Hidden" (declared at line 7) is inaccessible
-- `templates/arguments/argument-private-type.cpp` (gcc-14): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-private-type.cpp` (clang-18): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
-- `templates/arguments/argument-private-type.cpp` (gcc-16): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-private-type.cpp` (gcc-16-o2): error: 'struct Owner::Hidden' is private within this context / note: declared private here
-- `templates/arguments/argument-private-type.cpp` (clang-22): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
-- `templates/arguments/argument-private-type.cpp` (clang-22-o2): error: 'Hidden' is a private member of 'Owner' / note: implicitly declared private here
-- `templates/arguments/class-argument-reference-temporary.cpp` (clang-host): error: reference to subobject of temporary object is not allowed in a template argument
-- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-host): error: ‘Ref{((const int&)(&<anonymous>.Pair::a))}’ is not a constant expression
-- `templates/arguments/class-argument-reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
-- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-14): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
-- `templates/arguments/class-argument-reference-temporary.cpp` (clang-18): error: reference to subobject of temporary object is not allowed in a template argument
-- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
-- `templates/arguments/class-argument-reference-temporary.cpp` (gcc-16-o2): error: 'Ref{((const int&)(&<anonymous>.Pair::a))}' is not a constant expression
-- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22): error: reference to subobject of temporary object is not allowed in a template argument
-- `templates/arguments/class-argument-reference-temporary.cpp` (clang-22-o2): error: reference to subobject of temporary object is not allowed in a template argument
-- `templates/arguments/class-for-template.cpp` (clang-host): error: template argument for template template parameter must be a class template or type alias template
-- `templates/arguments/class-for-template.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Use’ / note:   expected a class template, got ‘Plain’
-- `templates/arguments/class-for-template.cpp` (edg-7.0): error: class "Plain" is not a class template
-- `templates/arguments/class-for-template.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
-- `templates/arguments/class-for-template.cpp` (clang-18): error: template argument for template template parameter must be a class template or type alias template
-- `templates/arguments/class-for-template.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
-- `templates/arguments/class-for-template.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'Plain'
-- `templates/arguments/class-for-template.cpp` (clang-22): error: template argument for template template parameter must be a class template or type alias template
-- `templates/arguments/class-for-template.cpp` (clang-22-o2): error: template argument for template template parameter must be a class template or type alias template
-- `templates/arguments/constant-floating-to-integer.cpp` (clang-host): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
-- `templates/arguments/constant-floating-to-integer.cpp` (gcc-host): error: conversion from ‘double’ to ‘int’ in a converted constant expression / error: could not convert ‘2.0e+0’ from ‘double’ to ‘int’
-- `templates/arguments/constant-floating-to-integer.cpp` (edg-7.0): error: argument of type "double" is incompatible with template parameter of type "int"
-- `templates/arguments/constant-floating-to-integer.cpp` (gcc-14): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
-- `templates/arguments/constant-floating-to-integer.cpp` (clang-18): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
-- `templates/arguments/constant-floating-to-integer.cpp` (gcc-16): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
-- `templates/arguments/constant-floating-to-integer.cpp` (gcc-16-o2): error: conversion from 'double' to 'int' in a converted constant expression / error: could not convert '2.0e+0' from 'double' to 'int'
-- `templates/arguments/constant-floating-to-integer.cpp` (clang-22): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
-- `templates/arguments/constant-floating-to-integer.cpp` (clang-22-o2): error: conversion from 'double' to 'int' is not allowed in a converted constant expression
-- `templates/arguments/constant-int-to-bool.cpp` (clang-host): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (gcc-host): error: narrowing conversion of ‘2’ from ‘int’ to ‘bool’ [-Wnarrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "bool": constant value does not fit in destination type
-- `templates/arguments/constant-int-to-bool.cpp` (gcc-14): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (clang-18): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (gcc-16): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (gcc-16-o2): error: narrowing conversion of '2' from 'int' to 'bool' [-Wnarrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (clang-22): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
-- `templates/arguments/constant-int-to-bool.cpp` (clang-22-o2): error: non-type template argument evaluates to 2, which cannot be narrowed to type 'bool' [-Wc++11-narrowing]
-- `templates/arguments/constant-integer-to-floating.cpp` (clang-host): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
-- `templates/arguments/constant-integer-to-floating.cpp` (gcc-host): error: conversion from ‘int’ to ‘double’ in a converted constant expression / error: could not convert ‘1’ from ‘int’ to ‘double’
-- `templates/arguments/constant-integer-to-floating.cpp` (edg-7.0): error: argument of type "int" is incompatible with template parameter of type "double"
-- `templates/arguments/constant-integer-to-floating.cpp` (gcc-14): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
-- `templates/arguments/constant-integer-to-floating.cpp` (clang-18): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
-- `templates/arguments/constant-integer-to-floating.cpp` (gcc-16): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
-- `templates/arguments/constant-integer-to-floating.cpp` (gcc-16-o2): error: conversion from 'int' to 'double' in a converted constant expression / error: could not convert '1' from 'int' to 'double'
-- `templates/arguments/constant-integer-to-floating.cpp` (clang-22): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
-- `templates/arguments/constant-integer-to-floating.cpp` (clang-22-o2): error: conversion from 'int' to 'double' is not allowed in a converted constant expression
-- `templates/arguments/constant-narrowing.cpp` (clang-host): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
-- `templates/arguments/constant-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘300’ from ‘int’ to ‘unsigned char’ [-Wnarrowing]
-- `templates/arguments/constant-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned char": constant value does not fit in destination type
-- `templates/arguments/constant-narrowing.cpp` (gcc-14): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
-- `templates/arguments/constant-narrowing.cpp` (clang-18): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
-- `templates/arguments/constant-narrowing.cpp` (gcc-16): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
-- `templates/arguments/constant-narrowing.cpp` (gcc-16-o2): error: narrowing conversion of '300' from 'int' to 'unsigned char' [-Wnarrowing]
-- `templates/arguments/constant-narrowing.cpp` (clang-22): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
-- `templates/arguments/constant-narrowing.cpp` (clang-22-o2): error: non-type template argument evaluates to 300, which cannot be narrowed to type 'unsigned char' [-Wc++11-narrowing]
-- `templates/arguments/constant-not-constant.cpp` (clang-host): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
-- `templates/arguments/constant-not-constant.cpp` (gcc-host): error: the value of ‘count’ is not usable in a constant expression / note: ‘int count’ is not const / note: in template argument for type ‘int’
-- `templates/arguments/constant-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "count" (declared at line 7) cannot be used as a constant
-- `templates/arguments/constant-not-constant.cpp` (gcc-14): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
-- `templates/arguments/constant-not-constant.cpp` (clang-18): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
-- `templates/arguments/constant-not-constant.cpp` (gcc-16): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
-- `templates/arguments/constant-not-constant.cpp` (gcc-16-o2): error: the value of 'count' is not usable in a constant expression / note: 'int count' is not const / note: in template argument for type 'int'
-- `templates/arguments/constant-not-constant.cpp` (clang-22): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
-- `templates/arguments/constant-not-constant.cpp` (clang-22-o2): error: non-type template argument is not a constant expression / note: read of non-const variable 'count' is not allowed in a constant expression
-- `templates/arguments/constant-pointer-to-base.cpp` (clang-host): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-base.cpp` (gcc-host): error: conversion from ‘Derived*’ to ‘Base*’ in a converted constant expression / error: could not convert ‘& object’ from ‘Derived*’ to ‘Base*’
-- `templates/arguments/constant-pointer-to-base.cpp` (edg-7.0): error: argument of type "Derived *" is incompatible with template parameter of type "Base *"
-- `templates/arguments/constant-pointer-to-base.cpp` (gcc-14): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
-- `templates/arguments/constant-pointer-to-base.cpp` (clang-18): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
-- `templates/arguments/constant-pointer-to-base.cpp` (gcc-16-o2): error: conversion from 'Derived*' to 'Base*' in a converted constant expression / error: could not convert '& object' from 'Derived*' to 'Base*'
-- `templates/arguments/constant-pointer-to-base.cpp` (clang-22): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-base.cpp` (clang-22-o2): error: conversion from 'Derived *' to 'Base *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-void.cpp` (clang-host): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-void.cpp` (gcc-host): error: conversion from ‘int*’ to ‘void*’ in a converted constant expression / error: could not convert ‘& global’ from ‘int*’ to ‘void*’
-- `templates/arguments/constant-pointer-to-void.cpp` (edg-7.0): error: argument of type "int *" is incompatible with template parameter of type "void *"
-- `templates/arguments/constant-pointer-to-void.cpp` (gcc-14): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
-- `templates/arguments/constant-pointer-to-void.cpp` (clang-18): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
-- `templates/arguments/constant-pointer-to-void.cpp` (gcc-16-o2): error: conversion from 'int*' to 'void*' in a converted constant expression / error: could not convert '& global' from 'int*' to 'void*'
-- `templates/arguments/constant-pointer-to-void.cpp` (clang-22): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
-- `templates/arguments/constant-pointer-to-void.cpp` (clang-22-o2): error: conversion from 'int *' to 'void *' is not allowed in a converted constant expression
-- `templates/arguments/constant-scoped-enum.cpp` (clang-host): error: value of type 'Level' is not implicitly convertible to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (gcc-host): error: could not convert ‘Level::low’ from ‘Level’ to ‘int’
-- `templates/arguments/constant-scoped-enum.cpp` (edg-7.0): error: argument of type "Level" is incompatible with template parameter of type "int"
-- `templates/arguments/constant-scoped-enum.cpp` (gcc-14): error: could not convert 'Level::low' from 'Level' to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (clang-18): error: value of type 'Level' is not implicitly convertible to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (gcc-16): error: could not convert 'Level::low' from 'Level' to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (gcc-16-o2): error: could not convert 'Level::low' from 'Level' to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (clang-22): error: value of type 'Level' is not implicitly convertible to 'int'
-- `templates/arguments/constant-scoped-enum.cpp` (clang-22-o2): error: value of type 'Level' is not implicitly convertible to 'int'
-- `templates/arguments/empty-list-needs-angles.cpp` (clang-host): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/empty-list-needs-angles.cpp` (gcc-host): error: missing template argument list after ‘Box’; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/empty-list-needs-angles.cpp` (edg-7.0): error: cannot deduce class template arguments
-- `templates/arguments/empty-list-needs-angles.cpp` (gcc-14): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/empty-list-needs-angles.cpp` (clang-18): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/empty-list-needs-angles.cpp` (gcc-16): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/empty-list-needs-angles.cpp` (gcc-16-o2): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/empty-list-needs-angles.cpp` (clang-22): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/empty-list-needs-angles.cpp` (clang-22-o2): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/expression-for-type.cpp` (clang-host): error: template argument for template type parameter must be a type
-- `templates/arguments/expression-for-type.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<class T> struct Box’ / note:   expected a type, got ‘1’
-- `templates/arguments/expression-for-type.cpp` (edg-7.0): error: expected a type specifier
-- `templates/arguments/expression-for-type.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
-- `templates/arguments/expression-for-type.cpp` (clang-18): error: template argument for template type parameter must be a type
-- `templates/arguments/expression-for-type.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
-- `templates/arguments/expression-for-type.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<class T> struct Box' / note:   expected a type, got '1'
-- `templates/arguments/expression-for-type.cpp` (clang-22): error: template argument for template type parameter must be a type
-- `templates/arguments/expression-for-type.cpp` (clang-22-o2): error: template argument for template type parameter must be a type
-- `templates/arguments/function-explicit-too-many.cpp` (clang-host): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
-- `templates/arguments/function-explicit-too-many.cpp` (gcc-host): error: no matching function for call to ‘identity<int, int>(int)’
-- `templates/arguments/function-explicit-too-many.cpp` (edg-7.0): error: no instance of function template "identity" matches the argument list / note: substituting explicit template arguments "<int, int>" for function template "identity" failed
-- `templates/arguments/function-explicit-too-many.cpp` (gcc-14): error: no matching function for call to 'identity<int, int>(int)' / note: candidate: 'template<class T> T identity(T)' / note:   template argument deduction/substitution failed: / error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> T identity(T)'
-- `templates/arguments/function-explicit-too-many.cpp` (clang-18): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
-- `templates/arguments/function-explicit-too-many.cpp` (gcc-16): error: no matching function for call to 'identity<int, int>(int)'
-- `templates/arguments/function-explicit-too-many.cpp` (gcc-16-o2): error: no matching function for call to 'identity<int, int>(int)'
-- `templates/arguments/function-explicit-too-many.cpp` (clang-22): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
-- `templates/arguments/function-explicit-too-many.cpp` (clang-22-o2): error: no matching function for call to 'identity' / note: candidate template ignored: substitution failure: too many template arguments for function template 'identity'
-- `templates/arguments/greater-ends-list.cpp` (clang-host): error: expected unqualified-id
-- `templates/arguments/greater-ends-list.cpp` (gcc-host): error: expected unqualified-id before numeric constant
-- `templates/arguments/greater-ends-list.cpp` (edg-7.0): error: expected an identifier
-- `templates/arguments/greater-ends-list.cpp` (gcc-14): error: expected unqualified-id before numeric constant
-- `templates/arguments/greater-ends-list.cpp` (clang-18): error: expected unqualified-id
-- `templates/arguments/greater-ends-list.cpp` (gcc-16): error: expected unqualified-id before numeric constant
-- `templates/arguments/greater-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before numeric constant
-- `templates/arguments/greater-ends-list.cpp` (clang-22): error: expected unqualified-id
-- `templates/arguments/greater-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
-- `templates/arguments/injected-name-two-bases-template.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-host): error: template argument 1 is invalid
-- `templates/arguments/injected-name-two-bases-template.cpp` (edg-7.0): error: "Both::Base" is ambiguous
-- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-14): error: template argument 1 is invalid
-- `templates/arguments/injected-name-two-bases-template.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16): error: template argument 1 is invalid
-- `templates/arguments/injected-name-two-bases-template.cpp` (gcc-16-o2): error: template argument 1 is invalid
-- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases-template.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup / error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases.cpp` (clang-host): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases.cpp` (gcc-host): error: reference to ‘Base’ is ambiguous
-- `templates/arguments/injected-name-two-bases.cpp` (edg-7.0): error: "Both::Base" is ambiguous
-- `templates/arguments/injected-name-two-bases.cpp` (gcc-14): error: reference to 'Base' is ambiguous / note: candidates are: 'struct Base<char> Base<char>::Base' / note:                 'struct Base<int> Base<int>::Base'
-- `templates/arguments/injected-name-two-bases.cpp` (clang-18): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases.cpp` (gcc-16): error: reference to 'Base' is ambiguous
-- `templates/arguments/injected-name-two-bases.cpp` (gcc-16-o2): error: reference to 'Base' is ambiguous
-- `templates/arguments/injected-name-two-bases.cpp` (clang-22): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/injected-name-two-bases.cpp` (clang-22-o2): error: member 'Base' found in multiple base classes of different types / note: member type 'Base<int>' found by ambiguous name lookup / note: member type 'Base<char>' found by ambiguous name lookup
-- `templates/arguments/name-without-arguments.cpp` (clang-host): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/name-without-arguments.cpp` (gcc-host): error: missing template argument list after ‘Box’; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/name-without-arguments.cpp` (edg-7.0): error: cannot deduce class template arguments
-- `templates/arguments/name-without-arguments.cpp` (gcc-14): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/name-without-arguments.cpp` (clang-18): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/name-without-arguments.cpp` (gcc-16): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/name-without-arguments.cpp` (gcc-16-o2): error: missing template argument list after 'Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/name-without-arguments.cpp` (clang-22): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/name-without-arguments.cpp` (clang-22-o2): error: cannot form pointer to deduced class template specialization type
-- `templates/arguments/pointer-function-name.cpp` (clang-host): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
-- `templates/arguments/pointer-function-name.cpp` (gcc-host): error: ‘"use"’ is not a valid template argument of type ‘const char*’ because ‘"use"’ is not a variable or function
-- `templates/arguments/pointer-function-name.cpp` (edg-7.0): error: a template argument may not reference a non-external entity
-- `templates/arguments/pointer-function-name.cpp` (gcc-14): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
-- `templates/arguments/pointer-function-name.cpp` (clang-18): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
-- `templates/arguments/pointer-function-name.cpp` (gcc-16): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
-- `templates/arguments/pointer-function-name.cpp` (gcc-16-o2): error: '"use"' is not a valid template argument of type 'const char*' because '"use"' is not a variable or function
-- `templates/arguments/pointer-function-name.cpp` (clang-22): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
-- `templates/arguments/pointer-function-name.cpp` (clang-22-o2): error: pointer to subobject of predefined '__func__' variable is not allowed in a template argument
-- `templates/arguments/pointer-local.cpp` (clang-host): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
-- `templates/arguments/pointer-local.cpp` (gcc-host): error: the address of ‘local’ is not a valid template argument because it does not have static storage duration
-- `templates/arguments/pointer-local.cpp` (edg-7.0): error: expression must have a constant value / note: a pointer or reference to variable "local" (declared at line 8) cannot be used as a constant
-- `templates/arguments/pointer-local.cpp` (gcc-14): error: the address of 'local' is not a valid template argument because it does not have static storage duration
-- `templates/arguments/pointer-local.cpp` (clang-18): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
-- `templates/arguments/pointer-local.cpp` (gcc-16): error: the address of 'local' is not a valid template argument because it does not have static storage duration
-- `templates/arguments/pointer-local.cpp` (gcc-16-o2): error: the address of 'local' is not a valid template argument because it does not have static storage duration
-- `templates/arguments/pointer-local.cpp` (clang-22): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
-- `templates/arguments/pointer-local.cpp` (clang-22-o2): error: non-type template argument is not a constant expression / note: pointer to 'local' is not a constant expression
-- `templates/arguments/pointer-string-literal.cpp` (clang-host): error: pointer to subobject of string literal is not allowed in a template argument
-- `templates/arguments/pointer-string-literal.cpp` (gcc-host): error: ‘"text"’ is not a valid template argument for type ‘const char*’ because string literals can never be used in this context
-- `templates/arguments/pointer-string-literal.cpp` (edg-7.0): error: invalid nontype template argument of type "const char *"
-- `templates/arguments/pointer-string-literal.cpp` (gcc-14): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
-- `templates/arguments/pointer-string-literal.cpp` (clang-18): error: pointer to subobject of string literal is not allowed in a template argument
-- `templates/arguments/pointer-string-literal.cpp` (gcc-16): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
-- `templates/arguments/pointer-string-literal.cpp` (gcc-16-o2): error: '"text"' is not a valid template argument for type 'const char*' because string literals can never be used in this context
-- `templates/arguments/pointer-string-literal.cpp` (clang-22): error: pointer to subobject of string literal is not allowed in a template argument
-- `templates/arguments/pointer-string-literal.cpp` (clang-22-o2): error: pointer to subobject of string literal is not allowed in a template argument
-- `templates/arguments/pointer-zero.cpp` (clang-host): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
-- `templates/arguments/pointer-zero.cpp` (gcc-host): error: conversion from ‘int’ to ‘int*’ in a converted constant expression / error: could not convert ‘0’ from ‘int’ to ‘int*’
-- `templates/arguments/pointer-zero.cpp` (edg-7.0): error: argument of type "int" is incompatible with template parameter of type "int *"
-- `templates/arguments/pointer-zero.cpp` (gcc-14): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
-- `templates/arguments/pointer-zero.cpp` (clang-18): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
-- `templates/arguments/pointer-zero.cpp` (gcc-16): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
-- `templates/arguments/pointer-zero.cpp` (gcc-16-o2): error: conversion from 'int' to 'int*' in a converted constant expression / error: could not convert '0' from 'int' to 'int*'
-- `templates/arguments/pointer-zero.cpp` (clang-22): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
-- `templates/arguments/pointer-zero.cpp` (clang-22-o2): error: conversion from 'int' to 'int *' is not allowed in a converted constant expression
-- `templates/arguments/qualified-name-in-class.cpp` (clang-host): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
-- `templates/arguments/qualified-name-in-class.cpp` (gcc-host): error: missing template argument list after ‘lib::Box’; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
-- `templates/arguments/qualified-name-in-class.cpp` (edg-7.0): error: argument list for class template "lib::Box" is missing
-- `templates/arguments/qualified-name-in-class.cpp` (gcc-14): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id
-- `templates/arguments/qualified-name-in-class.cpp` (clang-18): error: use of class template 'Box' requires template arguments; argument deduction not allowed in non-static struct member
-- `templates/arguments/qualified-name-in-class.cpp` (gcc-16): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
-- `templates/arguments/qualified-name-in-class.cpp` (gcc-16-o2): error: missing template argument list after 'lib::Box'; for deduction, template placeholder must be followed by a simple declarator-id [-Wtemplate-body]
-- `templates/arguments/qualified-name-in-class.cpp` (clang-22): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
-- `templates/arguments/qualified-name-in-class.cpp` (clang-22-o2): error: use of class template 'lib::Box' requires template arguments; argument deduction not allowed in non-static struct member
-- `templates/arguments/reference-temporary.cpp` (clang-host): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
-- `templates/arguments/reference-temporary.cpp` (gcc-host): error: initializing ‘const int&’ with ‘int’ in converted constant expression does not bind directly / error: could not convert ‘5’ from ‘int’ to ‘const int&’
-- `templates/arguments/reference-temporary.cpp` (edg-7.0): error: expression must have a constant value / note: reference or pointer to temporary with limited lifetime
-- `templates/arguments/reference-temporary.cpp` (gcc-14): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
-- `templates/arguments/reference-temporary.cpp` (clang-18): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
-- `templates/arguments/reference-temporary.cpp` (gcc-16): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
-- `templates/arguments/reference-temporary.cpp` (gcc-16-o2): error: initializing 'const int&' with 'int' in converted constant expression does not bind directly / error: could not convert '5' from 'int' to 'const int&'
-- `templates/arguments/reference-temporary.cpp` (clang-22): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
-- `templates/arguments/reference-temporary.cpp` (clang-22-o2): error: conversion from 'int' to 'const int &' in converted constant expression would bind reference to a temporary
-- `templates/arguments/same-specialization-alias-template.cpp` (gcc-host): error: static assertion failed
-- `templates/arguments/same-specialization-alias-template.cpp` (edg-7.0): error: static assertion failed
-- `templates/arguments/same-specialization-alias-template.cpp` (gcc-14): error: static assertion failed
-- `templates/arguments/same-specialization-alias-template.cpp` (gcc-16): error: static assertion failed
-- `templates/arguments/same-specialization-alias-template.cpp` (gcc-16-o2): error: static assertion failed
-- `templates/arguments/same-specialization-union-empty.cpp` (gcc-host): error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: ‘Choice()’ is not a constant expression / error: ‘Choice()’ is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
-- `templates/arguments/same-specialization-union-empty.cpp` (gcc-14): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
-- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
-- `templates/arguments/same-specialization-union-empty.cpp` (gcc-16-o2): error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: 'Choice()' is not a constant expression / error: 'Choice()' is not a constant expression because it refers to an incompletely initialized variable / error: template argument 1 is invalid / error: template argument 2 is invalid
-- `templates/arguments/shift-ends-list.cpp` (clang-host): error: expected unqualified-id
-- `templates/arguments/shift-ends-list.cpp` (gcc-host): error: expected unqualified-id before ‘>’ token
-- `templates/arguments/shift-ends-list.cpp` (edg-7.0): error: expected an identifier
-- `templates/arguments/shift-ends-list.cpp` (gcc-14): error: expected unqualified-id before '>' token
-- `templates/arguments/shift-ends-list.cpp` (clang-18): error: expected unqualified-id
-- `templates/arguments/shift-ends-list.cpp` (gcc-16): error: expected unqualified-id before '>' token
-- `templates/arguments/shift-ends-list.cpp` (gcc-16-o2): error: expected unqualified-id before '>' token
-- `templates/arguments/shift-ends-list.cpp` (clang-22): error: expected unqualified-id
-- `templates/arguments/shift-ends-list.cpp` (clang-22-o2): error: expected unqualified-id
-- `templates/arguments/template-template-constant-type.cpp` (edg-7.0): error: class template "Long" is not compatible with template template parameter "C"
-- `templates/arguments/template-template-constant-type.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: template non-type parameter has a different type 'long' in template argument / note: previous non-type template parameter with type 'int' is here
-- `templates/arguments/template-template-defaults.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: too many template parameters in template template argument / note: previous template template parameter is here / error: expected expression
-- `templates/arguments/template-template-mismatch.cpp` (clang-host): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/template-template-mismatch.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Apply’ / note:   expected a template of type ‘template<class> class C’, got ‘template<int N> struct Num’
-- `templates/arguments/template-template-mismatch.cpp` (edg-7.0): error: class template "Num" is not compatible with template template parameter "C"
-- `templates/arguments/template-template-mismatch.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
-- `templates/arguments/template-template-mismatch.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: template parameter has a different kind in template argument / note: previous template template parameter is here
-- `templates/arguments/template-template-mismatch.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
-- `templates/arguments/template-template-mismatch.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<int N> struct Num'
-- `templates/arguments/template-template-mismatch.cpp` (clang-22): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/template-template-mismatch.cpp` (clang-22-o2): error: template argument for non-type template parameter must be an expression / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/template-template-too-many.cpp` (clang-host): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/template-template-too-many.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Apply’ / note:   expected a template of type ‘template<class> class C’, got ‘template<class T, class U> struct Pair’
-- `templates/arguments/template-template-too-many.cpp` (edg-7.0): error: class template "Pair" is not compatible with template template parameter "C"
-- `templates/arguments/template-template-too-many.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
-- `templates/arguments/template-template-too-many.cpp` (clang-18): error: template template argument has different template parameters than its corresponding template template parameter / note: too many template parameters in template template argument / note: previous template template parameter is here
-- `templates/arguments/template-template-too-many.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
-- `templates/arguments/template-template-too-many.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Apply' / note:   expected a template of type 'template<class> class C', got 'template<class T, class U> struct Pair'
-- `templates/arguments/template-template-too-many.cpp` (clang-22): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/template-template-too-many.cpp` (clang-22-o2): error: too few template arguments for class template 'Pair' / note: template template argument has different template parameters than its corresponding template template parameter / note: previous template template parameter is here
-- `templates/arguments/too-few.cpp` (clang-host): error: too few template arguments for class template 'Pair'
-- `templates/arguments/too-few.cpp` (gcc-host): error: wrong number of template arguments (1, should be 2) / note: provided for ‘template<class T, class U> struct Pair’
-- `templates/arguments/too-few.cpp` (edg-7.0): error: too few arguments for class template "Pair"
-- `templates/arguments/too-few.cpp` (gcc-14): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
-- `templates/arguments/too-few.cpp` (clang-18): error: too few template arguments for class template 'Pair'
-- `templates/arguments/too-few.cpp` (gcc-16): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
-- `templates/arguments/too-few.cpp` (gcc-16-o2): error: wrong number of template arguments (1, should be 2) / note: provided for 'template<class T, class U> struct Pair'
-- `templates/arguments/too-few.cpp` (clang-22): error: too few template arguments for class template 'Pair'
-- `templates/arguments/too-few.cpp` (clang-22-o2): error: too few template arguments for class template 'Pair'
-- `templates/arguments/too-many.cpp` (clang-host): error: too many template arguments for class template 'Box'
-- `templates/arguments/too-many.cpp` (gcc-host): error: wrong number of template arguments (2, should be 1) / note: provided for ‘template<class T> struct Box’
-- `templates/arguments/too-many.cpp` (edg-7.0): error: too many arguments for class template "Box"
-- `templates/arguments/too-many.cpp` (gcc-14): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
-- `templates/arguments/too-many.cpp` (clang-18): error: too many template arguments for class template 'Box'
-- `templates/arguments/too-many.cpp` (gcc-16): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
-- `templates/arguments/too-many.cpp` (gcc-16-o2): error: wrong number of template arguments (2, should be 1) / note: provided for 'template<class T> struct Box'
-- `templates/arguments/too-many.cpp` (clang-22): error: too many template arguments for class template 'Box'
-- `templates/arguments/too-many.cpp` (clang-22-o2): error: too many template arguments for class template 'Box'
-- `templates/arguments/type-for-constant.cpp` (clang-host): error: template argument for non-type template parameter must be an expression
-- `templates/arguments/type-for-constant.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<int N> struct Num’ / note:   expected a constant of type ‘int’, got ‘int’
-- `templates/arguments/type-for-constant.cpp` (edg-7.0): error: type name is not allowed
-- `templates/arguments/type-for-constant.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
-- `templates/arguments/type-for-constant.cpp` (clang-18): error: template argument for non-type template parameter must be an expression
-- `templates/arguments/type-for-constant.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
-- `templates/arguments/type-for-constant.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int'
-- `templates/arguments/type-for-constant.cpp` (clang-22): error: template argument for non-type template parameter must be an expression
-- `templates/arguments/type-for-constant.cpp` (clang-22-o2): error: template argument for non-type template parameter must be an expression
-- `templates/arguments/type-or-expression-constant.cpp` (clang-host): error: template argument for non-type template parameter is treated as function type 'int ()'
-- `templates/arguments/type-or-expression-constant.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<int N> struct Num’ / note:   expected a constant of type ‘int’, got ‘int()’ / note:   ambiguous template argument for non-type template parameter is treated as function type
-- `templates/arguments/type-or-expression-constant.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
-- `templates/arguments/type-or-expression-constant.cpp` (clang-18): error: template argument for non-type template parameter is treated as function type 'int ()'
-- `templates/arguments/type-or-expression-constant.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
-- `templates/arguments/type-or-expression-constant.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<int N> struct Num' / note:   expected a constant of type 'int', got 'int()' / note:   ambiguous template argument for non-type template parameter is treated as function type
-- `templates/arguments/type-or-expression-constant.cpp` (clang-22): error: template argument for non-type template parameter is treated as function type 'int ()'
-- `templates/arguments/type-or-expression-constant.cpp` (clang-22-o2): error: template argument for non-type template parameter is treated as function type 'int ()'
-- `templates/arguments/variable-template-for-class-template.cpp` (clang-host): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
-- `templates/arguments/variable-template-for-class-template.cpp` (gcc-host): error: type/value mismatch at argument 1 in template parameter list for ‘template<template<class> class C> struct Use’ / note:   expected a class template, got ‘width<T>’
-- `templates/arguments/variable-template-for-class-template.cpp` (edg-7.0): error: variable template "width" is not a class template
-- `templates/arguments/variable-template-for-class-template.cpp` (gcc-14): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
-- `templates/arguments/variable-template-for-class-template.cpp` (clang-18): error: use of variable template 'width' requires template arguments
-- `templates/arguments/variable-template-for-class-template.cpp` (gcc-16): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
-- `templates/arguments/variable-template-for-class-template.cpp` (gcc-16-o2): error: type/value mismatch at argument 1 in template parameter list for 'template<template<class> class C> struct Use' / note:   expected a class template, got 'width<T>'
-- `templates/arguments/variable-template-for-class-template.cpp` (clang-22): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
-- `templates/arguments/variable-template-for-class-template.cpp` (clang-22-o2): error: template argument does not refer to a class or alias template, or template template parameter / note: template argument refers to a variable template 'width', here
-- `templates/arguments/variable-template-without-arguments.cpp` (clang-host): error: use of variable template 'width' requires template arguments
-- `templates/arguments/variable-template-without-arguments.cpp` (gcc-host): error: missing template arguments before ‘;’ token
-- `templates/arguments/variable-template-without-arguments.cpp` (edg-7.0): error: argument list for variable template "width" is missing
-- `templates/arguments/variable-template-without-arguments.cpp` (gcc-14): error: missing template arguments before ';' token
-- `templates/arguments/variable-template-without-arguments.cpp` (clang-18): error: use of variable template 'width' requires template arguments
-- `templates/arguments/variable-template-without-arguments.cpp` (gcc-16): error: missing template arguments before ';' token
-- `templates/arguments/variable-template-without-arguments.cpp` (gcc-16-o2): error: missing template arguments before ';' token
-- `templates/arguments/variable-template-without-arguments.cpp` (clang-22): error: use of variable template 'width' requires template arguments
-- `templates/arguments/variable-template-without-arguments.cpp` (clang-22-o2): error: use of variable template 'width' requires template arguments
+- `templates/deduction/adjust-reference-rvalue.cpp` (clang-host): error: no matching function for call to 'ref' / note: candidate function [with T = int] not viable: expects an lvalue for 1st argument
+- `templates/deduction/adjust-reference-rvalue.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’ / note: initializing argument 1 of ‘void ref(T&) [with T = int]’
+- `templates/deduction/adjust-reference-rvalue.cpp` (edg-7.0): error: no instance of function template "ref" matches the argument list / note: function template "ref" does not match because argument #1 does not match parameter
+- `templates/deduction/adjust-reference-rvalue.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int' / note:   initializing argument 1 of 'void ref(T&) [with T = int]'
+- `templates/deduction/adjust-reference-rvalue.cpp` (clang-18): error: no matching function for call to 'ref' / note: candidate function [with T = int] not viable: expects an lvalue for 1st argument
+- `templates/deduction/adjust-reference-rvalue.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int' / note: initializing argument 1 of 'void ref(T&) [with T = int]'
+- `templates/deduction/adjust-reference-rvalue.cpp` (gcc-16-o2): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int' / note: initializing argument 1 of 'void ref(T&) [with T = int]'
+- `templates/deduction/adjust-reference-rvalue.cpp` (clang-22): error: no matching function for call to 'ref' / note: candidate function [with T = int] not viable: expects an lvalue for 1st argument
+- `templates/deduction/adjust-reference-rvalue.cpp` (clang-22-o2): error: no matching function for call to 'ref' / note: candidate function [with T = int] not viable: expects an lvalue for 1st argument
+- `templates/deduction/braced-elements-differ.cpp` (clang-host): error: no matching function for call to 'list' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/braced-elements-differ.cpp` (gcc-host): error: no matching function for call to ‘list(<brace-enclosed initializer list>)’
+- `templates/deduction/braced-elements-differ.cpp` (edg-7.0): error: no instance of function template "list" matches the argument list / note: candidate function template "list" failed deduction
+- `templates/deduction/braced-elements-differ.cpp` (gcc-14): error: no matching function for call to 'list(<brace-enclosed initializer list>)' / note: candidate: 'template<class T> void list(std::initializer_list<T>)' / note:   template argument deduction/substitution failed: / note:   deduced conflicting types for parameter 'T' ('int' and 'long int')
+- `templates/deduction/braced-elements-differ.cpp` (clang-18): error: no matching function for call to 'list' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/braced-elements-differ.cpp` (gcc-16): error: no matching function for call to 'list(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-elements-differ.cpp` (gcc-16-o2): error: no matching function for call to 'list(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-elements-differ.cpp` (clang-22): error: no matching function for call to 'list' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/braced-elements-differ.cpp` (clang-22-o2): error: no matching function for call to 'list' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/braced-empty.cpp` (clang-host): error: no matching function for call to 'list' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-empty.cpp` (gcc-host): error: no matching function for call to ‘list(<brace-enclosed initializer list>)’
+- `templates/deduction/braced-empty.cpp` (edg-7.0): error: no instance of function template "list" matches the argument list / note: candidate function template "list" failed deduction
+- `templates/deduction/braced-empty.cpp` (gcc-14): error: no matching function for call to 'list(<brace-enclosed initializer list>)' / note: candidate: 'template<class T> void list(std::initializer_list<T>)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/braced-empty.cpp` (clang-18): error: no matching function for call to 'list' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-empty.cpp` (gcc-16): error: no matching function for call to 'list(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-empty.cpp` (gcc-16-o2): error: no matching function for call to 'list(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-empty.cpp` (clang-22): error: no matching function for call to 'list' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-empty.cpp` (clang-22-o2): error: no matching function for call to 'list' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-other-parameter.cpp` (clang-host): error: no matching function for call to 'one' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-other-parameter.cpp` (gcc-host): error: no matching function for call to ‘one(<brace-enclosed initializer list>)’
+- `templates/deduction/braced-other-parameter.cpp` (edg-7.0): error: no instance of function template "one" matches the argument list / note: candidate function template "one" failed deduction
+- `templates/deduction/braced-other-parameter.cpp` (gcc-14): error: no matching function for call to 'one(<brace-enclosed initializer list>)' / note: candidate: 'template<class T> void one(T)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/braced-other-parameter.cpp` (clang-18): error: no matching function for call to 'one' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-other-parameter.cpp` (gcc-16): error: no matching function for call to 'one(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-other-parameter.cpp` (gcc-16-o2): error: no matching function for call to 'one(<brace-enclosed initializer list>)'
+- `templates/deduction/braced-other-parameter.cpp` (clang-22): error: no matching function for call to 'one' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/braced-other-parameter.cpp` (clang-22-o2): error: no matching function for call to 'one' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/combine-conflict-one-pair.cpp` (clang-host): error: no matching function for call to 'apply' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('char' vs. 'int')
+- `templates/deduction/combine-conflict-one-pair.cpp` (gcc-host): error: no matching function for call to ‘apply(char (&)(int))’
+- `templates/deduction/combine-conflict-one-pair.cpp` (edg-7.0): error: no instance of function template "apply" matches the argument list / note: candidate function template "apply" failed deduction
+- `templates/deduction/combine-conflict-one-pair.cpp` (gcc-14): error: no matching function for call to 'apply(char (&)(int))' / note: candidate: 'template<class T> void apply(T (*)(T))' / note:   template argument deduction/substitution failed: / note:   deduced conflicting types for parameter 'T' ('char' and 'int')
+- `templates/deduction/combine-conflict-one-pair.cpp` (clang-18): error: no matching function for call to 'apply' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('char' vs. 'int')
+- `templates/deduction/combine-conflict-one-pair.cpp` (gcc-16): error: no matching function for call to 'apply(char (&)(int))'
+- `templates/deduction/combine-conflict-one-pair.cpp` (gcc-16-o2): error: no matching function for call to 'apply(char (&)(int))'
+- `templates/deduction/combine-conflict-one-pair.cpp` (clang-22): error: no matching function for call to 'apply' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('char' vs. 'int')
+- `templates/deduction/combine-conflict-one-pair.cpp` (clang-22-o2): error: no matching function for call to 'apply' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('char' vs. 'int')
+- `templates/deduction/combine-conflict.cpp` (clang-host): error: no matching function for call to 'larger' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/combine-conflict.cpp` (gcc-host): error: no matching function for call to ‘larger(int, long int)’
+- `templates/deduction/combine-conflict.cpp` (edg-7.0): error: no instance of function template "larger" matches the argument list / note: candidate function template "larger" failed deduction
+- `templates/deduction/combine-conflict.cpp` (gcc-14): error: no matching function for call to 'larger(int, long int)' / note: candidate: 'template<class T> T larger(T, T)' / note:   template argument deduction/substitution failed: / note:   deduced conflicting types for parameter 'T' ('int' and 'long int')
+- `templates/deduction/combine-conflict.cpp` (clang-18): error: no matching function for call to 'larger' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/combine-conflict.cpp` (gcc-16): error: no matching function for call to 'larger(int, long int)'
+- `templates/deduction/combine-conflict.cpp` (gcc-16-o2): error: no matching function for call to 'larger(int, long int)'
+- `templates/deduction/combine-conflict.cpp` (clang-22): error: no matching function for call to 'larger' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/combine-conflict.cpp` (clang-22-o2): error: no matching function for call to 'larger' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'long')
+- `templates/deduction/combine-missing.cpp` (clang-host): error: no matching function for call to 'make' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/combine-missing.cpp` (gcc-host): error: no matching function for call to ‘make(int)’
+- `templates/deduction/combine-missing.cpp` (edg-7.0): error: no instance of function template "make" matches the argument list / note: candidate function template "make" failed deduction
+- `templates/deduction/combine-missing.cpp` (gcc-14): error: no matching function for call to 'make(int)' / note: candidate: 'template<class T, class U> U make(T)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'U'
+- `templates/deduction/combine-missing.cpp` (clang-18): error: no matching function for call to 'make' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/combine-missing.cpp` (gcc-16): error: no matching function for call to 'make(int)'
+- `templates/deduction/combine-missing.cpp` (gcc-16-o2): error: no matching function for call to 'make(int)'
+- `templates/deduction/combine-missing.cpp` (clang-22): error: no matching function for call to 'make' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/combine-missing.cpp` (clang-22-o2): error: no matching function for call to 'make' / note: candidate template ignored: couldn't infer template argument 'U'
+- `templates/deduction/context-address-mismatch.cpp` (clang-host): error: address of overloaded function 'take' does not match required type 'void (int)' / note: candidate template ignored: could not match 'Tag<T>' against 'void'
+- `templates/deduction/context-address-mismatch.cpp` (gcc-host): error: no matches converting function ‘take’ to type ‘void (*)(int)’
+- `templates/deduction/context-address-mismatch.cpp` (edg-7.0): error: no instance of function template "take" matches the required type
+- `templates/deduction/context-address-mismatch.cpp` (gcc-14): error: no matches converting function 'take' to type 'void (*)(int)' / note: candidate is: 'template<class T> Tag<T> take(T)'
+- `templates/deduction/context-address-mismatch.cpp` (clang-18): error: address of overloaded function 'take' does not match required type 'void (int)' / note: candidate template ignored: could not match 'Tag<T>' against 'void'
+- `templates/deduction/context-address-mismatch.cpp` (gcc-16): error: no matches converting function 'take' to type 'void (*)(int)'
+- `templates/deduction/context-address-mismatch.cpp` (gcc-16-o2): error: no matches converting function 'take' to type 'void (*)(int)'
+- `templates/deduction/context-address-mismatch.cpp` (clang-22): error: address of overloaded function 'take' does not match required type 'void (int)' / note: candidate template ignored: could not match 'Tag<T>' against 'void'
+- `templates/deduction/context-address-mismatch.cpp` (clang-22-o2): error: address of overloaded function 'take' does not match required type 'void (int)' / note: candidate template ignored: could not match 'Tag<T>' against 'void'
+- `templates/deduction/declaration-ambiguous.cpp` (clang-host): error: function template specialization 'put' ambiguously refers to more than one function template; explicitly specify template arguments to identify a particular function template / note: function template 'put<int>' matches specialization [with T = int] / note: function template 'put<int>' matches specialization [with T = int]
+- `templates/deduction/declaration-ambiguous.cpp` (gcc-host): error: ambiguous template specialization ‘put<>’ for ‘void put(int, int)’
+- `templates/deduction/declaration-ambiguous.cpp` (edg-7.0): error: more than one instance of overloaded function "put" matches the argument list:
+- `templates/deduction/declaration-ambiguous.cpp` (gcc-14): error: ambiguous template specialization 'put<>' for 'void put(int, int)' / note: candidates are: 'template<class T> void put(T, int)' / note:                 'template<class T> void put(int, T)'
+- `templates/deduction/declaration-ambiguous.cpp` (clang-18): error: function template specialization 'put' ambiguously refers to more than one function template; explicitly specify template arguments to identify a particular function template / note: function template 'put<int>' matches specialization [with T = int] / note: function template 'put<int>' matches specialization [with T = int]
+- `templates/deduction/declaration-ambiguous.cpp` (gcc-16): error: ambiguous template specialization 'put<>' for 'void put(int, int)'
+- `templates/deduction/declaration-ambiguous.cpp` (gcc-16-o2): error: ambiguous template specialization 'put<>' for 'void put(int, int)'
+- `templates/deduction/declaration-ambiguous.cpp` (clang-22): error: function template specialization 'put' ambiguously refers to more than one function template; explicitly specify template arguments to identify a particular function template / note: function template 'put<int>' matches specialization [with T = int] / note: function template 'put<int>' matches specialization [with T = int]
+- `templates/deduction/declaration-ambiguous.cpp` (clang-22-o2): error: function template specialization 'put' ambiguously refers to more than one function template; explicitly specify template arguments to identify a particular function template / note: function template 'put<int>' matches specialization [with T = int] / note: function template 'put<int>' matches specialization [with T = int]
+- `templates/deduction/default-argument-not-deduced.cpp` (clang-host): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/default-argument-not-deduced.cpp` (gcc-host): error: no matching function for call to ‘fill()’
+- `templates/deduction/default-argument-not-deduced.cpp` (edg-7.0): error: no instance of function template "fill" matches the argument list / note: candidate function template "fill" failed deduction
+- `templates/deduction/default-argument-not-deduced.cpp` (gcc-14): error: no matching function for call to 'fill()' / note: candidate: 'template<class T> void fill(T)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/default-argument-not-deduced.cpp` (clang-18): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/default-argument-not-deduced.cpp` (gcc-16): error: no matching function for call to 'fill()'
+- `templates/deduction/default-argument-not-deduced.cpp` (gcc-16-o2): error: no matching function for call to 'fill()'
+- `templates/deduction/default-argument-not-deduced.cpp` (clang-22): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/default-argument-not-deduced.cpp` (clang-22-o2): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/difference-derived-two-bases.cpp` (clang-host): error: no matching function for call to 'up' / note: candidate template ignored: failed template argument deduction
+- `templates/deduction/difference-derived-two-bases.cpp` (gcc-host): error: no matching function for call to ‘up(Both&)’
+- `templates/deduction/difference-derived-two-bases.cpp` (edg-7.0): error: no instance of function template "up" matches the argument list / note: candidate function template "up" failed deduction
+- `templates/deduction/difference-derived-two-bases.cpp` (gcc-14): error: no matching function for call to 'up(Both&)' / note: candidate: 'template<class T> void up(Base<T>&)' / note:   template argument deduction/substitution failed: / note:   'Base<T>' is an ambiguous base class of 'Both'
+- `templates/deduction/difference-derived-two-bases.cpp` (clang-18): error: no matching function for call to 'up' / note: candidate template ignored: failed template argument deduction
+- `templates/deduction/difference-derived-two-bases.cpp` (gcc-16): error: no matching function for call to 'up(Both&)'
+- `templates/deduction/difference-derived-two-bases.cpp` (gcc-16-o2): error: no matching function for call to 'up(Both&)'
+- `templates/deduction/difference-derived-two-bases.cpp` (clang-22): error: no matching function for call to 'up' / note: candidate template ignored: failed template argument deduction
+- `templates/deduction/difference-derived-two-bases.cpp` (clang-22-o2): error: no matching function for call to 'up' / note: candidate template ignored: failed template argument deduction
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (clang-host): error: no matching function for call to 'add' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('Meter' vs. 'int')
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (gcc-host): error: no matching function for call to ‘add(Meter, int)’
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (edg-7.0): error: no instance of function template "add" matches the argument list / note: candidate function template "add" failed deduction
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (gcc-14): error: no matching function for call to 'add(Meter, int)' / note: candidate: 'template<class T> constexpr T add(T, T)' / note:   template argument deduction/substitution failed: / note:   deduced conflicting types for parameter 'T' ('Meter' and 'int')
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (clang-18): error: no matching function for call to 'add' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('Meter' vs. 'int')
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (gcc-16): error: no matching function for call to 'add(Meter, int)'
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (gcc-16-o2): error: no matching function for call to 'add(Meter, int)'
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (clang-22): error: no matching function for call to 'add' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('Meter' vs. 'int')
+- `templates/deduction/explicit-fixed-not-deduced.cpp` (clang-22-o2): error: no matching function for call to 'add' / note: candidate template ignored: deduced conflicting types for parameter 'T' ('Meter' vs. 'int')
+- `templates/deduction/forwarding-const-not.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
+- `templates/deduction/forwarding-const-not.cpp` (gcc-host): error: cannot bind rvalue reference of type ‘const int&&’ to lvalue of type ‘int’ / note: initializing argument 1 of ‘void take(const T&&) [with T = int]’
+- `templates/deduction/forwarding-const-not.cpp` (edg-7.0): error: no instance of function template "take" matches the argument list / note: function template "take" does not match because argument #1 does not match parameter
+- `templates/deduction/forwarding-const-not.cpp` (gcc-14): error: cannot bind rvalue reference of type 'const int&&' to lvalue of type 'int' / note:   initializing argument 1 of 'void take(const T&&) [with T = int]'
+- `templates/deduction/forwarding-const-not.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
+- `templates/deduction/forwarding-const-not.cpp` (gcc-16): error: cannot bind rvalue reference of type 'const int&&' to lvalue of type 'int' / note: initializing argument 1 of 'void take(const T&&) [with T = int]'
+- `templates/deduction/forwarding-const-not.cpp` (gcc-16-o2): error: cannot bind rvalue reference of type 'const int&&' to lvalue of type 'int' / note: initializing argument 1 of 'void take(const T&&) [with T = int]'
+- `templates/deduction/forwarding-const-not.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
+- `templates/deduction/forwarding-const-not.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate function [with T = int] not viable: expects an rvalue for 1st argument
+- `templates/deduction/match-bound-type.cpp` (gcc-host): error: static assertion failed
+- `templates/deduction/match-bound-type.cpp` (gcc-14): error: static assertion failed
+- `templates/deduction/match-bound-type.cpp` (gcc-16): error: static assertion failed
+- `templates/deduction/match-bound-type.cpp` (gcc-16-o2): error: static assertion failed
+- `templates/deduction/match-constant-type-differs.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate template ignored: substitution failure: deduced non-type template argument does not have the same type as the corresponding template parameter ('int' vs 'long')
+- `templates/deduction/match-constant-type-differs.cpp` (gcc-host): error: no matching function for call to ‘take(Fixed<4>)’
+- `templates/deduction/match-constant-type-differs.cpp` (edg-7.0): error: no instance of function template "take" matches the argument list / note: candidate function template "take" failed deduction
+- `templates/deduction/match-constant-type-differs.cpp` (gcc-14): error: no matching function for call to 'take(Fixed<4>)' / note: candidate: 'template<long int N> void take(Fixed<N>)' / note:   template argument deduction/substitution failed: / note:   mismatched types 'long int' and 'int'
+- `templates/deduction/match-constant-type-differs.cpp` (clang-18): error: no matching function for call to 'take' / note: candidate template ignored: substitution failure: deduced non-type template argument does not have the same type as the corresponding template parameter ('int' vs 'long')
+- `templates/deduction/match-constant-type-differs.cpp` (gcc-16): error: no matching function for call to 'take(Fixed<4>)'
+- `templates/deduction/match-constant-type-differs.cpp` (gcc-16-o2): error: no matching function for call to 'take(Fixed<4>)'
+- `templates/deduction/match-constant-type-differs.cpp` (clang-22): error: no matching function for call to 'take' / note: candidate template ignored: substitution failure: deduced non-type template argument does not have the same type as the corresponding template parameter ('int' vs 'long')
+- `templates/deduction/match-constant-type-differs.cpp` (clang-22-o2): error: no matching function for call to 'take' / note: candidate template ignored: substitution failure: deduced non-type template argument does not have the same type as the corresponding template parameter ('int' vs 'long')
+- `templates/deduction/match-noexcept.cpp` (edg-7.0): error: no instance of function template "nothrow" matches the argument list / note: candidate function template "nothrow" failed deduction / error: no instance of function template "nothrow" matches the argument list / note: candidate function template "nothrow" failed deduction
+- `templates/deduction/match-shape-mismatch.cpp` (clang-host): error: no matching function for call to 'point' / note: candidate template ignored: could not match 'T *' against 'int'
+- `templates/deduction/match-shape-mismatch.cpp` (gcc-host): error: no matching function for call to ‘point(int)’
+- `templates/deduction/match-shape-mismatch.cpp` (edg-7.0): error: no instance of function template "point" matches the argument list / note: candidate function template "point" failed deduction
+- `templates/deduction/match-shape-mismatch.cpp` (gcc-14): error: no matching function for call to 'point(int)' / note: candidate: 'template<class T> void point(T*)' / note:   template argument deduction/substitution failed: / note:   mismatched types 'T*' and 'int'
+- `templates/deduction/match-shape-mismatch.cpp` (clang-18): error: no matching function for call to 'point' / note: candidate template ignored: could not match 'T *' against 'int'
+- `templates/deduction/match-shape-mismatch.cpp` (gcc-16): error: no matching function for call to 'point(int)'
+- `templates/deduction/match-shape-mismatch.cpp` (gcc-16-o2): error: no matching function for call to 'point(int)'
+- `templates/deduction/match-shape-mismatch.cpp` (clang-22): error: no matching function for call to 'point' / note: candidate template ignored: could not match 'T *' against 'int'
+- `templates/deduction/match-shape-mismatch.cpp` (clang-22-o2): error: no matching function for call to 'point' / note: candidate template ignored: could not match 'T *' against 'int'
+- `templates/deduction/nondeduced-array-by-value.cpp` (clang-host): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-array-by-value.cpp` (gcc-host): error: no matching function for call to ‘fill(int [3])’
+- `templates/deduction/nondeduced-array-by-value.cpp` (edg-7.0): error: no instance of function template "fill" matches the argument list / note: candidate function template "fill" failed deduction
+- `templates/deduction/nondeduced-array-by-value.cpp` (gcc-14): error: no matching function for call to 'fill(int [3])' / note: candidate: 'template<int N> void fill(int*)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'N'
+- `templates/deduction/nondeduced-array-by-value.cpp` (clang-18): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-array-by-value.cpp` (gcc-16): error: no matching function for call to 'fill(int [3])'
+- `templates/deduction/nondeduced-array-by-value.cpp` (gcc-16-o2): error: no matching function for call to 'fill(int [3])'
+- `templates/deduction/nondeduced-array-by-value.cpp` (clang-22): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-array-by-value.cpp` (clang-22-o2): error: no matching function for call to 'fill' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-decltype.cpp` (clang-host): error: no matching function for call to 'typed' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-decltype.cpp` (gcc-host): error: no matching function for call to ‘typed(int)’
+- `templates/deduction/nondeduced-decltype.cpp` (edg-7.0): error: no instance of function template "typed" matches the argument list / note: candidate function template "typed" failed deduction
+- `templates/deduction/nondeduced-decltype.cpp` (gcc-14): error: no matching function for call to 'typed(int)' / note: candidate: 'template<class T> void typed(decltype (T{}))' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/nondeduced-decltype.cpp` (clang-18): error: no matching function for call to 'typed' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-decltype.cpp` (gcc-16): error: no matching function for call to 'typed(int)'
+- `templates/deduction/nondeduced-decltype.cpp` (gcc-16-o2): error: no matching function for call to 'typed(int)'
+- `templates/deduction/nondeduced-decltype.cpp` (clang-22): error: no matching function for call to 'typed' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-decltype.cpp` (clang-22-o2): error: no matching function for call to 'typed' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-expression.cpp` (clang-host): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-expression.cpp` (gcc-host): error: no matching function for call to ‘next(Fixed<3>)’
+- `templates/deduction/nondeduced-expression.cpp` (edg-7.0): error: no instance of function template "next" matches the argument list / note: candidate function template "next" failed deduction
+- `templates/deduction/nondeduced-expression.cpp` (gcc-14): error: no matching function for call to 'next(Fixed<3>)' / note: candidate: 'template<int N> void next(Fixed<(N + 1)>)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'N'
+- `templates/deduction/nondeduced-expression.cpp` (clang-18): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-expression.cpp` (gcc-16): error: no matching function for call to 'next(Fixed<3>)'
+- `templates/deduction/nondeduced-expression.cpp` (gcc-16-o2): error: no matching function for call to 'next(Fixed<3>)'
+- `templates/deduction/nondeduced-expression.cpp` (clang-22): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-expression.cpp` (clang-22-o2): error: no matching function for call to 'next' / note: candidate template ignored: couldn't infer template argument 'N'
+- `templates/deduction/nondeduced-qualified-only.cpp` (clang-host): error: no matching function for call to 'only' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-qualified-only.cpp` (gcc-host): error: no matching function for call to ‘only(int)’
+- `templates/deduction/nondeduced-qualified-only.cpp` (edg-7.0): error: no instance of function template "only" matches the argument list / note: candidate function template "only" failed deduction
+- `templates/deduction/nondeduced-qualified-only.cpp` (gcc-14): error: no matching function for call to 'only(int)' / note: candidate: 'template<class T> void only(typename Id<T>::type)' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/nondeduced-qualified-only.cpp` (clang-18): error: no matching function for call to 'only' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-qualified-only.cpp` (gcc-16): error: no matching function for call to 'only(int)'
+- `templates/deduction/nondeduced-qualified-only.cpp` (gcc-16-o2): error: no matching function for call to 'only(int)'
+- `templates/deduction/nondeduced-qualified-only.cpp` (clang-22): error: no matching function for call to 'only' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/nondeduced-qualified-only.cpp` (clang-22-o2): error: no matching function for call to 'only' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-template.cpp` (clang-host): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-template.cpp` (gcc-host): error: no matching function for call to ‘apply(<unresolved overloaded function type>)’
+- `templates/deduction/overload-set-template.cpp` (edg-7.0): error: no instance of function template "apply" matches the argument list / note: candidate function template "apply" failed deduction
+- `templates/deduction/overload-set-template.cpp` (gcc-14): error: no matching function for call to 'apply(<unresolved overloaded function type>)' / note: candidate: 'template<class T> void apply(T (*)(int))' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/overload-set-template.cpp` (clang-18): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-template.cpp` (gcc-16): error: no matching function for call to 'apply(<unresolved overloaded function type>)'
+- `templates/deduction/overload-set-template.cpp` (gcc-16-o2): error: no matching function for call to 'apply(<unresolved overloaded function type>)'
+- `templates/deduction/overload-set-template.cpp` (clang-22): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-template.cpp` (clang-22-o2): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-two-match.cpp` (clang-host): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-two-match.cpp` (gcc-host): error: no matching function for call to ‘apply(<unresolved overloaded function type>)’
+- `templates/deduction/overload-set-two-match.cpp` (edg-7.0): error: no instance of function template "apply" matches the argument list / note: candidate function template "apply" failed deduction
+- `templates/deduction/overload-set-two-match.cpp` (gcc-14): error: no matching function for call to 'apply(<unresolved overloaded function type>)' / note: candidate: 'template<class T> void apply(T (*)(T))' / note:   template argument deduction/substitution failed: / note:   couldn't deduce template parameter 'T'
+- `templates/deduction/overload-set-two-match.cpp` (clang-18): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-two-match.cpp` (gcc-16): error: no matching function for call to 'apply(<unresolved overloaded function type>)'
+- `templates/deduction/overload-set-two-match.cpp` (gcc-16-o2): error: no matching function for call to 'apply(<unresolved overloaded function type>)'
+- `templates/deduction/overload-set-two-match.cpp` (clang-22): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/overload-set-two-match.cpp` (clang-22-o2): error: no matching function for call to 'apply' / note: candidate template ignored: couldn't infer template argument 'T'
+- `templates/deduction/pack-not-last-call.cpp` (clang-host): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
+- `templates/deduction/pack-not-last-call.cpp` (gcc-host): error: no matching function for call to ‘lead(int, int)’
+- `templates/deduction/pack-not-last-call.cpp` (edg-7.0): error: no instance of function template "lead" matches the argument list / note: candidate function template "lead" failed deduction
+- `templates/deduction/pack-not-last-call.cpp` (gcc-14): error: no matching function for call to 'lead(int, int)' / note: candidate: 'template<class ... Ts> void lead(Ts ..., int)' / note:   template argument deduction/substitution failed: / note:   candidate expects 1 argument, 2 provided
+- `templates/deduction/pack-not-last-call.cpp` (clang-18): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
+- `templates/deduction/pack-not-last-call.cpp` (gcc-16): error: no matching function for call to 'lead(int, int)'
+- `templates/deduction/pack-not-last-call.cpp` (gcc-16-o2): error: no matching function for call to 'lead(int, int)'
+- `templates/deduction/pack-not-last-call.cpp` (clang-22): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
+- `templates/deduction/pack-not-last-call.cpp` (clang-22-o2): error: no matching function for call to 'lead' / note: candidate function [with Ts = <>] not viable: requires 1 argument, but 2 were provided
+- `templates/deduction/substitution-hard-error.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Hard<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-hard-error.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type
+- `templates/deduction/substitution-hard-error.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `templates/deduction/substitution-hard-error.cpp` (gcc-14): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-hard-error.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Hard<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-hard-error.cpp` (gcc-16): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-hard-error.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-hard-error.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Hard<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-hard-error.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of template class 'Hard<int>' requested here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-lambda-body.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-lambda-body.cpp` (gcc-host): error: ‘int’ is not a class, struct, or union type / error: ‘int’ is not a class, struct, or union type / error: ‘One pick(T, decltype (<lambda>)*) [with T = int; decltype (<lambda>) = <lambda()>]’, declared using local type ‘<lambda()>’, is used but never defined [-fpermissive]
+- `templates/deduction/substitution-lambda-body.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name / error: template instantiation resulted in unexpected function type of "One (int, lambda []()->void *)" (the meaning of a name may have changed since the template declaration -- the type of the template is "One (T, decltype((<expression>)) *)")
+- `templates/deduction/substitution-lambda-body.cpp` (gcc-14): error: 'int' is not a class, struct, or union type / error: 'int' is not a class, struct, or union type
+- `templates/deduction/substitution-lambda-body.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-lambda-body.cpp` (gcc-16): error: 'int' is not a class, struct, or union type / error: 'int' is not a class, struct, or union type / error: 'One pick(T, decltype (<lambda>)*) [with T = int; decltype (<lambda>) = <lambda()>]', declared using local type '<lambda()>', is used but never defined [-fpermissive]
+- `templates/deduction/substitution-lambda-body.cpp` (gcc-16-o2): error: 'int' is not a class, struct, or union type / error: 'int' is not a class, struct, or union type / error: 'One pick(T, decltype (<lambda>)*) [with T = int; decltype (<lambda>) = <lambda()>]', declared using local type '<lambda()>', is used but never defined [-fpermissive]
+- `templates/deduction/substitution-lambda-body.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-lambda-body.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: while substituting into a lambda expression here / note: while substituting deduced template arguments into function template 'pick' [with T = int]
+- `templates/deduction/substitution-noexcept-later.cpp` (clang-host): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'act<int>' requested here
+- `templates/deduction/substitution-noexcept-later.cpp` (gcc-host): error: ‘value’ is not a member of ‘int’
+- `templates/deduction/substitution-noexcept-later.cpp` (edg-7.0): error: name followed by "::" must be a class or namespace name
+- `templates/deduction/substitution-noexcept-later.cpp` (gcc-14): error: 'value' is not a member of 'int'
+- `templates/deduction/substitution-noexcept-later.cpp` (clang-18): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'act<int>' requested here
+- `templates/deduction/substitution-noexcept-later.cpp` (gcc-16): error: 'value' is not a member of 'int'
+- `templates/deduction/substitution-noexcept-later.cpp` (gcc-16-o2): error: 'value' is not a member of 'int'
+- `templates/deduction/substitution-noexcept-later.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'act<int>' requested here
+- `templates/deduction/substitution-noexcept-later.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of exception specification for 'act<int>' requested here
+- `templates/ordering/call-defaults-tie.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/call-defaults-tie.cpp` (gcc-host): error: call of overloaded ‘f(int)’ is ambiguous
+- `templates/ordering/call-defaults-tie.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `templates/ordering/call-defaults-tie.cpp` (gcc-14): error: call of overloaded 'f(int)' is ambiguous / note: candidate: 'void f(T, int) [with T = int]' / note: candidate: 'void f(T) [with T = int]'
+- `templates/ordering/call-defaults-tie.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/call-defaults-tie.cpp` (gcc-16): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/call-defaults-tie.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/call-defaults-tie.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/call-defaults-tie.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-conversion-results-differ.cpp` (clang-host): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-conversion-results-differ.cpp` (gcc-host): error: conversion from ‘Source’ to ‘int*’ is ambiguous
+- `templates/ordering/constraints-conversion-results-differ.cpp` (gcc-14): error: conversion from 'Source' to 'int*' is ambiguous / note: candidate: 'Source::operator T*() const [with T = int]' / note: candidate: 'Source::operator T* const() const [with T = int]'
+- `templates/ordering/constraints-conversion-results-differ.cpp` (clang-18): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-conversion-results-differ.cpp` (gcc-16): error: conversion from 'Source' to 'int*' is ambiguous
+- `templates/ordering/constraints-conversion-results-differ.cpp` (gcc-16-o2): error: conversion from 'Source' to 'int*' is ambiguous
+- `templates/ordering/constraints-conversion-results-differ.cpp` (clang-22): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-conversion-results-differ.cpp` (clang-22-o2): error: conversion from 'Source' to 'int *' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/constraints-different-heads.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/constraints-different-heads.cpp` (gcc-host): error: call of overloaded ‘f(int)’ is ambiguous
+- `templates/ordering/constraints-different-heads.cpp` (gcc-14): error: call of overloaded 'f(int)' is ambiguous / note: candidate: 'void f(T) [with T = int]' / note: candidate: 'void f(T) [with T = int; U = int]'
+- `templates/ordering/constraints-different-heads.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/constraints-different-heads.cpp` (gcc-16): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/constraints-different-heads.cpp` (gcc-16-o2): error: call of overloaded 'f(int)' is ambiguous
+- `templates/ordering/constraints-different-heads.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/constraints-different-heads.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int, U = int]
+- `templates/ordering/neither.cpp` (clang-host): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/neither.cpp` (gcc-host): error: call of overloaded ‘put(int, int)’ is ambiguous
+- `templates/ordering/neither.cpp` (edg-7.0): error: more than one instance of overloaded function "put" matches the argument list:
+- `templates/ordering/neither.cpp` (gcc-14): error: call of overloaded 'put(int, int)' is ambiguous / note: candidate: 'void put(T, int) [with T = int]' / note: candidate: 'void put(int, T) [with T = int]'
+- `templates/ordering/neither.cpp` (clang-18): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/neither.cpp` (gcc-16): error: call of overloaded 'put(int, int)' is ambiguous
+- `templates/ordering/neither.cpp` (gcc-16-o2): error: call of overloaded 'put(int, int)' is ambiguous
+- `templates/ordering/neither.cpp` (clang-22): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/neither.cpp` (clang-22-o2): error: call to 'put' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-and-cv-removed.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-and-cv-removed.cpp` (gcc-host): error: call of overloaded ‘take(int&)’ is ambiguous
+- `templates/ordering/reference-and-cv-removed.cpp` (edg-7.0): error: more than one instance of overloaded function "take" matches the argument list:
+- `templates/ordering/reference-and-cv-removed.cpp` (gcc-14): error: call of overloaded 'take(int&)' is ambiguous / note: candidate: 'void take(T) [with T = int]' / note: candidate: 'void take(const T&) [with T = int]'
+- `templates/ordering/reference-and-cv-removed.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-and-cv-removed.cpp` (gcc-16): error: call of overloaded 'take(int&)' is ambiguous
+- `templates/ordering/reference-and-cv-removed.cpp` (gcc-16-o2): error: call of overloaded 'take(int&)' is ambiguous
+- `templates/ordering/reference-and-cv-removed.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-and-cv-removed.cpp` (clang-22-o2): error: call to 'take' is ambiguous / note: candidate function [with T = int] / note: candidate function [with T = int]
+- `templates/ordering/reference-pairs-disagree.cpp` (clang-host): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
+- `templates/ordering/reference-pairs-disagree.cpp` (gcc-host): error: call of overloaded ‘f(int&, int&)’ is ambiguous
+- `templates/ordering/reference-pairs-disagree.cpp` (edg-7.0): error: more than one instance of overloaded function "f" matches the argument list:
+- `templates/ordering/reference-pairs-disagree.cpp` (gcc-14): error: call of overloaded 'f(int&, int&)' is ambiguous / note: candidate: 'void f(T&, U&&) [with T = int; U = int&]' / note: candidate: 'void f(T&&, U&) [with T = int&; U = int]'
+- `templates/ordering/reference-pairs-disagree.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
+- `templates/ordering/reference-pairs-disagree.cpp` (gcc-16): error: call of overloaded 'f(int&, int&)' is ambiguous
+- `templates/ordering/reference-pairs-disagree.cpp` (gcc-16-o2): error: call of overloaded 'f(int&, int&)' is ambiguous
+- `templates/ordering/reference-pairs-disagree.cpp` (clang-22): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
+- `templates/ordering/reference-pairs-disagree.cpp` (clang-22-o2): error: call to 'f' is ambiguous / note: candidate function [with T = int, U = int &] / note: candidate function [with T = int &, U = int]
+- `templates/ordering/reversed-candidate.cpp` (gcc-host): error: static assertion failed
+- `templates/ordering/reversed-candidate.cpp` (gcc-14): error: static assertion failed
+- `templates/ordering/reversed-candidate.cpp` (gcc-16): error: static assertion failed
+- `templates/ordering/reversed-candidate.cpp` (gcc-16-o2): error: static assertion failed
 - `templates/specialization/alias-explicit.cpp` (clang-host): error: explicit specialization of alias templates is not permitted
 - `templates/specialization/alias-explicit.cpp` (gcc-host): error: expected unqualified-id before ‘using’
 - `templates/specialization/alias-explicit.cpp` (edg-7.0): error: an alias template cannot be explicitly specialized

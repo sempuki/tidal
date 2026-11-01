@@ -56,12 +56,13 @@ In scope:
   (roadmap phase 3, items H, L, and M).
 - Templates: declarations and parameters, template-ids and template
   arguments, explicit and partial specialization, variable templates,
-  and alias templates (roadmap phase 4, item N1).
+  alias templates, deduction, and partial ordering (roadmap phase 4,
+  items N1 and O).
 
 Referenced but not specified:
 
 The in-scope topics depend on the rest of templates and on concepts:
-deduction and partial ordering, dependent names and instantiation,
+dependent names and instantiation,
 constraints, packs, forwarding references, and class template argument
 deduction. Tidal sections refer to them by name, mark each use
 *(templates referenced)* or *(concepts referenced)*, and list them in a

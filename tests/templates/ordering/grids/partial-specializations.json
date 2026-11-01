@@ -1,0 +1,26 @@
+{
+ "prelude": "template <class T, class U> struct Pair { static constexpr int value = 0; };\n",
+ "template": "{prelude}{a} {{ static constexpr int value = 1; }};\n{b} {{ static constexpr int value = 2; }};\n{row}",
+ "rows": {
+  "int int → first": "static_assert(Pair<int, int>::value == 1);",
+  "int int → second": "static_assert(Pair<int, int>::value == 2);",
+  "int pointer int pointer → first": "static_assert(Pair<int*, int*>::value == 1);",
+  "int pointer int pointer → second": "static_assert(Pair<int*, int*>::value == 2);",
+  "int pointer char → first": "static_assert(Pair<int*, char>::value == 1);",
+  "int pointer char → second": "static_assert(Pair<int*, char>::value == 2);",
+  "int int pointer → first": "static_assert(Pair<int, int*>::value == 1);",
+  "int int pointer → second": "static_assert(Pair<int, int*>::value == 2);",
+  "const int int → first": "static_assert(Pair<const int, int>::value == 1);",
+  "const int int → second": "static_assert(Pair<const int, int>::value == 2);",
+  "char int → first": "static_assert(Pair<char, int>::value == 1);",
+  "char int → second": "static_assert(Pair<char, int>::value == 2);"
+ },
+ "pairs": {
+  "T T": "template <class T> struct Pair<T, T>",
+  "T pointer U": "template <class T, class U> struct Pair<T*, U>",
+  "T U pointer": "template <class T, class U> struct Pair<T, U*>",
+  "T pointer T pointer": "template <class T> struct Pair<T*, T*>",
+  "T int": "template <class T> struct Pair<T, int>",
+  "const T U": "template <class T, class U> struct Pair<const T, U>"
+ }
+}

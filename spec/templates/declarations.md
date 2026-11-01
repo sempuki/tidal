@@ -12,8 +12,9 @@ the template gives arguments for the parameters and gets a
 
 Template arguments and template-ids are on {doc}`arguments`. Explicit
 and partial specializations are on {doc}`specialization`. Deduction of
-template arguments, dependent names, instantiation, and constraints are
-not specified yet *(templates referenced)*.
+template arguments is on {doc}`deduction`. Dependent names,
+instantiation, and constraints are not specified yet
+*(templates referenced)*.
 
 Depends on: declarations, class definitions and members, function
 definitions, constant evaluation, name lookup.
@@ -82,10 +83,11 @@ of arguments of its kind.
 A parameter can have a {term}`default template argument`. A use that
 leaves out the argument gets the default. A pack has no default. The
 defaults of all the declarations of one template add up, but each
-parameter gets its default in one declaration only. In a class, variable, or alias template, the
-arguments are matched by position, so only a trailing parameter can be
-left out. A function template can get its arguments by deduction as
-well *(templates referenced)*, so its defaults can come in any order.
+parameter gets its default in one declaration only. In a class,
+variable, or alias template, the arguments are matched by position, so
+only a trailing parameter can be left out. A function template can get
+its arguments by deduction as well ({rule}`DED-23`), so its defaults
+can come in any order.
 :::
 
 :::{principle} TPL-P4
@@ -190,9 +192,9 @@ entity. These declarations are not valid after a template head:
 
 Function templates and plain functions can share a name in one scope.
 Each function template with the name adds a candidate to overload
-resolution ({rule}`OVL-1`). Two function templates with the same
-function type and heads that are not equivalent (TPL-20) are two
-templates.
+resolution ({rule}`OVL-1`, {rule}`DED-1`). Two function templates
+with the same function type and heads that are not equivalent (TPL-20)
+are two templates.
 :::
 
 :::{rule} TPL-45

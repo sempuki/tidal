@@ -259,11 +259,12 @@ list where the program needs a type or a value. The rule holds also
 when every parameter has a default. A qualified name, such as
 `::Box` or `lib::Box`, never finds the injected class name, so it needs
 an argument list in its own class too. These cases are exceptions, and
-all belong with deduction *(templates referenced)*:
+all belong with deduction:
 
 - the name of a function template, whose arguments a call or a target
-  type can supply,
-- a class template as the type of a variable with an initializer,
+  type can supply ({rule}`DED-1`, {rule}`DED-30`),
+- a class template as the type of a variable with an initializer
+  *(templates referenced)*,
 - a class template as the type of a constant parameter
   ({rule}`TPL-11`).
 :::
@@ -295,7 +296,7 @@ template argument.
 
 A template-id of a function template can give arguments for the leading
 parameters only. Each later parameter gets its argument from deduction
-*(templates referenced)* or from its default.
+({rule}`DED-2`) or from its default.
 :::
 
 :::{rule} TARG-21

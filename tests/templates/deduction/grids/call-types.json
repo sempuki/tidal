@@ -1,0 +1,33 @@
+{
+ "prelude": "template <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\ntemplate <class T> struct Tag {};\nint n = 0;\nconst int c = 1;\nint arr[3];\nint fn(char);\nconst int* cp = nullptr;\n",
+ "template": "{prelude}{col}\nstatic_assert({row});",
+ "rows": {
+  "int lvalue gives int": "same<decltype(f(n)), Tag<int>>",
+  "int lvalue gives int lref": "same<decltype(f(n)), Tag<int&>>",
+  "const int lvalue gives int": "same<decltype(f(c)), Tag<int>>",
+  "const int lvalue gives const int": "same<decltype(f(c)), Tag<const int>>",
+  "const int lvalue gives const int lref": "same<decltype(f(c)), Tag<const int&>>",
+  "int prvalue gives int": "same<decltype(f(1)), Tag<int>>",
+  "int xvalue gives int": "same<decltype(f(static_cast<int&&>(n))), Tag<int>>",
+  "array gives int": "same<decltype(f(arr)), Tag<int>>",
+  "array gives int pointer": "same<decltype(f(arr)), Tag<int*>>",
+  "array gives int array": "same<decltype(f(arr)), Tag<int[3]>>",
+  "array gives int array lref": "same<decltype(f(arr)), Tag<int(&)[3]>>",
+  "function gives function": "same<decltype(f(fn)), Tag<int(char)>>",
+  "function gives function pointer": "same<decltype(f(fn)), Tag<int(*)(char)>>",
+  "function gives function lref": "same<decltype(f(fn)), Tag<int(&)(char)>>",
+  "const int pointer gives const int pointer": "same<decltype(f(cp)), Tag<const int*>>",
+  "const int pointer gives const int": "same<decltype(f(cp)), Tag<const int>>",
+  "const int pointer gives int": "same<decltype(f(cp)), Tag<int>>",
+  "const int pointer gives const int pointer lref": "same<decltype(f(cp)), Tag<const int*&>>"
+ },
+ "cols": {
+  "T": "template <class T> Tag<T> f(T);",
+  "const T": "template <class T> Tag<T> f(const T);",
+  "T lref": "template <class T> Tag<T> f(T&);",
+  "const T lref": "template <class T> Tag<T> f(const T&);",
+  "T rref": "template <class T> Tag<T> f(T&&);",
+  "T pointer": "template <class T> Tag<T> f(T*);",
+  "const T pointer": "template <class T> Tag<T> f(const T*);"
+ }
+}

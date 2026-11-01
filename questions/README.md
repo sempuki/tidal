@@ -218,6 +218,10 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0205](Q-0205-explicit-specialization-member-enumeration.md) | Can a member enumeration of a class template have an explicit specialization? | provisional | yes if the class template only declares it; Clang and EDG accept, GCC rejects under -pedantic-errors |
 | [Q-0206](Q-0206-clang18-member-template-explicit-primary.md) | Are partial specializations of a member template ignored when its primary is explicitly specialized for one class? | compiler defect | yes; Clang 18's choice is fixed in Clang 22 |
 | [Q-0207](Q-0207-explicit-specialization-of-member-partial-specialization.md) | Does an explicit specialization of one member partial specialization keep the others? | provisional | yes, and it is selected; Clang and EDG agree, GCC ignores it |
+| [Q-0208](Q-0208-noexcept-deduces-bool.md) | Does the noexcept of a function type give a value to a bool constant parameter? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0209](Q-0209-placeholder-bound-type.md) | What type does a placeholder constant parameter get from an array bound? | provisional | the type of `sizeof`; Clang and EDG agree, GCC gives `int` |
+| [Q-0210](Q-0210-constraints-different-heads-or-results.md) | Do constraints decide between templates whose heads, or whose conversion results, differ? | provisional | no; Clang and GCC agree, EDG lets them decide |
+| [Q-0211](Q-0211-swapped-candidate-ordering.md) | Are the parameters of a swapped candidate reversed for partial ordering? | provisional | yes; Clang and EDG agree, GCC differs |
 
 ## Status values
 

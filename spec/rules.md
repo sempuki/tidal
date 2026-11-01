@@ -38,6 +38,7 @@ Every rule ID starts with the prefix of its page.
 | `CX` | `declarations/constexpr.md` |
 | `DCL` | `declarations/declarators.md` |
 | `DCMP` | `classes/comparisons.md` |
+| `DED` | `templates/deduction.md` |
 | `DEFARG` | `declarations/functions/default-arguments.md` |
 | `DEL` | `declarations/functions/deleted.md` |
 | `DER` | `classes/derived.md` |
@@ -69,6 +70,7 @@ Every rule ID starts with the prefix of its page.
 | `OBJ` | `foundations/objects.md` |
 | `ODR` | `foundations/odr.md` |
 | `OPR` | `classes/operators.md` |
+| `ORD` | `templates/ordering.md` |
 | `OVL` | `foundations/overload-resolution.md` |
 | `PFX` | `expressions/postfix.md` |
 | `PRIM` | `expressions/primary.md` |

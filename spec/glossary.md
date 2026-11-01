@@ -102,6 +102,11 @@ cv-qualifier
   `const` object after its initialization. Each access to a `volatile`
   object is an observable effect ({rule}`TR-7`).
 
+deduction
+  The step that finds the template arguments of a function template from
+  a use, such as the argument types of a call ({rule}`DED-1`,
+  {principle}`DED-P2`).
+
 declarator
   The part of a declaration that gives one name and makes its type. A
   declarator adds pointers, references, arrays, and function parameters
@@ -136,6 +141,11 @@ explicit specialization
   A declaration that starts with `template <>` and defines one
   specialization of a template for one argument list ({rule}`TSP-1`,
   {rule}`TSP-2`).
+
+forwarding reference
+  A function parameter of type `T&&`, where `T` is a type parameter of
+  the function template itself, with no qualifiers. An lvalue argument
+  makes `T` an lvalue reference type ({rule}`DED-8`).
 
 full expression
   An expression that is not part of a larger expression, such as the
@@ -226,6 +236,16 @@ member template
   function, a nested class, or a static variable with a head of its own
   ({rule}`TPL-24`).
 
+more specialized
+  One template is more specialized than another when deduction finds the
+  other's parameters from its invented types, and not the reverse
+  ({rule}`ORD-1`).
+
+non-deduced position
+  A place in a parameter type where a template parameter takes no value
+  from the argument, such as the part before `::` in a qualified name
+  ({rule}`DED-13`).
+
 observable behavior
   The part of an execution that an implementation must reproduce:
 
@@ -239,6 +259,10 @@ operator function
   A function whose name is `operator` followed by an operator, such as
   `operator+`. An expression that uses the operator can call the
   operator function ({rule}`OPR-1`).
+
+partial ordering
+  The comparison that decides which of two templates is more
+  specialized ({principle}`ORD-P2`).
 
 partial specialization
   A declaration with its own template head that defines the
