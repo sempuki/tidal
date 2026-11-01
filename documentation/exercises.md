@@ -157,6 +157,7 @@ catalog counts as done.
 | R-class-template-deduction, R-deduction, R-arguments | done, 305/305; findings RB-1 to RB-17 | `reports/clean-room/R-templates/` |
 | R-packs, R-concepts, R-constraints, R-ordering | done, 339/342; findings RA-1 to RA-14 | `reports/clean-room/R-templates/` |
 | X5 | done: 41 rule changes; findings X5-1 to X5-20 | `reports/clean-room/X5/` |
+| R-declarations, R-specialization, R-dependent-names, R-instantiation | done, 445/445; findings RC-1 to RC-25 | `reports/clean-room/R-templates/` |
 | All others | planned | |
 
 ## 9. Prompts
