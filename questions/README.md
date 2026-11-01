@@ -158,7 +158,7 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0145](Q-0145-copy-list-init-explicit-conversion-function.md) | Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter? | provisional | no; GCC and EDG agree, Clang differs |
 | [Q-0146](Q-0146-constraints-between-templates-with-different-parameters.md) | Do constraints decide between two templates whose function parameters differ? | provisional | no; Clang and GCC agree, EDG differs |
 | [Q-0147](Q-0147-rewritten-candidate-removes-builtin.md) | Does a rewritten candidate remove the built-in candidate with the same parameter list? | provisional | yes; Clang and EDG agree, GCC differs |
-| [Q-0148](Q-0148-reference-kind-against-template.md) | Does the plain-over-template tie-breaker come before the function reference kind? | provisional | yes; EDG and Clang's result agree, GCC differs |
+| [Q-0148](Q-0148-reference-kind-against-template.md) | Does the function reference kind come before the template tie-breakers? | provisional | yes, the kind comes first; GCC agrees, EDG differs, Clang does not apply the kind |
 | [Q-0149](Q-0149-list-for-reference-to-unknown-bound-array.md) | What type does a braced list give a reference to an array of unknown bound? | provisional | the reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces |
 | [Q-0150](Q-0150-explicit-constructor-for-reference-temporary.md) | Can a braced list for a reference use an explicit constructor to make the temporary? | provisional | no; GCC and EDG agree, Clang differs |
 | [Q-0151](Q-0151-parenthesized-list-for-reference.md) | Can a parenthesized list of several values initialize a reference to an aggregate? | provisional | no; Clang and EDG agree, GCC differs |
@@ -167,7 +167,17 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0154](Q-0154-list-element-nearest-base.md) | Does the nearest-base tie-breaker apply to a braced list with one element of a derived class? | provisional | yes; Clang and GCC agree, EDG differs |
 | [Q-0155](Q-0155-braced-string-literal-for-array-reference.md) | When does one braced string literal have a sequence to a reference to a character array? | provisional | when the literal can initialize the array; GCC differs on UTF-8, Clang on size and bound |
 | [Q-0156](Q-0156-explicit-conversion-value-for-reference.md) | Can direct initialization of a reference use an explicit conversion function that returns a value? | provisional | no; GCC and EDG agree, Clang differs |
-| [Q-0157](Q-0157-list-class-element-for-reference.md) | Does a braced list with one class element bind a reference through the element's conversion function? | provisional | as REF-6 and REF-14 say; GCC agrees for non-class references, Clang and EDG for class references |
+| [Q-0157](Q-0157-list-class-element-for-reference.md) | Does a braced list with one class element bind a reference through the element's conversion function? | provisional | no; a temporary unless the element has the referenced type or a derived class; Clang and EDG agree, GCC differs |
+| [Q-0158](Q-0158-equality-returning-reference-to-bool.md) | Can an `==` used for a reversed or rewritten comparison return a reference to `bool`? | provisional | no; Clang and EDG agree, GCC differs |
+| [Q-0159](Q-0159-current-object-of-another-class.md) | Is `*this` the implied object argument when its class is not the class of the members found? | provisional | no, the call has no object; GCC agrees, Clang and EDG differ |
+| [Q-0160](Q-0160-constraints-without-target-type.md) | Do constraints reduce an overload set whose address has no target type? | provisional | yes; Clang 22 and GCC 16 agree, GCC 14 and EDG differ |
+| [Q-0161](Q-0161-address-of-member-set-other-forms.md) | Can a call through `&(C::f)` or `&f` use a set that holds a non-static member? | provisional | no; GCC agrees, Clang 22 and EDG differ in part |
+| [Q-0162](Q-0162-constraint-tie-breaker-parameter-lists.md) | Does the constraint tie-breaker apply when the parameter lists differ beyond the parameters that the call uses? | provisional | no; Clang 22 and GCC agree, EDG differs |
+| [Q-0163](Q-0163-conversion-result-function-pointer-conversion.md) | Does the result tie-breaker prefer the identity to a function pointer conversion? | provisional | yes; Clang and GCC agree, EDG differs |
+| [Q-0164](Q-0164-braced-array-for-unknown-bound-reference.md) | Does one braced array lvalue bind a reference to an array of unknown bound directly? | provisional | yes; Clang and EDG agree, GCC makes a temporary |
+| [Q-0165](Q-0165-braced-function-for-function-reference.md) | Does one braced function name bind a reference to a function as `=` does? | provisional | yes; GCC rejects an overload set, EDG a noexcept function |
+| [Q-0166](Q-0166-braced-string-literal-reference-temporary.md) | Can one braced string literal initialize the temporary array of a reference? | provisional | yes, under LIST-6; Clang and EDG agree, GCC rejects |
+| [Q-0167](Q-0167-braced-string-literal-char-array-overloads.md) | Does one braced string literal prefer a reference to a `char` array over one to an `unsigned char` array? | provisional | no, ambiguous; Clang and EDG agree, GCC picks `char` |
 
 ## Status values
 

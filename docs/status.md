@@ -16,7 +16,7 @@ current state only. The history of how the project got here is in
 | [Value categories and temporaries](../spec/foundations/values.md) | 15 | 8 required, 4 reject, 2 unspecified, 1 impl-defined | 53 | 7 | 1 | 41 | Q-0099 | 0 flagged |
 | [Standard conversions](../spec/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 62 | 6 | 2 | 31 | Q-0028, Q-0100 | 0 flagged |
 | [Implicit conversion sequences](../spec/foundations/conversion-sequences.md) | 45 | 44 required, 1 reject | 106 | 12 | 21 | 28 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157 | 0 flagged |
-| [Overload resolution](../spec/foundations/overload-resolution.md) | 38 | 31 required, 7 reject | 100 | 9 | 11 | 0 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148 | 0 flagged |
+| [Overload resolution](../spec/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 137 | 8 | 23 | 0 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0160, Q-0161, Q-0162, Q-0163 | 0 flagged |
 | [Names, scopes, and lookup](../spec/foundations/names.md) | 36 | 18 required, 18 reject | 178 | 5 | 0 | 44 |  | 0 flagged |
 | [Use and the one-definition rule](../spec/foundations/odr.md) | 16 | 7 required, 3 reject, 2 impl-defined, 3 no-diagnostic, 1 recommended | 50 | 2 | 8 | 14 | Q-0127, Q-0128, Q-0129, Q-0130 | 0 flagged |
 | [Sequencing and evaluation order](../spec/foundations/evaluation-order.md) | 9 | 5 required, 1 undefined, 2 unspecified, 1 recommended | 25 | 2 | 0 | 65 |  | 0 flagged |
@@ -52,8 +52,8 @@ current state only. The history of how the project got here is in
 | [Alignment](../spec/declarations/alignment.md) | 7 | 2 required, 3 reject, 1 impl-defined, 1 no-diagnostic | 31 | 2 | 13 | 1 | Q-0069, Q-0070, Q-0071, Q-0072, Q-0073 | 0 flagged |
 | [Volatile](../spec/declarations/volatile.md) | 11 | 4 required, 5 reject, 1 undefined, 1 recommended | 33 | 3 | 1 | 3 | Q-0080 | 0 flagged |
 | [Forms of initialization](../spec/declarations/initialization/forms.md) | 9 | 6 required, 2 reject, 1 undefined | 31 | 3 | 1 | 24 | Q-0013, Q-0039 | 0 flagged |
-| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 57 | 4 | 2 | 17 | Q-0042, Q-0043 | 0 flagged |
-| [Reference binding](../spec/declarations/initialization/references.md) | 13 | 8 required, 4 reject, 1 undefined | 46 | 1 | 7 | 44 | Q-0040, Q-0109, Q-0110, Q-0149, Q-0150, Q-0151 | 0 flagged |
+| [List initialization and aggregates](../spec/declarations/initialization/list.md) | 16 | 8 required, 8 reject | 60 | 4 | 3 | 17 | Q-0042, Q-0043, Q-0166, Q-0167 | 0 flagged |
+| [Reference binding](../spec/declarations/initialization/references.md) | 13 | 8 required, 4 reject, 1 undefined | 56 | 1 | 13 | 44 | Q-0040, Q-0109, Q-0110, Q-0149, Q-0150, Q-0151, Q-0157, Q-0164, Q-0165, Q-0166 | 0 flagged |
 | [Initialization of static and thread storage](../spec/declarations/initialization/static.md) | 6 | 2 required, 2 unspecified, 2 impl-defined | 11 | 2 | 0 | 15 | Q-0014 | 0 flagged |
 | [Structured bindings](../spec/declarations/structured-bindings.md) | 16 | 9 required, 7 reject | 49 | 6 | 4 | 11 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | 0 flagged |
 | [Enumerations](../spec/declarations/enumerations.md) | 21 | 10 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 59 | 5 | 3 | 19 | Q-0017, Q-0018, Q-0047, Q-0114 | 0 flagged |
@@ -77,7 +77,7 @@ current state only. The history of how the project got here is in
 | [Unions and bit-fields](../spec/classes/unions.md) | 23 | 11 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 101 | 5 | 3 | 23 | Q-0057, Q-0058, Q-0088 | 0 flagged |
 | [Conversion functions](../spec/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 63 | 1 | 1 | 10 | Q-0059 | 0 flagged |
 | [Operator overloading](../spec/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 95 | 3 | 1 | 31 | Q-0060 | 0 flagged |
-| [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 63 | 2 | 2 | 17 | Q-0061, Q-0062 | 0 flagged |
+| [Defaulted comparisons](../spec/classes/comparisons.md) | 12 | 5 required, 5 reject, 1 no-diagnostic, 1 recommended | 67 | 2 | 3 | 17 | Q-0061, Q-0062, Q-0158 | 0 flagged |
 | [Throw expressions and the exception object](../spec/exceptions/throw.md) | 11 | 9 required, 1 reject | 27 | 4 | 0 | 34 |  | 0 flagged |
 | [Try blocks and handlers](../spec/exceptions/handlers.md) | 17 | 7 required, 6 reject, 1 undefined, 3 recommended | 74 | 5 | 2 | 26 |  | 0 flagged |
 | [Unwinding and termination](../spec/exceptions/unwinding.md) | 8 | 6 required, 1 impl-defined, 1 recommended | 30 | 1 | 0 | 41 |  | 0 flagged |
@@ -95,7 +95,7 @@ report, covering every page, is
 
 ## Test matrix
 
-Eight compilers are baseline, and 3815/3815 tests pass on each. Two
+Eight compilers are baseline, and 3867/3867 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -116,7 +116,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-One hundred and fifty-six questions are open for opinions, each with
+One hundred and sixty-six questions are open for opinions, each with
 a provisional answer the spec follows. Ten of them have the status
 "compiler defect". Their answer is that one compiler or an older
 version is wrong (Q-0002, Q-0003, Q-0013, Q-0015, Q-0016, Q-0023,
@@ -166,19 +166,12 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `docs/roadmap.md` orders the work (decisions 0033 and 0039). Phases 1
-and 2 are done. Next:
+to 3 are done. Next:
 
-1. Repairs from the gap review of item M
-   (`reports/review/2026-10-31-gap-review-overload-resolution.md`).
-2. Two findings from the item L repairs: REF-6 sends a one-element list
-   that holds an array lvalue to REF-14, and all compilers bind it
-   directly; LIST-15 requires the character type of a string literal to
-   match, and all compilers accept a plain literal for an `unsigned
-   char` array.
-3. Front end, round 6: the conversion-sequence repairs and overload
+1. Front end, round 6: the conversion-sequence repairs and overload
    resolution. Then the interpreter (decision 0048, roadmap item FI).
-4. Phase 4 of the roadmap: templates, starting with item N1.
-5. The remaining findings of exercises X1 to X4.
+2. Phase 4 of the roadmap: templates, starting with item N1.
+3. The remaining findings of exercises X1 to X4.
 
 Waiting on the maintainer:
 
