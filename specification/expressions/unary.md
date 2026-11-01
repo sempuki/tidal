@@ -319,7 +319,9 @@ include:
 - a pointer to an object whose lifetime has ended.
 
 For a read or write of an object whose lifetime has ended,
-{rule}`OBJ-2` is the rule that applies.
+{rule}`OBJ-2` is the rule that applies. The specific cases of UN-7 are
+{rule}`PFX-21` for a member call and {rule}`REF-5` for a reference
+binding, each through a null pointer (decision 0052).
 :::
 
 :::{rule} UN-21

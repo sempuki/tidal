@@ -199,8 +199,9 @@ including an expression of type `void`.
 :kind: reject
 :tests: statements/jumps/break-with-label.cpp statements/jumps/continue-with-label.cpp
 
-A `break` or `continue` statement must not name a label. The statement
-always acts on the innermost loop or `switch` (JMP-1, JMP-2).
+A `break` or `continue` statement must not name a label. The grammar
+has no place for a label after either keyword ({rule}`TR-12`). The
+statement always acts on the innermost loop or `switch` (JMP-1, JMP-2).
 :::
 
 ## Runtime Behavior

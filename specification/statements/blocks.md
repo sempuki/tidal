@@ -121,9 +121,9 @@ come before a declaration.
 :kind: required
 :tests: statements/blocks/ambiguous-declaration.cpp statements/blocks/disambiguation-rest-not-declaration.cpp statements/blocks/disambiguation-declarator-forms.cpp
 
-If a statement can be read as an expression statement or as a
-declaration, the statement is a declaration. The whole statement
-decides. If the start of a statement has the form of a declaration and
+If the grammar ({rule}`TR-12`) derives a statement as an expression
+statement and as a declaration, the statement is a declaration. The
+whole statement decides. If the start of a statement has the form of a declaration and
 the rest cannot belong to a declaration, the statement is an expression
 statement.
 :::

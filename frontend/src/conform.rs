@@ -21,8 +21,9 @@ struct Test {
     /// The -W flags other than -Werror.
     wflags: Vec<String>,
     sources: Vec<PathBuf>,
-    /// The base expectation is `run` or `run-fail`: the harness runs the
-    /// program after the check accepts it.
+    /// The base expectation is `run` or `run-fail`, or the test has a
+    /// `tidal-interpreter: run-fail` line: the harness runs the program
+    /// after the check accepts it.
     run: Option<RunExpect>,
 }
 
@@ -30,6 +31,10 @@ struct Test {
 enum RunExpect {
     Run,
     RunFail,
+    /// `tidal-interpreter: run-fail` on an `accept` test (decision 0053):
+    /// the run must stop at undefined behavior and name one of the test's
+    /// rules.
+    Undefined,
 }
 
 /// The result of running a `run` or `run-fail` test.
@@ -78,6 +83,7 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
     let mut rules = Vec::new();
     let mut flags = String::new();
     let mut sources = Vec::new();
+    let mut interpreter = None;
     for line in src.lines() {
         let Some(rest) = line.strip_prefix("// tidal-") else {
             if !line.starts_with("//") {
@@ -91,6 +97,8 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
             edg = Some(v.trim().to_string());
         } else if let Some(v) = rest.strip_prefix("rules:") {
             rules = v.split_whitespace().map(String::from).collect();
+        } else if let Some(v) = rest.strip_prefix("interpreter:") {
+            interpreter = Some(v.trim().to_string());
         } else if let Some(v) = rest.strip_prefix("flags:") {
             flags = v.trim().to_string();
         } else if let Some(v) = rest.strip_prefix("sources:") {
@@ -105,6 +113,7 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
     let run = match expect.as_deref() {
         Some("run") => Some(RunExpect::Run),
         Some("run-fail") => Some(RunExpect::RunFail),
+        _ if interpreter.as_deref() == Some("run-fail") => Some(RunExpect::Undefined),
         _ => None,
     };
     let e = edg.or(expect)?;
@@ -227,7 +236,10 @@ fn judge_run(t: &Test, k: RunExpect, o: Option<&RunOutcome>) -> (RunRes, String)
         // The program ends with a nonzero status.
         (RunExpect::Run, RunOutcome::Terminated(..)) => RunRes::WrongResult,
         (RunExpect::RunFail, RunOutcome::Terminated(..)) => RunRes::Pass,
-        (RunExpect::RunFail, RunOutcome::Undefined(r, ..)) => {
+        // Only a stop at undefined behavior meets an interpreter-only
+        // expectation.
+        (RunExpect::Undefined, RunOutcome::Result(..) | RunOutcome::Terminated(..)) => RunRes::MissedUndefined,
+        (RunExpect::RunFail | RunExpect::Undefined, RunOutcome::Undefined(r, ..)) => {
             // A stop can name several rules, separated by commas.
             if r.split(", ").any(|r| t.rules.iter().any(|x| x == r)) {
                 RunRes::Pass

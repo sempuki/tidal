@@ -551,7 +551,7 @@ undefined.
 
 :::{rule} NEW-5
 :kind: undefined
-:tests: expressions/new-delete/delete-mismatch-array.cpp expressions/new-delete/delete-mismatch-scalar.cpp expressions/new-delete/delete-not-from-new.cpp expressions/new-delete/double-delete.cpp expressions/new-delete/delete-derived-array-through-base-constant.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp expressions/new-delete/delete-array-mismatch-sanitizer.cpp expressions/new-delete/delete-twice-sanitizer.cpp
+:tests: expressions/new-delete/delete-mismatch-array.cpp expressions/new-delete/delete-mismatch-scalar.cpp expressions/new-delete/delete-not-from-new.cpp expressions/new-delete/double-delete.cpp expressions/new-delete/delete-derived-array-through-base-constant.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp expressions/new-delete/delete-array-mismatch-sanitizer.cpp expressions/new-delete/delete-twice-sanitizer.cpp classes/virtual/delete-array-through-base-sanitizer.cpp
 
 The behavior is undefined if the program:
 
@@ -560,7 +560,11 @@ The behavior is undefined if the program:
 - deletes the same object twice,
 - deletes a pointer that `new` did not give,
 - uses `delete[]` through a pointer to a base for an array of a derived
-  class ({question}`Q-0091`). VIRT-12 gives the rule for one object.
+  class ({question}`Q-0091`).
+
+{rule}`VIRT-12` is the specific case of NEW-5 for `delete[]` through a
+pointer to a base (decision 0052). VIRT-12 also gives the rule for one
+object.
 
 A read or write of a dynamic object after `delete` breaks {rule}`OBJ-2`.
 :::
@@ -679,8 +683,8 @@ int* h = new (std::nothrow) int[count];  // null
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 105
-of 125 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 106
+of 126 tests.
 
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so

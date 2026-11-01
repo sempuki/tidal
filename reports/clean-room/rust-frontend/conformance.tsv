@@ -772,8 +772,11 @@ pass	classes/unions/bitfield-float.cpp
 pass	classes/unions/bitfield-in-union.cpp
 pass	classes/unions/bitfield-init-default-member.cpp
 unsupported	classes/unions/bitfield-layout-lp64.cpp
+run-unsupported	classes/unions/bitfield-low-order-first.cpp
 MISSED-REJECT	classes/unions/bitfield-narrowing-init.cpp
 pass	classes/unions/bitfield-negative-width.cpp
+unsupported	classes/unions/bitfield-next-unit-ilp32.cpp
+unsupported	classes/unions/bitfield-next-unit-lp64.cpp
 pass	classes/unions/bitfield-nonconst-ref.cpp
 MISSED-REJECT	classes/unions/bitfield-nonconstant-width.cpp
 pass	classes/unions/bitfield-plain-int-signed.cpp
@@ -785,6 +788,8 @@ MISSED-REJECT	classes/unions/bitfield-sizeof.cpp
 pass	classes/unions/bitfield-static.cpp
 pass	classes/unions/bitfield-typedef.cpp
 MISSED-REJECT	classes/unions/bitfield-unnamed-cv.cpp
+FALSE-REJECT	classes/unions/bitfield-unnamed-not-member.cpp
+FALSE-REJECT	classes/unions/bitfield-unnamed-value-init-copy.cpp
 pass	classes/unions/bitfield-unsigned-wraps.cpp
 pass	classes/unions/bitfield-very-wide.cpp
 pass	classes/unions/bitfield-wide-unsigned-promotion.cpp
@@ -873,7 +878,7 @@ pass	classes/virtual/covariant-through-base-pointer.cpp
 MISSED-REJECT	classes/virtual/covariant-unrelated.cpp
 pass	classes/virtual/default-args-static-type.cpp
 pass	classes/virtual/delete-array-through-base-constant.cpp
-RUN-UNEXPECTED-UB	classes/virtual/delete-array-through-base-sanitizer.cpp
+pass	classes/virtual/delete-array-through-base-sanitizer.cpp
 pass	classes/virtual/delete-nonvirtual-warns.cpp
 pass	classes/virtual/derived-concrete.cpp
 pass	classes/virtual/derived-still-abstract.cpp
@@ -1144,6 +1149,7 @@ pass	declarations/constexpr/constinit-nonconstexpr-dtor.cpp
 pass	declarations/constexpr/constinit-not-const.cpp
 pass	declarations/constexpr/constinit-on-declaration-only.cpp
 pass	declarations/constexpr/constinit-on-function.cpp
+pass	declarations/constexpr/constinit-only-on-definition.cpp
 pass	declarations/constexpr/constinit-static.cpp
 pass	declarations/constexpr/constinit-with-constexpr.cpp
 pass	declarations/constexpr/function-compile-and-run.cpp
@@ -1414,6 +1420,8 @@ pass	declarations/functions/definitions/main-wrong-return-type.cpp
 pass	declarations/functions/definitions/nested-function-definition.cpp
 pass	declarations/functions/definitions/parameter-destruction-order.cpp
 pass	declarations/functions/definitions/parameter-duplicate.cpp
+pass	declarations/functions/definitions/parameter-name-from-definition.cpp
+pass	declarations/functions/definitions/parameter-names-may-differ.cpp
 pass	declarations/functions/definitions/parameter-nested-block.cpp
 pass	declarations/functions/definitions/parameter-scope-redeclare.cpp
 pass	declarations/functions/definitions/redeclaration-ok.cpp
@@ -1443,7 +1451,7 @@ pass	declarations/functions/return-deduction/basic.cpp
 pass	declarations/functions/return-deduction/braced-return.cpp
 pass	declarations/functions/return-deduction/conflicting-returns.cpp
 pass	declarations/functions/return-deduction/decltype-auto-dangling.cpp
-RUN-UNEXPECTED-UB	declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp
+pass	declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp
 pass	declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp
 pass	declarations/functions/return-deduction/decltype-auto.cpp
 pass	declarations/functions/return-deduction/discarded-return-not-deduced.cpp
@@ -1460,6 +1468,7 @@ pass	declarations/functions/return-deduction/virtual-auto.cpp
 pass	declarations/functions/return-deduction/void-and-value.cpp
 pass	declarations/functions/return-deduction/void-call-return.cpp
 pass	declarations/initialization/forms/array-from-array.cpp
+pass	declarations/initialization/forms/array-member-empty-braces.cpp
 pass	declarations/initialization/forms/array-paren-init.cpp
 pass	declarations/initialization/forms/array-partial.cpp
 pass	declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp
@@ -1598,7 +1607,7 @@ EDG-ONLY	declarations/initialization/references/null-dereference-bind-constant.c
 pass	declarations/initialization/references/parenthesized-list-aggregate.cpp
 pass	declarations/initialization/references/reference-member-not-extended.cpp
 pass	declarations/initialization/references/reference-multiple-values.cpp
-RUN-UNEXPECTED-UB	declarations/initialization/references/returned-reference-temporary-sanitizer.cpp
+pass	declarations/initialization/references/returned-reference-temporary-sanitizer.cpp
 pass	declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp
 pass	declarations/initialization/references/rvalue-ref-binds-rvalue.cpp
 pass	declarations/initialization/references/rvalue-ref-drops-const.cpp
@@ -1607,6 +1616,7 @@ pass	declarations/initialization/references/rvalue-ref-rejects-lvalue.cpp
 pass	declarations/initialization/references/rvalue-ref-to-function.cpp
 pass	declarations/initialization/references/static-reference-to-temporary.cpp
 pass	declarations/initialization/references/unknown-bound-ref.cpp
+pass	declarations/initialization/static/accessor-across-units.cpp
 pass	declarations/initialization/static/across-units-order.cpp
 pass	declarations/initialization/static/before-main-observed.cpp
 pass	declarations/initialization/static/const-variable-in-initializer.cpp
@@ -1626,6 +1636,7 @@ pass	declarations/initialization/static/member-read-before-constructor-constant.
 run-unsupported	declarations/initialization/static/reference-constant-initialized.cpp
 RUN-WRONG-RESULT	declarations/initialization/static/static-member-in-order.cpp
 pass	declarations/initialization/static/thread-local-init-deferred.cpp
+pass	declarations/initialization/static/unit-not-named.cpp
 pass	declarations/inline/constexpr-function-inline.cpp
 pass	declarations/inline/constexpr-variable-internal.cpp
 pass	declarations/inline/deleted-function-inline.cpp
@@ -1665,6 +1676,8 @@ pass	declarations/linkage-specifications/block-form-no-scope.cpp
 pass	declarations/linkage-specifications/block-form.cpp
 pass	declarations/linkage-specifications/block-scope.cpp
 pass	declarations/linkage-specifications/c-and-cpp-overload.cpp
+EDG-ONLY	declarations/linkage-specifications/c-callback-alias.cpp
+pass	declarations/linkage-specifications/c-callback-c-function.cpp
 pass	declarations/linkage-specifications/c-cross-unit.cpp
 EDG-ONLY	declarations/linkage-specifications/c-function-pointer-assign.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-linkage-main.cpp
@@ -1673,6 +1686,7 @@ run-unsupported	declarations/linkage-specifications/c-name-across-namespaces.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-name-conflict-types.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-name-conflicts-global.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-overload-rejected.cpp
+EDG-ONLY	declarations/linkage-specifications/c-parameter-type-linkage.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-variable-and-function-conflict.cpp
 MISSED-REJECT	declarations/linkage-specifications/c-variable-named-main.cpp
 pass	declarations/linkage-specifications/class-scope.cpp
@@ -1707,6 +1721,7 @@ pass	declarations/namespaces/nested-definition.cpp
 pass	declarations/namespaces/nested-first-inline.cpp
 pass	declarations/namespaces/nested-inline-definition.cpp
 pass	declarations/namespaces/out-of-namespace-definition.cpp
+pass	declarations/namespaces/qualified-definition-storage-class.cpp
 pass	declarations/namespaces/undeclared-qualified-definition.cpp
 pass	declarations/namespaces/unnamed-namespace-duplicate.cpp
 pass	declarations/namespaces/unnamed-namespace.cpp
@@ -1793,6 +1808,7 @@ pass	declarations/storage-linkage/mutable-namespace.cpp
 pass	declarations/storage-linkage/mutable-reference-member.cpp
 pass	declarations/storage-linkage/mutable-static-member.cpp
 MISSED-REJECT	declarations/storage-linkage/plain-after-thread-local.cpp
+MISSED-REJECT	declarations/storage-linkage/qualified-static-after-extern.cpp
 pass	declarations/storage-linkage/recursive-static-init.cpp
 pass	declarations/storage-linkage/register.cpp
 pass	declarations/storage-linkage/static-block-function.cpp
@@ -1932,6 +1948,7 @@ pass	declarations/type-names/variable-then-typedef.cpp
 pass	declarations/volatile/access-run.cpp
 MISSED-REJECT	declarations/volatile/assign-to-volatile-class.cpp
 MISSED-REJECT	declarations/volatile/assignment-result-warns.cpp
+pass	declarations/volatile/bitfield-write-keeps-neighbors.cpp
 pass	declarations/volatile/compound-no-warning.cpp
 pass	declarations/volatile/const-cast-removes.cpp
 pass	declarations/volatile/const-ref-volatile-no-temporary.cpp
@@ -1963,6 +1980,7 @@ pass	declarations/volatile/volatile-member-of-volatile-object.cpp
 pass	declarations/volatile/volatile-member-on-plain.cpp
 pass	declarations/volatile/volatile-object-ordinary-ctor.cpp
 MISSED-REJECT	declarations/volatile/volatile-parameter-warns.cpp
+pass	declarations/volatile/volatile-path-to-plain-object.cpp
 MISSED-REJECT	declarations/volatile/volatile-return-warns.cpp
 MISSED-REJECT	declarations/volatile/volatile-structured-binding.cpp
 pass	exceptions/handlers/basic-catch.cpp
@@ -2071,6 +2089,7 @@ pass	exceptions/throw/rethrow-keeps-changes.cpp
 pass	exceptions/throw/rethrow-outside-handler-terminates.cpp
 pass	exceptions/throw/rethrow-same-object.cpp
 pass	exceptions/throw/static-type-not-dynamic.cpp
+pass	exceptions/throw/storage-not-from-operator-new.cpp
 pass	exceptions/throw/string-literal-decays.cpp
 pass	exceptions/throw/throw-expression-type-void.cpp
 pass	exceptions/throw/throw-in-noexcept-terminates.cpp
@@ -2101,6 +2120,7 @@ pass	exceptions/unwinding/noexcept-boundary-is-the-function.cpp
 pass	exceptions/unwinding/noexcept-false-destructor-can-throw.cpp
 pass	exceptions/unwinding/noexcept-function-handles-inside.cpp
 pass	exceptions/unwinding/objects-after-throw-not-created.cpp
+RUN-UNEXPECTED-UB	exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp
 run-unsupported	exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp
 run-unsupported	exceptions/unwinding/placement-new-throws-placement-delete.cpp
 MISSED-REJECT	exceptions/unwinding/rethrow-in-noexcept-warns.cpp
@@ -2232,6 +2252,9 @@ pass	expressions/casts/functional-braced-unknown-bound.cpp
 pass	expressions/casts/functional-cast-several-arguments.cpp
 pass	expressions/casts/functional-cast-several-scalar.cpp
 pass	expressions/casts/functional-empty-parens.cpp
+run-unsupported	expressions/casts/integer-to-pointer-address.cpp
+pass	expressions/casts/pointer-sized-integer-ilp32.cpp
+run-unsupported	expressions/casts/pointer-sized-integer.cpp
 run-unsupported	expressions/casts/reinterpret-function-pointer-round-trip.cpp
 run-unsupported	expressions/casts/reinterpret-function-to-object.cpp
 pass	expressions/casts/reinterpret-integer-too-small.cpp
@@ -2293,6 +2316,8 @@ MISSED-REJECT	expressions/comparison/array-relational-warns.cpp
 pass	expressions/comparison/chained-comparison-warns.cpp
 pass	expressions/comparison/chained-comparison.cpp
 pass	expressions/comparison/chained-less-equal-warns.cpp
+pass	expressions/comparison/chained-mixed-relational-warns.cpp
+pass	expressions/comparison/chained-parenthesized-no-warning.cpp
 pass	expressions/comparison/derived-base-pointer-equality.cpp
 pass	expressions/comparison/different-enums-warns.cpp
 pass	expressions/comparison/enum-float-comparison-warns.cpp
@@ -2490,6 +2515,9 @@ pass	expressions/constant-expressions/static-local-not-usable-reached.cpp
 pass	expressions/constant-expressions/static-local-reached.cpp
 FALSE-REJECT	expressions/constant-expressions/static-local-usable-reached.cpp
 EDG-ONLY	expressions/constant-expressions/string-literal-identity.cpp
+pass	expressions/constant-expressions/termination-noexcept-rejected.cpp
+pass	expressions/constant-expressions/termination-not-reached.cpp
+pass	expressions/constant-expressions/termination-rethrow-rejected.cpp
 pass	expressions/constant-expressions/throw-evaluated.cpp
 pass	expressions/constant-expressions/throw-not-evaluated.cpp
 pass	expressions/constant-expressions/try-without-throw.cpp
@@ -2522,6 +2550,7 @@ pass	expressions/conversions/floating-to-integral-truncates.cpp
 pass	expressions/conversions/floating-to-unsigned-negative.cpp
 pass	expressions/conversions/function-pointer-to-void-pointer.cpp
 pass	expressions/conversions/implicit-conversion-contexts.cpp
+pass	expressions/conversions/implicit-conversion-more-contexts.cpp
 pass	expressions/conversions/integer-variable-to-pointer.cpp
 pass	expressions/conversions/integral-promotion.cpp
 pass	expressions/conversions/integral-to-floating-exact.cpp
@@ -2850,6 +2879,7 @@ pass	expressions/new-delete/array-no-default-ctor.cpp
 pass	expressions/new-delete/array-non-integral-size.cpp
 pass	expressions/new-delete/array-of-auto.cpp
 run-unsupported	expressions/new-delete/array-overhead-other-forms.cpp
+pass	expressions/new-delete/array-paren-init-runtime-bound.cpp
 unsupported	expressions/new-delete/array-paren-init.cpp
 pass	expressions/new-delete/array-runtime-size.cpp
 MISSED-REJECT	expressions/new-delete/array-scoped-enumeration-size.cpp
@@ -2868,11 +2898,17 @@ pass	expressions/new-delete/const-scalar-with-init.cpp
 unsupported	expressions/new-delete/constant-evaluation-class-allocation.cpp
 unsupported	expressions/new-delete/constant-evaluation-nothrow.cpp
 pass	expressions/new-delete/constant-evaluation-placement.cpp
+run-unsupported	expressions/new-delete/deallocate-by-name-alignment-mismatch-sanitizer.cpp
+RUN-MISSED-UB	expressions/new-delete/deallocate-by-name-array-mismatch-sanitizer.cpp
+run-unsupported	expressions/new-delete/deallocate-by-name-null.cpp
+run-unsupported	expressions/new-delete/deallocate-by-name-partner.cpp
 pass	expressions/new-delete/deallocation-deleted-no-throw.cpp
 pass	expressions/new-delete/deallocation-deleted.cpp
 pass	expressions/new-delete/deallocation-placement-deleted.cpp
 pass	expressions/new-delete/deallocation-private-no-throw.cpp
 pass	expressions/new-delete/deallocation-private.cpp
+pass	expressions/new-delete/default-new-alignment-ilp32-clang.cpp
+pass	expressions/new-delete/default-new-alignment-ilp32.cpp
 pass	expressions/new-delete/default-new-alignment.cpp
 pass	expressions/new-delete/delete-array-mismatch-sanitizer.cpp
 run-unsupported	expressions/new-delete/delete-class-converting-to-pointer.cpp
@@ -2998,7 +3034,10 @@ pass	expressions/postfix/subscript-two-integers.cpp
 pass	expressions/postfix/subscript-write-past-end-constant.cpp
 pass	expressions/primary/bool-nullptr.cpp
 pass	expressions/primary/char-delimited-empty.cpp
+pass	expressions/primary/char-digits-consecutive.cpp
 pass	expressions/primary/char-empty.cpp
+pass	expressions/primary/char-encoding-ilp32.cpp
+pass	expressions/primary/char-encoding-lp64.cpp
 pass	expressions/primary/char-escape-out-of-range.cpp
 pass	expressions/primary/char-escapes.cpp
 pass	expressions/primary/char-hex-no-digits.cpp
@@ -3008,6 +3047,7 @@ unsupported	expressions/primary/char-named-escape-unknown.cpp
 unsupported	expressions/primary/char-named-escape.cpp
 pass	expressions/primary/char-octal-too-large.cpp
 pass	expressions/primary/char-plain-signedness.cpp
+pass	expressions/primary/char-simple-escape-values.cpp
 pass	expressions/primary/char-types.cpp
 pass	expressions/primary/char-u8-not-single-byte.cpp
 pass	expressions/primary/char-ucn-basic.cpp
@@ -3016,6 +3056,7 @@ pass	expressions/primary/char-ucn-surrogate.cpp
 pass	expressions/primary/char-unicode-multichar.cpp
 pass	expressions/primary/char-unknown-escape.cpp
 pass	expressions/primary/char-unprefixed-not-single-unit.cpp
+pass	expressions/primary/char-value-code-unit.cpp
 pass	expressions/primary/char16-not-bmp.cpp
 pass	expressions/primary/float-exponent-no-digits.cpp
 pass	expressions/primary/float-exponent-sign-no-digits.cpp
@@ -3069,6 +3110,9 @@ pass	expressions/primary/nullptr-to-bool-copy.cpp
 pass	expressions/primary/nullptr-to-int.cpp
 pass	expressions/primary/number-ends-at-space.cpp
 pass	expressions/primary/number-extends-over-sign.cpp
+MISSED-REJECT	expressions/primary/number-runs-over-dots.cpp
+pass	expressions/primary/number-runs-over-letters.cpp
+unsupported	expressions/primary/number-runs-over-underscore.cpp
 pass	expressions/primary/paren-function-call.cpp
 pass	expressions/primary/paren-lvalue.cpp
 pass	expressions/primary/paren-same-type.cpp
@@ -3080,7 +3124,7 @@ pass	expressions/primary/string-escape-in-string.cpp
 pass	expressions/primary/string-index-constant.cpp
 pass	expressions/primary/string-lvalue.cpp
 pass	expressions/primary/string-modify-constant.cpp
-RUN-UNEXPECTED-UB	expressions/primary/string-modify-sanitizer.cpp
+pass	expressions/primary/string-modify-sanitizer.cpp
 pass	expressions/primary/string-raw-bad-delimiter.cpp
 pass	expressions/primary/string-raw-delimiter-backslash.cpp
 pass	expressions/primary/string-raw-delimiter-paren.cpp
@@ -3129,6 +3173,7 @@ run-unsupported	expressions/sequencing/member-pointer-object-first.cpp
 pass	expressions/sequencing/multiplicative-operand-order.cpp
 run-unsupported	expressions/sequencing/new-placement-and-bound-order.cpp
 pass	expressions/sequencing/object-before-member-call-arguments.cpp
+FALSE-REJECT	expressions/sequencing/operand-used-twice-evaluated-once.cpp
 pass	expressions/sequencing/overloaded-assignment-order.cpp
 pass	expressions/sequencing/overloaded-compound-assignment-order.cpp
 FALSE-REJECT	expressions/sequencing/overloaded-member-pointer-order.cpp
@@ -3490,6 +3535,8 @@ run-unsupported	foundations/language-support/alignment-enumeration-self-declared
 pass	foundations/language-support/alignment-enumeration-unscoped.cpp
 run-unsupported	foundations/language-support/alignment-enumeration-with-enumerator.cpp
 pass	foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp
+pass	foundations/language-support/allocator-other-namespace-constant.cpp
+FALSE-REJECT	foundations/language-support/allocator-self-declared-constant.cpp
 run-unsupported	foundations/language-support/byte-self-declared.cpp
 unsupported	foundations/language-support/construct-at-other-namespace-constant.cpp
 unsupported	foundations/language-support/construct-at-self-declared.cpp
@@ -3504,6 +3551,7 @@ pass	foundations/language-support/initializer-list-not-template.cpp
 pass	foundations/language-support/initializer-list-parameter-not-needed.cpp
 unsupported	foundations/language-support/initializer-list-pointer-and-size.cpp
 unsupported	foundations/language-support/nothrow-tag-self-declared.cpp
+pass	foundations/language-support/placement-array-needs-array-form.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
 pass	foundations/language-support/size-and-null-types.cpp
 pass	foundations/language-support/strong-ordering-minimal.cpp
@@ -3751,6 +3799,7 @@ pass	foundations/odr/guard-text-after-endif.cpp
 pass	foundations/odr/guarded-header-twice.cpp
 pass	foundations/odr/header-class-shared.cpp
 pass	foundations/odr/header-class-template-shared.cpp
+pass	foundations/odr/header-constant-three-forms.cpp
 pass	foundations/odr/header-enumeration-shared.cpp
 pass	foundations/odr/header-function-in-two-units.cpp
 pass	foundations/odr/header-function-template-shared.cpp
@@ -3949,10 +3998,16 @@ run-unsupported	foundations/storage/access-signed-counterpart-and-cv.cpp
 pass	foundations/storage/access-unrelated-class.cpp
 pass	foundations/storage/access-unrelated-scalar.cpp
 pass	foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
+FALSE-REJECT	foundations/storage/allocation-array-class-elements-constant.cpp
+RUN-UNEXPECTED-UB	foundations/storage/allocation-array-class-elements.cpp
+pass	foundations/storage/allocation-array-unbuilt-element-constant.cpp
+run-unsupported	foundations/storage/arena-reset-reuses-bytes.cpp
 MISSED-REJECT	foundations/storage/array-size-exceeds-size-type.cpp
 run-unsupported	foundations/storage/assignment-by-destroy-and-construct.cpp
 run-unsupported	foundations/storage/base-bytes-shared-with-member.cpp
+pass	foundations/storage/byte-array-cast-reaches-byte.cpp
 run-unsupported	foundations/storage/byte-array-hosts-objects.cpp
+pass	foundations/storage/byte-array-placement-reaches-object.cpp
 run-unsupported	foundations/storage/byte-order-little-endian.cpp
 run-unsupported	foundations/storage/byte-pointer-walks-object.cpp
 run-unsupported	foundations/storage/byte-round-trip-char-and-byte.cpp
@@ -3970,7 +4025,6 @@ pass	foundations/storage/implicit-lifetime-trivial-class.cpp
 pass	foundations/storage/implicit-object-class-allocation-function.cpp
 run-unsupported	foundations/storage/implicit-object-first-use-member.cpp
 pass	foundations/storage/implicit-object-from-allocation-function.cpp
-run-unsupported	foundations/storage/implicit-object-in-byte-array.cpp
 pass	foundations/storage/implicit-objects-follow-later-use.cpp
 pass	foundations/storage/implicit-objects-no-set-works.cpp
 run-unsupported	foundations/storage/interconvertible-chain.cpp
@@ -4007,6 +4061,10 @@ pass	foundations/translation/constant-evaluation-only-where-needed.cpp
 pass	foundations/translation/constant-evaluation-rejects-ub.cpp
 pass	foundations/translation/constant-evaluation-same-function.cpp
 pass	foundations/translation/exit-status-kept-optimized.cpp
+unsupported	foundations/translation/grammar-else-without-if.cpp
+unsupported	foundations/translation/grammar-for-constexpr.cpp
+unsupported	foundations/translation/grammar-mismatched-bracket.cpp
+unsupported	foundations/translation/grammar-missing-operand.cpp
 pass	foundations/translation/if-consteval-selects.cpp
 pass	foundations/translation/ill-formed-diagnosed.cpp
 pass	foundations/translation/ill-formed-in-unused-function.cpp
@@ -4181,12 +4239,14 @@ pass	statements/jumps/break-in-lambda-in-loop.cpp
 pass	statements/jumps/break-innermost.cpp
 pass	statements/jumps/break-outside.cpp
 pass	statements/jumps/break-range-for.cpp
+unsupported	statements/jumps/break-with-label.cpp
 pass	statements/jumps/constructor-return-void-expression.cpp
 pass	statements/jumps/continue-for.cpp
 pass	statements/jumps/continue-in-switch.cpp
 pass	statements/jumps/continue-outside.cpp
 pass	statements/jumps/continue-range-for.cpp
 pass	statements/jumps/continue-while-condition.cpp
+unsupported	statements/jumps/continue-with-label.cpp
 pass	statements/jumps/copy-elision-named.cpp
 pass	statements/jumps/destructor-return-value.cpp
 pass	statements/jumps/destructor-return-void-expression.cpp
@@ -4207,6 +4267,7 @@ pass	statements/jumps/goto-skips-nontrivial-destructor.cpp
 pass	statements/jumps/goto-undefined-label.cpp
 pass	statements/jumps/label-function-scope.cpp
 pass	statements/jumps/label-separate-names.cpp
+pass	statements/jumps/leave-two-loops.cpp
 pass	statements/jumps/return-braced.cpp
 pass	statements/jumps/return-converts.cpp
 pass	statements/jumps/return-destroys-locals.cpp
@@ -4268,6 +4329,7 @@ pass	statements/range-for/storage-class.cpp
 run-unsupported	statements/range-for/structured-binding.cpp
 pass	statements/range-for/temporary-in-range-expression.cpp
 pass	statements/range-for/temporary-range-lives.cpp
+pass	statements/switch/block-holds-case-declaration.cpp
 pass	statements/switch/break-exits.cpp
 pass	statements/switch/case-duplicate-after-conversion.cpp
 pass	statements/switch/case-duplicate.cpp
@@ -4292,6 +4354,7 @@ pass	statements/switch/condition-types.cpp
 pass	statements/switch/dispatch.cpp
 pass	statements/switch/enum-all-cases-or-default-silent.cpp
 MISSED-REJECT	statements/switch/enum-missing-case-warns.cpp
+pass	statements/switch/enum-value-outside-cases.cpp
 pass	statements/switch/fallthrough.cpp
 pass	statements/switch/init-name-redeclared.cpp
 pass	statements/switch/init-statement.cpp

@@ -428,7 +428,8 @@ reference or would have type `void`.
 :kind: required
 :tests: declarations/declarators/function-declaration-ambiguity.cpp declarations/declarators/function-declaration-ambiguity-type.cpp
 
-A declaration that can be read as a function declaration is a function
+If the grammar ({rule}`TR-12`) derives a declaration as a function
+declaration and in another way, the declaration is a function
 declaration. This rule includes a parenthesized initializer that has the
 form of a parameter list, such as a type name followed by `()`.
 :::
@@ -480,9 +481,10 @@ reference is a use of that object or function.
 :tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp declarations/declarators/modify-const-object-sanitizer.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp
 
 If a program changes an object that is defined `const`, the behavior is
-undefined. The behavior is also undefined when a cast removes `const`. A
-program can change an object that is not defined `const` through such a
-cast.
+undefined. The behavior is also undefined when a cast removes `const`.
+A program can change an object that is not defined `const` through such
+a cast. The specific cases of CV-5 are {rule}`CAST-5` and {rule}`PRIM-8`
+(decision 0052).
 :::
 
 ## Implementation Requirements

@@ -250,10 +250,11 @@ The result of `const_cast` refers to the same object as its operand.
 
 :::{rule} CAST-5
 :kind: undefined
-:tests: expressions/casts/const-cast-write-const-object.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp
+:tests: expressions/casts/const-cast-write-const-object.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp expressions/primary/string-modify-sanitizer.cpp
 
 A write through the result of `const_cast` to an object that is `const`
-is undefined (CV-5).
+is undefined (CV-5). {rule}`PRIM-8` is the specific case of CAST-5 for
+the characters of a string literal (decision 0052).
 :::
 
 :::{rule} CAST-14
@@ -319,7 +320,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 53 of 54 tests. The results are in
+All eight compilers agree on 54 of 55 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

@@ -1,19 +1,20 @@
 # Q-0312: Should the specification list token sequences that no production accepts, such as `for constexpr`?
 
 **Status:** open
-**Affects:** `statements/index.md`, `statements/range-for.md`, the grammar of each statements page
+**Affects:** `foundations/translation.md`, `statements/index.md`, `statements/range-for.md`, the grammar of each statements page
 
 ## Context
 
 The `statement` production and the `range_for_stmt` production accept
 no keyword between `for` and `(`. So `for constexpr (...)` is not a
-valid statement. Only the grammar shows this fact. No `reject` rule
-names the form, and no test covers it.
+valid statement. The grammar shows this fact. No rule names the form
+itself.
 
 A reader who looks for the forms that the language leaves unused reads
-the rules and their tests. Such a reader does not find `for constexpr`,
-because the form breaks no rule. The same holds for other keyword pairs
-in a statement position that no production accepts.
+the rules and their tests. Such a reader finds `for constexpr` only in a
+test of TR-12, the general rule for token sequences that the grammar
+does not derive. The same holds for other keyword pairs in a statement
+position that no production accepts.
 
 | Probe | GCC 16.2 | Clang 22 |
 |---|---|---|
@@ -22,7 +23,9 @@ in a statement position that no production accepts.
 ## Evidence
 
 The probe above. The grammar in `specification/statements/range-for.md`
-and `specification/statements/loops.md`.
+and `specification/statements/loops.md`. The tests of TR-12 in
+`tests/foundations/translation/`, which every compiler in the matrix
+rejects.
 
 ## Options
 
@@ -35,13 +38,19 @@ and `specification/statements/loops.md`.
 3. Keep a list of such forms outside the specification, for example in
    the roadmap's index of unused forms, and leave the specification
    unchanged.
+4. Add one general `reject` rule that gives the grammar its effect, with
+   tests for a few token sequences that no production derives.
 
 ## Provisional answer
 
-No; the grammar stays the only statement (option 1), and a list of such forms can live in the roadmap (option 3). The
-grammar already rejects the form, and a rule for one unused keyword pair
-would invite a rule for every pair. The maintainer decides whether the
-roadmap keeps the list.
+The grammar is the statement, and TR-12 gives its effect (option
+4). TR-12 makes a token sequence that the grammar does not derive a
+program that is not valid, and the implementation rejects it. The
+diagnostic need not name a rule other than TR-12. No rule lists such
+sequences one by one, because the list has no end. So `for constexpr`
+has no rule of its own, and its test cites TR-12. KW-1, JMP-17, TARG-4,
+STMT-6, and DCL-13 cite TR-12. The maintainer decides whether the
+roadmap also keeps a list of such forms (option 3).
 
 ## Opinions
 

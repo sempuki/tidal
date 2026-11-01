@@ -10,6 +10,10 @@ with its expectation.
 Only `baseline` compilers decide whether a test passes. Results from
 `report` compilers are shown but don't fail the run.
 
+A `tidal-interpreter: run-fail` line is for the front end's interpreter
+only (decision 0053). The runner checks its form and does not use it, so
+the matrix compilers only build such a test.
+
 Results are cached in build/cache/, keyed by the test text, the compiler's
 identity (version output and image ID), and its command templates.
 
@@ -35,6 +39,9 @@ import matrix  # noqa: E402
 from matrix import BUILD, TESTS, Compiler  # noqa: E402
 
 EXPECTATIONS = {"accept", "reject", "link-fail", "run", "run-fail"}
+# The values of tidal-interpreter, which only the front end's interpreter
+# checks (decision 0053).
+INTERPRETER_EXPECTATIONS = {"run-fail"}
 # Bump when outcome() changes how it computes a result, so cached results
 # from the old logic are not reused.
 OUTCOME_VERSION = 5
@@ -53,6 +60,8 @@ class Test:
     notes: list[str] = field(default_factory=list)
     sources: list[Path] = field(default_factory=list)
     errors: dict[str, str] = field(default_factory=dict)
+    # The tidal-interpreter expectation, or None. No compiler uses it.
+    interpreter: str | None = None
 
     @property
     def name(self) -> str:
@@ -83,6 +92,7 @@ def parse_test(path: Path) -> Test:
     default = None
     overrides = {}
     errors = {}
+    interpreter = None
     for line in path.read_text().splitlines():
         if not line.startswith("//"):
             break
@@ -109,6 +119,8 @@ def parse_test(path: Path) -> Test:
             notes.append(value)
         elif key == "sources":
             sources += [path.parent / s for s in value.split()]
+        elif key == "interpreter":
+            interpreter = value
         else:
             raise ValueError(f"{path}: unknown directive tidal-{key}")
     if not rules:
@@ -118,10 +130,15 @@ def parse_test(path: Path) -> Test:
     for value in [default, *overrides.values()]:
         if value is not None and value not in EXPECTATIONS:
             raise ValueError(f"{path}: bad expectation {value!r}")
+    if interpreter is not None:
+        if interpreter not in INTERPRETER_EXPECTATIONS:
+            raise ValueError(f"{path}: bad tidal-interpreter value {interpreter!r}")
+        if {default, *overrides.values()} - {None, "accept"}:
+            raise ValueError(f"{path}: tidal-interpreter needs a test that expects accept on every compiler")
     for s in sources:
         if not s.name.endswith(EXTRA_SUFFIX) or not s.exists():
             raise ValueError(f"{path}: tidal-sources entry {s.name} must be an existing *{EXTRA_SUFFIX} file")
-    return Test(path, rules, default, overrides, flags, notes, sources, errors)
+    return Test(path, rules, default, overrides, flags, notes, sources, errors, interpreter)
 
 
 def test_files(paths: list[Path]) -> list[Path]:

@@ -74,11 +74,12 @@ header of `//` directives at the top of the file controls the runner:
 
 | Directive | Values | Meaning |
 |---|---|---|
-| `tidal-rules` | rule IDs | Rules this test supports. Required. A test of a failed constant cites the rule that the evaluation broke, and can also cite the rule that needs the constant (decision 0038). A test whose program breaks a general `reject` rule and a specific one cites the specific rule, and can also cite the general one. The general rule names the specific rules (decision 0042). |
+| `tidal-rules` | rule IDs | Rules this test supports. Required. A test of a failed constant cites the rule that the evaluation broke, and can also cite the rule that needs the constant (decision 0038). A test whose program breaks a general `reject` rule and a specific one cites the specific rule, and can also cite the general one. The general rule names the specific rules (decision 0042). The same holds for `undefined` rules, and a run stop that names either rule matches (decision 0052). |
 | `tidal-expect` | `accept`, `reject`, `link-fail`, `run`, `run-fail` | `accept`: compiles. `reject`: fails to compile. `link-fail`: every translation unit compiles, but linking them fails. `run`: compiles, links, runs, and exits 0. `run-fail`: compiles and links, but the run exits nonzero, for example because a sanitizer stops it (decision 0028). |
 | `tidal-expect-<x>` | same | Override for a compiler family (`clang`, `gcc`, `edg`) or a compiler id from `tools/compilers.json`. Use only with a `tidal-note` naming the question in `questions/`, or, for a report compiler such as `gcc-16-o2`, the rule that allows both outcomes (decisions 0043 and 0047). A variant compiler uses the overrides of the compiler it is a variant of, unless the test gives its own. |
 | `tidal-error` | regular expression | For a `reject`, `link-fail`, or `run-fail` test: one of the compiler's error or note messages, the linker's message, or a line of the program's output must match it, case-insensitive. A failure for another reason fails the test. |
 | `tidal-error-<x>` | regular expression | The same, for a compiler family (`clang`, `gcc`, `edg`) or a compiler id. Overrides `tidal-error` for that compiler. |
+| `tidal-interpreter` | `run-fail` | For an `accept` test whose run has undefined behavior that no sanitizer stops. The matrix compilers only build the program, and `tools/run_tests.py` ignores the line. The front end's interpreter runs the program and must stop at undefined behavior that names one of the test's rules (decision 0053). |
 | `tidal-flags` | compiler flags | Extra flags, for example `-O0 -fsanitize=undefined -fno-sanitize-recover=undefined`. A sanitizer test starts with `-O0`, because at `-O2` the optimizer can remove the operation before the sanitizer sees it (decision 0043). |
 | `tidal-sources` | file names | Extra translation units for this test, named `*.tu.cpp` and kept next to it. Each unit is compiled on its own, then all are linked together. |
 | `tidal-note` | text | Free text, such as the question ID (`Q-0001`) behind an override. |
@@ -90,7 +91,7 @@ promises none (decision 0047). The test expects one of these:
 | Case | Expectation |
 |---|---|
 | A sanitizer configuration stops the behavior. | `run-fail`, with the flags of decisions 0028 and 0043. |
-| No sanitizer configuration stops the behavior. | `accept`. The program compiles, and the test does not check its run. |
+| No sanitizer configuration stops the behavior. | `accept`. The matrix compilers only build the program. If the front end's interpreter stops the run with one of the test's rules, the test adds `tidal-interpreter: run-fail` (decision 0053). |
 
 If constant evaluation can reach the behavior, a separate test expects
 `reject`. The notes and the rule's Evidence describe which

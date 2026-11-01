@@ -182,8 +182,9 @@ enclosing list, a named cast, or a template head.
 :tests: templates/arguments/greater-ends-list.cpp templates/arguments/shift-ends-list.cpp
 
 A `>` or `>>` operator in a template argument must be in parentheses.
-Without them, the operator ends the list (TARG-3), and the rest of the
-expression does not fit after the template-id.
+Without them, the operator ends the list (TARG-3), and the grammar does
+not derive the rest of the expression after the template-id
+({rule}`TR-12`).
 :::
 
 ### Matching arguments to parameters

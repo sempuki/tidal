@@ -51,7 +51,7 @@ informative.
 ## Principles
 
 :::{principle} TR-P1
-:rules: TR-1 TR-6
+:rules: TR-1 TR-6 TR-12
 
 A rule in this specification is a *rule on the program* or a *fact about
 the implementation*. A rule on the program says what a valid program
@@ -64,7 +64,7 @@ which kind it is and how strong it is:
 
 | Class | Kind | Meaning |
 |---|---|---|
-| `reject` | rule on the program | The implementation must diagnose a program that breaks the rule. |
+| `reject` | rule on the program | The implementation must diagnose a program that breaks the rule. The grammar of the `Syntax` segments is such a rule (TR-12). |
 | `no-diagnostic` | rule on the program | The program is not valid, and an implementation need not notice. |
 | `required` | fact | Every implementation behaves this way. |
 | `undefined` | rule on the program | This specification sets no requirement on what happens. |
@@ -196,6 +196,16 @@ constant evaluation not constant (TR-5). The implementation rejects the
 program there.
 :::
 
+:::{rule} TR-12
+:kind: reject
+:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp
+
+The tokens of each translation unit must form a sequence of zero or
+more `declaration` that the grammar derives. The grammar is the set of
+productions in the `Syntax` segments. A diagnostic for a token sequence
+that the grammar does not derive need not name a rule other than TR-12.
+:::
+
 ## Runtime Behavior
 
 :::{rule} TR-2
@@ -308,8 +318,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 31 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 34
+of 35 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -318,6 +328,11 @@ the run and link tests say only that the programs are valid.
   255.
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
   and GCC reject it ({question}`Q-0024`).
+- TR-12: every compiler rejects each token sequence of the tests. Each
+  message names the token that the parser expected, or says that an
+  expression or a statement was expected. The grammar states which
+  sequences are valid, and TR-12 gives the effect of a sequence outside
+  them. No rule lists such sequences one by one ({question}`Q-0312`).
 
 The table below gives, for each `recommended` rule that asks for a
 warning, the flag that turns the warning on in Clang 22 and GCC 16. The

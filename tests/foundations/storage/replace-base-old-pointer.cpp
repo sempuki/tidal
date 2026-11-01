@@ -1,6 +1,7 @@
 // tidal-rules: STG-19
 // tidal-expect: accept
-// tidal-note: STG-19 makes the call through the old pointer undefined, so the test checks only that the program compiles. No sanitizer in the matrix stops the run.
+// tidal-interpreter: run-fail
+// tidal-note: STG-19 makes the call through the old pointer undefined, so the matrix compilers only build the program. No sanitizer in the matrix stops the run. The interpreter must stop with STG-19 (decision 0053).
 #include "placement.h"
 struct Base { virtual int id() { return 1; } };
 struct Derived : Base { int id() override { return 2; } };

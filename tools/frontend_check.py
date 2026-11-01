@@ -17,6 +17,11 @@ or `RUN-UNEXPECTED-UB`. Such a status counts as a passed check and a failed
 run. Each status has a rank: 2 for a full pass, 1 for a passed check with a
 failed run, 0 for a failed check.
 
+An `accept` test with a `tidal-interpreter: run-fail` line (decision 0053)
+also runs in the interpreter, and its run must stop at undefined behavior
+that names one of the test's rules. Its status is a run status as above.
+The summary counts these tests and how many of them pass.
+
 Fails when a test's rank is lower than in the baseline. New tests and tests
 that improved are reported. --update rewrites the baseline.
 
@@ -26,6 +31,7 @@ Usage:
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -35,6 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
 BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
 PASSING = {"pass", "EDG-ONLY"}
+INTERPRETER = re.compile(r"^// tidal-interpreter:\s*run-fail\s*$", re.M)
 
 
 def rank(status: str | None) -> int:
@@ -72,6 +79,21 @@ def results(cargo_bin: str) -> dict[str, str]:
         if not name.endswith(".tu.cpp"):
             status.setdefault(name, "pass")
     return status
+
+
+def interpreter_tests() -> list[str]:
+    """The tests whose run only the interpreter checks (decision 0053)."""
+    tests = ROOT / "tests"
+    found = []
+    for path in sorted(tests.rglob("*.cpp")):
+        header = []
+        for line in path.read_text().splitlines():
+            if not line.startswith("//"):
+                break
+            header.append(line)
+        if INTERPRETER.search("\n".join(header)):
+            found.append(path.relative_to(tests).as_posix())
+    return found
 
 
 def read_baseline() -> dict[str, str]:
@@ -116,8 +138,11 @@ def main() -> int:
         print(f"frontend: new test {n}: {now[n]}")
     passing = sum(s in PASSING for s in now.values())
     checks = sum(rank(s) >= 1 for s in now.values())
+    interp = interpreter_tests()
     print(f"frontend: {passing}/{len(now)} pass, {checks}/{len(now)} pass their check, "
           f"{len(worse)} worse, {len(better)} better, {new} new ({len(new_failing)} not passing)")
+    print(f"frontend: {sum(now.get(n) in PASSING for n in interp)}/{len(interp)} "
+          f"interpreter-only expectations met")
     return 1 if worse else 0
 
 
