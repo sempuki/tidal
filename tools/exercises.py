@@ -57,7 +57,7 @@ OUTCOMES = {
     "compiles": "compiles; the program is not run (it may have no main)",
     "runs": "compiles, runs, and exits with status 0",
     "run-fail": "compiles, but the run ends with a nonzero status",
-    "undefined": "compiles, but running it has undefined behavior, so no outcome is promised",
+    "undefined": "compiles, but running it has undefined behavior, so no outcome is promised; when the build flags include a sanitizer that stops the operation, answer `run-fail`",
     "depends": "the compilers differ, as the specification records; say which in `why`",
 }
 # A test expectation and the answers that match it.
