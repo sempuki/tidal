@@ -1,0 +1,21 @@
+{
+"p01": {"rules": ["TRY-5"], "why": "A handler parameter must not use auto."},
+"p02": {"rules": ["TRY-5"], "why": "A handler parameter must not have a qualified name such as n::x."},
+"p03": {"rules": ["TRY-5"], "why": "A handler parameter must not have the type void."},
+"p04": {"rules": ["TRY-17"], "why": "A return statement is not valid in a handler of a constructor's function try block."},
+"p05": {"rules": ["TRY-14"], "why": "The outermost block of the handler declares the parameter v again."},
+"p06": {"rules": ["TRY-7"], "why": "The goto transfers control into the try block from outside it."},
+"p07": {"rules": ["TRY-14"], "why": "inside is declared in the try block, so the handler cannot see it."},
+"p08": {"rules": ["TRY-7"], "why": "The case label transfers control from the switch into the handler."},
+"p09": {"rules": ["TRY-5"], "why": "A handler parameter must not have a storage class such as static."},
+"p10": {"rules": ["TRY-5"], "why": "A handler parameter must not be a pointer to an incomplete class, and I is incomplete."},
+"p11": {"rules": ["TRY-14"], "why": "inside is declared in the try block, so it is not visible after the try block."},
+"p12": {"rules": ["TRY-5"], "why": "A handler parameter must not have an rvalue reference type."},
+"p13": {"rules": ["TRY-5"], "why": "A handler parameter must not be an abstract class by value."},
+"p14": {"rules": ["TRY-14"], "why": "The handler parameter v is visible only in its handler, and the program uses v after the try block."},
+"p15": {"rules": ["TRY-7"], "why": "The goto transfers control into the handler from outside it."},
+"p16": {"rules": ["TRY-5"], "why": "A handler parameter must not be a reference to an array of unknown bound."},
+"p17": {"rules": ["TRY-3"], "why": "The catch-all handler must be the last handler, and here catch (int) follows it."},
+"p18": {"rules": ["TRY-5"], "why": "A handler parameter must not be an incomplete class by value."},
+"p19": {"rules": ["TRY-16"], "why": "A try block must have at least one handler."}
+}

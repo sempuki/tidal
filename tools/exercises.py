@@ -19,8 +19,8 @@ The reader answers with a JSON object, one entry per program:
 `outcome` is one of the OUTCOMES below. `score` compares the answers
 with the key and prints a Markdown table of the wrong ones.
 
-`diagnose` takes the page's single-file tests that GCC is expected to
-reject and that carry a GCC error pattern. Each program comes with the
+`diagnose` takes the page's single-file tests that the specification and
+GCC both reject and that carry a GCC error pattern. Each program comes with the
 host g++ message that matches the pattern. The reader names the rule
 and writes a fixed program pNN-fix.cpp:
 
@@ -189,7 +189,10 @@ def diagnose(page: str, out: Path) -> int:
         test = run_tests.parse_test(TESTS / name)
         pattern = test.errors.get("gcc") or test.errors.get("")
         expect = test.overrides.get("gcc-host") or test.overrides.get("gcc") or test.default
-        if pattern and expect == "reject" and not test.sources and not test.flags:
+        # Only programs that the specification rejects. A program that only
+        # GCC rejects (an override) breaks no rule, so it has no answer.
+        if (pattern and expect == "reject" and test.default == "reject"
+                and not test.sources and not test.flags):
             chosen.append((name, test, pattern))
     if not chosen:
         print(f"no tests with a GCC error pattern for {page}")
