@@ -83,7 +83,7 @@ each item starts.
 ## Phase 5: consolidate, fill the object model, exercise
 
 Decision 0050 (provisional) adopts this phase from the second round of
-clean-room roadmaps (`reports/clean-room/roadmap-2/`).
+clean-room roadmaps (`reports/clean-room/roadmap-2/`). All items are done.
 
 | Item | Work | Prerequisites |
 |---|---|---|

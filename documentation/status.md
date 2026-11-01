@@ -144,7 +144,7 @@ Q-0026, Q-0044, Q-0115, Q-0125, Q-0177, Q-0181, Q-0206, Q-0212, Q-0213, Q-0238).
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 4421 of 5385 tests. The front end
+- The clean-room front end passes 4439 of 5408 tests. The front end
   has no preprocessor, so it rejects the valid tests that use
   `#include`.
   `tools/frontend_check.py` fails when a test that it passed no longer
@@ -177,16 +177,21 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, and
-0050). Phases 1 to 4 are drafted, and phase 5 is provisional. Next:
+0050). Phases 1 to 5 are done. Next:
 
-1. Phase 5, item FE: front-end round 9 on the pages since round 8
-   (templates, storage, language support), then templates in the
-   interpreter, run outcomes in the regression baseline, and a
-   `run-fail` test for every `undefined` rule.
-2. Phase 5, item E: Write suites for generic code, Predict batches for
-   the template pages, a Diagnose batch on missed rejects, and Propose
-   round 2 (X5 to X8).
-Items T0, C1, C2, F1, F2, F3, and L of phase 5 are done.
+1. Roadmap round 3. Clean-room views (programmer, implementer, editor,
+   clean-room writer, language designer) rank what comes after phase 5,
+   in `reports/clean-room/roadmap-3/`. A provisional decision then sets
+   phase 6.
+2. Follow-ups that no phase item holds:
+   - a Clang `-fsanitize=type` configuration for STG-18 and STG-23
+     (Clang 22 reports these accesses but does not stop the run),
+   - the copy-move triviality split, where Clang copies a union member
+     whose class has two copy constructors,
+   - a namespace-scope rule that a class and a variable can share a
+     name (`names.md`),
+   - the compiler-defect candidates Q-0015, Q-0023, Q-0026, Q-0044,
+     Q-0125, Q-0181, and Q-0206.
 
 Waiting on the maintainer:
 

@@ -203,6 +203,7 @@ pass	classes/constructors/deleted-dtor-sizeof.cpp
 pass	classes/constructors/deleted-dtor-temporary.cpp
 pass	classes/constructors/deleted-dtor-variable.cpp
 pass	classes/constructors/double-destroy-constant.cpp
+RUN-MISSED-UB	classes/constructors/double-destroy-sanitizer.cpp
 pass	classes/constructors/dtor-address.cpp
 pass	classes/constructors/dtor-call-via-alias.cpp
 pass	classes/constructors/dtor-call-wrong-type.cpp
@@ -816,6 +817,7 @@ MISSED-REJECT	classes/unions/narrowing-first-member.cpp
 pass	classes/unions/nontrivial-member-needs-construction.cpp
 pass	classes/unions/placement-new-activates.cpp
 unsupported	classes/unions/read-inactive-after-switch-constant.cpp
+pass	classes/unions/read-inactive-bool-sanitizer.cpp
 unsupported	classes/unions/read-inactive-constant.cpp
 pass	classes/unions/shared-storage.cpp
 unsupported	classes/unions/slot-array-constant.cpp
@@ -871,6 +873,7 @@ pass	classes/virtual/covariant-through-base-pointer.cpp
 MISSED-REJECT	classes/virtual/covariant-unrelated.cpp
 pass	classes/virtual/default-args-static-type.cpp
 pass	classes/virtual/delete-array-through-base-constant.cpp
+RUN-UNEXPECTED-UB	classes/virtual/delete-array-through-base-sanitizer.cpp
 pass	classes/virtual/delete-nonvirtual-warns.cpp
 pass	classes/virtual/derived-concrete.cpp
 pass	classes/virtual/derived-still-abstract.cpp
@@ -910,6 +913,7 @@ MISSED-REJECT	classes/virtual/hidden-virtual-warns.cpp
 MISSED-REJECT	classes/virtual/no-unique-final-overrider.cpp
 pass	classes/virtual/nonvirtual-base-two-overriders.cpp
 MISSED-REJECT	classes/virtual/nonvirtual-dtor-delete-constant.cpp
+RUN-MISSED-UB	classes/virtual/nonvirtual-dtor-delete-sanitizer.cpp
 pass	classes/virtual/object-call-no-dispatch.cpp
 pass	classes/virtual/override-both-deleted.cpp
 MISSED-REJECT	classes/virtual/override-deleted-mismatch.cpp
@@ -924,6 +928,7 @@ pass	classes/virtual/override-without-virtual-keyword.cpp
 pass	classes/virtual/polymorphic-class.cpp
 pass	classes/virtual/private-override.cpp
 pass	classes/virtual/pure-call-in-ctor-constant.cpp
+run-unsupported	classes/virtual/pure-call-in-ctor-sanitizer.cpp
 pass	classes/virtual/pure-defined-out-of-line.cpp
 pass	classes/virtual/pure-dtor-defined.cpp
 pass	classes/virtual/pure-dtor-needs-definition.cpp
@@ -1212,6 +1217,7 @@ pass	declarations/declarators/function-returning-array.cpp
 pass	declarations/declarators/function-returning-function.cpp
 pass	declarations/declarators/function-returning-pointers-ok.cpp
 pass	declarations/declarators/increment-const.cpp
+RUN-MISSED-UB	declarations/declarators/modify-const-object-sanitizer.cpp
 pass	declarations/declarators/modify-const-object-via-cast.cpp
 pass	declarations/declarators/modify-nonconst-object-via-cast.cpp
 pass	declarations/declarators/multidim-inner-bound.cpp
@@ -1437,6 +1443,7 @@ pass	declarations/functions/return-deduction/basic.cpp
 pass	declarations/functions/return-deduction/braced-return.cpp
 pass	declarations/functions/return-deduction/conflicting-returns.cpp
 pass	declarations/functions/return-deduction/decltype-auto-dangling.cpp
+RUN-UNEXPECTED-UB	declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp
 pass	declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp
 pass	declarations/functions/return-deduction/decltype-auto.cpp
 pass	declarations/functions/return-deduction/discarded-return-not-deduced.cpp
@@ -1591,6 +1598,7 @@ EDG-ONLY	declarations/initialization/references/null-dereference-bind-constant.c
 pass	declarations/initialization/references/parenthesized-list-aggregate.cpp
 pass	declarations/initialization/references/reference-member-not-extended.cpp
 pass	declarations/initialization/references/reference-multiple-values.cpp
+RUN-UNEXPECTED-UB	declarations/initialization/references/returned-reference-temporary-sanitizer.cpp
 pass	declarations/initialization/references/rvalue-ref-base-from-derived-lvalue.cpp
 pass	declarations/initialization/references/rvalue-ref-binds-rvalue.cpp
 pass	declarations/initialization/references/rvalue-ref-drops-const.cpp
@@ -1929,6 +1937,7 @@ pass	declarations/volatile/const-cast-removes.cpp
 pass	declarations/volatile/const-ref-volatile-no-temporary.cpp
 pass	declarations/volatile/const-volatile-external.cpp
 pass	declarations/volatile/constant-read-rejected.cpp
+EDG-ONLY	declarations/volatile/constant-read-through-plain.cpp
 MISSED-REJECT	declarations/volatile/copy-volatile-class-rejected.cpp
 pass	declarations/volatile/copy-volatile-scalar-ok.cpp
 pass	declarations/volatile/defaulted-comparison-volatile.cpp
@@ -2215,6 +2224,7 @@ pass	expressions/casts/const-cast-member-pointer.cpp
 pass	expressions/casts/const-cast-pointer.cpp
 pass	expressions/casts/const-cast-reference.cpp
 pass	expressions/casts/const-cast-value.cpp
+pass	expressions/casts/const-cast-write-const-object-sanitizer.cpp
 pass	expressions/casts/const-cast-write-const-object.cpp
 run-unsupported	expressions/casts/decay-copy-auto.cpp
 unsupported	expressions/casts/decay-copy-type.cpp
@@ -2350,6 +2360,7 @@ pass	expressions/comparison/three-way-no-library.cpp
 pass	expressions/comparison/three-way-nullptr-values.cpp
 EDG-ONLY	expressions/comparison/three-way-pointer-zero.cpp
 pass	expressions/comparison/three-way-precedence.cpp
+pass	expressions/comparison/three-way-result-copies-member.cpp
 pass	expressions/comparison/three-way-same-array.cpp
 pass	expressions/comparison/three-way-type.cpp
 pass	expressions/comparison/three-way-unrelated-pointers-constant.cpp
@@ -2720,6 +2731,7 @@ run-unsupported	expressions/member-pointers/derived-object.cpp
 pass	expressions/member-pointers/derived-to-base-implicit.cpp
 run-unsupported	expressions/member-pointers/derived-to-base-static-cast.cpp
 unsupported	expressions/member-pointers/dynamic-type-lacks-member-constant.cpp
+run-unsupported	expressions/member-pointers/dynamic-type-lacks-member-sanitizer.cpp
 MISSED-REJECT	expressions/member-pointers/explicit-object-not-member-pointer.cpp
 run-unsupported	expressions/member-pointers/explicit-object-ordinary-pointer.cpp
 MISSED-REJECT	expressions/member-pointers/form-bitfield.cpp
@@ -2736,6 +2748,7 @@ pass	expressions/member-pointers/mutable-direct-ok.cpp
 pass	expressions/member-pointers/mutable-through-pointer.cpp
 pass	expressions/member-pointers/no-conversion-to-ordinary-pointer.cpp
 pass	expressions/member-pointers/null-converts.cpp
+run-unsupported	expressions/member-pointers/null-data-member-sanitizer.cpp
 unsupported	expressions/member-pointers/null-use-constant.cpp
 run-unsupported	expressions/member-pointers/precedence.cpp
 pass	expressions/member-pointers/private-base-conversion.cpp
@@ -2932,6 +2945,7 @@ pass	expressions/postfix/call-explicit-constructor.cpp
 pass	expressions/postfix/call-incomplete-parameter.cpp
 pass	expressions/postfix/call-incomplete-return.cpp
 pass	expressions/postfix/call-non-function.cpp
+pass	expressions/postfix/call-null-pointer-sanitizer.cpp
 pass	expressions/postfix/call-null-pointer.cpp
 pass	expressions/postfix/call-object-pointer.cpp
 pass	expressions/postfix/call-result-category.cpp
@@ -3066,6 +3080,7 @@ pass	expressions/primary/string-escape-in-string.cpp
 pass	expressions/primary/string-index-constant.cpp
 pass	expressions/primary/string-lvalue.cpp
 pass	expressions/primary/string-modify-constant.cpp
+RUN-UNEXPECTED-UB	expressions/primary/string-modify-sanitizer.cpp
 pass	expressions/primary/string-raw-bad-delimiter.cpp
 pass	expressions/primary/string-raw-delimiter-backslash.cpp
 pass	expressions/primary/string-raw-delimiter-paren.cpp
@@ -3481,9 +3496,12 @@ unsupported	foundations/language-support/construct-at-self-declared.cpp
 run-unsupported	foundations/language-support/exception-classes-allocation.cpp
 run-unsupported	foundations/language-support/exception-classes-array-length.cpp
 RUN-WRONG-RESULT	foundations/language-support/exception-classes-bad-cast.cpp
+pass	foundations/language-support/initializer-list-auto-deduction.cpp
+pass	foundations/language-support/initializer-list-candidate-not-viable.cpp
 pass	foundations/language-support/initializer-list-missing.cpp
 MISSED-REJECT	foundations/language-support/initializer-list-no-members.cpp
 pass	foundations/language-support/initializer-list-not-template.cpp
+pass	foundations/language-support/initializer-list-parameter-not-needed.cpp
 unsupported	foundations/language-support/initializer-list-pointer-and-size.cpp
 unsupported	foundations/language-support/nothrow-tag-self-declared.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
@@ -3926,10 +3944,10 @@ FALSE-REJECT	foundations/overload-resolution/viable-constraints.cpp
 pass	foundations/overload-resolution/viable-count.cpp
 pass	foundations/overload-resolution/viable-sequence.cpp
 run-unsupported	foundations/storage/access-character-types.cpp
-run-unsupported	foundations/storage/access-signed-char.cpp
+pass	foundations/storage/access-signed-char.cpp
 run-unsupported	foundations/storage/access-signed-counterpart-and-cv.cpp
-run-unsupported	foundations/storage/access-unrelated-class.cpp
-run-unsupported	foundations/storage/access-unrelated-scalar.cpp
+pass	foundations/storage/access-unrelated-class.cpp
+pass	foundations/storage/access-unrelated-scalar.cpp
 pass	foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
 MISSED-REJECT	foundations/storage/array-size-exceeds-size-type.cpp
 run-unsupported	foundations/storage/assignment-by-destroy-and-construct.cpp
@@ -3950,10 +3968,11 @@ pass	foundations/storage/implicit-array-for-arithmetic.cpp
 pass	foundations/storage/implicit-lifetime-aggregate.cpp
 pass	foundations/storage/implicit-lifetime-trivial-class.cpp
 pass	foundations/storage/implicit-object-class-allocation-function.cpp
+run-unsupported	foundations/storage/implicit-object-first-use-member.cpp
 pass	foundations/storage/implicit-object-from-allocation-function.cpp
 run-unsupported	foundations/storage/implicit-object-in-byte-array.cpp
 pass	foundations/storage/implicit-objects-follow-later-use.cpp
-run-unsupported	foundations/storage/implicit-objects-no-set-works.cpp
+pass	foundations/storage/implicit-objects-no-set-works.cpp
 run-unsupported	foundations/storage/interconvertible-chain.cpp
 run-unsupported	foundations/storage/interconvertible-standard-layout-base.cpp
 run-unsupported	foundations/storage/interconvertible-union-member.cpp
@@ -3972,13 +3991,13 @@ pass	foundations/storage/placement-new-result-is-address.cpp
 pass	foundations/storage/placement-too-small-sanitizer.cpp
 unsupported	foundations/storage/replace-array-element-constant.cpp
 pass	foundations/storage/replace-base-ends-enclosing-sanitizer.cpp
-RUN-UNEXPECTED-UB	foundations/storage/replace-base-old-pointer.cpp
+pass	foundations/storage/replace-base-old-pointer.cpp
 unsupported	foundations/storage/replace-const-member-constant.cpp
 pass	foundations/storage/replace-object-with-const-member.cpp
 pass	foundations/storage/replace-other-type-old-name-sanitizer.cpp
 unsupported	foundations/storage/replace-through-reference-constant.cpp
 pass	foundations/storage/replace-variable-old-name.cpp
-RUN-UNEXPECTED-UB	foundations/storage/reuse-const-automatic-object.cpp
+pass	foundations/storage/reuse-const-automatic-object.cpp
 pass	foundations/storage/reuse-const-static-object-sanitizer.cpp
 pass	foundations/storage/reuse-does-not-call-destructor.cpp
 unsupported	foundations/storage/reuse-other-union-member-constant.cpp
@@ -4008,6 +4027,7 @@ pass	foundations/translation/main-wrong-parameter-types.cpp
 pass	foundations/translation/observable-volatile-kept-optimized.cpp
 pass	foundations/translation/undefined-at-link.cpp
 pass	foundations/translation/undefined-on-taken-path-only.cpp
+pass	foundations/translation/undefined-on-taken-path-sanitizer.cpp
 pass	foundations/translation/undefined-taints-whole-evaluation.cpp
 pass	foundations/translation/unit-sees-own-declarations-only.cpp
 pass	foundations/translation/units-translated-separately.cpp
@@ -4603,6 +4623,8 @@ pass	templates/constraints/alias-not-satisfied.cpp
 pass	templates/constraints/and-short-circuit-clause.cpp
 pass	templates/constraints/and-short-circuit.cpp
 pass	templates/constraints/atomic-not-bool-class.cpp
+pass	templates/constraints/atomic-not-bool-nondependent-clause.cpp
+pass	templates/constraints/atomic-not-bool-nondependent-concept.cpp
 pass	templates/constraints/atomic-not-bool-other-candidate.cpp
 pass	templates/constraints/atomic-not-bool-skipped.cpp
 pass	templates/constraints/atomic-not-bool.cpp
@@ -4655,6 +4677,7 @@ pass	templates/constraints/lambda-conversion.cpp
 MISSED-REJECT	templates/constraints/lambda-overload.cpp
 MISSED-REJECT	templates/constraints/lambda-redeclaration.cpp
 pass	templates/constraints/lookup-at-check.cpp
+pass	templates/constraints/mapping-different-argument-tokens.cpp
 FALSE-REJECT	templates/constraints/mapping-same-arguments.cpp
 EDG-ONLY	templates/constraints/mapping-unused-parameter-not-substituted.cpp
 EDG-ONLY	templates/constraints/mapping-unused-parameter.cpp
