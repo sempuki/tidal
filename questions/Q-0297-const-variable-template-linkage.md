@@ -37,6 +37,8 @@ specialization on every compiler that links.
 Yes; Clang and GCC 16 agree, GCC 14 differs (option 1). Every current compiler that links agrees, and the newer GCC
 changed from option 2 to option 1.
 
+The question stays open under decision 0051 (2026-11-01). EDG 7.0 does not link, so the newest EDG gives no result for the question.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

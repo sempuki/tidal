@@ -1,6 +1,6 @@
 # Q-0288: Can a requires expression inside a member function use a private member of the class?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-26, `tests/templates/concepts/requirement-access-member.cpp`
 
 ## Context
@@ -32,9 +32,11 @@ in its own context, but no compiler does so.
    the private member (Clang, GCC 16, EDG).
 2. The requirement is false (GCC 14).
 
-## Provisional answer
+## Answer
 
 Yes; every current compiler agrees, GCC 14 differs (option 1). Every current implementation agrees.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still gives `false`, and the test keeps its override for GCC 14.
 
 ## Opinions
 

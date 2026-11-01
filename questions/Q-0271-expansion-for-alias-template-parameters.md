@@ -1,6 +1,6 @@
 # Q-0271: Can a pack expansion give an argument to a parameter of an alias template that is not a pack?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PACK-11, `tests/templates/packs/expansion-to-alias-parameters.cpp`
 
 ## Context
@@ -29,11 +29,13 @@ treatment there looks unsettled.
 2. The expansion is valid, as for a class template, and the arguments
    are matched after substitution.
 
-## Provisional answer
+## Answer
 
 No; every compiler rejects (option 1). Every implementation rejects the expansion. An alias template
 is replaced by its type at the use, so the type needs each argument
 before the length of the pack is known.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. No older version differs. The doubt of the gap review (item 7) stays a ground for a contributor to reopen the question.
 
 ## Opinions
 

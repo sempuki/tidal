@@ -1,6 +1,6 @@
 # Q-0072: Can alignas apply to a function, a type alias, or a bit-field?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** ALN-2, `tests/declarations/alignment/on-function.cpp`, `on-typedef.cpp`, `on-alias-declaration.cpp`, `on-bitfield.cpp`
 
 ## Context
@@ -16,10 +16,12 @@ The four tests above, each with an override for GCC 14.
 1. `alignas` must not occur in these positions.
 2. `alignas` is valid there.
 
-## Provisional answer
+## Answer
 
 No; GCC 14's acceptance is fixed in GCC 16 (option 1). The newest version of every compiler in the matrix rejects
 all four. GCC 14 has a defect that GCC 16 fixes. The overrides for
 GCC 14 stay while GCC 14 is in the matrix.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still accepts all four, and the tests keep their overrides for GCC 14.
 
 ## Opinions

@@ -1,6 +1,6 @@
 # Q-0261: Are the constraints of a function template checked before its return type is formed?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-11, `tests/templates/constraints/before-function-type.cpp`
 
 ## Context
@@ -25,9 +25,11 @@ The test above. Every compiler accepts the same case with the class in a paramet
    (Clang 22, GCC, EDG).
 2. The return type comes first (Clang 18).
 
-## Provisional answer
+## Answer
 
 Yes; every current compiler agrees, Clang 18 differs (option 1). Every current implementation agrees.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the program, and the test keeps its override for Clang 18.
 
 ## Opinions
 

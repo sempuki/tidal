@@ -23,12 +23,12 @@ status, and the first sentence of its answer section.
 | [Q-0007](Q-0007-language-version.md) | Which language version does Tidal track, and how are newer features handled? | provisional | C++23, with newer features rejected under strict mode, for the proof of concept |
 | [Q-0008](Q-0008-similarity-thresholds.md) | Are the similarity thresholds (8-word run, 0.25 overlap) right? | provisional | Keep the thresholds (option 1) until reports from more sections show how many flags each setting produces |
 | [Q-0009](Q-0009-license.md) | Which license covers the specification, tests, and tools? | settled | Apache-2.0 with LLVM exception (option 1), added by the repository owner in `LICENSE.txt` |
-| [Q-0010](Q-0010-decltype-auto-braced-single.md) | Is `decltype(auto) x{e};` valid, deducing from `e`? | provisional | Yes, as all implementations do |
+| [Q-0010](Q-0010-decltype-auto-braced-single.md) | Is `decltype(auto) x{e};` valid, deducing from `e`? | settled | Yes, as all implementations do |
 | [Q-0011](Q-0011-missing-definition-class.md) | Is using an entity with no definition `no-diagnostic` or `reject`? | provisional | No-diagnostic |
 | [Q-0012](Q-0012-largest-array.md) | Should Tidal set a minimum for the largest array an implementation accepts? | provisional | No; the limit is implementation-defined |
 | [Q-0013](Q-0013-edg-uninitialized-array-element.md) | Does EDG accepting a read of an uninitialized array element during constant evaluation change INIT-1? | compiler defect | No; likely EDG defect |
 | [Q-0014](Q-0014-early-dynamic-initialization.md) | May an implementation perform dynamic initialization before the program starts? | provisional | Yes, unspecified |
-| [Q-0015](Q-0015-clang18-braced-structured-binding.md) | Is `auto [a, b]{arr};` valid when `arr` is an array? | compiler defect | Yes; Clang 18's rejection is fixed in later versions |
+| [Q-0015](Q-0015-clang18-braced-structured-binding.md) | Is `auto [a, b]{arr};` valid when `arr` is an array? | settled | Yes; Clang 18's rejection is fixed in later versions |
 | [Q-0016](Q-0016-constrained-structured-binding.md) | May a structured binding use a constrained `auto`? | compiler defect | No; likely EDG defect |
 | [Q-0017](Q-0017-enum-value-out-of-range.md) | Is converting a value outside an enumeration's range undefined? | provisional | Undefined |
 | [Q-0018](Q-0018-enum-no-standard-underlying-type.md) | What happens when no standard integer type holds all of an unscoped enumeration's values? | provisional | Impl-defined |
@@ -36,10 +36,10 @@ status, and the first sentence of its answer section.
 | [Q-0020](Q-0020-unimplemented-features.md) | How should tests record a compiler that doesn't implement a feature yet? | provisional | Per-compiler expectation naming this question |
 | [Q-0021](Q-0021-misplaced-standard-attribute.md) | Is a standard attribute applied to the wrong kind of entity rejected or ignored? | provisional | Rejected |
 | [Q-0022](Q-0022-func-outside-function.md) | Is `__func__` outside a function rejected? | provisional | Yes |
-| [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | compiler defect | Yes; GCC 14's acceptance is fixed in GCC 16 |
+| [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | settled | Yes; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0024](Q-0024-main-parameter-lists.md) | Which parameter lists may `main` have? | provisional | () and (int, char**) everywhere; others implementation-defined, including a first parameter of type `long` |
 | [Q-0025](Q-0025-constinit-placement.md) | Which declarations of a variable must carry `constinit`? | provisional | The initializing declaration, if any declaration does |
-| [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | compiler defect | No; GCC 14's acceptance is fixed in GCC 16 |
+| [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | settled | No; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0027](Q-0027-mixed-ref-qualifiers.md) | May a member function with a ref-qualifier be overloaded with one without? | provisional | No; the declarations are rejected |
 | [Q-0028](Q-0028-float-narrowing-out-of-range.md) | Is converting a floating value above the target's finite range implementation-defined or undefined? | provisional | Implementation-defined |
 | [Q-0029](Q-0029-chained-comparison.md) | Is a chained comparison such as `3 > 2 > 1` valid? | provisional | Valid; a warning is recommended |
@@ -85,7 +85,7 @@ status, and the first sentence of its answer section.
 | [Q-0069](Q-0069-alignas-weaker-than-natural.md) | Can alignas make an alignment weaker than the natural one? | provisional | No; the program is not valid |
 | [Q-0070](Q-0070-alignas-redeclaration-mismatch.md) | Must all declarations of a variable agree on alignas? | provisional | Yes; if a declaration has `alignas`, the definition must have the same alignment |
 | [Q-0071](Q-0071-several-alignas-on-class.md) | Which alignas applies when a class has several? | provisional | The strictest alignment |
-| [Q-0072](Q-0072-alignas-invalid-positions-gcc14.md) | Can alignas apply to a function, a type alias, or a bit-field? | compiler defect | No; GCC 14's acceptance is fixed in GCC 16 |
+| [Q-0072](Q-0072-alignas-invalid-positions-gcc14.md) | Can alignas apply to a function, a type alias, or a bit-field? | settled | No; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0073](Q-0073-alignas-on-enumeration.md) | Can alignas apply to an enumeration? | provisional | No; `alignas` must not apply to an enumeration |
 | [Q-0074](Q-0074-language-linkage-in-function-type.md) | Is language linkage part of a function type? | provisional | Implementation-defined |
 | [Q-0075](Q-0075-c-linkage-conflicts-global.md) | Can a name with C language linkage match a global variable? | provisional | No; the program is not valid |
@@ -114,7 +114,7 @@ status, and the first sentence of its answer section.
 | [Q-0098](Q-0098-range-for-data-member-begin.md) | Do data members named begin and end select the member form of a range-based for? | provisional | Yes; any member named begin or end counts |
 | [Q-0099](Q-0099-array-xvalue-subscript.md) | Is a subscript of an array xvalue an xvalue? | settled | Duplicate of Q-0034 |
 | [Q-0100](Q-0100-char-zero-null-pointer.md) | Is a character literal with value zero a null pointer constant? | provisional | No; only an integer literal with value zero is a null pointer constant |
-| [Q-0101](Q-0101-nullptr-logical-operand.md) | Can nullptr be an operand of a logical operator? | compiler defect | Yes; GCC 14's rejection is fixed in GCC 16 |
+| [Q-0101](Q-0101-nullptr-logical-operand.md) | Can nullptr be an operand of a logical operator? | settled | Yes; GCC 14's rejection is fixed in GCC 16 |
 | [Q-0102](Q-0102-conditional-zero-nullptr.md) | Does a conditional with the literal 0 and nullptr have the type of nullptr? | provisional | Yes; the result has the type of `nullptr` |
 | [Q-0103](Q-0103-relational-nullptr-type.md) | Can two values of the type of nullptr be compared with a relational operator? | provisional | No, as for two pointers to members |
 | [Q-0104](Q-0104-object-and-first-member-equal.md) | Do a class object and its first member compare equal through void pointers? | provisional | Yes; the pointers hold the same address |
@@ -138,7 +138,7 @@ status, and the first sentence of its answer section.
 | [Q-0122](Q-0122-empty-init-in-range-for.md) | May a range-based `for` have an empty init statement? | provisional | Yes; GCC rejects it |
 | [Q-0123](Q-0123-attribute-position-in-pointer-declarator.md) | Does an attribute in a pointer declarator come before or after the cv-qualifiers? | provisional | After; Clang differs |
 | [Q-0124](Q-0124-increment-narrow-signed-out-of-range.md) | Is `++` or `--` on a signed operand narrower than `int` defined when the new value does not fit the operand's type? | provisional | The step is defined and the value converts back; EDG differs |
-| [Q-0125](Q-0125-clang18-sized-deallocation.md) | Does Clang 18 omitting the sized deallocation functions change NEW-19? | compiler defect | No; Clang 22 declares them |
+| [Q-0125](Q-0125-clang18-sized-deallocation.md) | Does Clang 18 omitting the sized deallocation functions change NEW-19? | settled | No; Clang 22 declares them |
 | [Q-0126](Q-0126-const-object-union-member-value.md) | When does a union or an anonymous union give its members a value for a const object without an initializer? | provisional | A union gives a value when one variant member has a default member initializer, and a class of only anonymous unions is valid |
 | [Q-0127](Q-0127-include-guard-or-pragma-once.md) | Which mechanism does Tidal specify for including a header only once? | provisional | Both; the include guard is required and `#pragma once` is implementation-defined |
 | [Q-0128](Q-0128-internal-linkage-missing-definition.md) | Must an implementation diagnose a used function with internal linkage that has no definition? | provisional | No; the rule needs no diagnostic and a warning is recommended; GCC is silent when the only use is in an uncalled inline function |
@@ -182,7 +182,7 @@ status, and the first sentence of its answer section.
 | [Q-0166](Q-0166-braced-string-literal-reference-temporary.md) | Can one braced string literal initialize the temporary array of a reference? | provisional | Yes, under LIST-6; Clang and EDG agree, GCC rejects |
 | [Q-0167](Q-0167-braced-string-literal-char-array-overloads.md) | Does one braced string literal prefer a reference to a `char` array over one to an `unsigned char` array? | provisional | No, ambiguous; Clang and EDG agree, GCC picks `char` |
 | [Q-0168](Q-0168-alias-template-same-as-class-template.md) | Is an alias template that passes its parameters through the same template argument as its class template? | provisional | Unspecified; Clang says no, GCC and EDG say yes |
-| [Q-0169](Q-0169-template-template-argument-extra-defaults.md) | Can a template template argument have more parameters than the parameter, if the extra ones have defaults? | provisional | Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects |
+| [Q-0169](Q-0169-template-template-argument-extra-defaults.md) | Can a template template argument have more parameters than the parameter, if the extra ones have defaults? | settled | Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects |
 | [Q-0170](Q-0170-type-or-expression-for-constant-parameter.md) | Is `int()` a type or a value when the parameter is a constant parameter? | provisional | A type; Clang and GCC agree, EDG reads the value 0 |
 | [Q-0171](Q-0171-explicit-specialization-in-class.md) | Can an explicit specialization of a member template be declared in the class? | provisional | Yes; Clang and EDG agree, GCC rejects |
 | [Q-0172](Q-0172-function-partial-specialization-diagnosed-on-use.md) | Must an implementation reject a partial specialization of a function template that no call uses? | provisional | Yes; Clang and GCC agree, EDG rejects only at a use |
@@ -190,11 +190,11 @@ status, and the first sentence of its answer section.
 | [Q-0174](Q-0174-partial-specialization-not-more-specialized.md) | Is a partial specialization valid when it is not more specialized than the primary template? | provisional | No; Clang rejects, GCC and EDG accept |
 | [Q-0175](Q-0175-static-class-member-read-before-initialization.md) | Can a dynamic initializer read the zero in a member of a later class-type variable? | provisional | No; the read is undefined (OBJ-2) |
 | [Q-0176](Q-0176-volatile-initialization-observable.md) | Is the initialization of a volatile object an observable write? | provisional | Yes, for an initializer that runs at run time |
-| [Q-0177](Q-0177-attribute-before-base-and-after-new-bound.md) | Can an attribute specifier come before a base class and after the array bound of a `new` expression? | compiler defect | Yes; GCC 14 defect |
+| [Q-0177](Q-0177-attribute-before-base-and-after-new-bound.md) | Can an attribute specifier come before a base class and after the array bound of a `new` expression? | settled | Yes; GCC 14 defect |
 | [Q-0178](Q-0178-call-through-pointer-differing-in-noexcept.md) | Is a call through a function pointer whose type differs from the function only in `noexcept` undefined? | provisional | Yes, undefined |
 | [Q-0179](Q-0179-throw-in-noexcept-warning-scope.md) | Which throws in a non-throwing function should get a warning? | provisional | Those that no enclosing handler catches by static type; a rethrow needs `catch (...)` |
 | [Q-0180](Q-0180-dangling-reference-warnings.md) | Which dangling references should an implementation warn about? | provisional | A general recommended rule, tested on the `new` case |
-| [Q-0181](Q-0181-clang18-explicit-object-from-prvalue.md) | Does a class prvalue initialize a by-value explicit object parameter without a copy or move? | compiler defect | Yes; Clang 18's rejection is fixed in Clang 22 |
+| [Q-0181](Q-0181-clang18-explicit-object-from-prvalue.md) | Does a class prvalue initialize a by-value explicit object parameter without a copy or move? | settled | Yes; Clang 18's rejection is fixed in Clang 22 |
 | [Q-0182](Q-0182-evidence-reasons-for-implementation-choices.md) | May Evidence give the reason for an implementation's choice? | provisional | Only when a clean input states the reason |
 | [Q-0183](Q-0183-cost-model-for-proposals.md) | Should Tidal give proposals a way to state implementation cost? | provisional | No cost model for now; a proposal states cost in words |
 | [Q-0184](Q-0184-vendor-options-in-evidence.md) | Should Evidence record vendor options that change behavior? | provisional | Yes, when a test runs the compiler with the option |
@@ -219,7 +219,7 @@ status, and the first sentence of its answer section.
 | [Q-0203](Q-0203-thread-local-explicit-specialization-only.md) | Can an explicit specialization of a variable template be thread_local when the template is not? | provisional | Yes; Clang and GCC accept, EDG rejects |
 | [Q-0204](Q-0204-access-in-explicit-specialization-function-type.md) | Is a private type in the function type of an explicit specialization access-checked? | provisional | No; Clang and EDG accept, GCC rejects |
 | [Q-0205](Q-0205-explicit-specialization-member-enumeration.md) | Can a member enumeration of a class template have an explicit specialization? | provisional | Yes if the class template only declares it; Clang and EDG accept, GCC rejects under -pedantic-errors |
-| [Q-0206](Q-0206-clang18-member-template-explicit-primary.md) | Are partial specializations of a member template ignored when its primary is explicitly specialized for one class? | compiler defect | Yes; Clang 18's choice is fixed in Clang 22 |
+| [Q-0206](Q-0206-clang18-member-template-explicit-primary.md) | Are partial specializations of a member template ignored when its primary is explicitly specialized for one class? | settled | Yes; Clang 18's choice is fixed in Clang 22 |
 | [Q-0207](Q-0207-explicit-specialization-of-member-partial-specialization.md) | Does an explicit specialization of one member partial specialization keep the others? | provisional | Yes, and it is selected; Clang and EDG agree, GCC ignores it |
 | [Q-0208](Q-0208-noexcept-deduces-bool.md) | Does the noexcept of a function type give a value to a bool constant parameter? | provisional | Yes; Clang and GCC agree, EDG differs |
 | [Q-0209](Q-0209-placeholder-bound-type.md) | What type does a placeholder constant parameter get from an array bound? | provisional | The type of `sizeof`; Clang and EDG agree, GCC gives `int` |
@@ -274,7 +274,7 @@ status, and the first sentence of its answer section.
 | [Q-0258](Q-0258-virtual-function-trailing-clause.md) | Can a virtual function have a trailing requires clause? | provisional | No; Clang and EDG agree, GCC differs |
 | [Q-0259](Q-0259-requires-expression-parameter-default-and-ellipsis.md) | Can a parameter of a requires expression have a default argument, or the list end in an ellipsis? | provisional | No; Clang and EDG agree, GCC differs |
 | [Q-0260](Q-0260-trailing-clause-in-function-template.md) | Can a lambda or a member of a local class inside a function template have a trailing requires clause? | provisional | Yes; Clang and GCC agree, EDG differs |
-| [Q-0261](Q-0261-constraints-before-return-type.md) | Are the constraints of a function template checked before its return type is formed? | provisional | Yes; every current compiler agrees, Clang 18 differs |
+| [Q-0261](Q-0261-constraints-before-return-type.md) | Are the constraints of a function template checked before its return type is formed? | settled | Yes; every current compiler agrees, Clang 18 differs |
 | [Q-0262](Q-0262-order-of-placeholder-constraints.md) | Is the requires clause after the template parameter list checked before the constraints of placeholder parameters? | provisional | Yes; GCC and EDG agree, Clang differs |
 | [Q-0263](Q-0263-non-bool-atomic-constraint-skipped.md) | Is an atomic constraint whose type is never bool an error when a short circuit skips it? | provisional | Yes; Clang and EDG agree, GCC differs |
 | [Q-0264](Q-0264-satisfaction-changes-between-checks.md) | Does an implementation diagnose an atomic constraint whose result changes between two checks? | provisional | No diagnostic required; GCC 16 diagnoses |
@@ -283,8 +283,8 @@ status, and the first sentence of its answer section.
 | [Q-0267](Q-0267-constrained-friend-template-declaration.md) | Must a friend template whose constraint uses the enclosing class's template parameter be a definition? | provisional | Yes; Clang and GCC agree, EDG differs |
 | [Q-0268](Q-0268-constrained-friend-definitions-distinct.md) | Are the constrained friend definitions of two class specializations two functions? | provisional | Yes; Clang and GCC agree, EDG differs |
 | [Q-0269](Q-0269-placeholder-parameter-redeclares-template.md) | Does a function with a placeholder parameter redeclare the function template with the same invented head? | provisional | Yes, following DED-34 and TPL-20; Clang agrees, GCC and EDG differ |
-| [Q-0270](Q-0270-attribute-on-concept.md) | Can a concept definition have an attribute after the concept's name? | provisional | Yes; every current compiler agrees, Clang 18 differs |
-| [Q-0271](Q-0271-expansion-for-alias-template-parameters.md) | Can a pack expansion give an argument to a parameter of an alias template that is not a pack? | provisional | No; every compiler rejects |
+| [Q-0270](Q-0270-attribute-on-concept.md) | Can a concept definition have an attribute after the concept's name? | settled | Yes; every current compiler agrees, Clang 18 differs |
+| [Q-0271](Q-0271-expansion-for-alias-template-parameters.md) | Can a pack expansion give an argument to a parameter of an alias template that is not a pack? | settled | No; every compiler rejects |
 | [Q-0272](Q-0272-expansion-for-concept-parameters.md) | Can a pack expansion give an argument to a parameter of a concept that is not a pack? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0273](Q-0273-expansion-before-end-outside-a-call.md) | How does a list with an expansion before its end take part in deduction outside a call? | provisional | Non-deduced; the partial specialization is rejected; Clang agrees, GCC and EDG differ |
 | [Q-0274](Q-0274-using-declaration-empty-pack-name.md) | What does a name mean that finds an expanded using-declarator when the pack is empty? | provisional | Not valid, no diagnostic required; GCC and EDG accept, Clang rejects |
@@ -301,10 +301,10 @@ status, and the first sentence of its answer section.
 | [Q-0285](Q-0285-type-constraints-on-packs-ordered.md) | Are two variadic templates ordered by the type constraints on their packs? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0286](Q-0286-constrained-placeholder-structured-binding.md) | Can a structured binding declaration have a constrained placeholder? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0287](Q-0287-compound-requirement-step-order.md) | In a compound requirement, are the arguments of the type constraint substituted only after the expression and the `noexcept` test hold? | provisional | Yes, and unused extra arguments are substituted; EDG agrees, Clang and GCC each differ in one case |
-| [Q-0288](Q-0288-requirement-access-inside-member.md) | Can a requires expression inside a member function use a private member of the class? | provisional | Yes; every current compiler agrees, GCC 14 differs |
-| [Q-0289](Q-0289-nested-requirement-evaluates-parameter.md) | Is a nested requirement that evaluates a parameter of the requires expression an error? | provisional | Yes; every current compiler agrees, Clang 18 differs |
+| [Q-0288](Q-0288-requirement-access-inside-member.md) | Can a requires expression inside a member function use a private member of the class? | settled | Yes; every current compiler agrees, GCC 14 differs |
+| [Q-0289](Q-0289-nested-requirement-evaluates-parameter.md) | Is a nested requirement that evaluates a parameter of the requires expression an error? | settled | Yes; every current compiler agrees, Clang 18 differs |
 | [Q-0290](Q-0290-requires-expression-void-parameter-list.md) | Does `(void)` give a requires expression no parameters inside a template? | provisional | Yes; GCC and EDG agree, Clang differs |
-| [Q-0291](Q-0291-explicit-instantiation-unsatisfied-member.md) | Can a program explicitly instantiate a member function whose constraints fail for the class's arguments? | provisional | No; every current compiler agrees, Clang 18 differs |
+| [Q-0291](Q-0291-explicit-instantiation-unsatisfied-member.md) | Can a program explicitly instantiate a member function whose constraints fail for the class's arguments? | settled | No; every current compiler agrees, Clang 18 differs |
 | [Q-0292](Q-0292-partial-specialization-repeats-primary-not-more-constrained.md) | Can a partial specialization repeat the primary template's parameters when it is not more constrained? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0293](Q-0293-constraints-templates-differing-in-ellipsis.md) | Do constraints decide between two templates that differ only in an ellipsis? | provisional | Yes, the ellipsis does not count for templates (ORD-13); Clang and EDG agree, GCC differs |
 | [Q-0294](Q-0294-braced-list-model.md) | How does a braced list bind a reference, initialize an array, and form a conversion sequence? | provisional | The table of REF-P3: direct, temporary, or none; 14 child questions keep each split |
@@ -313,7 +313,7 @@ status, and the first sentence of its answer section.
 | [Q-0297](Q-0297-const-variable-template-linkage.md) | Does a `const` variable template have one object for each specialization across translation units? | provisional | Yes; Clang and GCC 16 agree, GCC 14 differs |
 | [Q-0298](Q-0298-pointer-difference-beyond-ptrdiff.md) | How do implementations treat a pointer difference that does not fit its type? | provisional | Undefined (ADD-18); EDG rejects positions past the largest difference |
 | [Q-0299](Q-0299-alignment-enumeration-shape.md) | Must an implementation reject a declaration of `std::align_val_t` with another shape? | provisional | Yes, reject (LSUP-5); GCC and EDG reject, Clang accepts |
-| [Q-0300](Q-0300-aligned-form-for-ordinary-type.md) | Does a `new` expression for a type of ordinary alignment fall back to an aligned allocation function? | provisional | No; there is no reverse step, and the program is rejected (NEW-30, option 1) |
+| [Q-0300](Q-0300-aligned-form-for-ordinary-type.md) | Does a `new` expression for a type of ordinary alignment fall back to an aligned allocation function? | settled | No; there is no reverse step, and the program is rejected (NEW-30, option 1) |
 | [Q-0301](Q-0301-erroneous-array-bound.md) | What does a `new` expression do with an erroneous run-time array bound? | provisional | No allocation call, throws `std::bad_array_new_length` (NEW-35); Clang throws `std::bad_alloc` from the allocation function, GCC allocates first for too few elements |
 | [Q-0302](Q-0302-erroneous-bound-non-throwing.md) | Does an erroneous array bound give a null pointer when the allocation function is non-throwing? | provisional | Yes (NEW-36); Clang agrees, GCC throws |
 | [Q-0303](Q-0303-nothrow-new-constant-evaluation.md) | Can constant evaluation use a `new` expression with the nothrow tag? | provisional | Yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject |
@@ -321,11 +321,11 @@ status, and the first sentence of its answer section.
 | [Q-0305](Q-0305-char-array-hosting.md) | Does an array of plain `char` host an object created in it? | provisional | No; only arrays of `unsigned char` and `std::byte` host objects (STG-4, option 1) |
 | [Q-0306](Q-0306-signed-char-access.md) | Can a program read or write another object through a `signed char` glvalue? | provisional | No; `signed char` is not an allowed type, and the access is undefined (STG-23, option 1) |
 | [Q-0307](Q-0307-constant-evaluation-replacement.md) | Must constant evaluation reject a use of an old pointer after a replacement that STG-9 does not allow? | provisional | Yes, undefined (STG-19, STG-20); every constant evaluator in the matrix accepts |
-| [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | compiler defect | Yes (STG-1); Clang 18 accepts |
+| [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | settled | Yes (STG-1); Clang 18 accepts |
 | [Q-0309](Q-0309-union-member-read-after-destructor-constant.md) | Must constant evaluation reject a read of a union member after an explicit destructor call ends it? | compiler defect | Yes, undefined (UNI-14, OBJ-2); GCC 16 accepts |
 | [Q-0310](Q-0310-constexpr-function-first-point.md) | Which point of instantiation does a constexpr function specialization use outside constant evaluation? | provisional | Either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point |
 | [Q-0311](Q-0311-adl-template-id-argument.md) | Does an argument that is a template-id for a function template add the namespaces of its template arguments? | provisional | Yes; a template-id adds what each type template argument adds (NAM-27, option 1), as GCC does |
-| [Q-0312](Q-0312-token-sequences-no-production-accepts.md) | Should the specification list token sequences that no production accepts, such as `for constexpr`? | open | No; the grammar stays the only statement (option 1), and a list of such forms can live in the roadmap |
+| [Q-0312](Q-0312-token-sequences-no-production-accepts.md) | Should the specification list token sequences that no production accepts, such as `for constexpr`? | open | The grammar is the statement, and TR-12 gives its effect |
 | [Q-0313](Q-0313-scoped-enumeration-integral-operand.md) | Can an enumerator of a scoped enumeration give the operand of `alignas`, the width of a bit-field, or the size in an array `new`? | provisional | No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` |
 | [Q-0314](Q-0314-class-operand-integral-constant.md) | Can a constant of class type that converts to an integer give the operand of `alignas` or the width of a bit-field? | provisional | Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects |
 | [Q-0315](Q-0315-template-argument-use.md) | Does a constant template argument use the variable or function that it names? | provisional | Yes (ODR-3); Clang reports an undefined internal function, GCC does not |

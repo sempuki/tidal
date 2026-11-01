@@ -1,6 +1,6 @@
 # Q-0270: Can a concept definition have an attribute after the concept's name?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-3, `tests/templates/concepts/attribute.cpp`
 
 ## Context
@@ -21,9 +21,11 @@ The test above.
 1. Valid (every current implementation).
 2. Not valid (Clang 18).
 
-## Provisional answer
+## Answer
 
 Yes; every current compiler agrees, Clang 18 differs (option 1). Every current implementation agrees.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the attribute, and the test keeps its override for Clang 18.
 
 ## Opinions
 

@@ -34,6 +34,8 @@ type is a specialization of one, and predicts a rejection.
 Yes; every compiler accepts (option 1). Every implementation deduces, and the specification follows
 the behavior that implementations share.
 
+The question stays open under decision 0051 (2026-11-01). Every newest version accepts both forms, but the gap review (item 20) objects to the answer and predicts a rejection.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

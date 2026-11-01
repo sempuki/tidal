@@ -31,6 +31,8 @@ no-diagnostic rule for points that differ (INST-32).
 
 Yes; every compiler rejects (option 1). Every compiler rejects, so a `reject` rule matches every implementation. Option 2 also allows every result, and a contributor can argue for it with the gap review.
 
+The question stays open under decision 0051 (2026-11-01). Every compiler rejects, and a rejection also fits option 2, so the compilers do not separate the options. The gap review (item 31) reads the case against option 1.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

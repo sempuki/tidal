@@ -1,7 +1,7 @@
 // tidal-rules: LOOP-3
 // tidal-expect: run
 // tidal-expect-gcc-14: run-fail
-// tidal-note: Gap review 2026-10-30. Q-0044. GCC 14 destroys the for condition variable before the iteration expression; GCC 16, Clang, and EDG after it.
+// tidal-note: Gap review 2026-10-30. Q-0044. GCC 14 destroys the for condition variable before the iteration expression; GCC 16 and Clang 22 after it. EDG does not link this test. In constant evaluation EDG 7.0 destroys the variable before the body (Q-0044, Evidence).
 char log[16];
 int pos = 0;
 struct Flag {

@@ -1,6 +1,6 @@
 # Q-0177: Can an attribute specifier come before a base class and after the array bound of a `new` expression?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** ATTR-19
 
 ## Context
@@ -28,10 +28,12 @@ Every compiler accepts the other positions of ATTR-19.
 2. Both positions are not valid. Clang, EDG, and GCC 16 have the same
    extension.
 
-## Provisional answer
+## Answer
 
 Yes; GCC 14 defect (option 1). Every other compiler in the matrix accepts both positions,
 including the newer GCC.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still rejects both positions, and the test keeps its override for GCC 14.
 
 ## Opinions
 

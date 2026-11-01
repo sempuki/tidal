@@ -1,6 +1,6 @@
 # Q-0101: Can nullptr be an operand of a logical operator?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** LOG-12, `tests/expressions/logical/nullptr-operand.cpp`
 
 ## Context
@@ -18,10 +18,12 @@ GCC 14.
 
 2. The operand is not valid.
 
-## Provisional answer
+## Answer
 
 Yes; GCC 14's rejection is fixed in GCC 16 (option 1). The newest version of every compiler in the matrix accepts
 the operand. GCC 14 has a defect that GCC 16 fixes. The override for
 GCC 14 stays while GCC 14 is in the matrix.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still rejects both expressions, and the test keeps its override for GCC 14.
 
 ## Opinions

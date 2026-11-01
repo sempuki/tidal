@@ -298,7 +298,7 @@ All eight compilers agree on 51 of 55 tests. The results are in
   reports an empty list of names as a pedantic diagnostic.
 - **SB-7, braced array initializer.** Clang 18.1.3 rejects
   `auto [r, s]{a};` when `a` is an array. Clang 22, GCC, and EDG accept
-  the declaration. The provisional answer is that the declaration is
+  the declaration. The settled answer is that the declaration is
   valid. See {question}`Q-0015`.
 - **SB-15, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
   Clang and GCC reject the declaration. The provisional answer is that

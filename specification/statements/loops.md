@@ -166,8 +166,9 @@ do {} while (int x = 0);      // rejected: do needs an expression
 The results are in `tests/RESULTS.md`.
 
 - LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
-  expression. GCC 16, Clang, and EDG destroy the variable after
-  ({question}`Q-0044`).
+  expression. GCC 16 and Clang destroy the variable after. EDG does not
+  run the test. During constant evaluation EDG destroys the variable
+  before the body ({question}`Q-0044`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

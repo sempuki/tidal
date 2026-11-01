@@ -1,6 +1,6 @@
 # Q-0206: Are partial specializations of a member template ignored when its primary is explicitly specialized for one class?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** TSP-21
 
 ## Context
@@ -28,10 +28,12 @@ with an override for Clang 18.
    Clang 18).
 2. The partial specializations still apply (Clang 18).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 18's choice is fixed in Clang 22 (option 1). Clang 22 agrees with GCC and EDG, so the Clang 18 result is a
 defect that a later Clang fixes.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still uses the pointer partial specialization, and the test keeps its override for Clang 18.
 
 ## Opinions
 

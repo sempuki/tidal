@@ -47,6 +47,8 @@ implementations share. The form with `template` follows the same
 answer, which GCC and EDG give. The question keeps both readings open
 for contributors.
 
+The question stays open under decision 0051 (2026-11-01). Clang 22 rejects the form with the keyword `template`, and GCC 16 and EDG 7.0 accept it, so two families disagree.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

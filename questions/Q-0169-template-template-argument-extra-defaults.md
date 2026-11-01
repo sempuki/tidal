@@ -1,6 +1,6 @@
 # Q-0169: Can a template template argument have more parameters than the parameter, if the extra ones have defaults?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TARG-17
 
 ## Context
@@ -28,11 +28,13 @@ compiler.
    accepts is valid for the argument (Clang 22, GCC, EDG).
 2. The parameter lists must match exactly (Clang 18).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects (option 1). Every newer compiler accepts the argument, and option 1 also
 explains why a parameter with a pack accepts a template with fixed
 parameters.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the argument, and the test keeps its override for Clang 18.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0308: Must an implementation reject a class whose size does not fit in `std::size_t`?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** STG-1, `tests/foundations/storage/class-size-exceeds-size-type.cpp`
 
 ## Context
@@ -28,10 +28,12 @@ compiler (`array-size-exceeds-size-type.cpp`, DCL-10).
 2. The size limit for classes is an implementation limit with no
    required diagnostic.
 
-## Provisional answer
+## Answer
 
 Yes (STG-1); Clang 18 accepts (option 1). Every current compiler rejects the program, and the reduced
 size of Clang 18 is not the size of the class.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still accepts the class, and the test keeps its override for Clang 18. GCC 16 rejects the program at `sizeof` and accepts the class definition.
 
 ## Opinions
 

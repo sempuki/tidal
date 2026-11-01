@@ -1,6 +1,6 @@
 # Q-0300: Does a `new` expression for a type of ordinary alignment fall back to an aligned allocation function?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NEW-29, NEW-30, `tests/expressions/new-delete/aligned-form-only-for-ordinary-type.cpp`
 
 ## Context
@@ -29,9 +29,11 @@ EDG says the function "cannot be called".
    the matrix supports it in C++23 mode. The inventory may describe a
    later version of the language (Q-0007).
 
-## Provisional answer
+## Answer
 
 No; there is no reverse step, and the program is rejected (NEW-30, option 1). Every implementation in the matrix behaves this way.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. No older version differs.
 
 ## Opinions
 

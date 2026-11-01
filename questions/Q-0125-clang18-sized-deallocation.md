@@ -1,6 +1,6 @@
 # Q-0125: Does Clang 18 omitting the sized deallocation functions change NEW-19?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** NEW-19, `tests/expressions/new-delete/global-functions-by-name.cpp`, `tests/expressions/new-delete/aligned-forms-by-name.cpp`
 
 ## Context
@@ -22,9 +22,11 @@ forms unless a flag asks for them.
    the other compilers.
 2. Leave the sized forms out of NEW-19.
 
-## Provisional answer
+## Answer
 
 No; Clang 22 declares them (option 1). The newest version of every implementation in the matrix
 declares the sized forms.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the calls of the sized forms, and the tests keep their overrides for Clang 18.
 
 ## Opinions

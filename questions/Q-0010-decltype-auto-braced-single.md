@@ -1,6 +1,6 @@
 # Q-0010: Is `decltype(auto) x{e};` valid, deducing from `e`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** AUTO-11, `tests/declarations/auto/decltype-auto-braced.cpp`
 
 ## Context
@@ -26,8 +26,10 @@ reject the multiple-element form.
 2. Rejected. Programs using it today would break on a conforming
    implementation.
 
-## Provisional answer
+## Answer
 
 Yes, as all implementations do (option 1). Tidal describes what implementations do, and they agree.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. No older version differs.
 
 ## Opinions

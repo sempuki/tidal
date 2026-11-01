@@ -1,6 +1,6 @@
 # Q-0015: Is `auto [a, b]{arr};` valid when `arr` is an array?
 
-**Status:** compiler defect
+**Status:** settled
 **Affects:** SB-7, `tests/declarations/structured-bindings/initializer-braces.cpp`
 
 ## Context
@@ -21,9 +21,11 @@ compilers accept the `=` and parenthesized forms.
 1. Valid. Clang 18's rejection is a defect fixed in a later Clang.
 2. Implementation-defined.
 
-## Provisional answer
+## Answer
 
 Yes; Clang 18's rejection is fixed in later versions (option 1). The newer version of the same implementation and both other
 implementations accept the braced form.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the braced form, and the test keeps its override for Clang 18.
 
 ## Opinions

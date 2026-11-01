@@ -1,6 +1,6 @@
 # Q-0289: Is a nested requirement that evaluates a parameter of the requires expression an error?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-35, CNS-9, `tests/templates/concepts/nested-requirement-parameter-evaluated.cpp`
 
 ## Context
@@ -28,9 +28,11 @@ concepts and constraints (item 22) expects the rejection.
    expression (CNS-9).
 2. The requirement does not hold (Clang 18).
 
-## Provisional answer
+## Answer
 
 Yes; every current compiler agrees, Clang 18 differs (option 1). Every current implementation agrees.
+
+Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still accepts the program and gives `false`, and the test keeps its override for Clang 18.
 
 ## Opinions
 

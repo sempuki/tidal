@@ -36,6 +36,8 @@ The test above. A first version of the test expected the copy into
 In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang (option 1). GCC 14 and GCC 16 differ, and option 1 allows both. The test
 accepts every order.
 
+The question stays open under decision 0051 (2026-11-01). Clang 22 and GCC 16 both make the copy into `self` first, which both options allow. Only GCC 14 separates the options, so the newest versions give no ground to settle the answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
