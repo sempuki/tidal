@@ -1,0 +1,923 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-30"
+  ],
+  "why": "Plain has ordinary alignment, so the expression needs operator new(size), and the class only offers an aligned form, which is not tried in its place."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-7"
+  ],
+  "why": "new cannot create an abstract class."
+ },
+ "p03": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-26",
+   "NEW-19",
+   "NEW-40"
+  ],
+  "why": "The aligned calls by name pair correctly, but two calls use sized forms, and Clang 18 does not declare the sized forms (Q-0125); Clang 18 rejects and the others run."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-11"
+  ],
+  "why": "S has no default constructor and the array has no initializers."
+ },
+ "p05": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35",
+   "LSUP-8"
+  ],
+  "why": "GCC throws std::bad_array_new_length for the negative bound and all three catches succeed; as I read Q-0301, Clang instead passes an impossible size and the library throws std::bad_alloc, so the first try returns 2."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "label does not convert to arena&, the parameter of the only placement form."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-31",
+   "NEW-19",
+   "LSUP-6"
+  ],
+  "why": "The nothrow forms are noexcept, the small requests succeed, and the huge request returns null."
+ },
+ "p08": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-23"
+  ],
+  "why": "A function and a template both match the placement form; GCC calls the function and returns 0, and Clang calls neither and returns 10 (Q-0220)."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "The first bound can be a run-time value and the result points to an array of 3 ints."
+ },
+ "p10": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-2",
+   "NEW-17"
+  ],
+  "why": "A scoped enumeration bound: Clang and EDG reject it and GCC converts it and runs (Q-0313)."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-11",
+   "NEW-37"
+  ],
+  "why": "During constant evaluation a call of ::operator new by name is valid only inside std::allocator, and this allocator is in the namespace pool."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-33",
+   "NEW-10"
+  ],
+  "why": "The non-allocating array form places each array exactly at buffer, with no extra storage."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-10"
+  ],
+  "why": "The type can be in parentheses, so new (int)(4) and new (int (*)()) are valid."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "An array new needs an operator new[] placement form, and only operator new is declared."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-25"
+  ],
+  "why": "The deallocation function for a throwing constructor is private."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-37"
+  ],
+  "why": "A placement form defined by the program is not valid during constant evaluation."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-7"
+  ],
+  "why": "new cannot create a reference."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-13"
+  ],
+  "why": "new S uses the class function once and ::new S uses the global one, so the pointers differ."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-4"
+  ],
+  "why": "Deleting a null pointer does nothing, also during constant evaluation."
+ },
+ "p20": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-40"
+  ],
+  "why": "The unaligned delete frees storage from the aligned form, and the address sanitizer stops this mismatch."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "The placement argument converts to view through its constructor, so the form is accepted and sets used."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-17"
+  ],
+  "why": "The constant bound makes the array too large for the type of sizeof."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-17"
+  ],
+  "why": "With no bound, an initializer must give the number of elements."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-6"
+  ],
+  "why": "The object made during constant evaluation is never deleted."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-39",
+   "NEW-35"
+  ],
+  "why": "make(2) has three initializers for two elements, an erroneous bound during constant evaluation."
+ },
+ "p26": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-35"
+  ],
+  "why": "GCC calls the allocation function before throwing, so it returns 2, and Clang's oversized request makes the function throw std::bad_alloc, so it returns 3 (Q-0301)."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "Missing initializers give 0 and () value-initializes, so every check holds."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-8"
+  ],
+  "why": "Deleting a pointer to an incomplete class is valid."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-12",
+   "NEW-21"
+  ],
+  "why": "Allocation happens before the argument throws, and the class operator delete then frees it."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-25"
+  ],
+  "why": "The deallocation function must be accessible also when the initialization cannot throw."
+ },
+ "p31": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-8"
+  ],
+  "why": "Deleting void*: GCC accepts with a warning and Clang and EDG reject (Q-0035)."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28",
+   "NEW-27"
+  ],
+  "why": "Only the types above the default alignment get the alignment argument, placed before the placement argument, so each form number matches."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-33"
+  ],
+  "why": "The non-allocating form builds each object at buffer."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-23"
+  ],
+  "why": "The search finds the placement delete in the base class, and its parameters match, so freed is 1."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "No placement form is declared, so new (&x) int is not valid."
+ },
+ "p36": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-40"
+  ],
+  "why": "operator delete frees storage from operator new[], and the address sanitizer stops the mismatch."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-37",
+   "NEW-6"
+  ],
+  "why": "An over-aligned type is accepted in constant evaluation, and both objects are deleted."
+ },
+ "p38": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-25"
+  ],
+  "why": "The matching placement delete is deleted; Clang and EDG reject and GCC accepts (Q-0221)."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-5",
+   "CE-9"
+  ],
+  "why": "Deleting a pointer that new did not give is undefined, so constant evaluation rejects it."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-25",
+   "NEW-22"
+  ],
+  "why": "The matching placement delete has the shape of a usual sized form, which is not allowed."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-12",
+   "NEW-18"
+  ],
+  "why": "The placement argument and bound run in either order, and the allocation function runs after both."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "Two placement arguments do not fit a form with one parameter after the size."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23",
+   "NEW-24"
+  ],
+  "why": "No delete has an int parameter after the pointer, so no deallocation function is called and freed stays 0."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-5",
+   "CE-9"
+  ],
+  "why": "delete[] of a single object is undefined, so constant evaluation rejects it."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-7"
+  ],
+  "why": "new cannot create void."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "With no bound, the initializer gives three elements."
+ },
+ "p47": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-22",
+   "NEW-24"
+  ],
+  "why": "The search finds a delete in the class but no usual form there, and the global forms are not used in its place, so freed stays 0."
+ },
+ "p48": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-5",
+   "NEW-P2"
+  ],
+  "why": "The implicit copy shares the pointer, both destructors delete it, and the address sanitizer stops the second delete."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23"
+  ],
+  "why": "The function is chosen over the template, so the template body with the failing assertion is not instantiated (Q-0220)."
+ },
+ "p50": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-37"
+  ],
+  "why": "The nothrow forms during constant evaluation: Clang 18, Clang 22, and GCC 16 accept, and GCC 14 and EDG reject (Q-0303)."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "A run-time bound of 0 gives a non-null pointer."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-3",
+   "CE-9"
+  ],
+  "why": "Reading the object before any write is undefined, so constant evaluation rejects it."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-17"
+  ],
+  "why": "A constant bound must not be negative."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28",
+   "NEW-22"
+  ],
+  "why": "The over-aligned delete passes the alignment to either the unsized or the sized aligned form, and both cases pass."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-10",
+   "NEW-13"
+  ],
+  "why": "The placement argument reaches the global placement form and Pool uses its own operator new."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-16"
+  ],
+  "why": "auto cannot be the element type of an array in new."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-9"
+  ],
+  "why": "delete[] destroys the elements from last to first."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-31"
+  ],
+  "why": "A noexcept allocation function that returns null makes the expression give null without constructing anything."
+ },
+ "p59": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-22"
+  ],
+  "why": "The class declares one usual form, the sized one, so that form is called."
+ },
+ "p60": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "A floating bound 2.0: GCC rejects, and Clang 22 and EDG accept and the program runs (Q-0036)."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-11"
+  ],
+  "why": "A const scalar is valid with an initializer."
+ },
+ "p62": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-5"
+  ],
+  "why": "The second delete of the same object is undefined, and the address sanitizer stops it."
+ },
+ "p63": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-27"
+  ],
+  "why": "With -m32 the default new alignment is 8 on Clang and 16 on GCC and EDG, so only Clang accepts."
+ },
+ "p64": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-25"
+  ],
+  "why": "The usual delete is deleted; Clang and EDG reject and GCC accepts (Q-0221)."
+ },
+ "p65": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28",
+   "NEW-26"
+  ],
+  "why": "An over-aligned type gets storage aligned to 64 from the aligned form."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-19",
+   "NEW-26"
+  ],
+  "why": "The aligned operator new forms are potentially throwing and the operator delete forms are non-throwing."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-37",
+   "LSUP-10"
+  ],
+  "why": "A placement new inside a construct_at outside the std namespace is not valid during constant evaluation."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23"
+  ],
+  "why": "The defaulted second int parameter counts, so delete(void*, int, int) matches."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-37"
+  ],
+  "why": "A class's own operator new is not valid during constant evaluation."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-17"
+  ],
+  "why": "The initializer has more elements than the constant bound."
+ },
+ "p71": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-23"
+  ],
+  "why": "The class declares no operator delete, so the global placement delete with Tag is found and matches."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-27"
+  ],
+  "why": "The default new alignment on x86-64 is 16."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "A run-time bound works and the last element is n - 1."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-11",
+   "NEW-17"
+  ],
+  "why": "The second bound is not a constant."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-34"
+  ],
+  "why": "The array may start after extra storage, but it lies inside the requested block, which is large enough."
+ },
+ "p76": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-19",
+   "NEW-40"
+  ],
+  "why": "The pairs are correct, but two calls use sized forms, which Clang 18 does not declare (Q-0125); Clang 18 rejects and the others run."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23"
+  ],
+  "why": "delete(void*, int, char) has the same extra parameters as the allocation."
+ },
+ "p78": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-41"
+  ],
+  "why": "Calls by name of the global deallocation functions with null do nothing, and no sanitizer reports them."
+ },
+ "p79": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35"
+  ],
+  "why": "GCC throws std::bad_array_new_length without a call and returns 0; as I read Q-0301, Clang passes an impossible size and the function throws std::bad_alloc, so it returns 3."
+ },
+ "p80": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-14"
+  ],
+  "why": "The implementation may skip the allocation, and the program accepts 0 or 1 calls."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-11"
+  ],
+  "why": "A const scalar needs an initializer."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-22"
+  ],
+  "why": "The class declares both usual forms, so the one-parameter form is called."
+ },
+ "p83": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-25"
+  ],
+  "why": "The usual delete is deleted and the constructor throws; Clang and EDG reject and GCC accepts (Q-0221)."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-16"
+  ],
+  "why": "new auto needs an initializer."
+ },
+ "p85": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-15"
+  ],
+  "why": "The class converts to int* through one non-explicit conversion function."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-16"
+  ],
+  "why": "new auto needs exactly one initializer."
+ },
+ "p87": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-6",
+   "NEW-3"
+  ],
+  "why": "The object is written before it is read and deleted before the evaluation ends."
+ },
+ "p88": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28"
+  ],
+  "why": "The aligned form gets the size of Block and the alignment 64."
+ },
+ "p89": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-9"
+  ],
+  "why": "Four objects are built and four destroyed."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-1"
+  ],
+  "why": "All five forms create int objects with the given values, and new auto(7) gives int*."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-8"
+  ],
+  "why": "delete needs a pointer, and int is not one."
+ },
+ "p92": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-26",
+   "NEW-28"
+  ],
+  "why": "The aligned call by name gives storage aligned to 4096, and new Block uses the aligned form."
+ },
+ "p93": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-23",
+   "NEW-24"
+  ],
+  "why": "const Tag& and Tag are different parameter types, so no delete matches and none is called."
+ },
+ "p94": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-27"
+  ],
+  "why": "With -m32 the value is 16 on GCC and EDG and 8 on Clang, so only Clang rejects."
+ },
+ "p95": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-5"
+  ],
+  "why": "delete[] of a derived array through a base pointer in constant evaluation: GCC accepts, Clang and EDG reject (Q-0091)."
+ },
+ "p96": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-31"
+  ],
+  "why": "The nothrow form returns null, so no argument is evaluated, nothing is built, and nothing is freed."
+ },
+ "p97": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-24"
+  ],
+  "why": "A delete with an ellipsis does not match, and the usual form is not used in its place."
+ },
+ "p98": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-19",
+   "NEW-26",
+   "NEW-40"
+  ],
+  "why": "Each deallocation call pairs with its allocation, so the sanitizers report nothing."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-20"
+  ],
+  "why": "A pointer to const does not convert to the void* parameter of the placement form."
+ },
+ "p100": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-29"
+  ],
+  "why": "No class function takes the alignment, so both new and delete drop it and use the plain forms."
+ },
+ "p101": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-19"
+  ],
+  "why": "The global operator new forms are potentially throwing and the operator delete forms are non-throwing."
+ },
+ "p102": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-36",
+   "NEW-35"
+  ],
+  "why": "Erroneous bounds with the nothrow form: Clang gives null and runs, GCC throws std::bad_array_new_length and returns 1 (Q-0302)."
+ },
+ "p103": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-7"
+  ],
+  "why": "new cannot create an incomplete type."
+ },
+ "p104": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35"
+  ],
+  "why": "GCC throws std::bad_array_new_length for the negative bound with no call and returns 0; as I read Q-0301, Clang calls the function with an impossible size, which throws std::bad_alloc and returns 3."
+ },
+ "p105": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-5"
+  ],
+  "why": "delete of storage from new[] is undefined, and the address sanitizer reports the mismatch."
+ },
+ "p106": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-32"
+  ],
+  "why": "A potentially throwing placement form returns null, and the undefined behavior sanitizer reports the constructor call on null."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-5",
+   "CE-9"
+  ],
+  "why": "The second delete of the same object is undefined, so constant evaluation rejects it."
+ },
+ "p108": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-22"
+  ],
+  "why": "::new uses the global functions, and either global usual form sets freed to 1."
+ },
+ "p109": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "A class that converts to int is a valid bound."
+ },
+ "p110": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-8",
+   "NEW-11"
+  ],
+  "why": "const objects with initializers can be created, and a pointer to const can be deleted."
+ },
+ "p111": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-5",
+   "CE-9"
+  ],
+  "why": "Single delete of an array is undefined, so constant evaluation rejects it."
+ },
+ "p112": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-23"
+  ],
+  "why": "For an array the search uses operator delete[], and delete[](void*, Tag) matches."
+ },
+ "p113": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-21",
+   "NEW-23"
+  ],
+  "why": "The global placement delete with an int matches the global placement new."
+ },
+ "p114": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28",
+   "NEW-22",
+   "NEW-23"
+  ],
+  "why": "The alignment is passed only for the over-aligned types, to new, delete, and the delete after a throw, and the placement match includes the alignment."
+ },
+ "p115": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-38"
+  ],
+  "why": "Both requests are too large to meet, so the global functions throw std::bad_alloc."
+ },
+ "p116": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "A floating bound 1.5: Clang and EDG convert it to 1, and GCC rejects it (Q-0036)."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "NEW-2",
+   "NEW-6"
+  ],
+  "why": "I expect a parenthesized list to initialize the array like a braced one, giving 1, 2, 0, but the specification does not cover this form, so this is outside knowledge."
+ },
+ "p118": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-24"
+  ],
+  "why": "Two templates match and neither is more specialized; Clang and GCC call none and return 0, and EDG rejects (Q-0222)."
+ },
+ "p119": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-10",
+   "NEW-20"
+  ],
+  "why": "The placement argument reaches operator new(size, int), which records 7."
+ },
+ "p120": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-39"
+  ],
+  "why": "make(-1) has a negative bound during constant evaluation."
+ },
+ "p121": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-4"
+  ],
+  "why": "delete and delete[] of null do nothing."
+ },
+ "p122": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-12"
+  ],
+  "why": "The allocation function runs before the initializer argument, so trace is 12."
+ },
+ "p123": {
+  "outcome": "reject",
+  "rules": [
+   "NEW-7"
+  ],
+  "why": "new cannot create a function type."
+ },
+ "p124": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "Each zero-length array gives a distinct non-null pointer."
+ },
+ "p125": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-2"
+  ],
+  "why": "() value-initializes each element to 0."
+ }
+}
