@@ -178,6 +178,25 @@ answer**, and the spec follows it until a pull request changes it.
 | [Q-0165](Q-0165-braced-function-for-function-reference.md) | Does one braced function name bind a reference to a function as `=` does? | provisional | yes; GCC rejects an overload set, EDG a noexcept function |
 | [Q-0166](Q-0166-braced-string-literal-reference-temporary.md) | Can one braced string literal initialize the temporary array of a reference? | provisional | yes, under LIST-6; Clang and EDG agree, GCC rejects |
 | [Q-0167](Q-0167-braced-string-literal-char-array-overloads.md) | Does one braced string literal prefer a reference to a `char` array over one to an `unsigned char` array? | provisional | no, ambiguous; Clang and EDG agree, GCC picks `char` |
+| [Q-0168](Q-0168-alias-template-same-as-class-template.md) | Is an alias template that passes its parameters through the same template argument as its class template? | provisional | unspecified; Clang says no, GCC and EDG say yes |
+| [Q-0169](Q-0169-template-template-argument-extra-defaults.md) | Can a template template argument have more parameters than the parameter, if the extra ones have defaults? | provisional | yes; Clang 22, GCC, and EDG agree, Clang 18 rejects |
+| [Q-0170](Q-0170-type-or-expression-for-constant-parameter.md) | Is `int()` a type or a value when the parameter is a constant parameter? | provisional | a type; Clang and GCC agree, EDG reads the value 0 |
+| [Q-0171](Q-0171-explicit-specialization-in-class.md) | Can an explicit specialization of a member template be declared in the class? | provisional | yes; Clang and EDG agree, GCC rejects |
+| [Q-0172](Q-0172-function-partial-specialization-diagnosed-on-use.md) | Must an implementation reject a partial specialization of a function template that no call uses? | provisional | yes; Clang and GCC agree, EDG rejects only at a use |
+| [Q-0173](Q-0173-partial-specialization-after-use.md) | Must an implementation diagnose a partial specialization declared after a use that it would match? | provisional | no, no diagnostic required; GCC and EDG reject, Clang accepts |
+| [Q-0174](Q-0174-partial-specialization-not-more-specialized.md) | Is a partial specialization valid when it is not more specialized than the primary template? | provisional | no; Clang rejects, GCC and EDG accept |
+| [Q-0175](Q-0175-static-class-member-read-before-initialization.md) | Can a dynamic initializer read the zero in a member of a later class-type variable? | provisional | no; the read is undefined (OBJ-2) |
+| [Q-0176](Q-0176-volatile-initialization-observable.md) | Is the initialization of a volatile object an observable write? | provisional | yes, for an initializer that runs at run time |
+| [Q-0177](Q-0177-attribute-before-base-and-after-new-bound.md) | Can an attribute specifier come before a base class and after the array bound of a `new` expression? | compiler defect | yes; GCC 14 defect |
+| [Q-0178](Q-0178-call-through-pointer-differing-in-noexcept.md) | Is a call through a function pointer whose type differs from the function only in `noexcept` undefined? | provisional | yes, undefined |
+| [Q-0179](Q-0179-throw-in-noexcept-warning-scope.md) | Which throws in a non-throwing function should get a warning? | provisional | those that no enclosing handler catches by static type; a rethrow needs `catch (...)` |
+| [Q-0180](Q-0180-dangling-reference-warnings.md) | Which dangling references should an implementation warn about? | provisional | a general recommended rule, tested on the `new` case |
+| [Q-0181](Q-0181-clang18-explicit-object-from-prvalue.md) | Does a class prvalue initialize a by-value explicit object parameter without a copy or move? | compiler defect | yes; Clang 18's rejection is fixed in Clang 22 |
+| [Q-0182](Q-0182-evidence-reasons-for-implementation-choices.md) | May Evidence give the reason for an implementation's choice? | provisional | only when a clean input states the reason |
+| [Q-0183](Q-0183-cost-model-for-proposals.md) | Should Tidal give proposals a way to state implementation cost? | provisional | not yet; front-end counts once Tidal has a corpus of whole programs |
+| [Q-0184](Q-0184-vendor-options-in-evidence.md) | Should Evidence record vendor options that change behavior? | provisional | yes, when a test runs the compiler with the option |
+| [Q-0185](Q-0185-change-notation-and-versions.md) | How does Tidal mark a change to a rule and the language version a rule holds for? | provisional | a change table for proposals now; a version field when a second version is specified |
+| [Q-0186](Q-0186-proposals-and-outside-judgments.md) | May a proposal rest on judgments from outside Tidal? | provisional | yes, marked as outside knowledge |
 
 ## Status values
 
