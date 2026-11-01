@@ -248,7 +248,7 @@ impl P {
         match t {
             Ty::Array(e, _) => self.skippable_type(&e.t),
             Ty::Class(c) => Some(self.trivial(*c, Sm::Default)? && self.trivial(*c, Sm::Dtor)?),
-            Ty::Unknown => None,
+            Ty::Unknown | Ty::Dep(_) => None,
             _ => Some(true),
         }
     }

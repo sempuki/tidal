@@ -11,6 +11,7 @@ impl P {
     /// was a definition.
     pub fn parse_class_specifier(&mut self) -> PR<(QTy, bool)> {
         let line = self.line();
+        let start_pos = self.pos;
         let key = match self.tok().text.as_str() {
             "struct" => 0u8,
             "class" => 1,
@@ -26,11 +27,65 @@ impl P {
         let mut name = String::new();
         let mut qual: Option<Result<usize, ()>> = None;
         let mut spec_args = false;
+        // The class of a specialization that a replay makes.
+        let mut inst_req: Option<crate::templ::InstReq> = None;
+        // The template and arguments after the name of an explicit or
+        // partial specialization.
+        let mut spec_targs: Option<(usize, Vec<TArg>)> = None;
+        let explicit_spec = std::mem::take(&mut self.explicit_spec);
         if self.is_ident() || self.at("::") {
+            self.last_qual_templ = None;
             qual = self.parse_nested_name()?;
             name = self.ident()?;
+            if let Some(crate::templ::InstReq::Class { name: n, .. }) = &self.inst {
+                if *n == name && qual.is_none() {
+                    inst_req = self.inst.take();
+                }
+            }
             if self.at("<") {
-                self.skip_template_args()?;
+                let tid = if inst_req.is_some() {
+                    None
+                } else {
+                    let found = match qual {
+                        None => self.lookup(&name),
+                        Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
+                        Some(Err(())) => None,
+                    };
+                    found.and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)))
+                };
+                if self.inst_depth == 0 && inst_req.is_none() {
+                    let found_any = match qual {
+                        None => self.lookup(&name).is_some(),
+                        Some(Ok(s)) => self.lookup_in_scope(s, &name, true).is_some(),
+                        Some(Err(())) => true,
+                    };
+                    if tid.is_none() && explicit_spec && found_any {
+                        // TSP-4: an explicit specialization names a template.
+                        self.error(line, "TSP-4", format!("'{}' is not a template", name));
+                    } else if tid.is_none() && self.pending_template.is_some() && !found_any && !self.in_template_outer() {
+                        // TSP-31: a partial specialization follows its primary
+                        // template.
+                        self.error(line, "TSP-31", format!("a partial specialization of '{}', which is not declared", name));
+                    } else if tid.is_some() && !explicit_spec && self.pending_template.is_none() && !self.in_template() && self.at_class_head_def() {
+                        // TSP-4: an explicit specialization starts with
+                        // `template <>`.
+                        self.error(line, "TSP-4", "an explicit specialization without 'template <>'");
+                    }
+                }
+                match tid {
+                    Some(t) if self.templs[t].kind == crate::templ::TKind::Class => {
+                        let l = self.line();
+                        let raw = self.parse_raw_targs()?;
+                        if self.in_template() {
+                            if let Some(pats) = self.pattern_targs(t, raw) {
+                                spec_targs = Some((t, pats));
+                            }
+                        } else if let Ok(Some(args)) = self.targs_for(t, raw, l, false) {
+                            spec_targs = Some((t, args));
+                        }
+                    }
+                    _ => self.skip_template_args()?,
+                }
                 spec_args = true;
             }
         }
@@ -47,6 +102,32 @@ impl P {
             self.pos += 1;
         }
         let is_def = self.at("{") || (self.at(":") && !self.at_k(1, ":"));
+        if spec_targs.is_some() && self.friend_spec_pos.is_some_and(|p| p + 1 == start_pos) && self.inst_depth == 0 {
+            // TSP-12: no friend partial or explicit specialization.
+            self.error(line, "TSP-12", "a friend declaration declares a partial or explicit specialization");
+        }
+        if let Some((t, args)) = &spec_targs {
+            // TSP-32: the class key agrees with the primary template's.
+            let pk = match self.decls[self.templs[*t].decl].k {
+                DK::Template(TemplKind::Class(pc)) if pc != usize::MAX => Some(self.classes[pc].key),
+                _ => None,
+            };
+            if let Some(pk) = pk {
+                if (pk == 2) != (key == 2) {
+                    self.error(line, "TSP-32", "the class key of the specialization does not agree with the template's");
+                }
+            }
+            if self.pending_template.is_some() && args.iter().any(|a| a.is_dep()) {
+                if self.at(";") || is_def {
+                    self.last_templ = Some(crate::templ::Last::Partial(*t, args.clone()));
+                }
+            } else if explicit_spec && !args.iter().any(|a| a.is_dep()) {
+                return self.explicit_class_spec(*t, args.clone(), key, is_def, line);
+            }
+        }
+        if let Some(req) = inst_req {
+            return self.inst_class_body(req, key, is_def, line);
+        }
         if !is_def {
             if name.is_empty() {
                 return Err(self.err("anonymous class without a body"));
@@ -58,7 +139,7 @@ impl P {
             return Ok((q, false));
         }
         // definition
-        let pending = self.pending_template.take();
+        let mut pending = self.pending_template.take();
         let is_template = pending.is_some() || spec_args || self.in_template();
         let cur = self.decl_scope();
         let mut target_scope = cur;
@@ -136,11 +217,35 @@ impl P {
                 let c = self.classes.len() - 1;
                 if !name.is_empty() && !spec_args && !matches!(qual, Some(Err(()))) {
                     let k = if pending.is_some() { DK::Template(TemplKind::Class(c)) } else { DK::Class(c) };
-                    self.add_decl_in(target_scope, &name, k, line);
+                    let id = self.add_decl_in(target_scope, &name, k, line);
+                    if pending.is_some() {
+                        self.pending_template = pending;
+                        self.class_templ_early(c, id);
+                        pending = self.pending_template.take();
+                    }
                 }
                 c
             }
         };
+        if pending.is_some() && name.is_empty() && self.inst_depth == 0 {
+            // TPL-4: a class template has a name.
+            self.error(line, "TPL-4", "a class without a name after a template head");
+        }
+        if pending.is_some() && !spec_args && !matches!(qual, Some(Err(()))) && !name.is_empty() {
+            self.last_templ = Some(crate::templ::Last::Class(c));
+            if pending.as_ref().is_some_and(|p| p.params.contains(&name)) && self.inst_depth == 0 {
+                // TPL-18: a class template with the name of its parameter.
+                self.error(line, "TPL-18", format!("the class template '{}' has the name of its own parameter", name));
+            }
+        }
+        if matches!(self.last_templ, Some(crate::templ::Last::Partial(..))) && spec_args {
+            self.last_partial_class = Some(c);
+        }
+        if pending.is_some() && matches!(qual, Some(Err(()))) {
+            if let Some((t, pats)) = self.last_qual_templ.take() {
+                self.last_templ = Some(crate::templ::Last::Member(t, pats));
+            }
+        }
         self.classes[c].template |= is_template;
         if !own_attrs.is_empty() {
             self.class_attrs.entry(c).or_default().extend(own_attrs.clone());
@@ -189,6 +294,7 @@ impl P {
                     QTy::unknown()
                 };
                 self.eat("...");
+                self.require_ty(&bq, bl);
                 let bc = match bq.t {
                     Ty::Class(b) => {
                         if !self.classes[b].complete {
@@ -199,7 +305,7 @@ impl P {
                             Some(b)
                         }
                     }
-                    Ty::Unknown => None,
+                    Ty::Unknown | Ty::Dep(_) => None,
                     _ => {
                         self.error(bl, "DER-1", "base is not a class type");
                         None
@@ -227,7 +333,10 @@ impl P {
         self.stack.push(class_scope);
         // injected class name
         if !name.is_empty() && self.scopes[class_scope].names.get(&name).is_none() {
-            self.add_decl_in(class_scope, &name, DK::Class(c), line);
+            let id = self.add_decl_in(class_scope, &name, DK::Class(c), line);
+            if let Some(&t) = self.class_tid.get(&c) {
+                self.injected.insert(id, t);
+            }
         }
         self.class_depth += 1;
         self.access_stack.push(if self.classes[c].key == 1 { 2 } else { 0 });
@@ -248,7 +357,9 @@ impl P {
         if self.class_depth == 0 {
             self.run_deferred();
         }
-        let _ = pending;
+        if pending.is_some() {
+            self.templ_class_defined = true;
+        }
         if is_template {
             return Ok((QTy::unknown(), true));
         }
@@ -283,7 +394,13 @@ impl P {
                         }
                         return Ok(QTy::new(Ty::Class(c)));
                     }
-                    DK::Template(TemplKind::Class(_)) => return Ok(QTy::unknown()),
+                    DK::Template(TemplKind::Class(pc)) => {
+                        if self.pending_template.is_some() && *pc != usize::MAX {
+                            // TPL-15: another declaration adds defaults.
+                            self.last_templ = Some(crate::templ::Last::Class(*pc));
+                        }
+                        return Ok(QTy::unknown());
+                    }
                     DK::Enum(_) => {
                         self.error(line, "TYN-10", "class key used for an enumeration");
                         return Ok(QTy::unknown());
@@ -349,11 +466,232 @@ impl P {
         });
         let c = self.classes.len() - 1;
         let k = if self.pending_template.is_some() { DK::Template(TemplKind::Class(c)) } else { DK::Class(c) };
-        self.add_decl_in(scope, name, k, line);
+        let id = self.add_decl_in(scope, name, k, line);
         if self.pending_template.is_some() {
+            self.class_templ_early(c, id);
+            self.last_templ = Some(crate::templ::Last::Class(c));
             return Ok(QTy::unknown());
         }
         Ok(QTy::new(Ty::Class(c)))
+    }
+
+    /// Whether scope `outer` is `inner` or encloses it.
+    pub fn scope_encloses(&self, outer: usize, inner: usize) -> bool {
+        let mut s = Some(inner);
+        while let Some(x) = s {
+            if x == outer {
+                return true;
+            }
+            s = self.scopes[x].parent;
+        }
+        false
+    }
+
+    /// Whether the parser is inside an enclosing template head (a member
+    /// template's head inside a class template).
+    fn in_template_outer(&self) -> bool {
+        self.templ > 1
+    }
+
+    /// At the end of a class head before its body or base list, after
+    /// the template arguments.
+    fn at_class_head_def(&self) -> bool {
+        let mut k = 0;
+        let mut depth = 0i32;
+        loop {
+            let t = self.peek(k);
+            if t.kind == TK::Eof {
+                return false;
+            }
+            match t.text.as_str() {
+                "<" => depth += 1,
+                ">" => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return self.at_k(k + 1, "{") || (self.at_k(k + 1, ":") && !self.at_k(k + 2, ":"));
+                    }
+                }
+                ">>" => {
+                    depth -= 2;
+                    if depth <= 0 {
+                        return self.at_k(k + 1, "{") || (self.at_k(k + 1, ":") && !self.at_k(k + 2, ":"));
+                    }
+                }
+                ";" => return false,
+                _ => {}
+            }
+            k += 1;
+        }
+    }
+
+    /// `template <> class C<args> ...`: an ordinary class for one
+    /// specialization (TSP-1, TSP-20).
+    fn explicit_class_spec(&mut self, t: usize, args: Vec<TArg>, key: u8, is_def: bool, line: u32) -> PR<(QTy, bool)> {
+        if self.inst_depth == 0 && !self.scope_encloses(self.decl_scope(), self.templs[t].scope) {
+            // TSP-5: in the template's namespace or one that encloses it.
+            self.error(line, "TSP-5", "an explicit specialization outside the namespace of its template");
+        }
+        if self.templs[t].insts.iter().any(|x| x.0 == args && matches!(x.1, crate::templ::Inst::Class(c) if self.classes[c].complete)) && is_def {
+            // TSP-6: declared after a use that made the specialization.
+            let name = self.templs[t].name.clone();
+            self.error(line, "TSP-6", format!("explicit specialization of '{}' after its first use", name));
+        }
+        let existing = self.templs[t].explicit.iter().find(|x| x.0 == args).and_then(|x| match x.1 {
+            crate::templ::Inst::Class(c) => Some(c),
+            _ => None,
+        });
+        let lazy = self.templs[t].insts.iter().position(|x| x.0 == args && matches!(x.1, crate::templ::Inst::Class(c) if !self.classes[c].complete));
+        let c = match existing {
+            Some(c) => c,
+            None => {
+                // A use that named the specialization before is the same
+                // class (INST-2).
+                let c = match lazy {
+                    Some(k) => {
+                        let crate::templ::Inst::Class(c) = self.templs[t].insts.remove(k).1 else { unreachable!() };
+                        c
+                    }
+                    None => self.new_inst_class(t, &args, line),
+                };
+                self.classes[c].key = key;
+                self.templs[t].explicit.push((args.clone(), crate::templ::Inst::Class(c)));
+                c
+            }
+        };
+        if !is_def {
+            return Ok((QTy::new(Ty::Class(c)), false));
+        }
+        if self.classes[c].complete {
+            self.error(line, "TYN-7", "explicit specialization defined twice");
+        }
+        self.class_body(c, key, line)?;
+        Ok((QTy::new(Ty::Class(c)), true))
+    }
+
+    /// The definition of the class of a specialization, in a replay.
+    fn inst_class_body(&mut self, req: crate::templ::InstReq, key: u8, is_def: bool, line: u32) -> PR<(QTy, bool)> {
+        let crate::templ::InstReq::Class { tid, args, existing, .. } = req else { unreachable!() };
+        let c = match existing {
+            Some(c) => c,
+            None => {
+                let c = self.new_inst_class(tid, &args, line);
+                self.classes[c].key = key;
+                c
+            }
+        };
+        if let Some(k) = self.templs[tid].insts.iter().position(|x| x.0 == args) {
+            self.templs[tid].insts[k].1 = crate::templ::Inst::Class(c);
+        }
+        self.inst_out = Some(crate::templ::InstOut::Class(c));
+        if !is_def {
+            return Ok((QTy::new(Ty::Class(c)), false));
+        }
+        self.inst_busy.insert(c);
+        let r = self.class_body(c, key, line);
+        self.inst_busy.remove(&c);
+        r?;
+        Ok((QTy::new(Ty::Class(c)), true))
+    }
+
+    /// The bases and the member list of a class that is not a template:
+    /// an explicit specialization or an instance.
+    fn class_body(&mut self, c: usize, key: u8, line: u32) -> PR<()> {
+        let name = self.classes[c].name.clone();
+        let class_scope = self.classes[c].scope;
+        if self.at("final") {
+            self.pos += 1;
+        }
+        if self.eat(":") {
+            loop {
+                self.skip_attributes();
+                let mut virt = false;
+                let mut access = if key == 1 { 2 } else { 0 };
+                loop {
+                    if self.eat("virtual") {
+                        virt = true;
+                    } else if self.eat("public") {
+                        access = 0;
+                    } else if self.eat("protected") {
+                        access = 1;
+                    } else if self.eat("private") {
+                        access = 2;
+                    } else {
+                        break;
+                    }
+                }
+                let bl = self.line();
+                let hits = self.binding_hits;
+                let bq = if self.at("decltype") {
+                    self.pos += 1;
+                    self.parse_decltype()?
+                } else if self.qualified_names_type(0) || self.at("typename") {
+                    self.eat("typename");
+                    self.in_base_clause += 1;
+                    let r = self.parse_type_name();
+                    self.in_base_clause -= 1;
+                    r?
+                } else {
+                    self.skip_qualified_name()?;
+                    QTy::unknown()
+                };
+                self.eat("...");
+                self.require_ty(&bq, bl);
+                let bc = match bq.t {
+                    Ty::Class(b) => {
+                        if !self.classes[b].complete {
+                            self.error(bl, "DER-1", "base class is incomplete");
+                            None
+                        } else {
+                            Some(b)
+                        }
+                    }
+                    Ty::Unknown | Ty::Dep(_) => None,
+                    _ => {
+                        self.error(bl, "DER-1", "base is not a class type");
+                        None
+                    }
+                };
+                if let Some(b) = bc {
+                    if self.classes[b].has_virtual {
+                        self.classes[c].has_virtual = true;
+                    }
+                    if self.binding_hits > hits && self.inst_of.contains_key(&c) {
+                        // DEP-11: a base whose type depends on a parameter.
+                        self.dep_bases.insert((c, b));
+                    }
+                }
+                self.classes[c].bases.push(BaseInfo { class: bc, virt, access });
+                if !self.eat(",") {
+                    break;
+                }
+            }
+        }
+        self.expect("{")?;
+        let saved = self.stack.clone();
+        self.stack.push(class_scope);
+        if !name.is_empty() && self.scopes[class_scope].names.get(&name).is_none() {
+            let id = self.add_decl_in(class_scope, &name, DK::Class(c), line);
+            if let Some((t, _)) = self.inst_of.get(&c) {
+                self.injected.insert(id, *t);
+            }
+        }
+        self.class_depth += 1;
+        self.access_stack.push(if key == 1 { 2 } else { 0 });
+        let saved_templ = self.templ;
+        self.templ = 0;
+        while !self.at("}") && self.tok().kind != TK::Eof {
+            self.parse_declaration_recover(Ctx::Class(c));
+        }
+        self.templ = saved_templ;
+        self.access_stack.pop();
+        self.expect("}")?;
+        self.class_depth -= 1;
+        self.stack = saved;
+        self.classes[c].complete = true;
+        if self.class_depth == 0 {
+            self.run_deferred();
+        }
+        Ok(())
     }
 
     /// Lookup that ignores names other than classes and enumerations
@@ -389,7 +727,7 @@ impl P {
             let q = self.parse_type_id()?;
             match &q.t {
                 t if t.is_integral() => fixed = Some(t.clone()),
-                Ty::Unknown => fixed = Some(Ty::Int),
+                Ty::Unknown | Ty::Dep(_) => fixed = Some(Ty::Int),
                 Ty::Enum(e) => {
                     let _ = e;
                     self.error(fl, "ENUM-17", "underlying type must be an integer type");
@@ -543,7 +881,7 @@ impl P {
                     Ty::Enum(_) => None,
                     _ => None,
                 };
-                if !(et.t.is_integral() || matches!(et.t, Ty::Enum(_) | Ty::Unknown)) {
+                if !(et.t.is_integral() || matches!(et.t, Ty::Enum(_) | Ty::Unknown | Ty::Dep(_))) {
                     self.error(el, "CE-25", "enumerator value must have integer or enumeration type");
                 }
                 match self.const_int(&ex) {

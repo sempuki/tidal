@@ -22,6 +22,11 @@ impl P {
                 self.call_overloads(None, fs, args, line)
             }
             EK::BoundMember(obj, fs) => self.call_overloads(Some(*obj), fs, args, line),
+            EK::TemplId(obj, fs, raw) => {
+                self.call_explicit = Some(raw);
+                self.call_adl = adl;
+                self.call_overloads(obj.map(|o| *o), fs, args, line)
+            }
             EK::Unary(UOp::AddrOf, ref x) if !self.in_template() && (matches!(x.k, EK::BoundMember(..)) || (x.paren && matches!(&x.k, EK::Overloads(fs) if fs.iter().any(|&f| self.func(f).is_some_and(|f| f.class.is_some() && !f.is_static && !f.explicit_obj))))) => {
                 // OVL-44: the set holds a member with an implicit object
                 // parameter, so the operand of `&` must be a qualified name
@@ -70,7 +75,7 @@ impl P {
                         }
                         Expr::unknown(line, "call operator")
                     }
-                    Ty::Unknown => Expr::unknown(line, "call of unknown callee"),
+                    Ty::Unknown | Ty::Dep(_) => Expr::unknown(line, "call of unknown callee"),
                     Ty::Func(_) | Ty::Ptr(_) => {
                         let c = self.rvalue(callee);
                         let Ty::Ptr(p) = &c.ty.t else {
@@ -257,7 +262,7 @@ impl P {
             return;
         }
         match t {
-            Ty::Unknown => *certain = false,
+            Ty::Unknown | Ty::Dep(_) => *certain = false,
             Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) => self.assoc_ty(&q.t, ns, cls, certain, depth + 1),
             Ty::Func(f) => {
                 for p in &f.params {
@@ -314,6 +319,32 @@ impl P {
                 None => *certain = false,
             }
         }
+        // NAM-27: a specialization adds the namespace of the template,
+        // what each type argument adds, and the namespace of each
+        // template argument that is a template.
+        if let Some((t, args)) = self.inst_of.get(&c) {
+            let s = self.templs[*t].scope;
+            self.add_ns(self.ns_of(s), ns);
+            for a in args.clone() {
+                self.assoc_targ(&a, ns, cls, certain, depth);
+            }
+        }
+    }
+
+    fn assoc_targ(&self, a: &TArg, ns: &mut Vec<usize>, cls: &mut Vec<usize>, certain: &mut bool, depth: u32) {
+        match a {
+            TArg::Type(q) => self.assoc_ty(&q.t, ns, cls, certain, depth + 1),
+            TArg::Templ(TName::Templ(t)) => {
+                let s = self.templs[*t].scope;
+                self.add_ns(self.ns_of(s), ns);
+            }
+            TArg::Pack(v) => {
+                for x in v {
+                    self.assoc_targ(x, ns, cls, certain, depth);
+                }
+            }
+            _ => {}
+        }
     }
 
     pub fn call_overloads_pub(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
@@ -324,13 +355,37 @@ impl P {
         let no_object = std::mem::take(&mut self.call_no_object);
         let mut cands = cands;
         let adl = std::mem::take(&mut self.call_adl);
+        let independent = std::mem::take(&mut self.call_adl_independent);
         if obj.is_none() && adl {
             if let Some(&c0) = cands.first() {
                 let name = self.decls[c0].name.clone();
                 for d in self.adl_lookup(&name, &args).0 {
+                    // DEP-5: an independent call sees the declarations
+                    // before the template's definition only.
+                    if independent && d >= self.lookup_limit {
+                        continue;
+                    }
                     if !cands.contains(&d) {
                         cands.push(d);
                     }
+                }
+            }
+        }
+        // DED-1: each function template adds the specialization that
+        // deduction gives.
+        let explicit = self.call_explicit.take();
+        if !self.in_template() && (explicit.is_some() || cands.iter().any(|&c| self.func(c).is_some_and(|f| f.template))) {
+            let name = cands.first().map(|&c| self.decls[c].name.clone()).unwrap_or_default();
+            match self.templ_candidates(&cands, explicit.as_ref(), &args, line) {
+                Ok(v) => cands = v,
+                Err(true) => return Expr::unknown(line, "call needing template deduction or unknown arguments"),
+                Err(false) => {
+                    if args.iter().any(|a| a.ty.is_unknown() && !matches!(a.k, EK::InitList(_) | EK::Overloads(_) | EK::Func(_))) {
+                        return Expr::unknown(line, "call needing template deduction or unknown arguments");
+                    }
+                    // DED-35: no function after deduction.
+                    self.error(line, "DED-35", format!("no viable function for the call of '{}': deduction fails for each template", name));
+                    return Expr::unknown(line, "bad call");
                 }
             }
         }
@@ -480,6 +535,27 @@ impl P {
                 return Expr::unknown(line, "bad call");
             }
         }
+        if let Some(errs) = self.noexcept_errors.remove(&fid) {
+            // DED-27, DED-29: the exception specification of the chosen
+            // specialization.
+            self.d.list.extend(errs);
+        }
+        if !self.in_template() {
+            // INST-9: a call that uses a default argument makes it.
+            let params = self.func(fid).map(|f| f.params.clone()).unwrap_or_default();
+            for &p in params.iter().skip(args.len()) {
+                if let Some(errs) = self.default_errors.remove(&p) {
+                    self.d.list.extend(errs);
+                }
+            }
+            // A use that needs the definition of a specialization makes
+            // it; a deduced return type needs it also in an unevaluated
+            // operand (INST-7, DED-29).
+            let needs_ret = self.func(fid).is_some_and(|f| f.fty.ret.is_unknown());
+            if self.in_unevaluated == 0 || needs_ret {
+                self.use_fn(fid);
+            }
+        }
         let f = self.func(fid).unwrap().clone();
         if let (Some(o), Some(owner)) = (&obj, f.class) {
             // OVL-37, ACC-3: the chosen member must be accessible. Only a
@@ -500,6 +576,14 @@ impl P {
         if self.in_unevaluated == 0 && !self.in_template() && self.internal_fns.contains(&fid) {
             self.internal_uses.push((fid, line));
         }
+        if self.in_unevaluated == 0 && !self.in_template() {
+            let (ret, params) = (f.fty.ret.clone(), f.fty.params.clone());
+            self.require_ty(&ret, line);
+            for p in params {
+                self.require_ty(&p, line);
+            }
+        }
+        let f = self.func(fid).unwrap().clone();
         if self.in_unevaluated == 0 && !self.in_template() {
             // PFX-14: no call with an incomplete class as the return type or
             // as a parameter type.
@@ -524,8 +608,16 @@ impl P {
             // (A lambda that calls a consteval function with non-constant
             // arguments becomes consteval itself, CEV-1.)
             // CEV-1: each call of a consteval function is a constant expression.
+            // CEV-1: a constexpr function made from a template takes on
+            // `consteval` from such a call.
+            let escalating = self.fns.last().and_then(|c| c.func).filter(|&g| (self.spec_of.contains_key(&g) || self.inst_depth > 0) && self.func(g).is_some_and(|x| x.constexpr));
             match self.const_check(&call) {
                 Ok(()) => {}
+                Err(crate::consteval::CeErr::NotConst(..)) if escalating.is_some() => {
+                    if let Some(fm) = self.func_mut(escalating.unwrap()) {
+                        fm.consteval = true;
+                    }
+                }
                 Err(crate::consteval::CeErr::NotConst(r, m)) => self.error_because(line, "CEV-1", r, format!("call of consteval function is not a constant expression ({}: {})", r, m)),
                 Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(line, format!("consteval call: {}", m)),
             }
@@ -547,7 +639,7 @@ impl P {
             match &p.t {
                 Ty::LRef(i) => a.cat == Cat::L && i.t == at.t && i.c == at.c && i.v == at.v,
                 Ty::RRef(i) => a.cat != Cat::L && i.t == at.t && i.c == at.c && i.v == at.v,
-                t => *t == at.t && !matches!(t, Ty::Unknown),
+                t => *t == at.t && !matches!(t, Ty::Unknown | Ty::Dep(_)),
             }
         })
     }
@@ -1001,7 +1093,7 @@ impl P {
                 }
                 // A class element for a reference to a scalar converts into
                 // the temporary too (Q-0157).
-                let class_to_scalar = v.len() == 1 && matches!(nonref(&v[0].ty).t, Ty::Class(_)) && !matches!(inner.t, Ty::Class(_) | Ty::Unknown);
+                let class_to_scalar = v.len() == 1 && matches!(nonref(&v[0].ty).t, Ty::Class(_)) && !matches!(inner.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_));
                 if matches!(inner.t, Ty::Array(..) | Ty::Class(_)) || v.len() != 1 || class_to_scalar {
                     let x = self.convert_init(e, &inner.unqual(), InitForm::CopyList, line);
                     return self.bind_temp_or_unknown(x, inner, line);
@@ -1349,7 +1441,7 @@ impl P {
         }
         let direct = match (&inner.t, &xt.t) {
             (Ty::Func(_), _) => true,
-            (_, Ty::Unknown) => true,
+            (_, Ty::Unknown | Ty::Dep(_)) => true,
             (a, b) if a == b => true,
             (Ty::Class(a), Ty::Class(b)) => self.is_base_of(*a, *b),
             // The same type apart from cv-qualifiers, also on the elements
@@ -1545,7 +1637,7 @@ impl P {
                             },
                         };
                         let pt = nonref(&pt);
-                        if !matches!(a.k, EK::InitList(_)) && !matches!(pt.t, Ty::Class(_) | Ty::Unknown) && !matches!(nonref(&a.ty).t, Ty::Class(_)) && self.is_narrowing(a, &pt.t) {
+                        if !matches!(a.k, EK::InitList(_)) && !matches!(pt.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) && !matches!(nonref(&a.ty).t, Ty::Class(_)) && self.is_narrowing(a, &pt.t) {
                             self.error(line, "ILC-4", format!("narrowing conversion of an element from {} to {}", show(&nonref(&a.ty)), show(&pt)));
                             return unknown;
                         }
@@ -1567,6 +1659,9 @@ impl P {
                 let mark = self.d.list.len();
                 let conv = self.convert_args(&f.fty, args.to_vec(), line, Some(cid));
                 if self.d.list.len() == mark && !conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                    if self.in_unevaluated == 0 {
+                        self.use_fn(cid);
+                    }
                     return Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line);
                 }
                 self.d.list.truncate(mark);

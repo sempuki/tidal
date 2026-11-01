@@ -21,6 +21,9 @@ pub enum Ctx {
 pub struct PendingTemplate {
     pub params: Vec<String>,
     pub specialization: bool,
+    pub tparams: Vec<crate::templ::TParam>,
+    pub depth: u32,
+    pub dependent: bool,
 }
 
 impl P {
@@ -33,6 +36,7 @@ impl P {
             }
             self.parse_declaration_recover(Ctx::Namespace);
         }
+        self.finish_lazy();
         self.check_main();
         self.check_internal_uses();
     }
@@ -119,6 +123,12 @@ impl P {
             "extern" if self.peek(1).kind == TK::Str => {
                 self.parse_linkage_spec(ctx)?;
                 return Ok(None);
+            }
+            "extern" if self.at_k(1, "template") && !self.at_k(2, "<") && !self.in_template() && self.inst_depth == 0 => {
+                // An explicit instantiation declaration (INST-27).
+                self.pos += 2;
+                self.parse_explicit_inst(ctx, true, line)?;
+                return Ok(Some(Stmt::Null));
             }
             "export" | "module" | "import" => {
                 return Err(self.err("modules (outside the specification)"));
@@ -355,7 +365,7 @@ impl P {
                         self.scopes[cur].names.entry(n).or_default().extend(ids);
                     }
                 }
-                Ty::Unknown => {}
+                Ty::Unknown | Ty::Dep(_) => {}
                 _ => self.error(line, "ENUM-20", "using enum must name an enumeration"),
             }
             return Ok(());
@@ -367,9 +377,17 @@ impl P {
             self.expect("=")?;
             let q = self.parse_type_id()?;
             self.expect(";")?;
+            if let Some(crate::templ::InstReq::Alias) = &self.inst {
+                // TPL-28: the specialization is the type the alias gives.
+                self.inst = None;
+                self.inst_out = Some(crate::templ::InstOut::Type(q));
+                return Ok(());
+            }
             if let Some(pt) = self.pending_template.take() {
                 let _ = pt;
-                self.add_decl(&name, DK::Template(TemplKind::Alias), line);
+                let cur = self.decl_scope();
+                let id = self.add_decl_in(cur, &name, DK::Template(TemplKind::Alias), line);
+                self.last_templ = Some(crate::templ::Last::Alias(id));
                 return Ok(());
             }
             self.declare_typedef(&name, q, line, ctx);
@@ -509,85 +527,201 @@ impl P {
         self.add_decl_in(cur, name, DK::Type(q), line);
     }
 
+    /// The parameters of a template head, from `<` to `>`, declared in
+    /// the current scope with depth `depth`.
+    pub fn parse_tparams(&mut self, depth: u32) -> PR<Vec<crate::templ::TParam>> {
+        use crate::templ::{TParam, TPK};
+        self.expect("<")?;
+        let mut params: Vec<TParam> = Vec::new();
+        if self.eat(">") {
+            return Ok(params);
+        }
+        loop {
+            let pl = self.line();
+            let idx = params.len() as u32;
+            if (self.at("class") || self.at("typename")) && !(self.peek(1).kind == TK::Ident && !is_keyword(&self.peek(1).text) && self.at_k(2, "::")) {
+                self.pos += 1;
+                let pack = self.eat("...");
+                let name = if self.is_ident() { self.ident()? } else { String::new() };
+                self.check_tparam_name(&name, &params, pl);
+                let id = self.add_decl(&name, DK::TypeParam, pl);
+                self.tparam.insert(id, (depth, idx));
+                let mut default = None;
+                if self.eat("=") {
+                    let st = self.pos;
+                    self.no_gt += 1;
+                    let r = self.parse_type_id();
+                    self.no_gt -= 1;
+                    r?;
+                    default = Some(self.copy_toks(st, self.pos));
+                    if pack {
+                        self.error(pl, "TPL-34", "a template parameter pack has a default argument");
+                    }
+                }
+                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false });
+            } else if self.at("template") {
+                self.pos += 1;
+                let inner_scope = self.push_scope(SK::Template);
+                let _ = inner_scope;
+                let inner = self.parse_tparams(u32::MAX - 2);
+                self.pop_scope();
+                let inner = inner?;
+                self.pos += 1; // class/typename
+                let pack = self.eat("...");
+                let name = if self.is_ident() { self.ident()? } else { String::new() };
+                self.check_tparam_name(&name, &params, pl);
+                let id = self.add_decl(&name, DK::Template(TemplKind::Class(usize::MAX)), pl);
+                self.tparam.insert(id, (depth, idx));
+                self.ttp_inner.insert(id, std::rc::Rc::new(inner.clone()));
+                let mut default = None;
+                if self.eat("=") {
+                    let st = self.pos;
+                    self.skip_qualified_name()?;
+                    default = Some(self.copy_toks(st, self.pos));
+                    if pack {
+                        self.error(pl, "TPL-34", "a template parameter pack has a default argument");
+                    }
+                }
+                params.push(TParam { name, kind: TPK::Templ(std::rc::Rc::new(inner)), pack, default, line: pl, dauto: false });
+            } else if self.is_ident() && self.lookup(&self.tok().text.clone()).is_some_and(|ids| matches!(self.decls[ids[0]].k, DK::Template(TemplKind::Concept))) {
+                // constrained parameter
+                self.tparam_constrained = true;
+                self.pos += 1;
+                if self.at("<") {
+                    self.skip_balanced();
+                }
+                let pack = self.eat("...");
+                let name = if self.is_ident() { self.ident()? } else { String::new() };
+                let id = self.add_decl(&name, DK::TypeParam, pl);
+                self.tparam.insert(id, (depth, idx));
+                let mut default = None;
+                if self.eat("=") {
+                    let st = self.pos;
+                    self.parse_type_id()?;
+                    default = Some(self.copy_toks(st, self.pos));
+                }
+                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false });
+            } else {
+                // TPL-11: a class template name alone is a type here.
+                self.in_tparam_decl = true;
+                let ds = self.parse_decl_specs(None);
+                self.in_tparam_decl = false;
+                let ds = ds?;
+                let auto = ds.auto.is_some();
+                let base = self.ds_base(&ds).unwrap_or(QTy::unknown());
+                let d = self.parse_declarator(true, true)?;
+                let mut ty = self.apply_ops(base, &d.ops, pl);
+                // TPL-8: an array or function type becomes a pointer.
+                ty = match &ty.t {
+                    Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
+                    Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ty.clone()))),
+                    _ => ty,
+                };
+                // TPL-32: top-level const and volatile are dropped.
+                if !ty.t.is_ref() {
+                    ty.c = false;
+                    ty.v = false;
+                }
+                let name = d.name.clone().unwrap_or_default();
+                self.check_tparam_name(&name, &params, pl);
+                if (!ds.storage.is_empty() || ds.defined_class.is_some() || ds.defined_enum.is_some()) && self.inst_depth == 0 {
+                    // TPL-33: no storage class, and no class or enumeration
+                    // defined.
+                    self.error(pl, "TPL-33", "a constant template parameter with a storage class or a type definition");
+                }
+                if !auto && !ty.is_unknown() && self.inst_depth == 0 && !self.tparam_type_ok(&ty) {
+                    self.error(pl, "TPL-7", "the type of a constant template parameter is not a structural type");
+                }
+                let mut default = None;
+                if self.eat("=") {
+                    let st = self.pos;
+                    self.templ += 1;
+                    self.no_gt += 1;
+                    let e = self.parse_conditional();
+                    self.no_gt -= 1;
+                    self.templ -= 1;
+                    e?;
+                    default = Some(self.copy_toks(st, self.pos));
+                    if d.pack {
+                        self.error(pl, "TPL-34", "a template parameter pack has a default argument");
+                    }
+                }
+                let vi = VarInfo { ty: ty.clone(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: true, local: false, dependent: true, defined: true, class: None };
+                let id = self.add_decl(&name, DK::Var(vi), pl);
+                self.tparam.insert(id, (depth, idx));
+                let kind = if auto || ty.is_unknown() && ds.auto.is_some() { TPK::Auto } else { TPK::Const(ty) };
+                params.push(TParam { name, kind, pack: d.pack, default, line: pl, dauto: ds.auto == Some(true) });
+            }
+            if self.eat(",") {
+                continue;
+            }
+            self.expect(">")?;
+            return Ok(params);
+        }
+    }
+
     fn parse_template(&mut self, ctx: Ctx) -> PR<()> {
         let line = self.line();
         self.expect("template")?;
         if !self.at("<") {
-            // explicit instantiation
-            self.templ += 1;
+            // An explicit instantiation (INST-16 to INST-29).
+            if self.in_template() || self.inst_depth > 0 {
+                self.templ += 1;
+                let r = self.parse_declaration(ctx);
+                self.templ -= 1;
+                r?;
+                return Ok(());
+            }
+            return self.parse_explicit_inst(ctx, false, line);
+        }
+        let specialization = self.at_k(1, ">");
+        if specialization {
+            // An explicit specialization is an ordinary declaration of
+            // one specialization (TSP-1, TSP-2).
+            self.pos += 2;
+            if let Ctx::Block = ctx {
+                self.error(line, "TSP-5", "explicit specialization in a block");
+                self.recover();
+                return Ok(());
+            }
+            if self.lang_c > 0 && self.inst_depth == 0 {
+                // TPL-3: no explicit specialization with C language linkage.
+                self.error(line, "TPL-3", "an explicit specialization with C language linkage");
+            }
+            let saved_spec = self.explicit_spec;
+            let saved_last = self.last_templ.take();
+            self.explicit_spec = true;
+            let in_dep = self.templ > 0;
+            if in_dep {
+                self.templ += 1;
+            }
             let r = self.parse_declaration(ctx);
-            self.templ -= 1;
+            if in_dep {
+                self.templ -= 1;
+            }
+            self.pending_template = None;
+            self.explicit_spec = saved_spec;
+            self.last_templ = saved_last;
             r?;
             return Ok(());
         }
-        self.expect("<")?;
+        let depth = self.tdepth;
         let scope = self.push_scope(SK::Template);
         let _ = scope;
-        let mut params = Vec::new();
-        let specialization = self.at(">");
-        let r = (|| -> PR<()> {
-            if self.eat(">") {
-                return Ok(());
+        let r = self.parse_tparams(depth);
+        let tparams = match r {
+            Ok(v) => v,
+            Err(e) => {
+                self.pop_scope();
+                return Err(e);
             }
-            loop {
-                let pl = self.line();
-                if self.at("class") || self.at("typename") {
-                    self.pos += 1;
-                    self.eat("...");
-                    let name = if self.is_ident() { self.ident()? } else { String::new() };
-                    if self.eat("=") {
-                        self.parse_type_id()?;
-                    }
-                    params.push(name.clone());
-                    self.add_decl(&name, DK::TypeParam, pl);
-                } else if self.at("template") {
-                    self.pos += 1;
-                    self.skip_balanced();
-                    self.pos += 1; // class/typename
-                    self.eat("...");
-                    let name = if self.is_ident() { self.ident()? } else { String::new() };
-                    params.push(name.clone());
-                    self.add_decl(&name, DK::Template(TemplKind::Class(usize::MAX)), pl);
-                } else if self.is_ident() && self.lookup(&self.tok().text.clone()).is_some_and(|ids| matches!(self.decls[ids[0]].k, DK::Template(TemplKind::Concept))) {
-                    // constrained parameter
-                    self.pos += 1;
-                    if self.at("<") {
-                        self.skip_balanced();
-                    }
-                    self.eat("...");
-                    let name = if self.is_ident() { self.ident()? } else { String::new() };
-                    params.push(name.clone());
-                    self.add_decl(&name, DK::TypeParam, pl);
-                } else {
-                    let ds = self.parse_decl_specs(None)?;
-                    let base = self.ds_base(&ds).unwrap_or(QTy::unknown());
-                    let d = self.parse_declarator(true, true)?;
-                    let ty = self.apply_ops(base, &d.ops, pl);
-                    let name = d.name.clone().unwrap_or_default();
-                    if self.eat("=") {
-                        self.templ += 1;
-                        let e = self.parse_conditional();
-                        self.templ -= 1;
-                        e?;
-                    }
-                    params.push(name.clone());
-                    let vi = VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: true, local: false, dependent: true, defined: true, class: None };
-                    self.add_decl(&name, DK::Var(vi), pl);
-                }
-                if self.eat(",") {
-                    continue;
-                }
-                self.expect(">")?;
-                return Ok(());
-            }
-        })();
-        if let Err(e) = r {
-            self.pop_scope();
-            return Err(e);
-        }
+        };
+        let params: Vec<String> = tparams.iter().map(|p| p.name.clone()).collect();
+        let mut constrained = std::mem::take(&mut self.tparam_constrained);
         if self.at("requires") {
             self.pos += 1;
             self.skip_constraint()?;
+            constrained = true;
         }
         if self.at("concept") {
             self.pos += 1;
@@ -605,14 +739,920 @@ impl P {
             self.recover();
             return Ok(());
         }
-        self.pending_template = Some(PendingTemplate { params, specialization });
+        let dependent = self.templ > 0;
+        let body_start = self.pos;
+        if self.inst_depth == 0 {
+            if self.lang_c > 0 {
+                // TPL-3: no template with C language linkage.
+                self.error(line, "TPL-3", "a template with C language linkage");
+            }
+            if let Ctx::Class(c) = ctx {
+                if self.class_is_local(c) {
+                    // TPL-2: no template in a local class.
+                    self.error(line, "TPL-2", "a template declared in a local class");
+                }
+            }
+            if self.at("friend") || (self.at_k(1, "friend") && !self.at("friend")) {
+                let def_fn = self.friend_template_defines_function();
+                if tparams.iter().any(|p| p.default.is_some()) && !def_fn {
+                    // TPL-37: a friend declaration of a template gives no
+                    // default, unless it defines a function template.
+                    self.error(line, "TPL-37", "a friend template declaration gives a default template argument");
+                }
+            }
+        }
+        let saved_last = self.last_templ.take();
+        let saved_hc = std::mem::replace(&mut self.head_constrained, constrained);
+        self.pending_template = Some(PendingTemplate { params, specialization: false, tparams: tparams.clone(), depth, dependent });
         self.templ += 1;
+        self.tdepth += 1;
         let r = self.parse_declaration(ctx);
+        self.tdepth -= 1;
         self.templ -= 1;
         self.pending_template = None;
         self.pop_scope();
+        let last = std::mem::replace(&mut self.last_templ, saved_last);
         r?;
+        let body_end = self.pos;
+        // A member template defined outside its class: the enclosing
+        // head records the whole declaration (TPL-24).
+        let outer = match (&last, dependent) {
+            (Some(crate::templ::Last::Member(t, p)), true) => Some(crate::templ::Last::Member(*t, p.clone())),
+            _ => None,
+        };
+        self.head_constrained = constrained;
+        self.record_template(last, tparams, depth, dependent, body_start, body_end, ctx, line);
+        self.head_constrained = saved_hc;
+        if let Some(o) = outer {
+            self.last_templ = Some(o);
+        }
         Ok(())
+    }
+
+    /// Whether a declarator names a member of an instance or of an
+    /// explicitly specialized class (TSP-3, TSP-22).
+    fn in_instance_member(&self, d: &Declarator) -> bool {
+        match d.qual {
+            Some(s) => matches!(self.scopes[s].kind, SK::Class(c) if self.in_instance(c)),
+            None => false,
+        }
+    }
+
+    /// Skip what is left of a function declaration after an error.
+    fn recover_function_body(&mut self) {
+        while !self.at(";") && !self.at("{") && self.tok().kind != TK::Eof {
+            if self.at("(") {
+                self.skip_balanced();
+            } else {
+                self.pos += 1;
+            }
+        }
+        if self.at("{") {
+            self.skip_balanced();
+        } else {
+            self.eat(";");
+        }
+    }
+
+    /// DED-32, DED-33, TSP-4: the template and arguments of the
+    /// specialization that a declaration with the function type `ft`
+    /// names.
+    fn match_declared_spec(&mut self, cands: &[DeclId], targs: Option<&std::rc::Rc<Vec<crate::templ::RawArg>>>, ft: &QTy, line: u32) -> Option<(usize, Vec<TArg>)> {
+        self.match_declared_spec_rule(cands, targs, ft, line, "TSP-4")
+    }
+
+    fn match_declared_spec_rule(&mut self, cands: &[DeclId], targs: Option<&std::rc::Rc<Vec<crate::templ::RawArg>>>, ft: &QTy, line: u32, rule: &'static str) -> Option<(usize, Vec<TArg>)> {
+        use crate::templ::Binds;
+        let mut found: Vec<(usize, Vec<TArg>)> = Vec::new();
+        for &c in cands {
+            let t = self.decl_tid[&c];
+            let params = self.templs[t].params.clone();
+            let mut b = Binds::new(self.templs[t].depth, &params);
+            if let Some(raw) = targs {
+                let me = self.d.muted_errors;
+                self.d.muted += 1;
+                let r = self.targs_for(t, (**raw).clone(), line, true);
+                self.d.muted -= 1;
+                match r {
+                    Ok(Some(v)) if self.d.muted_errors == me => {
+                        for (i, a) in v.into_iter().enumerate() {
+                            b.vals[i] = Some(a);
+                        }
+                    }
+                    _ => continue,
+                }
+            }
+            let Some(f) = self.func(c).cloned() else { continue };
+            let pt = QTy::new(Ty::Func(Box::new(f.fty.clone())));
+            let ok = if f.ret_auto.is_some() && matches!(&ft.t, Ty::Func(af) if af.ret.is_unknown()) {
+                // A deduced return type: the parameters only.
+                match (&pt.t, &ft.t) {
+                    (Ty::Func(pf), Ty::Func(af)) => pf.params.len() == af.params.len() && pf.params.iter().zip(af.params.iter()).all(|(p, a)| self.deduce_ty(p, a, &mut b)),
+                    _ => false,
+                }
+            } else {
+                self.deduce_ty(&pt, ft, &mut b)
+            };
+            if !ok || b.unknown {
+                continue;
+            }
+            let mut args = Vec::new();
+            let mut complete = true;
+            for (i, v) in b.vals.iter().enumerate() {
+                match v {
+                    Some(v) => args.push(v.clone()),
+                    None if params[i].pack => args.push(TArg::Pack(vec![])),
+                    None => match self.default_arg(t, i, &args) {
+                        Some(a) if !a.is_dep() => args.push(a),
+                        _ => complete = false,
+                    },
+                }
+            }
+            if complete {
+                found.push((t, args));
+            }
+        }
+        if found.is_empty() {
+            self.error(line, rule, "no function template has a specialization with the declared type");
+            return None;
+        }
+        if found.len() == 1 {
+            return found.pop();
+        }
+        // DED-33, ORD-9: partial ordering chooses one.
+        for i in 0..found.len() {
+            let best = (0..found.len()).all(|j| {
+                if i == j {
+                    return true;
+                }
+                let (a, b) = self.func_order(found[i].0, found[j].0, None);
+                a && !b
+            });
+            if best {
+                return Some(found.swap_remove(i));
+            }
+        }
+        self.error(line, "DED-33", "more than one function template matches the declaration, and none is more specialized");
+        None
+    }
+
+    /// TSP-11: the head and the argument list of a partial
+    /// specialization.
+    fn check_partial(&mut self, t: usize, tparams: &[crate::templ::TParam], pats: &[TArg], depth: u32, line: u32) {
+        use crate::templ::Binds;
+        if tparams.iter().any(|p| p.default.is_some()) {
+            self.error(line, "TSP-11", "a parameter of a partial specialization has a default");
+            return;
+        }
+        // The argument list is not the primary template's parameters again.
+        let n = self.templs[t].params.len();
+        let same = !tparams.iter().any(|p| matches!(p.kind, crate::templ::TPK::Auto))
+            && pats.len() == n
+            && tparams.len() == n
+            && pats.iter().enumerate().all(|(i, a)| {
+                let k = (depth, i as u32);
+                match a {
+                    TArg::Type(q) => !q.c && !q.v && matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1)),
+                    TArg::Val(TVal::Param(x, y)) => (*x, *y) == k,
+                    TArg::Templ(TName::Param(x, y)) => (*x, *y) == k,
+                    TArg::Expand(x) => matches!(&**x, TArg::Type(q) if matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1))),
+                    TArg::Pack(v) => v.len() == 1 && matches!(&v[0], TArg::Expand(x) if matches!(&**x, TArg::Type(q) if matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1)))),
+                    _ => false,
+                }
+            });
+        if same {
+            self.error(line, "TSP-11", "the argument list of a partial specialization is the primary template's parameter list");
+            return;
+        }
+        // A constant argument whose parameter type uses another parameter
+        // is not a fixed value.
+        let prim = self.templs[t].params.clone();
+        for (i, a) in pats.iter().enumerate() {
+            if let (Some(crate::templ::TPK::Const(pt)), TArg::Val(TVal::Const(..))) = (prim.get(i).map(|p| &p.kind), a) {
+                if matches!(pt.t, Ty::Dep(_)) {
+                    self.error(line, "TSP-11", "a fixed value for a parameter whose type depends on another parameter");
+                    return;
+                }
+            }
+        }
+        // Every pack is expanded.
+        let unexpanded = pats.iter().flat_map(|a| match a {
+            TArg::Pack(v) => v.iter().collect::<Vec<_>>(),
+            x => vec![x],
+        }).any(|a| match a {
+            TArg::Type(q) => matches!(&q.t, Ty::Dep(d) if matches!(**d, Dep::Param(dd, i) if dd == depth && tparams.get(i as usize).is_some_and(|p| p.pack))),
+            TArg::Val(TVal::Param(dd, i)) => *dd == depth && tparams.get(*i as usize).is_some_and(|p| p.pack),
+            _ => false,
+        });
+        if unexpanded {
+            self.error(line, "TSP-11", "a pack of a partial specialization is not expanded");
+            return;
+        }
+        // Each parameter appears where deduction can find it.
+        let b = Binds::new(depth, tparams);
+        let mut seen: Vec<u32> = Vec::new();
+        for a in pats {
+            self.deducible_params(a, &b, &mut seen);
+        }
+        if (0..tparams.len() as u32).any(|i| !seen.contains(&i)) {
+            self.error(line, "TSP-11", "a parameter of a partial specialization is not deducible from its argument list");
+            return;
+        }
+        // A pack expansion is the last argument.
+        let flat: Vec<&TArg> = pats.iter().flat_map(|a| match a {
+            TArg::Pack(v) => v.iter().collect::<Vec<_>>(),
+            x => vec![x],
+        }).collect();
+        if let Some(i) = flat.iter().position(|a| matches!(a, TArg::Expand(_))) {
+            if i + 1 != flat.len() {
+                self.error(line, "TSP-11", "a pack expansion is not the last argument of a partial specialization");
+            }
+        }
+    }
+
+    /// The parameters that an argument pattern gives values to.
+    fn deducible_params(&self, a: &TArg, b: &crate::templ::Binds, out: &mut Vec<u32>) {
+        match a {
+            TArg::Type(q) => self.deducible_in_ty(q, b, out),
+            TArg::Val(TVal::Param(d, i)) if *d == b.depth => out.push(*i),
+            TArg::Templ(TName::Param(d, i)) if *d == b.depth => out.push(*i),
+            TArg::Pack(v) => {
+                for x in v {
+                    self.deducible_params(x, b, out);
+                }
+            }
+            TArg::Expand(x) => self.deducible_params(x, b, out),
+            _ => {}
+        }
+    }
+
+    fn deducible_in_ty(&self, q: &QTy, b: &crate::templ::Binds, out: &mut Vec<u32>) {
+        match &q.t {
+            Ty::Dep(d) => match &**d {
+                Dep::Param(dd, i) if *dd == b.depth => out.push(*i),
+                Dep::Id(n, args) => {
+                    if let TName::Param(dd, i) = n {
+                        if *dd == b.depth {
+                            out.push(*i);
+                        }
+                    }
+                    for a in args {
+                        self.deducible_params(a, b, out);
+                    }
+                }
+                Dep::Array(el, bound) => {
+                    self.deducible_in_ty(el, b, out);
+                    if let TVal::Param(dd, i) = bound {
+                        if *dd == b.depth {
+                            out.push(*i);
+                        }
+                    }
+                }
+                Dep::MemPtr(c, m) => {
+                    self.deducible_in_ty(c, b, out);
+                    self.deducible_in_ty(m, b, out);
+                }
+                _ => {}
+            },
+            Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) | Ty::Array(x, _) | Ty::MemPtr(_, x) => self.deducible_in_ty(x, b, out),
+            Ty::Func(f) => {
+                self.deducible_in_ty(&f.ret, b, out);
+                for p in &f.params {
+                    self.deducible_in_ty(p, b, out);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// An explicit instantiation, after `template` (or `extern template`
+    /// for a declaration): INST-16 to INST-29.
+    fn parse_explicit_inst(&mut self, ctx: Ctx, ext: bool, line: u32) -> PR<()> {
+        if !matches!(ctx, Ctx::Namespace) {
+            // INST-21: at namespace scope.
+            self.error(line, "INST-21", "an explicit instantiation outside namespace scope");
+            self.recover();
+            return Ok(());
+        }
+        if !self.decl_attrs.is_empty() || (self.at("[") && self.at_k(1, "[")) {
+            // INST-25: no attribute.
+            self.error(line, "INST-25", "an attribute on an explicit instantiation");
+            self.skip_attributes();
+        }
+        let kind_key = if ext { "decl" } else { "def" };
+        if self.at("class") || self.at("struct") || self.at("union") {
+            let key = match self.tok().text.as_str() {
+                "struct" => 0u8,
+                "class" => 1,
+                _ => 2,
+            };
+            self.pos += 1;
+            let scope = self.parse_nested_name()?;
+            let name = self.ident()?;
+            let found = match scope {
+                None => self.lookup(&name),
+                Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
+                Some(Err(())) => None,
+            };
+            if !self.at("<") {
+                // A member class: `template struct Outer<int>::Inner;`.
+                let c = found.and_then(|ids| ids.iter().find_map(|&i| self.class_of_decl(i)));
+                self.expect(";")?;
+                if let Some(c) = c {
+                    if !ext {
+                        self.explicit_inst_class(c, line);
+                    }
+                } else {
+                    self.error(line, "INST-22", format!("'{}' names no specialization", name));
+                }
+                return Ok(());
+            }
+            let tid = found.and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)));
+            let Some(t) = tid.filter(|&t| self.templs[t].kind == crate::templ::TKind::Class) else {
+                self.skip_template_args()?;
+                self.recover_until_semicolon();
+                self.eat(";");
+                self.error(line, "INST-22", format!("'{}' is not a class template", name));
+                return Ok(());
+            };
+            let raw = self.parse_raw_targs()?;
+            self.expect(";")?;
+            let here = self.decl_scope();
+            if !self.scope_encloses(here, self.templs[t].scope) || (scope.is_none() && here != self.templs[t].scope) {
+                // INST-21: in the template's namespace or one that encloses
+                // it, with a qualified name outside the template's own.
+                self.error(line, "INST-21", "an explicit instantiation outside the namespace of its template, or without a qualified name");
+                return Ok(());
+            }
+            let Ok(Some(args)) = self.targs_for(t, raw, line, false) else { return Ok(()) };
+            let pk = match self.decls[self.templs[t].decl].k {
+                DK::Template(TemplKind::Class(pc)) if pc != usize::MAX => Some(self.classes[pc].key),
+                _ => None,
+            };
+            if pk.is_some_and(|pk| (pk == 2) != (key == 2)) {
+                self.error(line, "TSP-32", "the class key of the explicit instantiation does not agree with the template's");
+            }
+            let k = format!("class {} {}", t, self.show_targs(&args));
+            self.note_explicit_inst(&k, ext, line);
+            let q = self.class_ref(t, args.clone(), line);
+            if let Ty::Class(c) = q.t {
+                let defined = self.templs[t].src.is_some() || self.templs[t].partials.iter().any(|p| p.src.is_some()) || self.classes[c].complete;
+                if !defined {
+                    // INST-20: the class template is defined.
+                    self.error(line, "INST-20", format!("an explicit instantiation of '{}', whose template is not defined", self.templs[t].name));
+                    return Ok(());
+                }
+                self.require_class(c, line);
+                if !ext && !self.templs[t].explicit.iter().any(|x| x.1 == crate::templ::Inst::Class(c)) {
+                    self.explicit_inst_class(c, line);
+                }
+            }
+            let _ = kind_key;
+            return Ok(());
+        }
+        let ds = self.parse_decl_specs(None)?;
+        if ds.inline || ds.constexpr || ds.consteval || ds.storage.iter().any(|s| *s != Storage::ThreadLocal) {
+            // INST-25: no inline, constexpr, consteval, or storage class.
+            self.error(line, "INST-25", "an explicit instantiation with 'inline', 'constexpr', or a storage class");
+        }
+        if (ds.ty.is_none() && ds.auto.is_none() && !self.is_ctor_start(None)) || self.at(";") {
+            // INST-23: a class needs its class key.
+            self.error(line, "INST-23", "an explicit instantiation of a class without its class key");
+            self.recover_until_semicolon();
+            self.eat(";");
+            return Ok(());
+        }
+        let d = match self.parse_declarator(false, false) {
+            Ok(d) => d,
+            Err(_) => {
+                // INST-22: the name is a template declared before.
+                self.error(line, "INST-22", "an explicit instantiation names no declared template");
+                self.recover();
+                return Ok(());
+            }
+        };
+        let fn_targs = self.decl_fn_targs.take();
+        let name = d.name.clone().unwrap_or_default();
+        if self.at("<") && !d.template_args {
+            // INST-22: the name is a template declared before.
+            self.error(line, "INST-22", format!("'{}' is not a declared template", name));
+            self.recover();
+            return Ok(());
+        }
+        if self.at(",") || self.at("=") || self.at("{") || (self.at("(") && d.func().is_none()) {
+            // INST-23: one declarator, no initializer or body.
+            self.error(line, "INST-23", "an explicit instantiation with more than one declarator, an initializer, or a body");
+            self.recover();
+            return Ok(());
+        }
+        let base = match (&ds.ty, ds.auto) {
+            (Some(t), _) => t.clone(),
+            (None, Some(_)) => QTy::unknown(),
+            (None, None) => QTy::new(Ty::Void),
+        };
+        if d.template_args && d.func().is_none() {
+            // A variable template: `template int table<int>[3];`.
+            let found = match d.qual {
+                Some(s) => self.lookup_in_scope(s, &name, true),
+                None => self.lookup(&name),
+            };
+            let tid = found.and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)));
+            let raw = self.parse_raw_targs()?;
+            while !self.at(";") && self.tok().kind != TK::Eof {
+                if self.at("=") || self.at("{") {
+                    // INST-23: no initializer.
+                    self.error(line, "INST-23", "an explicit instantiation with an initializer");
+                    self.recover();
+                    return Ok(());
+                }
+                if self.at("[") {
+                    self.skip_balanced();
+                } else {
+                    self.pos += 1;
+                }
+            }
+            self.expect(";")?;
+            let Some(t) = tid else {
+                self.error(line, "INST-22", format!("'{}' is not a variable template", name));
+                return Ok(());
+            };
+            if let Ok(Some(args)) = self.targs_for(t, raw, line, false) {
+                let k = format!("var {} {}", t, self.show_targs(&args));
+                self.note_explicit_inst(&k, ext, line);
+                if !ext {
+                    let defined = self.templs[t].src.as_ref().is_some_and(|s| s.toks.iter().any(|x| x.kind == TK::Punct && (x.text == "=" || x.text == "{")));
+                    if !defined {
+                        // INST-20: the definition can come later in the unit.
+                        self.later_explicit.push((t, args, line, true));
+                    } else if let Some(v) = self.var_inst(t, args, line) {
+                        if let Some(errs) = self.body_errors.remove(&v) {
+                            self.d.list.extend(errs);
+                        }
+                    }
+                }
+            }
+            return Ok(());
+        }
+        self.expect(";")?;
+        let ty = self.apply_ops(base, &d.ops, line);
+        let Ty::Func(mut ft) = ty.t.clone() else {
+            // A static data member of a class specialization.
+            if let Some(s) = d.qual {
+                if let Some(v) = self.lookup_in_scope(s, &name, true).and_then(|ids| ids.into_iter().find(|&i| self.var(i).is_some())) {
+                    if !ext {
+                        self.lazy_static_defs.remove(&v);
+                        if let Some(errs) = self.body_errors.remove(&v) {
+                            self.d.list.extend(errs);
+                        }
+                    }
+                    return Ok(());
+                }
+            }
+            self.error(line, "INST-22", format!("'{}' names no specialization", name));
+            return Ok(());
+        };
+        if ds.auto.is_some() {
+            ft.ret = QTy::unknown();
+        }
+        let ftq = QTy::new(Ty::Func(ft.clone()));
+        if let Some(s) = d.qual {
+            if let SK::Class(c) = self.scopes[s].kind {
+                if self.in_instance(c) && fn_targs.is_none() {
+                    // A member function of a class specialization.
+                    let ids = self.lookup_in_scope(s, &name, true).unwrap_or_default();
+                    let m = ids.into_iter().find(|&i| self.func(i).is_some_and(|f| !f.template && f.fty.params == ft.params && f.fty.cv_c == ft.cv_c));
+                    match m {
+                        Some(m) => {
+                            if self.func(m).is_some_and(|f| f.defaulted && !f.first_defaulted || f.body.is_none() && !self.lazy_bodies.contains_key(&m) && f.kind == FnKind::Ctor && !f.defined) {
+                                self.error(line, "INST-24", "an explicit instantiation of a special member function that is declared implicitly");
+                                return Ok(());
+                            }
+                            let k = format!("fn {}", m);
+                            self.note_explicit_inst(&k, ext, line);
+                            if !ext {
+                                self.force_use(m);
+                            }
+                        }
+                        None => {
+                            let rule = if d.kind == NameKind::Ctor || d.kind == NameKind::Dtor { "INST-24" } else { "INST-22" };
+                            self.error(line, rule, format!("'{}' names no member function of the class specialization", name));
+                        }
+                    }
+                    return Ok(());
+                }
+            }
+        }
+        let scope = d.qual.unwrap_or_else(|| self.decl_scope());
+        let cands: Vec<DeclId> = self.lookup_in_scope(scope, &name, true).unwrap_or_default().into_iter().filter(|&i| self.is_func_templ(i)).collect();
+        if d.qual.is_none() && cands.is_empty() {
+            if let Some(ids) = self.lookup(&name) {
+                if ids.iter().any(|&i| self.is_func_templ(i)) {
+                    // INST-21: outside the template's namespace the name is
+                    // qualified.
+                    self.error(line, "INST-21", "an explicit instantiation outside the template's namespace needs a qualified name");
+                    return Ok(());
+                }
+            }
+        }
+        if cands.is_empty() {
+            self.error(line, "INST-22", format!("'{}' is not a function template", name));
+            return Ok(());
+        }
+        let ftq = if ft.noexcept { ftq } else {
+            // The declaration can leave out the template's `noexcept`.
+            let mut f2 = (*ft).clone();
+            if cands.iter().any(|&c| self.func(c).is_some_and(|f| f.fty.noexcept)) {
+                f2.noexcept = true;
+            }
+            QTy::new(Ty::Func(Box::new(f2)))
+        };
+        let Some((t, args)) = self.match_declared_spec_rule(&cands, fn_targs.as_ref(), &ftq, line, "INST-22") else { return Ok(()) };
+        if !self.scope_encloses(self.decl_scope(), self.templs[t].scope) {
+            // INST-21: in the template's namespace or one that encloses it.
+            self.error(line, "INST-21", "an explicit instantiation outside the namespace of its template");
+            return Ok(());
+        }
+        if ds.auto.is_none() && self.func(self.templs[t].decl).is_some_and(|f| f.ret_auto.is_some()) {
+            // INST-22: a deduced return type is named with `auto`.
+            self.error(line, "INST-22", "an explicit instantiation writes the deduced return type");
+            return Ok(());
+        }
+        let k = format!("fn {} {}", t, self.show_targs(&args));
+        self.note_explicit_inst(&k, ext, line);
+        if self.templs[t].explicit.iter().any(|x| x.0 == args) {
+            // INST-18: an explicit specialization stays the definition.
+            return Ok(());
+        }
+        if let crate::templ::SpecRes::Ok(s) = self.func_spec(t, &args, line) {
+            if !ext {
+                let has_body = self.templs[t].src.as_ref().is_some_and(|src| src.toks.iter().any(|x| x.kind == TK::Punct && (x.text == "{" || x.text == "=")));
+                if !has_body {
+                    // INST-20: the definition can come later in the unit.
+                    self.later_explicit.push((t, args, line, false));
+                    return Ok(());
+                }
+                self.force_use(s);
+            }
+        }
+        Ok(())
+    }
+
+    /// INST-26: one explicit instantiation definition, and no declaration
+    /// after it.
+    fn note_explicit_inst(&mut self, key: &str, ext: bool, line: u32) {
+        let prev = self.explicit_insts.get(key).copied();
+        match (prev, ext) {
+            (Some(true), false) => self.error(line, "INST-26", "a second explicit instantiation definition of one specialization"),
+            (Some(true), true) => self.error(line, "INST-26", "an explicit instantiation declaration after the definition"),
+            _ => {}
+        }
+        if !ext {
+            self.explicit_insts.insert(key.to_string(), true);
+        } else {
+            self.explicit_insts.entry(key.to_string()).or_insert(false);
+        }
+    }
+
+    /// A definition that an explicit instantiation makes now, with its
+    /// diagnostics.
+    fn force_use(&mut self, f: DeclId) {
+        if self.lazy_bodies.contains_key(&f) {
+            self.run_lazy_body(f);
+        }
+        if self.spec_of.contains_key(&f) {
+            self.func_body(f);
+        }
+        if let Some(errs) = self.body_errors.remove(&f) {
+            self.d.list.extend(errs);
+        }
+    }
+
+    /// INST-17: the explicit instantiation of a class makes each member
+    /// that is defined, except member templates.
+    fn explicit_inst_class(&mut self, c: usize, line: u32) {
+        self.require_class(c, line);
+        let members: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().collect();
+        for m in members {
+            match &self.decls[m].k {
+                DK::Func(f) if !f.template => {
+                    if self.replayed_defs.contains(&m) || self.lazy_bodies.contains_key(&m) || self.body_errors.contains_key(&m) {
+                        self.force_use(m);
+                    }
+                }
+                DK::Var(_) => {
+                    self.lazy_static_defs.remove(&m);
+                    if let Some(errs) = self.body_errors.remove(&m) {
+                        self.d.list.extend(errs);
+                    }
+                }
+                DK::Class(mc) if *mc != c => {
+                    let mc = *mc;
+                    if self.in_instance(mc) {
+                        self.explicit_inst_class(mc, line);
+                    }
+                }
+                _ => {}
+            }
+        }
+        for f in self.classes[c].fields.clone() {
+            if let Some(errs) = self.body_errors.remove(&f) {
+                self.d.list.extend(errs);
+            }
+        }
+    }
+
+    /// Whether a class is local to a function (TPL-2).
+    fn class_is_local(&self, c: usize) -> bool {
+        let mut s = self.scopes[self.classes[c].scope].parent;
+        while let Some(x) = s {
+            match self.scopes[x].kind {
+                SK::Block | SK::Params => return true,
+                SK::Namespace => return false,
+                _ => {}
+            }
+            s = self.scopes[x].parent;
+        }
+        false
+    }
+
+    /// After a template head and `friend`: whether the declaration defines
+    /// a function (a body follows the parameters).
+    fn friend_template_defines_function(&self) -> bool {
+        let mut k = 0;
+        let mut depth = 0i32;
+        loop {
+            let t = self.peek(k);
+            if t.kind == TK::Eof {
+                return false;
+            }
+            if t.kind == TK::Punct {
+                match t.text.as_str() {
+                    "(" | "[" => depth += 1,
+                    ")" | "]" => depth -= 1,
+                    "{" if depth == 0 => return k > 0 && self.peek(k - 1).text != "class" && self.peek(k - 1).text != "struct",
+                    ";" if depth == 0 => return false,
+                    _ => {}
+                }
+            }
+            k += 1;
+        }
+    }
+
+    /// TPL-18: a template parameter name is not declared twice in one
+    /// head.
+    fn check_tparam_name(&mut self, name: &str, params: &[crate::templ::TParam], line: u32) {
+        if !name.is_empty() && params.iter().any(|p| p.name == name) && self.inst_depth == 0 {
+            self.error(line, "TPL-18", format!("the template parameter '{}' is declared twice", name));
+        }
+    }
+
+    /// TPL-6, TPL-7: a structural type for a constant parameter.
+    fn tparam_type_ok(&self, t: &QTy) -> bool {
+        match &t.t {
+            Ty::RRef(_) | Ty::Void => false,
+            Ty::LRef(x) => !matches!(x.t, Ty::Void),
+            Ty::Class(c) => {
+                let lit = self.literal_type(t).unwrap_or(true);
+                lit && self.structural(t) && !self.classes[*c].opaque
+            }
+            _ => true,
+        }
+    }
+
+    /// Keep the record of a template after its declaration (templ.rs).
+    #[allow(clippy::too_many_arguments)]
+    fn record_template(&mut self, last: Option<crate::templ::Last>, tparams: Vec<crate::templ::TParam>, depth: u32, dependent: bool, start: usize, end: usize, ctx: Ctx, line: u32) {
+        use crate::templ::*;
+        let Some(last) = last else { return };
+        let head_constrained = std::mem::take(&mut self.head_constrained) || matches!(last, Last::Func(id) if self.func(id).is_some_and(|f| f.constrained));
+        let (vid, base) = self.origin_of(start);
+        let src = Source { toks: self.copy_toks(start, end), stack: self.stack.clone(), ctx, access: self.access_stack.last().copied().unwrap_or(0), limit: if self.inst_depth > 0 { self.lookup_limit } else { self.decls.len() }, vid, base };
+        let scope = self.decl_scope();
+        if !dependent && self.inst_depth == 0 {
+            let primary = matches!(last, Last::Class(_) | Last::Var(_) | Last::Alias(_));
+            if primary {
+                // TPL-30: a pack is the last parameter.
+                if let Some(i) = tparams.iter().position(|p| p.pack) {
+                    if i + 1 != tparams.len() {
+                        self.error(line, "TPL-30", "a template parameter pack is not the last parameter");
+                    }
+                }
+                // TPL-14: each parameter after one with a default has one,
+                // with the defaults of all declarations (TPL-15).
+                let earlier = match &last {
+                    Last::Class(c) => self.class_tid.get(c).map(|&t| self.templs[t].params.clone()),
+                    _ => None,
+                };
+                let has = |i: usize| tparams[i].default.is_some() || earlier.as_ref().is_some_and(|e| e.get(i).is_some_and(|p| p.default.is_some()));
+                if let Some(i) = (0..tparams.len()).find(|&i| has(i)) {
+                    if (i..tparams.len()).any(|j| !has(j) && !tparams[j].pack) {
+                        self.error(line, "TPL-14", "a template parameter without a default follows one with a default");
+                    }
+                }
+            }
+        }
+        if let Last::Member(..) = &last {
+            if tparams.iter().any(|p| p.default.is_some()) && self.inst_depth == 0 {
+                // TPL-17: no default in a member definition outside the
+                // class, in either head.
+                self.error(line, "TPL-17", "a member definition outside its class template gives a default template argument");
+            }
+        }
+        let new_info = |p: &P, name: String, kind: TKind, decl: DeclId, src: Option<Source>| TemplInfo {
+            name,
+            kind,
+            params: tparams.clone(),
+            depth,
+            src,
+            stack: p.stack.clone(),
+            decl,
+            scope,
+            line,
+            dependent,
+            explicit: vec![],
+            partials: vec![],
+            insts: vec![],
+            members: vec![],
+            fn_pack: None,
+            fresh: false,
+            constrained: head_constrained,
+        };
+        match last {
+            Last::Class(c) => {
+                let defined = self.classes[c].complete;
+                if self.class_tid.get(&c).is_some_and(|&t| self.templs[t].src.is_none() && self.templs[t].insts.is_empty() && self.templs[t].fresh) {
+                    let t = self.class_tid[&c];
+                    self.templs[t].fresh = false;
+                    if defined {
+                        self.templs[t].src = Some(src);
+                    }
+                    return;
+                }
+                match self.class_tid.get(&c).copied() {
+                    Some(t) => {
+                        if !dependent && self.inst_depth == 0 {
+                            if !crate::templ::heads_equivalent(&self.templs[t].params, &tparams) {
+                                // TPL-20: equivalent heads.
+                                self.error(line, "TPL-20", format!("the template head of '{}' differs from an earlier declaration", self.templs[t].name));
+                            } else if self.templs[t].params.iter().zip(tparams.iter()).any(|(a, b)| a.default.is_some() && b.default.is_some()) {
+                                // TPL-16: one default per parameter.
+                                self.error(line, "TPL-16", format!("a default template argument of '{}' is given again", self.templs[t].name));
+                            }
+                        }
+                        if defined && self.templs[t].src.is_none() {
+                            self.templs[t].src = Some(src);
+                            // A later definition replaces the parameter names
+                            // and adds defaults (TPL-15).
+                            let old = std::mem::take(&mut self.templs[t].params);
+                            let mut ps = tparams.clone();
+                            for (i, p) in ps.iter_mut().enumerate() {
+                                if p.default.is_none() {
+                                    p.default = old.get(i).and_then(|o| o.default.clone());
+                                }
+                            }
+                            self.templs[t].params = ps;
+                        } else {
+                            let mut ps = std::mem::take(&mut self.templs[t].params);
+                            for (i, p) in ps.iter_mut().enumerate() {
+                                if p.default.is_none() {
+                                    p.default = tparams.get(i).and_then(|o| o.default.clone());
+                                }
+                            }
+                            self.templs[t].params = ps;
+                        }
+                    }
+                    None => {
+                        let decl = (0..self.decls.len()).rev().find(|&d| matches!(self.decls[d].k, DK::Template(TemplKind::Class(x)) if x == c));
+                        let Some(decl) = decl else { return };
+                        let name = self.classes[c].name.clone();
+                        let info = new_info(self, name, TKind::Class, decl, if defined { Some(src) } else { None });
+                        self.templs.push(info);
+                        let t = self.templs.len() - 1;
+                        self.class_tid.insert(c, t);
+                        self.decl_tid.insert(decl, t);
+                    }
+                }
+            }
+            Last::Partial(t, pats) => {
+                if self.inst_depth == 0 && !dependent {
+                    self.check_partial(t, &tparams, &pats, depth, line);
+                }
+                let defined = self.at_end_of_definition(start, end);
+                let pclass = self.last_partial_class.take();
+                if let Some(k) = self.templs[t].partials.iter().position(|p| p.pats == pats && p.params.len() == tparams.len()) {
+                    if defined {
+                        self.templs[t].partials[k].src = Some(src);
+                        self.templs[t].partials[k].class = pclass;
+                    }
+                } else {
+                    self.templs[t].partials.push(Partial { params: tparams.clone(), pats, src: if defined { Some(src) } else { None }, depth, line, class: pclass, constrained: head_constrained });
+                }
+            }
+            Last::VarPartial(t, pats) => {
+                if self.inst_depth == 0 && !dependent {
+                    self.check_partial(t, &tparams, &pats, depth, line);
+                }
+                self.templs[t].partials.push(Partial { params: tparams.clone(), pats, src: Some(src), depth, line, class: None, constrained: head_constrained });
+            }
+            Last::Func(id) => {
+                let defined = self.func(id).is_some_and(|f| f.defined);
+                match self.decl_tid.get(&id).copied() {
+                    Some(t) => {
+                        if defined {
+                            self.templs[t].src = Some(src);
+                            self.templs[t].params = tparams.clone();
+                        }
+                        self.templs[t].constrained |= head_constrained;
+                    }
+                    None => {
+                        let name = self.decls[id].name.clone();
+                        let mut info = new_info(self, name, TKind::Func, id, Some(src));
+                        info.fn_pack = self.func(id).and_then(|f| f.params.iter().position(|&p| self.pack_params.contains(&p)));
+                        self.templs.push(info);
+                        let t = self.templs.len() - 1;
+                        self.decl_tid.insert(id, t);
+                    }
+                }
+            }
+            Last::VarDef(id) => {
+                if let Some(&t) = self.decl_tid.get(&id) {
+                    self.templs[t].src = Some(src);
+                    self.templs[t].params = tparams.clone();
+                }
+            }
+            Last::Var(id) => {
+                let name = self.decls[id].name.clone();
+                let info = new_info(self, name, TKind::Var, id, Some(src));
+                self.templs.push(info);
+                let t = self.templs.len() - 1;
+                self.decl_tid.insert(id, t);
+            }
+            Last::Alias(id) => {
+                let name = self.decls[id].name.clone();
+                let info = new_info(self, name, TKind::Alias, id, Some(src));
+                self.templs.push(info);
+                let t = self.templs.len() - 1;
+                self.decl_tid.insert(id, t);
+            }
+            Last::Member(t, pats) => {
+                if dependent || self.templs[t].dependent {
+                    return;
+                }
+                let tdepth = self.templs[t].depth;
+                let _ = tdepth;
+                let primary = pats.len() == tparams.len()
+                    && pats.iter().enumerate().all(|(i, a)| match a {
+                        TArg::Type(q) => !q.c && !q.v && matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(depth, i as u32)),
+                        TArg::Val(TVal::Param(d, j)) => *d == depth && *j == i as u32,
+                        TArg::Templ(TName::Param(d, j)) => *d == depth && *j == i as u32,
+                        TArg::Expand(x) => matches!(&**x, TArg::Type(q) if matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(depth, i as u32))),
+                        TArg::Pack(v) => v.len() == 1 && matches!(&v[0], TArg::Expand(_)),
+                        _ => false,
+                    });
+                if !primary && self.inst_depth == 0 && pats.len() == tparams.len() && self.templs[t].partials.is_empty() {
+                    // TPL-43: the head's parameters in their order, and a
+                    // pack with `...`.
+                    self.error(line, "TPL-43", "the arguments after the class name do not list the head's parameters in order");
+                    return;
+                }
+                if self.inst_depth == 0 && !self.templs[t].dependent && pats.len() == self.templs[t].params.len() && tparams.len() != pats.len() && primary_like(&pats) {
+                    // TPL-20, TPL-24: a member template needs its own head.
+                    self.error(line, "TPL-20", "the head of a member definition does not match the class template's head");
+                    return;
+                }
+                let partial = if primary {
+                    None
+                } else {
+                    let parts = self.templs[t].partials.clone();
+                    let mut found = None;
+                    for (k, pt) in parts.iter().enumerate() {
+                        if self.partial_at_least(&tparams, &pats, depth, &pt.params, &pt.pats, pt.depth) && self.partial_at_least(&pt.params, &pt.pats, pt.depth, &tparams, &pats, depth) {
+                            found = Some(k);
+                            break;
+                        }
+                    }
+                    match found {
+                        Some(k) => Some(k),
+                        None => return,
+                    }
+                };
+                let m = Member { params: tparams.clone(), pats, src, depth, partial };
+                self.templs[t].members.push(m.clone());
+                // The instances made before the definition get it now.
+                let insts: Vec<(Vec<TArg>, Inst, Option<usize>)> = self.templs[t].insts.clone();
+                for (args, inst, pidx) in insts {
+                    if let Inst::Class(c) = inst {
+                        self.replay_member(&m, c, &args, pidx);
+                    }
+                }
+            }
+        }
+    }
+
+    /// Whether the tokens from `start` to `end` hold a definition: a body
+    /// in braces.
+    fn at_end_of_definition(&self, start: usize, end: usize) -> bool {
+        self.toks[start..end.min(self.toks.len())].iter().any(|t| t.kind == TK::Punct && t.text == "{")
     }
 
     pub fn skip_constraint(&mut self) -> PR<()> {
@@ -691,7 +1731,23 @@ impl P {
     pub fn parse_simple_declaration(&mut self, ctx: Ctx) -> PR<Vec<DeclId>> {
         let line = self.line();
         let class = if let Ctx::Class(c) = ctx { Some(c) } else { None };
+        let after_head = self.pending_template.is_some();
+        self.templ_class_defined = false;
         let ds = self.parse_decl_specs(class)?;
+        if after_head && self.inst_depth == 0 && std::mem::take(&mut self.templ_class_defined) && !self.at(";") {
+            self.error(line, "TPL-4", "a class template definition followed by a declarator");
+        }
+        if after_head && self.inst_depth == 0 {
+            // TPL-4: the declaration after a template head declares one
+            // named entity.
+            if ds.typedef {
+                self.error(line, "TPL-4", "a typedef declaration after a template head");
+            } else if ds.defined_class.is_some_and(|c| self.classes[c].name.is_empty()) {
+                self.error(line, "TPL-4", "a class without a name after a template head");
+            } else if ds.defined_class.is_some() && !self.at(";") {
+                self.error(line, "TPL-4", "a class template definition followed by a declarator");
+            }
+        }
         if ds.friend {
             if let Ctx::Class(c) = ctx {
                 self.friend_classes.insert(c);
@@ -749,6 +1805,7 @@ impl P {
         if ds.auto.is_some() && (self.at("[") || ((self.at("&") || self.at("&&")) && self.at_k(1, "["))) {
             return self.parse_structured_binding(&ds, ctx, line);
         }
+        self.templ_head_decl = after_head && self.inst_depth == 0;
         if (ds.ty.is_some() && self.at("[") && !self.at_k(1, "[")) || (ds.auto.is_some() && self.at("*") && self.at_k(1, "[")) {
             // SB-7: a structured binding uses plain `auto`.
             self.error(line, "SB-15", "structured binding declared with a type other than auto");
@@ -776,10 +1833,15 @@ impl P {
             }
             first = false;
             if self.eat(",") {
+                if std::mem::take(&mut self.templ_head_decl) {
+                    // TPL-4: one declarator after a template head.
+                    self.error(line, "TPL-4", "a declaration with two or more declarators after a template head");
+                }
                 continue;
             }
             break;
         }
+        self.templ_head_decl = false;
         self.expect(";")?;
         Ok(ids)
     }
@@ -892,7 +1954,7 @@ impl P {
                     elems = Some(v);
                 }
             }
-            Ty::Unknown => {}
+            Ty::Unknown | Ty::Dep(_) => {}
             _ => {
                 if !self.in_template() {
                     self.error(il, "SB-2", "structured binding of a type that is not an array or a class");
@@ -1099,6 +2161,28 @@ impl P {
                 }
             }
         }
+        if let Some(crate::templ::InstReq::Var { name: n }) = &self.inst {
+            if *n == name && !d.qual_unknown {
+                // The variable of a specialization of a variable template.
+                self.inst = None;
+                if d.template_args {
+                    self.skip_template_args()?;
+                }
+                let mut d2 = d.clone();
+                d2.template_args = false;
+                self.inst_fresh = true;
+                let r = self.declare_variable(ds, &d2, ty, ctx, auto_ty);
+                self.inst_fresh = false;
+                if let Ok((Some(id), _)) = &r {
+                    self.hide_decl(*id);
+                    self.inst_out = Some(crate::templ::InstOut::Var(*id));
+                }
+                return r;
+            }
+        }
+        if d.template_args && std::mem::take(&mut self.explicit_spec) && !self.in_template() {
+            return self.explicit_var_spec(ds, d, ty, ctx, auto_ty);
+        }
         if d.qual_unknown || d.template_args {
             // A definition of a member of an unknown class, or a
             // specialization: skip the initializer.
@@ -1112,10 +2196,15 @@ impl P {
         }
         if let Ctx::Class(c) = ctx {
             if !ds.storage.contains(&Storage::Static) && d.qual.is_none() {
+                if self.pending_template.take().is_some() && self.inst_depth == 0 {
+                    // TPL-27: a non-static data member is not a template.
+                    self.error(line, "TPL-27", "a non-static data member declared as a template");
+                }
                 return self.declare_field(ds, d, ty, c);
             }
         }
         if let Some(pt) = self.pending_template.take() {
+            self.last_decl_qual = d.qual;
             return self.declare_var_template(ds, &name, ty, pt, line);
         }
         self.declare_variable(ds, d, ty, ctx, auto_ty)
@@ -1133,79 +2222,132 @@ impl P {
         }
     }
 
+    /// Remove a declaration from its scope's names: a specialization is
+    /// found through its template only.
+    pub fn hide_decl(&mut self, id: DeclId) {
+        let s = self.decls[id].scope;
+        let name = self.decls[id].name.clone();
+        if let Some(v) = self.scopes[s].names.get_mut(&name) {
+            v.retain(|&x| x != id);
+        }
+    }
+
+    /// `template <> T v<args> = ...;`: the variable for one
+    /// specialization of a variable template (TSP-2).
+    fn explicit_var_spec(&mut self, ds: &DeclSpec, d: &Declarator, ty: QTy, ctx: Ctx, auto_ty: &mut Option<QTy>) -> PR<(Option<DeclId>, bool)> {
+        let name = d.name.clone().unwrap_or_default();
+        let line = d.line;
+        let found = match d.qual {
+            Some(s) => self.lookup_in_scope(s, &name, true),
+            None => self.lookup(&name),
+        };
+        let tid = found.and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)));
+        let Some(t) = tid else {
+            self.error(line, "TSP-4", format!("'{}' is not a template", name));
+            self.skip_template_args()?;
+            self.skip_initializer();
+            return Ok((None, false));
+        };
+        let raw = self.parse_raw_targs()?;
+        let args = match self.targs_for(t, raw, line, false) {
+            Ok(Some(a)) => a,
+            _ => {
+                self.skip_initializer();
+                return Ok((None, false));
+            }
+        };
+        if self.templs[t].insts.iter().any(|x| x.0 == args && matches!(x.1, crate::templ::Inst::Var(_))) {
+            self.error(line, "TSP-6", format!("explicit specialization of '{}' after its first use", name));
+        }
+        let mut d2 = d.clone();
+        d2.template_args = false;
+        self.inst_fresh = true;
+        let r = self.declare_variable(ds, &d2, ty, ctx, auto_ty);
+        self.inst_fresh = false;
+        if let Ok((Some(id), _)) = &r {
+            self.hide_decl(*id);
+            if let Some(x) = self.templs[t].explicit.iter_mut().find(|x| x.0 == args) {
+                x.1 = crate::templ::Inst::Var(*id);
+            } else {
+                self.templs[t].explicit.push((args.clone(), crate::templ::Inst::Var(*id)));
+            }
+            self.spec_of.insert(*id, (t, args));
+        }
+        r
+    }
+
     fn declare_var_template(&mut self, ds: &DeclSpec, name: &str, ty: QTy, pt: PendingTemplate, line: u32) -> PR<(Option<DeclId>, bool)> {
         let _ = (ds, ty);
+        if let Some(q) = self.last_decl_qual.take() {
+            // TPL-26: the definition of a static data member template
+            // outside its class.
+            if let SK::Class(_) = self.scopes[q].kind {
+                let found = self.scopes[q].names.get(name).cloned().unwrap_or_default();
+                if let Some(&id) = found.iter().find(|&&i| matches!(self.decls[i].k, DK::Template(TemplKind::Var { .. }))) {
+                    if self.eat("=") {
+                        let _ = self.parse_assignment()?;
+                    } else {
+                        self.skip_initializer();
+                    }
+                    self.last_templ = Some(crate::templ::Last::VarDef(id));
+                    return Ok((Some(id), false));
+                }
+            }
+        }
         let mut init = None;
         if self.eat("=") {
-            let e = self.parse_assignment()?;
+            let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
+            init = Some(Rc::new(e));
+        } else if self.at("{") {
+            let e = self.parse_braced_init()?;
             init = Some(Rc::new(e));
         } else {
             self.skip_initializer();
         }
         let cur = self.decl_scope();
+        if let Some(&prev) = self.scopes[cur].names.get(name).and_then(|v| v.iter().find(|&&i| matches!(self.decls[i].k, DK::Template(TemplKind::Var { .. })))) {
+            // Another declaration of the variable template: the
+            // definition gives its tokens.
+            if init.is_some() {
+                self.last_templ = Some(crate::templ::Last::VarDef(prev));
+            }
+            return Ok((Some(prev), false));
+        }
+        if self.inst_depth == 0 && self.scopes[cur].names.get(name).is_some_and(|v| !v.is_empty()) {
+            // TPL-21: a variable template shares its name with nothing.
+            self.error(line, "TPL-21", format!("the variable template '{}' has the name of another entity in its scope", name));
+        }
         let id = self.add_decl_in(cur, name, DK::Template(TemplKind::Var { params: pt.params, init, specs: vec![] }), line);
+        self.last_templ = Some(crate::templ::Last::Var(id));
         Ok((Some(id), false))
     }
 
     fn declare_var_template_spec(&mut self, name: &str, pt: PendingTemplate, line: u32) -> PR<(Option<DeclId>, bool)> {
-        // The declarator stopped at `<`: parse the pattern arguments.
+        // The declarator stopped at `<`: the arguments are the pattern
+        // of a partial specialization (TSP-10).
+        let _ = (pt, line);
         let found = self.lookup(name);
-        let target = found.and_then(|ids| ids.into_iter().find(|&i| matches!(self.decls[i].k, DK::Template(TemplKind::Var { .. }))));
-        let mut pats = Vec::new();
-        let ok = (|| -> PR<()> {
-            self.expect("<")?;
-            loop {
-                if self.is_ident() {
-                    let n = self.tok().text.clone();
-                    if let Some(i) = pt.params.iter().position(|p| *p == n) {
-                        if self.at_k(1, ",") || self.at_k(1, ">") || self.at_k(1, ">>") {
-                            self.pos += 1;
-                            pats.push(QTyPat::Param(i));
-                            if self.eat(",") {
-                                continue;
-                            }
-                            self.expect(">")?;
-                            return Ok(());
-                        }
-                    }
+        let target = found.and_then(|ids| ids.into_iter().find_map(|i| self.tid_of(i)));
+        match target {
+            Some(t) => {
+                let raw = self.parse_raw_targs()?;
+                if let Some(pats) = self.pattern_targs(t, raw) {
+                    self.last_templ = Some(crate::templ::Last::VarPartial(t, pats));
                 }
-                if self.starts_type() {
-                    let q = self.parse_type_id()?;
-                    if q.is_unknown() {
-                        return Err(self.err("unsupported pattern"));
-                    }
-                    pats.push(QTyPat::Ty(q));
-                } else {
-                    return Err(self.err("non-type pattern"));
-                }
-                if self.eat(",") {
-                    continue;
-                }
-                self.expect(">")?;
-                return Ok(());
             }
-        })();
-        if ok.is_err() || target.is_none() || !self.at("=") {
+            None => self.skip_template_args()?,
+        }
+        if self.eat("=") {
+            let _ = self.parse_assignment()?;
+        } else {
             self.skip_initializer();
-            if let Some(t) = target {
-                if let DK::Template(TemplKind::Var { init, .. }) = &mut self.decls[t].k {
-                    *init = None; // can no longer evaluate it
-                }
-            }
-            return Ok((None, false));
         }
-        self.expect("=")?;
-        let e = self.parse_assignment()?;
-        let t = target.unwrap();
-        if let DK::Template(TemplKind::Var { specs, .. }) = &mut self.decls[t].k {
-            specs.push((pt.params, pats, Rc::new(e)));
-        }
-        let _ = line;
         Ok((None, false))
     }
 
     fn declare_field(&mut self, ds: &DeclSpec, d: &Declarator, ty: QTy, c: usize) -> PR<(Option<DeclId>, bool)> {
         let line = d.line;
+        self.require_ty(&ty, line);
         let name = d.name.clone().unwrap_or_default();
         self.check_object_attrs(true, self.at(":"));
         if !self.in_template() && self.is_abstract(&ty.t) {
@@ -1253,7 +2395,7 @@ impl P {
                 }
                 Err(_) => bits = Some(1),
             }
-            if !(ty.t.is_integral() || matches!(ty.t, Ty::Enum(_) | Ty::Unknown)) {
+            if !(ty.t.is_integral() || matches!(ty.t, Ty::Enum(_) | Ty::Unknown | Ty::Dep(_))) {
                 self.error(line, "BF-2", "bit-field of non-integral type");
             }
         }
@@ -1429,6 +2571,10 @@ impl P {
 
     fn declare_variable(&mut self, ds: &DeclSpec, d: &Declarator, mut ty: QTy, ctx: Ctx, auto_ty: &mut Option<QTy>) -> PR<(Option<DeclId>, bool)> {
         let line = d.line;
+        if !(ds.storage.contains(&Storage::Extern) && !self.at("=") && !self.at("{") && !self.at("(")) && !(matches!(ctx, Ctx::Class(_)) && !self.at("=") && !self.at("{")) {
+            // INST-1: an object needs its class complete.
+            self.require_ty(&ty, line);
+        }
         let name = d.name.clone().unwrap_or_default();
         self.check_object_attrs(false, false);
         self.check_no_defaults_in(d, line);
@@ -1482,7 +2628,7 @@ impl P {
             self.stack.push(q);
         }
         // Existing declaration in the same scope.
-        let prev = self.scopes[target_scope].names.get(&name).cloned().unwrap_or_default();
+        let prev = if self.inst_fresh { Vec::new() } else { self.scopes[target_scope].names.get(&name).cloned().unwrap_or_default() };
         let mut redecl: Option<DeclId> = None;
         for &p in &prev {
             match &self.decls[p].k {
@@ -1524,12 +2670,23 @@ impl P {
             self.check_condition_conflict(&name, line);
         }
         // ODR-1: a static data member defined twice outside its class.
+        let explicit = std::mem::take(&mut self.explicit_spec);
         if let (Some(q), Some(p)) = (d.qual, redecl) {
-            if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() && !self.static_member_defs.insert(p) {
+            if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() && !self.static_member_defs.insert(p) && !(explicit && self.replayed_defs.contains(&p)) {
                 self.error(line, "ODR-1", format!("static data member '{}' defined twice", name));
             }
+            if self.member_replay {
+                self.replayed_defs.insert(p);
+                self.member_replay_decl = Some(p);
+                if !self.used_statics.contains(&p) {
+                    self.lazy_static_defs.insert(p);
+                }
+            }
+            if explicit {
+                self.lazy_static_defs.remove(&p);
+            }
         }
-        if d.qual.is_some() && redecl.is_none() && !self.in_template() {
+        if d.qual.is_some() && redecl.is_none() && !self.in_template() && !self.inst_fresh {
             if let SK::Class(c) = self.scopes[target_scope].kind {
                 if !self.class_uncertain(c) {
                     self.error(line, "CLS-23", format!("no static member '{}' in the class", name));
@@ -1608,6 +2765,23 @@ impl P {
         self.auto_in_own_init = None;
         self.stack = saved;
         r?;
+        // INST-10: an object of an instance with no constructor of its
+        // own uses the default member initializers that its initializer
+        // leaves.
+        if let Ty::Class(c) = &ty.t {
+            let c = *c;
+            if self.inst_of.contains_key(&c) && self.classes[c].ctors.is_empty() {
+                let given = match &init {
+                    Some(Expr { k: EK::InitList(v), .. }) => v.len(),
+                    _ => 0,
+                };
+                for fd in self.classes[c].fields.clone().into_iter().skip(given) {
+                    if let Some(errs) = self.body_errors.remove(&fd) {
+                        self.d.list.extend(errs);
+                    }
+                }
+            }
+        }
         // Placeholder deduction (AUTO rules).
         if ds.auto.is_some() && !ds.concept_auto || ds.auto.is_some() {
             match &init {
@@ -1884,6 +3058,7 @@ impl P {
     // ---- functions ----
 
     fn declare_function(&mut self, ds: &DeclSpec, d: &Declarator, ty: QTy, ctx: Ctx) -> PR<(Option<DeclId>, bool)> {
+        let explicit = std::mem::take(&mut self.explicit_spec);
         let line = d.line;
         let name = d.name.clone().unwrap_or_default();
         let fd = d.func().unwrap().clone();
@@ -1920,7 +3095,7 @@ impl P {
                 self.error(line, "DCL-21", "trailing return type without 'auto'");
             }
         }
-        let is_static = ds.storage.contains(&Storage::Static);
+        let mut is_static = ds.storage.contains(&Storage::Static);
         if ds.explicit && !self.in_template() {
             // CTOR-9: only a constructor or conversion function declared
             // in its class can have explicit.
@@ -1963,6 +3138,15 @@ impl P {
         }
         if is_static && ds.virtual_ {
             self.error(line, "CLS-27", "static member function declared virtual");
+        }
+        if self.pending_template.is_some() && self.inst_depth == 0 && in_class_body {
+            // TPL-25: no virtual member function template, and no
+            // destructor template.
+            if ds.virtual_ {
+                self.error(line, "TPL-25", "a member function template declared virtual");
+            } else if kind == FnKind::Dtor {
+                self.error(line, "TPL-25", "a destructor declared as a template");
+            }
         }
         if fd.has_explicit_this && (is_static || ds.virtual_ || fd.cv_c || fd.cv_v || fd.refq != 0) {
             self.error(line, "CLS-14", "explicit object member function that is static, virtual, or qualified");
@@ -2008,10 +3192,91 @@ impl P {
                 self.warn(line, "FN-6", "'main' has a parameter list other than () or (int, char**)");
             }
         }
+        let fn_targs = self.decl_fn_targs.take();
+        if fn_targs.is_some() && self.pending_template.is_some() && !explicit && self.inst_depth == 0 {
+            // TSP-7: no partial specialization of a function template.
+            self.error(line, "TSP-7", format!("a partial specialization of the function template '{}'", name));
+        }
+        // TSP-2, DED-32: the specialization that an explicit
+        // specialization of a function template declares.
+        let mut explicit_of: Option<(usize, Vec<TArg>)> = None;
+        if explicit && self.pending_template.is_none() && !self.in_template() && self.inst_depth == 0 {
+            let scope = match (d.qual, ctx) {
+                (Some(q), _) => q,
+                (None, Ctx::Class(c)) => self.classes[c].scope,
+                _ => self.decl_scope(),
+            };
+            let cands: Vec<DeclId> = self.lookup_in_scope(scope, &name, true).unwrap_or_default().into_iter().filter(|&i| self.is_func_templ(i)).collect();
+            if !cands.is_empty() || (fn_targs.is_some() && !self.in_instance_member(d)) {
+                let ft = QTy::new(Ty::Func(fty.clone()));
+                match self.match_declared_spec(&cands, fn_targs.as_ref(), &ft, line) {
+                    Some(x) => explicit_of = Some(x),
+                    None => {
+                        self.recover_function_body();
+                        return Ok((None, true));
+                    }
+                }
+            }
+        }
+        if explicit && self.inst_depth == 0 {
+            if ds.friend {
+                // TSP-12: no friend explicit specialization.
+                self.error(line, "TSP-12", "a friend declaration declares an explicit specialization");
+            }
+            if let Some(SK::Class(c)) = d.qual.map(|s| self.scopes[s].kind.clone()) {
+                if self.inst_of.get(&c).is_some_and(|(t, _)| self.templs[*t].explicit.iter().any(|x| x.1 == crate::templ::Inst::Class(c))) {
+                    // TSP-23: a member of an explicitly specialized class
+                    // is defined without `template <>`.
+                    self.error(line, "TSP-23", "a member of an explicitly specialized class is defined with 'template <>'");
+                } else if self.inst_of.contains_key(&c) && matches!(kind, FnKind::Ctor | FnKind::Dtor) || name == "operator=" && self.inst_of.contains_key(&c) {
+                    let declared = self.lookup_in_scope(self.classes[c].scope, &name, false).unwrap_or_default().into_iter().any(|i| self.func(i).is_some_and(|f| f.fty.params == fty.params && f.fty.cv_c == fty.cv_c));
+                    if !declared {
+                        // TSP-27: no explicit specialization of a special
+                        // member that the class declares implicitly.
+                        self.error(line, "TSP-27", "an explicit specialization of a special member function that is declared implicitly");
+                    }
+                }
+            }
+        }
+        if explicit && self.inst_depth == 0 && fd.defaults > 0 && d.qual.is_some_and(|s| matches!(self.scopes[s].kind, SK::Class(c) if self.inst_of.contains_key(&c) && !self.templs[self.inst_of[&c].0].explicit.iter().any(|x| x.1 == crate::templ::Inst::Class(c)))) {
+            // TSP-8: no default argument in a member of an implicit
+            // instantiation given explicitly.
+            self.error(line, "TSP-8", "a default argument in an explicit specialization of a member");
+        }
+        if let Some((t, _)) = &explicit_of {
+            // The specialization of a static member function template is
+            // static.
+            if self.func(self.templs[*t].decl).is_some_and(|f| f.is_static) {
+                is_static = true;
+            }
+        }
+        if let Some((t, args)) = &explicit_of {
+            if self.templs[*t].insts.iter().any(|x| &x.0 == args && matches!(x.1, crate::templ::Inst::Func(_))) {
+                // TSP-6: declared after a use that made the specialization.
+                self.error(line, "TSP-6", format!("explicit specialization of '{}' after its first use", name));
+            }
+            if ds.storage.iter().any(|s| *s != Storage::ThreadLocal) {
+                // TSP-24: no storage class other than thread_local.
+                self.error(line, "TSP-24", "an explicit specialization with a storage class");
+            }
+            if fd.defaults > 0 {
+                // TSP-8: no default argument.
+                self.error(line, "TSP-8", "a default argument in an explicit specialization of a function template");
+            }
+        }
         // Find a previous declaration of the same function.
         let template = self.pending_template.is_some();
-        self.pending_template = None;
-        let prev = if in_class_body && !is_friend {
+        let pending_head: Option<Vec<crate::templ::TParam>> = self.pending_template.take().map(|p| p.tparams);
+        let inst_req = match &self.inst {
+            Some(crate::templ::InstReq::Func { name: n, .. }) if (*n == name || (d.kind == NameKind::Conversion && n.starts_with("operator "))) && !d.qual_unknown => self.inst.take(),
+            _ => None,
+        };
+        // A specialization in a replay: the declaration only, or with its
+        // definition when a use needs it.
+        let sig_only = matches!(inst_req, Some(crate::templ::InstReq::Func { existing: None, .. }));
+        let prev = if inst_req.is_some() || explicit_of.is_some() {
+            Vec::new()
+        } else if in_class_body && !is_friend {
             let sc = self.classes[class.unwrap()].scope;
             self.scopes[sc].names.get(&name).cloned().unwrap_or_default()
         } else {
@@ -2035,7 +3300,17 @@ impl P {
                     // Two templates whose parameters depend on template
                     // parameters can differ in ways the front end does not
                     // model, such as a requires-clause (OVL-41).
-                    let distinct_templates = template && f.fty.ret != fty.ret && f.fty.params.iter().chain(fty.params.iter()).any(|q| q.is_unknown());
+                    // TPL-22: a different function type, also in the
+                    // result type, makes another template.
+                    let distinct_templates = template && f.fty.ret != fty.ret && (f.fty.params.iter().chain(fty.params.iter()).any(|q| q.is_unknown()) || f.fty.ret.is_unknown() || fty.ret.is_unknown());
+                    // TPL-20, TPL-22: heads that are not equivalent make
+                    // another template.
+                    let heads_differ = template
+                        && match (&pending_head, self.decl_tid.get(&p)) {
+                            (Some(h), Some(&t)) => !crate::templ::heads_equivalent(h, &self.templs[t].params),
+                            _ => false,
+                        };
+                    let distinct_templates = distinct_templates || heads_differ;
                     if f.fty.params == fty.params && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq && !(self.at("requires") && in_class_body) && !distinct_templates {
                         // (A member with a trailing requires-clause can
                         // overload one with the same parameters.)
@@ -2055,7 +3330,7 @@ impl P {
                 _ => {}
             }
         }
-        if d.qual.is_some() && existing.is_none() && !d.qual_unknown && !self.in_template() && !template {
+        if d.qual.is_some() && existing.is_none() && !d.qual_unknown && !self.in_template() && !template && explicit_of.is_none() && inst_req.is_none() {
             if let SK::Class(c) = self.scopes[target_scope].kind {
                 if !self.class_uncertain(c) && kind != FnKind::Ctor && kind != FnKind::Dtor {
                     // CLS-4: the class must declare the member first.
@@ -2111,6 +3386,12 @@ impl P {
                     let (pdel, pdef0) = self.func(p).map(|f| (f.deleted, f.defined)).unwrap_or((false, false));
                     if deleted {
                         self.error(line, "DEL-2", format!("'= delete' on a declaration of '{}' that is not the first", name));
+                    } else if pdel && explicit && self.replayed_defs.contains(&p) {
+                        // TSP-3: the explicit specialization replaces the
+                        // deleted definition from the template.
+                        if let Some(f) = self.func_mut(p) {
+                            f.deleted = false;
+                        }
                     } else if pdel && (is_def || defaulted) {
                         self.error(line, "DEL-2", format!("definition of the deleted function '{}'", name));
                     }
@@ -2144,8 +3425,19 @@ impl P {
                     // FN-2: all declarations have the same return type.
                     self.error(line, "FN-14", format!("declarations of '{}' have different return types", name));
                 }
-                if pdef && is_def && !self.in_template() {
+                if pdef && is_def && !self.in_template() && !(explicit && self.replayed_defs.contains(&p)) {
                     self.error(line, "FN-14", format!("function '{}' defined twice", name));
+                }
+                if explicit && self.replayed_defs.remove(&p) {
+                    // TSP-3: an explicit specialization of a member of an
+                    // instance replaces the definition from the template.
+                    self.lazy_bodies.remove(&p);
+                    self.body_errors.remove(&p);
+                    if let Some(f) = self.func_mut(p) {
+                        f.body = None;
+                        f.defined = false;
+                        f.mem_inits.clear();
+                    }
                 }
                 // a later declaration's parameters are used for the body;
                 // default arguments accumulate over declarations (DEFARG)
@@ -2250,6 +3542,9 @@ impl P {
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
+                if inst_req.is_some() {
+                    self.inst_out = Some(crate::templ::InstOut::Func(id));
+                }
                 if self.lang_c > 0 && member_class.is_none() {
                     self.c_fns.insert(id);
                 }
@@ -2274,6 +3569,28 @@ impl P {
                 id
             }
         };
+        if let Some(errs) = self.pending_noexcept_errors.take() {
+            self.noexcept_errors.insert(id, errs);
+        }
+        if inst_req.is_some() || explicit_of.is_some() {
+            // A specialization is found through its template only.
+            self.hide_decl(id);
+            if let Some(c) = member_class {
+                self.classes[c].ctors.retain(|&x| x != id);
+            }
+        }
+        if let Some((t, args)) = explicit_of.take() {
+            match self.templs[t].explicit.iter_mut().find(|x| x.0 == args) {
+                Some(x) => x.1 = crate::templ::Inst::Func(id),
+                None => self.templs[t].explicit.push((args.clone(), crate::templ::Inst::Func(id))),
+            }
+            let label = format!("{}<{}>", self.templs[t].name, self.show_targs(&args));
+            self.fn_label.insert(id, label);
+            self.spec_of.insert(id, (t, args));
+        }
+        if template && !d.qual_unknown && !is_friend {
+            self.last_templ = Some(crate::templ::Last::Func(id));
+        }
         // ACC-7, NAM-29: a friend first declared in a class is hidden
         // from ordinary lookup until the namespace declares it.
         if in_class_body && is_friend && d.qual.is_none() {
@@ -2371,6 +3688,9 @@ impl P {
             }
             return Ok((Some(id), false));
         }
+        if (deleted || defaulted) && self.inst_depth > 0 && member_class.is_some_and(|c| self.inst_of.contains_key(&c)) {
+            self.replayed_defs.insert(id);
+        }
         if deleted || defaulted {
             self.pos += 2;
             self.expect(";")?;
@@ -2388,7 +3708,23 @@ impl P {
             f.defined = true;
             f.template |= template;
         }
+        if self.inst_depth > 0 && (self.member_replay || member_class.is_some_and(|c| self.inst_of.contains_key(&c))) && !explicit {
+            self.replayed_defs.insert(id);
+        }
+        if self.member_replay {
+            self.member_replay_decl = Some(id);
+        }
         // FN-12: complete parameter and return types in a definition.
+        if !self.in_template() && !template && !sig_only {
+            let (ret, params) = {
+                let f = self.func(id).unwrap();
+                (f.fty.ret.clone(), f.fty.params.clone())
+            };
+            self.require_ty(&ret, line);
+            for p in params {
+                self.require_ty(&p, line);
+            }
+        }
         if !self.in_template() && !template {
             let ret = self.func(id).unwrap().fty.ret.clone();
             if let Ty::Class(c) = ret.t {
@@ -2405,6 +3741,14 @@ impl P {
                     }
                 }
             }
+        }
+        if sig_only {
+            // DED-24: substitution makes the declaration only.
+            if let Some(f) = self.func_mut(id) {
+                f.defined = false;
+            }
+            self.skip_function_body()?;
+            return Ok((Some(id), true));
         }
         // Body: deferred in a class body (NAM-6), parsed now otherwise.
         if in_class_body {
@@ -2496,7 +3840,20 @@ impl P {
     /// Parse the deferred bodies of a class after its definition.
     pub fn run_deferred(&mut self) {
         let list = std::mem::take(&mut self.deferred);
+        let mut snapshot: Option<Rc<Vec<crate::lexer::Token>>> = None;
         for df in list {
+            if let Some(fid) = df.func {
+                // INST-5: the body of a member function of an instance
+                // waits for a use.
+                let lazy = !self.force_bodies && self.in_instance(df.class) && self.func(fid).is_some_and(|f| !matches!(f.kind, FnKind::Ctor | FnKind::Dtor));
+                if lazy {
+                    let toks = snapshot.get_or_insert_with(|| Rc::new(self.toks.clone())).clone();
+                    self.lazy_bodies.insert(fid, (toks, df));
+                    self.lazy_limits.insert(fid, self.lookup_limit);
+                    self.lazy_origins.insert(fid, self.tok_origin);
+                    continue;
+                }
+            }
             let save_pos = self.pos;
             let save_stack = std::mem::replace(&mut self.stack, df.stack.clone());
             let save_templ = self.templ;
@@ -2516,31 +3873,23 @@ impl P {
                     }
                 }
             } else if let Some(pid) = df.param {
-                let line = self.line();
-                // DEFARG-4: `this` in a default argument, outside sizeof and
-                // decltype.
-                let toks: Vec<String> = self.toks[df.start..df.end].iter().map(|t| t.text.clone()).collect();
-                if toks.iter().any(|t| t == "this") && !toks.iter().any(|t| t == "sizeof" || t == "decltype" || t == "noexcept") {
-                    self.error(line, "DEFARG-4", "default argument uses 'this'");
+                let keep = self.in_instance(df.class);
+                let mark = self.d.list.len();
+                self.run_deferred_param(pid, &df);
+                if keep && self.d.list.len() > mark {
+                    let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
+                    self.default_errors.insert(pid, kept);
                 }
-                let saved_class_depth = self.class_depth;
-                self.class_depth = 0;
-                let r = if self.at("{") { self.parse_braced_init() } else { self.parse_assignment() };
-                self.class_depth = saved_class_depth;
-                match r {
-                    Ok(e) => {
-                        let ty = self.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
-                        let form = if matches!(e.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
-                        let ce = self.convert_init(e, &ty, form, line);
-                        self.check_default_arg(&ce, line);
-                        if let DK::Var(v) = &mut self.decls[pid].k {
-                            v.init = Some(Rc::new(ce));
-                        }
-                    }
-                    Err(e) => self.unsupported(e.line, format!("parse: {}", e.msg)),
-                }
+                self.pos = save_pos;
+                self.stack = save_stack;
+                self.templ = save_templ;
+                continue;
             } else if let Some(fid) = df.field {
                 let line = self.line();
+                // INST-10: a default member initializer of an instance is
+                // made when a constructor uses it; its errors wait.
+                let keep = self.in_instance(df.class);
+                let mark = self.d.list.len();
                 self.dmi_depth += 1;
                 let r = (|| -> PR<Expr> {
                     if self.eat("=") {
@@ -2568,10 +3917,41 @@ impl P {
                     Err(e) => self.unsupported(e.line, format!("parse: {}", e.msg)),
                 }
                 self.dmi_depth -= 1;
+                if keep && self.d.list.len() > mark {
+                    let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
+                    self.body_errors.insert(fid, kept);
+                }
             }
             self.pos = save_pos;
             self.stack = save_stack;
             self.templ = save_templ;
+        }
+    }
+
+    /// A default argument of a member function, parsed after its class.
+    fn run_deferred_param(&mut self, pid: DeclId, df: &Deferred) {
+        let line = self.line();
+        // DEFARG-4: `this` in a default argument, outside sizeof and
+        // decltype.
+        let toks: Vec<String> = self.toks[df.start..df.end].iter().map(|t| t.text.clone()).collect();
+        if toks.iter().any(|t| t == "this") && !toks.iter().any(|t| t == "sizeof" || t == "decltype" || t == "noexcept") {
+            self.error(line, "DEFARG-4", "default argument uses 'this'");
+        }
+        let saved_class_depth = self.class_depth;
+        self.class_depth = 0;
+        let r = if self.at("{") { self.parse_braced_init() } else { self.parse_assignment() };
+        self.class_depth = saved_class_depth;
+        match r {
+            Ok(e) => {
+                let ty = self.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
+                let form = if matches!(e.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
+                let ce = self.convert_init(e, &ty, form, line);
+                self.check_default_arg(&ce, line);
+                if let DK::Var(v) = &mut self.decls[pid].k {
+                    v.init = Some(Rc::new(ce));
+                }
+            }
+            Err(e) => self.unsupported(e.line, format!("parse: {}", e.msg)),
         }
     }
 
@@ -2676,6 +4056,23 @@ impl P {
         self.check_jumps(depth);
         let ctx = self.fns.pop().unwrap();
         let body = r?;
+        if kind == FnKind::Ctor {
+            // INST-10: a constructor uses the default member initializers
+            // of the members that it does not initialize.
+            if let Some(c) = class.filter(|c| self.inst_of.contains_key(c)) {
+                let inits: Vec<DeclId> = self.func(fid).map(|f| f.mem_inits.iter().filter_map(|m| m.field).collect()).unwrap_or_default();
+                let delegating = self.func(fid).is_some_and(|f| f.mem_inits.iter().any(|m| m.base == Some(c)));
+                if !delegating {
+                    for fd in self.classes[c].fields.clone() {
+                        if !inits.contains(&fd) {
+                            if let Some(errs) = self.body_errors.remove(&fd) {
+                                self.d.list.extend(errs);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // JMP-5: each goto names a label of its own function.
         for (l, line) in &ctx.gotos {
             if !ctx.labels.contains_key(l) {
@@ -3008,4 +4405,29 @@ pub fn elem_class(t: &Ty) -> Option<usize> {
         Ty::Class(c) => Some(*c),
         _ => None,
     }
+}
+
+/// Whether the arguments of a member definition are only parameters,
+/// each once.
+fn primary_like(pats: &[TArg]) -> bool {
+    let mut seen = Vec::new();
+    for a in pats {
+        let k = match a {
+            TArg::Type(q) if !q.c && !q.v => match &q.t {
+                Ty::Dep(d) => match &**d {
+                    Dep::Param(x, y) => (*x, *y),
+                    _ => return false,
+                },
+                _ => return false,
+            },
+            TArg::Val(TVal::Param(x, y)) => (*x, *y),
+            TArg::Templ(TName::Param(x, y)) => (*x, *y),
+            _ => return false,
+        };
+        if seen.contains(&k) {
+            return false;
+        }
+        seen.push(k);
+    }
+    true
 }

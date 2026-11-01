@@ -26,17 +26,23 @@ pub struct Diags {
     /// Depth of "tentative" parsing. Diagnostics produced while tentative
     /// are dropped by the caller on backtrack.
     pub muted: u32,
+    /// Errors and unsupported notes dropped while muted, for substitution
+    /// (DED-24).
+    pub muted_errors: u32,
+    pub muted_unsup: u32,
 }
 
 impl Diags {
     pub fn error(&mut self, line: u32, rule: Option<&'static str>, msg: impl Into<String>) {
         if self.muted > 0 {
+            self.muted_errors += 1;
             return;
         }
         self.list.push(Diag { sev: Severity::Error, rule, cause: None, msg: msg.into(), line });
     }
     pub fn unsupported(&mut self, line: u32, msg: impl Into<String>) {
         if self.muted > 0 {
+            self.muted_unsup += 1;
             return;
         }
         self.list.push(Diag { sev: Severity::Unsupported, rule: None, cause: None, msg: msg.into(), line });

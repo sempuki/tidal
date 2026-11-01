@@ -612,6 +612,18 @@ impl P {
             return CtorRes::Unknown;
         }
         let ctors = self.classes[c].ctors.clone();
+        // DED-1: a constructor template adds its specialization.
+        let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
+            if list {
+                return CtorRes::Unknown;
+            }
+            match self.expand_fn_templates(&ctors, args, 0) {
+                Some(v) if !v.is_empty() => v,
+                _ => return CtorRes::Unknown,
+            }
+        } else {
+            ctors
+        };
         for &cid in &ctors {
             let Some(f) = self.func(cid) else { return CtorRes::Unknown };
             if f.template || f.opaque || f.constrained {
@@ -978,11 +990,80 @@ impl P {
     /// type selects, converted to the target. None when the front end
     /// cannot decide; an error when no function or more than one matches.
     pub fn overload_target(&mut self, e: &Expr, to: &QTy, line: u32) -> Option<Expr> {
-        let (fs, _) = Self::overload_set_of(e)?;
+        // A function template named alone, or with explicit arguments.
+        let mut explicit: Option<std::rc::Rc<Vec<crate::templ::RawArg>>> = None;
+        let set = match &e.k {
+            EK::Func(f) if self.func(*f).is_some_and(|x| x.template) => Some(vec![*f]),
+            EK::TemplId(None, fs, raw) => {
+                explicit = Some(raw.clone());
+                Some(fs.clone())
+            }
+            EK::Unary(UOp::AddrOf, x) => match &x.k {
+                EK::Func(f) if self.func(*f).is_some_and(|y| y.template) => Some(vec![*f]),
+                EK::TemplId(None, fs, raw) => {
+                    explicit = Some(raw.clone());
+                    Some(fs.clone())
+                }
+                _ => None,
+            },
+            _ => None,
+        };
+        let fs = match set {
+            Some(fs) => fs,
+            None => Self::overload_set_of(e)?.0,
+        };
         if self.in_template() || to.is_unknown() {
             return None;
         }
+        // OVL-19, DED-30: each function template adds the specialization
+        // that deduction from the target gives.
+        let fs = if fs.iter().any(|&f| self.func(f).is_some_and(|x| x.template)) || explicit.is_some() {
+            let Some(v) = self.target_specs(&fs, explicit.as_ref(), to, line) else { return None };
+            if v.is_empty() {
+                // DED-35: no specialization matches the target type.
+                let name = fs.first().map(|&f| self.decls[f].name.clone()).unwrap_or_default();
+                self.error(line, "DED-35", format!("no specialization of '{}' matches the target type {}", name, show(to)));
+                return Some(Expr::unknown(line, "bad overload set"));
+            }
+            v
+        } else {
+            fs
+        };
         let mut matches = self.overload_matches(&fs, to).ok()?;
+        if matches.len() > 1 {
+            // OVL-19 steps 3 and 5: a plain function removes the
+            // specializations, and the more specialized template wins.
+            if matches.iter().any(|m| !self.spec_of.contains_key(&m.0)) {
+                matches.retain(|m| !self.spec_of.contains_key(&m.0));
+            } else {
+                let ids: Vec<DeclId> = matches.iter().map(|m| m.0).collect();
+                let mut keep: Option<DeclId> = None;
+                for &a in &ids {
+                    let best = ids.iter().all(|&b| {
+                        if a == b {
+                            return true;
+                        }
+                        let (ta, tb) = (self.spec_of[&a].0, self.spec_of[&b].0);
+                        if ta == tb {
+                            return false;
+                        }
+                        let (x, y) = self.func_order(ta, tb, None);
+                        x && !y
+                    });
+                    if best {
+                        keep = Some(a);
+                        break;
+                    }
+                }
+                if let Some(k) = keep {
+                    matches.retain(|m| m.0 == k);
+                }
+            }
+        }
+        if matches.len() == 1 && !self.in_template() && self.in_unevaluated == 0 {
+            // INST-7: taking the address needs the definition.
+            self.use_fn(matches[0].0);
+        }
         if matches.len() != 1 {
             // OVL-20: exactly one function must remain.
             let name = fs.first().map(|&f| self.decls[f].name.clone()).unwrap_or_default();

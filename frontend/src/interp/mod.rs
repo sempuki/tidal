@@ -416,7 +416,7 @@ impl<'a> Machine<'a> {
                 }
                 Val::Agg(v)
             }
-            Ty::Unknown => return unsup("object of unknown type"),
+            Ty::Unknown | Ty::Dep(_) => return unsup("object of unknown type"),
             Ty::Void | Ty::Func(_) => return unsup("object of void or function type"),
             _ => Val::Uninit,
         })
@@ -562,8 +562,9 @@ impl<'a> Machine<'a> {
         self.check_in_bounds(p)?;
         let v = self.get_at(p)?.clone();
         match v {
-            Val::Uninit if self.objs[p.obj].heap != Heap::No => ub("NEW-3", "read of an object from new that has no value"),
-            Val::Uninit => ub("INIT-1", "read of an object with no value"),
+            // OBJ-2 is the rule for a read of a scalar with no value.
+            Val::Uninit if self.objs[p.obj].heap != Heap::No => ub("OBJ-2, NEW-3", "read of an object from new that has no value"),
+            Val::Uninit => ub("OBJ-2, INIT-1", "read of an object with no value"),
             Val::Inactive => {
                 if self.constant {
                     return limit("CE-6", "read of a union member that is not active");
@@ -571,21 +572,18 @@ impl<'a> Machine<'a> {
                 ub("UNI-6", "read of a union member that is not active")
             }
             Val::Agg(_) if self.constant && has_unset(&v) => limit("CE-22", "copy of an object that has a scalar part with no value"),
+            // OBJ-2: an implicit copy or move reads each scalar part.
+            Val::Agg(_) if has_unset(&v) => ub("OBJ-2", "implicit copy of an object that has a scalar part with no value"),
             Val::NotUsable(m) => limit("CE-3", m),
             v => Ok(v),
         }
     }
 
-    /// The rules that a use of an object after its lifetime breaks: OBJ-2,
-    /// and DTOR-7 after a destructor. An indirection also breaks UN-7. A
-    /// run names each of them; constant evaluation names the first.
+    /// The rule that a use of an object after its lifetime breaks:
+    /// OBJ-2, to which UN-7 and DTOR-7 refer.
     pub fn ended_rule(&self, indirection: bool) -> &'static str {
-        match (self.constant, indirection) {
-            (true, true) => "UN-7",
-            (true, false) => "OBJ-2",
-            (false, true) => "UN-7, OBJ-2, DTOR-7",
-            (false, false) => "OBJ-2, DTOR-7",
-        }
+        let _ = indirection;
+        "OBJ-2"
     }
 
     /// End the lifetime of a complete object.

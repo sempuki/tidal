@@ -165,6 +165,10 @@ impl P {
             // ICS-8: the chosen conversion function is deleted.
             self.error_because(line, "ICS-8", "DEL-1", format!("conversion by the deleted function '{}'", self.decls[fid].name));
         }
+        if self.in_unevaluated == 0 {
+            self.use_fn(fid);
+        }
+        let f = self.func(fid)?.clone();
         let (t, cat) = crate::expr2::ret_cat(&f.fty.ret);
         let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), t, cat, line);
         if self.in_unevaluated == 0 && self.internal_fns.contains(&fid) {
@@ -190,6 +194,9 @@ impl P {
         if p.is_unknown() || self.in_template() {
             return Err(());
         }
+        // INST-3: the front end makes the classes complete.
+        self.require_pointee(p, a.line);
+        self.require_pointee(&a.ty, a.line);
         if matches!(a.k, EK::InitList(_)) && a.ty.is_unknown() {
             return self.ics_list(a, p, std_only);
         }
@@ -384,7 +391,8 @@ impl P {
             }
             _ => None,
         };
-        let related = at.t == inner.t || related_base.is_some();
+        // An array's qualifiers are those of its elements (CV-6).
+        let related = at.t == inner.t || crate::templ::strip_cv(&at, true, true).t == crate::templ::strip_cv(inner, true, true).t || related_base.is_some();
         let cv_ok = (!at.c || inner.c) && (!at.v || inner.v);
         let const_lref = !rref && inner.c && !inner.v;
         if related && cv_ok {
@@ -488,6 +496,16 @@ impl P {
         self.conv_fns(ac, 0, &mut fns);
         let mut cands: Vec<UCand> = Vec::new();
         for fid in fns {
+            let fid = if self.is_func_templ(fid) {
+                // DED-31: the specialization for the needed type.
+                match self.conv_spec(fid, p, to_ref) {
+                    crate::templ::SpecRes::Ok(s) => s,
+                    crate::templ::SpecRes::Fail => continue,
+                    crate::templ::SpecRes::Unknown => return Err(()),
+                }
+            } else {
+                fid
+            };
             let f = self.func(fid).unwrap().clone();
             // ICS-8: a deleted function still forms a sequence.
             if f.explicit {
@@ -506,20 +524,49 @@ impl P {
             if third.kind != IK::Std {
                 continue;
             }
-            if f.template && third.s.rank != 0 {
+            if (f.template || self.spec_of.contains_key(&fid)) && third.s.rank != 0 {
                 // ICS-5: a template only with an exact-match third part.
                 continue;
             }
             cands.push(UCand { f: fid, first, third: third.s });
         }
-        Ok(self.pick_user(cands, true))
+        // OVL-28, ORD-8: the order of the templates of the
+        // specializations.
+        self.tie_more.clear();
+        let specs: Vec<DeclId> = cands.iter().map(|c| c.f).filter(|d| self.spec_of.contains_key(d)).collect();
+        for &x in &specs {
+            for &y in &specs {
+                if x != y {
+                    let (tx, ty) = (self.spec_of[&x].0, self.spec_of[&y].0);
+                    if tx != ty {
+                        let (a, b) = self.func_order(tx, ty, None);
+                        if a && !b {
+                            self.tie_more.push((x, y));
+                        }
+                    }
+                }
+            }
+        }
+        let r = self.pick_user(cands, true);
+        self.tie_more.clear();
+        Ok(r)
     }
 
     /// ICS-3, ICS-4: a user-defined sequence to class `pc` through a
     /// converting constructor, or a conversion function of the argument.
     fn ics_user_to_class(&mut self, a: &Expr, pc: usize) -> R {
         let mut cands: Vec<UCand> = Vec::new();
-        for cid in self.classes[pc].ctors.clone() {
+        let ctors = self.classes[pc].ctors.clone();
+        let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
+            // DED-1: a converting constructor template.
+            match self.expand_fn_templates(&ctors, std::slice::from_ref(a), a.line) {
+                Some(v) => v,
+                None => return Err(()),
+            }
+        } else {
+            ctors
+        };
+        for cid in ctors {
             let Some(f) = self.func(cid).cloned() else { return Err(()) };
             if f.template {
                 return Err(());
@@ -544,7 +591,7 @@ impl P {
                 let third = match rt.t {
                     Ty::Class(rc) if rc == pc => Std::identity(QTy::new(Ty::Class(pc))),
                     Ty::Class(rc) if self.is_base_of(pc, rc) => Std { rank: 2, sec: Sec::ClassBase(rc, pc), qual: false, to: QTy::new(Ty::Class(pc)), refb: None },
-                    Ty::Unknown => return Err(()),
+                    Ty::Unknown | Ty::Dep(_) => return Err(()),
                     _ => continue,
                 };
                 let Some(first) = self.ics_object(a, &f) else { continue };
@@ -570,7 +617,12 @@ impl P {
             }
             // ICS-37, OVL-26: between two conversion functions, the better
             // third part.
-            (by_third || (conv(x.f) && conv(y.f))) && self.std_cmp(&x.third, &y.third, true) > 0
+            let t = if by_third || (conv(x.f) && conv(y.f)) { self.std_cmp(&x.third, &y.third, true) } else { 0 };
+            if t != 0 {
+                return t > 0;
+            }
+            // OVL-27, OVL-28.
+            (!self.spec_of.contains_key(&x.f) && self.spec_of.contains_key(&y.f)) || self.tie_more.contains(&(x.f, y.f))
         };
         for (i, x) in cands.iter().enumerate() {
             if cands.iter().enumerate().all(|(j, y)| i == j || better(x, y)) {
@@ -832,7 +884,7 @@ impl P {
     /// tie-breakers of OVL-26 to OVL-33 are left to the callers, which
     /// give up on the candidates that need them.
     pub fn best_of(&self, cands: &[(DeclId, Vec<Ics>)]) -> Option<usize> {
-        let better = |x: &Vec<Ics>, y: &Vec<Ics>| {
+        let better = |fx: DeclId, x: &Vec<Ics>, fy: DeclId, y: &Vec<Ics>| {
             let mut some = false;
             for (a, b) in x.iter().zip(y.iter()) {
                 let c = self.ics_cmp(a, b);
@@ -843,16 +895,34 @@ impl P {
                     some = true;
                 }
             }
+            if !some {
+                // OVL-27: a plain function beats a template specialization.
+                if !self.spec_of.contains_key(&fx) && self.spec_of.contains_key(&fy) && self.func(fx).is_some() {
+                    return true;
+                }
+                // OVL-28: the more specialized template wins.
+                if self.tie_more.contains(&(fx, fy)) {
+                    return true;
+                }
+            }
             some
         };
-        (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || better(&cands[i].1, &cands[j].1)))
+        (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || better(cands[i].0, &cands[i].1, cands[j].0, &cands[j].1)))
     }
 
     /// ICS-21 to ICS-36: 1 when `a` is better, -1 when `b` is better, 0
     /// when neither is.
     pub fn ics_cmp(&self, a: &Ics, b: &Ics) -> i8 {
         if a.kind == IK::Slot || b.kind == IK::Slot {
-            // ICS-14: the object slot ties with every sequence.
+            // OVL-25: against the user-defined first sequence of a
+            // surrogate candidate, the object slot of a static member is
+            // better; against a standard sequence it takes no part.
+            if a.kind == IK::Slot && matches!(b.kind, IK::User | IK::Ambig) {
+                return 1;
+            }
+            if b.kind == IK::Slot && matches!(a.kind, IK::User | IK::Ambig) {
+                return -1;
+            }
             return 0;
         }
         // Step 1: list targets (ICS-22 to ICS-24).
@@ -1072,7 +1142,21 @@ impl P {
         if viable.iter().any(|v| v.1.len() != n) {
             return Err(());
         }
-        Ok(self.best_of(&viable).map(|i| viable[i].clone()))
+        // OVL-28: the order of the templates of the specializations.
+        self.tie_more.clear();
+        let specs: Vec<DeclId> = viable.iter().map(|v| v.0).filter(|d| self.spec_of.contains_key(d)).collect();
+        if specs.len() > 1 {
+            for &a in &specs {
+                for &b in &specs {
+                    if a != b && self.spec_more_specialized(a, b, args.len()) {
+                        self.tie_more.push((a, b));
+                    }
+                }
+            }
+        }
+        let r = self.best_of(&viable).map(|i| viable[i].clone());
+        self.tie_more.clear();
+        Ok(r)
     }
 
     /// One candidate for each function. Two declarations of a function
@@ -1175,6 +1259,18 @@ impl P {
                 }
             }
         }
+        // DED-1: an operator function template adds its specialization.
+        if members.iter().chain(others.iter()).any(|&d| self.func(d).is_some_and(|f| f.template)) {
+            // A comparison also has rewritten candidates (OVL-13), which
+            // this selection does not form.
+            if matches!(op, "==" | "!=" | "<" | ">" | "<=" | ">=" | "<=>") {
+                return None;
+            }
+            let rest: Vec<Expr> = r.iter().map(|x| (*x).clone()).collect();
+            members = self.expand_fn_templates(&members, &rest, line)?;
+            let all: Vec<Expr> = ops.iter().map(|e| (*e).clone()).collect();
+            others = self.expand_fn_templates(&others, &all, line)?;
+        }
         let mut cands: Vec<(DeclId, Vec<Ics>)> = Vec::new();
         for &fid in members.iter().chain(others.iter()) {
             let f = self.func(fid)?.clone();
@@ -1227,7 +1323,22 @@ impl P {
         if cands.is_empty() {
             return None;
         }
-        let i = self.best_of(&cands)?;
+        // OVL-28: the order of the templates of the specializations.
+        self.tie_more.clear();
+        let specs: Vec<DeclId> = cands.iter().map(|v| v.0).filter(|d| self.spec_of.contains_key(d)).collect();
+        if specs.len() > 1 {
+            let n = ops.len();
+            for &a in &specs {
+                for &b in &specs {
+                    if a != b && self.spec_more_specialized(a, b, n) {
+                        self.tie_more.push((a, b));
+                    }
+                }
+            }
+        }
+        let best = self.best_of(&cands);
+        self.tie_more.clear();
+        let i = best?;
         let fid = cands[i].0;
         let saved = std::mem::take(&mut self.call_adl);
         let x = if members.contains(&fid) {
@@ -1246,7 +1357,7 @@ impl P {
         if self.in_template() || !self.class_ok(c) || self.classes[c].ctors.is_empty() || args.is_empty() {
             return false;
         }
-        if args.len() == 1 && (matches!(nonref(&args[0].ty).t, Ty::Class(_) | Ty::Unknown) || matches!(args[0].k, EK::InitList(_))) {
+        if args.len() == 1 && (matches!(nonref(&args[0].ty).t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) || matches!(args[0].k, EK::InitList(_))) {
             return false;
         }
         for cid in self.classes[c].ctors.clone() {
@@ -1260,7 +1371,7 @@ impl P {
                 // whole (ILC-2); the caller does not say which form it has.
                 match nonref(&self.var(p0).map(|v| v.ty.clone()).unwrap_or(QTy::unknown())).t {
                     Ty::Class(lc) if self.init_list_elem(lc).is_some() => return false,
-                    Ty::Unknown => return false,
+                    Ty::Unknown | Ty::Dep(_) => return false,
                     _ => {}
                 }
             }

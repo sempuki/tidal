@@ -66,6 +66,8 @@ pub enum DOp {
     LRef,
     RRef,
     MemPtr(Option<usize>, bool, bool),
+    /// A pointer to member of a class that is a template parameter.
+    MemPtrDep(QTy, bool, bool),
     Array(Option<u64>),
     Func(Box<FnDecl>),
 }
@@ -131,6 +133,10 @@ impl P {
 
     /// Does a (possibly qualified) name starting at offset k name a type?
     pub fn qualified_names_type(&self, mut k: usize) -> bool {
+        if self.has_fact(self.pos + k, crate::templ::FACT_VALUE_QUAL) {
+            // DEP-19: the template read the name as a value.
+            return false;
+        }
         let mut scope: Option<usize> = None;
         if self.at_k(k, "::") {
             scope = Some(self.global);
@@ -152,8 +158,23 @@ impl P {
             let id = ids[0];
             // template-id
             let mut next = k + 1;
-            if self.at_k(next, "<") && matches!(self.decls[id].k, DK::Template(_)) {
+            if self.at_k(next, "<") && self.names_template(id) {
                 next = self.skip_angle_at(next);
+            }
+            if self.at_k(next, "::") && next > k + 1 {
+                // A template-id before `::`: the member is looked up in the
+                // pattern and in the specializations.
+                if let Some(t) = self.tid_of(id) {
+                    let member = self.peek(next + 1).text.clone();
+                    match self.templ_member_scope(t, &member) {
+                        Some(s) => {
+                            scope = Some(s);
+                            k = next + 1;
+                            continue;
+                        }
+                        None => return false,
+                    }
+                }
             }
             if self.at_k(next, "::") {
                 match &self.decls[id].k {
@@ -445,7 +466,10 @@ impl P {
                 "consteval" => ds.consteval = true,
                 "constinit" => ds.constinit = true,
                 "virtual" => ds.virtual_ = true,
-                "friend" => ds.friend = true,
+                "friend" => {
+                    ds.friend = true;
+                    self.friend_spec_pos = Some(self.pos);
+                }
                 "explicit" => {
                     ds.explicit = true;
                     if self.at_k(1, "(") {
@@ -558,8 +582,8 @@ impl P {
                         break;
                     }
                     self.pos += 1;
-                    self.skip_qualified_name()?;
-                    ds.ty = Some(QTy::unknown());
+                    let q = self.parse_typename_type()?;
+                    ds.ty = Some(q);
                     ds.named_type = true;
                     continue;
                 }
@@ -751,12 +775,51 @@ impl P {
                 Some(Err(())) => None,
             };
             let mut next = 1;
-            let is_templ = found.as_ref().is_some_and(|ids| matches!(self.decls[ids[0]].k, DK::Template(_)));
+            let is_templ = found.as_ref().is_some_and(|ids| self.names_template(ids[0]) && !self.func(ids[0]).is_some());
             if self.at_k(1, "<") && (is_templ || matches!(scope, Some(Err(())))) {
                 next = self.skip_angle_at(1);
             }
             if !self.at_k(next, "::") || self.peek(next + 1).kind != TK::Ident && !self.at_k(next + 1, "~") && !self.at_k(next + 1, "template") && !self.at_k(next + 1, "operator") {
                 return Ok(scope);
+            }
+            if is_templ && next > 1 && self.tname_of(found.as_ref().unwrap()[0]).is_some() {
+                // A template-id before `::` names a class (TSP-13).
+                let id = found.as_ref().unwrap()[0];
+                let line = self.line();
+                self.pos += 1;
+                self.last_qual_templ = None;
+                let q = self.parse_template_id_type(id, line)?;
+                self.expect("::")?;
+                let s = match &q.t {
+                    Ty::Class(c) => {
+                        let c = *c;
+                        self.require_class(c, line);
+                        Ok(self.classes[c].scope)
+                    }
+                    Ty::Dep(d) => {
+                        if let Dep::Id(TName::Templ(t), pats) = &**d {
+                            self.last_qual_templ = Some((*t, pats.clone()));
+                        }
+                        Err(())
+                    }
+                    _ => Err(()),
+                };
+                scope = Some(s);
+                continue;
+            }
+            if let Some(ids) = &found {
+                let c = match &self.decls[ids[0]].k {
+                    DK::Class(c) => Some(*c),
+                    DK::Type(q) => match q.t {
+                        Ty::Class(c) => Some(c),
+                        _ => None,
+                    },
+                    _ => None,
+                };
+                if let Some(c) = c {
+                    let l = self.line();
+                    self.require_class(c, l);
+                }
             }
             let s = match found {
                 Some(ids) => match &self.decls[ids[0]].k {
@@ -772,7 +835,7 @@ impl P {
                     DK::Type(q) => match &q.t {
                         Ty::Class(c) => Ok(self.classes[*c].scope),
                         Ty::Enum(e) => Ok(self.enums[*e].scope),
-                        Ty::Unknown => Err(()),
+                        Ty::Unknown | Ty::Dep(_) => Err(()),
                         _ => {
                             if !self.in_template() {
                                 // NAM-16: a fundamental type is not a qualifier.
@@ -836,6 +899,12 @@ impl P {
                 return Ok(QTy::unknown());
             }
         };
+        let amb = amb && !(self.at("<") && found.as_ref().is_some_and(|ids| {
+            // TARG-11: with an argument list, the injected class names of
+            // one template's specializations name the template.
+            let ts: Vec<Option<usize>> = ids.iter().map(|&i| self.tid_of(i)).collect();
+            ts.iter().all(|t| t.is_some() && *t == ts[0])
+        }));
         if !self.in_template() {
             if amb {
                 if scope.is_none() && self.stack.iter().any(|&s| matches!(self.scopes[s].kind, SK::Class(_))) {
@@ -865,6 +934,9 @@ impl P {
             return Err(PErr { line, msg: format!("unknown type name '{}'", name) });
         };
         let id = *ids.iter().find(|&&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::TypeParam | DK::Template(_))).unwrap_or(&ids[0]);
+        if self.at("<") && self.names_template(id) && !matches!(self.decls[id].k, DK::Template(_)) {
+            return self.parse_template_id_type(id, line);
+        }
         if self.at("<") && matches!(self.decls[id].k, DK::Template(_)) {
             if name == "initializer_list" && self.scopes[self.decls[id].scope].name == "std" && !self.in_template() {
                 // LSUP-1: std::initializer_list<E> becomes a class that
@@ -879,11 +951,35 @@ impl P {
                 }
                 self.pos = save;
             }
-            self.skip_template_args()?;
+            return self.parse_template_id_type(id, line);
+        }
+        if let DK::Template(TemplKind::Class(_) | TemplKind::Alias) = &self.decls[id].k {
+            // TARG-10: a template name needs an argument list. A
+            // variable declared with the name and an initializer deduces
+            // the arguments, which the front end does not model.
+            let ctad = self.peek(0).kind == TK::Ident && !is_keyword(&self.peek(0).text) && (self.at_k(1, "{") || self.at_k(1, "(") || self.at_k(1, "="));
+            let ctad = ctad || self.at("{") || self.at("(");
+            if !ctad && !self.in_tparam_decl && (!self.in_template() || scope.is_some()) && !self.tparam.contains_key(&id) && self.tid_of(id).is_some() {
+                self.error(line, "TARG-10", format!("the template '{}' is used without an argument list", name));
+            }
             return Ok(QTy::unknown());
         }
+        if self.binding_scopes.contains(&self.decls[id].scope) {
+            self.binding_hits += 1;
+        }
         Ok(match &self.decls[id].k {
-            DK::Type(q) => q.clone(),
+            DK::Type(q) => {
+                if let Some(v) = self.pack_binds.get(&id) {
+                    self.last_pack_ref = Some(id);
+                    self.pack_refs.push(v.len());
+                    let k = self.pack_index.unwrap_or(0);
+                    match v.get(k) {
+                        Some(TArg::Type(t)) => return Ok(t.clone()),
+                        _ => return Ok(QTy::unknown()),
+                    }
+                }
+                q.clone()
+            }
             DK::Class(c) => {
                 if self.classes[*c].template {
                     QTy::unknown()
@@ -892,8 +988,129 @@ impl P {
                 }
             }
             DK::Enum(e) => QTy::new(Ty::Enum(*e)),
+            DK::TypeParam => {
+                if self.in_template() {
+                    self.last_pack_ref = Some(id);
+                }
+                self.tparam_type(id)
+            }
             _ => QTy::unknown(),
         })
+    }
+
+    /// A template-id that names a type, at `<` after the name `id`
+    /// (TARG-1, TSP-13).
+    pub fn parse_template_id_type(&mut self, id: DeclId, line: u32) -> PR<QTy> {
+        use crate::templ::RawArg;
+        let tn = self.tname_of(id);
+        let mut raw = self.parse_raw_targs()?;
+        if let Some(inner) = self.ttp_inner.get(&id).cloned() {
+            // TPL-40: the defaults of the template template parameter's
+            // own head fill the list.
+            for p in inner.iter().skip(raw.len()) {
+                let Some(toks) = p.default.clone() else { break };
+                let src = crate::templ::Source { toks, stack: self.stack.clone(), ctx: crate::decl2::Ctx::Namespace, access: 0, limit: self.lookup_limit, vid: usize::MAX, base: 0 };
+                let r = self.replay(&src, &[], &[], None, |q| q.parse_raw_targ().ok());
+                match r {
+                    Some((Some(a), _)) => raw.push(a),
+                    _ => break,
+                }
+            }
+        }
+        let dependent = raw.iter().any(|r| match r {
+            RawArg::Type(q) => q.is_unknown(),
+            RawArg::Expr(e) => e.ty.is_unknown() || crate::templ::has_unknown(e),
+            RawArg::Templ(TName::Param(..)) => true,
+            RawArg::Templ(_) => false,
+            RawArg::Expand(_) => true,
+        });
+        match tn {
+            Some(TName::Templ(tid)) => {
+                if !matches!(self.templs[tid].kind, crate::templ::TKind::Class | crate::templ::TKind::Alias) {
+                    return Ok(QTy::unknown());
+                }
+                if self.in_template() || dependent {
+                    match self.pattern_targs(tid, raw) {
+                        Some(args) => Ok(self.class_ref(tid, args, line)),
+                        None => Ok(QTy::unknown()),
+                    }
+                } else {
+                    match self.targs_for(tid, raw, line, false) {
+                        Ok(Some(args)) => Ok(self.class_ref(tid, args, line)),
+                        _ => Ok(QTy::unknown()),
+                    }
+                }
+            }
+            Some(TName::Param(d, i)) => {
+                if let Some(inner) = self.ttp_inner.get(&id) {
+                    let need = inner.iter().filter(|p| p.default.is_none() && !p.pack).count();
+                    let has_pack = inner.iter().any(|p| p.pack);
+                    if raw.len() < need || (raw.len() > inner.len() && !has_pack) {
+                        // TARG-6: the arguments fit the parameter's own head
+                        // (TPL-40).
+                        self.error(line, "TARG-6", "the arguments do not fit the head of the template template parameter");
+                    }
+                }
+                let mut args = Vec::new();
+                for r in raw {
+                    match r {
+                        RawArg::Type(q) => args.push(TArg::Type(q)),
+                        RawArg::Templ(n) => args.push(TArg::Templ(n)),
+                        _ => args.push(TArg::Val(TVal::Opaque)),
+                    }
+                }
+                Ok(crate::templ::dep(Dep::Id(TName::Param(d, i), args)))
+            }
+            None => Ok(QTy::unknown()),
+        }
+    }
+
+    /// `typename` followed by a qualified name (a dependent type in a
+    /// template, or a member type in a specialization).
+    pub fn parse_typename_type(&mut self) -> PR<QTy> {
+        let line = self.line();
+        let save = self.pos;
+        let mark = self.d.list.len();
+        let scope = self.parse_nested_name();
+        if let Ok(Some(Ok(s))) = scope {
+            self.eat("template");
+            let name = self.ident()?;
+            let found = self.lookup_qualified(s, &name).0;
+            if let Some(ids) = found {
+                if let Some(&id) = ids.iter().find(|&&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Template(_) | DK::TypeParam)) {
+                    if !self.in_template() && !self.accessible(id, false) {
+                        // DED-26: access is checked in substitution too.
+                        self.error(line, "ACC-2", format!("'{}' is not accessible here", name));
+                    }
+                    if self.at("<") && self.names_template(id) {
+                        return self.parse_template_id_type(id, line);
+                    }
+                    return Ok(match &self.decls[id].k {
+                        DK::Type(q) => q.clone(),
+                        DK::Class(c) if !self.classes[*c].template => QTy::new(Ty::Class(*c)),
+                        DK::Enum(e) => QTy::new(Ty::Enum(*e)),
+                        _ => QTy::unknown(),
+                    });
+                }
+            }
+            if self.at("<") {
+                self.skip_template_args()?;
+            }
+            let certain = match self.scopes[s].kind {
+                SK::Class(c) => !self.class_uncertain(c) && self.classes[c].complete,
+                _ => !self.scopes[s].uncertain,
+            };
+            if certain && !self.in_template() {
+                self.error(line, "NAM-9", format!("no type named '{}' in the named scope", name));
+            }
+            return Ok(QTy::unknown());
+        }
+        self.pos = save;
+        if self.in_template() {
+            self.d.list.truncate(mark);
+        }
+        self.skip_qualified_name()?;
+        Ok(if self.in_template() { crate::templ::dep(Dep::Opaque) } else { QTy::unknown() })
     }
 
     /// The class for `std::initializer_list<E>`. The front end does not
@@ -1103,6 +1320,12 @@ impl P {
                         _ => QTy::new(if is_l { Ty::LRef(Box::new(t)) } else { Ty::RRef(Box::new(t)) }),
                     }
                 }
+                DOp::MemPtrDep(cls, cc, vv) => {
+                    let mut q = crate::templ::dep(Dep::MemPtr(cls.clone(), t));
+                    q.c = *cc;
+                    q.v = *vv;
+                    q
+                }
                 DOp::MemPtr(c, cc, vv) => {
                     if t.t.is_ref() {
                         self.error(line, "DCL-23", "pointer to member of reference type");
@@ -1123,7 +1346,13 @@ impl P {
                         }
                         _ => {}
                     }
-                    if *n == Some(u64::MAX) {
+                    if let Some((d, i)) = n.and_then(arr_param_decode) {
+                        let (c, v) = (t.c, t.v);
+                        let mut q = crate::templ::dep(Dep::Array(t, TVal::Param(d, i)));
+                        q.c = c;
+                        q.v = v;
+                        q
+                    } else if *n == Some(u64::MAX) {
                         QTy::unknown()
                     } else {
                         // CV-6: cv on an array applies to the elements.
@@ -1181,8 +1410,14 @@ impl P {
                 let save = self.pos;
                 let scope = self.parse_nested_name()?;
                 let cname = self.ident();
+                let mut dep_class: Option<QTy> = None;
                 let class = match (scope, cname) {
-                    (None, Ok(n)) => self.lookup(&n).and_then(|ids| self.class_of_decl(ids[0])),
+                    (None, Ok(n)) => self.lookup(&n).and_then(|ids| {
+                        if self.tparam.contains_key(&ids[0]) && matches!(self.decls[ids[0]].k, DK::TypeParam) {
+                            dep_class = Some(self.tparam_type(ids[0]));
+                        }
+                        self.class_of_decl(ids[0])
+                    }),
                     (Some(Ok(s)), Ok(n)) => self.lookup_in_scope(s, &n, true).and_then(|ids| self.class_of_decl(ids[0])),
                     _ => None,
                 };
@@ -1191,7 +1426,23 @@ impl P {
                     return Err(self.err("bad pointer-to-member declarator"));
                 }
                 let (c, v) = self.parse_cv();
-                ptr_ops.push(DOp::MemPtr(class, c, v));
+                if class.is_none() && dep_class.is_none() && !self.in_template() {
+                    // MPTR-8: the class of a pointer to member is a class.
+                    let named = self.toks[save..self.pos].iter().find(|t| t.kind == TK::Ident).map(|t| t.text.clone());
+                    if let Some(n) = named {
+                        if let Some(ids) = self.lookup(&n) {
+                            if let DK::Type(q) = &self.decls[ids[0]].k {
+                                if !q.is_unknown() && !matches!(q.t, Ty::Class(_)) {
+                                    self.error(line, "MPTR-8", format!("'{}' is not a class, so it has no pointer to member", n));
+                                }
+                            }
+                        }
+                    }
+                }
+                match dep_class {
+                    Some(q) => ptr_ops.push(DOp::MemPtrDep(q, c, v)),
+                    None => ptr_ops.push(DOp::MemPtr(class, c, v)),
+                }
             } else {
                 break;
             }
@@ -1266,7 +1517,15 @@ impl P {
                     let bl = self.line();
                     let e = self.parse_assignment()?;
                     self.expect("]")?;
-                    let n = self.array_bound(&e, bl);
+                    // A bound that is a constant parameter (DED-P3).
+                    let pb = match &e.k {
+                        EK::Unknown(w) if w.starts_with("template parameter#") => w["template parameter#".len()..].parse::<usize>().ok().and_then(|id| self.tparam.get(&id).copied()),
+                        _ => None,
+                    };
+                    let n = match pb {
+                        Some((d, i)) => Some(arr_param_encode(d, i)),
+                        None => self.array_bound(&e, bl),
+                    };
                     suffixes.push(DOp::Array(n));
                 }
             } else if self.at("(") && (d.name.is_some() || inner_ops.iter().any(|o| !matches!(o, DOp::Func(_))) || !inner_ops.is_empty() || abstract_ok) {
@@ -1363,10 +1622,19 @@ impl P {
 
     pub fn parse_declarator_name(&mut self, d: &mut Declarator) -> PR<()> {
         d.line = self.line();
+        self.last_qual_templ = None;
         let scope = self.parse_nested_name()?;
         match scope {
             Some(Ok(s)) => d.qual = Some(s),
-            Some(Err(())) => d.qual_unknown = true,
+            Some(Err(())) => {
+                d.qual_unknown = true;
+                // TPL-23: a member of a class template defined outside.
+                if self.pending_template.is_some() {
+                    if let Some((t, pats)) = self.last_qual_templ.take() {
+                        self.last_templ = Some(crate::templ::Last::Member(t, pats));
+                    }
+                }
+            }
             None => {}
         }
         if self.eat("~") {
@@ -1401,11 +1669,31 @@ impl P {
             }
         }
         if self.at("<") {
-            let is_templ = match d.qual {
+            let found = match d.qual {
                 Some(s) => self.lookup_in_scope(s, &n, true),
                 None => self.lookup(&n),
+            };
+            let fn_templ = found.as_ref().is_some_and(|ids| ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template)));
+            if fn_templ {
+                // The template arguments of a declaration of a function
+                // template specialization (DED-32, TSP-7).
+                let save = self.pos;
+                let mark = self.d.list.len();
+                self.d.muted += 1;
+                let raw = self.parse_raw_targs();
+                self.d.muted -= 1;
+                self.d.list.truncate(mark);
+                match raw {
+                    Ok(raw) if self.at("(") => {
+                        self.decl_fn_targs = Some(std::rc::Rc::new(raw));
+                        d.template_args = true;
+                        d.name = Some(n);
+                        return Ok(());
+                    }
+                    _ => self.pos = save,
+                }
             }
-            .is_some_and(|ids| ids.iter().any(|&i| matches!(self.decls[i].k, DK::Template(_)) || self.func(i).is_some_and(|f| f.template)));
+            let is_templ = found.is_some_and(|ids| ids.iter().any(|&i| matches!(self.decls[i].k, DK::Template(_)) || self.func(i).is_some_and(|f| f.template)));
             if is_templ || self.in_template() {
                 d.template_args = true;
                 // keep the argument tokens for variable template partial
@@ -1611,10 +1899,46 @@ impl P {
                 let l = self.line();
                 // the parameters are in scope in the noexcept operand
                 self.stack.push(scope);
+                // EXS-9, DED-27: in a specialization the operand is
+                // substituted only when a use needs it.
+                let in_inst = self.inst_depth > 0;
+                let mark = self.d.list.len();
+                let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+                let saved_muted = if in_inst { std::mem::take(&mut self.d.muted) } else { self.d.muted };
                 let e = self.parse_expression();
+                if in_inst {
+                    self.d.muted = saved_muted;
+                    self.d.muted_errors = me;
+                    self.d.muted_unsup = mu;
+                }
                 self.stack.pop();
                 let e = e?;
                 self.expect(")")?;
+                if in_inst && (self.d.list.len() != mark || e.ty.is_unknown()) {
+                    let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
+                    if !kept.is_empty() {
+                        self.pending_noexcept_errors = Some(kept);
+                    }
+                    f.noexcept = false;
+                    self.skip_attributes();
+                    if self.eat("->") {
+                        let save = self.stack.clone();
+                        self.stack.push(scope);
+                        let r = (|| -> PR<QTy> {
+                            let ds = self.parse_decl_specs(None)?;
+                            let d = self.parse_declarator(true, false)?;
+                            if ds.auto.is_some() {
+                                f.trailing_auto = Some((ds, d));
+                                return Ok(QTy::unknown());
+                            }
+                            let base = self.ds_base(&ds)?;
+                            Ok(self.apply_ops(base, &d.ops, d.line))
+                        })();
+                        self.stack = save;
+                        f.trailing = Some(r?);
+                    }
+                    return Ok(f);
+                }
                 // EXS-1 / CE-11: the operand is a constant of type bool.
                 if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
                     f.noexcept = v;
@@ -1668,6 +1992,8 @@ impl P {
             if explicit_this {
                 f.has_explicit_this = true;
             }
+            let pstart = self.pos;
+            let pmark = self.pack_refs.len();
             let ds = self.parse_decl_specs(None)?;
             if !ds.storage.is_empty() || ds.register {
                 // STO-6: no storage class on a parameter.
@@ -1682,6 +2008,58 @@ impl P {
             }
             let base = self.ds_base(&ds)?;
             let d = self.parse_declarator(true, true)?;
+            if d.pack && !self.in_template() && self.pack_refs.len() > pmark {
+                // A function parameter pack in a specialization: one
+                // parameter for each element.
+                let n = self.pack_refs[pmark];
+                self.pack_refs.truncate(pmark);
+                let end = self.pos;
+                let saved = self.pack_index;
+                let name = d.name.clone().unwrap_or_default();
+                let mut ids = Vec::new();
+                for k in 0..n {
+                    self.pos = pstart;
+                    self.pack_index = Some(k);
+                    let r = (|| -> PR<QTy> {
+                        let ds = self.parse_decl_specs(None)?;
+                        let base = self.ds_base(&ds)?;
+                        let d = self.parse_declarator(true, true)?;
+                        Ok(self.apply_ops(base, &d.ops, d.line))
+                    })();
+                    self.pack_index = saved;
+                    let ty = r?;
+                    let ty = match ty.t {
+                        Ty::Array(e, _) => QTy::new(Ty::Ptr(e)),
+                        Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ty))),
+                        _ => ty,
+                    };
+                    let vi = VarInfo { ty: ty.clone(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: true, local: true, dependent: ty.is_unknown(), defined: true, class: None };
+                    let id = self.add_decl(if k == 0 { &name } else { "" }, DK::Var(vi), line);
+                    if k > 0 {
+                        self.decls[id].name = name.clone();
+                    }
+                    f.params.push(id);
+                    f.ptys.push(QTy { t: ty.t.clone(), c: false, v: false });
+                    ids.push(id);
+                }
+                self.pos = end;
+                if ids.is_empty() {
+                    let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: true, local: true, dependent: true, defined: true, class: None };
+                    let id = self.add_decl(&name, DK::Var(vi), line);
+                    self.fn_param_packs.insert(id, vec![]);
+                }
+                for &id in &ids {
+                    self.fn_param_packs.insert(id, ids.clone());
+                }
+                if self.eat(",") {
+                    continue;
+                }
+                if self.eat("...") {
+                    f.variadic = true;
+                }
+                self.expect(")")?;
+                return Ok(());
+            }
             let mut ty = self.apply_ops(base, &d.ops, d.line);
             if ty.t == Ty::Void && d.ops.is_empty() {
                 // DCL-9: `void` only as the whole list.
@@ -1723,13 +2101,31 @@ impl P {
                     defer_default = Some((start, self.pos));
                 } else {
                     let dl = self.line();
-                    let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-                    // DEFARG-5: the default argument is valid for the
-                    // parameter type at the declaration.
-                    let form = if matches!(e.k, EK::InitList(_)) { crate::decl2::InitForm::CopyList } else { crate::decl2::InitForm::Copy };
-                    let e = if ty.is_unknown() || self.in_template() { e } else { self.convert_init(e, &ty, form, dl) };
-                    self.check_default_arg(&e, dl);
-                    default = Some(e);
+                    // INST-9: in a specialization, a default argument is
+                    // made when a call uses it; its errors wait.
+                    let keep = self.inst_depth > 0 && !self.in_template();
+                    let mark = self.d.list.len();
+                    let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+                    let saved_muted = if keep { std::mem::take(&mut self.d.muted) } else { self.d.muted };
+                    let r = (|| -> PR<Expr> {
+                        let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
+                        // DEFARG-5: the default argument is valid for the
+                        // parameter type at the declaration.
+                        let form = if matches!(e.k, EK::InitList(_)) { crate::decl2::InitForm::CopyList } else { crate::decl2::InitForm::Copy };
+                        let e = if ty.is_unknown() || self.in_template() { e } else { self.convert_init(e, &ty, form, dl) };
+                        self.check_default_arg(&e, dl);
+                        Ok(e)
+                    })();
+                    if keep {
+                        self.d.muted = saved_muted;
+                        let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
+                        self.d.muted_errors = me;
+                        self.d.muted_unsup = mu;
+                        if !kept.is_empty() {
+                            self.pending_default_errors = Some(kept);
+                        }
+                    }
+                    default = Some(r?);
                 }
             }
             let name = d.name.clone().unwrap_or_default();
@@ -1753,6 +2149,9 @@ impl P {
                 class: None,
             };
             let id = self.add_decl(&name, DK::Var(vi), line);
+            if let Some(kept) = self.pending_default_errors.take() {
+                self.default_errors.insert(id, kept);
+            }
             if let Some((start, end)) = defer_default {
                 let c = self.current_class_any().unwrap();
                 self.deferred.push(Deferred { func: None, field: None, param: Some(id), start, end, stack: self.stack.clone(), templ: self.templ, class: c });
@@ -1763,6 +2162,7 @@ impl P {
             }
             if d.pack {
                 f.variadic = true;
+                self.pack_params.insert(id);
             }
             if self.eat(",") {
                 continue;
@@ -1864,5 +2264,22 @@ impl P {
                 Some(u64::MAX)
             }
         }
+    }
+}
+
+/// An array bound that names a constant template parameter, kept in the
+/// bound of `DOp::Array`.
+const ARR_PARAM: u64 = u64::MAX - (1u64 << 48);
+
+pub fn arr_param_encode(d: u32, i: u32) -> u64 {
+    ARR_PARAM + (((d as u64) & 0xffff) << 16) + (i as u64 & 0xffff)
+}
+
+pub fn arr_param_decode(n: u64) -> Option<(u32, u32)> {
+    if (ARR_PARAM..u64::MAX).contains(&n) {
+        let x = n - ARR_PARAM;
+        Some((((x >> 16) & 0xffff) as u32, (x & 0xffff) as u32))
+    } else {
+        None
     }
 }

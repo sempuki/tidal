@@ -55,6 +55,11 @@ impl<'a> Machine<'a> {
             if v.local || v.param || v.dependent {
                 continue;
             }
+            // A member of a class template's pattern, or a variable of a
+            // type that depends on a template parameter, is no object.
+            if v.class.is_some_and(|c| self.p.classes[c].template) || matches!(v.ty.t, Ty::Dep(_)) {
+                continue;
+            }
             if v.storage == Storage::Extern && v.init.is_none() {
                 continue;
             }
@@ -169,11 +174,20 @@ impl<'a> Machine<'a> {
         // order of the definitions (OBJ-4). SINIT-3: the order between
         // units is unspecified; the interpreter takes the units in order.
         let mut dynamic = Vec::new();
-        for &(t, id) in &vars {
+        // A constant initializer that reads another static variable runs
+        // after it (a specialization's variable can be declared after the
+        // variable that reads it).
+        let order = self.const_order(&vars);
+        let mut is_const = std::collections::HashSet::new();
+        for &(t, id) in &order {
             if self.in_tu(t, |m| m.init_constant(id))? {
-                continue;
+                is_const.insert((t, id));
             }
-            dynamic.push((t, id));
+        }
+        for &(t, id) in &vars {
+            if !is_const.contains(&(t, id)) {
+                dynamic.push((t, id));
+            }
         }
         if n > 1 && dynamic.iter().any(|d| d.0 != dynamic[0].0) {
             self.choice("SINIT-3", "the translation units initialize their static objects in the order the units are given");
@@ -200,6 +214,39 @@ impl<'a> Machine<'a> {
             r => r?,
         }
         Ok(status)
+    }
+
+    /// The static variables, each after the variables of its unit that
+    /// its initializer names.
+    fn const_order(&self, vars: &[(usize, DeclId)]) -> Vec<(usize, DeclId)> {
+        let set: std::collections::HashSet<(usize, DeclId)> = vars.iter().copied().collect();
+        let mut done: std::collections::HashSet<(usize, DeclId)> = std::collections::HashSet::new();
+        let mut out = Vec::new();
+        fn visit(m: &Machine, v: (usize, DeclId), set: &std::collections::HashSet<(usize, DeclId)>, done: &mut std::collections::HashSet<(usize, DeclId)>, out: &mut Vec<(usize, DeclId)>, depth: u32) {
+            if done.contains(&v) || depth > 64 {
+                return;
+            }
+            done.insert(v);
+            let p = m.ps[v.0];
+            if let Some(init) = p.var(v.1).and_then(|x| x.init.clone()) {
+                let mut deps = Vec::new();
+                crate::ast::walk_expr(&init, &mut |x| {
+                    if let EK::Var(d) = &x.k {
+                        deps.push(*d);
+                    }
+                });
+                for d in deps {
+                    if set.contains(&(v.0, d)) {
+                        visit(m, (v.0, d), set, done, out, depth + 1);
+                    }
+                }
+            }
+            out.push(v);
+        }
+        for &v in vars {
+            visit(self, v, &set, &mut done, &mut out, 0);
+        }
+        out
     }
 
     fn zero_static(&mut self, id: DeclId) -> R<()> {

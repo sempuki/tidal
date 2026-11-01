@@ -126,9 +126,10 @@ columns:
 The harness then runs each test whose base expectation is `run` or
 `run-fail`, if the check accepted every translation unit, and links the
 units of a test with `tidal-sources`. A `run` test passes when the
-result is exit status 0. A `run-fail` test passes when the run stops at
-undefined behavior that names one of the test's rules, or the program
-ends with a nonzero status or terminates. A separate table counts the run
+exit status is 0. The status is the value of `main` modulo 256
+(TR-11). A `run-fail` test passes when the run stops at undefined
+behavior that names one of the test's rules, or the program ends with a
+nonzero status or terminates. A separate table counts the run
 tests:
 
 - **Pass**.
@@ -158,6 +159,7 @@ lines. `--out FILE` writes the tables and one line per test to FILE.
 | `src/expr.rs`, `src/expr2.rs` | expressions, conversions, calls, casts, initialization |
 | `src/ics.rs` | implicit conversion sequences and their comparison (ICS rules), and overload resolution for calls (OVL-22 to OVL-25, OVL-34 to OVL-36) |
 | `src/ovl.rs` | overload resolution for operators, constructors, calls on a class object, and the address of an overload set (OVL rules) |
+| `src/templ.rs` | templates: the record of each template, template argument lists, specializations made by parsing a template's tokens again with its parameters bound, selection of explicit and partial specializations, deduction, partial ordering, packs, and the definitions that a use needs (TPL, TARG, TSP, DED, ORD, INST, DEP rules) |
 | `src/stmt.rs` | statements and jump checks |
 | `src/interp/mod.rs` | the interpreter's machine: values, objects, places, the objects that end with a block, a full expression, or the program, and the stops (decision 0048) |
 | `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, `new`, `delete`, `throw`, and `dynamic_cast` |
@@ -166,6 +168,22 @@ lines. `--out FILE` writes the tables and one line per test to FILE.
 | `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
 | `src/conform.rs` | the conformance harness |
 
+## Templates
+
+A template keeps the tokens of its declaration. The front end parses
+the pattern once, with each template parameter as a dependent type, for
+the checks that need no arguments and as the patterns of deduction,
+selection, and partial ordering. A specialization is made by parsing the
+tokens again with each parameter bound to its argument. A class
+specialization is made complete when a use needs it (INST-1), the body
+of a member function when a use needs it, and the definition of a
+function specialization at its first use if constant evaluation can call
+it, or else at the end of the unit (INST-31). Names in namespaces are
+looked up as at the template's definition (DEP-5), and argument-dependent
+lookup of a dependent call also sees later declarations (DEP-9).
+Constraints and requires-clauses are not modeled: a constrained template
+leaves its calls unknown.
+
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-7.md`.
+`report-8.md`.

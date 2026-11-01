@@ -3,6 +3,7 @@
 // front end uses the GCC and Clang alignments of TYP-2, not EDG's.
 
 use std::cell::Cell;
+use std::rc::Rc;
 
 thread_local! {
     pub static ILP32: Cell<bool> = Cell::new(false);
@@ -49,6 +50,79 @@ pub enum Ty {
     /// parameter, or produced by a construct it does not understand.
     /// Checks never fire on it.
     Unknown,
+    /// A type that depends on a template parameter, in the form that
+    /// deduction takes apart (DED-P3). Checks treat it as unknown.
+    Dep(Rc<Dep>),
+}
+
+/// A dependent type (templates/deduction, DED-P3).
+#[derive(Clone, Debug, PartialEq)]
+pub enum Dep {
+    /// A type template parameter: the depth of its head and its index.
+    Param(u32, u32),
+    /// A template-id whose arguments depend on template parameters.
+    Id(TName, Vec<TArg>),
+    /// An array whose bound is a constant parameter.
+    Array(QTy, TVal),
+    /// A pointer to member whose class depends on a parameter.
+    MemPtr(QTy, QTy),
+    /// A dependent type in a non-deduced position (DED-13).
+    Opaque,
+}
+
+/// The template of a template-id: a template, or a template template
+/// parameter.
+#[derive(Clone, Debug, PartialEq)]
+pub enum TName {
+    Templ(usize),
+    Param(u32, u32),
+}
+
+/// A template argument (TARG-P2), or a pattern for one.
+#[derive(Clone, Debug, PartialEq)]
+pub enum TArg {
+    Type(QTy),
+    Val(TVal),
+    Templ(TName),
+    /// The arguments of a template parameter pack.
+    Pack(Vec<TArg>),
+    /// A pack expansion in a pattern.
+    Expand(Box<TArg>),
+}
+
+/// The value of a constant template argument.
+#[derive(Clone, Debug, PartialEq)]
+pub enum TVal {
+    Param(u32, u32),
+    Const(QTy, CVal),
+    /// An expression that depends on a parameter (non-deduced).
+    Opaque,
+}
+
+/// A constant value as TARG-P4 compares it.
+#[derive(Clone, Debug, PartialEq)]
+pub enum CVal {
+    Int(i128),
+    /// The bits of a floating value.
+    Float(u64),
+    Null,
+    /// The address of a variable or function; with 1 + k, the address
+    /// of element k of an array.
+    Addr(usize, u8),
+    /// An object of class type: the variable that holds it.
+    Obj(usize),
+}
+
+impl TArg {
+    pub fn is_dep(&self) -> bool {
+        match self {
+            TArg::Type(q) => q.is_unknown(),
+            TArg::Val(v) => !matches!(v, TVal::Const(..)),
+            TArg::Templ(n) => matches!(n, TName::Param(..)),
+            TArg::Pack(v) => v.iter().any(|a| a.is_dep()),
+            TArg::Expand(_) => true,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -97,7 +171,7 @@ impl QTy {
 impl Ty {
     pub fn contains_unknown(&self) -> bool {
         match self {
-            Ty::Unknown => true,
+            Ty::Unknown | Ty::Dep(_) => true,
             Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) | Ty::MemPtr(_, q) => q.t.contains_unknown(),
             Ty::Func(f) => f.ret.t.contains_unknown() || f.params.iter().any(|p| p.t.contains_unknown()),
             _ => false,

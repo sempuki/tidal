@@ -283,10 +283,8 @@ impl<'a> Machine<'a> {
                 }
                 match (&tp.t, &ep.t) {
                     (Ty::Class(tc), Ty::Class(ec)) => tc == ec || self.public_unique_base(*ec, *tc),
-                    // A pointer to an object converts to `void*`. TRY-2
-                    // does not list this conversion; the test
-                    // match-void-pointer.cpp expects it (outside
-                    // knowledge).
+                    // TRY-2: a pointer to an object converts to a
+                    // pointer to `void` with the same or more qualifiers.
                     (Ty::Void, b) => !matches!(b, Ty::Func(_)),
                     (a, b) => a == b,
                 }

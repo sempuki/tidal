@@ -218,10 +218,11 @@ fn judge_run(t: &Test, k: RunExpect, o: Option<&RunOutcome>) -> (RunRes, String)
     let line = crate::describe_run(o);
     let res = match (k, o) {
         (_, RunOutcome::Unsupported(..)) => RunRes::Unsupported,
-        (RunExpect::Run, RunOutcome::Result(0, _)) => RunRes::Pass,
+        // TR-11: the environment receives the value modulo 256.
+        (RunExpect::Run, RunOutcome::Result(v, _)) if v.rem_euclid(256) == 0 => RunRes::Pass,
         (RunExpect::Run, RunOutcome::Result(..)) => RunRes::WrongResult,
         (RunExpect::Run, RunOutcome::Undefined(..)) => RunRes::UnexpectedUndefined,
-        (RunExpect::RunFail, RunOutcome::Result(0, _)) => RunRes::MissedUndefined,
+        (RunExpect::RunFail, RunOutcome::Result(v, _)) if v.rem_euclid(256) == 0 => RunRes::MissedUndefined,
         (RunExpect::RunFail, RunOutcome::Result(..)) => RunRes::Pass,
         // The program ends with a nonzero status.
         (RunExpect::Run, RunOutcome::Terminated(..)) => RunRes::WrongResult,

@@ -86,6 +86,33 @@ impl P {
         Ok(m.full(|m| m.eval(e))?)
     }
 
+    /// The entity that a constant pointer or reference names, for a
+    /// template argument (TARG-14): the variable or function, and the
+    /// element for a pointer into an array (1 + index), or Ok(None) for a
+    /// null pointer.
+    pub fn const_addr(&self, e: &Expr) -> R<Option<(DeclId, u8)>> {
+        let mut m = Machine::new(self, true);
+        let v = m.full(|m| m.eval(e))?;
+        match v {
+            Val::Null => Ok(None),
+            Val::FnPtr(_, d) => Ok(Some((d, 0))),
+            Val::Ptr(p) => {
+                let Some((&(_, d), _)) = m.globals.iter().find(|(_, &o)| o == p.obj) else { return unsup("pointer to an object without a name") };
+                if !p.path.is_empty() {
+                    return unsup("pointer to a subobject");
+                }
+                if p.array {
+                    if p.off < 0 || p.off > 250 {
+                        return unsup("pointer to an array element");
+                    }
+                    return Ok(Some((d, (p.off + 1) as u8)));
+                }
+                Ok(Some((d, 0)))
+            }
+            _ => unsup("not a pointer"),
+        }
+    }
+
     pub fn const_int(&self, e: &Expr) -> R<i128> {
         if e.ty.is_unknown() {
             if let EK::Unknown(w) = &e.k {
@@ -220,7 +247,7 @@ impl P {
     /// does not model the type well enough to say.
     pub fn literal_type(&self, t: &QTy) -> Option<bool> {
         match &t.t {
-            Ty::Unknown => None,
+            Ty::Unknown | Ty::Dep(_) => None,
             Ty::Array(el, _) => self.literal_type(el),
             Ty::Class(c) => {
                 let c = *c;

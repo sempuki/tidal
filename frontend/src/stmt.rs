@@ -960,7 +960,13 @@ impl P {
                 self.cx_counter += 1;
                 self.cx_branches.push(self.cx_counter);
             }
+            // IF-13: in a specialization, a discarded statement is not
+            // instantiated.
+            let saved = if disc_then && self.inst_depth > 0 { Some(self.begin_discarded()) } else { None };
             let then = self.parse_substatement(Some((cs, "IF-10")));
+            if let Some(sv) = saved {
+                self.end_discarded(sv);
+            }
             if is_constexpr {
                 self.cx_branches.pop();
             }
@@ -978,7 +984,11 @@ impl P {
                     self.cx_counter += 1;
                     self.cx_branches.push(self.cx_counter);
                 }
+                let saved = if disc_else && self.inst_depth > 0 { Some(self.begin_discarded()) } else { None };
                 let e = self.parse_substatement(Some((cs, "IF-10")));
+                if let Some(sv) = saved {
+                    self.end_discarded(sv);
+                }
                 if is_constexpr {
                     self.cx_branches.pop();
                 }

@@ -20,6 +20,7 @@ mod ovl;
 mod parser;
 mod special;
 mod stmt;
+mod templ;
 mod types;
 
 use diag::Severity;

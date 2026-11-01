@@ -174,6 +174,10 @@ pub enum EK {
     /// of its members, one per capture (LAM rules). The flag says that a
     /// capture is by reference.
     Closure(usize, Vec<Expr>, bool),
+    /// The name of a function template with explicit template
+    /// arguments, before the call: the object of a member call, the
+    /// functions, and the arguments as written (DED-2).
+    TemplId(Option<Box<Expr>>, Vec<DeclId>, Rc<Vec<crate::templ::RawArg>>),
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
@@ -312,6 +316,7 @@ pub fn sexp(e: &Expr) -> String {
         EK::Delete(a, x) => format!("delete{} {}", if *a { "[]" } else { "" }, sexp(x)),
         EK::DynamicCast(x) => format!("dynamic_cast {}", sexp(x)),
         EK::Closure(c, v, _) => format!("closure#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
+        EK::TemplId(_, v, _) => format!("templ-id{:?}", v),
         EK::Unknown(w) => format!("UNKNOWN({})", w),
     };
     format!("({}{}{}:{})", if e.qualified { "Q " } else { "" }, inner, if cat.is_empty() { String::new() } else { format!(" {}", cat) }, ty)

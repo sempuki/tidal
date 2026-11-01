@@ -294,6 +294,7 @@ pub struct PErr {
 
 pub type PR<T> = Result<T, PErr>;
 
+#[derive(Clone)]
 pub struct Deferred {
     pub func: Option<DeclId>,
     pub field: Option<DeclId>,
@@ -432,6 +433,133 @@ pub struct P {
     pub ref_lambda_fns: std::collections::HashSet<DeclId>,
     /// ENUM-10: the type of an enumerator inside its enumerator list.
     pub enumerator_ty: HashMap<DeclId, Ty>,
+    /// Templates (templ.rs): their records, the template that each
+    /// declaration names, and the template of each pattern class.
+    pub templs: Vec<crate::templ::TemplInfo>,
+    pub decl_tid: HashMap<DeclId, usize>,
+    pub class_tid: HashMap<usize, usize>,
+    /// Template parameters: (depth of the head, index).
+    pub tparam: HashMap<DeclId, (u32, u32)>,
+    /// The number of template heads around the parser.
+    pub tdepth: u32,
+    pub last_templ: Option<crate::templ::Last>,
+    pub inst: Option<crate::templ::InstReq>,
+    pub inst_out: Option<crate::templ::InstOut>,
+    /// Injected class names of instances (TARG-11).
+    pub injected: HashMap<DeclId, usize>,
+    /// The template and arguments of each class made from a template.
+    pub inst_of: HashMap<usize, (usize, Vec<TArg>)>,
+    /// The template and arguments of each function or variable
+    /// specialization.
+    pub spec_of: HashMap<DeclId, (usize, Vec<TArg>)>,
+    /// The value of each bound constant parameter.
+    pub const_param_val: HashMap<DeclId, Expr>,
+    /// The arguments of each bound template parameter pack.
+    pub pack_binds: HashMap<DeclId, Vec<TArg>>,
+    pub inst_depth: u32,
+    pub inst_count: u32,
+    pub class_label: HashMap<usize, String>,
+    pub fn_label: HashMap<DeclId, String>,
+    /// Parsing the declaration after `template <>`.
+    pub explicit_spec: bool,
+    /// Errors in the bodies of members of instances, reported when the
+    /// member is used.
+    pub body_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    /// A declaration in a replay that declares a new entity.
+    pub inst_fresh: bool,
+    pub in_inst_body: bool,
+    /// A member definition replayed for an instance.
+    pub member_replay: bool,
+    pub inst_busy: std::collections::HashSet<usize>,
+    pub class_targ_objs: Vec<(String, DeclId)>,
+    /// Function definitions that a replay made, which an explicit
+    /// specialization of the member can replace.
+    pub replayed_defs: std::collections::HashSet<DeclId>,
+    /// Function parameters declared as packs.
+    pub pack_params: std::collections::HashSet<DeclId>,
+    /// The last type name that named a bound or declared type pack.
+    pub last_pack_ref: Option<DeclId>,
+    /// The class template of the last dependent template-id before `::`.
+    pub last_qual_templ: Option<(usize, Vec<TArg>)>,
+    pub last_partial_class: Option<usize>,
+    /// The head of each bound template template parameter (TPL-40).
+    pub ttp_inner: HashMap<DeclId, std::rc::Rc<Vec<crate::templ::TParam>>>,
+    /// Function specializations whose definitions are being made.
+    pub body_busy: std::collections::HashSet<DeclId>,
+    /// The explicit template arguments of the call being built.
+    pub call_explicit: Option<std::rc::Rc<Vec<crate::templ::RawArg>>>,
+    /// Pairs of candidates of the call being resolved where the first
+    /// comes from a more specialized template (OVL-28).
+    pub tie_more: Vec<(DeclId, DeclId)>,
+    /// Inside the n-th copy of a pack expansion in a specialization.
+    pub pack_index: Option<usize>,
+    /// The lengths of the packs that the pattern being parsed names.
+    pub pack_refs: Vec<usize>,
+    /// The parameters that a function parameter pack became, under each
+    /// of them (and under a placeholder for an empty pack).
+    pub fn_param_packs: HashMap<DeclId, Vec<DeclId>>,
+    /// The bodies of member functions of instances, made when a use
+    /// needs them (INST-5, INST-7): the tokens and the deferred body.
+    pub lazy_bodies: HashMap<DeclId, (std::rc::Rc<Vec<crate::lexer::Token>>, Deferred)>,
+    /// Parse deferred bodies now, also those of instances.
+    pub force_bodies: bool,
+    pub finished_specs: std::collections::HashSet<DeclId>,
+    pub in_tparam_decl: bool,
+    pub pending_default_errors: Option<Vec<crate::diag::Diag>>,
+    /// The definitions that a use needs, made at the end of the unit
+    /// (INST-31).
+    pub used_later: Vec<DeclId>,
+    /// The errors of scoped enumerations of instances (INST-5).
+    pub enum_errors: HashMap<usize, Vec<crate::diag::Diag>>,
+    pub member_replay_decl: Option<DeclId>,
+    pub finishing: bool,
+    /// The errors of default arguments of specializations (INST-9).
+    pub default_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    pub depth_reported: bool,
+    pub last_decl_qual: Option<usize>,
+    /// Static data members whose definitions a replay made and no use
+    /// has needed yet (INST-8).
+    pub lazy_static_defs: std::collections::HashSet<DeclId>,
+    /// In a replay: the declarations that namespace lookup sees (DEP-5).
+    pub lookup_limit: usize,
+    pub lazy_limits: HashMap<DeclId, usize>,
+    /// The scopes that bind template parameters in replays.
+    pub binding_scopes: std::collections::HashSet<usize>,
+    /// Lookups that found a bound template parameter.
+    pub binding_hits: u32,
+    /// The bases of instances whose types depend on a parameter (DEP-11).
+    pub dep_bases: std::collections::HashSet<(usize, usize)>,
+    pub templ_head_decl: bool,
+    pub templ_class_defined: bool,
+    /// The template arguments written after the name of a function
+    /// declaration.
+    pub decl_fn_targs: Option<std::rc::Rc<Vec<crate::templ::RawArg>>>,
+    /// The explicit instantiations of the unit: whether each is a
+    /// definition (INST-26).
+    pub explicit_insts: HashMap<String, bool>,
+    /// Explicit instantiation definitions whose template is defined later
+    /// (INST-20): the template, arguments, line, and whether a variable.
+    pub later_explicit: Vec<(usize, Vec<TArg>, u32, bool)>,
+    pub used_statics: std::collections::HashSet<DeclId>,
+    pub pending_noexcept_errors: Option<Vec<crate::diag::Diag>>,
+    /// The errors of the exception specifications of specializations,
+    /// reported when a call chooses one (DED-27).
+    pub noexcept_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    /// In a substitution: the count of muted errors at its start.
+    pub sfinae_mark: Option<u32>,
+    /// Where the current tokens come from: the token vector and the
+    /// index of the first token (main unit: vector 0, index 0).
+    pub tok_origin: (usize, usize),
+    pub lazy_origins: HashMap<DeclId, (usize, usize)>,
+    /// Facts that the parse of a template's pattern recorded at a token,
+    /// for its specializations (DEP rules).
+    pub pattern_facts: HashMap<(usize, usize), u8>,
+    pub call_adl_independent: bool,
+    /// The template head being recorded has constraints.
+    pub head_constrained: bool,
+    pub tparam_constrained: bool,
+    /// The position of the last `friend` keyword of decl-specifiers.
+    pub friend_spec_pos: Option<usize>,
 }
 
 impl P {
@@ -508,6 +636,76 @@ impl P {
             closure_caps: Default::default(),
             closure_this: Default::default(),
             closure_conv: Default::default(),
+            templs: Vec::new(),
+            decl_tid: HashMap::new(),
+            class_tid: HashMap::new(),
+            tparam: HashMap::new(),
+            tdepth: 0,
+            last_templ: None,
+            inst: None,
+            inst_out: None,
+            injected: HashMap::new(),
+            inst_of: HashMap::new(),
+            spec_of: HashMap::new(),
+            const_param_val: HashMap::new(),
+            pack_binds: HashMap::new(),
+            inst_depth: 0,
+            inst_count: 0,
+            class_label: HashMap::new(),
+            fn_label: HashMap::new(),
+            explicit_spec: false,
+            body_errors: HashMap::new(),
+            inst_fresh: false,
+            in_inst_body: false,
+            member_replay: false,
+            inst_busy: Default::default(),
+            class_targ_objs: Vec::new(),
+            replayed_defs: Default::default(),
+            pack_params: Default::default(),
+            last_pack_ref: None,
+            last_qual_templ: None,
+            last_partial_class: None,
+            ttp_inner: HashMap::new(),
+            body_busy: Default::default(),
+            call_explicit: None,
+            tie_more: Vec::new(),
+            pack_index: None,
+            pack_refs: Vec::new(),
+            fn_param_packs: HashMap::new(),
+            lazy_bodies: HashMap::new(),
+            force_bodies: false,
+            finished_specs: Default::default(),
+            in_tparam_decl: false,
+            pending_default_errors: None,
+            used_later: Vec::new(),
+            enum_errors: HashMap::new(),
+            member_replay_decl: None,
+            finishing: false,
+            default_errors: HashMap::new(),
+            depth_reported: false,
+            last_decl_qual: None,
+            lazy_static_defs: Default::default(),
+            lookup_limit: usize::MAX,
+            lazy_limits: HashMap::new(),
+            binding_scopes: Default::default(),
+            binding_hits: 0,
+            dep_bases: Default::default(),
+            templ_head_decl: false,
+            templ_class_defined: false,
+            decl_fn_targs: None,
+            explicit_insts: HashMap::new(),
+            later_explicit: Vec::new(),
+            used_statics: Default::default(),
+            pending_noexcept_errors: None,
+            noexcept_errors: HashMap::new(),
+            sfinae_mark: None,
+            tok_origin: (0, 0),
+            lazy_origins: HashMap::new(),
+            pattern_facts: HashMap::new(),
+            call_adl_independent: false,
+            head_constrained: false,
+            tparam_constrained: false,
+            friend_spec_pos: None,
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;
@@ -925,6 +1123,24 @@ impl P {
         id
     }
     fn add_decl_in0(&mut self, scope: usize, name: &str, k: DK, line: u32) -> DeclId {
+        if !name.is_empty() && self.inst_depth == 0 && matches!(self.scopes[scope].kind, SK::Class(_) | SK::Block | SK::Params) {
+            // TPL-18: a name declared again in the scope of a template
+            // parameter with that name.
+            let mut s = self.scopes[scope].parent;
+            while let Some(x) = s {
+                match self.scopes[x].kind {
+                    SK::Namespace => break,
+                    SK::Template if !self.binding_scopes.contains(&x) => {
+                        if self.scopes[x].names.get(name).is_some_and(|v| v.iter().any(|&d| self.tparam.contains_key(&d))) {
+                            self.d.error(line, Some("TPL-18"), format!("'{}' is declared again in the scope of the template parameter with that name", name));
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+                s = self.scopes[x].parent;
+            }
+        }
         self.decls.push(Decl { name: name.to_string(), k, line, scope });
         let id = self.decls.len() - 1;
         if !name.is_empty() {
@@ -971,12 +1187,17 @@ impl P {
     /// The declarations of a name at one scope of unqualified lookup.
     pub fn lookup_level(&self, s: usize, name: &str, noms: &[(usize, usize)]) -> (Option<Vec<DeclId>>, bool) {
         let mut sources: Vec<Vec<DeclId>> = Vec::new();
-        let own = self.own_names(s, name);
+        let mut own = self.own_names(s, name);
+        if self.scopes[s].kind == SK::Namespace {
+            // DEP-5: in a specialization, a namespace shows the
+            // declarations before the template's definition.
+            own.retain(|&d| d < self.lookup_limit);
+        }
         let mut amb = false;
         if !own.is_empty() {
             sources.push(own);
         } else if let SK::Class(c) = self.scopes[s].kind {
-            if let Some((r, a)) = self.member_lookup(c, name) {
+            if let Some((r, a)) = self.member_lookup_unqual(c, name) {
                 amb = a;
                 sources.push(r);
             }
@@ -984,7 +1205,8 @@ impl P {
         if self.scopes[s].kind == SK::Namespace {
             for &(t, n) in noms {
                 if t == s {
-                    let v = self.own_names(n, name);
+                    let mut v = self.own_names(n, name);
+                    v.retain(|&d| d < self.lookup_limit);
                     if !v.is_empty() {
                         sources.push(v);
                     }
@@ -1117,6 +1339,7 @@ impl P {
     fn qual_ns(&self, s: usize, name: &str, visited: &mut Vec<usize>) -> Vec<Vec<DeclId>> {
         let mut own = Vec::new();
         self.inline_names(s, name, &mut own, 0);
+        own.retain(|&d| d < self.lookup_limit);
         if !own.is_empty() {
             return vec![own];
         }
@@ -1149,6 +1372,43 @@ impl P {
             }
         }
     }
+    /// Unqualified lookup in a class: the bases whose types depend on a
+    /// template parameter are not searched (DEP-11).
+    pub fn member_lookup_unqual(&self, c: usize, name: &str) -> Option<(Vec<DeclId>, bool)> {
+        if !self.classes[c].bases.iter().any(|b| b.class.is_some_and(|bc| self.dep_bases.contains(&(c, bc)))) {
+            return self.member_lookup(c, name);
+        }
+        let own = self.own_names(self.classes[c].scope, name);
+        if !own.is_empty() {
+            return Some((own, false));
+        }
+        let mut found: Vec<(Vec<DeclId>, bool)> = Vec::new();
+        for b in &self.classes[c].bases {
+            let Some(bc) = b.class else { continue };
+            if self.dep_bases.contains(&(c, bc)) {
+                continue;
+            }
+            if let Some(r) = self.member_lookup(bc, name) {
+                found.push(r);
+            }
+        }
+        match found.len() {
+            0 => None,
+            1 => found.pop(),
+            _ => {
+                let mut ids = Vec::new();
+                for (v, _) in &found {
+                    for &d in v {
+                        if !ids.contains(&d) {
+                            ids.push(d);
+                        }
+                    }
+                }
+                Some((ids, true))
+            }
+        }
+    }
+
     /// Lookup of a member in a class and its bases (NAM-17, DER-3,
     /// DER-4). Returns the declarations and whether they are found in
     /// more than one base subobject.

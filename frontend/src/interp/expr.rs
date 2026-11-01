@@ -282,9 +282,17 @@ impl<'a> Machine<'a> {
                 let p = self.lvalue(a)?;
                 match self.dynamic_target(&p, &e.ty.t)? {
                     Some(q) => Ok(q),
-                    // The failed cast of a reference throws std::bad_cast,
-                    // which the specification does not describe.
-                    None => unsup("failed dynamic_cast of a reference (std::bad_cast)"),
+                    // VIRT-10: the failed cast of a reference throws an
+                    // exception of a library type; the interpreter gives
+                    // it a type that only `catch (...)` matches.
+                    None => {
+                        if self.constant {
+                            return limit("CE-8", "a failed dynamic_cast of a reference throws");
+                        }
+                        let place = self.alloc(&QTy::int())?;
+                        self.write(&place, Val::Int(0), true)?;
+                        Err(Stop::Throw(Exc { obj: place.obj, ty: QTy::new(Ty::Unknown) }))
+                    }
                 }
             }
             EK::This => unsup("this as lvalue"),
@@ -438,21 +446,38 @@ impl<'a> Machine<'a> {
             return unsup("dynamic type of an object the interpreter cannot see");
         };
         let at = |path: Vec<usize>| Ptr { obj: p.obj, path, off: 0, array: false };
-        if !matches!(to, Ty::Void) {
-            // The operand's subobject must be a public base of the most
-            // derived object. VIRT-10 does not state this condition; the
-            // test dynamic-cast-private-base.cpp needs it (outside
-            // knowledge).
-            let fp = full_path(p);
+        // The classes along the path from the most derived object to the
+        // operand's subobject, and whether each edge is public.
+        let fp = full_path(p);
+        let mut chain: Vec<(usize, bool)> = vec![(mdc, true)];
+        {
             let mut c = mdc;
             for &i in fp.iter().skip(mdpath.len()) {
                 let Some(b) = self.p.classes[c].bases.get(i) else { break };
-                if b.access != 0 {
-                    return Ok(None);
-                }
                 let Some(bc) = b.class else { break };
+                chain.push((bc, b.access == 0));
                 c = bc;
             }
+        }
+        if let Ty::Class(tc) = to {
+            // VIRT-10, step 1: the operand is a public base subobject of
+            // exactly one `T` object on its path.
+            let mut hits = Vec::new();
+            for k in 0..chain.len().saturating_sub(1) {
+                if chain[k].0 == *tc && chain[k + 1..].iter().all(|x| x.1) {
+                    hits.push(k);
+                }
+            }
+            if hits.len() == 1 {
+                let k = hits[0];
+                let mut path = mdpath.clone();
+                path.extend(fp.iter().skip(mdpath.len()).take(k));
+                return Ok(Some(at(path)));
+            }
+        }
+        if !matches!(to, Ty::Void) && !chain.iter().all(|x| x.1) {
+            // Step 2 needs the operand reached through public bases only.
+            return Ok(None);
         }
         match to {
             Ty::Void => Ok(Some(at(mdpath))),
@@ -746,7 +771,7 @@ impl<'a> Machine<'a> {
                 Ok(Val::Void)
             }
             EK::Unknown(why) => self.unknown(why),
-            EK::Overloads(_) | EK::BoundMember(..) => unsup("overload set"),
+            EK::Overloads(_) | EK::BoundMember(..) | EK::TemplId(..) => unsup("overload set"),
         }
     }
 
@@ -1037,6 +1062,46 @@ impl<'a> Machine<'a> {
         }
     }
 
+    /// UNI-13: make the union members of a chain such as `s.u.a.tag` or
+    /// `u.arr[1]` active, from the outside in. Only a chain of names,
+    /// member accesses, and subscripts with no side effects.
+    fn activate_chain(&mut self, l: &Expr) -> R<()> {
+        fn plain(e: &Expr) -> bool {
+            match &e.k {
+                EK::Var(_) | EK::Int(_) => true,
+                EK::Member(o, _) => plain(o),
+                EK::Index(a, i) => plain(a) && plain(i),
+                EK::Conv(Conv::ArrayDecay | Conv::LToR | Conv::NoOp | Conv::Arith, x) => plain(x),
+                _ => false,
+            }
+        }
+        if !plain(l) {
+            return Ok(());
+        }
+        match &l.k {
+            EK::Member(o, _) => {
+                self.activate_chain(o)?;
+                if matches!(o.k, EK::Member(..) | EK::Index(..)) {
+                    let p = self.lvalue(o)?;
+                    self.activate(&p)?;
+                }
+            }
+            EK::Index(a, _) => {
+                let mut x = &**a;
+                while let EK::Conv(Conv::ArrayDecay | Conv::NoOp, y) = &x.k {
+                    x = y;
+                }
+                if matches!(x.k, EK::Member(..)) {
+                    self.activate_chain(x)?;
+                    let p = self.lvalue(x)?;
+                    self.activate(&p)?;
+                }
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+
     /// UNI-5: an assignment to a member of a union makes that member
     /// active, also when the assignment names a member of the member, as
     /// in `u.a.tag = 7`. The other members end.
@@ -1052,7 +1117,13 @@ impl<'a> Machine<'a> {
                     if self.p.classes[c].key == 2 {
                         let holder = Ptr { obj: place.obj, path: fp[..k].to_vec(), off: 0, array: false };
                         if let (Ok(Val::Agg(items)), Some(ft)) = (self.get_at(&holder), &ft) {
-                            if matches!(items.get(i), Some(Val::Inactive)) {
+                            // UNI-13: only a member whose default constructor
+                            // is trivial becomes active.
+                            let trivial = match &ft.t {
+                                Ty::Class(m) => self.trivial_default(*m, 0),
+                                _ => true,
+                            };
+                            if matches!(items.get(i), Some(Val::Inactive)) && trivial {
                                 let sh = if ft.t.is_ref() { Val::Uninit } else { self.shape(ft)? };
                                 if let Val::Agg(items) = self.slot(&holder, true)? {
                                     for (j, it) in items.iter_mut().enumerate() {
@@ -1070,6 +1141,27 @@ impl<'a> Machine<'a> {
             t = next;
         }
         Ok(())
+    }
+
+    /// Whether the default constructor of a class is trivial: no
+    /// constructor of its own, no default member initializer, no virtual
+    /// function, and trivial bases and members.
+    fn trivial_default(&self, c: usize, depth: u32) -> bool {
+        let ci = &self.p.classes[c];
+        if depth > 16 || !ci.ctors.is_empty() || ci.has_virtual {
+            return false;
+        }
+        ci.bases.iter().all(|b| b.class.is_some_and(|bc| self.trivial_default(bc, depth + 1)))
+            && ci.fields.iter().all(|&f| match &self.p.decls[f].k {
+                DK::Field(fi) => {
+                    fi.init.is_none()
+                        && match &fi.ty.t {
+                            Ty::Class(m) => self.trivial_default(*m, depth + 1),
+                            _ => true,
+                        }
+                }
+                _ => true,
+            })
     }
 
     /// `++` and `--` on the object at `place`. Returns the old value.
@@ -1146,6 +1238,11 @@ impl<'a> Machine<'a> {
         }
         // SEQ-3: the right operand first, then the left.
         let rv = self.eval(r)?;
+        if op.is_none() {
+            // UNI-13: the union members on a chain of member accesses
+            // and subscripts become active before the place is formed.
+            self.activate_chain(l)?;
+        }
         let place = self.lvalue(l)?;
         if op.is_none() {
             self.activate(&place)?;
@@ -1482,7 +1579,14 @@ impl<'a> Machine<'a> {
                     BOp::Mul => fin(x * y, "MUL-12"),
                     BOp::Div => {
                         if y == 0.0 {
-                            return ub("MUL-11", "floating division by zero");
+                            // CE-28: not in constant evaluation.
+                            if self.constant {
+                                return limit("CE-28", "floating division by zero in constant evaluation");
+                            }
+                            // MUL-11, MUL-20: the types of the matrix
+                            // targets follow IEEE 754, so the result is a
+                            // NaN or an infinity.
+                            return Ok(Val::Float(round(x / y)));
                         }
                         fin(x / y, "MUL-12")
                     }
@@ -1740,6 +1844,11 @@ impl<'a> Machine<'a> {
             if union && j != active {
                 self.write(&sub, Val::Inactive, true)?;
                 continue;
+            }
+            if union && !fi.ty.t.is_ref() {
+                // The active member gets its parts before they are set.
+                let sh = self.shape(&fi.ty)?;
+                self.write(&sub, sh, true)?;
             }
             if k < items.len() {
                 let it = items[k].clone();

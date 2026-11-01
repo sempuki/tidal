@@ -110,7 +110,7 @@ impl P {
         Ok(lhs)
     }
 
-    fn parse_cast(&mut self) -> PR<Expr> {
+    pub fn parse_cast(&mut self) -> PR<Expr> {
         if self.at("(") && self.is_cast_paren() {
             let line = self.line();
             let save = self.pos;
@@ -190,6 +190,17 @@ impl P {
                 "sizeof" => {
                     self.pos += 1;
                     if self.eat("...") {
+                        if !self.in_template() && self.at("(") && self.peek(1).kind == TK::Ident && self.at_k(2, ")") {
+                            // The number of elements of a pack.
+                            let name = self.peek(1).text.clone();
+                            if let Some(ids) = self.lookup(&name) {
+                                let n = self.fn_param_packs.get(&ids[0]).map(|v| v.len()).or_else(|| self.pack_binds.get(&ids[0]).map(|v| v.len()));
+                                if let Some(n) = n {
+                                    self.pos += 3;
+                                    return Ok(Expr::new(EK::Int(n as i128), QTy::new(Ty::size_t()), Cat::PR, line));
+                                }
+                            }
+                        }
                         self.skip_balanced();
                         return Ok(Expr::new(EK::Unknown("sizeof...".into()), QTy::new(Ty::size_t()), Cat::PR, line));
                     }
@@ -251,8 +262,9 @@ impl P {
                     let e = self.parse_cast()?;
                     let e = self.rvalue(e);
                     let pt = e.ty.clone();
+                    self.require_pointee(&pt, line);
                     match &pt.t {
-                        Ty::Ptr(_) | Ty::Unknown | Ty::Class(_) => {}
+                        Ty::Ptr(_) | Ty::Unknown | Ty::Dep(_) | Ty::Class(_) => {}
                         _ => self.error(line, "NEW-8", "operand of delete must be a pointer"),
                     }
                     let _ = arr;
@@ -398,6 +410,7 @@ impl P {
     /// values) when there is an initializer.
     #[allow(clippy::too_many_arguments)]
     fn check_new_type(&mut self, t: &QTy, is_auto: bool, bounds: &[Option<u64>], first_absent: bool, first_const: Option<i128>, init: Option<(bool, usize)>, placement: Option<&[Expr]>, global: bool, line: u32) {
+        self.require_ty(t, line);
         if is_auto {
             if !bounds.is_empty() {
                 self.error(line, "NEW-16", "array of 'auto' in new");
@@ -716,7 +729,7 @@ impl P {
                     self.error(line, "ATTR-17", "'[[' that does not start an attribute");
                 }
                 self.pos += 1;
-                if self.at("]") && matches!(nonref(&e.ty).t, Ty::Class(_) | Ty::Unknown) {
+                if self.at("]") && matches!(nonref(&e.ty).t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) {
                     // an overloaded operator[] with no parameters (OPR)
                     self.pos += 1;
                     e = Expr::unknown(line, "overloaded operator[]");
@@ -734,7 +747,7 @@ impl P {
                 self.no_gt = save;
                 let idx = idx?;
                 self.expect("]")?;
-                if extra && !matches!(nonref(&e.ty).t, Ty::Class(_) | Ty::Unknown) {
+                if extra && !matches!(nonref(&e.ty).t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) {
                     // COMMA-6: the built-in subscript takes one argument.
                     self.error(line, "COMMA-6", "comma in a built-in subscript");
                 }
@@ -747,12 +760,19 @@ impl P {
                 };
             } else if self.at("(") {
                 let adl = self.adl_pos == Some(self.pos);
+                let open = self.pos;
                 self.pos += 1;
                 let save = self.no_gt;
                 self.no_gt = 0;
                 let args = self.parse_call_args();
                 self.no_gt = save;
                 let args = args?;
+                if adl && self.in_template() && !args.iter().any(|a| a.ty.is_unknown()) {
+                    // DEP-3: a call whose arguments do not depend on a
+                    // parameter is bound at the definition.
+                    self.note_fact(open, crate::templ::FACT_INDEPENDENT_CALL);
+                }
+                self.call_adl_independent = adl && self.has_fact(open, crate::templ::FACT_INDEPENDENT_CALL);
                 self.call_adl = adl;
                 e = self.build_call(e, args, line);
             } else if self.at(".") || self.at("->") {
@@ -785,9 +805,11 @@ impl P {
             return Ok(args);
         }
         loop {
-            let a = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-            self.eat("...");
-            args.push(a);
+            let (items, expanded) = self.parse_expansion(|p| if p.at("{") { p.parse_braced_init() } else { p.parse_assignment() })?;
+            if !expanded {
+                self.eat("...");
+            }
+            args.extend(items);
             if self.eat(",") {
                 continue;
             }
@@ -796,7 +818,32 @@ impl P {
         }
     }
 
+    /// Whether the qualified name at `start` starts with a template
+    /// parameter or a template-id with a dependent argument.
+    pub fn qual_starts_with_tparam(&self, start: usize) -> bool {
+        let t = &self.toks[start.min(self.toks.len() - 1)];
+        if t.kind != TK::Ident {
+            return false;
+        }
+        match self.lookup(&t.text) {
+            Some(ids) => ids.iter().any(|&i| self.tparam.contains_key(&i)),
+            None => false,
+        }
+    }
+
+    /// At `<` after a member name: the argument list is followed by `(`.
+    fn at_member_call_after_targs(&self) -> bool {
+        let k = self.skip_angle_at(0);
+        self.at_k(k, "(")
+    }
+
     fn parse_member_access(&mut self, obj: Expr, arrow: bool, line: u32) -> PR<Expr> {
+        // INST-1: a member access needs the class complete.
+        if arrow {
+            self.require_pointee(&obj.ty, line);
+        } else {
+            self.require_ty(&nonref(&obj.ty), line);
+        }
         // destructor call
         if self.at("~") {
             self.pos += 1;
@@ -853,6 +900,27 @@ impl P {
         } else {
             self.ident()?
         };
+        let name_pos = self.pos.saturating_sub(1);
+        if self.at("<") && self.in_template() && obj.ty.is_unknown() && !(name_pos >= 2 && self.toks[name_pos - 1].text == "template") {
+            // DEP-24: without `template` the `<` is the less-than operator.
+            self.note_fact(name_pos, crate::templ::FACT_LESS);
+        }
+        if self.at("<") && self.has_fact(name_pos, crate::templ::FACT_LESS) {
+            let ot = nonref(&obj.ty);
+            let c = match (&ot.t, arrow) {
+                (Ty::Class(c), false) => Some(*c),
+                (Ty::Ptr(p), true) => if let Ty::Class(c) = p.t { Some(c) } else { None },
+                _ => None,
+            };
+            if c.and_then(|c| self.lookup_member(c, &name)).is_some_and(|ids| ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template) || matches!(self.decls[i].k, DK::Template(_)))) {
+                self.error(line, "DEP-24", format!("the template reads '<' after '{}' as the less-than operator; the member template needs 'template'", name));
+                self.skip_template_args()?;
+                if self.at("(") {
+                    self.skip_balanced();
+                }
+                return Ok(Expr::unknown(line, "member template without template"));
+            }
+        }
         if self.at("<") {
             // member template arguments
             let ot = nonref(&obj.ty);
@@ -861,7 +929,26 @@ impl P {
                 (Ty::Ptr(p), true) => if let Ty::Class(c) = p.t { Some(c) } else { None },
                 _ => None,
             };
-            let is_templ = class.and_then(|c| self.lookup_member(c, &name)).is_some_and(|ids| ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template) || matches!(self.decls[i].k, DK::Template(_))));
+            let found = class.and_then(|c| self.lookup_member(c, &name));
+            let is_templ = found.as_ref().is_some_and(|ids| ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template) || matches!(self.decls[i].k, DK::Template(_))));
+            let fn_templ = found.as_ref().is_some_and(|ids| ids.iter().any(|&i| self.is_func_templ(i)));
+            if fn_templ && !self.in_template() && self.at_member_call_after_targs() {
+                // DED-2: a member function template with explicit
+                // arguments.
+                let fids: Vec<DeclId> = found.unwrap().into_iter().filter(|&i| self.func(i).is_some()).collect();
+                let raw = self.parse_raw_targs()?;
+                let o = if arrow {
+                    let o = self.rvalue(obj);
+                    let pt = match &o.ty.t {
+                        Ty::Ptr(p) => (**p).clone(),
+                        _ => QTy::unknown(),
+                    };
+                    Expr::new(EK::Unary(UOp::Deref, Box::new(o)), pt, Cat::L, line)
+                } else {
+                    obj
+                };
+                return Ok(Expr::new(EK::TemplId(Some(Box::new(o)), fids, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line));
+            }
             if is_templ || ot.is_unknown() {
                 self.skip_template_args()?;
                 return Ok(Expr::unknown(line, "member template"));
@@ -875,7 +962,7 @@ impl P {
                     let pt = (**p).clone();
                     Expr::new(EK::Unary(UOp::Deref, Box::new(o)), pt, Cat::L, line)
                 }
-                Ty::Unknown => return Ok(Expr::unknown(line, "member of unknown")),
+                Ty::Unknown | Ty::Dep(_) => return Ok(Expr::unknown(line, "member of unknown")),
                 Ty::Class(c) => {
                     let c = *c;
                     if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && self.lookup_member(c, "operator->").is_none() {
@@ -1026,6 +1113,11 @@ impl P {
                     let save = self.no_gt;
                     self.no_gt = 0;
                     if self.at("...") || self.is_fold() {
+                        if !self.in_template() && self.inst_depth > 0 {
+                            let r = self.parse_fold(line);
+                            self.no_gt = save;
+                            return r;
+                        }
                         self.no_gt = save;
                         self.pos -= 1;
                         self.skip_balanced();
@@ -1095,11 +1187,14 @@ impl P {
             }
             "requires" => {
                 self.pos += 1;
-                if self.at("(") {
+                if self.in_template() || self.inst_depth == 0 {
+                    if self.at("(") {
+                        self.skip_balanced();
+                    }
                     self.skip_balanced();
+                    return Ok(Expr::new(EK::Unknown("requires expression".into()), QTy::bool_(), Cat::PR, line));
                 }
-                self.skip_balanced();
-                return Ok(Expr::new(EK::Unknown("requires expression".into()), QTy::bool_(), Cat::PR, line));
+                return self.eval_requires(line);
             }
             "__func__" => {
                 self.pos += 1;
@@ -1160,6 +1255,72 @@ impl P {
             return Err(self.err(format!("unexpected keyword '{}' in an expression", s)));
         }
         self.parse_id_expression()
+    }
+
+    /// A requires-expression in a specialization: each simple requirement
+    /// is valid or not (outside the specification; constraints are not
+    /// specified yet).
+    fn eval_requires(&mut self, line: u32) -> PR<Expr> {
+        let depth = self.stack.len();
+        if self.at("(") {
+            let f = self.parse_params()?;
+            self.stack.push(f.scope);
+        }
+        self.expect("{")?;
+        let mut ok = true;
+        let mut known = true;
+        while !self.at("}") && self.tok().kind != TK::Eof {
+            let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+            self.d.muted += 1;
+            let r: PR<()> = if self.at("{") || self.at("requires") {
+                known = false;
+                while !self.at(";") && self.tok().kind != TK::Eof {
+                    if self.at("{") || self.at("(") {
+                        self.skip_balanced();
+                    } else {
+                        self.pos += 1;
+                    }
+                }
+                Ok(())
+            } else if self.at("typename") {
+                self.pos += 1;
+                self.parse_typename_type().map(|q| {
+                    if q.is_unknown() {
+                        ok = false;
+                    }
+                })
+            } else {
+                self.parse_expression().map(|e| {
+                    if e.ty.is_unknown() && matches!(e.k, EK::Unknown(_)) {
+                        ok = false;
+                    }
+                })
+            };
+            self.d.muted -= 1;
+            if r.is_err() {
+                known = false;
+                while !self.at(";") && !self.at("}") && self.tok().kind != TK::Eof {
+                    self.pos += 1;
+                }
+            }
+            if self.d.muted_errors != me {
+                ok = false;
+            }
+            if self.d.muted_unsup != mu {
+                known = false;
+            }
+            self.d.muted_errors = me;
+            self.d.muted_unsup = mu;
+            if !self.eat(";") {
+                break;
+            }
+        }
+        self.expect("}")?;
+        self.stack.truncate(depth);
+        if !known {
+            return Ok(Expr::new(EK::Unknown("requires expression".into()), QTy::bool_(), Cat::PR, line));
+        }
+        Ok(Expr::new(EK::Int(ok as i128), QTy::bool_(), Cat::PR, line))
     }
 
     fn is_fold(&self) -> bool {
@@ -1413,11 +1574,9 @@ impl P {
                     is_mutable = true;
                 }
                 if self.at("static") {
-                    // A static call operator competes with the conversion
-                    // to a function pointer in ways the front end does not
-                    // model, so the lambda stays unknown.
+                    // LAM-13: a static call operator, which a call
+                    // chooses over the surrogate (OVL-25).
                     is_static = true;
-                    generic = true;
                 }
                 if self.at("consteval") {
                     is_consteval = true;
@@ -1889,6 +2048,10 @@ impl P {
         let scope = self.parse_nested_name()?;
         if let Some(Err(())) = scope {
             // qualifier names something unknown or dependent
+            if self.in_template() && self.qual_starts_with_tparam(start) {
+                // DEP-19: the pattern reads the name as a value.
+                self.note_fact(start, crate::templ::FACT_VALUE_QUAL);
+            }
             if self.eat("template") {}
             if self.at("~") {
                 self.pos += 1;
@@ -1947,6 +2110,19 @@ impl P {
             Some(Ok(s)) => self.lookup_qualified(s, &name),
             Some(Err(())) => (None, false),
         };
+        if scope.is_some() && self.has_fact(start, crate::templ::FACT_VALUE_QUAL) {
+            if let Some(ids) = &found {
+                if ids.iter().all(|&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias))) {
+                    // DEP-19: the template read the name as a value, and
+                    // in this specialization it names a type.
+                    self.error(line, "DEP-19", format!("'{}' names a type, but the template reads it as a value without 'typename'", name));
+                    if self.at("(") || self.at("{") {
+                        self.skip_balanced();
+                    }
+                    return Ok(Expr::unknown(line, "type read as a value"));
+                }
+            }
+        }
         if amb && !self.in_template() {
             self.report_ambiguous(scope.and_then(|r| r.ok()), &name, line);
             if self.at("(") {
@@ -1968,6 +2144,39 @@ impl P {
                 }
             }
         }
+        // TARG-23: after an unqualified name that finds only functions or
+        // nothing, `<` opens a template argument list, and a call can find
+        // a function template by argument-dependent lookup.
+        let only_plain_fns = found.as_ref().is_some_and(|ids| ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)));
+        if scope.is_none() && self.at("<") && !self.in_template() && (found.is_none() || only_plain_fns) {
+            let save = self.pos;
+            let mark = self.d.list.len();
+            self.d.muted += 1;
+            let raw = self.parse_raw_targs();
+            self.d.muted -= 1;
+            if let Ok(raw) = raw {
+                if self.at("(") {
+                    self.d.list.truncate(mark);
+                    self.pos += 1;
+                    let args = self.parse_call_args()?;
+                    let (adl, _) = self.adl_lookup(&name, &args);
+                    let mut cands: Vec<DeclId> = found.clone().unwrap_or_default();
+                    for d in adl {
+                        if !cands.contains(&d) {
+                            cands.push(d);
+                        }
+                    }
+                    if cands.iter().any(|&c| self.func(c).is_some_and(|f| f.template)) {
+                        let callee = Expr::new(EK::TemplId(None, cands, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line);
+                        return Ok(self.build_call(callee, args, line));
+                    }
+                    self.error(line, "NAM-8", format!("no function template named '{}' is found for the call", name));
+                    return Ok(Expr::unknown(line, "undeclared"));
+                }
+            }
+            self.pos = save;
+            self.d.list.truncate(mark);
+        }
         let Some(ids) = found else {
             if self.at("<") && self.in_template() {
                 self.skip_template_args()?;
@@ -1979,13 +2188,32 @@ impl P {
                 let save = self.pos;
                 self.pos += 1;
                 let args = self.parse_call_args()?;
-                let (found, certain) = self.adl_lookup(&name, &args);
+                if self.in_template() && !args.iter().any(|a| a.ty.is_unknown()) {
+                    // DEP-3: a call whose arguments do not depend on a
+                    // parameter is bound at the definition.
+                    self.note_fact(save, crate::templ::FACT_INDEPENDENT_CALL);
+                }
+                let (mut found, certain) = self.adl_lookup(&name, &args);
+                if self.has_fact(save, crate::templ::FACT_INDEPENDENT_CALL) {
+                    // DEP-5: the declarations before the definition only.
+                    let lim = self.lookup_limit;
+                    found.retain(|&d| d < lim);
+                }
                 if !found.is_empty() {
                     let callee = Expr::new(EK::Overloads(found), QTy::unknown(), Cat::L, line);
                     return Ok(self.build_call(callee, args, line));
                 }
                 let _ = save;
                 let in_class_body = self.class_depth > 0 && self.fns.is_empty();
+                if self.in_template() && certain && !in_class_body && self.class_depth == 0 && self.fns.len() == 1 && self.fns[0].class.is_none()
+                    && args.iter().all(|a| !a.ty.is_unknown() && !matches!(nonref(&a.ty).t, Ty::Class(_) | Ty::Enum(_)) && !matches!(a.k, EK::InitList(_)))
+                    && !self.stack.iter().any(|&s| self.scopes[s].uncertain)
+                {
+                    // DEP-6, DEP-10: an independent call with arguments of
+                    // fundamental types finds only what the definition
+                    // sees.
+                    self.error_because(line, "DEP-6", "NAM-8", format!("call of undeclared function '{}' in a template: no declaration before the definition", name));
+                }
                 if !self.lookup_uncertain() && !in_class_body && certain && !self.in_template() {
                     // NAM-8: no declaration, and argument-dependent lookup
                     // finds no function (NAM-28, NAM-30).
@@ -2032,15 +2260,33 @@ impl P {
             }
         }
         // template-id
-        let tid = ids.iter().copied().find(|&i| matches!(self.decls[i].k, DK::Template(_)));
+        let tid = ids.iter().copied().find(|&i| matches!(self.decls[i].k, DK::Template(_)) || self.injected.contains_key(&i));
         if let Some(t) = tid {
             if self.at("<") {
                 return self.parse_template_id_expr(t, line);
             }
+            if let DK::Template(TemplKind::Var { .. }) = self.decls[t].k {
+                if !self.in_template() && self.tid_of(t).is_some() {
+                    // TARG-10: a variable template needs an argument list.
+                    self.error(line, "TARG-10", format!("the variable template '{}' is used without an argument list", name));
+                    return Ok(Expr::unknown(line, "variable template"));
+                }
+            }
         }
         if ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template)) && self.at("<") {
-            self.skip_template_args()?;
-            return Ok(Expr::unknown(line, "function template specialization"));
+            if self.in_template() {
+                self.skip_template_args()?;
+                return Ok(Expr::unknown(line, "function template specialization"));
+            }
+            // DED-2: explicit template arguments for the call.
+            let raw = self.parse_raw_targs()?;
+            let fids: Vec<DeclId> = ids.iter().copied().filter(|&i| self.func(i).is_some()).collect();
+            let e = self.name_expr(fids.clone(), line);
+            let obj = match e.k {
+                EK::BoundMember(o, _) => Some(o),
+                _ => None,
+            };
+            return Ok(Expr::new(EK::TemplId(obj, fids, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line));
         }
         // TYN-4: a function or variable hides a class of the same name.
         let ids: Vec<DeclId> = if ids.iter().any(|&i| matches!(self.decls[i].k, DK::Var(_) | DK::Func(_) | DK::Enumerator(..))) {
@@ -2096,84 +2342,35 @@ impl P {
     fn parse_template_id_expr(&mut self, t: DeclId, line: u32) -> PR<Expr> {
         let k = self.decls[t].k.clone();
         match k {
-            DK::Template(TemplKind::Var { params, init, specs }) => {
-                // Parse the type arguments.
-                self.expect("<")?;
-                let mut args: Vec<QTy> = Vec::new();
-                self.no_gt += 1;
-                let r = (|| -> PR<()> {
-                    if self.at(">") {
-                        return Ok(());
-                    }
-                    loop {
-                        if self.starts_type() {
-                            args.push(self.parse_type_id()?);
-                        } else {
-                            let _ = self.parse_conditional()?;
-                            args.push(QTy::unknown());
-                        }
-                        if !self.eat(",") {
-                            return Ok(());
-                        }
-                    }
-                })();
-                self.no_gt -= 1;
-                r?;
-                self.expect(">")?;
-                let _ = params;
-                if args.iter().any(|a| a.is_unknown()) {
+            DK::Template(TemplKind::Var { .. }) => {
+                let Some(tid) = self.tid_of(t) else {
+                    self.skip_template_args()?;
+                    return Ok(Expr::unknown(line, "variable template"));
+                };
+                let raw = self.parse_raw_targs()?;
+                if self.in_template() {
                     return Ok(Expr::new(EK::Unknown("variable template with unknown arguments".into()), QTy::unknown(), Cat::PR, line));
                 }
-                // most specialized matching partial specialization; with
-                // patterns of plain parameters, the first match is enough
-                for (sp, pats, e) in &specs {
-                    if pats.len() != args.len() {
-                        continue;
-                    }
-                    let mut bind: Vec<Option<QTy>> = vec![None; sp.len()];
-                    let mut ok = true;
-                    for (p, a) in pats.iter().zip(args.iter()) {
-                        match p {
-                            QTyPat::Param(i) => match &bind[*i] {
-                                None => bind[*i] = Some(a.clone()),
-                                Some(b) => {
-                                    if b != a {
-                                        ok = false;
-                                    }
-                                }
-                            },
-                            QTyPat::Ty(q) => {
-                                if q != a {
-                                    ok = false;
-                                }
-                            }
-                        }
-                    }
-                    if ok {
-                        let mut ex = (**e).clone();
-                        ex.line = line;
-                        return Ok(ex);
-                    }
-                }
-                match init {
-                    Some(e) => {
-                        let mut ex = (*e).clone();
-                        ex.line = line;
-                        if ex.ty.is_unknown() {
-                            return Ok(Expr::unknown(line, "variable template"));
-                        }
-                        Ok(ex)
-                    }
-                    None => Ok(Expr::unknown(line, "variable template")),
+                match self.targs_for(tid, raw, line, false) {
+                    Ok(Some(args)) => match self.var_inst(tid, args, line) {
+                        Some(d) => Ok(self.name_expr(vec![d], line)),
+                        None => Ok(Expr::unknown(line, "variable template")),
+                    },
+                    _ => Ok(Expr::new(EK::Unknown("variable template with unknown arguments".into()), QTy::unknown(), Cat::PR, line)),
                 }
             }
             DK::Template(TemplKind::Concept) => {
                 self.skip_template_args()?;
                 Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line))
             }
-            DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias) => {
-                self.skip_template_args()?;
-                self.parse_functional_cast(QTy::unknown(), line)
+            DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias) | DK::Class(_) => {
+                let q = self.parse_template_id_type(t, line)?;
+                if self.at("::") {
+                    if let Ty::Class(_) = q.t {
+                        return self.parse_functional_cast(q, line);
+                    }
+                }
+                self.parse_functional_cast(q, line)
             }
             _ => {
                 self.skip_template_args()?;
@@ -2184,6 +2381,26 @@ impl P {
 
     /// Build the expression for a name that lookup found (PRIM-12).
     pub fn name_expr(&mut self, ids: Vec<DeclId>, line: u32) -> Expr {
+        let mut ids = ids;
+        if ids.len() == 1 {
+            // A pack in a specialization: the element of the copy being
+            // parsed.
+            if let Some(list) = self.fn_param_packs.get(&ids[0]).cloned() {
+                self.pack_refs.push(list.len());
+                match list.get(self.pack_index.unwrap_or(0)) {
+                    Some(&d) => ids = vec![d],
+                    None => return Expr::unknown(line, "empty pack"),
+                }
+            } else if let Some(v) = self.pack_binds.get(&ids[0]).cloned() {
+                if !matches!(self.decls[ids[0]].k, DK::Type(_)) {
+                    self.pack_refs.push(v.len());
+                    return match v.get(self.pack_index.unwrap_or(0)) {
+                        Some(TArg::Val(TVal::Const(t, cv))) => self.tval_expr(t, cv, line),
+                        _ => Expr::unknown(line, "empty pack"),
+                    };
+                }
+            }
+        }
         let id = ids[0];
         if ids.len() == 1 && self.func(id).is_some_and(|f| f.deleted) && !self.in_template() {
             // DEL-1: no reference to a deleted function.
@@ -2215,12 +2432,28 @@ impl P {
         if matches!(self.decls[id].k, DK::Var(_)) {
             self.used_vars.insert(id);
             *self.use_count.entry(id).or_default() += 1;
+            if self.in_unevaluated == 0 && !self.in_template() {
+                // INST-8: a use of the variable makes its definition.
+                self.lazy_static_defs.remove(&id);
+                self.used_statics.insert(id);
+                if let Some(errs) = self.body_errors.remove(&id) {
+                    self.d.list.extend(errs);
+                }
+            }
         }
         match self.decls[id].k.clone() {
             DK::Var(v) => {
+                if let Some(e) = self.const_param_val.get(&id) {
+                    // TPL-9: the name of a constant parameter is its value.
+                    let mut e = e.clone();
+                    e.line = line;
+                    return e;
+                }
                 if v.dependent {
                     if v.param {
-                        return Expr::new(EK::Unknown("template parameter".into()), nonref(&v.ty), Cat::PR, line);
+                        // TPL-9: a reference or class parameter is an lvalue.
+                        let cat = if v.ty.t.is_ref() || matches!(v.ty.t, Ty::Class(_)) { Cat::L } else { Cat::PR };
+                        return Expr::new(EK::Unknown(format!("template parameter#{}", id)), nonref(&v.ty), cat, line);
                     }
                     // SB-12: a structured binding name is an lvalue.
                     return Expr::new(EK::Var(id), nonref(&v.ty), Cat::L, line);
@@ -2277,6 +2510,10 @@ impl P {
                     }
                 }
                 if fids.len() == 1 {
+                    if self.in_unevaluated == 0 && !self.in_template() {
+                        // INST-7: a use of the function.
+                        self.use_fn(fids[0]);
+                    }
                     let f = self.func(fids[0]).unwrap();
                     let t = QTy::new(Ty::Func(Box::new(f.fty.clone())));
                     return Expr::new(EK::Func(fids[0]), t, Cat::L, line);
@@ -2557,6 +2794,29 @@ impl P {
     /// Returns Err with a reason if no implicit conversion exists.
     pub fn implicit(&mut self, e: Expr, to: &QTy, direct: bool) -> Result<Expr, String> {
         let line = e.line;
+        if !self.in_template() {
+            // INST-1: a conversion between classes needs them complete; a
+            // pointer conversion only when the classes differ.
+            let cls = |q: &QTy| -> Option<(usize, bool)> {
+                match &nonref(q).t {
+                    Ty::Class(c) => Some((*c, false)),
+                    Ty::Ptr(x) => match x.t {
+                        Ty::Class(c) => Some((c, true)),
+                        _ => None,
+                    },
+                    _ => None,
+                }
+            };
+            match (cls(&e.ty), cls(to)) {
+                (Some((a, pa)), Some((b, pb))) if a != b || pa != pb => {
+                    self.require_class(a, line);
+                    self.require_class(b, line);
+                }
+                (Some((a, false)), None) => self.require_class(a, line),
+                (None, Some((b, false))) => self.require_class(b, line),
+                _ => {}
+            }
+        }
         if let Some(x) = self.overload_target(&e, to, line) {
             return Ok(x);
         }
@@ -3842,7 +4102,7 @@ impl P {
                 let cat = if obj_cat == Cat::L { Cat::L } else { Cat::X };
                 Expr::new(EK::Unknown("pointer to member access".into()), t, cat, line)
             }
-            Ty::Unknown => Expr::unknown(line, "pointer to member access"),
+            Ty::Unknown | Ty::Dep(_) => Expr::unknown(line, "pointer to member access"),
             _ => {
                 self.error(line, "MPTR-10", "right operand of a pointer-to-member operator is not a pointer to member");
                 Expr::unknown(line, "bad operand")
@@ -3898,6 +4158,7 @@ impl P {
     }
 
     pub fn build_sizeof(&mut self, ty: QTy, line: u32, is_expr: bool) -> Expr {
+        self.require_ty(&nonref(&ty), line);
         let st = QTy::new(Ty::size_t());
         if ty.is_unknown() {
             return Expr::new(EK::Unknown("sizeof unknown type".into()), st, Cat::PR, line);
@@ -3928,6 +4189,7 @@ impl P {
     }
 
     fn build_alignof(&mut self, ty: QTy, line: u32) -> Expr {
+        self.require_ty(&nonref(&ty), line);
         let st = QTy::new(Ty::size_t());
         if ty.is_unknown() {
             return Expr::new(EK::Unknown("alignof unknown".into()), st, Cat::PR, line);
@@ -3964,13 +4226,14 @@ impl P {
             }
             f.fty.params.iter().take(1).all(|p| match &nonref(p).t {
                 Ty::Class(x) => *x == c,
-                Ty::Unknown => false,
+                Ty::Unknown | Ty::Dep(_) => false,
                 _ => true,
             })
         })
     }
 
     pub fn build_functional(&mut self, ty: QTy, init: Expr, braced: bool, line: u32) -> Expr {
+        self.require_ty(&ty, line);
         let EK::InitList(items) = &init.k else { unreachable!() };
         if ty.is_unknown() {
             return Expr::unknown(line, "functional cast to unknown type");
