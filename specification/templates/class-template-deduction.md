@@ -27,9 +27,9 @@ forms of initialization, aggregates, inherited constructors.
 
 The program writes `Box b(1);`, and the implementation finds `Box<int>`.
 The implementation does not need a new algorithm for the purpose. The
-class template gets a set of {term}`deduction guides <deduction guide>`.
-Each guide is a function template that takes the arguments of an
-initializer and returns a specialization. Overload resolution chooses
+{term}`class template` gets a set of {term}`deduction guides <deduction guide>`.
+Each guide is a {term}`function template` that takes the arguments of an
+initializer and returns a {term}`specialization`. Overload resolution chooses
 one guide, as for a call, and the result type of that guide is the
 type. The procedure runs in these steps:
 
@@ -58,7 +58,7 @@ a class template name with no argument list, and an initializer
                the initialization runs as for that type
 ```
 
-Step 5 is a separate initialization. Deduction can succeed and the
+Step 5 is a separate initialization. {term}`Deduction <deduction>` can succeed and the
 initialization can still fail, for example on access or a deleted
 constructor (CTAD-26).
 :::
@@ -79,17 +79,17 @@ result below. For the class `template <class T> struct Box`:
 | aggregate `T v;`, with the list `{1}` | `T` | `T` | `Box<T>` | CTAD-9 |
 | user guide `Box(int) -> Box<long>;` | as written | as written | as written | CTAD-11 |
 
-Only the primary template gives guides from constructors. A guide from
+Only the {term}`primary template` gives guides from constructors. A guide from
 a constructor keeps the `explicit` of the constructor. Its `T&&` is an
 rvalue reference to the class parameter, and no forwarding reference.
 The `U&&` of a constructor template's own parameter `U` is a forwarding
 reference (CTAD-8). The class's own parameters are deduced as a function
 template's parameters are.
 
-An alias template that stands for a specialization of a class template
+An {term}`alias template` that stands for a specialization of a class template
 gets the guides of that class template, matched to the alias (CTAD-14).
 A guide of the alias must give a specialization of the alias that meets
-the constraints of the alias (CTAD-28).
+the {term}`constraints <constraint>` of the alias (CTAD-28).
 A class template that inherits constructors gets the guides of its base
 in the same way (CTAD-16).
 :::
@@ -99,8 +99,8 @@ in the same way (CTAD-16).
 
 The guides compete as the constructors of a class would, so the usual
 rules of overload resolution apply first ({rule}`OVL-25` to
-{rule}`OVL-28`). Every guide is a function template, so partial
-ordering often decides. If two guides still tie, these tie-breakers
+{rule}`OVL-28`). Every guide is a function template, so {term}`partial ordering`
+often decides. If two guides still tie, these tie-breakers
 decide, in this order:
 
 | Order | Wins | Over | Rule |
@@ -132,7 +132,7 @@ the second and the fourth.
 ```
 
 A `deduction_guide` is a `declaration`, and in a class it is a
-`member_decl`. A template head before it makes a `template_decl`.
+`member_decl`. A {term}`template head` before it makes a `template_decl`.
 
 ## Constraints
 
@@ -153,10 +153,10 @@ stand with no argument list in these places:
 - the type of a functional cast, with parentheses or braces,
 - the type of a constant template parameter ({rule}`TPL-11`).
 
-The template arguments are then deduced from the initializer. With no
+The {term}`template arguments <template argument>` are then deduced from the initializer. With no
 initializer, the choice of a guide has no arguments. The name can have
 a qualifier, also a dependent one ({question}`Q-0243`). A
-template template parameter can stand there, and deduction uses the
+{term}`template template parameter` can stand there, and deduction uses the
 class template that it names after substitution ({question}`Q-0275`).
 :::
 
@@ -167,7 +167,7 @@ class template that it names after substitution ({question}`Q-0275`).
 A class template name with no argument list must not be used in other
 places. In particular, it must not be:
 
-- part of a pointer, reference, or array declarator,
+- part of a pointer, reference, or array {term}`declarator`,
 - the type of a function parameter or a return type,
 - the declared type of a class member that is not `static`.
 
@@ -187,7 +187,7 @@ template type, each declarator must deduce the same type.
 :kind: required
 :tests: templates/class-template-deduction/empty-argument-list.cpp templates/class-template-deduction/partial-argument-list.cpp
 
-A name with an argument list, even `<>`, is a template-id. No class
+A name with an argument list, even `<>`, is a {term}`template-id`. No class
 template argument deduction takes place, and the missing arguments take
 their defaults ({rule}`TARG-9`).
 :::
@@ -199,7 +199,7 @@ their defaults ({rule}`TARG-9`).
 :tests: templates/class-template-deduction/constructor-guides.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/conditional-explicit.cpp templates/class-template-deduction/conditional-explicit-copy-list.cpp
 
 Each constructor of the primary class template gives a guide. The
-constructors of partial and explicit specializations give no guide.
+constructors of partial and {term}`explicit specializations <explicit specialization>` give no guide.
 A guide from a constructor has these parts:
 
 - Its template parameters are those of the class, then those of the
@@ -286,7 +286,7 @@ The elements match the members as in aggregate initialization
 :kind: required
 :tests: templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-fewer.cpp
 
-A pack of bases gives the aggregate candidate a function parameter pack
+A pack of bases gives the aggregate candidate a {term}`function parameter pack`
 of the base types:
 
 - A pack at the end takes the remaining elements of the list.
@@ -328,12 +328,12 @@ elided, also for a string literal ({question}`Q-0277`).
 A `deduction_guide` declares a {term}`user guide <deduction guide>` for
 the class template that it names. A user guide can be a template or
 not, and its parameters can have default arguments. Its `T&&`, with `T`
-its own type parameter, is a {term}`forwarding reference`.
+its own {term}`type parameter`, is a {term}`forwarding reference`.
 
 A use of the class template takes the user guides declared before the
 use. A use in a template takes the user guides declared before the
 {term}`point of instantiation`, also if the use depends on no template
-parameter. A user guide between two points of instantiation of one
+parameter. A user guide between two points of {term}`instantiation` of one
 specialization ({rule}`INST-31`) gives the points different meanings,
 and {rule}`INST-32` applies.
 :::
@@ -345,10 +345,10 @@ and {rule}`INST-32` applies.
 A `deduction_guide` must obey these rules:
 
 - The result is a template-id of the class template that the guide
-  names, with no cv-qualifier ({question}`Q-0242`).
+  names, with no {term}`cv-qualifier` ({question}`Q-0242`).
 - The guide has no body and no specifier other than `explicit`.
 - The guide is declared in the scope of the class template.
-- A guide for a member template has the access of that member.
+- A guide for a {term}`member template` has the access of that member.
 - One guide is not declared twice.
 - Two guides that are not templates do not have the same parameter
   types, even with different results ({question}`Q-0280`).
@@ -711,7 +711,7 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   before the name is not valid. Every compiler deduces through
   `typename Outer<T>::In` after instantiation ({question}`Q-0243`).
 - CTAD-24 is the reject rule of the tests in which no guide is chosen.
-  Clang names deduction in its message. GCC says that deduction failed,
+  Clang names deduction in its message. GCC reports a deduction failure,
   and EDG reports that no constructor matches.
 - CTAD-26: in each test of the rule, the message names the
   constructor of the deduced specialization, so deduction succeeded

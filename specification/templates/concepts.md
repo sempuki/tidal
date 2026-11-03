@@ -1,7 +1,7 @@
 # Concepts and requires expressions
 
 A {term}`constraint` is a condition on template arguments that the
-implementation checks at compile time. This page gives the ways to
+implementation checks during translation. This page gives the ways to
 write a constraint:
 
 - concept definitions and concept-ids,
@@ -18,34 +18,46 @@ constant evaluation.
 ## Principles
 
 :::{principle} CPT-P1
-:rules: CPT-8 CPT-9 CPT-11 CPT-16 CPT-17 CPT-19 CPT-20 CPT-21 CPT-23
-:exceptions: CPT-10 CPT-12 CPT-13 CPT-14 CPT-15 CPT-18 CPT-22 CPT-37
+:rules: CPT-8 CPT-16 CPT-17 CPT-19 CPT-20 CPT-21 CPT-23
+:exceptions: CPT-18 CPT-22 CPT-37
 
 A constraint can be written in these places:
 
 | Place | Example | What it constrains | Rules |
 |---|---|---|---|
-| before a type parameter | `template <Big T>` | the template | CPT-17, CPT-19 |
-| before `auto` in a constant parameter | `template <Big auto N>` | the template | CPT-21 |
+| before a {term}`type parameter` | `template <Big T>` | the template | CPT-17, CPT-19 |
+| before `auto` in a {term}`constant parameter` | `template <Big auto N>` | the template | CPT-21 |
 | after the template parameter list | `template <class T> requires Big<T>` | the template | CPT-8 |
-| before `auto` in a function parameter | `int f(Big auto x)` | the function template | CPT-20 |
-| after the declarator of a function | `int f() requires Big<T>` | the function | CPT-11 |
+| before `auto` in a function parameter | `int f(Big auto x)` | the {term}`function template` | CPT-20 |
+| after the {term}`declarator` of a function | `int f() requires Big<T>` | the function | CPT-11 |
 | on a lambda | `[]<class T> requires Big<T> (T) {}` | the call operator | CPT-16 |
 | before `auto` in a variable or a return type | `Big auto n = 1;` | the deduced type | CPT-22, CPT-23 |
 | after `->` in a compound requirement | `{ e } -> Big;` | the type of `e` | CPT-33 |
 | in a nested requirement | `requires Big<T>;` | the requires expression | CPT-35 |
+:::
+
+:::{principle} CPT-P4
+:rules: CPT-9
+:exceptions: CPT-10
 
 A requires clause sits between two parts of a declaration, so the end
 of its expression must be plain to see. Its operands are therefore
 primary expressions joined by `&&` and `||`. Any other expression, a
 negation or a comparison for example, goes in parentheses (CPT-10).
+:::
 
-A trailing requires clause constrains a function that has template
-arguments to check. The function is a template, or the function is
+:::{principle} CPT-P5
+:rules: CPT-11
+:exceptions: CPT-12 CPT-13 CPT-14 CPT-15
+
+A trailing requires clause constrains a function that has {term}`template arguments <template argument>`
+to check. The function is a template, or the function is
 declared inside a templated entity. A generic lambda is a template. A
-clause on any other function is not valid. A clause on a virtual function is not valid either, because
-a call through a base class does not check the constraints (CPT-14,
-CPT-15).
+clause on any other function is not valid. A clause on a virtual
+function is not valid either, because a call through a base class does
+not check the constraints (CPT-14, CPT-15). The clause comes after the
+declarator of a function and after any trailing return type (CPT-11 to
+CPT-13).
 :::
 
 :::{principle} CPT-P2
@@ -58,23 +70,23 @@ constraint expression. A {term}`concept-id`, the name of the concept
 with a template argument list, is a constant of type `bool`. Its value
 says whether the arguments satisfy the concept ({rule}`CNS-7`). The
 arguments must fit the concept's parameters in kind and number. A
-concept-id with other arguments is an error and has no value (CPT-36).
+concept-id with other arguments is not valid and has no value (CPT-36).
 
 A concept is only a name for a constraint:
 
 - A concept is defined once, at namespace scope. It has no
-  specializations and no instantiations (CPT-4, CPT-7).
+  {term}`specializations <specialization>` and no {term}`instantiations <instantiation>` (CPT-4, CPT-7).
 - A concept has no constraints of its own (CPT-5).
 - A concept cannot use its own name (CPT-6).
 
 A named constraint also orders declarations. Two uses of one concept
-give the same atomic constraints, and two copies of the same text do
+give the same {term}`atomic constraints <atomic constraint>`, and two copies of the same text do
 not ({rule}`CNS-4`).
 :::
 
 :::{principle} CPT-P3
-:rules: CPT-24 CPT-25 CPT-26 CPT-28 CPT-30 CPT-31 CPT-32 CPT-33 CPT-35
-:exceptions: CPT-27 CPT-29 CPT-34
+:rules: CPT-24 CPT-25 CPT-28 CPT-30 CPT-31 CPT-32 CPT-33 CPT-35
+:exceptions: CPT-29 CPT-34
 
 A {term}`requires expression` asks whether some code is valid for the
 template arguments. The answer is a `bool` constant. The body lists
@@ -91,6 +103,11 @@ The requirements are checked in order, and the first one that fails
 ends the check (CPT-25). No requirement is evaluated (CPT-30). The
 optional parameters are names with types, and no objects exist for
 them (CPT-28).
+:::
+
+:::{principle} CPT-P6
+:rules: CPT-26
+:exceptions: CPT-27
 
 A requirement that depends on template parameters is checked when the
 arguments are substituted. If the requirement is not valid for the
@@ -142,8 +159,7 @@ wherever a constant expression can.
 :kind: required
 :tests: templates/concepts/parameter-kinds.cpp templates/concepts/parameter-kinds-constant-pack.cpp
 
-A concept can have type parameters, constant parameters, template
-template parameters, and packs. The constraint expression can be any
+A concept can have type parameters, constant parameters, {term}`template template parameters <template template parameter>`, and packs. The constraint expression can be any
 `logical_or_expr`. The restricted grammar of CPT-10 does not apply to
 it.
 :::
@@ -169,7 +185,7 @@ declare a concept.
 :kind: reject
 :tests: templates/concepts/head-clause.cpp templates/concepts/head-type-constraint.cpp
 
-The template head of a concept must not have a requires clause or a
+The {term}`template head` of a concept must not have a requires clause or a
 template parameter with a {term}`type constraint`.
 :::
 
@@ -187,8 +203,8 @@ in a template argument.
 
 The template arguments of a concept-id must match the concept's
 template parameters in kind and number. A concept-id with arguments
-that do not match is an error, also where a `false` value would be
-expected.
+that do not match makes the program not valid, also where a `false`
+value would be expected.
 :::
 
 :::{rule} CPT-7
@@ -209,11 +225,11 @@ or instantiate it explicitly.
 A {term}`requires clause` can follow the template parameter list of
 these templates, and constrains the template ({rule}`CNS-1`):
 
-- a class template, function template, variable template, alias
-  template, or member template,
-- a partial specialization,
+- a {term}`class template`, function template, {term}`variable template`, alias
+  template, or {term}`member template`,
+- a {term}`partial specialization`,
 - a template template parameter,
-- a deduction guide, which deduction then uses only if the clause is
+- a {term}`deduction guide`, which {term}`deduction` then uses only if the clause is
   satisfied.
 :::
 
@@ -309,7 +325,7 @@ clause appertain to the lambda.
 A type constraint `C` or `C<A...>` before a type parameter `T`
 constrains the template with `C<T>` or `C<T, A...>`. The name of the
 concept can be qualified. The parameter can have a default argument,
-which is checked only when a template-id uses it ({rule}`CNS-13`).
+which is checked only when a {term}`template-id` uses it ({rule}`CNS-13`).
 :::
 
 :::{rule} CPT-18
@@ -346,10 +362,11 @@ constraint constrains each element of the invented pack.
 :kind: required
 :tests: templates/concepts/placeholder-constant-parameter.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp templates/concepts/placeholder-constant-parameter-not-satisfied.cpp
 
-A constant template parameter can have a constrained placeholder type.
+A constant template parameter can have a constrained {term}`placeholder type`.
 The type constraint, applied to the type that the argument gives, is a
-constraint of the template ({rule}`CNS-1`). A function template whose
-constant argument fails it is not a viable candidate ({rule}`CNS-11`).
+constraint of the template ({rule}`CNS-1`). If the constant argument
+does not satisfy the constraint, the function template has a
+{term}`deduction failure` ({rule}`CNS-11`).
 :::
 
 :::{rule} CPT-22
@@ -471,7 +488,7 @@ A simple requirement holds if its expression is valid.
 
 A type requirement holds if its name forms a valid type. The name can
 be a member type, a member template specialization, a class template
-specialization, or an alias template specialization. A class template
+specialization, or an {term}`alias template` specialization. A class template
 specialization is not instantiated, so the class can be incomplete. A
 specialization whose arguments fail the template's constraints or its
 default arguments is not valid. If those arguments depend on no
@@ -647,8 +664,8 @@ words, for example "concept cannot have associated constraints" and
   before it checks the expression and `noexcept`. GCC never substitutes
   an extra argument that the concept does not use. EDG follows the
   order of the rule in both cases ({question}`Q-0287`). If the early
-  substitution instantiates a class whose body has an error, the error
-  is an error of the program ({rule}`CNS-33`). In
+  substitution instantiates a class whose body has an error, the
+  program is not valid ({rule}`CNS-33`). In
   `compound-requirement-order.cpp` and
   `compound-requirement-order-noexcept.cpp`, Clang therefore rejects a
   program that GCC and EDG accept.

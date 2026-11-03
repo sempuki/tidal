@@ -29,13 +29,13 @@ has one of four kinds:
 | Ellipsis | an argument that matches `...` | ICS-6 |
 | Ambiguous | two or more constructors or conversion functions, none of them best | ICS-7 |
 
-An argument that names an overload set first selects one function of the
+An argument that names an {term}`overload set` first selects one function of the
 set, and then has the sequence of an lvalue that names that function
 (ICS-47).
 
 A sequence holds at most one user-defined conversion (ICS-9, ICS-10).
-Forming a sequence looks only at the argument's type, cv-qualifiers, and
-value category. Faults such as access, narrowing, a deleted function, or
+Forming a sequence looks only at the argument's type, {term}`cv-qualifiers <cv-qualifier>`, and
+{term}`value category`. Faults such as access, narrowing, a deleted function, or
 a bit-field are checked only for the function that is chosen (ICS-8).
 So a function can win and then fail.
 :::
@@ -114,7 +114,7 @@ A braced list has no type, so its sequence depends on the parameter:
 
 Each element converts on its own, so one list can use several
 user-defined conversions. For a reference, {principle}`REF-P3` gives
-which lists bind directly, which make a temporary, and which have no
+which lists {term}`bind directly`, which make a temporary, and which have no
 sequence.
 :::
 
@@ -215,7 +215,7 @@ Each conversion has a {term}`sequence rank`:
 
 - exact match: the identity, an lvalue transformation, a qualification
   adjustment,
-- promotion: an integer promotion ({rule}`CONV-1`), the promotions of
+- promotion: an {term}`integer promotion` ({rule}`CONV-1`), the promotions of
   ICS-39, and `float` to `double`,
 - conversion: every other conversion of ICS-P2.
 
@@ -293,7 +293,7 @@ serve it.
 :kind: required
 :tests: foundations/conversion-sequences/template-conversion-exact.cpp
 
-A conversion function template serves a user-defined conversion only if
+A conversion {term}`function template` serves a user-defined conversion only if
 the third part of ICS-3 has exact-match rank.
 :::
 

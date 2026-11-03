@@ -137,7 +137,7 @@ deprecated.
 ```
 
 A `...` before the `declarator_id`, or as the last part of an
-`abstract_declarator`, declares a function parameter pack
+`abstract_declarator`, declares a {term}`function parameter pack`
 ({rule}`PACK-1`).
 
 ## Constraints
@@ -206,8 +206,7 @@ declaration. A program must not declare:
 :kind: required
 :tests: declarations/declarators/reference-collapsing.cpp declarations/declarators/cv-on-reference-alias-ignored.cpp
 
-A reference added to a reference type from an alias, a template
-argument, or `decltype` collapses into one reference ({rule}`PACK-24`). The result is an rvalue reference
+A reference added to a reference type from an alias, a {term}`template argument`, or `decltype` collapses into one reference ({rule}`PACK-24`). The result is an rvalue reference
 only if both references are rvalue references. A cv-qualifier applied to
 such an alias has no effect.
 :::
@@ -342,7 +341,7 @@ cv-qualifier that an alias repeats is permitted and counts one time.
 :kind: reject
 :tests: declarations/declarators/const-requires-initializer.cpp declarations/declarators/extern-const-declaration.cpp
 
-A definition of a `const` variable of scalar type must have an
+A definition of a `const` variable of {term}`scalar type` must have an
 initializer. An `extern` declaration that is not a definition needs no
 initializer. Class types have a separate rule, {rule}`CTOR-4`.
 :::
@@ -488,7 +487,7 @@ If a program changes an object that is defined `const`, the behavior is
 undefined, also when a cast removes `const`. A program can change an
 object that is not defined `const` through such a cast. The specific
 cases are {rule}`CAST-5` and {rule}`PRIM-8` (decision 0052), and
-constant evaluation rejects both ({rule}`CE-9`).
+{term}`constant evaluation` rejects both ({rule}`CE-9`).
 :::
 
 ## Implementation Requirements

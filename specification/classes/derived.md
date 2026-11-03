@@ -21,7 +21,7 @@ and destructors, copy and move.
 :::{principle} DER-P1
 :rules: DER-1 DER-2 DER-18 DER-22
 
-A derived object contains one subobject for each base in its base list,
+A derived object contains one {term}`subobject` for each base in its base list,
 and the members of each base become members of the derived class
 ({principle}`OBJ-P1`). A base must therefore be a complete class that
 allows derivation. The same class reached by two non-virtual paths gives
@@ -49,7 +49,7 @@ the object really is, so the conversion:
 
 - needs `static_cast`,
 - is undefined when the claim is false,
-- is impossible from a virtual base, whose location depends on the most
+- is impossible from a {term}`virtual base`, whose location depends on the most
   derived class.
 :::
 
@@ -72,7 +72,7 @@ A is a non-virtual base           A is a virtual base
 a D holds two A subobjects        a D holds one A subobject
 ```
 
-Only the most derived class knows the whole object, so its constructor
+Only the {term}`most derived class` knows the whole object, so its constructor
 initializes the virtual base, first and once. Every constructor of that
 class must be able to initialize the virtual base. The position of the
 virtual base is decided at run time, so such a class has no `constexpr`
@@ -85,8 +85,7 @@ constructor or destructor.
 Constructing a derived object constructs its bases, so the derived class
 needs access to the constructors and destructors of the bases. A derived
 class can inherit the constructors of a direct base. An inherited
-constructor builds the base subobject and leaves the rest to default
-initialization. A signature that two bases both offer is ambiguous.
+constructor builds the base subobject and leaves the rest to {term}`default initialization`. A signature that two bases both offer is ambiguous.
 :::
 
 ## Syntax
@@ -188,7 +187,7 @@ A qualified name or a using-declaration can remove the ambiguity. An
 ambiguity makes the program not valid only where the program uses the
 name. Two rules name specific cases of this rule (decision 0042):
 {rule}`NAM-18` for a qualified name `C::x`, and {rule}`NAM-36` for an
-injected class name inherited from two different bases.
+{term}`injected class name` inherited from two different bases.
 :::
 
 :::{rule} DER-5
@@ -200,7 +199,7 @@ pointer or reference to an unambiguous base. The result refers to the
 base subobject, which can have a different address. A null pointer
 converts to a null pointer. An object of the derived class can
 initialize a base object. The initialization copies only the base part.
-Constant evaluation can do this conversion.
+{term}`Constant evaluation <constant evaluation>` can do this conversion.
 :::
 
 :::{rule} DER-10
@@ -245,9 +244,9 @@ A class with a virtual base must not have a `constexpr` constructor or a
 :tests: classes/derived/abstract-skips-virtual-base-init.cpp classes/derived/most-derived-must-init-virtual-base.cpp
 
 Each constructor of the most derived class must be able to initialize
-every virtual base. If a virtual base has no default constructor, each
+every virtual base. If a virtual base has no {term}`default constructor`, each
 such constructor must name the virtual base in its member initializer
-list. An abstract class is never the most derived class, so its
+list. An {term}`abstract class` is never the most derived class, so its
 constructors need not initialize its virtual bases.
 :::
 
@@ -299,7 +298,7 @@ not use:
 
 - a constructor of `B` that DER-8 does not inherit,
 - an inherited constructor that is not accessible,
-- an inherited `explicit` constructor in copy-initialization.
+- an inherited `explicit` constructor in {term}`copy-initialization`.
 :::
 
 :::{rule} DER-15

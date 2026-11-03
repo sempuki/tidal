@@ -49,9 +49,9 @@ of the kind that its parameter takes:
 
 | Parameter | Argument | Rules |
 |---|---|---|
-| type parameter | a type, of any kind | TARG-5, TARG-7, TARG-25 |
-| constant parameter | a constant expression that converts to the parameter's type | TARG-12 to TARG-16 |
-| template template parameter | the name of a class template or alias template | TARG-17, TARG-18 |
+| {term}`type parameter` | a type, of any kind | TARG-5, TARG-7, TARG-25 |
+| {term}`constant parameter` | a constant expression that converts to the parameter's type | TARG-12 to TARG-16 |
+| {term}`template template parameter` | the name of a {term}`class template` or {term}`alias template` | TARG-17, TARG-18 |
 | a pack | the rest of the arguments, zero or more | TARG-21 |
 
 A parameter with no argument takes its default (TARG-9). Outside a call,
@@ -64,11 +64,11 @@ names the current specialization (TARG-11).
 :rules: TARG-12 TARG-14 TARG-16
 :exceptions: TARG-13 TARG-15
 
-A constant argument must have a value at compile time that two
+A constant argument must have a value during translation that two
 template-ids can compare. So the argument is a constant expression, and
 the conversion to the parameter's type is one that keeps the value
 ({rule}`CE-19`). A pointer or reference argument names a function or an
-object with static storage duration, because only such an entity has
+object with static {term}`storage duration`, because only such an entity has
 one address for the whole program.
 
 The grid in Evidence gives the result for each kind of argument and
@@ -112,7 +112,7 @@ argument.
    template_arg: `type_id` | `constant_expr` | [`nested_name`] `template_name`
 ```
 
-A `template_arg` with `...` is a pack expansion ({rule}`PACK-10`).
+A `template_arg` with `...` is a {term}`pack expansion` ({rule}`PACK-10`).
 
 A `template_id` is an `unqualified_id` ({doc}`../expressions/primary`),
 and it can name a class in a `simple_type`. A `template_name` is an
@@ -148,7 +148,7 @@ of the name:
   object ({rule}`NAM-37`).
 
 TARG-23 gives the exception for functions, and {rule}`DEP-24` the case
-of a type-dependent object.
+of a {term}`type-dependent` object.
 :::
 
 :::{rule} TARG-23
@@ -157,8 +157,8 @@ of a type-dependent object.
 
 If ordinary lookup of an unqualified name before `<` finds only
 functions, or finds nothing, the `<` opens a template argument list. If
-the template-id is the name in a call, argument-dependent lookup
-({rule}`NAM-27`) can find a function template for it.
+the template-id is the name in a call, {term}`argument-dependent lookup`
+({rule}`NAM-27`) can find a {term}`function template` for it.
 :::
 
 :::{rule} TARG-3
@@ -174,7 +174,7 @@ end the list:
 - the `>` that closes a nested template argument list.
 
 A `>>` token there counts as two `>` tokens. The second one can end the
-enclosing list, a named cast, or a template head.
+enclosing list, a named cast, or a {term}`template head`.
 :::
 
 :::{rule} TARG-4
@@ -228,7 +228,7 @@ arguments are not valid:
 
 - an expression for a type parameter,
 - a type for a constant parameter,
-- a class, a variable template, or a concept, for a template template
+- a class, a {term}`variable template`, or a {term}`concept`, for a template template
   parameter that takes a class template.
 :::
 
@@ -271,7 +271,7 @@ list where the program needs a type or a value. The rule holds also
 when every parameter has a default. A qualified name, such as
 `::Box` or `lib::Box`, never finds the injected class name, so it needs
 an argument list in its own class too. These cases are exceptions, and
-all belong with deduction:
+all belong with {term}`deduction`:
 
 - the name of a function template, whose arguments a call or a target
   type can supply ({rule}`DED-1`, {rule}`DED-30`),
@@ -290,7 +290,7 @@ places (decision 0042).
 
 In a class template, the {term}`injected class name` with no argument
 list names the current specialization ({rule}`NAM-33`). In an explicit
-or partial specialization, the injected class name names that
+or {term}`partial specialization`, the injected class name names that
 specialization. Where a template template argument is needed, or where
 an argument list follows, the injected class name names the template.
 :::
@@ -368,7 +368,7 @@ of a function or of an object with static storage duration. A reference
 argument names such a function or object, also through a reference
 variable that {rule}`CE-3` allows. The object can be a member or an
 array element of a larger object, and the entity can have internal
-linkage.
+{term}`linkage`.
 :::
 
 :::{rule} TARG-15
@@ -378,12 +378,12 @@ linkage.
 These arguments are not valid for a pointer or reference parameter:
 
 - a string literal, or the address of one,
-- the address of an object with automatic storage duration,
-- a value that would bind a reference to a temporary object,
+- the address of an object with {term}`automatic storage` duration,
+- a value that would bind a reference to a {term}`temporary object`,
 - the integer `0`, because an integer does not convert to a pointer
   here,
 - the address of the result of `typeid`, of the predefined variable
-  `__func__`, or of a subobject of either.
+  `__func__`, or of a {term}`subobject` of either.
 
 The same limits apply to a pointer or reference member of an argument
 of class type, at any depth.
@@ -416,11 +416,11 @@ extra parameters have defaults, and a parameter with a pack accepts a
 template with any number of parameters of that kind. For constant
 parameters:
 
-- a placeholder type in either head matches any type in the other,
+- a {term}`placeholder type` in either head matches any type in the other,
 - two fixed types match when the head's arguments convert to the
   argument template's type ({question}`Q-0201`).
 
-The check compares the primary templates only. A use of the parameter
+The check compares the {term}`primary templates <primary template>` only. A use of the parameter
 with arguments selects the argument template's partial specializations
 as usual ({rule}`TSP-13`).
 :::
@@ -500,7 +500,7 @@ void run() {
 }
 ```
 
-A reference variable with a constant initializer names its object
+A reference variable with a {term}`constant initializer` names its object
 ({rule}`CE-3`):
 
 ```cpp

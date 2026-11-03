@@ -206,6 +206,7 @@ def page_outline(path: Path):
                 cur["text"].append(line.strip())
     for pr in principles:
         first = " ".join(pr["text"])
+        first = re.sub(r"\{[a-z]+\}`([^`<]*?)(?:\s*<[^>]*>)?`", r"\1", first)
         pr["gist"] = re.split(r"(?<=[.])\s", first)[0] if first else ""
     return title, principles, rules
 

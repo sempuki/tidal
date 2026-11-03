@@ -22,19 +22,19 @@ Depends on: template declarations, template arguments.
 :rules: TSP-1 TSP-2 TSP-3 TSP-9 TSP-10 TSP-18 TSP-22 TSP-25 TSP-28 TSP-30
 :exceptions: TSP-7 TSP-20 TSP-23 TSP-27
 
-Without a specialization of its own, a specialization comes from the
+Without a {term}`specialization` of its own, a specialization comes from the
 definition of the template, the {term}`primary template`, with the
 arguments in place of the parameters ({principle}`INST-P1`). A program
 can replace that definition:
 
 | Kind of template | Explicit specialization | Partial specialization |
 |---|---|---|
-| class template | yes (TSP-1) | yes (TSP-9) |
-| variable template | yes (TSP-2) | yes (TSP-10) |
-| function template | yes (TSP-2) | no (TSP-7) |
-| alias template | no (TSP-7) | no (TSP-7) |
+| {term}`class template` | yes (TSP-1) | yes (TSP-9) |
+| {term}`variable template` | yes (TSP-2) | yes (TSP-10) |
+| {term}`function template` | yes (TSP-2) | no (TSP-7) |
+| {term}`alias template` | no (TSP-7) | no (TSP-7) |
 | member of a class template: a member function, `static` data member, member class, or member enumeration | yes (TSP-3) | no |
-| member template of a class template | yes (TSP-3) | as for its kind |
+| {term}`member template` of a class template | yes (TSP-3) | as for its kind |
 
 An explicit specialization or a partial specialization is a separate
 definition. Its members need not match those of the primary template,
@@ -64,7 +64,7 @@ argument list, with defaults added (TARG-9)
 
 A partial specialization matches when some values for its own
 parameters make its argument list the same as the given list. The
-values come from the given arguments by deduction
+values come from the given arguments by {term}`deduction`
 ({principle}`DED-P1`). The grid in Evidence shows which argument types
 match which patterns.
 :::
@@ -152,7 +152,7 @@ arguments that deduction finds from the function's type can be left out
 :tests: templates/specialization/explicit-needs-header.cpp templates/specialization/explicit-not-template.cpp templates/specialization/explicit-no-matching-template.cpp
 
 An explicit specialization must start with `template <>`. The name must
-be a template-id of a template that is declared before it. For a
+be a {term}`template-id` of a template that is declared before it. For a
 function template, one of the templates with that name must have a
 specialization with the declared function type.
 :::
@@ -208,7 +208,7 @@ declares the member template ({question}`Q-0171`).
 
 An explicit specialization must be declared before the first use of its
 specialization that needs a definition, such as a variable of the class
-type or a call of the function, in the same translation unit. A use of
+type or a call of the function, in the same {term}`translation unit`. A use of
 a class specialization creates the member enumerations that the class
 template defines. So an explicit specialization of such an enumeration
 after that use is not valid.
@@ -294,7 +294,7 @@ class template that is given explicitly must start with `template <>`.
 :kind: reject
 :tests: templates/specialization/explicit-implicit-member.cpp templates/specialization/explicit-implicit-destructor.cpp
 
-A program must not explicitly specialize a special member function that
+A program must not explicitly specialize a {term}`special member function` that
 the implementation declares implicitly, such as an implicit copy
 constructor.
 :::
@@ -326,7 +326,7 @@ that the class template defines must not have one.
 :tests: templates/specialization/class-partial.cpp templates/specialization/class-partial-more-parameters.cpp templates/specialization/partial-redeclared.cpp templates/specialization/partial-member-template.cpp templates/specialization/partial-pack-before-parameter.cpp
 
 A {term}`partial specialization` of a class template has its own
-template head and an argument list after the class name. The argument
+{term}`template head` and an argument list after the class name. The argument
 list is a pattern in terms of the head's parameters. These rules also
 apply:
 
@@ -374,22 +374,22 @@ needs its own definition.
 The head and argument list of a partial specialization must follow
 these conditions:
 
-- No parameter has a default template argument.
+- No parameter has a {term}`default template argument`.
 - The argument list is not the primary template's parameter list
-  again, unless the partial specialization is more constrained than the
-  primary template ({rule}`CNS-36`). A constant parameter whose type
+  again, unless the partial specialization is {term}`more constrained` than the
+  primary template ({rule}`CNS-36`). A {term}`constant parameter` whose type
   fits fewer arguments, such as `auto*` or `int` for `auto`, makes the
   list differ.
 - Each parameter appears in the argument list where deduction can find
   it. A constant argument that is an expression of a parameter, such as
   `N + 1`, gives no value for `N`.
-- The partial specialization is more specialized than the primary
+- The partial specialization is {term}`more specialized` than the primary
   template ({rule}`ORD-14`, {question}`Q-0174`).
 - A constant argument whose parameter type in the primary template uses
   another parameter is not a fixed value, while that other parameter
   stays a parameter of the partial specialization.
 - Every pack in an argument is expanded with `...`.
-- A pack expansion is the last argument.
+- A {term}`pack expansion` is the last argument.
 :::
 
 :::{rule} TSP-12

@@ -12,8 +12,8 @@ covers:
 - the differences that a match allows,
 - braced lists, overload sets, and packs as arguments,
 - how the results of all arguments combine,
-- substitution, and the failures that remove a template from the
-  candidates.
+- substitution, and the {term}`deduction failure` that removes a
+  template from the candidates.
 
 Partial ordering of templates is on {doc}`ordering`. Dependent names
 are on {doc}`dependent-names`, and instantiation is on
@@ -35,13 +35,13 @@ that holds none. The context decides the two types:
 | Context | Type with template parameters | Type without | Rules |
 |---|---|---|---|
 | a call | each function parameter that takes part | the type of its argument | DED-1 to DED-29 |
-| a function template name with a target type | the function type of the template | the function type of the target | DED-30, {rule}`OVL-18` |
+| a {term}`function template` name with a target type | the function type of the template | the function type of the target | DED-30, {rule}`OVL-18` |
 | a conversion function template | its result type | the type that the initialization needs | DED-31 |
-| an explicit specialization, explicit instantiation, or friend | the function type of each template with the name | the declared function type | DED-32, DED-33 |
+| an {term}`explicit specialization`, {term}`explicit instantiation`, or friend | the function type of each template with the name | the declared function type | DED-32, DED-33 |
 | a placement deallocation function template | its parameter types after the first | the parameter types of the placement allocation function after the first | DED-39 |
-| a partial specialization | its argument list | the argument list of the use | {rule}`TSP-14` |
-| partial ordering | the types of one template | the invented types of the other | {principle}`ORD-P2` |
-| a variable with a placeholder type | the placeholder, as an invented type parameter | the type of the initializer | {rule}`AUTO-1` to {rule}`AUTO-4` |
+| a {term}`partial specialization` | its argument list | the argument list of the use | {rule}`TSP-14` |
+| {term}`partial ordering` | the types of one template | the invented types of the other | {principle}`ORD-P2` |
+| a variable with a {term}`placeholder type` | the placeholder, as an invented {term}`type parameter` | the type of the initializer | {rule}`AUTO-1` to {rule}`AUTO-4` |
 
 A function parameter with a placeholder type makes a function template
 of its own (DED-34). Each context uses the matching of DED-P3. The
@@ -81,9 +81,9 @@ a call, with explicit template arguments or without
 a specialization, which is a candidate of the call ({rule}`OVL-1`)
 ```
 
-A failure in any step removes the template from the candidates and is
-not an error by itself. The call then goes on with the other
-candidates. A call is not valid only when no candidate remains
+A failure in any step is a {term}`deduction failure`. A deduction
+failure removes the template from the candidates, and the program stays
+valid. The call then goes on with the other candidates. A call is not valid only when no candidate remains
 (DED-35), or when an error comes from outside the function type
 (DED-29).
 :::
@@ -102,8 +102,8 @@ the argument type at that place:
 | `T C::*` | `T` and `C` |
 | `R(A1, A2)`, `R(*)(A1, A2)`, `R(&)(A1, A2)` | `R`, `A1`, `A2` |
 | `void() noexcept(B)` | `B` |
-| `Box<T, N>`, with `Box` a class template | `T` and `N`, from the arguments of the specialization |
-| `TT<T>`, with `TT` a template template parameter | `TT` and `T` |
+| `Box<T, N>`, with `Box` a {term}`class template` | `T` and `N`, from the arguments of the {term}`specialization` |
+| `TT<T>`, with `TT` a {term}`template template parameter` | `TT` and `T` |
 | `TT<int>`, with `TT` a template template parameter | `TT` |
 | `Hold<TT>`, with `Hold` a class template and `TT` a template template parameter | `TT` |
 | `void (*)(A...)` and `List<H, A...>`, with `A` a pack | each element of `A`, from the remaining parameters or arguments |
@@ -115,7 +115,7 @@ positions give no value, because no single argument determines them:
 |---|---|---|
 | a qualified name with a template parameter before `::`, in every part of the name | `typename Id<T>::type`, `typename Outer<T>::template In<U>` | many `T` can give one member, and the member depends on `T` |
 | the operand of `decltype` | `decltype(T{})` | many `T` can give one type |
-| an expression of a constant parameter | `Fixed<N + 1>` | the value of `N` would need to be solved |
+| an expression of a {term}`constant parameter` | `Fixed<N + 1>` | the value of `N` would need to be solved |
 | the first bound of an array parameter | `int values[N]` | the parameter is a pointer ({rule}`DCL-8`) |
 
 A template parameter in such a position takes its value from another
@@ -139,7 +139,7 @@ user code:
 | a base class and more `const` | `const Base<T>*` | a pointer to a class derived from `Base<int>` | DED-14, DED-15 |
 
 The arguments that have no type of their own deduce in their own ways:
-a braced list (DED-16 to DED-18), an overload set (DED-19), and the
+a braced list (DED-16 to DED-18), an {term}`overload set` (DED-19), and the
 arguments for a pack (DED-20).
 :::
 
@@ -147,9 +147,9 @@ arguments for a pack (DED-20).
 :rules: DED-24 DED-25 DED-26 DED-27 DED-28 DED-38
 :exceptions: DED-29
 
-Substitution puts the values into the function type. If the result is
-not a valid type or expression, the template is removed, and the
-program stays valid. A program can therefore offer a template only for
+Substitution puts the values into the function type. A result that is
+not a valid type or expression is a {term}`substitution failure`. The
+template is removed, and the program stays valid. A program can therefore offer a template only for
 the arguments whose types support it. The removal covers the function
 type itself and nothing that the function type causes elsewhere:
 
@@ -158,7 +158,7 @@ type itself and nothing that the function type causes elsewhere:
 | a parameter type, the result type, or a template parameter's type or default | the template is removed | DED-24 |
 | the operand of a conditional `explicit` | the template is removed | DED-24 |
 | access to a name in those places | the template is removed | DED-26 |
-| a call in those places with no viable function, also a call of a lambda | the template is removed | DED-24, DED-29 |
+| a call in those places with no {term}`viable function`, also a call of a lambda | the template is removed | DED-24, DED-29 |
 | the body of a class that substitution instantiates | the program is not valid | DED-29 |
 | the body of a function template that substitution instantiates | the program is not valid | DED-29 |
 | the body of a lambda expression in the function type or in a template parameter | the program is not valid | DED-29 |
@@ -179,7 +179,7 @@ The defaults of the template parameters come before the function type
 :tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp
 
 In a call that names a function template, {term}`deduction` finds the
-template arguments from the call arguments. The specialization that
+{term}`template arguments <template argument>` from the call arguments. The specialization that
 deduction gives is a candidate ({rule}`OVL-1`). A constructor template
 gets its template arguments in the same way.
 :::
@@ -245,7 +245,7 @@ adjusted before the match:
 The top-level `const` and `volatile` of a parameter type take no part
 in the match. For a reference parameter, the referred type is matched.
 The argument then keeps its qualifiers and its array or function type.
-Except under DED-8, the value category of the argument takes no part.
+Except under DED-8, the {term}`value category` of the argument takes no part.
 :::
 
 :::{rule} DED-8
@@ -404,15 +404,15 @@ If an argument names an overload set, each function of the set is
 matched with the parameter type. The pair gives values only if the set
 has no function template and exactly one function matches. Otherwise
 the pair gives no value, and the set resolves after substitution
-({rule}`OVL-39`). The parameter can then take its type from a default
-template argument (DED-23).
+({rule}`OVL-39`). The parameter can then take its type from a {term}`default template argument`
+(DED-23).
 :::
 
 :::{rule} DED-20
 :kind: required
 :tests: templates/deduction/pack-trailing.cpp templates/deduction/pack-not-last.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/pack-not-last-other-position.cpp
 
-A function parameter pack at the end of the parameters takes the
+A {term}`function parameter pack` at the end of the parameters takes the
 remaining arguments. Each of them makes a pair with the pattern of the
 pack, as for one parameter. A pack before the end is a non-deduced
 position. Such a pack is empty unless explicit arguments give it
@@ -423,7 +423,7 @@ elements, even when a later parameter type names the same pack.
 :kind: required
 :tests: templates/deduction/pack-function-type.cpp templates/deduction/pack-class-arguments.cpp
 
-A pack expansion at the end of a list in a parameter type takes the
+A {term}`pack expansion` at the end of a list in a parameter type takes the
 remaining elements of the matching list in the argument type, one by
 one. Such a list is the parameter list of a function type, or the
 template argument list of a class template specialization. The
@@ -438,7 +438,7 @@ expansion can take no element.
 
 Each pair gives values on its own, and one pair can give values to
 several template parameters. All values for one template parameter must
-be the same. Otherwise deduction fails.
+be the same. Otherwise the result is a {term}`deduction failure`.
 :::
 
 :::{rule} DED-22
@@ -456,9 +456,9 @@ does. The bound then converts to that type.
 
 A template parameter that has no value from a pair or an explicit
 argument takes its default template argument ({rule}`TARG-9`). A
-template parameter pack with no value is empty, wherever the pack is in
-the template head. Any other template parameter without a value makes
-deduction fail.
+{term}`template parameter pack` with no value is empty, wherever the pack is in
+the {term}`template head`. Any other template parameter without a value gives
+a {term}`deduction failure`.
 :::
 
 ### Substitution
@@ -475,10 +475,10 @@ function type is then adjusted as a declared one is ({rule}`DCL-8`):
 - the operand of a conditional `explicit` of a constructor or
   conversion function.
 
-If substitution makes a type or expression that is not valid, the
-template adds no candidate. A template argument whose constant
-evaluation fails, by {rule}`CE-9` or by a limit of {rule}`CE-10`, is
-such an expression. {rule}`PACK-27` gives the pack cases.
+A type or expression that substitution makes and that is not valid is
+a {term}`substitution failure`. The template then adds no candidate. A
+template argument whose {term}`constant evaluation` fails, by {rule}`CE-9` or
+by a limit of {rule}`CE-10`, is such an expression. {rule}`PACK-27` gives the pack cases.
 :::
 
 :::{rule} DED-25
@@ -495,8 +495,8 @@ and no class in them is instantiated.
 :tests: templates/deduction/substitution-access.cpp templates/deduction/substitution-access-member-function.cpp
 
 Substitution checks access to each name in the function type, as at
-the template's declaration ({rule}`ACC-3`). A name that is not accessible makes
-substitution fail.
+the template's declaration ({rule}`ACC-3`). A name that is not
+accessible is a {term}`substitution failure`.
 :::
 
 :::{rule} DED-27
@@ -524,7 +524,7 @@ them the same function type.
 After the defaults of the template parameters are substituted, each
 function parameter whose declared type holds no template parameter is
 checked against its argument ({question}`Q-0215`). If the argument has
-no implicit conversion sequence, the template adds no candidate, and
+no {term}`implicit conversion sequence`, the template adds no candidate, and
 the function type is not substituted.
 :::
 
@@ -543,8 +543,9 @@ during deduction:
   template parameter declaration,
 - the `noexcept` operand of the chosen specialization (DED-27).
 
-A call with no viable function in the function type is a failure of
-substitution (DED-24), also when the called function is a lambda.
+A call with no viable function in the function type is a
+{term}`substitution failure` (DED-24), also when the called function is
+a lambda.
 :::
 
 ### Other contexts
@@ -611,7 +612,7 @@ function a function template. Each `auto` adds an invented type
 parameter after those of the template head, in order. Explicit template
 arguments can give the invented parameters. If the head ends in a pack,
 the pack takes every explicit argument ({rule}`TARG-21`), and the
-invented parameters get their types from deduction. A type constraint
+invented parameters get their types from deduction. A {term}`type constraint`
 before `auto` constrains the invented parameter ({rule}`CPT-20`).
 :::
 
@@ -639,8 +640,9 @@ template are two matches, and {rule}`NEW-24` calls neither
 A use of a function template name must have a function after
 deduction. These uses are not valid:
 
-- a call with no viable function, because each template fails
-  deduction or gives a specialization that is not viable,
+- a call with no viable function, because each template has a
+  {term}`deduction failure` or gives a specialization that is not
+  viable,
 - a target type that no specialization matches.
 
 The rule is the case of {rule}`OVL-35` and {rule}`OVL-20` for templates
@@ -666,7 +668,7 @@ count(items);                   // T = int, N = 4
 count({1, 2, 3});               // T = int, N = 3
 ```
 
-A failed substitution removes a template, and the call goes on:
+A substitution failure removes a template, and the call goes on:
 
 ```cpp
 template <class T> int size(const T& c, typename T::size_type = 0);
@@ -676,7 +678,7 @@ size(1);                        // int::size_type is not valid; size(...)
 
 An error in the function type removes the template, also a call of a
 lambda with no viable function there (DED-24). An error in the body of
-a lambda is an error of the program (DED-29):
+a lambda makes the program not valid (DED-29):
 
 ```cpp
 template <class T>
@@ -735,7 +737,7 @@ grids below.
 - DED-11: GCC gives a placeholder constant parameter that takes an array
   bound the type `int`. Clang and EDG give the parameter the type of
   a `sizeof` expression ({question}`Q-0209`).
-- DED-35 is the reject rule of the tests in which deduction fails. In
+- DED-35 is the reject rule of the tests with a deduction failure. In
   each, Clang names the failed step in a note: conflicting values,
   a parameter with no value, or a type that does not match.
   GCC and EDG report no matching function.
@@ -745,8 +747,8 @@ grids below.
   gives no viable function on every compiler. Clang and EDG report no
   match, and GCC reports the initialization of the reference. The page
   does not say in which step the bound is checked.
-- DED-29: an error in the body of a lambda expression in the function
-  type is an error on every compiler.
+- DED-29: every compiler rejects an error in the body of a lambda
+  expression in the function type.
 - DED-27: every compiler substitutes the `noexcept` operand of the
   chosen specialization, also in an operand of `decltype`.
 - DED-28: Clang and GCC substitute the default of a template parameter

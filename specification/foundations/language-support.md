@@ -57,7 +57,7 @@ kind. Each name has one job:
 | `std::align_val_t` | carries an alignment to an allocation function |
 | `std::nothrow_t` | selects an allocation function that returns null on failure |
 | the non-allocating placement forms | give back the address that they receive |
-| the exception classes | form a hierarchy that handlers can catch |
+| the exception classes | form a hierarchy that {term}`handlers <handler>` can catch |
 
 The library defines the functions and the members. A program that
 includes no header declares the names, and the library supplies the
@@ -93,7 +93,7 @@ initializes an object of that type, or where {rule}`AUTO-7` deduces
 that type ({question}`Q-0321`). Before that point, the program must
 declare `std::initializer_list` with this shape:
 
-- a class template with one type parameter `E`,
+- a {term}`class template` with one {term}`type parameter` `E`,
 - two non-static data members, a pointer to `const E` and a count of
   type `std::size_t`,
 - a constructor that takes the pointer and the count.
@@ -141,8 +141,8 @@ for the `0` ({question}`Q-0334`):
 A defaulted `<=>` converts the result of each part to its return type
 ({rule}`DCMP-4`). If a part gives a stronger ordering class than the
 return type, the program must declare a conversion to the weaker class.
-A conversion function on the stronger class and a converting
-constructor on the weaker class both serve.
+A conversion function on the stronger class and a {term}`converting constructor`
+on the weaker class both serve.
 :::
 
 :::{rule} LSUP-5
@@ -164,12 +164,12 @@ A class uses the tuple protocol of {rule}`SB-5` when the program
 declares these templates in namespace `std` and specializes them for
 the class:
 
-| Template | Parameters | Specialization gives |
+| Template | Parameters | {term}`Specialization <specialization>` gives |
 |---|---|---|
 | `tuple_size` | a type `E` | a constant member `value` of type `std::size_t`, the number of elements |
 | `tuple_element` | a `std::size_t` value `I` and a type `E` | a member type `type`, the type of element `I` |
 
-`E` keeps its cv-qualifiers, so a binding with `const` needs
+`E` keeps its {term}`cv-qualifiers <cv-qualifier>`, so a binding with `const` needs
 specializations for `const C` as well as for `C`.
 :::
 
@@ -197,7 +197,7 @@ this shape:
 
 | Name | Shape |
 |---|---|
-| `std::nothrow_t` | an empty class with an `explicit` default constructor |
+| `std::nothrow_t` | an empty class with an `explicit` {term}`default constructor` |
 | `std::nothrow` | an object of type `const std::nothrow_t` |
 | `operator new`, `operator new[]` | parameters `std::size_t` and `const std::nothrow_t&`, and `noexcept` |
 | `operator delete`, `operator delete[]` | parameters `void*` and `const std::nothrow_t&`, and `noexcept` |
@@ -255,7 +255,7 @@ declaration gives a scoped enumeration with the underlying type
 A program that includes no header can declare `std::construct_at`
 itself, in this shape:
 
-- a `constexpr` function template with the parameters `T* location`
+- a `constexpr` {term}`function template` with the parameters `T* location`
   and `Args&&... args`,
 - a body that returns
   `::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...)`,

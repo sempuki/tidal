@@ -29,17 +29,17 @@ context decides which types of the two templates take part:
 | Context | Types that take part | Rules |
 |---|---|---|
 | a call, after the sequences tie ({rule}`OVL-28`) | the parameters for which the call has arguments | ORD-5 |
-| a call with a member template | as for a call, and an object parameter for each member | ORD-6 |
-| a call with a swapped rewritten candidate | as for a call, with the swapped parameters reversed | ORD-7 |
-| an initialization by conversion function templates | the result types | ORD-8 |
-| the address of an overload set ({rule}`OVL-19`) | the function types | ORD-9 |
-| an explicit specialization, explicit instantiation, or friend declaration ({rule}`DED-32`) | the function types | ORD-9 |
+| a call with a {term}`member template` | as for a call, and an object parameter for each member | ORD-6 |
+| a call with a swapped {term}`rewritten candidate` | as for a call, with the swapped parameters reversed | ORD-7 |
+| an initialization by conversion {term}`function templates <function template>` | the result types | ORD-8 |
+| the address of an {term}`overload set` ({rule}`OVL-19`) | the function types | ORD-9 |
+| an {term}`explicit specialization`, {term}`explicit instantiation`, or friend declaration ({rule}`DED-32`) | the function types | ORD-9 |
 | a placement deallocation function template ({rule}`DED-39`) | the function types | ORD-9 |
-| partial specializations ({rule}`TSP-15`, {rule}`TSP-11`) | one parameter for each, of the class with its pattern | ORD-14 |
+| {term}`partial specializations <partial specialization>` ({rule}`TSP-15`, {rule}`TSP-11`) | one parameter for each, of the class with its pattern | ORD-14 |
 :::
 
 :::{principle} ORD-P2
-:rules: ORD-1 ORD-2 ORD-3 ORD-4 ORD-10 ORD-11 ORD-12 ORD-13 ORD-15 ORD-16
+:rules: ORD-1 ORD-2 ORD-3 ORD-4 ORD-15 ORD-16
 
 The comparison of two templates `F1` and `F2` runs in these steps:
 
@@ -81,20 +81,32 @@ F1, F2, and the types that take part (ORD-P1)
 
 An invented type stands for any argument that `F1` accepts. If `F2`
 can be deduced from the invented types, `F2` accepts everything that
-`F1` accepts. Step 2 strips references and qualifiers because one
-argument can bind to either kind of reference. Step 5 then uses them
-inside each pair, before the verdict. If one pair prefers `F1` and
-another pair `F2`, neither template is more specialized
-(`reference-pairs-disagree.cpp`). The same holds when deduction
-succeeds in only one direction, and a reference pair removes that
-direction (`reference-pairs-one-way.cpp`).
+`F1` accepts.
+:::
 
-Steps 5a and 5b act inside a pair, so they come before 6c and 6d. A
-test observes 5a before 6c (`reference-before-variadic.cpp`). Steps 5a
-and 5b apply on their own, and both can remove a direction from one
-pair (`reference-kind-and-qualifiers.cpp`). Steps 6c and 6d never
-decide the same case, because 6c needs a trailing pack in only one
-template, and 6d needs parameter lists of the same length.
+:::{principle} ORD-P3
+:rules: ORD-10 ORD-11
+
+Step 2 of {principle}`ORD-P2` strips references and qualifiers because
+one argument can bind to either kind of reference. Step 5 then uses
+them inside each pair, before the verdict. If one pair prefers `F1` and
+another pair `F2`, neither template is more specialized
+(`reference-pairs-disagree.cpp`). The same holds when {term}`deduction`
+succeeds in only one direction, and a reference pair removes that
+direction (`reference-pairs-one-way.cpp`). Steps 5a and 5b apply on
+their own, and both can remove a direction from one pair
+(`reference-kind-and-qualifiers.cpp`).
+:::
+
+:::{principle} ORD-P4
+:rules: ORD-12 ORD-13
+
+When each template is at least as specialized as the other, the
+tie-breakers of step 6 apply. Steps 5a and 5b act inside a pair, so
+they come before 6c and 6d. A test observes 5a before 6c
+(`reference-before-variadic.cpp`). Steps 6c and 6d never decide the
+same case, because 6c needs a trailing pack in only one template, and
+6d needs parameter lists of the same length.
 :::
 
 ## Constraints
@@ -138,8 +150,8 @@ that appears in none of the compared types needs no value.
 An invented pack cannot give a value to a parameter that is not a pack,
 so such a pair fails. A pack with nothing against it takes no part, and
 neither does the number of call arguments for a pack. Both statements
-hold for function parameters and for the template arguments of a class
-template specialization.
+hold for function parameters and for the {term}`template arguments <template argument>` of a {term}`class template`
+{term}`specialization`.
 :::
 
 :::{rule} ORD-16
@@ -168,7 +180,7 @@ ellipsis, take no part.
 :kind: required
 :tests: templates/ordering/member-object.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reversed-member-object.cpp
 
-One template can be a member with an implicit object parameter while
+One template can be a member with an {term}`implicit object parameter` while
 the other is not. The member then gets a first parameter of type
 reference to its class, with the member's qualifiers. The reference is
 an lvalue reference, except in these cases, where it is an rvalue
@@ -237,7 +249,7 @@ applies whatever the kinds of the two references, together with ORD-10
 :tests: templates/ordering/non-variadic.cpp templates/ordering/reference-before-variadic.cpp templates/ordering/pack-default-parameter.cpp
 
 Each template can be at least as specialized as the other after ORD-10
-and ORD-11. If only one of them ends in a function parameter pack, and
+and ORD-11. If only one of them ends in a {term}`function parameter pack`, and
 the other has no parameter at the pack's position, the other one is
 more specialized. A parameter with a default argument counts as a
 parameter at that position ({question}`Q-0216`).
@@ -247,8 +259,8 @@ parameter at that position ({question}`Q-0216`).
 :kind: required
 :tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp
 
-If no earlier step decides, the more constrained template
-({rule}`CNS-23`) is more specialized. Constraints decide between two
+If no earlier step decides, the {term}`more constrained` template
+({rule}`CNS-23`) is more specialized. {term}`Constraints <constraint>` decide between two
 functions, templates or not, only if all these conditions hold
 ({question}`Q-0146`):
 
@@ -256,7 +268,7 @@ functions, templates or not, only if all these conditions hold
   parameters with default arguments.
 - The function parameter types are the same, position by position.
 - For conversion functions, the result types are the same.
-- For two templates, the template heads are equivalent by
+- For two templates, the {term}`template heads <template head>` are equivalent by
   {rule}`TPL-20`, which leaves out constraints. The invented type
   parameters of {rule}`DED-34` are part of the head.
 - For two functions that are not templates, both parameter lists end
@@ -275,7 +287,7 @@ Two partial specializations of one template compare as two function
 templates. Each has the template head and constraints of its partial
 specialization, and one parameter. The parameter's type is the class
 template specialization with the partial specialization's argument list.
-The primary template compares in the same way, with its own parameters
+The {term}`primary template` compares in the same way, with its own parameters
 as its argument list. Constraints compare by {rule}`CNS-23`.
 :::
 

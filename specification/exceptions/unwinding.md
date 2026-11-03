@@ -23,7 +23,7 @@ A throw is a way of leaving a block, and leaving a block ends the
 block's automatic objects in the reverse of their construction order
 ({principle}`OBJ-P2`). {term}`Unwinding <unwinding>` runs that exit for
 the full expression that threw and for every block between the throw
-and the handler, innermost first. By the time the handler runs, nothing
+and the {term}`handler`, innermost first. By the time the handler runs, nothing
 that the code inside the try block created still exists. In this
 diagram, `fail()` throws:
 
@@ -149,7 +149,7 @@ the sized or the unsized global deallocation function.
 :kind: required
 :tests: exceptions/unwinding/static-objects-survive-unwinding.cpp exceptions/unwinding/static-local-init-throws-retry.cpp
 
-Unwinding does not destroy objects with static storage duration. If the
+Unwinding does not destroy objects with static {term}`storage duration`. If the
 initialization of a static local variable throws, the variable is not
 initialized, and the next time control reaches its declaration the
 initialization runs again.
@@ -170,7 +170,7 @@ cases:
   another exception.
 - An exception leaves `main`.
 - An exception has no matching handler in any enclosing try block.
-- A rethrow finds no handled exception ({rule}`THR-7`).
+- A rethrow finds no {term}`handled exception` ({rule}`THR-7`).
 - The copy into a by-value handler parameter throws ({rule}`TRY-18`).
 :::
 
@@ -230,7 +230,7 @@ catch the exception. An enclosing try block can catch:
   handler is not enclosed by the try block of that handler
   ({rule}`TRY-8`).
 
-A call to a function that might throw does not need a warning.
+A call to a function that can throw does not need a warning.
 :::
 
 ## Examples

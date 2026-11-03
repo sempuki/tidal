@@ -59,7 +59,7 @@ The declaration is deliberately narrow and has these limits:
 
 - `auto` as its type,
 - a few specifiers,
-- one declarator with one list of names.
+- one {term}`declarator` with one list of names.
 
 Each name is a new declaration in the enclosing scope, so the names must
 be distinct and must not repeat a name of that scope
@@ -112,7 +112,7 @@ The members that SB-3 names must:
   or a friend of the class ({rule}`ACC-2`),
 - not include an anonymous union.
 
-The type of the hidden variable must not be a union or a scalar type.
+The type of the hidden variable must not be a union or a {term}`scalar type`.
 :::
 
 :::{rule} SB-4
@@ -120,7 +120,7 @@ The type of the hidden variable must not be a union or a scalar type.
 :tests: declarations/structured-bindings/binding-types.cpp declarations/structured-bindings/reference-member-binding-type.cpp declarations/structured-bindings/tuple-const-specialization.cpp
 
 For an array element or a data member, `decltype` of a name gives the
-declared type of the element, with the cv-qualifiers of the hidden
+declared type of the element, with the {term}`cv-qualifiers <cv-qualifier>` of the hidden
 variable added. If the data member has a reference type, the result is
 that reference type. For the tuple protocol, the result is
 `std::tuple_element<i, E>::type` with nothing added (SB-5).
@@ -139,7 +139,7 @@ from one of these calls, and its type is
 
 - `e.get<i>()`, if member lookup of `get` in `E` finds a member function
   template,
-- otherwise `get<i>(e)`, where only argument-dependent lookup
+- otherwise `get<i>(e)`, where only {term}`argument-dependent lookup`
   ({rule}`NAM-5`) finds `get`.
 
 The calls to `get` occur in the order of the elements. If

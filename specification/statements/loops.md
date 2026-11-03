@@ -30,7 +30,7 @@ an absent condition means `true`.
 :::{principle} LOOP-P2
 :rules: LOOP-4 LOOP-7 LOOP-8
 
-The scopes and lifetimes of a loop follow the general rules
+The scopes and {term}`lifetimes <lifetime>` of a loop follow the general rules
 ({principle}`NAM-P1`, {principle}`OBJ-P2`). The body is a scope, and
 each iteration enters the body afresh, so a variable the condition
 declares is created and destroyed in each iteration. The initializer of

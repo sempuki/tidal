@@ -58,10 +58,10 @@ its object parameter ({rule}`ICS-13`):
 | initialization of a reference or a non-class object from a class | conversion functions of the initializer | the initializer | OVL-15, {rule}`ICS-4` |
 | `&f` and `f` with a target type | the functions that `f` names | none | OVL-18 to OVL-20 |
 | `(&f)(a)` | the functions that `f` names | none | OVL-21, OVL-44 |
-| an argument that names an overload set | the candidates of the call, each of which selects one function of the set | | OVL-39, {rule}`ICS-47` |
+| an argument that names an {term}`overload set` | the candidates of the call, each of which selects one function of the set | | OVL-39, {rule}`ICS-47` |
 
-Each function template that lookup finds adds at most one
-specialization, by deduction ({rule}`DED-1`). Two kinds of function are
+Each {term}`function template` that lookup finds adds at most one
+{term}`specialization`, by {term}`deduction` ({rule}`DED-1`). Two kinds of function are
 never candidates:
 
 - an inherited constructor that has the shape of a copy or move
@@ -158,8 +158,8 @@ the table, these letters stand for sets of types:
   type or an integer type that promotion leaves unchanged
   ({rule}`CONV-1`),
 - `I`: a promoted integer type,
-- `X`: an arithmetic type,
-- `J`: an integral type, which is an integer type, `bool`, or a
+- `X`: an {term}`arithmetic type`,
+- `J`: an {term}`integral type`, which is an integer type, `bool`, or a
   character type,
 - `T`: an object type,
 - `E`: an enumeration type,
@@ -174,7 +174,7 @@ the table, these letters stand for sets of types:
 | `[]` | `(T*, std::ptrdiff_t)` and `(std::ptrdiff_t, T*)` | `T&` | {doc}`/expressions/postfix` |
 | unary `+`, `-` | `(A)`; also `(P)` for `+` | the same type | {doc}`/expressions/unary` |
 | `~` | `(I)` | `I` | {doc}`/expressions/unary` |
-| unary `*` | `(T*)`, and `(F*)` for a function type `F` without cv-qualifiers | `T&`, `F&` | {doc}`/expressions/unary` |
+| unary `*` | `(T*)`, and `(F*)` for a function type `F` without {term}`cv-qualifiers <cv-qualifier>` | `T&`, `F&` | {doc}`/expressions/unary` |
 | `!`, `&&`, `\|\|` | `(bool)`, `(bool, bool)` | `bool` | {doc}`/expressions/logical` |
 | `==`, `!=`, `<`, `>`, `<=`, `>=` | `(A, A)` for every pair; `(P, P)` and `(E, E)` for one type | `bool` | {doc}`/expressions/comparison` |
 | `==`, `!=` only | `(M, M)` for one member pointer type `M`; `(std::nullptr_t, std::nullptr_t)` | `bool` | {doc}`/expressions/comparison` |
@@ -213,8 +213,8 @@ are the functions that name lookup finds ({rule}`NAM-5`):
 - A member that a using-declaration brings from a base is a candidate
   unless a member of the derived class hides it ({rule}`DER-3`).
 - Each function template found adds the specialization that deduction
-  gives ({rule}`DED-1`). A template whose deduction fails adds no
-  candidate ({rule}`DED-35`).
+  gives ({rule}`DED-1`). A template with a {term}`deduction failure` adds
+  no candidate ({rule}`DED-35`).
 :::
 
 :::{rule} OVL-2
@@ -229,7 +229,7 @@ implied object argument if these conditions hold:
 - The class of `*this` is `C` or a class derived from `C`
   ({question}`Q-0159`).
 
-`*this` meets the implicit object parameter ({rule}`ICS-13`), or the
+`*this` meets the {term}`implicit object parameter` ({rule}`ICS-13`), or the
 explicit object parameter ({rule}`ICS-41`). Otherwise the call has no
 object (OVL-3).
 :::
@@ -250,7 +250,7 @@ static member can be chosen.
 
 The candidates of `x.f(a)` are the members `f` that member lookup
 ({rule}`NAM-37`) finds in the class of `x`. `x` is the implied object
-argument, with its cv-qualifiers and value category. `p->f(a)` is
+argument, with its cv-qualifiers and {term}`value category`. `p->f(a)` is
 `(*p).f(a)`.
 :::
 
@@ -294,9 +294,9 @@ those of the function type.
 For an operator with an operand of class or enumeration type, the
 candidates are these ({rule}`OPR-6`):
 
-- the member operator functions of the left operand's class,
+- the member {term}`operator functions <operator function>` of the left operand's class,
 - the non-member operator functions that lookup finds, with class
-  scopes passed over ({rule}`NAM-38`), and argument-dependent lookup,
+  scopes passed over ({rule}`NAM-38`), and {term}`argument-dependent lookup`,
 - the built-in candidates of OVL-9,
 - the rewritten candidates of {rule}`DCMP-6`.
 
@@ -397,7 +397,7 @@ has these candidates:
 | Form | Candidates |
 |---|---|
 | direct, default, and value initialization | every constructor of `T` |
-| copy initialization, `v` of class `T` or derived from `T` | the converting constructors of `T` ({rule}`CTOR-9`) |
+| copy initialization, `v` of class `T` or derived from `T` | the {term}`converting constructors <converting constructor>` of `T` ({rule}`CTOR-9`) |
 | copy initialization, `v` of another type | the converting constructors of `T`, and the conversion functions of `v` to `T` or a class derived from `T` that are not `explicit` |
 | list initialization | {rule}`ILC-3` |
 
@@ -497,13 +497,13 @@ The matching functions of OVL-18 are reduced in these steps:
 
 1. Each function template adds the specialization that deduction from
    the target gives ({rule}`DED-30`).
-2. Functions whose constraints are not satisfied ({rule}`CNS-7`) are
+2. Functions whose {term}`constraints <constraint>` are not satisfied ({rule}`CNS-7`) are
    removed.
 3. If a plain function remains, the specializations are removed.
 4. A plain function is removed if another plain function is more
    constrained ({rule}`CNS-23`) and the two meet the conditions of
    {rule}`ORD-13` ({question}`Q-0142`).
-5. A specialization is removed if another comes from a more specialized
+5. A specialization is removed if another comes from a {term}`more specialized`
    template ({rule}`ORD-9`).
 :::
 
@@ -515,7 +515,7 @@ After OVL-19, exactly one function must remain. Without a target type,
 these steps apply:
 
 1. A function template adds the specialization that its explicit
-   template arguments fix, if they fix every template parameter. Any
+   {term}`template arguments <template argument>` fix, if they fix every template parameter. Any
    other template makes the program not valid.
 2. Steps 2 and 4 of OVL-19 remove functions ({question}`Q-0142`).
 3. Exactly one function must remain.
@@ -585,7 +585,7 @@ arguments ({rule}`PFX-5`):
 :kind: required
 :tests: foundations/overload-resolution/viable-sequence.cpp foundations/overload-resolution/no-object-ref-qualified-member.cpp
 
-A viable function has an implicit conversion sequence ({rule}`ICS-1`)
+A viable function has an {term}`implicit conversion sequence` ({rule}`ICS-1`)
 from each argument to its parameter, and a reference that cannot bind
 has no sequence ({rule}`ICS-12`). The implied object argument counts,
 with the object parameter as its parameter. In a call with no object
@@ -661,7 +661,7 @@ Of two specializations, the one from the more specialized template wins
 :kind: required
 :tests: foundations/overload-resolution/tie-more-specialized-constraints.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
 
-Of two specializations, the one from the more constrained template
+Of two specializations, the one from the {term}`more constrained` template
 ({rule}`CNS-23`) wins if the two templates meet the conditions of
 {rule}`ORD-13`. Otherwise the constraints do not decide
 ({question}`Q-0146`).
@@ -745,8 +745,8 @@ is not valid. Such a use is ambiguous. These rules name specific cases
 
 - {rule}`OPR-15` for operators,
 - {rule}`CTOR-25` for constructors,
-- {rule}`ORD-15` for templates that partial ordering does not order,
-- {rule}`CTAD-24` for the guides of a class template,
+- {rule}`ORD-15` for templates that {term}`partial ordering` does not order,
+- {rule}`CTAD-24` for the guides of a {term}`class template`,
 - {rule}`CNS-24` for declarations that their constraints do not order.
 :::
 

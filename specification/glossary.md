@@ -143,8 +143,8 @@ constant parameter
   ({rule}`TARG-12`).
 
 constraint
-  A condition on template arguments that the implementation checks at
-  compile time. See {term}`concept`, {term}`requires clause`, and
+  A condition on template arguments that the implementation checks
+  during translation. See {term}`concept`, {term}`requires clause`, and
   {term}`type constraint`.
 
 contextual conversion
@@ -189,6 +189,15 @@ deduction
   The step that finds the template arguments of a function template from
   a use, such as the argument types of a call ({rule}`DED-1`,
   {principle}`DED-P2`).
+
+deduction failure
+  The end of a {term}`deduction` that gives no specialization. Any step
+  of the deduction can fail ({principle}`DED-P2`). Examples are values
+  that do not agree, a template parameter with no value, a
+  {term}`substitution failure`, and constraints that are not satisfied
+  ({rule}`CNS-11`). The template adds no candidate, and the program
+  stays valid. A use of the name is not valid only when no function
+  remains ({rule}`DED-35`).
 
 deduction guide
   A function template that takes the arguments of an initializer and
@@ -637,6 +646,16 @@ subobject
   An object inside another object: a base subobject, a non-static data
   member, or an array element. A virtual base gives one subobject that
   every path to it shares ({rule}`DER-6`).
+
+substitution failure
+  A type or an expression that is not valid, made when template
+  arguments replace template parameters, in a place where the program
+  stays valid. In the function type of a function template, the
+  substitution failure is a {term}`deduction failure` ({rule}`DED-24`).
+  In an atomic constraint, the constraint is not satisfied
+  ({rule}`CNS-7`). An error in the body of a class or function that the
+  substitution instantiates is not a substitution failure
+  ({rule}`DED-29`, {rule}`CNS-33`).
 
 subsume
   A constraint subsumes another if each way to satisfy the first shares

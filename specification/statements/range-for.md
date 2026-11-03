@@ -36,7 +36,7 @@ evaluated, so a name there means the outer entity (RFOR-8).
 
 The loop variable is a fresh automatic variable of the body's scope in
 each iteration ({principle}`LOOP-P2`). A storage class would contradict
-this automatic storage, and a redeclaration at the top level of the body
+this {term}`automatic storage`, and a redeclaration at the top level of the body
 would give the name two meanings, so both are rejected.
 :::
 
@@ -65,7 +65,7 @@ For a range of class type, `begin` and `end` are found as follows:
   member counts, so a data member of a callable type works
   ({question}`Q-0098`).
 - If only one of the names is a member, or neither, both are free
-  functions that argument-dependent lookup finds
+  functions that {term}`argument-dependent lookup` finds
   ({rule}`NAM-5`, {rule}`NAM-27`).
 
 `begin` and `end` can return different types. The loop advances the
@@ -149,7 +149,7 @@ A change to the range in the body does not move the end.
 :kind: required
 :tests: statements/range-for/temporary-range-lives.cpp statements/range-for/temporary-in-range-expression.cpp
 
-Each temporary object that the range expression creates lives until the
+Each {term}`temporary object` that the range expression creates lives until the
 loop ends.
 :::
 

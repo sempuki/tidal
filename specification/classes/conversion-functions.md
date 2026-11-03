@@ -28,7 +28,7 @@ type hides the base's, as any member with the same name would.
 :::{principle} CVF-P2
 :rules: CVF-2 CVF-3 CVF-4 CVF-6 CVF-8 CVF-10 CVF-11 CVF-12
 
-An implicit conversion may call one conversion function, as one of its
+An implicit conversion can call one conversion function, as one of its
 user-defined steps, wherever a value of the target type is needed.
 `explicit` withdraws the function from implicit use and leaves it for:
 
@@ -129,7 +129,7 @@ functions that a conversion can use.
 :tests: classes/conversion-functions/two-converting-ctors.cpp classes/conversion-functions/two-user-conversions.cpp
 
 An implicit conversion uses at most one conversion function or
-converting constructor. {rule}`ICS-9` gives the same limit for a
+{term}`converting constructor`. {rule}`ICS-9` gives the same limit for a
 conversion sequence.
 :::
 
@@ -161,7 +161,7 @@ Contextual conversion occurs in:
 The uses that CVF-3 lists are the only uses of an `explicit` conversion
 function. Other conversions must not use the function. An operand of a
 built-in operator other than `!`, `&&`, and `||` is such a conversion,
-so the built-in candidates of {rule}`OVL-9` cannot use the function.
+so the {term}`built-in candidates <built-in candidate>` of {rule}`OVL-9` cannot use the function.
 :::
 
 :::{rule} CVF-4
@@ -169,7 +169,7 @@ so the built-in candidates of {rule}`OVL-9` cannot use the function.
 :tests: classes/conversion-functions/best-match-exact.cpp classes/conversion-functions/const-overloads.cpp classes/conversion-functions/conversion-to-base-not-used.cpp classes/conversion-functions/conversion-to-self-not-used.cpp classes/conversion-functions/conversion-to-void-explicit-call.cpp classes/conversion-functions/conversion-to-void.cpp
 
 Overload resolution chooses between conversion functions as it does for
-other functions. The object is the implied argument, so cv-qualifiers
+other functions. The object is the implied argument, so {term}`cv-qualifiers <cv-qualifier>`
 and ref-qualifiers select between overloads ({rule}`ICS-13`,
 {rule}`ICS-37`). A conversion function to
 its own class, a base of that class, or `void` is never used by a
@@ -204,7 +204,7 @@ the target type counts as the same type. Other targets are not hidden.
 
 A `switch` condition and an array bound in `new` need one conversion to
 an integral or enumeration type. A class with two conversion functions
-to different integral types makes these uses ambiguous.
+to different {term}`integral types <integral type>` makes these uses ambiguous.
 :::
 
 ## Recommended Practice

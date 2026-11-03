@@ -25,7 +25,7 @@ deduction, partial ordering, overload resolution, instantiation.
 :::{principle} CNS-P1
 :rules: CNS-1 CNS-2 CNS-3 CNS-4
 
-The implementation reduces the constraints of a declaration to a
+The implementation reduces the {term}`constraints <constraint>` of a declaration to a
 formula over {term}`atomic constraints <atomic constraint>`. Both the
 check of a constraint and the comparison of two declarations work on
 this formula:
@@ -56,10 +56,10 @@ The result is the {term}`normal form` of the declaration's
 expression it comes from, and the expression is known by its place in
 the source. Two copies of the same text are two atomic constraints.
 The mapping holds only the parameters that the expression uses, so two
-concept-ids that differ only in an unused argument give one atomic
+{term}`concept-ids <concept-id>` that differ only in an unused argument give one atomic
 constraint.
 The implementation never compares the meaning of two expressions, so
-the comparison of two declarations is always decidable. A concept
+the comparison of two declarations is always decidable. A {term}`concept`
 lets several declarations share one expression, and so share its
 atomic constraints.
 :::
@@ -68,7 +68,7 @@ atomic constraints.
 :rules: CNS-5 CNS-6 CNS-7 CNS-8
 :exceptions: CNS-9 CNS-39 CNS-10 CNS-33 CNS-35
 
-The implementation checks a normal form against template arguments in
+The implementation checks a normal form against {term}`template arguments <template argument>` in
 these steps. A form that the check finds `true` is
 {term}`satisfied`.
 
@@ -91,7 +91,7 @@ atom E    substitute the mapping into E                             CNS-7
                 E is false                         -> not satisfied
 ```
 
-A substitution failure gives "not satisfied" and no error. A
+A {term}`substitution failure` gives "not satisfied" and no error. A
 constraint can therefore test whether an operation exists, and a
 declaration whose constraint fails is only left out. A failure is
 local to its atomic constraint. A negation is part of its atomic
@@ -99,7 +99,7 @@ constraint, so a failure inside `!E` makes the constraint not
 satisfied. A failure inside a concept makes the concept-id `false`,
 and its negation is then `true` (CNS-8). Only a failure that the
 substitution forms itself counts. An error inside a class or function
-that the substitution instantiates is an error of the program (CNS-33).
+that the substitution instantiates makes the program not valid (CNS-33).
 
 An atomic constraint must be a constant of type `bool` exactly. Its
 value is never converted, so a constraint means the same in every
@@ -114,24 +114,23 @@ of the declaration needs them. The use decides what a failure does:
 
 | Use | Arguments | If the constraints are not satisfied | Rules |
 |---|---|---|---|
-| a call, through overload resolution | after deduction | the candidate is not viable | {rule}`OVL-24`, CNS-11 |
-| the address of an overload set | after deduction | the function is removed | {rule}`OVL-19` |
+| a call, through overload resolution | after {term}`deduction` | the candidate is not viable | {rule}`OVL-24`, CNS-11 |
+| the address of an {term}`overload set` | after deduction | the function is removed | {rule}`OVL-19` |
 | any other use of a function's name: a call of a single function, `&`, `decltype` | known | the program is not valid | CNS-12 |
-| a template-id of a class, variable, or alias template | known | the program is not valid | CNS-13 |
-| a template-id inside a template | depend on parameters | checked at instantiation | CNS-14 |
+| a {term}`template-id` of a class, variable, or {term}`alias template` | known | the program is not valid | CNS-13 |
+| a template-id inside a template | depend on parameters | checked at {term}`instantiation` | CNS-14 |
 | a template-id inside a template | do not depend on parameters | the program is not valid | CNS-13 |
-| a use of a template template parameter inside the template | do not depend on parameters | the program is not valid, with no diagnostic required | CNS-38 |
-| an explicit instantiation or specialization | known | the program is not valid | CNS-13 |
-| an explicit specialization of a member template, outside the class | the class's arguments | the member does not match | CNS-37 |
+| a use of a {term}`template template parameter` inside the template | do not depend on parameters | the program is not valid, with no diagnostic required | CNS-38 |
+| an {term}`explicit instantiation` or {term}`specialization` | known | the program is not valid | CNS-13 |
+| an {term}`explicit specialization` of a {term}`member template`, outside the class | the class's arguments | the member does not match | CNS-37 |
 | the instantiation of a class | known | the member is declared and cannot be used | CNS-15, CNS-16 |
-| the selection of a partial specialization | after matching | the partial specialization does not match | CNS-17, CNS-36 |
+| the selection of a {term}`partial specialization` | after matching | the partial specialization does not match | CNS-17, CNS-36 |
 | a lambda's conversion to a pointer to function | known | the conversion does not exist | CNS-18 |
 | the selection of the destructor, at the end of the class | known | the destructor is not a candidate | CNS-19, CNS-20 |
-| a special member function | known | the function is not eligible | CNS-21 |
-| a placeholder type | after deduction | the program is not valid | {rule}`CPT-22`, {rule}`AUTO-16` |
+| a {term}`special member function` | known | the function is not eligible | CNS-21 |
+| a {term}`placeholder type` | after deduction | the program is not valid | {rule}`CPT-22`, {rule}`AUTO-16` |
 
-A constraint guards its declaration, and nothing else. For a function
-template, the check comes after deduction and before the function
+A constraint guards its declaration, and nothing else. For a {term}`function template`, the check comes after deduction and before the function
 type is formed. A failed check therefore stops the substitution, and
 errors in the return type and the parameters do not arise. The default
 arguments of the template parameters are formed before the check
@@ -142,7 +141,7 @@ arguments of the template parameters are formed before the check
 :rules: CNS-22 CNS-23 CNS-25 CNS-34
 :exceptions: CNS-24
 
-Overload resolution and partial ordering prefer the declaration with
+Overload resolution and {term}`partial ordering` prefer the declaration with
 more constraints. The comparison runs in these steps, on the normal
 forms of CNS-P1:
 
@@ -194,8 +193,8 @@ constrained, the use is not valid (CNS-24).
 The constraints of a template are part of the template's identity.
 All declarations of one template write the same constraints in the
 same places, and a declaration with other constraints declares another
-template. A trailing requires clause is part of the identity of a
-function in the same way. Two members of a class template can differ
+template. A trailing {term}`requires clause` is part of the identity of a
+function in the same way. Two members of a {term}`class template` can differ
 only in their trailing clauses, and a definition outside the class
 repeats the clause. The clause is not part of the function's type. A
 lambda expression in a constraint is unique, so a constraint with a
@@ -218,8 +217,8 @@ redeclares.
 The {term}`associated constraints` of a declaration are one conjunction
 of these parts, in this order ({question}`Q-0262`, {question}`Q-0282`):
 
-1. the type constraints of the template parameters, in order. For a
-   constant parameter, the type constraint of its placeholder counts
+1. the {term}`type constraints <type constraint>` of the template parameters, in order. For a
+   {term}`constant parameter`, the type constraint of its placeholder counts
    ({question}`Q-0281`).
 2. the requires clause after the template parameter list,
 3. the type constraints of the placeholder parameters, in order,
@@ -247,7 +246,7 @@ steps:
 :tests: templates/constraints/negation-atomic.cpp templates/constraints/fold-atomic.cpp templates/concepts/type-constraint-pack-one-atom.cpp
 
 Every other expression gives one {term}`atomic constraint`. A negation,
-a comparison, a call, a requires expression, and a fold expression are
+a comparison, a call, a {term}`requires expression`, and a fold expression are
 each one atomic constraint, even if they contain `&&` or `||`.
 :::
 
@@ -291,7 +290,7 @@ right operand is not substituted or checked.
 To check an atomic constraint, the implementation substitutes the
 arguments of its mapping, and no others, into its expression. Names
 are looked up as in a template ({rule}`DEP-9`), and the point of the
-check acts as the point of instantiation. Then:
+check acts as the {term}`point of instantiation`. Then:
 
 - If the substitution forms a type or an expression that is not valid,
   the constraint is not satisfied.
@@ -304,7 +303,7 @@ check acts as the point of instantiation. Then:
 :kind: required
 :tests: templates/constraints/negation-substitution-failure.cpp templates/constraints/negated-concept.cpp
 
-A substitution failure inside a negation makes the whole atomic
+A {term}`substitution failure` inside a negation makes the whole atomic
 constraint not satisfied. A failure inside a concept makes the
 concept-id `false` (CNS-7), so the negation of the concept-id is
 satisfied.
@@ -336,7 +335,7 @@ expression ({question}`Q-0263`).
 
 The substitution of CNS-7 can instantiate a class or the body of a
 function, for example to read a member or to deduce a return type. An
-error inside that instantiation is not a substitution failure. The
+error inside that instantiation is not a {term}`substitution failure`. The
 program is not valid, even if another candidate would be chosen.
 :::
 
@@ -356,10 +355,10 @@ through overload resolution inside a requirement.
 :tests: templates/constraints/before-function-type.cpp templates/constraints/before-parameters.cpp templates/constraints/default-argument-before-constraints.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp
 
 For a function template, the constraints are checked when deduction
-and the default template arguments have given every template argument
+and the {term}`default template arguments <default template argument>` have given every template argument
 ({rule}`DED-1`). The check comes before substitution into the function
-type. If the constraints are not satisfied, deduction fails, and the
-function type is not formed ({question}`Q-0261`).
+type. If the constraints are not satisfied, the result is a
+{term}`deduction failure`, and the function type is not formed ({question}`Q-0261`).
 :::
 
 :::{rule} CNS-12
@@ -415,8 +414,8 @@ class instantiates only the members whose constraints are satisfied.
 :tests: templates/constraints/constructors-count.cpp templates/constraints/constructors-count-only-constrained.cpp
 
 A constructor whose constraints are not satisfied still counts as a
-declared constructor. The class therefore gets no implicit default
-constructor ({rule}`CTOR-2`).
+declared constructor. The class therefore gets no implicit {term}`default constructor`
+({rule}`CTOR-2`).
 :::
 
 :::{rule} CNS-17
@@ -425,7 +424,7 @@ constructor ({rule}`CTOR-2`).
 
 A partial specialization matches an argument list only if its
 constraints are satisfied for the arguments that {rule}`TSP-14` finds.
-Its argument list can repeat the primary template's parameters if it is
+Its argument list can repeat the {term}`primary template`'s parameters if it is
 more constrained than the primary template (CNS-36).
 :::
 
@@ -480,7 +479,7 @@ A special member function is {term}`eligible` if all of these hold
 - No other special member of the same kind whose constraints are
   satisfied is more constrained. Two copy or move constructors are of
   the same kind if their first parameters have the same type. Two
-  assignment operators also need the same cv-qualifiers and
+  assignment operators also need the same {term}`cv-qualifiers <cv-qualifier>` and
   ref-qualifier.
 
 Only the eligible special members decide whether a class has trivial
@@ -563,7 +562,7 @@ Two constraints are equivalent if their expressions have the same
 tokens, and each name means the same entity. A template parameter
 matches the parameter at the same position. Two concept-ids that name
 the same specialization of a concept are equivalent. A placeholder
-parameter matches its invented type parameter ({question}`Q-0269`). A
+parameter matches its invented {term}`type parameter` ({question}`Q-0269`). A
 constraint that contains a lambda expression is not equivalent to any
 other constraint.
 :::

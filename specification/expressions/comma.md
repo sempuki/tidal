@@ -9,7 +9,7 @@ Then the operator evaluates its right operand, which gives the result.
 :rules: COMMA-1 COMMA-2 COMMA-3 COMMA-7 COMMA-9
 
 The comma operator runs two expressions in order and keeps the second.
-The left operand is evaluated first, with all its side effects, and its
+The left operand is evaluated first, with all its {term}`side effects <side effect>`, and its
 value is dropped, so the left operand can even be `void`. The right
 operand gives the result unchanged, with its own type and value
 category. The overloaded operator keeps the same order. The operator
@@ -23,7 +23,7 @@ A comma also separates the items in lists such as these:
 
 - arguments,
 - initializers,
-- declarators,
+- {term}`declarators <declarator>`,
 - enumerators,
 - subscript arguments.
 
@@ -76,7 +76,7 @@ In these lists, a comma separates the items:
 - declarators in one declaration,
 - base and member initializers,
 - enumerators,
-- template arguments ({rule}`TARG-5`).
+- {term}`template arguments <template argument>` ({rule}`TARG-5`).
 
 A comma operator in such a list must be in parentheses.
 :::
@@ -115,7 +115,7 @@ is not an operand.
 The left operand is evaluated first, and its value is discarded. All
 side effects of the left operand complete before the right operand is
 evaluated. A temporary that the left operand creates lives to the end
-of the full expression ({rule}`VC-6`).
+of the {term}`full expression` ({rule}`VC-6`).
 :::
 
 :::{rule} COMMA-7

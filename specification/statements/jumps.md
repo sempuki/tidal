@@ -33,7 +33,7 @@ program leaves two or more loops at once in one of these ways:
 - `return` from a function that holds the loops,
 - a flag that every loop condition tests.
 
-A `constexpr` function can contain `goto`, but constant evaluation
+A `constexpr` function can contain `goto`, but {term}`constant evaluation`
 rejects a `goto` that it reaches ({rule}`CE-17`).
 
 A label belongs to the whole function and to no other name space
@@ -47,7 +47,7 @@ Some regions limit the jumps that enter or leave them:
 | Region | Entry | Exit | Jumps | Rule |
 |---|---|---|---|---|
 | A lambda body | not valid | not valid | `break`, `continue`, `goto` | JMP-7, JMP-14 |
-| A try block or a handler | not valid | valid | `goto`, `case`, `default` | {rule}`TRY-7` |
+| A try block or a {term}`handler` | not valid | valid | `goto`, `case`, `default` | {rule}`TRY-7` |
 | A branch of `if constexpr` or `if consteval` | not valid | valid | `goto`, `case`, `default` | {rule}`IF-17` |
 | A handler of a constructor's function try block | | no `return` | `return` | {rule}`TRY-17` |
 | A constructor or destructor | | no `return` with a value | `return` | JMP-12 |
@@ -67,7 +67,7 @@ enters a scope must not skip the creation of an object at the target
 | Backward past a declaration | The variable is destroyed, and the declaration makes the variable again. |
 | Forward past an initialization | Rejected, because the variable would exist without a value |
 
-A declaration with no initializer whose default initialization does
+A declaration with no initializer whose {term}`default initialization` does
 nothing has nothing to skip, so a jump can pass it. The variable still
 exists after the jump, and the end of the block destroys it as usual.
 :::
@@ -83,7 +83,7 @@ exists after the jump, and the end of the block destroys it as usual.
 
 A local variable or a parameter that is returned by name is about to
 end, so the name is treated as an rvalue and the value is moved out
-({principle}`CPY-P4`). The implementation may go further and make a
+({principle}`CPY-P4`). The implementation can go further and make a
 local variable the result object itself, but never a parameter, whose
 storage belongs to the caller.
 :::
@@ -158,8 +158,8 @@ A jump must not skip the declaration of a variable with
 not apply to a declaration with no initializer whose type is one of
 these:
 
-- a scalar type,
-- a class type whose default constructor is trivial ({rule}`CTOR-23`),
+- a {term}`scalar type`,
+- a class type whose {term}`default constructor` is trivial ({rule}`CTOR-23`),
 - an array of these types.
 
 The destructor of the class plays no part ({question}`Q-0041`).

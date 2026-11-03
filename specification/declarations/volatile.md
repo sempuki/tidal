@@ -22,8 +22,8 @@ and each write through a volatile glvalue is performed as written. The
 object itself need not be volatile. A volatile object promises that
 every access is observable, so an access to a volatile object through a
 glvalue that is not volatile is undefined. The value read is an
-ordinary value, so arithmetic on the value is not volatile. Constant
-evaluation cannot read a volatile object, because the read is an
+ordinary value, so arithmetic on the value is not volatile. {term}`Constant evaluation <constant evaluation>`
+cannot read a volatile object, because the read is an
 observable effect.
 
 | Object | Glvalue | Access |
@@ -108,7 +108,7 @@ reference does not bind to a temporary.
 :kind: required
 :tests: declarations/volatile/copy-volatile-scalar-ok.cpp declarations/volatile/volatile-class-user-copy.cpp
 
-A volatile object of scalar type can be copied. A volatile class object
+A volatile object of {term}`scalar type` can be copied. A volatile class object
 can be copied or assigned with functions that the class declares for
 volatile operands. VOL-11 lists what is not valid.
 :::
@@ -149,8 +149,8 @@ observable effect ({rule}`TR-7`) that the implementation performs, also
 when the object is not volatile. The type of a volatile variable keeps
 `volatile`, but the result of an arithmetic operation on its value does
 not. A `const
-volatile` variable at namespace scope has external linkage, so all
-translation units share the variable.
+volatile` variable at namespace scope has external {term}`linkage`, so all
+{term}`translation units <translation unit>` share the variable.
 :::
 
 :::{rule} VOL-12

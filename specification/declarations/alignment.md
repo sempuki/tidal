@@ -132,7 +132,7 @@ An object has the alignment of its declaration or type. This rule
 applies to objects in:
 
 - static storage,
-- automatic storage,
+- {term}`automatic storage`,
 - dynamic storage, including objects and arrays that `new` creates with
   an alignment larger than the largest {term}`fundamental alignment`.
 :::
@@ -154,7 +154,7 @@ alignment. EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
 :kind: no-diagnostic
 :tests: declarations/alignment/different-units-alignas.cpp
 
-Declarations of one entity in different translation units must have the
+Declarations of one entity in different {term}`translation units <translation unit>` must have the
 same alignment. An implementation need not diagnose a difference. If the
 implementation accepts such a program, Tidal sets no requirements on its
 behavior.

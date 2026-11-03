@@ -43,7 +43,7 @@ can go through an ellipsis.
 Member access names a member of a class object, and `->` is member
 access through a pointer. The object expression is always evaluated,
 even for a static member. The member keeps the object's category and
-cv-qualifiers, so a member of a prvalue is an xvalue and a member of a
+{term}`cv-qualifiers <cv-qualifier>`, so a member of a prvalue is an xvalue and a member of a
 `const` object is `const` unless the member is `mutable` or a reference.
 A member function reached this way can only be called, and a call needs
 complete types for what it passes and returns.
@@ -73,7 +73,7 @@ prefix forms.
    argument: `assignment_expr` | `braced_init`
 ```
 
-An `argument` with `...` is a pack expansion ({rule}`PACK-13`).
+An `argument` with `...` is a {term}`pack expansion` ({rule}`PACK-13`).
 
 ## Constraints
 

@@ -53,8 +53,8 @@ object.
 
 A non-static member function acts on an object. In the function, `this`
 has the type of that object with the function's own cv-qualifiers. The
-ref-qualifier of the function selects the function by the value
-category of the object.
+ref-qualifier of the function selects the function by the {term}`value category`
+of the object.
 A member function can instead write that object out as its first
 parameter. The object is then an ordinary argument, so the function:
 
@@ -88,10 +88,10 @@ address of the object, of each base subobject, and of the first member
 Each condition of CLS-19 removes something that would break the
 picture:
 
-- a pointer for virtual calls, or a virtual base, at the start,
+- a pointer for virtual calls, or a {term}`virtual base`, at the start,
 - members of two classes, which would need an order between the classes,
 - members in two accesses,
-- two subobjects of one type, which need two addresses. This case
+- two {term}`subobjects <subobject>` of one type, which need two addresses. This case
   covers a base whose type is the type of an object at the start of the
   first member (CLS-32).
 
@@ -301,7 +301,7 @@ A class must not declare:
 A function can define a class inside its body. In an evaluated operand,
 a member function of that local class can name the static variables of
 the function. The member function can also read the value of a
-`constexpr` variable of any literal type, or of another constant
+`constexpr` variable of any {term}`literal type`, or of another constant
 variable, without taking the address of the variable.
 :::
 
@@ -312,7 +312,7 @@ variable, without taking the address of the variable.
 A local class (CLS-12) must not have:
 
 - a static data member,
-- a member template,
+- a {term}`member template`,
 - a friend function defined in the local class.
 
 Each member function of a local class is defined inside the class. In an
@@ -430,7 +430,7 @@ zero size, and the choice is implementation-defined (CLS-31).
 
 These types are {term}`standard-layout` types:
 
-- scalar types,
+- {term}`scalar types <scalar type>`,
 - standard-layout classes (CLS-19),
 - arrays of standard-layout types,
 - the cv-qualified forms of these types.
@@ -464,7 +464,7 @@ An object of a standard-layout class has these properties:
 
 A `reinterpret_cast` between a pointer to the object and a pointer to
 that member or base gives a usable pointer ({rule}`STG-16`). The same
-holds during constant evaluation
+holds during {term}`constant evaluation`
 ({question}`Q-0338`).
 :::
 

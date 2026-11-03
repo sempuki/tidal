@@ -51,7 +51,7 @@ excludes the kinds that declare no variable.
 :::{principle} IF-P5
 :rules: IF-11 IF-12
 
-The statement's objects follow the general rules of lifetime
+The statement's objects follow the general rules of {term}`lifetime`
 ({principle}`OBJ-P2`). Temporaries of the condition end before a branch
 runs, and the variables of the initializer and the condition end with
 the statement. A jump into a branch skips the condition, as a jump skips
@@ -68,7 +68,7 @@ that branch. For a discarded branch:
 - The branch is still parsed and, outside a template, still checked,
   because the branch is still part of the program.
 - In a template the branch is not instantiated, so the branch can hold
-  code that is wrong for the template arguments.
+  code that is wrong for the {term}`template arguments <template argument>`.
 - The `return` statements of the branch do not deduce the return type,
   and nothing that the branch names needs a definition, because the
   branch never runs.
@@ -241,7 +241,7 @@ with no arguments ({rule}`DEP-6`).
 :tests: statements/if/constexpr-discard-return-type.cpp statements/if/constexpr-non-template-return-type.cpp
 
 A `return` statement in a discarded statement does not take part in
-return type deduction. This rule applies in templates and in other
+return type {term}`deduction`. This rule applies in templates and in other
 functions.
 :::
 

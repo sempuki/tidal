@@ -15,10 +15,10 @@ Depends on: constant expressions, standard conversions.
 :::{principle} SA-P1
 :rules: SA-1 SA-3 SA-7 SA-4 SA-8
 
-A static assertion is a check that constant evaluation performs on the
+A static assertion is a check that {term}`constant evaluation` performs on the
 program's behalf. The condition is a constant expression, converted as
 a condition is, and it must be `true`. A `false` condition makes the
-program invalid, and the message, a string literal for the reader, goes
+program not valid, and the message, a string literal for the reader, goes
 into the diagnostic.
 :::
 
@@ -27,7 +27,7 @@ into the diagnostic.
 
 A static assertion is a declaration, so it can stand wherever a
 declaration can, including in a class body and in a block. Like other
-code in a template, a static assertion is checked for each instantiation
+code in a template, a static assertion is checked for each {term}`instantiation`
 and not before, and a template that is never instantiated is never
 checked.
 :::
@@ -137,8 +137,8 @@ template <class T> T half(T v) {
 int h = half(10);                     // checked for T = int: valid
 ```
 
-A `static_assert` can check that an operation is refused without making
-the program invalid. The check goes through a concept whose requirement
+A `static_assert` can check that an operation is not valid, and the
+program stays valid. The check goes through a {term}`concept` whose requirement
 depends on its parameters ({rule}`CPT-26`, {rule}`CPT-27`):
 
 ```cpp
@@ -148,7 +148,7 @@ Usd operator+(Usd a, Usd b) { return {a.cents + b.cents}; }
 
 template <class A, class B> concept addable = requires(A a, B b) { a + b; };
 static_assert(addable<Usd, Usd>);
-static_assert(!addable<Usd, Eur>);    // fine: the sum is refused
+static_assert(!addable<Usd, Eur>);    // fine: the sum is not valid
 ```
 
 ## Evidence

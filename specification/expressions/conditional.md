@@ -8,8 +8,8 @@ gives one of two other operands, as the condition selects.
 :::{principle} COND-P1
 :rules: COND-1 COND-2 COND-6 COND-7 COND-10 COND-14 COND-15
 
-`?:` is a selection. The condition is converted to `bool` by contextual
-conversion and evaluated first, with all its side effects. Then exactly
+`?:` is a selection. The condition is converted to `bool` by {term}`contextual conversion`
+and evaluated first, with all its {term}`side effects <side effect>`. Then exactly
 one of the two other operands is evaluated, and the other is not touched
 at all:
 
@@ -25,7 +25,7 @@ at all:
 
 So during constant evaluation only the selected operand has to
 be constant. The operator groups to the right, and its middle operand
-is a full expression that can hold a comma or an assignment without
+is a {term}`full expression` that can hold a comma or an assignment without
 parentheses.
 :::
 
@@ -37,7 +37,7 @@ category, and the result type and category are decided before either
 operand is evaluated.
 
 - If both are lvalues of one type, the result is an lvalue, with the
-  union of their cv-qualifiers.
+  union of their {term}`cv-qualifiers <cv-qualifier>`.
 - An operand that throws takes no part, because it gives no value.
 - A `void` operand can pair only with another `void`.
 - If two class types each convert to the other, there is no single

@@ -9,10 +9,10 @@ function ({rule}`CTOR-2`, {rule}`CPY-4`, {rule}`DTOR-2`).
 :::{principle} DEL-P1
 :rules: DEL-1 DEL-2 DEL-3 DEL-5
 
-A deleted function is declared so that it can be chosen and then
-refused. The deleted function takes part in overload resolution like any
-function, and a use of the function is an error, even in an operand that
-is never evaluated. The deletion is on the first declaration, so no
+A deleted function is declared so that overload resolution can choose
+it and the implementation then rejects the use. The deleted function takes part in overload resolution like any
+function, and the implementation rejects a use of the function, even in
+an operand that is never evaluated. The deletion is on the first declaration, so no
 earlier code could use the function, and the deletion is the function's
 only definition.
 :::
@@ -60,7 +60,7 @@ version permits a reason ({question}`Q-0007`).
 :kind: reject
 :tests: declarations/functions/deleted/default-non-member.cpp declarations/functions/deleted/defaulted-friend-comparison.cpp
 
-`= default` is permitted only on special member functions and comparison
+`= default` is permitted only on {term}`special member functions <special member function>` and comparison
 operators ({rule}`DCMP-3`). A defaulted comparison operator can be a
 friend that the class declares. Other functions that are not class
 members must not use `= default`.
@@ -70,7 +70,7 @@ members must not use `= default`.
 :kind: required
 :tests: declarations/functions/deleted/deleted-in-two-units.cpp
 
-A deleted function is `inline`. Several translation units can contain
+A deleted function is `inline`. Several {term}`translation units <translation unit>` can contain
 the same deleted definition.
 :::
 
@@ -89,7 +89,8 @@ void h();
 void h() = delete;         // rejected: not the first declaration
 ```
 
-Keeping one overload and deleting the others refuses some conversions.
+Keeping one overload and deleting the others makes some conversions
+not valid in a call.
 A deleted overload still takes part in overload resolution, so each
 call picks a function by the usual ranks ({principle}`ICS-P2`):
 
@@ -108,7 +109,7 @@ scale(3u);         // rejected: the template is an exact match
 ```
 
 A requirement that depends on a template parameter does not hold when
-its call selects a deleted function, so a concept can test the refusal
+its call selects a deleted function, so a {term}`concept` can test the deletion
 ({rule}`CPT-26`). The same call outside a template is not valid
 ({rule}`CPT-27`):
 

@@ -32,7 +32,7 @@ except where the program needs only the type or the value:
 | Where the name occurs | Use? |
 |---|---|
 | An evaluated expression that calls the function, takes an address, or binds a reference | yes |
-| A constant template argument that takes an address or binds a reference | yes |
+| A constant {term}`template argument` that takes an address or binds a reference | yes |
 | An evaluated expression that reads the value of a constant variable | no |
 | An operand of `sizeof`, `decltype`, or `noexcept` | no |
 | A branch of `if constexpr` that the condition does not select | no |
@@ -56,9 +56,9 @@ A definition creates the entity. A declaration only names it. The
 number of definitions that the language allows depends on the kind of
 entity and on the scope that is counted:
 
-| Entity | Definitions in one translation unit | Definitions in the program | Who finds a fault |
+| Entity | Definitions in one {term}`translation unit` | Definitions in the program | Who finds a fault |
 |---|---|---|---|
-| Variable or function with external linkage, not `inline` | at most one | exactly one, if the program uses the entity | the linker, if anything |
+| Variable or function with external {term}`linkage`, not `inline` | at most one | exactly one, if the program uses the entity | the linker, if anything |
 | Variable or function with internal linkage | at most one; exactly one, if the unit uses the entity | one in each unit that uses it | the compiler, usually as a warning |
 | `inline` variable or function | at most one; exactly one, if the unit uses the entity | one in each unit that uses it, all the same | usually nothing |
 | Class or enumeration | at most one | one in each unit that needs it, all the same | usually nothing |
@@ -197,9 +197,9 @@ with these exceptions:
 - The name is a reference variable that a constant expression
   initializes.
 - The name is in an unevaluated operand ({rule}`UNEV-1`) or in a
-  discarded statement.
+  {term}`discarded statement`.
 
-A name of an overload set uses only the function that overload
+A name of an {term}`overload set` uses only the function that overload
 resolution or a target type selects ({rule}`OVL-18`). A constant
 template argument is an evaluated expression, so `S<&g>` uses `g`
 ({question}`Q-0315`).
@@ -212,7 +212,7 @@ A constant variable is a variable of object type that is
 :kind: required
 :tests: foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/prvalue-initializer-no-copy.cpp
 
-These constructs use special member functions:
+These constructs use {term}`special member functions <special member function>`:
 
 - Initializing an object uses the constructor that the initialization
   selects.
@@ -361,7 +361,7 @@ explicit and partial specializations of it:
   the use ({rule}`TSP-17`).
 
 An implementation need not diagnose a break of this rule.
-{rule}`INST-35` states the rule for an explicit instantiation and an
+{rule}`INST-35` states the rule for an {term}`explicit instantiation` and an
 explicit specialization in different units.
 :::
 

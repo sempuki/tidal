@@ -83,8 +83,8 @@ An operand must not have one of these types:
 - a pointer-to-member type,
 - the type of `nullptr`.
 
-A class operand is valid only through a usable conversion or an operator
-function ({rule}`OPR-6`).
+A class operand is valid only through a usable conversion or an {term}`operator function`
+({rule}`OPR-6`).
 :::
 
 :::{rule} SHF-4

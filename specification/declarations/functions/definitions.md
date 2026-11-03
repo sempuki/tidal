@@ -12,8 +12,8 @@ A function definition gives the body of a function. This page covers:
 :::{principle} FN-P1
 :rules: FN-2 FN-14 FN-15 FN-16 FN-9 FN-12
 
-A function can be declared many times and defined once in a translation
-unit ({principle}`TR-P2`). The parameter types tell whether two
+A function can be declared many times and defined once in a {term}`translation unit`
+({principle}`TR-P2`). The parameter types tell whether two
 declarations name one function or two overloads (FN-15). The
 declarations of one function must then agree on the other properties,
 apart from the parameter names:
@@ -27,7 +27,7 @@ apart from the parameter names:
 | language linkage | {rule}`LSP-7` |
 | `static` among member functions | {rule}`CLS-9` |
 | ref-qualifiers among overloads | {rule}`CLS-26` |
-| template head, for a function template | {rule}`TPL-20` |
+| {term}`template head`, for a {term}`function template` | {rule}`TPL-20` |
 | each default argument, given in one declaration only | {rule}`DEFARG-9` |
 | parameter names, which can differ or be left out | FN-16 |
 
@@ -44,7 +44,7 @@ A parameter is a local variable of the outermost block of the body,
 declared by the caller's argument. So the body cannot declare the
 parameter's name again at that level ({principle}`NAM-P1`), and a nested
 block can. The implementation chooses whether the parameter object ends
-when the function returns or when the caller's full expression ends.
+when the function returns or when the caller's {term}`full expression` ends.
 :::
 
 :::{principle} FN-P3
@@ -126,7 +126,7 @@ All declarations of a function must have the same return type.
 
 Two declarations of one name in one scope declare one function if they
 have the same parameter types after the adjustments of {rule}`DCL-8`.
-For member functions, the cv-qualifiers and ref-qualifiers must also be
+For member functions, the {term}`cv-qualifiers <cv-qualifier>` and ref-qualifiers must also be
 the same. Otherwise the declarations declare two functions, which
 overload ({rule}`OVL-1`).
 :::
@@ -180,7 +180,7 @@ not be inside a function body.
 In a function definition, each parameter type and the return type must
 be complete, except `void` and except in a deleted definition. A
 declaration that is not a definition can use incomplete types. A
-definition must use a function declarator. A `typedef` name of a
+definition must use a function {term}`declarator`. A `typedef` name of a
 function type cannot define a function.
 :::
 

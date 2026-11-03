@@ -143,7 +143,7 @@ conditions are true:
 - The `switch` has no `default` label.
 - An enumerator of the type has no `case` label with its value.
 
-In a template, the check applies to each specialization.
+In a template, the check applies to each {term}`specialization`.
 :::
 
 :::{rule} SW-8

@@ -26,7 +26,7 @@ An object comes into existence when its initialization completes and
 goes out of existence when its destructor completes, or when its storage
 is released or reused. Between those two points the object has a stable
 address, and no other complete object shares that address. An object
-of scalar type has a lifetime that starts with its storage, so the
+of {term}`scalar type` has a lifetime that starts with its storage, so the
 object can exist with no value yet.
 
 These events end the lifetime of an object:
@@ -34,11 +34,11 @@ These events end the lifetime of an object:
 | Event | Objects | Rule |
 |---|---|---|
 | Control leaves the block | automatic objects | OBJ-3 |
-| The full expression ends | temporaries | OBJ-9 |
+| The {term}`full expression` ends | temporaries | OBJ-9 |
 | `delete` | dynamic objects | OBJ-5 |
 | The program or the thread ends | static and thread objects | OBJ-4 |
 | An explicit destructor call | any object | {rule}`DTOR-6` |
-| The enclosing object or array ends | subobjects and elements | OBJ-1, OBJ-6 |
+| The enclosing object or array ends | {term}`subobjects <subobject>` and elements | OBJ-1, OBJ-6 |
 | Another object takes the storage | any object | OBJ-10, {rule}`STG-6` |
 | The storage is released, without a destructor call | any object | {rule}`STG-27` |
 
@@ -62,7 +62,7 @@ constructor body and the destructor body both see complete parts:
 :rules: OBJ-3 OBJ-4 OBJ-5 OBJ-6 OBJ-9
 :exceptions: OBJ-11
 
-The storage duration of an object decides who ends the object and when.
+The {term}`storage duration` of an object decides who ends the object and when.
 In every case, objects end in the reverse of the order in which they
 began.
 
@@ -96,7 +96,7 @@ or write the object. This principle covers the following objects:
 - a dynamic object after `delete`,
 - an object whose storage another object has taken.
 
-Because constant evaluation tracks every lifetime, it rejects each of
+Because {term}`constant evaluation` tracks every lifetime, it rejects each of
 these cases.
 :::
 
@@ -121,7 +121,7 @@ end a lifetime.
 :kind: required
 :tests: foundations/objects/block-reverse-order.cpp foundations/objects/nested-block-ends-first.cpp foundations/objects/early-return-destroys.cpp foundations/objects/loop-body-each-iteration.cpp foundations/objects/constant-evaluation-same-order.cpp foundations/objects/unbraced-substatement-ends-object.cpp
 
-Objects with automatic storage duration are destroyed when control
+Objects with {term}`automatic storage` duration are destroyed when control
 leaves their block, in the reverse of the order of their construction.
 A branch or a loop body without braces counts as a block here
 ({rule}`IF-8`, {rule}`LOOP-4`). This rule applies to every exit, such as
@@ -137,7 +137,7 @@ end without suspension *(coroutines referenced)*.
 
 Objects with static storage duration at namespace scope are constructed
 before `main` runs, in the order of their definitions within a
-translation unit. A static object local to a function is constructed
+{term}`translation unit`. A static object local to a function is constructed
 when control first reaches its declaration, and not at all if control
 never does. Both kinds of object are destroyed after `main` returns, in
 the reverse of the order in which their construction completed. A

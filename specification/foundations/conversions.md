@@ -139,7 +139,7 @@ for each context gives the target type:
 - a condition, by {term}`contextual conversion` ({rule}`IF-3`),
 - an array bound, an enumerator value, and a case label (CE-11, CE-19),
 - the condition of a `switch` ({rule}`SW-2`),
-- the parameter of a handler, from the exception object, by the
+- the parameter of a {term}`handler`, from the {term}`exception object`, by the
   conversions of {rule}`TRY-2` only.
 :::
 
@@ -202,7 +202,7 @@ A function name can be used as a pointer that calls that function.
 
 A pointer or reference to a derived class converts implicitly to a
 pointer or reference to a base class (DER-5). A null pointer converts to
-a null pointer, also when the base subobject is at a nonzero offset.
+a null pointer, also when the base {term}`subobject` is at a nonzero offset.
 CONV-17 lists the bases that do not allow the conversion.
 :::
 
@@ -223,7 +223,7 @@ These conversions must not occur implicitly:
 
 - the conversion of CONV-14 to a base that is ambiguous (DER-10) or
   not accessible ({rule}`ACC-12`),
-- the conversion of CONV-15 through a virtual base or an ambiguous
+- the conversion of CONV-15 through a {term}`virtual base` or an ambiguous
   base, or to a base that is not accessible (MPTR-11),
 - a pointer to a member of a derived class to a pointer to a member of
   its base.
@@ -324,7 +324,7 @@ one.
 If the target floating-point type has infinities, a value above the
 largest finite value of the type converts to the largest finite value or
 to infinity. The implementation defines which one ({question}`Q-0028`).
-The conversion is not undefined, so it can occur in constant evaluation.
+The conversion is not undefined, so it can occur in {term}`constant evaluation`.
 :::
 
 ## Examples

@@ -19,7 +19,7 @@ Depends on: primary expressions, value categories, unary operators.
 
 For a plain name, `decltype` reports the declared type of the entity.
 For any other expression, including a name in parentheses, `decltype`
-reports the type of the expression marked with its value category
+reports the type of the expression marked with its {term}`value category`
 ({principle}`VC-P1`).
 
 | Operand | Result |
@@ -50,9 +50,9 @@ be written out.
 The operands of `decltype`, `sizeof`, and `noexcept` exist only to be
 asked about, and are never evaluated. So these operands:
 
-- cause no side effect,
+- cause no {term}`side effect`,
 - need no definition for what they name,
-- may describe an operation that would be undefined if it ran.
+- can describe an operation that would be undefined if it ran.
 
 A member can be named there without an object. The implementation still
 has to understand the expression. So these checks apply as anywhere
@@ -90,7 +90,7 @@ should warn.
                 : | "decltype" "(" "auto" ")"
 ```
 
-`decltype(auto)` is a placeholder type. The rules for `decltype(auto)`
+`decltype(auto)` is a {term}`placeholder type`. The rules for `decltype(auto)`
 are with placeholder types. A discarded-value expression is one of
 these:
 
@@ -107,7 +107,7 @@ these:
 If the operand of `decltype` is a name without parentheses, the result
 is the type that the entity was declared with. This rule applies to:
 
-- variables, parameters, and references, with their cv-qualifiers and
+- variables, parameters, and references, with their {term}`cv-qualifiers <cv-qualifier>` and
   reference,
 - member access `a.m` and `p->m`, which gives the declared type of `m`,
 - functions, enumerators, bit-fields, and structured bindings.
@@ -120,7 +120,7 @@ variable, not of the capture.
 :kind: reject
 :tests: expressions/decltype/overloaded-name.cpp declarations/auto/decltype-auto-overload-set.cpp
 
-The operand of `decltype` must not be the name of an overload set that
+The operand of `decltype` must not be the name of an {term}`overload set` that
 {rule}`OVL-20` does not reduce to one function.
 :::
 
@@ -202,7 +202,7 @@ The operands of UNEV-1 still have these requirements:
 :kind: reject
 :tests: expressions/decltype/discarded-volatile-read.cpp expressions/decltype/discarded-volatile-operand-read.cpp
 
-Constant evaluation rejects both reads of a volatile object that UNEV-2
+{term}`Constant evaluation <constant evaluation>` rejects both reads of a volatile object that UNEV-2
 gives (CE-12).
 :::
 
@@ -213,7 +213,7 @@ gives (CE-12).
 :tests: expressions/decltype/discarded-call-runs.cpp expressions/decltype/discarded-constant.cpp expressions/decltype/discarded-prvalue-materialized.cpp expressions/decltype/discarded-reference-no-copy.cpp expressions/decltype/void-cast-no-warning.cpp
 
 A discarded-value expression is evaluated, and its value is not used. A
-prvalue of class type creates a temporary object, which is then
+prvalue of class type creates a {term}`temporary object`, which is then
 destroyed. A glvalue is not copied. A cast to `void` makes any
 expression a discarded-value expression and stops warnings about an
 unused result. Constant evaluation follows these rules.

@@ -43,7 +43,7 @@ knows:
 
 The evaluation can change only its own objects, because anything else
 exists at run time. The result must outlive the evaluation, so the
-result cannot be a pointer to an automatic or temporary object, and
+result cannot be a pointer to an automatic or {term}`temporary object`, and
 storage that the evaluation allocated must be freed before the
 evaluation ends. The result must also be complete, with a value in
 every part.
@@ -68,7 +68,7 @@ placed in memory. So an evaluation rejects these operations:
 A read of a scalar that has no value is rejected, also where a run
 permits the read, as in a copy into `unsigned char`. Copying an object
 reads each of its parts, so a copy of an object with a part that has no
-value is rejected too. An exception has no handler at translation time,
+value is rejected too. An exception has no {term}`handler` at translation time,
 so a `throw` that the evaluation reaches ends the evaluation. For the
 same reason an evaluation never reaches a point where the program would
 terminate.
@@ -94,7 +94,7 @@ permits such a conversion:
 | an array bound | integer or enumeration | rejected | CE-11, CE-19, {rule}`DCL-19` |
 | an enumerator value | integer or enumeration | rejected | CE-11, CE-19, {rule}`ENUM-17` |
 | a case label | integer or enumeration | rejected | CE-11, CE-19, {rule}`SW-3` |
-| a constant template argument | the parameter's type | rejected | CE-19, {rule}`TARG-13` |
+| a constant {term}`template argument` | the parameter's type | rejected | CE-19, {rule}`TARG-13` |
 | the operand of `explicit(...)` | `bool` | rejected | CE-19 |
 | the operand of a `noexcept` specifier | `bool` | rejected | CE-19, {rule}`EXS-1` |
 | the condition of `if constexpr` | `bool` | permitted | {rule}`IF-16` |
@@ -149,7 +149,7 @@ Constant evaluation can contain these operations:
 During constant evaluation, the program can call only `constexpr` and
 `consteval` functions. An implicit or defaulted constructor,
 destructor, or assignment operator counts as `constexpr`, except a
-constructor or destructor of a class with a virtual base
+constructor or destructor of a class with a {term}`virtual base`
 ({rule}`DER-12`). Each function that it calls for a base or a member
 must also obey this rule.
 :::
@@ -290,7 +290,7 @@ exception (IF-16). The same condition applies to:
 
 - the condition of `explicit(...)`,
 - the operand of a `noexcept` specifier (EXS-1),
-- a template argument for a constant parameter ({rule}`TARG-13`).
+- a template argument for a {term}`constant parameter` ({rule}`TARG-13`).
 :::
 
 :::{rule} CE-12
@@ -314,9 +314,9 @@ the choice is unspecified.
 :tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp expressions/constant-expressions/result-refers-to-static-temporary.cpp expressions/constant-expressions/extended-temporary-through-cast.cpp expressions/constant-expressions/extended-temporary-static-local.cpp expressions/constant-expressions/extended-temporary-member.cpp expressions/constant-expressions/extended-temporary-nested.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp
 
 A pointer or reference that is the value of a constant expression must
-not refer to an object with automatic storage duration or to a temporary
+not refer to an object with {term}`automatic storage` duration or to a temporary
 object. The pointer or reference can refer to an object with static
-storage duration. A temporary that a reference with static storage
+{term}`storage duration`. A temporary that a reference with static storage
 duration extends, by any form of binding in {rule}`REF-4`, counts as
 static ({question}`Q-0193`).
 :::
@@ -344,7 +344,7 @@ where the division has a result at run time ({rule}`MUL-11`).
 
 If a `constexpr` function has only a declaration at the point where
 constant evaluation calls it, the call is not a constant expression. A
-definition later in the translation unit does not help.
+definition later in the {term}`translation unit` does not help.
 :::
 
 :::{rule} CE-17
@@ -400,7 +400,7 @@ reads only what its body reads.
 
 A *literal type* is one of these types:
 
-- a scalar type or a reference type,
+- a {term}`scalar type` or a reference type,
 - an array of a literal type,
 - the closure type of a lambda whose captures have literal types,
 - a class whose destructor is implicit, defaulted, or `constexpr`, and
@@ -420,11 +420,11 @@ fails the last condition.
 A *constant initializer* is an initializer whose whole initialization of
 the variable, with each conversion and constructor call in it, is a
 constant expression. For a variable with no initializer, this rule and
-CE-21 judge the default initialization ({rule}`INIT-9`):
+CE-21 judge the {term}`default initialization` ({rule}`INIT-9`):
 
 - A scalar or an array of scalars gets no initialization. The zero of
   {rule}`STO-3` is then a constant initializer.
-- A class or an array of a class calls the default constructor, also a
+- A class or an array of a class calls the {term}`default constructor`, also a
   {term}`trivial` one. The zero does not count, so a trivial
   constructor leaves each scalar member without a value
   ({question}`Q-0192`).
@@ -494,7 +494,7 @@ these figures:
 :tests: expressions/constant-expressions/unsequenced-not-detected.cpp
 
 Constant evaluation must not evaluate two {term}`unsequenced` accesses
-to one memory location where one access writes ({rule}`SEQ-4`,
+to one {term}`memory location` where one access writes ({rule}`SEQ-4`,
 {rule}`MUL-14`). An implementation need not diagnose such a pair.
 :::
 
@@ -584,7 +584,7 @@ split on each of them.
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
   In a template argument of a function template's signature, a failed
-  evaluation is a substitution failure ({rule}`DED-24`). So the limits
+  evaluation is a {term}`substitution failure` ({rule}`DED-24`). So the limits
   can decide which overload a call selects.
 
   - Clang stops at a depth of 512 calls and at its step limit

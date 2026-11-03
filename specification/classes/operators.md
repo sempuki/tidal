@@ -36,7 +36,7 @@ where the language promises that order.
 :::{principle} OPR-P2
 :rules: OPR-2 OPR-3 OPR-4 OPR-5 OPR-13 OPR-14
 
-An operator function keeps the shape of the operator it stands for. It
+An {term}`operator function` keeps the shape of the operator it stands for. It
 has:
 
 - the same number of operands,
@@ -185,7 +185,7 @@ operator function from these candidates:
 Implicit conversions apply to every operand of a non-member and to no
 left operand of a member. `a @= b` uses only `operator@=` and is never
 rewritten as `a = a @ b`. {rule}`OVL-7` gives the full candidate sets,
-and {rule}`OVL-9` lists the built-in candidates.
+and {rule}`OVL-9` lists the {term}`built-in candidates <built-in candidate>`.
 :::
 
 :::{rule} OPR-15

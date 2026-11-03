@@ -26,7 +26,7 @@ ordinary scope ({principle}`NAM-P1`), so an alias:
 - is declared once per scope,
 - can be declared again only to say the same thing.
 
-An alias can give a type only a name for linkage, and only when the type
+An alias can give a type only a name for {term}`linkage`, and only when the type
 is an unnamed class with nothing in it that needs a name of its own.
 :::
 
@@ -92,9 +92,9 @@ A `typedef` or an alias declaration declares a name for a type. The name
 denotes the same type, so the declaration does not make a new type or a
 new overload. These rules apply:
 
-- `typedef` can declare several names, each with its own declarator.
+- `typedef` can declare several names, each with its own {term}`declarator`.
 - An alias can name a function, array, or cv-qualified type. A
-  cv-qualifier applied to an alias of a pointer applies to the pointer.
+  {term}`cv-qualifier` applied to an alias of a pointer applies to the pointer.
   On an alias of an array, the cv-qualifier applies to the elements. On
   an alias of a reference or a function type, the cv-qualifier has no
   effect.

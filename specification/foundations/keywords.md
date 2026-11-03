@@ -18,8 +18,8 @@ lookup. Words added to the language late, such as `override` and
 so existing programs that use them as names stay valid. The parser
 recognizes such a word by its position alone, with no lookup
 ({rule}`KW-3`). Elsewhere the language uses lookup to decide how to
-read a token. An example is `<` after a name, which opens a template
-argument list depending on what lookup finds ({rule}`TARG-23`). The
+read a token. An example is `<` after a name, which opens a {term}`template argument`
+list depending on what lookup finds ({rule}`TARG-23`). The
 implementation reserves some names for its own declarations. A program
 that uses them can clash with the implementation, though no compiler
 reports it.
@@ -66,7 +66,7 @@ Each alternative spelling means the operator it names:
 
 `override`, `final`, `import`, and `module` are identifiers. They can
 name variables, functions, and classes. `override` and `final` have
-their special meaning only after the declarator of a member function or
+their special meaning only after the {term}`declarator` of a member function or
 after the name of a class ({rule}`VIRT-3`).
 :::
 

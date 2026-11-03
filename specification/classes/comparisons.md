@@ -21,8 +21,8 @@ A defaulted comparison compares part by part, bases first, in
 declaration order, and stops at the first difference. The implementation
 writes the function only when asked and only in a shape that the
 implementation can fill in. When a part cannot be compared that way, the
-implementation deletes the function, so only a use is an error
-({principle}`CPY-P3`). The return type of a defaulted `<=>` is the
+implementation deletes the function, so the implementation rejects only
+a use ({principle}`CPY-P3`). The return type of a defaulted `<=>` is the
 weakest ordering among the parts, and a defaulted `<=>` brings a
 defaulted `==` with it.
 :::
@@ -71,8 +71,8 @@ A defaulted comparison of class `C` must be one of these:
 
 A defaulted comparison must not be:
 
-- a function template (a comparison declared in a class template is
-  valid, and each specialization gets its own),
+- a {term}`function template` (a comparison declared in a {term}`class template` is
+  valid, and each {term}`specialization` gets its own),
 - a non-member that is not a friend,
 - a friend first declared outside `C` ({question}`Q-0061`).
 
@@ -91,7 +91,7 @@ A defaulted `==` compares the direct bases in the order of the base list,
 then the non-static data members in the order of their declarations. An
 array member is compared element by element. The first comparison that
 gives `false` ends the comparison. The defaulted `==` can be used in
-constant evaluation and has access to private members.
+{term}`constant evaluation` and has access to private members.
 :::
 
 :::{rule} DCMP-2
@@ -105,7 +105,7 @@ A defaulted `==` is deleted if one of these is true:
 - the class has a reference member,
 - the class is a union, or has an anonymous union member.
 
-A deleted defaulted `==` makes only a use of the operator invalid.
+A deleted defaulted `==` makes only a use of the operator not valid.
 :::
 
 :::{rule} DCMP-9
@@ -184,7 +184,7 @@ considers these candidates:
 
 `<=>` is never used to rewrite `==` or `!=`. A declared `!=` is used
 before a rewritten one. If an `==` has a matching `!=` (DCMP-13), that
-`==` is not used for reversed or rewritten candidates.
+`==` is not used for reversed or {term}`rewritten candidates <rewritten candidate>`.
 {rule}`OVL-13` gives what each rewritten candidate evaluates, and
 {rule}`OVL-32` and {rule}`OVL-33` rank the candidates.
 :::
@@ -211,11 +211,11 @@ hold:
   that a base declares. For a non-member `==`, the
   search looks in the namespace of the `==`, and a `friend` declared only
   in a class is not found.
-- Both are members with an implicit object parameter, or both are
+- Both are members with an {term}`implicit object parameter`, or both are
   non-members, and neither is a template.
 - Both have the same parameter types ({rule}`DCL-8`).
 
-The return types, the cv-qualifiers and ref-qualifiers of members,
+The return types, the {term}`cv-qualifiers <cv-qualifier>` and ref-qualifiers of members,
 access, and deletion take no part ({question}`Q-0190`).
 :::
 

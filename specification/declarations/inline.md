@@ -20,7 +20,7 @@ definitions and members.
 :::{principle} INL-P1
 :rules: INL-1 INL-5 INL-6 INL-7
 
-`inline` means that each translation unit that uses an entity defines
+`inline` means that each {term}`translation unit` that uses an entity defines
 the entity, and that all the definitions are one entity
 ({principle}`STO-P4`). These rules follow from the principle.
 
@@ -30,7 +30,7 @@ the entity, and that all the definitions are one entity
 - Every unit must agree that the entity is `inline`, and the
   definitions must match, because a static local variable inside an
   inline function is still one object for the program.
-- An entity with internal linkage is never shared, so `inline` on it
+- An entity with internal {term}`linkage` is never shared, so `inline` on it
   changes nothing across units.
 :::
 
@@ -61,7 +61,7 @@ class.
 ## Syntax
 
 `inline` is a declaration specifier. It occurs with other specifiers
-before the declarator.
+before the {term}`declarator`.
 
 ## Constraints
 
@@ -69,8 +69,7 @@ before the declarator.
 :kind: required
 :tests: declarations/inline/function-and-variable.cpp declarations/inline/inline-before-definition.cpp declarations/inline/inline-internal-linkage.cpp declarations/inline/inline-unused-not-defined.cpp declarations/inline/inline-variable-const-default-external.cpp declarations/inline/inline-virtual.cpp declarations/inline/constexpr-variable-internal.cpp declarations/inline/inline-friend-declaration-not-definition.cpp foundations/odr/header-constant-three-forms.cpp
 
-`inline` applies to functions and to variables with static storage
-duration. These rules apply:
+`inline` applies to functions and to variables with static {term}`storage duration`. These rules apply:
 
 - A function can be declared `inline` before its definition.
 - An inline function that no code uses needs no definition.
@@ -110,7 +109,7 @@ These declarations are inline without the keyword:
 - a `constexpr` or `consteval` function,
 - a `static constexpr` data member,
 - a deleted function,
-- an implicitly declared special member function.
+- an implicitly declared {term}`special member function`.
 :::
 
 :::{rule} INL-4

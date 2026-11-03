@@ -65,7 +65,7 @@ literal also initializes arrays of some other one-byte character types.
    designator: "." `identifier`
 ```
 
-An `init_clause` with `...` is a pack expansion ({rule}`PACK-13`).
+An `init_clause` with `...` is a {term}`pack expansion` ({rule}`PACK-13`).
 
 ## Constraints
 
@@ -221,7 +221,7 @@ a nested aggregate ({question}`Q-0043`).
 :kind: reject
 :tests: declarations/initialization/list/omitted-member-explicit-default.cpp
 
-An `explicit` default constructor cannot initialize a member that has no
+An `explicit` {term}`default constructor` cannot initialize a member that has no
 value in the list (LIST-8). Such a member must have a value in the list.
 :::
 

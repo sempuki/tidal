@@ -18,13 +18,13 @@ evaluation, objects and lifetime.
 :::{principle} THR-P1
 :rules: THR-1 THR-2 THR-3
 
-A `throw` makes the exception object from its operand the way a
+A `throw` makes the {term}`exception object` from its operand the way a
 declaration makes a variable from an initializer.
 
 | Operand | Exception object |
 |---|---|
 | A prvalue | The operand becomes the exception object directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
-| A local variable or parameter that every try block around the `throw` also contains | Moved from the operand, because the variable ends before any handler of the function can run |
+| A local variable or parameter that every try block around the `throw` also contains | Moved from the operand, because the variable ends before any {term}`handler` of the function can run |
 | Any other lvalue | Copied from the operand |
 
 A local variable that a try block around the `throw` does not contain
@@ -33,7 +33,7 @@ copies the variable. The copy or move belongs to the `throw`. An
 exception from the copy or move leaves the `throw` like any other
 exception.
 
-Arrays and functions decay to pointers, and cv-qualifiers are dropped,
+Arrays and functions decay to pointers, and {term}`cv-qualifiers <cv-qualifier>` are dropped,
 because the exception object is a fresh object of its own. So the
 operand's type must be complete and not abstract, and the copy or move
 that would run must be usable, as must the destructor that ends the
@@ -84,7 +84,7 @@ implementation should warn where it can see such a termination happen.
 :::{principle} THR-P5
 :rules: THR-10
 
-During constant evaluation a `throw` has nowhere to go, so an evaluation
+During {term}`constant evaluation` a `throw` has nowhere to go, so an evaluation
 that reaches one is not a constant and the program is rejected there
 ({principle}`TR-P4`). A `throw` on a path the evaluation does not take
 costs nothing, and the same function throws normally when called at run

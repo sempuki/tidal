@@ -91,7 +91,7 @@ function.
 :::{principle} CPY-P4
 :rules: CPY-9 CPY-10 CPY-11 CPY-24 CPY-25
 
-Whether a copy or a move happens follows from the value category of the
+Whether a copy or a move happens follows from the {term}`value category` of the
 source:
 
 | Source | Result |
@@ -117,8 +117,8 @@ writes the cast itself.
 The implementation can:
 
 - make a named local variable the return object instead of moving the
-  variable, except for a parameter and except in constant evaluation,
-- assign a shared virtual base more than once.
+  variable, except for a parameter and except in {term}`constant evaluation`,
+- assign a shared {term}`virtual base` more than once.
 
 The implementation should warn when:
 
@@ -136,7 +136,7 @@ trivial all the way down is *trivially copyable*. Copying the bytes of
 an object of such a class copies the value of the object.
 
 Only the functions that a copy can use count. These are the
-{term}`eligible` ones, so a deleted function, or one whose constraints
+{term}`eligible` ones, so a deleted function, or one whose {term}`constraints <constraint>`
 fail, neither helps nor blocks. A class with a `const` or reference
 member has no usable assignment, and its objects still copy by bytes as
 its constructors do. Access plays no part. A class whose destructor is
@@ -147,7 +147,7 @@ The property extends from classes to types:
 
 | Type | Trivially copyable |
 |---|---|
-| A scalar type | Always |
+| A {term}`scalar type` | Always |
 | A class type | If CPY-19 holds |
 | An array type | If the element type is |
 | A cv-qualified type | If the type without the qualifiers is |
@@ -201,9 +201,9 @@ copy a `const` object.
 :tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp
 
 A constructor of class `T` must not have a first parameter of type `T`
-if all other parameters have default arguments. In a class template,
+if all other parameters have default arguments. In a {term}`class template`,
 the implementation rejects such a constructor at the template's
-definition, before any instantiation. A constructor template
+definition, before any {term}`instantiation`. A constructor template
 never gives such a constructor, so a copy of a `T` uses the copy
 constructor ({rule}`CPY-1`).
 :::
@@ -213,7 +213,7 @@ constructor ({rule}`CPY-1`).
 :tests: classes/copy-move/move-ctor-default-args.cpp classes/copy-move/move-ctor.cpp
 
 A *move constructor* of class `T` is a constructor that is not a
-template. Its first parameter is `T&&` with any cv-qualifiers. Each other
+template. Its first parameter is `T&&` with any {term}`cv-qualifiers <cv-qualifier>`. Each other
 parameter has a default argument.
 :::
 
@@ -370,7 +370,7 @@ Overload resolution chooses between the copy and move functions:
 
 An lvalue of a class with no usable copy constructor cannot initialize a
 new object. An `explicit` copy constructor is not used in
-copy-initialization. Two rules name specific cases of this rule
+{term}`copy-initialization`. Two rules name specific cases of this rule
 (decision 0042):
 
 - {rule}`CPY-21`, a class whose move function deletes its copy,
@@ -397,12 +397,12 @@ deleted. The rule applies to:
 
 In a `return` statement, a name of one of these is an xvalue:
 
-- a local variable with automatic storage duration,
+- a local variable with {term}`automatic storage` duration,
 - a parameter of the function,
 - a variable of rvalue reference type that the function declares.
 
 Parentheses around the name do not change the classification. The return
-value is then initialized by a move, or by a converting constructor that
+value is then initialized by a move, or by a {term}`converting constructor` that
 takes an rvalue. A name of one of these is an lvalue:
 
 - a variable of lvalue reference type,
@@ -470,7 +470,7 @@ If a program copies the bytes of such an object into another object of
 the same type, the second object gets the same value. {rule}`STG-12`
 gives the byte types that the copy can go through and the limit on
 padding bytes. If the second object is `const` or has a `const`
-subobject, the copy changes a `const` object, and the behavior is
+{term}`subobject`, the copy changes a `const` object, and the behavior is
 undefined ({rule}`CV-5`, {question}`Q-0344`).
 :::
 

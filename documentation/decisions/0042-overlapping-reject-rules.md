@@ -12,7 +12,7 @@ specific one. Examples:
 |---|---|---|
 | CAST-19 | CAST-2 | a `static_cast` between unrelated pointer types |
 | CPY-24 | CPY-21, JMP-15 | an lvalue copy of a class whose move constructor deletes its copy |
-| CE-25 | DCL-19, SW-3 | a non-constant array bound or case label |
+| CE-11 | DCL-19, SW-3 | a non-constant array bound or case label |
 
 Tests cite one of the two, and not always the same one. A checker that
 names one rule then matches some tests and not others (front-end

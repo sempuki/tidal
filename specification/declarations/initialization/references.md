@@ -15,12 +15,12 @@ function. This page covers:
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives the reference that object.
 The expressions that a reference accepts follow from what the reference
-may do with its referent.
+can do with its referent.
 
-| Reference | What the reference may do | Binds to |
+| Reference | What the reference can do | Binds to |
 |---|---|---|
 | One that can change the object | Change the object | Only an lvalue of that type or a derived type |
-| `const` lvalue reference | Nothing | Also rvalues and values of other types, through a temporary object when there is no object to bind to |
+| `const` lvalue reference | Nothing | Also rvalues and values of other types, through a {term}`temporary object` when there is no object to bind to |
 | Rvalue reference | Take from an object that is going away | Rvalues, and never an lvalue of its own type |
 
 In parentheses and after `=`, the initializer is one expression.
@@ -65,7 +65,7 @@ one value that converts to the referenced type.
 | List | Scalar `T` | Class `C` | Array `E[N]` | Array `E[]` | Function |
 |---|---|---|---|---|---|
 | `{}` | temporary | temporary | temporary | none | none |
-| `{x}`, where `x` has the referenced type, ignoring cv-qualifiers, or a derived class | direct | direct | direct | direct, and `x` can be any `E[N]` | direct, and `x` can be an overload set |
+| `{x}`, where `x` has the referenced type, ignoring cv-qualifiers, or a derived class | direct | direct | direct | direct, and `x` can be any `E[N]` | direct, and `x` can be an {term}`overload set` |
 | `{x}`, where `x` has another type, even one with a conversion function to the referenced type | temporary | temporary | temporary | temporary of one element | none |
 | `{s}`, where `s` is a string literal of another array type | temporary | temporary | temporary if `s` can initialize the array, none otherwise | as for `E[N]` | none |
 | several values | none | temporary | temporary if `N` is not less than the number of values | temporary of one element for each value | none |

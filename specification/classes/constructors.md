@@ -140,7 +140,7 @@ A constructor has the name of its class and no return type. A constructor
 must not:
 
 - be `static` or `virtual`,
-- have a cv-qualifier or a ref-qualifier,
+- have a {term}`cv-qualifier` or a ref-qualifier,
 - have an explicit object parameter,
 - be declared two times in its class.
 
@@ -181,7 +181,7 @@ has no default member initializer:
 The default constructor is also deleted if a base or member has no
 default constructor that is accessible and not deleted, or has a
 destructor that is deleted or not accessible. A deleted default
-constructor makes only a use of the constructor invalid.
+constructor makes only a use of the constructor not valid.
 :::
 
 :::{rule} CTOR-20
@@ -248,7 +248,7 @@ Each `mem_init` must name one of these:
 
 - a non-static data member of the class,
 - a direct base of the class,
-- a virtual base ({rule}`DER-6`) of the class.
+- a {term}`virtual base` ({rule}`DER-6`) of the class.
 
 A name can be a type alias of a base. A `mem_init` must not:
 
@@ -276,7 +276,7 @@ list.
 :kind: reject
 :tests: classes/constructors/explicit-argument.cpp classes/constructors/explicit-bool-false.cpp classes/constructors/explicit-bool-not-constant.cpp classes/constructors/explicit-bool-true.cpp classes/constructors/explicit-copy-init.cpp classes/constructors/explicit-copy-list-init.cpp classes/constructors/explicit-default-copy-list.cpp classes/constructors/explicit-direct-init.cpp classes/constructors/explicit-non-ctor.cpp classes/constructors/explicit-out-of-line.cpp classes/constructors/explicit-return.cpp classes/constructors/explicit-static-cast.cpp
 
-An `explicit` constructor is not used in copy-initialization.
+An `explicit` constructor is not used in {term}`copy-initialization`.
 Copy-initialization includes:
 
 - `T x = v;` and `T x = {v};`,
@@ -294,7 +294,7 @@ expression `c` is `true`. Only a constructor or conversion function
 :kind: required
 :tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp
 
-A constructor that is not `explicit` is a *converting constructor*. An
+A constructor that is not `explicit` is a *{term}`converting constructor`*. An
 implicit conversion can use a converting constructor to make an object
 from the constructor's arguments, including from a braced list. Standard
 conversions can come before the converting constructor. {rule}`ICS-3`
@@ -326,7 +326,7 @@ initializer-list constructors. If those rules choose none, the arguments are
 the elements of the list.
 
 A call whose name finds a class, such as `probe(x)`, initializes an
-object of that class. Argument-dependent lookup does not run for such a
+object of that class. {term}`Argument-dependent lookup <argument-dependent lookup>` does not run for such a
 call ({rule}`NAM-32`).
 
 The program is not valid in each of these cases:
@@ -382,7 +382,7 @@ If the destructor of a class is deleted or not accessible, a program
 must not:
 
 - declare a variable of the class with automatic, static, or thread
-  storage duration,
+  {term}`storage duration`,
 - write a prvalue of the class, also where the prvalue initializes an
   object directly, as in `return S{};`,
 - apply `delete` to an object of the class.
@@ -419,7 +419,7 @@ implicit and user-declared destructors.
 
 A program must call a destructor with `()` and cannot take the address
 of a destructor. In an explicit destructor call, the name after `~` must
-denote the type of the object, also for a scalar type.
+denote the type of the object, also for a {term}`scalar type`.
 :::
 
 :::{rule} CTOR-18
@@ -526,7 +526,7 @@ of scalar type through a type name.
 
 If a member is read before it has a value, the behavior is undefined.
 This includes a member that a later `mem_init` initializes, and a member
-that default initialization leaves without a value. A call of a member
+that {term}`default initialization` leaves without a value. A call of a member
 function from the `mem_init` of a base, before all bases are initialized,
 is also undefined.
 :::
@@ -566,7 +566,7 @@ to itself ({question}`Q-0053`).
 :kind: no-diagnostic
 :tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp
 
-A constructor must not bind a reference member to a temporary object,
+A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
 with the constructor. An implementation need not diagnose such a
 binding ({question}`Q-0084`).

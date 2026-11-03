@@ -36,7 +36,7 @@ check each independent construct        check each dependent construct
 ```
 
 A name that does not depend on a parameter means the same thing in
-every specialization, so the implementation binds the name once, at the
+every {term}`specialization`, so the implementation binds the name once, at the
 definition. A later declaration does not change the binding. A
 {term}`dependent name` can mean something different for each argument
 list, so its lookup waits for the arguments.
@@ -47,13 +47,13 @@ An unqualified call with a dependent argument uses both phases
 | Lookup | Context | Finds a function declared after the template |
 |---|---|---|
 | ordinary unqualified lookup | the definition | no |
-| argument-dependent lookup | the definition and the {term}`point of instantiation` | yes, in an associated namespace |
+| argument-dependent lookup | the definition and the {term}`point of instantiation` | yes, in an {term}`associated namespace` |
 
 A call whose arguments are all of fundamental type has no associated
 namespace ({rule}`NAM-27`), so it finds only what the definition sees
 (DEP-10). An operator expression with a type-dependent operand finds
-its operator functions in the same two ways (DEP-9). Each translation
-unit sees only its own declarations. A better match in another unit
+its {term}`operator functions <operator function>` in the same two ways (DEP-9). Each {term}`translation unit`
+sees only its own declarations. A better match in another unit
 makes the program not valid, with no diagnostic required (DEP-38).
 :::
 
@@ -65,7 +65,7 @@ A construct depends on the template parameters in one of three ways:
 | Kind | Meaning | Examples |
 |---|---|---|
 | {term}`dependent type` | the type differs between specializations | `T`, `T*`, `Box<T>`, `T[N]`, `typename T::type`, `decltype(t.size())` |
-| {term}`type-dependent` expression | the type of the expression differs | `t`, `T(0)`, `t + 1`, `(t + ...)`, `this` in a class template |
+| {term}`type-dependent` expression | the type of the expression differs | `t`, `T(0)`, `t + 1`, `(t + ...)`, `this` in a {term}`class template` |
 | {term}`value-dependent` expression | the type is fixed, the value differs | `N`, `sizeof(T)`, `sizeof...(T)`, `static_cast<int>(t)` |
 
 Some forms have a fixed type whatever their operands: `sizeof`,
@@ -79,7 +79,7 @@ the implementation chooses its function at the definition (DEP-3).
 :exceptions: DEP-13 DEP-35
 
 A base class whose type is dependent is unknown at the definition. An
-explicit specialization can give the base any members, so the
+{term}`explicit specialization` can give the base any members, so the
 implementation does not search such a base for an unqualified name. A
 program reaches a member of a dependent base through `this->`, through
 the name of the class, or through the name of the base:
@@ -87,7 +87,7 @@ the name of the class, or through the name of the base:
 | Written | Searches a dependent base | Rule |
 |---|---|---|
 | `count` | no | DEP-11, DEP-12 |
-| `this->count` | yes, at the instantiation | DEP-11 |
+| `this->count` | yes, at the {term}`instantiation` | DEP-11 |
 | `Derived::count`, `Base<T>::count` | yes, at the instantiation | DEP-11, DEP-18 |
 
 An unqualified name that finds a member at the definition keeps that
@@ -119,7 +119,7 @@ so the implementation looks them up there:
 
 A member of the current instantiation needs no `typename` (DEP-16). If
 the class has no dependent base, a name that the class does not declare
-is an error. The name is not dependent, so the implementation can
+is not valid. The name is not dependent, so the implementation can
 report the error at the definition (DEP-17). With a dependent base, the
 lookup waits for the instantiation (DEP-18). A member access on an
 object whose type depends on a parameter, and is not the current
@@ -140,8 +140,8 @@ name is a type, a template, or a value. The program states the choice:
 | `typename T::name` | a type | the name is a type (DEP-22) |
 | `T::name<...>`, `x.name<...>` | `name`, then the less-than operator | |
 | `typename T::name<...>`, `T::name<...>` in a base list or an alias | not valid without `template` (DEP-24, {question}`Q-0225`) | |
-| `T::template name<...>` | a template-id | the name is a template (DEP-26) |
-| `typename T::template name<...>` | a type | the name is a class template or alias template |
+| `T::template name<...>` | a {term}`template-id` | the name is a template (DEP-26) |
+| `typename T::template name<...>` | a type | the name is a class template or {term}`alias template` |
 
 In a type-only position, only a type can appear, so the parser reads a
 qualified name as a type without `typename` (DEP-20). Both keywords can
@@ -169,7 +169,7 @@ definition:
 
 The condition of a `static_assert` in a template is checked only at the
 instantiation, also when the condition is independent ({rule}`SA-5`).
-A discarded statement is not instantiated ({rule}`IF-13`).
+A {term}`discarded statement` is not instantiated ({rule}`IF-13`).
 :::
 
 ## Syntax
@@ -225,8 +225,8 @@ DEP-3 does not give a fixed type:
 - the expression is a name declared with a dependent type,
 - the expression names a structured binding whose hidden variable has
   a dependent type,
-- the expression names an overload set through a dependent qualifier,
-  such as `T::make`, or with dependent explicit template arguments,
+- the expression names an {term}`overload set` through a dependent qualifier,
+  such as `T::make`, or with dependent explicit {term}`template arguments <template argument>`,
   such as `make<T>`,
 - the expression names a constant template parameter whose type is a
   {term}`placeholder type`,
@@ -402,10 +402,10 @@ member defined outside the class.
 In a class template, its members, and its nested classes, these names
 name the {term}`current instantiation`:
 
-- the injected class name ({rule}`TARG-11`),
+- the {term}`injected class name` ({rule}`TARG-11`),
 - the template name with its own parameters in order, also after `::`,
-  where an alias for a type parameter counts as that parameter,
-- in a partial specialization, the template name with that partial
+  where an alias for a {term}`type parameter` counts as that parameter,
+- in a {term}`partial specialization`, the template name with that partial
   specialization's argument list,
 - in a nested class, the nested class's name, also qualified with the
   enclosing current instantiation,
@@ -413,8 +413,8 @@ name the {term}`current instantiation`:
   ({question}`Q-0229`).
 
 Any other argument list names another specialization, which is
-dependent. A `static` constant member whose value is a constant
-parameter does not count as that parameter.
+dependent. A `static` constant member whose value is a {term}`constant parameter`
+does not count as that parameter.
 :::
 
 :::{rule} DEP-16
@@ -523,7 +523,7 @@ type is not valid.
 :kind: reject
 :tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp
 
-A member template must have the keyword `template` before its name in
+A {term}`member template` must have the keyword `template` before its name in
 these places:
 
 - after `::` with a dependent qualifier that is not the current
@@ -543,7 +543,7 @@ target of an alias declaration ({question}`Q-0225`).
 The keyword `template` can come before a template name that lookup
 already finds, also outside a template. Before a template template
 argument, `template` needs no argument list after the name. The
-default argument of a template template parameter is such an argument.
+default argument of a {term}`template template parameter` is such an argument.
 :::
 
 :::{rule} DEP-26
@@ -634,7 +634,7 @@ changes break the rule:
 - a default argument is added later to a function that lookup at the
   definition finds, also for a qualified call with a dependent argument
   ({question}`Q-0249`),
-- a constant evaluation needs a function, variable, or reference that
+- a {term}`constant evaluation` needs a function, variable, or reference that
   is defined only after the definition ({question}`Q-0250`).
 
 An implementation need not diagnose a break of this rule. A function
@@ -737,7 +737,7 @@ template <class T> int read() {
 
 A second lookup through `this` or the current instantiation
 (DEP-13, DEP-35). A member of a class hides the same member of its
-virtual bases ({rule}`DER-4`):
+{term}`virtual bases <virtual base>` ({rule}`DER-4`):
 
 ```cpp
 struct Fixed { int m = 1; };

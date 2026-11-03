@@ -27,7 +27,7 @@ A virtual call goes to the function for the class the object was created
 as, found through a pointer or reference to any base. A function in a
 derived class overrides a base function when their signatures match,
 with or without the keyword, and each virtual function must have exactly
-one such final overrider in the complete class. The call is resolved at
+one such {term}`final overrider` in the complete class. The call is resolved at
 run time, so every virtual function needs a definition, called or not.
 :::
 
@@ -82,7 +82,7 @@ destructor.
 
 `dynamic_cast` checks at run time whether the object is of the requested
 class, and gives a null pointer when the object is not. The check needs
-a polymorphic class, except for the harmless direction toward a base.
+a {term}`polymorphic class`, except for the harmless direction toward a base.
 :::
 
 ## Syntax
@@ -97,7 +97,7 @@ a polymorphic class, except for the harmless direction toward a base.
    dynamic_cast: "dynamic_cast" "<" `type_id` ">" "(" `expression` ")"
 ```
 
-`virt_specifiers` and `pure_specifier` come after the declarator of a
+`virt_specifiers` and `pure_specifier` come after the {term}`declarator` of a
 member function. `override` and `final` are identifiers with a special
 meaning only in that position. A *polymorphic class* declares or inherits
 a virtual function.
@@ -113,7 +113,7 @@ in its class definition. A program must not declare these as virtual:
 
 - a static member function,
 - a function outside a class, or a definition outside its class,
-- a member function template,
+- a member {term}`function template`,
 - a function with a deduced return type,
 - a member of a union,
 - a member function with an explicit object parameter.
@@ -160,7 +160,7 @@ or reference to a class `B`, with these conditions:
 
 - `B` is `D` or an unambiguous base of `D`,
 - `B` is accessible in the class of the override,
-- the target of the new type has the same or fewer cv-qualifiers.
+- the target of the new type has the same or fewer {term}`cv-qualifiers <cv-qualifier>`.
 
 A call through the base converts the result to the type of the
 overridden function.
@@ -182,9 +182,9 @@ declaration of the override, unless that class declares the override.
 
 Each virtual function of a class must have one *final overrider*, the
 override that a call selects. If two classes override the same function
-of a shared virtual base, and neither overrides the other, the class
+of a shared {term}`virtual base`, and neither overrides the other, the class
 that derives from both must override the function too. With a
-non-virtual base on two paths, each subobject has its own final
+non-virtual base on two paths, each {term}`subobject` has its own final
 overrider.
 :::
 
@@ -194,7 +194,7 @@ overrider.
 
 A class with at least one pure virtual function, declared or inherited
 without a final overrider, is *abstract*. A program must not create an
-object of an abstract class. This rule covers:
+object of an {term}`abstract class`. This rule covers:
 
 - a variable, an array, a temporary, or a member,
 - a `new` expression,
@@ -276,8 +276,8 @@ of the object. These calls do not use the final overrider:
 - a qualified call such as `p->B::f()`,
 - a call on an object, not a pointer or reference.
 
-Default arguments come from the function that the call names. Constant
-evaluation follows the same rules, and the final overrider that it calls
+Default arguments come from the function that the call names. {term}`Constant evaluation <constant evaluation>`
+follows the same rules, and the final overrider that it calls
 must be `constexpr` ({rule}`CE-2`).
 :::
 
@@ -295,7 +295,7 @@ A class that declares or inherits a virtual function is polymorphic.
 During the constructor or destructor of a class `C`, a virtual call on
 the object calls the final overrider for `C`. Overrides in classes
 derived from `C` are not used. After all constructors complete, calls use
-the most derived class.
+the {term}`most derived class`.
 :::
 
 :::{rule} VIRT-7

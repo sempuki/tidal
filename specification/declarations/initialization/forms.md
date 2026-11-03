@@ -14,7 +14,7 @@ initializer to the object's type ({principle}`VC-P2`).
 
 | Initializer | Meaning |
 |---|---|
-| `=` | The conversion. The `=` form is copy-initialization, so the conversion does not use an `explicit` constructor. |
+| `=` | The conversion. The `=` form is {term}`copy-initialization`, so the conversion does not use an `explicit` constructor. |
 | Parentheses | The same conversion as `=` |
 | A list of values, for an array | One value per element |
 | Empty braces, `T()` | The zero of the type |
@@ -24,7 +24,7 @@ initializer to the object's type ({principle}`VC-P2`).
 :::{principle} INIT-P2
 :rules: INIT-1 INIT-9
 
-Default initialization gives a value only where some code supplies one:
+{term}`Default initialization <default initialization>` gives a value only where some code supplies one:
 a constructor, or a default member initializer. Everything else is left
 as it is. An automatic object with no initializer therefore has no value
 until the program assigns one ({principle}`OBJ-P4`).
@@ -37,7 +37,7 @@ Empty parentheses after a name declare a function, because the grammar
 reads them as a parameter list. The same holds for any parentheses whose
 contents have the form of a parameter list, such as `T(&x)` or `T()`
 ({rule}`DCL-13`). Braces, or a second pair of parentheses, make the
-declaration a variable. Declarators in one declaration are initialized
+declaration a variable. {term}`Declarators <declarator>` in one declaration are initialized
 from left to right.
 :::
 
@@ -159,7 +159,7 @@ on each kind of object:
 | Object | Default initialization |
 |---|---|
 | A scalar | Nothing. The object has no value (INIT-1). |
-| A class | The default constructor of the class runs. |
+| A class | The {term}`default constructor` of the class runs. |
 | An array | Each element is default-initialized. |
 | A member that a constructor's member initializer list does not name | The default member initializer of the member, if there is one. If not, the member is default-initialized. |
 | A base that a constructor's member initializer list does not name | The base is default-initialized. |

@@ -71,7 +71,7 @@ because a program has no reason to ask.
 :rules: PRIM-11 PRIM-20 PRIM-12 PRIM-14 PRIM-25
 
 A name denotes the entity that lookup finds ({principle}`NAM-P2`), and
-the value category of the name follows from what that entity is
+the {term}`value category` of the name follows from what that entity is
 ({principle}`VC-P1`). A variable or function is an lvalue, and an
 enumerator is a prvalue. Inside a member function, a bare member name
 means the member of the current object, and `this` is a prvalue pointer
@@ -440,7 +440,7 @@ pointer-to-member type, and to `bool` by direct initialization.
 :tests: expressions/primary/this-const-member-modify.cpp expressions/primary/this-default-member-init.cpp expressions/primary/this-prvalue.cpp expressions/primary/this-type.cpp expressions/primary/this-trailing-return.cpp
 
 In a member function of class `C`, `this` is a prvalue that points to
-the object. The type of `this` is pointer to `C` with the cv-qualifiers
+the object. The type of `this` is pointer to `C` with the {term}`cv-qualifiers <cv-qualifier>`
 of the member function. A program can also use `this` in a default
 member initializer and in the trailing return type of a member function.
 :::
@@ -593,7 +593,7 @@ Linux targets in the matrix, `'ab'` is `0x6162` and `char` is signed.
 
 Whether two string literals with the same characters are the same
 object is unspecified. The same rule applies to two evaluations of one
-string literal. Constant evaluation rejects a comparison of the
+string literal. {term}`Constant evaluation <constant evaluation>` rejects a comparison of the
 addresses of such literals ({question}`Q-0033`).
 :::
 

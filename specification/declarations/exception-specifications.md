@@ -73,11 +73,11 @@ cycle that an implementation need not detect.
 :::{principle} EXS-P5
 :rules: EXS-9 EXS-10
 
-A template can make the specifier depend on its template arguments, so
+A template can make the specifier depend on its {term}`template arguments <template argument>`, so
 that each {term}`specialization` makes its own promise. A copy of a
 container, for example, can be non-throwing exactly when the copy of an
 element is. The implementation works out the specifier of a
-specialization only when a use needs it. So a class template can
+specialization only when a use needs it. So a {term}`class template` can
 declare a member whose operand is not valid for some arguments, and the
 program stays valid while no use needs that specifier.
 :::
@@ -90,7 +90,7 @@ program stays valid while no use needs that specifier.
 ```
 
 The specifier follows the parameter list and the qualifiers of a
-function declarator. `noexcept` alone means `noexcept(true)`. A function
+function {term}`declarator`. `noexcept` alone means `noexcept(true)`. A function
 with `noexcept(true)` is a *non-throwing* function.
 
 ## Constraints
@@ -157,7 +157,7 @@ non-throwing when the overridden function is not.
 A function without a `noexcept` specifier is not non-throwing, with
 these exceptions:
 
-- An implicit or defaulted special member function, or a defaulted
+- An implicit or defaulted {term}`special member function`, or a defaulted
   comparison, is non-throwing if each function that it calls for bases
   and members is non-throwing ({question}`Q-0095` for comparisons). A
   default member initializer that the function uses counts too. A

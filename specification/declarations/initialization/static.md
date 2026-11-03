@@ -46,7 +46,7 @@ Two forms make a variable safe to read from another unit's initializer:
 
 | Form | Why the order does not matter |
 |---|---|
-| a constant initializer, checked with `constinit` | The variable has its value before any code runs (SINIT-1, {rule}`CINIT-1`). |
+| a {term}`constant initializer`, checked with `constinit` | The variable has its value before any code runs (SINIT-1, {rule}`CINIT-1`). |
 | a block-scope `static` variable in a function that returns a reference to it | The first call initializes the variable ({rule}`STO-2`), so every caller gets a finished object. |
 
 The initializer of such a block-scope variable must not call its own
@@ -77,7 +77,7 @@ definitions. An `inline` variable is ordered only after an earlier
 `inline` variable that comes first in every translation unit that
 defines both. The order of an `inline` variable with other variables is
 unspecified (SINIT-3). Before its initializer runs, a variable of
-scalar type holds zero, so a pointer is null and a `bool` is `false`
+{term}`scalar type` holds zero, so a pointer is null and a `bool` is `false`
 (STO-3). A member of a class object has no value
 until the initialization of the object gives the member one
 ({rule}`OBJ-2`, {question}`Q-0175`).

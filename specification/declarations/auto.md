@@ -39,7 +39,7 @@ deduced type.
 | `auto&` | Makes a reference, so the reference keeps the initializer's type whole, with its qualifiers and without decay. The reference needs something to refer to. |
 | `auto&&` | Binds to anything. The reference becomes an lvalue or an rvalue reference as the initializer is one or the other. |
 | `const`, `volatile`, `*` | Adds to the deduced type as it would to a written one. |
-| A concept before `auto` | Checks the result. |
+| A {term}`concept` before `auto` | Checks the result. |
 
 :::
 
@@ -60,7 +60,7 @@ initializer.
 :::{principle} AUTO-P4
 :rules: AUTO-8 AUTO-9 AUTO-22 AUTO-11 AUTO-15
 
-Deduction must have exactly one answer. These constraints follow from
+{term}`Deduction <deduction>` must have exactly one answer. These {term}`constraints <constraint>` follow from
 the principle:
 
 - The variable needs an initializer.
@@ -203,7 +203,7 @@ In `auto x = { ... };` (AUTO-7):
 - each element must give the same `T`,
 - the list must not be empty,
 - a declaration of `std::initializer_list` with the shape that
-  {rule}`LSUP-1` gives must come first. An empty class template does not
+  {rule}`LSUP-1` gives must come first. An empty {term}`class template` does not
   have that shape.
 :::
 
@@ -216,9 +216,9 @@ A variable declared with `auto` must:
 - have an initializer,
 - not occur in its own initializer,
 - not have an initializer of type `void`,
-- not have as its initializer the name of an overload set that
+- not have as its initializer the name of an {term}`overload set` that
   {rule}`OVL-20` does not reduce to one function. The name of a function
-  template without template arguments is such a set. With arguments that
+  template without {term}`template arguments <template argument>` is such a set. With arguments that
   fix every template parameter, the name names one function.
 - not combine `auto` with another type specifier,
 - not be an array of `auto`.

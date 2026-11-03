@@ -31,7 +31,7 @@ xvalue, and anything else gives a prvalue.
 A prvalue is not an object until something needs an object. If a prvalue
 initializes an object of its own type, that object is the result, and no
 copy and no move takes place. There is no object to copy from. The
-language makes a temporary object from a prvalue only where an object
+language makes a {term}`temporary object` from a prvalue only where an object
 is unavoidable:
 
 - a reference binds to the prvalue,
@@ -39,19 +39,19 @@ is unavoidable:
 - an array becomes a pointer,
 - a class value is discarded.
 
-Constant evaluation follows the same model.
+{term}`Constant evaluation <constant evaluation>` follows the same model.
 :::
 
 :::{principle} VC-P3
 :rules: VC-6 VC-9
 
-A temporary object lives to the end of the full expression that made it,
+A temporary object lives to the end of the {term}`full expression` that made it,
 and temporaries of one full expression end in the reverse of their
-order of creation. The lifetime of every temporary therefore follows
+order of creation. The {term}`lifetime` of every temporary therefore follows
 from where full expressions begin and end. Each of the following is a
 separate full expression:
 
-- the initializer of a declarator,
+- the initializer of a {term}`declarator`,
 - the initializer of a member,
 - a condition,
 - a `return` expression,
@@ -67,8 +67,8 @@ alive longer (REF-4).
 
 The implementation keeps some freedom when a program passes or returns
 by value. The caller makes and ends each parameter object, so an
-exception from either step belongs to the caller. The implementation can make an extra copy of a trivially
-copyable argument or return value, and it chooses when a parameter
+exception from either step belongs to the caller. The implementation can make an extra copy of a {term}`trivially copyable`
+argument or return value, and it chooses when a parameter
 object ends. A program must not depend on the address of such an object
 or on the point where the object is destroyed.
 :::
@@ -114,7 +114,7 @@ These expressions are prvalues:
 - a member access that names a non-static member function. Such an
   expression can only be called ({rule}`PFX-20`).
 
-A prvalue of a type that is not a class type has no cv-qualifiers. So a
+A prvalue of a type that is not a class type has no {term}`cv-qualifiers <cv-qualifier>`. So a
 function can declare a return type such as `const int`, and a call to
 the function still gives a plain `int`. A class prvalue can be assigned
 to, because the assignment is a call of a member function. ASN-6 covers

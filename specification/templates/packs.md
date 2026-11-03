@@ -44,7 +44,7 @@ The pack kinds are these:
 | Kind | Declared as | An element is | Rule |
 |---|---|---|---|
 | type pack | `class... T` | a type | {rule}`TPL-30` |
-| type pack that expands an outer pack | `Same<T>... U` | a type, with the constraint of one outer element | PACK-26 |
+| type pack that expands an outer pack | `Same<T>... U` | a type, with the {term}`constraint` of one outer element | PACK-26 |
 | constant pack | `int... N` | a constant value | {rule}`TPL-36` |
 | template pack | `template <class> class... W` | a template | {rule}`TPL-12` |
 | function parameter pack | `T... p`, `auto... p` | a function parameter | PACK-1 |
@@ -55,8 +55,9 @@ the expansion in place, and a list of no elements leaves the construct
 in its form with nothing in that place (PACK-9). The lengths of the
 packs in one pattern must agree, because each copy takes one element of
 each pack (PACK-6). A name of a pack outside any pattern has no meaning,
-so it is an error (PACK-8). In the substitution into the type of a
-function template, such an error removes the template from the
+so the program is not valid (PACK-8). In the substitution into the type
+of a {term}`function template`, lengths that do not agree are a
+{term}`substitution failure`, which removes the template from the
 candidates (PACK-27).
 :::
 
@@ -72,7 +73,7 @@ that list:
 |---|---|---|---|
 | call arguments | `f(p...)` | an argument | PACK-13 |
 | braced list | `{p...}` | an element of the list | PACK-13 |
-| template arguments | `List<T...>` | a template argument | PACK-10, {rule}`TSP-9` |
+| {term}`template arguments <template argument>` | `List<T...>` | a template argument | PACK-10, {rule}`TSP-9` |
 | function parameters | `void f(T... p)` | a parameter | PACK-1 |
 | template parameters | `template <T... N>`, `template <Same<T>... U>` | a template parameter | {rule}`TPL-36`, PACK-26 |
 | base list | `struct D : B...` | a base class | PACK-14 |
@@ -92,7 +93,7 @@ expand the same pack through them (PACK-8).
 :exceptions: PACK-31
 
 A function template often passes its arguments on to another
-function. A {term}`forwarding reference` `T&&` keeps the value category
+function. A {term}`forwarding reference` `T&&` keeps the {term}`value category`
 of its argument in the deduced `T`. A reference added to a reference
 type then collapses into one reference ({rule}`DCL-4`):
 
@@ -102,7 +103,7 @@ type then collapses into one reference ({rule}`DCL-4`):
 | xvalue or prvalue of type `A` | `A` | `A&&` | xvalue |
 
 The cast follows `T`: an lvalue reference type `T` gives an lvalue, and
-any other `T` gives an xvalue (PACK-23). Deduction sets `T` from the
+any other `T` gives an xvalue (PACK-23). {term}`Deduction <deduction>` sets `T` from the
 argument, so the cast gives the argument back with its value category.
 A pack `T&&... x` does the same for each element on its own (PACK-22).
 `auto&&` follows the same table ({rule}`AUTO-4`), and the cast then
@@ -117,10 +118,10 @@ names `decltype(x)`.
 :kind: required
 :tests: templates/packs/function-pack-forms.cpp templates/packs/function-pack-array-and-unnamed.cpp
 
-A function parameter whose declarator has `...` before its name, or at
+A function parameter whose {term}`declarator` has `...` before its name, or at
 the end with no name, is a {term}`function parameter pack`. The type of
 the parameter is a pattern ({term}`pack expansion`). The pattern can be
-any declarator, and it names a template parameter pack or holds `auto`.
+any declarator, and it names a {term}`template parameter pack` or holds `auto`.
 :::
 
 :::{rule} PACK-2
@@ -162,11 +163,11 @@ before the pack can have default arguments.
 :kind: required
 :tests: templates/packs/member-template-pack-expansion.cpp templates/packs/member-template-pack-length.cpp
 
-A template parameter pack of a member template can expand a pack of an
+A template parameter pack of a {term}`member template` can expand a pack of an
 enclosing template ({rule}`TPL-36`):
 
-- a type parameter pack whose type constraint names the outer pack,
-- a template template parameter pack whose own parameter list names the
+- a {term}`type parameter` pack whose {term}`type constraint` names the outer pack,
+- a {term}`template template parameter` pack whose own parameter list names the
   outer pack.
 
 Element number i takes its constraint or its parameter list from element
@@ -200,7 +201,8 @@ function template.
 :tests: templates/packs/lengths-differ-substitution.cpp templates/packs/void-element-substitution.cpp
 
 If substitution into the type of a function template breaks PACK-6 or
-PACK-28, substitution fails ({rule}`DED-24`). The template then adds no
+PACK-28, the result is a {term}`substitution failure` ({rule}`DED-24`).
+The template then adds no
 candidate, and overload resolution can choose another candidate.
 :::
 
@@ -248,7 +250,7 @@ type `void`. A list of one `void` is empty only in the written form
 :kind: required
 :tests: templates/packs/expansion-to-fixed-parameters.cpp templates/packs/expansion-to-fixed-constant-parameters.cpp
 
-An expansion in the argument list of a class template can give
+An expansion in the argument list of a {term}`class template` can give
 arguments to parameters that are not packs. The arguments are matched
 with the parameters after substitution, and {rule}`TARG-6` then
 applies.
@@ -258,7 +260,7 @@ applies.
 :kind: reject
 :tests: templates/packs/expansion-to-alias-parameters.cpp templates/packs/expansion-to-concept-parameters.cpp
 
-An expansion in the argument list of an alias template or a concept
+An expansion in the argument list of an {term}`alias template` or a {term}`concept`
 must not give an argument to a parameter that is not a pack
 ({question}`Q-0271`, {question}`Q-0272`).
 :::
@@ -269,8 +271,8 @@ must not give an argument to a parameter that is not a pack
 :kind: required
 :tests: templates/packs/nondeduced-before-end.cpp templates/packs/nondeduced-before-end-call.cpp templates/packs/nondeduced-before-end-partial.cpp templates/packs/nondeduced-before-end-function-type.cpp
 
-In every deduction from a type, also in the match of a partial
-specialization ({rule}`TSP-14`, {question}`Q-0273`), a list with an
+In every deduction from a type, also in the match of a {term}`partial specialization`
+({rule}`TSP-14`, {question}`Q-0273`), a list with an
 expansion before its end is a {term}`non-deduced position`
 ({rule}`DED-13`). The list is one of these:
 
@@ -421,7 +423,7 @@ arises for an lvalue argument only ({rule}`DED-8`).
 
 A reference added to a reference type collapses as {rule}`DCL-4` gives.
 The rule applies to a type from an alias, a template argument, or
-`decltype`. A cv-qualifier on such a reference type has no effect.
+`decltype`. A {term}`cv-qualifier` on such a reference type has no effect.
 :::
 
 ### Capture modes of packs
@@ -445,7 +447,7 @@ A use of a name in a class template is not valid if both of these hold:
 
 - At the definition, the name finds a using-declarator expanded over a
   pack (PACK-21).
-- The pack of the instantiation has no elements.
+- The pack of the {term}`instantiation` has no elements.
 
 An implementation need not diagnose the error ({question}`Q-0274`).
 :::

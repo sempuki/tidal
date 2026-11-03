@@ -182,7 +182,7 @@ A capture list must obey these rules:
 - Only a variable with {term}`automatic storage` can be captured.
 - A lambda outside a function must not have a capture default, except in
   a default member initializer.
-- A variable of abstract class type ({rule}`VIRT-8`) cannot be captured
+- A variable of {term}`abstract class` type ({rule}`VIRT-8`) cannot be captured
   by copy.
 :::
 
@@ -196,7 +196,7 @@ apply:
 
 - Init captures are initialized in order with the other explicit
   captures (LAM-28).
-- The temporaries of the initializer end with the full expression that
+- The temporaries of the initializer end with the {term}`full expression` that
   contains the lambda expression ({rule}`VC-9`).
 - An init capture by reference that binds to a temporary makes the
   temporary live as long as the closure object.
@@ -241,7 +241,7 @@ Static and global variables need no capture.
 A lambda without captures converts to a pointer to a function with the
 same parameters and return type. For a `noexcept` lambda, the pointer is
 a pointer to a `noexcept` function. A generic lambda without captures
-converts to a pointer to function of any type that deduction from the
+converts to a pointer to function of any type that {term}`deduction` from the
 call operator template can match, as for a target type
 ({rule}`OVL-18`). Constant evaluation can use the conversion, and a call
 through the pointer if the call operator is `constexpr` ({rule}`LAM-12`).
@@ -293,8 +293,8 @@ program can call such a lambda during {term}`constant evaluation`.
 
 A lambda declared `static` has a static call operator. The closure
 also converts to a pointer to function ({rule}`LAM-10`). A call of the
-closure object chooses the static call operator over the surrogate
-candidate from that conversion ({rule}`OVL-25`).
+closure object chooses the static call operator over the {term}`surrogate candidate`
+from that conversion ({rule}`OVL-25`).
 :::
 
 :::{rule} LAM-27

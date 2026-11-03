@@ -183,9 +183,9 @@ not evaluated.
 :kind: required
 :tests: expressions/logical/left-before-right.cpp expressions/logical/temporaries-end-with-full-expression.cpp
 
-The left operand is evaluated completely, with all its side effects,
+The left operand is evaluated completely, with all its {term}`side effects <side effect>`,
 before the right operand starts. A temporary that the left operand
-creates lives to the end of the full expression ({rule}`VC-6`).
+creates lives to the end of the {term}`full expression` ({rule}`VC-6`).
 :::
 
 :::{rule} LOG-11

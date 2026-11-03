@@ -17,8 +17,8 @@ accessible overload that loses never rescues a call. Only names are
 checked. The following carry no name to check:
 
 - a deduced type,
-- the final overrider of a virtual call,
-- the declarator of a member defined outside its class.
+- the {term}`final overrider` of a virtual call,
+- the {term}`declarator` of a member defined outside its class.
 
 A default argument is checked where the function is declared, because
 the names in the default argument are written there.
@@ -134,7 +134,7 @@ of {rule}`OVL-37`.
 Access control applies to names. Access control does not apply in these
 cases:
 
-- A type that comes from deduction, for example with `auto`, and is not
+- A type that comes from {term}`deduction`, for example with `auto`, and is not
   named.
 - The final overrider of a virtual function call. The access of the
   function that the call names applies.
@@ -187,7 +187,7 @@ access.
 :tests: classes/access/hidden-friend.cpp foundations/names/adl-friend-declared-later.cpp foundations/names/adl-friend-in-namespace.cpp foundations/names/qualified-hidden-friend.cpp classes/access/hidden-friend-declared-before-use.cpp classes/access/hidden-friend-block-declaration.cpp classes/access/hidden-friend-qualified-after-declaration.cpp
 
 A friend function that is first declared in a class is a member of the
-enclosing namespace. Argument-dependent lookup ({rule}`NAM-29`) finds
+enclosing namespace. {term}`Argument-dependent lookup <argument-dependent lookup>` ({rule}`NAM-29`) finds
 the function. Ordinary and qualified lookup find the function in these
 places only:
 

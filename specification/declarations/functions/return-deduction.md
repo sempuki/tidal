@@ -112,7 +112,7 @@ If a `decltype(auto)` function returns a parenthesized local variable
 with {term}`automatic storage`, the return type is an rvalue reference
 to it (CPY-11). For a `static` local or a global variable, the return
 type is an lvalue reference. A use of the rvalue reference is
-undefined, and constant evaluation rejects the use ({rule}`CE-9`).
+undefined, and {term}`constant evaluation` rejects the use ({rule}`CE-9`).
 :::
 
 ## Examples

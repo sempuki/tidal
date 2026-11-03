@@ -67,7 +67,7 @@ object can hold the address of the next object in memory, and whether
 the two pointers compare equal is unspecified. The rows of an array of
 arrays have no gap between them, so the position past the end of one
 row equals the first element of the next row. Two pointers to members
-are equal when they select the same member of the same subobject.
+are equal when they select the same member of the same {term}`subobject`.
 :::
 
 :::{principle} CMP-P4
@@ -89,7 +89,7 @@ runs.
 | Result | Used where | Examples |
 |---|---|---|
 | `strong_ordering` | Equal values are the same | Integers, object pointers |
-| `partial_ordering` | Some values are unordered, or equal values can differ | Floating-point types, with NaN as the unordered case |
+| `partial_ordering` | Some pairs of values have no order, or equal values can differ | Floating-point types, where NaN has no order with any value |
 
 Because `<=>` stands in for all six comparisons, its operands must be
 comparable without loss. Whether a conversion loses a value can depend

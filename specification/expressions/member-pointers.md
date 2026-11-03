@@ -33,9 +33,9 @@ class the member belongs to without supplying an object.
 :rules: MPTR-3 MPTR-10
 
 `.*` and `->*` supply the missing object. The result is the member as if
-the member had been accessed on that object. The result takes its value
-category and its cv-qualifiers from the object, and a virtual function
-dispatches on the object's dynamic type. The object must be of the
+the member had been accessed on that object. The result takes its {term}`value category`
+and its {term}`cv-qualifiers <cv-qualifier>` from the object, and a virtual function
+dispatches on the object's {term}`dynamic type`. The object must be of the
 member's class or a class derived from the member's class, because only
 those objects have the member. A pointer to member function names no
 object by itself, so the result of applying the pointer exists only to
@@ -51,8 +51,8 @@ conversions between pointers to objects.
 | Conversion | Allowed by | Why |
 |---|---|---|
 | Base to derived | Implicit conversion | A pointer to a member of a base works with every derived object. |
-| Derived to base | `static_cast` only | A base object may lack the member. |
-| Through a virtual base | Nothing | The offset of the member is not known from the type. |
+| Derived to base | `static_cast` only | A base object can lack the member. |
+| Through a {term}`virtual base` | Nothing | The offset of the member is not known from the type. |
 | To an ordinary pointer, or between data members and member functions | Nothing | A pointer to member is not an address. |
 
 The qualifier rules follow those of ordinary pointers.
@@ -148,9 +148,9 @@ is `(*q).*p`. These rules apply:
   cv-qualifiers of `o`, also for a `mutable` member. The result is an
   lvalue if `o` is an lvalue and an xvalue if not.
 - For a member function, the result can only be called, as
-  `(o.*p)(args)`. The call uses the final overrider of a virtual
+  `(o.*p)(args)`. The call uses the {term}`final overrider` of a virtual
   function.
-- Constant evaluation can use both operators.
+- {term}`Constant evaluation <constant evaluation>` can use both operators.
 :::
 
 :::{rule} MPTR-10

@@ -109,7 +109,7 @@ Both operators bind more tightly than shifts and less tightly than `*`,
 :kind: required
 :tests: expressions/additive/operands-arithmetic.cpp expressions/additive/operands-mixed.cpp
 
-Both operators accept two operands of arithmetic type or unscoped
+Both operators accept two operands of {term}`arithmetic type` or unscoped
 enumeration type, in any combination.
 :::
 
@@ -122,7 +122,7 @@ The operands must have one of these forms:
 - two arithmetic or unscoped enumeration operands,
 - for `+`, a pointer and an integer, in either order,
 - for `-`, a pointer and then an integer,
-- for `-`, two pointers to the same type, ignoring cv-qualifiers.
+- for `-`, two pointers to the same type, ignoring {term}`cv-qualifiers <cv-qualifier>`.
 
 In this rule, an integer includes:
 

@@ -10,7 +10,7 @@ function call ({rule}`OPR-7`).
 :rules: MUL-1 MUL-2 MUL-3 MUL-4 MUL-5 MUL-15 MUL-19
 
 The multiplicative operators compute on numbers, so their operands are
-the arithmetic types and the unscoped enumerations, which convert to
+the {term}`arithmetic types <arithmetic type>` and the unscoped enumerations, which convert to
 integers. Nothing else is a number here, so an implementation rejects
 these operands:
 
@@ -56,7 +56,7 @@ hold has no value. The behavior is undefined in these cases:
   result,
 - a floating-point result beyond the range of its type.
 
-Constant evaluation rejects each of these cases ({principle}`TR-P4`).
+{term}`Constant evaluation <constant evaluation>` rejects each of these cases ({principle}`TR-P4`).
 :::
 
 :::{principle} MUL-P6

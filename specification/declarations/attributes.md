@@ -38,7 +38,7 @@ A standard attribute does not change what a valid program does.
 
 - A likelihood hint changes nothing.
 - A dependency hint changes nothing in a single thread.
-- An assumption is not evaluated, so its side effects never occur.
+- An assumption is not evaluated, so its {term}`side effects <side effect>` never occur.
 - Only `no_unique_address` can change a program's layout, and even
   `no_unique_address` keeps two members of one type at different
   addresses.
@@ -180,7 +180,7 @@ specifier, so each of those attributes must not have its own namespace.
 :tests: declarations/attributes/pointer-attribute-after-cv.cpp declarations/attributes/pointer-attribute-before-cv.cpp
 
 In a pointer declarator, an attribute specifier comes after the
-cv-qualifiers of the `*` ({question}`Q-0123`).
+{term}`cv-qualifiers <cv-qualifier>` of the `*` ({question}`Q-0123`).
 :::
 
 :::{rule} ATTR-19

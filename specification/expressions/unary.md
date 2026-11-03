@@ -73,7 +73,7 @@ is for `+` and `-`.
 :rules: UN-12 UN-13 UN-14 UN-15 UN-16 UN-17 UN-19
 
 `sizeof` and `alignof` ask a question about a type and answer it at
-translation time. Their operands are never evaluated, so side effects in
+translation time. Their operands are never evaluated, so {term}`side effects <side effect>` in
 the operands do not happen. The question needs a complete object type.
 These types have no size or alignment:
 
@@ -176,7 +176,7 @@ The operand of `&` must not be a prvalue or an xvalue.
 For prefix `++` and `--`, these conditions apply:
 
 - The operand must be an lvalue that the program can change.
-- The operand must have arithmetic type, other than `bool`, or be a
+- The operand must have {term}`arithmetic type`, other than `bool`, or be a
   pointer to an object.
 - The result is the operand itself, as an lvalue.
 :::
@@ -323,7 +323,7 @@ include:
 
 - a null pointer,
 - a pointer past the end of an array,
-- a pointer to an object whose lifetime has ended.
+- a pointer to an object whose {term}`lifetime` has ended.
 
 For a read or write of an object whose lifetime has ended,
 {rule}`OBJ-2` is the rule that applies. The specific cases of UN-7 are

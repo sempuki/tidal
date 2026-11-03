@@ -22,7 +22,7 @@ Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 call the function ({principle}`TR-P4`), and the same function still
 runs at run time with the same meaning. The body can contain operations
 that constant evaluation cannot do, as long as no constant evaluation
-reaches them ({rule}`CE-17`). Because every translation unit that
+reaches them ({rule}`CE-17`). Because every {term}`translation unit` that
 evaluates the function needs its body, the function is `inline`. The
 specifier applies to functions and variables only, and all
 declarations of a function must agree on it.
@@ -82,7 +82,7 @@ declaration, such as an `extern` declaration in a header, can carry
 A `constexpr` variable is `const`, and it must obey these rules:
 
 - The variable must have an initializer, unless it has class type and a
-  `constexpr` default constructor gives every member a value. An
+  `constexpr` {term}`default constructor` gives every member a value. An
   implicit default constructor does so when CTOR-4 holds for the class.
 - Its initialization must be a constant expression.
 - Its type must be a {term}`literal type` (CE-23).
@@ -160,7 +160,7 @@ These functions take on `consteval` from their bodies:
 - a `constexpr` function produced from a template
   ({doc}`/templates/instantiation`),
 - a lambda without `consteval` on it,
-- a special member function that the class defaults.
+- a {term}`special member function` that the class defaults.
 
 If such a function calls a `consteval` function and the arguments are
 not constant, the calling function is treated as `consteval` too, and
@@ -177,7 +177,7 @@ release is not.
 
 A program can take the address of a `consteval` function only in an
 immediate function context. A target type that selects a `consteval`
-function from an overload set ({rule}`OVL-18`) takes its address.
+function from an {term}`overload set` ({rule}`OVL-18`) takes its address.
 :::
 
 :::{rule} CINIT-1
@@ -186,7 +186,7 @@ function from an overload set ({rule}`OVL-18`) takes its address.
 
 A `constinit` variable must have a {term}`constant initializer`. For a
 variable with no initializer, {rule}`CE-24` and {rule}`CE-21` say when
-the default initialization is one. `constinit` does not make the
+the {term}`default initialization` is one. `constinit` does not make the
 variable `const`, so the program can
 change the variable. `constinit` does not require a `constexpr`
 destructor.
@@ -244,7 +244,7 @@ extern constinit int first_ticket;  // constinit here is optional
 constinit int first_ticket = 100;   // constinit here is required
 ```
 
-A table built at compile time. A function cannot return an array, so
+A table built during translation. A function cannot return an array, so
 the table is a struct with an array member. The default member
 initializer gives every element a value ({rule}`CE-21`):
 

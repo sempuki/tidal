@@ -51,8 +51,8 @@ each of its members are {term}`pointer-interconvertible`, so a
 
 The union does not know which member is active, so the union cannot
 build, copy, or destroy its members on its own. When a member would need
-such an operation, the implementation deletes the union's special member
-functions and leaves the job to the union's own code
+such an operation, the implementation deletes the union's {term}`special member functions <special member function>`
+and leaves the job to the union's own code
 ({principle}`CPY-P3`).
 :::
 
@@ -98,7 +98,7 @@ the declared type or a constant does not fit.
 :rules: UNI-10 UNI-12 UNI-15 UNI-16
 
 Two types are *layout-compatible* when they have the same layout. Two
-standard-layout structs that start with members of layout-compatible
+{term}`standard-layout` structs that start with members of layout-compatible
 types place those members at the same offsets:
 
 ```text
@@ -115,8 +115,8 @@ offset 0        4
 
 A union of such structs can therefore read the shared start through
 either struct, so a tag at the start can say which struct is active.
-The read is an exception to UNI-P1 at run time only. Constant
-evaluation tracks the active member and rejects the read.
+The read is an exception to UNI-P1 at run time only. {term}`Constant evaluation <constant evaluation>`
+tracks the active member and rejects the read.
 :::
 
 ## Syntax
@@ -170,7 +170,7 @@ For a copy or move function, the function that the union's own copy or
 move selects for the member decides
 ({question}`Q-0339`):
 
-- a default constructor,
+- a {term}`default constructor`,
 - a copy or move function,
 - a destructor.
 
@@ -277,7 +277,7 @@ A bit-field must not:
   floating-point type or a scoped enumeration ({question}`Q-0313`),
 - have width 0 and a name.
 
-An unnamed bit-field must not have a cv-qualifier ({question}`Q-0058`).
+An unnamed bit-field must not have a {term}`cv-qualifier` ({question}`Q-0058`).
 :::
 
 :::{rule} BF-3
@@ -315,7 +315,7 @@ A bit-field promotes as follows:
 3. If neither can, the promotion uses the declared type of the
    bit-field, as for other integers.
 
-The type of the bit-field for `auto` deduction is the declared type.
+The type of the bit-field for `auto` {term}`deduction` is the declared type.
 :::
 
 :::{rule} BF-7

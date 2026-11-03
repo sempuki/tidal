@@ -31,7 +31,7 @@ The older cast notations are defined by the named casts.
 | Notation | Meaning |
 |---|---|
 | `(T)e`, `T(e)` | Tries the named casts in a fixed order and takes the first that works |
-| `T{e}` | List initialization, so it refuses to narrow |
+| `T{e}` | List initialization, so a narrowing conversion is not valid |
 | `T(a, b)` | Construction |
 | `auto(e)` | A plain prvalue copy |
 | `T()` | A value-initialized prvalue |
@@ -47,8 +47,8 @@ accessible.
 original value. The implementation decides what the bits mean in
 between. So the integer that a pointer becomes, and whether a function
 pointer can become an object pointer at all, are implementation-defined.
-Constant evaluation refuses the cast because constant evaluation has no
-bits to show. The rules on raw storage say when a program can read or
+The cast is not valid in {term}`constant evaluation`, because constant
+evaluation has no bits to show. The rules on raw storage say when a program can read or
 write an object through the result ({rule}`STG-14`, {rule}`STG-16`).
 :::
 
@@ -104,7 +104,7 @@ is undefined:
 `static_cast` must not:
 
 - convert between unrelated pointer types,
-- remove a cv-qualifier,
+- remove a {term}`cv-qualifier`,
 - convert a pointer to an integer,
 - convert an integer other than a null pointer constant to a pointer,
 - convert between a pointer to a function and a pointer to an object,
@@ -202,7 +202,7 @@ not accessible. `static_cast` cannot.
 :kind: required
 :tests: expressions/casts/functional-empty-parens.cpp expressions/casts/functional-braced-unknown-bound.cpp
 
-`T()` value-initializes a prvalue of type `T`. For a scalar type the
+`T()` value-initializes a prvalue of type `T`. For a {term}`scalar type` the
 value is zero, and `void()` is a `void` expression. `T{...}` with an
 array type of unknown bound gives an array with one element for each
 value.
@@ -266,7 +266,7 @@ The behavior is undefined in these cases:
 - `static_cast` converts a value outside the range of an enumeration
   without a fixed underlying type ({rule}`ENUM-6`, {question}`Q-0017`).
 - A `static_cast` to a derived class `D` applies to an object that is
-  not a base subobject of a `D`.
+  not a base {term}`subobject` of a `D`.
 :::
 
 ## Implementation Requirements

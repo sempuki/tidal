@@ -22,8 +22,8 @@ definitions, constant evaluation, name lookup.
 ## Principles
 
 :::{principle} TPL-P1
-:rules: TPL-1 TPL-22 TPL-23 TPL-24 TPL-26 TPL-28 TPL-42 TPL-44 TPL-45 TPL-46 TPL-47 TPL-48
-:exceptions: TPL-29 TPL-31 TPL-43
+:rules: TPL-1 TPL-22 TPL-26 TPL-28 TPL-45 TPL-46
+:exceptions: TPL-29 TPL-31
 
 A template is a pattern for a family of entities. The template head
 lists the parameters, and the declaration after the head is the
@@ -47,17 +47,29 @@ The declaration after the head decides the kind of template:
 | a variable | {term}`variable template` | a variable | TPL-26 |
 | `using` name `=` type | {term}`alias template` | the type that the alias gives, with no new type | TPL-28 |
 | a member of a class | {term}`member template` | a member | TPL-24 |
+:::
+
+:::{principle} TPL-P5
+:rules: TPL-23 TPL-24 TPL-42 TPL-44 TPL-47
+:exceptions: TPL-25 TPL-27 TPL-43
 
 A member of a class template is not a template of its own. The member
 is part of each specialization of the class, so a definition outside
 the class repeats the class's head (TPL-23). Each specialization has
 its own copy of each member, including the `static` data members
 (TPL-47).
+
+A {term}`member template` has a head of its own. A definition outside a
+class template then has two heads, the class's head first (TPL-24). A
+member function template gives functions of its own, so a call can
+choose between it and a plain member function (TPL-44). A member
+function template is never virtual, and a data member that is not
+`static` is never a template (TPL-25, TPL-27).
 :::
 
 :::{principle} TPL-P2
-:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-49 TPL-11 TPL-12 TPL-30 TPL-32 TPL-36
-:exceptions: TPL-7 TPL-10 TPL-33 TPL-35
+:rules: TPL-5 TPL-6 TPL-8 TPL-9 TPL-49 TPL-11 TPL-12 TPL-32
+:exceptions: TPL-7 TPL-10 TPL-33
 
 Each template parameter has a kind, and the kind decides what an
 argument for it must be:
@@ -68,12 +80,23 @@ argument for it must be:
 | {term}`constant parameter` | `int N`, `auto V`, `Point P` | a constant of the declared type | a value: a prvalue, or an lvalue for a reference or class type |
 | {term}`template template parameter` | `template <class> class C` | a class template or alias template | a template |
 
-A constant parameter holds a value that is known at compile time.
+A constant parameter holds a value that is known during translation.
 Two arguments must be easy to compare, so that the implementation can
-tell whether two template-ids name one specialization. The type of a
+tell whether two {term}`template-ids <template-id>` name one specialization. The type of a
 constant parameter is therefore limited to a {term}`structural type`.
+:::
+
+:::{principle} TPL-P7
+:rules: TPL-30 TPL-36
+:exceptions: TPL-35
+
 A {term}`template parameter pack`, written with `...`, takes any number
-of arguments of its kind.
+of arguments of its kind. In the primary declaration of a class
+template or a variable template, and in an alias template, the pack
+comes last (TPL-30). A function template can have parameters after a
+pack, if {term}`deduction` or a default gives each of them a value (TPL-35). A
+constant pack can take its type from a type pack of an enclosing
+template (TPL-36).
 :::
 
 :::{principle} TPL-P3
@@ -91,16 +114,24 @@ can come in any order.
 :::
 
 :::{principle} TPL-P4
-:rules: TPL-19 TPL-20 TPL-21
-:exceptions: TPL-2 TPL-3 TPL-4 TPL-18 TPL-25 TPL-27 TPL-41
+:rules: TPL-19 TPL-48
+:exceptions: TPL-18 TPL-41
 
 A template parameter is a name in its own scope. The scope starts at the
 parameter and ends at the end of the template's declaration. The name
 hides the same name outside, and no declaration inside the template can
 reuse the name. In a member definition outside the class, the members
-of the class and of its bases come first (TPL-41). Several declarations
-of one template must agree on the parameters: their number, their
-kinds, and the types of the constant parameters. The names can differ.
+of the class and of its bases come first (TPL-41).
+:::
+
+:::{principle} TPL-P6
+:rules: TPL-20 TPL-21
+:exceptions: TPL-2 TPL-3 TPL-4
+
+Several declarations of one template must agree on the parameters:
+their number, their kinds, and the types of the constant parameters.
+The names can differ (TPL-20). The declaration after a head declares
+exactly one entity (TPL-4).
 
 Templates are declared only at namespace scope and in classes that are
 not local:
@@ -170,7 +201,7 @@ friend template.
 :kind: reject
 :tests: templates/declarations/c-linkage.cpp templates/declarations/c-linkage-explicit.cpp templates/declarations/c-linkage-partial.cpp
 
-A template, an explicit specialization, and a partial specialization
+A template, an {term}`explicit specialization`, and a {term}`partial specialization`
 must not have C language linkage ({rule}`LSP-1`).
 :::
 
@@ -182,7 +213,7 @@ The declaration after a template head must declare exactly one named
 entity. These declarations are not valid after a template head:
 
 - a `typedef` declaration,
-- a declaration with two or more declarators,
+- a declaration with two or more {term}`declarators <declarator>`,
 - a class without a name,
 - a class definition followed by a declarator, such as a variable
   name. A declaration of a class template declares no other entity.
@@ -296,7 +327,7 @@ parameter ({rule}`DCL-8`).
 :tests: templates/declarations/constant-parameter-category.cpp templates/declarations/constant-parameter-class-address.cpp templates/declarations/constant-parameter-shared-object.cpp templates/declarations/parameter-object-address-constant.cpp templates/declarations/parameter-object-not-destroyed.cpp
 
 In the template, the name of a constant parameter is an expression with
-this value category:
+this {term}`value category`:
 
 | Type of the parameter | The name is |
 |---|---|
@@ -305,7 +336,7 @@ this value category:
 | any other type | a prvalue with the argument's value |
 
 For a class type, all uses with equal arguments refer to one object
-with static storage duration. The object is the same in the whole
+with static {term}`storage duration`. The object is the same in the whole
 program, also for parameters of two different templates.
 :::
 
@@ -324,7 +355,7 @@ different addresses.
 :kind: reject
 :tests: templates/declarations/constant-parameter-assign.cpp templates/declarations/constant-parameter-address.cpp
 
-A program must not assign to a constant parameter of scalar type or
+A program must not assign to a constant parameter of {term}`scalar type` or
 take its address, because the name is a prvalue (TPL-9).
 :::
 
@@ -424,7 +455,7 @@ of template.
 
 In a template head, the default of a constant parameter ends at the
 first `>` that is not inside parentheses, brackets, or braces, as a
-template argument does ({rule}`TARG-3`). A `>` operator in such a
+{term}`template argument` does ({rule}`TARG-3`). A `>` operator in such a
 default must be in parentheses.
 :::
 
@@ -479,7 +510,7 @@ argument, unless the declaration is a definition of a function template
 
 A friend function template that is defined in a class can give default
 template arguments. That definition must be the only declaration of the
-function template in the translation unit ({question}`Q-0197`).
+function template in the {term}`translation unit` ({question}`Q-0197`).
 :::
 
 ### Scope and redeclaration
@@ -517,7 +548,7 @@ with that name. These declarations are not valid:
 - a variable with the name in the body of a function template,
 - a class template with the name of its own parameter.
 
-TPL-48 gives the case of a friend function. {rule}`CPT-29` names the specific case of a requires expression
+TPL-48 gives the case of a friend function. {rule}`CPT-29` names the specific case of a {term}`requires expression`
 parameter (decision 0042).
 :::
 
@@ -544,7 +575,7 @@ parameters at one position has:
 - for template template parameters, equivalent heads, by this rule.
 
 For function templates, a declaration whose head is not equivalent
-declares another template (TPL-22). The constraints must also be
+declares another template (TPL-22). The {term}`constraints <constraint>` must also be
 equivalent ({rule}`CNS-26`, {rule}`CNS-27`).
 :::
 

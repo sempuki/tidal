@@ -73,15 +73,15 @@ which kind it is and how strong it is:
 | `conditionally-supported` | fact | An implementation can reject the construct. If the implementation accepts the construct, it documents the behavior. |
 | `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
-A diagnostic for a `recommended` rule is a warning. The warning does
-not make the program invalid, and a program can ask the implementation
+A diagnostic for a `recommended` rule is a warning. The warning
+leaves the program valid, and a program can ask the implementation
 to treat the warning as an error.
 :::
 
 :::{principle} TR-P2
 :rules: TR-4
 
-Each translation unit is translated on its own, with only the
+Each {term}`translation unit` is translated on its own, with only the
 declarations it contains, and the units are then linked into one
 program:
 
@@ -97,7 +97,7 @@ So the following facts hold:
 
 - A name that one unit uses and another defines needs a declaration in
   the first unit.
-- A name with internal linkage is a different entity in each unit.
+- A name with internal {term}`linkage` is a different entity in each unit.
 - A name that is used but defined nowhere is found out only when the
   program is linked.
 
@@ -143,7 +143,7 @@ for the same reason.
 Undefined behavior is the point where the abstract machine has no next
 step. From there this specification requires nothing of the execution,
 including the parts that came before, because the implementation was
-free to reorder them. Constant evaluation runs the abstract machine
+free to reorder them. {term}`Constant evaluation <constant evaluation>` runs the abstract machine
 exactly, so constant evaluation stops at that point and the program is
 rejected, even when the value that the undefined step produced is never
 used.

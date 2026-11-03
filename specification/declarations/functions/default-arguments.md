@@ -27,7 +27,7 @@ declarations in one scope add them up. Each later declaration can add
 defaults, and none can repeat one. A call matches arguments to
 parameters from the left, so defaults fill the parameter list from the
 right. A pointer to the function carries no default arguments, and an
-operator function has no use for them. Across translation units, an
+{term}`operator function` has no use for them. Across {term}`translation units <translation unit>`, an
 `inline` function must end up with the same defaults everywhere.
 :::
 
@@ -56,7 +56,7 @@ parameters must have one.
 
 After a parameter with a default argument, each later parameter must
 also have one, in this declaration or in an earlier declaration in the
-same scope. A function parameter pack ({rule}`PACK-4`) and an ellipsis
+same scope. A {term}`function parameter pack` ({rule}`PACK-4`) and an ellipsis
 are exempt.
 :::
 

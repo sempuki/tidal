@@ -26,20 +26,20 @@ dependent names, the one-definition rule.
 :rules: INST-1 INST-2 INST-4 INST-7 INST-8 INST-9 INST-10 INST-12 INST-13 INST-36
 :exceptions: INST-3 INST-11
 
-The implementation instantiates a specialization only when a use needs
+The implementation instantiates a {term}`specialization` only when a use needs
 its definition. A program can therefore name a specialization whose
 definition would not be valid, as long as no use needs that
 definition. A use needs the definition in these cases:
 
 | Entity | Instantiated by | Not instantiated by | Rule |
 |---|---|---|---|
-| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a template argument, a function declaration | INST-1, INST-2 |
+| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a {term}`template argument`, a function declaration | INST-1, INST-2 |
 | function | a call, taking the address, `decltype` of a call when the return type is deduced, a braced initializer that names a `constexpr` function | `decltype`, `sizeof`, or `noexcept` of a call otherwise | INST-7 |
-| `static` data member, variable template | a read or other use of the value | `decltype` | INST-8 |
+| `static` data member, {term}`variable template` | a read or other use of the value | `decltype` | INST-8 |
 | default argument | a call that leaves out the argument | a call that gives the argument, an explicit instantiation | INST-9 |
 | default member initializer | a constructor or an aggregate initialization that does not initialize the member | a constructor or an aggregate initialization that does | INST-10 |
 
-A discarded statement of `if constexpr` is not instantiated
+A {term}`discarded statement` of `if constexpr` is not instantiated
 ({rule}`IF-13`). An exception specification is instantiated when a use
 needs the specification ({rule}`EXS-9`).
 :::
@@ -58,13 +58,13 @@ The definitions of most members wait for a use:
 | default member initializer | no (INST-10) |
 | `static` data member | the declaration only (INST-8) |
 | nested class | the declaration only |
-| member template | the declaration only |
+| {term}`member template` | the declaration only |
 | unscoped enumeration | the whole definition |
 | scoped enumeration | the declaration only ({question}`Q-0232`) |
 
 An error in a declaration made with the class makes the use of the
 class not valid (INST-6). Such an error can come from the arguments, for
-example a `static` data member whose dependent type becomes a function
+example a `static` data member whose {term}`dependent type` becomes a function
 type. An error in a definition that waits makes
 only the use that needs the definition not valid.
 :::
@@ -74,7 +74,7 @@ only the use that needs the definition not valid.
 :exceptions: INST-19
 
 An explicit instantiation lets a program make the definitions of chosen
-specializations in one translation unit, and use them from the
+specializations in one {term}`translation unit`, and use them from the
 others:
 
 | Form | Effect | Rule |
@@ -155,7 +155,7 @@ nesting. A chain with no end exceeds every limit.
 ```
 
 The `declaration` declares one specialization, without a body or an
-initializer: a class with its class key and template-id, a function,
+initializer: a class with its class key and {term}`template-id`, a function,
 a member function, a `static` data member, or a variable whose name is
 a template-id. With `extern`, the form is an explicit instantiation
 declaration. Without `extern`, the form is an explicit instantiation
@@ -169,7 +169,7 @@ definition.
 :kind: required
 :tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp
 
-A specialization of a class template is instantiated when a use needs
+A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
 use. These uses instantiate the class:
 
@@ -180,7 +180,7 @@ use. These uses instantiate the class:
 - the definition of a function whose parameter or return type is the
   class,
 - a call to a function that returns the class,
-- a deduction that searches the bases of the class ({rule}`DED-15`).
+- a {term}`deduction` that searches the bases of the class ({rule}`DED-15`).
 :::
 
 :::{rule} INST-2
@@ -198,8 +198,7 @@ without its instantiation.
 
 If the class template is declared and not yet defined at a use that
 needs a complete class, the specialization is incomplete there. The
-use is not valid ({rule}`TSP-20` gives the same for an explicit
-specialization).
+use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specialization`).
 :::
 
 :::{rule} INST-5
@@ -231,8 +230,8 @@ valid for the arguments of the specialization. These include:
 - each definition that a use or an explicit instantiation needs
   (INST-1, INST-7 to INST-10, INST-12, INST-17, INST-27).
 
-A member declared without a function declarator must not get a
-function type from the arguments. Two member partial specializations
+A member declared without a function {term}`declarator` must not get a
+function type from the arguments. Two member {term}`partial specializations <partial specialization>`
 must not become the same partial specialization ({question}`Q-0251`).
 :::
 
@@ -240,7 +239,7 @@ must not become the same partial specialization ({question}`Q-0251`).
 :kind: required
 :tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp
 
-A function template specialization or a member function of a class
+A {term}`function template` specialization or a member function of a class
 specialization is instantiated when a use needs its definition, such as
 a call or taking its address. `decltype`, `sizeof`, and `noexcept` of a
 call do not instantiate the function, except in these cases:
@@ -397,7 +396,7 @@ these allowances:
 - trailing template arguments that deduction finds can be left out
   ({rule}`DED-32`),
 - a function with a deduced return type is named with `auto`,
-- a variable template with a placeholder type is named with the
+- a variable template with a {term}`placeholder type` is named with the
   deduced type ({question}`Q-0256`),
 - the bound of an array type can be left out ({question}`Q-0236`).
 
@@ -420,7 +419,7 @@ class key. The key is `union` for a union template, and `class` or
 :kind: reject
 :tests: templates/instantiation/explicit-implicit-member.cpp templates/instantiation/explicit-implicit-destructor.cpp
 
-An explicit instantiation must not name a special member function that
+An explicit instantiation must not name a {term}`special member function` that
 the implementation declares implicitly.
 :::
 
@@ -467,7 +466,7 @@ instantiated:
 :tests: templates/instantiation/explicit-declaration-internal.cpp templates/instantiation/explicit-definition-internal.cpp templates/instantiation/explicit-declaration-internal-class.cpp templates/instantiation/explicit-declaration-internal-variable.cpp
 
 An explicit instantiation declaration must not name a specialization
-with internal linkage. An explicit instantiation definition can
+with internal {term}`linkage`. An explicit instantiation definition can
 ({question}`Q-0234`).
 :::
 
@@ -509,7 +508,7 @@ points of instantiation:
 A use inside a function counts at the namespace-scope declaration that
 holds the function, also when the function is not a template. A use can
 see the declarations up to the last point, and INST-32 applies where
-the points differ. A constant evaluation that needs a declaration after
+the points differ. A {term}`constant evaluation` that needs a declaration after
 the first point is such a case ({question}`Q-0257`).
 :::
 

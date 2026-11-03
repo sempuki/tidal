@@ -30,7 +30,7 @@ scope is one of these:
 - a function's parameter list,
 - a class body,
 - a namespace,
-- the whole translation unit.
+- the whole {term}`translation unit`.
 
 A declaration puts its name into the scope that contains it, and the
 name is visible from that point to the end of the scope. Before that
@@ -197,7 +197,7 @@ function. Each construct has its own order:
 | `f(a)` in a member function | found by ordinary lookup, which stops at the class | found by ordinary lookup outside the class; argument-dependent lookup only if no member is found | {rule}`NAM-32`, {rule}`OVL-2` |
 | `x @ y`, `@x` | the members of the left operand's class | lookup with class scopes passed over, and argument-dependent lookup | NAM-38, {rule}`OVL-7` |
 | range-based `for`: `begin`, `end` | used if the class has both names as members, of any kind | otherwise argument-dependent lookup only | {rule}`RFOR-2` |
-| structured binding: `get` | used if member lookup finds a member function template | otherwise argument-dependent lookup only | {rule}`SB-5` |
+| structured binding: `get` | used if member lookup finds a member {term}`function template` | otherwise argument-dependent lookup only | {rule}`SB-5` |
 
 In the operator row, members and free functions are candidates
 together. In the other rows, one source wins and the other is not
@@ -288,7 +288,7 @@ qualification (NAM-4).
 :kind: required
 :tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
 
-The lookup of non-member operator functions for an operator expression
+The lookup of non-member {term}`operator functions <operator function>` for an operator expression
 ({rule}`OVL-7`) searches outward from the use, as NAM-2 gives, and
 passes over each class scope. A block or a namespace that declares the
 operator function ends the search and hides the declarations outside
@@ -375,7 +375,7 @@ not look in these places:
 - the namespace that contains `C`,
 - a scoped enumeration in `C`.
 
-If the search finds `x` in two base subobjects, `C::x` is ambiguous.
+If the search finds `x` in two base {term}`subobjects <subobject>`, `C::x` is ambiguous.
 This ambiguity is a specific case of {rule}`DER-4` (decision 0042).
 :::
 
@@ -523,10 +523,10 @@ classes of all the arguments (NAM-29).
 | A pointer to `T`, an array of `T`, a reference to `T` | What `T` adds |
 | A function, or a pointer to a function | What the parameter types and the return type add |
 | A pointer to a member of `C` of type `T` | What `C` adds and what `T` adds |
-| A specialization of a class template ({rule}`TARG-19`) | Also the namespace of the template, what each type argument adds, and the namespace of each template argument that is a template |
+| A {term}`specialization` of a {term}`class template` ({rule}`TARG-19`) | Also the namespace of the template, what each type argument adds, and the namespace of each {term}`template argument` that is a template |
 | A lambda's closure type | The innermost namespace that contains the lambda, and the class whose body contains the lambda |
 | A class or enumeration declared in a function | The innermost namespace that contains the function |
-| A name of an overload set | What the type of each function adds. A function template adds what its parameter types and return type add, apart from the types that depend on its template parameters. For a template-id, see {question}`Q-0311` |
+| A name of an {term}`overload set` | What the type of each function adds. A function template adds what its parameter types and return type add, apart from the types that depend on its template parameters. For a {term}`template-id`, see {question}`Q-0311` |
 
 A class adds its associated namespaces also when the class is
 incomplete.

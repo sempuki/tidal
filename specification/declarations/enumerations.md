@@ -151,7 +151,7 @@ A scoped enumeration without `: type` has the underlying type `int`. A
 fixed underlying type comes after `:`. ENUM-17 lists what is not valid.
 
 The fixed underlying type can be `bool` or a character type. A
-cv-qualifier on the underlying type is ignored.
+{term}`cv-qualifier` on the underlying type is ignored.
 :::
 
 :::{rule} ENUM-17

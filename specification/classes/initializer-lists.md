@@ -21,8 +21,7 @@ destructors, overload resolution
 :rules: ILC-1 ILC-2 ILC-7
 
 For a class with constructors, a braced list is a constructor call. The
-elements are the arguments, and empty braces call the default
-constructor.
+elements are the arguments, and empty braces call the {term}`default constructor`.
 :::
 
 :::{principle} ILC-P2
@@ -42,7 +41,8 @@ the elements are tried as separate arguments
 ```
 
 Braces also promise that no value is silently cut down, so a narrowing
-conversion is an error and never a reason to try another constructor.
+conversion makes the program not valid and is never a reason to try
+another constructor.
 :::
 
 :::{principle} ILC-P3
@@ -141,7 +141,7 @@ narrow. Parentheses do not check narrowing.
 :tests: classes/initializer-lists/deduce-list-element-type.cpp classes/initializer-lists/function-param-list.cpp classes/initializer-lists/return-braced-list.cpp
 
 A function parameter of type `std::initializer_list<E>` accepts a braced
-list, also an empty one ({rule}`ICS-16`). A function template can deduce `E` if all
+list, also an empty one ({rule}`ICS-16`). A {term}`function template` can deduce `E` if all
 elements have the same type. A `return` statement with a braced list
 initializes a class return type through its constructors.
 :::

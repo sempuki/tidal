@@ -31,7 +31,7 @@ class's own operator, so the class decides what the left operand can be.
 
 A compound assignment `E1 op= E2` means `E1 = E1 op E2`, except that
 `E1` is evaluated once. The read, the operation, and the write are one
-evaluation. A function call `f()` that is unordered with the compound
+evaluation. A function call `f()` that is {term}`unordered` with the compound
 assignment runs before the read or after the write:
 
 ```text
@@ -44,7 +44,7 @@ assignment runs before the read or after the write:
 :::{principle} ASN-P3
 :rules: ASN-4
 
-The right operand is evaluated before the left one, and all side effects
+The right operand is evaluated before the left one, and all {term}`side effects <side effect>`
 of the right operand complete before the store. This order is an
 exception to the usual freedom (SEQ-1).
 :::
@@ -89,7 +89,7 @@ The left operand must not be:
 - an array,
 - a function.
 
-For a class type, assignment calls an operator function ({rule}`OPR-7`),
+For a class type, assignment calls an {term}`operator function` ({rule}`OPR-7`),
 so a class prvalue can be the left operand.
 :::
 
@@ -180,7 +180,7 @@ A compound assignment is one evaluation with respect to a function call
 whose order with the compound assignment is not set. The call runs
 before the read or after the write, never between them. The choice
 between the two orders is unspecified, and the behavior is not
-undefined. Constant evaluation also picks one of the two orders
+undefined. {term}`Constant evaluation <constant evaluation>` also picks one of the two orders
 ({rule}`CE-27`).
 :::
 

@@ -20,7 +20,7 @@ constructors and destructors.
 :::{principle} TRY-P1
 :rules: TRY-1 TRY-16 TRY-3 TRY-4
 
-A try block names the statements it guards and the handlers that can
+A try block names the statements it guards and the {term}`handlers <handler>` that can
 take over when one of those statements throws. When an exception leaves
 the block, the handlers are tried in the order written:
 
@@ -52,9 +52,9 @@ nothing, so such a try block is not valid.
 :rules: TRY-2 TRY-5 TRY-18
 
 A handler accepts an exception by its type, with only the conversions
-that keep the exception object what it is:
+that keep the {term}`exception object` what it is:
 
-- adding cv-qualifiers,
+- adding {term}`cv-qualifiers <cv-qualifier>`,
 - going from a derived class to an accessible unambiguous base,
 - adjusting a pointer's qualification or pointee base,
 - dropping `noexcept` from a pointer to a function,
@@ -169,7 +169,7 @@ the last handler of its try block.
 
 The handler parameter must not:
 
-- be an abstract class by value,
+- be an {term}`abstract class` by value,
 - be an incomplete class by value, by pointer, or by reference,
 - have an rvalue reference type, a reference to an array of unknown
   bound, or the type `void`,

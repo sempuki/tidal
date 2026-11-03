@@ -53,7 +53,7 @@ copy functions ({principle}`CPY-P2`, {rule}`CPY-8`).
 :rules: NEW-10 NEW-13 NEW-14 NEW-19 NEW-20 NEW-21 NEW-22 NEW-23 NEW-24 NEW-25 NEW-26 NEW-40 NEW-41
 
 The storage comes from an allocation function. A call of an allocation
-function also creates objects of implicit-lifetime types in the storage
+function also creates objects of {term}`implicit-lifetime types <implicit-lifetime type>` in the storage
 that the call returns, so the program can use the storage at once
 ({rule}`STG-8`). The global allocation and deallocation functions exist in every program without a declaration, so
 a program can also call them by name. A program that calls them by name
@@ -65,7 +65,7 @@ and `operator delete` of the class, or with extra placement arguments.
 `::new` reaches past a class's own functions to the global ones. The
 deallocation functions never throw. The implementation chooses how often
 the global functions are called, because a program only ever sees the
-objects. So two `new` expressions may share one allocation.
+objects. So two `new` expressions can share one allocation.
 
 If the initialization throws, the storage goes back through the
 deallocation function that pairs with the allocation function. The
@@ -256,7 +256,7 @@ must not be one of these:
 
 - `void`,
 - an incomplete type,
-- an abstract class ({rule}`VIRT-8`),
+- an {term}`abstract class` ({rule}`VIRT-8`),
 - a reference,
 - a function type.
 :::
@@ -289,8 +289,8 @@ address `p` ({rule}`STG-5`). The type can also be in parentheses, as in
 A `new` expression must not:
 
 - have a bound other than the first that is not a constant,
-- create a `const` object of scalar type without an initializer,
-- create an array of a class that has no default constructor, without
+- create a `const` object of {term}`scalar type` without an initializer,
+- create an array of a class that has no {term}`default constructor`, without
   an initializer for each element.
 :::
 
@@ -307,7 +307,7 @@ A class can declare its own `operator new` and `operator delete`. A
 :kind: required
 :tests: expressions/new-delete/global-functions-by-name.cpp expressions/new-delete/global-functions-with-own-forms.cpp expressions/new-delete/global-functions-specifiers.cpp expressions/new-delete/deallocate-by-name-partner.cpp
 
-Every translation unit has these global functions without a
+Every {term}`translation unit` has these global functions without a
 declaration in the program:
 
 - `operator new` and `operator new[]`, with one parameter of the type
@@ -445,7 +445,7 @@ have the same types in the same order. These conditions also apply:
 
 - A parameter with a default argument counts, also when the `new`
   expression gives no argument for the parameter.
-- A function template matches as {rule}`DED-39` says.
+- A {term}`function template` matches as {rule}`DED-39` says.
 :::
 
 :::{rule} NEW-24

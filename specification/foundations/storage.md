@@ -42,7 +42,7 @@ count in bytes:
 
 Two objects that exist at the same time have different addresses. One
 object can share an address with another only if it is nested in the
-other, or if it is an empty subobject of zero size. A type whose size
+other, or if it is an empty {term}`subobject` of zero size. A type whose size
 does not fit in `std::size_t` cannot exist.
 :::
 
@@ -80,7 +80,7 @@ can use fresh storage as objects of these types without placement
 | Operation | Creates objects in |
 |---|---|
 | a call of an allocation function, by name or from `new` | the storage that the call returns |
-| the start of a byte array's lifetime | the array |
+| the start of a byte array's {term}`lifetime` | the array |
 | some library functions *(library referenced)* | the storage that they name |
 
 The implementation chooses the objects that give the program defined
@@ -141,7 +141,7 @@ valid:
 | convert to `void*`, and then to `unsigned char*`, `char*`, or `std::byte*` | valid |
 | read or write the value ({rule}`OBJ-2`) | undefined |
 | member access, call of a non-static member function | undefined |
-| a cast to a derived class or a virtual base, `dynamic_cast`, `typeid` | undefined |
+| a cast to a derived class or a {term}`virtual base`, `dynamic_cast`, `typeid` | undefined |
 | `delete` | undefined |
 :::
 
@@ -177,11 +177,11 @@ A read or a write sees an object through the type of the glvalue. The
 implementation can assume that a glvalue of one type does not refer to
 an object of an unrelated type, and so can keep a value in a register
 across a write through another type. These glvalue types can read or
-write an object whose dynamic type is `T`:
+write an object whose {term}`dynamic type` is `T`:
 
 | Glvalue type | Allowed |
 |---|---|
-| `T` with any cv-qualifiers, also inside a pointer type | yes |
+| `T` with any {term}`cv-qualifiers <cv-qualifier>`, also inside a pointer type | yes |
 | the signed or unsigned integer type that matches `T` | yes |
 | `char`, `unsigned char`, `std::byte` | yes |
 | `signed char` | no ({question}`Q-0306`) |
@@ -295,7 +295,7 @@ one there.
 These types are
 {term}`implicit-lifetime types <implicit-lifetime type>`:
 
-- scalar types,
+- {term}`scalar types <scalar type>`,
 - array types, with any element type,
 - an aggregate class whose destructor is not user-provided,
 - a class with a trivial destructor that is not deleted, and with at
@@ -508,7 +508,7 @@ pointer that reaches the new object.
 :kind: undefined
 :tests: foundations/storage/reuse-const-static-object-sanitizer.cpp foundations/storage/reuse-const-automatic-object.cpp foundations/storage/reuse-const-automatic-object-constant.cpp
 
-Some complete objects are declared `const` and have a storage duration
+Some complete objects are declared `const` and have a {term}`storage duration`
 other than dynamic. If a program creates an object in the storage of
 such an object, the behavior is undefined. The rule applies during and
 after the lifetime of the `const` object ({question}`Q-0307`).
@@ -519,7 +519,7 @@ after the lifetime of the `const` object ({question}`Q-0307`).
 :tests: foundations/storage/scope-end-other-type-sanitizer.cpp
 
 Some variables have a class type whose destructor is not trivial, and
-static, thread, or automatic storage duration. If the storage of such
+static, thread, or {term}`automatic storage` duration. If the storage of such
 a variable holds no object of its type when the implicit destructor
 call happens, the behavior is undefined. An exit from the block by an
 exception counts. {rule}`DTOR-7` also covers a variable whose object
@@ -557,7 +557,7 @@ apply:
   listed.
 - A glvalue from a cast of a byte array's address refers to a byte
   (STG-29).
-- A read of a member in the common initial sequence that
+- A read of a member in the {term}`common initial sequence` that
   {rule}`UNI-10` allows is not such a read.
 :::
 
