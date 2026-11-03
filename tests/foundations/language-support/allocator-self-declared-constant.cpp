@@ -1,4 +1,4 @@
-// tidal-rules: LSUP-11
+// tidal-rules: LSUP-11 CE-4
 // tidal-expect: accept
 inline constexpr void* operator new(decltype(sizeof 0), void* at) noexcept { return at; }
 namespace std {

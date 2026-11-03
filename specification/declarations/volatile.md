@@ -267,8 +267,14 @@ of 40 tests.
 - VOL-2: Clang rejects an in-class initializer for a `static const
   volatile` member. GCC and EDG accept the initializer
   ({question}`Q-0080`).
-- VOL-5: Clang and GCC warn under `-Wall` for each listed use, and not
-  for compound assignment.
+- VOL-5: Clang and GCC warn by default for each listed use in C++23
+  mode, and not for compound assignment. The flag is
+  `-Wdeprecated-volatile` for Clang and `-Wvolatile` for GCC. `-Wall`,
+  `-Wextra`, and `-Wdeprecated` keep the warnings on, and
+  `-Wno-deprecated` turns them off. Clang 18 and 22 and GCC 14 and 16
+  agree, and EDG 7.0 also warns by default. The warnings for a volatile
+  parameter and return type are the same ({rule}`CV-9`). The tests use
+  `-Wall -Werror`, so each warning is a rejection.
 - VOL-6: no sanitizer of GCC or Clang reports a read of a volatile
   object through an `int*`, so `nonvolatile-access-to-volatile-constant.cpp`
   checks only that the program compiles. During constant evaluation Clang rejects the read,

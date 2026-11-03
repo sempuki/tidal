@@ -197,10 +197,13 @@ by {rule}`CE-8`.
 
 :::{rule} CE-4
 :kind: reject
-:tests: expressions/constant-expressions/reinterpret-cast.cpp expressions/constant-expressions/void-pointer-to-object.cpp
+:tests: expressions/constant-expressions/reinterpret-cast.cpp expressions/constant-expressions/void-pointer-to-object.cpp foundations/language-support/allocator-self-declared-constant.cpp expressions/constant-expressions/allocator-result-other-type.cpp
 
 Constant evaluation must not contain a `reinterpret_cast` or convert a
-pointer to `void` to a pointer to an object type.
+pointer to `void` to a pointer to an object type. Inside a member of
+`std::allocator<T>`, the result of a call of `::operator new` by name
+({rule}`LSUP-11`) can be converted to `T*` ({rule}`STG-28`,
+{question}`Q-0349`).
 :::
 
 :::{rule} CE-5
@@ -572,8 +575,8 @@ constinit Empty empty;                // fine: Empty has no scalar part
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 125
-of 146 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 126
+of 148 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:
@@ -602,6 +605,13 @@ split on each of them.
   - The limit on total work is reached long before the depth limit. A
     recursion of depth 40 that makes 331 million calls fails on every
     compiler.
+- CE-4: Clang, GCC, and EDG accept the conversion of the result of
+  `::operator new` to `T*` in `std::allocator<T>::allocate`, also through
+  a local variable of type `void*`. Each compiler rejects the call of
+  `::operator new` in a member that returns the `void*` without a
+  conversion. For a conversion to another type, such as `long*` in
+  `std::allocator<int>`, Clang rejects the conversion, and GCC and EDG
+  accept it ({question}`Q-0349`).
 - CE-12: Clang 18 also reports the `constexpr` function as never
   constant (compare {question}`Q-0020`).
 - CE-13: Clang rejects the comparison of two string literal addresses.

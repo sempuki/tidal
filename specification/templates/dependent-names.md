@@ -461,7 +461,7 @@ bases.
 
 :::{rule} DEP-19
 :kind: reject
-:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp
+:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp templates/dependent-names/parameter-position-variable-template.cpp
 
 Let `T` be dependent and not the current instantiation. Outside the
 positions of DEP-20, the parser reads `T::name` as a value. A
@@ -586,10 +586,13 @@ construct makes only the specializations with that error not valid.
 
 :::{rule} DEP-29
 :kind: reject
-:tests: templates/dependent-names/syntax-error-unused.cpp templates/dependent-names/typename-needs-qualified-name.cpp
+:tests: templates/dependent-names/syntax-error-unused.cpp templates/dependent-names/typename-needs-qualified-name.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/parameter-position-variable-template.cpp
 
 A template definition must follow the grammar, also when no
-specialization is made.
+specialization is made. In `template <class T> int take(T::type)` at
+namespace scope, `T::type` is a value (DEP-19), so the parentheses hold
+the initializer of a variable template. A function body after them
+breaks the grammar.
 :::
 
 :::{rule} DEP-37
@@ -733,6 +736,10 @@ template <class T> int read() {
   int n(T::count);                                // a variable: T::count is a value
   return n;
 }
+
+template <class T> int take(T::type);             // a variable template
+template <class T> int give(T::type) { return 0; } // rejected: a body after an initializer
+template <class T> int keep(typename T::type) { return 0; }  // a function template
 ```
 
 A second lookup through `this` or the current instantiation
@@ -769,8 +776,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 99
+of 120 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0224`, {question}`Q-0229`,
@@ -818,6 +825,12 @@ bullets below say so.
 - DEP-19: EDG accepts `sizeof(T::type)`, a functional cast, and a
   function declared in a block, when the instantiation makes `T::type`
   a type. Clang and GCC reject them ({question}`Q-0224`).
+- DEP-29: every compiler rejects `template <class T> int take(T::type)`
+  with a body at the definition, with no specialization. Clang reports
+  a missing `typename`, GCC expects `;` before the body, and EDG reports
+  that `T::type` is not a type name. Without a body, every compiler
+  accepts the declaration as a variable template, and `take<C>` is a
+  variable when `C::type` is a constant.
 - DEP-24: GCC accepts `typename T::box<int>`, and `T::box<int>` as a
   base, without `template`. Clang and EDG reject both
   ({question}`Q-0225`). Every compiler rejects `T::box<int>` without

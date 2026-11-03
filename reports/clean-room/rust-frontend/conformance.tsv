@@ -514,6 +514,7 @@ pass	classes/derived/base-final.cpp
 pass	classes/derived/base-incomplete.cpp
 pass	classes/derived/base-not-class.cpp
 pass	classes/derived/base-private-ctor.cpp
+pass	classes/derived/base-private-dtor-friend.cpp
 pass	classes/derived/base-private-dtor.cpp
 pass	classes/derived/base-protected-ctor.cpp
 pass	classes/derived/base-protected-dtor-direct.cpp
@@ -542,12 +543,14 @@ pass	classes/derived/inherited-ctor-access.cpp
 pass	classes/derived/inherited-ctor-default-args.cpp
 pass	classes/derived/inherited-ctor-explicit.cpp
 pass	classes/derived/inherited-ctor-hidden-by-derived.cpp
+pass	classes/derived/inherited-ctor-keeps-implicit.cpp
 pass	classes/derived/inherited-ctor-no-default.cpp
 pass	classes/derived/inherited-ctor-not-copy.cpp
 pass	classes/derived/inherited-ctor-not-direct-base.cpp
 pass	classes/derived/inherited-ctor-two-bases-ambiguous.cpp
 pass	classes/derived/inherited-ctor-two-bases-unused.cpp
 pass	classes/derived/inherited-ctor.cpp
+pass	classes/derived/inherited-nothing-not-aggregate.cpp
 pass	classes/derived/inherits-members.cpp
 run-unsupported	classes/derived/most-derived-inits-virtual-base.cpp
 pass	classes/derived/most-derived-must-init-virtual-base.cpp
@@ -2698,6 +2701,7 @@ pass	expressions/conditional/zero-and-nullptr.cpp
 pass	expressions/constant-expressions/active-union-member.cpp
 pass	expressions/constant-expressions/allocation-in-result.cpp
 pass	expressions/constant-expressions/allocation-not-freed.cpp
+pass	expressions/constant-expressions/allocator-result-other-type.cpp
 pass	expressions/constant-expressions/arithmetic-and-calls.cpp
 pass	expressions/constant-expressions/array-bound-floating.cpp
 pass	expressions/constant-expressions/array-bound-not-constant.cpp
@@ -5306,6 +5310,7 @@ pass	templates/declarations/default-friend-class.cpp
 pass	templates/declarations/default-friend-declaration.cpp
 pass	templates/declarations/default-friend-declared-before.cpp
 pass	templates/declarations/default-friend-definition.cpp
+FALSE-REJECT	templates/declarations/default-friend-overloads.cpp
 pass	templates/declarations/default-friend-redeclared.cpp
 pass	templates/declarations/default-greater-parenthesized.cpp
 pass	templates/declarations/default-greater.cpp
@@ -5561,6 +5566,7 @@ pass	templates/dependent-names/ordinary-lookup-later-fundamental.cpp
 MISSED-REJECT	templates/dependent-names/other-specialization-needs-typename.cpp
 pass	templates/dependent-names/pack-always-empty-function-type.cpp
 pass	templates/dependent-names/pack-always-empty.cpp
+pass	templates/dependent-names/parameter-position-variable-template.cpp
 MISSED-REJECT	templates/dependent-names/partial-primary-form-needs-typename.cpp
 pass	templates/dependent-names/per-specialization-type.cpp
 pass	templates/dependent-names/per-specialization.cpp
@@ -5604,7 +5610,7 @@ pass	templates/dependent-names/typename-finds-nothing.cpp
 pass	templates/dependent-names/typename-finds-value.cpp
 pass	templates/dependent-names/typename-needed-block.cpp
 EDG-ONLY	templates/dependent-names/typename-needed-expression.cpp
-pass	templates/dependent-names/typename-needed-parameter.cpp
+MISSED-REJECT	templates/dependent-names/typename-needed-parameter.cpp
 pass	templates/dependent-names/typename-needed-template-argument.cpp
 pass	templates/dependent-names/typename-needed-using.cpp
 pass	templates/dependent-names/typename-needs-qualified-name.cpp

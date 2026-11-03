@@ -260,18 +260,18 @@ access to that constructor or destructor.
 
 :::{rule} DER-21
 :kind: reject
-:tests: classes/derived/base-private-ctor.cpp classes/derived/base-private-dtor.cpp classes/derived/virtual-base-private-dtor.cpp
+:tests: classes/derived/base-private-ctor.cpp classes/derived/base-private-dtor.cpp classes/derived/virtual-base-private-dtor.cpp classes/derived/base-private-dtor-friend.cpp
 
 A derived class needs access to the constructor and destructor of each
-base that the derived class uses. This requirement includes virtual
-bases that are not direct bases. A private constructor or destructor
-does not give this access, so the special member of the derived class is
-deleted.
+base that the derived class uses, virtual bases that are not direct
+bases included. The access rules of {doc}`/classes/access` decide the
+access, so a friend of the base has access to a private member. If the
+derived class has no access, its special member is deleted.
 :::
 
 :::{rule} DER-8
 :kind: required
-:tests: classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor.cpp classes/derived/inherited-ctor-access-in-friend.cpp classes/derived/inherited-ctor-not-copy.cpp
+:tests: classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor.cpp classes/derived/inherited-ctor-access-in-friend.cpp classes/derived/inherited-ctor-not-copy.cpp classes/derived/inherited-ctor-keeps-implicit.cpp classes/derived/inherited-nothing-not-aggregate.cpp
 
 `using B::B;` in a class `D` *inherits* the constructors of the direct
 base `B`. A call with matching arguments initializes the `B` subobject
@@ -284,9 +284,13 @@ default-initialized. These rules apply:
   initialized, as for the constructor of `B` named there.
 - A constructor of `D` with the same parameters hides the inherited
   constructor.
+- An inherited constructor is not a constructor declared in `D`
+  ({rule}`CTOR-2`). `D` has the same implicit default, copy, and move
+  constructors that `D` has without `using B::B;`.
 
-A class that inherits constructors is not an aggregate
-({doc}`/declarations/initialization/list`).
+A class with `using B::B;` is not an aggregate
+({doc}`/declarations/initialization/list`), also when the class inherits
+no constructor.
 :::
 
 :::{rule} DER-20
@@ -412,6 +416,33 @@ struct Both : a::Item, b::Item {
 };
 ```
 
+A class that inherits constructors keeps its implicit constructors
+(DER-8). The using-declaration also makes the class a non-aggregate:
+
+```cpp
+struct Plain { };
+struct Wrapper : Plain {
+  using Plain::Plain;            // inherits no constructor
+  int size;
+};
+Wrapper w;                       // valid: the implicit default constructor
+Wrapper copy(w);                 // valid: the implicit copy constructor
+Wrapper bad{{}, 1};              // rejected: Wrapper is not an aggregate
+```
+
+The access rules decide whether a derived class can use the destructor
+of a base (DER-21). A friend has access:
+
+```cpp
+class Handle { ~Handle() {} friend struct Owner; };
+struct Owner : virtual Handle { };
+struct Holder : Owner { };
+void use() {
+  Owner o;                       // valid: Owner is a friend of Handle
+  Holder h;                      // rejected: Holder() and ~Holder() are deleted
+}
+```
+
 A derived visitor that overrides one `visit` hides the others, and
 Clang and GCC do not warn under `-Wall` (DER-3, {rule}`VIRT-13`):
 
@@ -463,8 +494,8 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 85
-of 86 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 89 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

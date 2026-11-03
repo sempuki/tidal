@@ -221,7 +221,7 @@ entity. These declarations are not valid after a template head:
 
 :::{rule} TPL-22
 :kind: required
-:tests: templates/declarations/function-template-overload.cpp templates/declarations/function-template-heads-differ.cpp
+:tests: templates/declarations/function-template-overload.cpp templates/declarations/function-template-heads-differ.cpp templates/declarations/default-friend-overloads.cpp
 
 Function templates and plain functions can share a name in one scope.
 Each function template with the name adds a candidate to overload
@@ -506,11 +506,14 @@ argument, unless the declaration is a definition of a function template
 
 :::{rule} TPL-38
 :kind: reject
-:tests: templates/declarations/default-friend-definition.cpp templates/declarations/default-friend-redeclared.cpp templates/declarations/default-friend-declared-before.cpp
+:tests: templates/declarations/default-friend-definition.cpp templates/declarations/default-friend-redeclared.cpp templates/declarations/default-friend-declared-before.cpp templates/declarations/default-friend-overloads.cpp
 
 A friend function template that is defined in a class can give default
 template arguments. That definition must be the only declaration of the
 function template in the {term}`translation unit` ({question}`Q-0197`).
+A declaration with the same name and function type and an equivalent
+head and constraints declares the same function template (TPL-20,
+TPL-22).
 :::
 
 ### Scope and redeclaration
@@ -780,10 +783,23 @@ template <class A, class B> int Map<A, B>::size() { return 0; }   // names diffe
 template <class A, class B> int Map<B, A>::size();                // rejected: order
 ```
 
+A friend definition with a default and the overloads of its name. Only
+another declaration of the same template breaks TPL-38:
+
+```cpp
+struct Host {
+  template <class T = int> friend int pick(Host) { return sizeof(T); }
+};
+template <class T> int pick(Host, int);           // valid: another function type
+template <class T, class U> int pick(Host);       // valid: another head
+template <class T> long pick(Host);               // valid: another return type
+template <class U> int pick(Host);                // rejected: the same template (Q-0197)
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 125 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0195`, {question}`Q-0197`,

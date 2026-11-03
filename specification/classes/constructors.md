@@ -149,7 +149,7 @@ A program cannot take the address of a constructor.
 
 :::{rule} CTOR-2
 :kind: required
-:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp classes/constructors/default-constructor-default-arguments.cpp
+:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp classes/constructors/default-constructor-default-arguments.cpp classes/derived/inherited-ctor-keeps-implicit.cpp
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
@@ -311,7 +311,7 @@ An implicit conversion uses at most one converting constructor.
 
 :::{rule} CTOR-25
 :kind: reject
-:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp classes/constructors/ctor-no-match-list-ctor-not-viable.cpp classes/constructors/ctor-no-match-other-class.cpp classes/constructors/ctor-no-match-nested-braces.cpp classes/constructors/ctor-implicit-copy-move.cpp classes/constructors/ctor-ambiguous-braces.cpp classes/constructors/ctor-ambiguous-copy-list.cpp classes/constructors/ctor-ambiguous-argument-braces.cpp foundations/conversion-sequences/chosen-list-ambiguous.cpp
+:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp classes/constructors/ctor-no-match-list-ctor-not-viable.cpp classes/constructors/ctor-no-match-other-class.cpp classes/constructors/ctor-no-match-nested-braces.cpp classes/constructors/ctor-implicit-copy-move.cpp classes/constructors/ctor-ambiguous-braces.cpp classes/constructors/ctor-ambiguous-copy-list.cpp classes/constructors/ctor-ambiguous-argument-braces.cpp foundations/conversion-sequences/chosen-list-ambiguous.cpp classes/derived/inherited-nothing-not-aggregate.cpp
 
 An initialization of a class object by a constructor must find one best
 constructor for its arguments ({rule}`OVL-34`). A constructor accepts
@@ -636,8 +636,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 167
-of 182 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 169
+of 184 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
