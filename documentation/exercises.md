@@ -174,6 +174,7 @@ catalog counts as done.
 | W7 | done: four programs build and run on GCC and Clang; findings W7-1 to W7-7 | `reports/clean-room/W7/` |
 | W6 | done: four programs build and run on GCC and Clang; findings W6-1 to W6-7 | `reports/clean-room/W6/` |
 | W10 | done: four programs build and run on GCC and Clang; findings W10-1 to W10-6 | `reports/clean-room/W10/` |
+| W9 | done: four programs build and run on GCC and Clang; findings W9-1 to W9-9 | `reports/clean-room/W9/` |
 | R-additive, R-multiplicative, R-shift, R-comparison | done, 220/220 (217 cite a rule of the test), without test names; findings REA-1 to REA-13 | `reports/clean-room/R-expressions/` |
 | R-conditional, R-lambdas, R-casts, R-new-delete | done, 276/278 (272 cite a rule of the test), without test names; findings REB-1 to REB-14 | `reports/clean-room/R-expressions/` |
 | R-blocks, R-if, R-jumps, R-loops, R-range-for, R-switch | done, 232/234 (231 cite a rule of the test), without test names; findings RS-1 to RS-16 | `reports/clean-room/R-statements/` |
