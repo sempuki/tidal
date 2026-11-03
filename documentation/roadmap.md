@@ -104,15 +104,32 @@ clean-room roadmaps (`reports/clean-room/roadmap-3/`).
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| R0 | Records from tools: status counts, question numbering and index, similarity column, Predict format and scoring | none |
+| R0 | Done: records from tools: status counts, question numbering and index, similarity column, Predict format and scoring | none |
 | Q | Done: question clusters 1 to 6, each with a gap review whose reading its questions record and weigh | R0 (index) |
-| G | Grammar-validity rule; `undefined` overlap convention and an interpreter-only expectation | none |
-| W | Write suites W1 to W14, programs run in the interpreter and become run tests | none |
-| P | Predict batches for expressions, statements, declarations, classes | R0 (format) |
-| D | Designer repair batch, then Propose X9 to X12 | none |
+| G | Done: grammar-validity rule (TR-12); `undefined` overlap convention and an interpreter-only expectation | none |
+| W | Write suites W1 to W14 done. The programs did not become run tests; phase 7 item WP takes that part | none |
+| P | Done: Predict batches for expressions, statements, declarations, classes | R0 (format) |
+| D | Done: designer repair batch, then Propose X9 to X12 and their repairs | none |
 | C | Done: Overloading chapter, hotspot pages, consistency pass, second tests, character values, implementation limits | Q for the overload pages |
-| O | Done: class properties and per-target class layout (CPY-19, CPY-28, CLS-19, CLS-29 to CLS-32, UNI-15, UNI-16), with grids under `tests/classes/copy-move/grids/` and `tests/classes/members/grids/`. A gap review follows. | an inventory |
+| O | Done: class properties and per-target class layout (CPY-19, CPY-28, CLS-19, CLS-29 to CLS-34, UNI-15, UNI-16), with grids under `tests/classes/copy-move/grids/` and `tests/classes/members/grids/`, its gap review, and the repairs | an inventory |
 | FE | Done: front-end rounds 10 to 14: byte memory, parse failures as rejects, interpreter coverage, choice exploration | G |
+
+## Phase 7: close the record, test by whole programs, and review every page
+
+Decision 0054 (provisional) adopts this phase from the fourth round of
+clean-room roadmaps (`reports/clean-room/roadmap-4/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| R1 | Close the phase 6 record: full matrix results, questions in similarity runs, roadmap and exercise rows, cluster 2 readings, Q-0312 | none |
+| WP | Write programs become run tests under `tests/programs/` | none |
+| SR | A second settling rule, applied to reviewed questions, and one decision packet for the maintainer | R1 |
+| TP | A matrix choice for every `impl-defined` rule, and the matrix layout as a table | none |
+| UW | A run witness for each `undefined` rule | none |
+| GR | Gap reviews of the eleven pages that never had one, then of open questions with no review | SR |
+| PR | Predict batches for the pages with no batch, first overloading and storage | none |
+| FE | Front-end rounds from 15: class layout, allocation by name, virtual bases, false rejects, Write programs | TP, WP |
+| X | A refresh check for Propose reports, then Propose X13 to X16 | none |
 
 ## Parallel lanes
 

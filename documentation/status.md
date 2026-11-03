@@ -183,10 +183,11 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-and 0051). Phases 1 to 5 are done, and phase 6 is provisional. Next:
+0051, and 0054). Phases 1 to 6 are done, and phase 7 is provisional.
+Next:
 
-1. A fourth round of clean-room roadmap reports, from the same views as
-   `reports/clean-room/roadmap-3/`, to plan phase 7.
+1. Phase 7, item R1: close the phase 6 record. Items WP, TP, UW, PR, and
+   X need nothing before them. Then SR, GR, and FE (decision 0054).
 
 Waiting on the maintainer:
 
@@ -220,6 +221,10 @@ Waiting on the maintainer:
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).
+- Confirm or change the provisional choices of decision 0054: settling
+  a question when its gap review supports the answer with no doubt and
+  a principle on the page agrees, and program tests under
+  `tests/programs/`.
 - Decide Q-0300, Q-0181, Q-0243, Q-0275, Q-0277, Q-0280, and Q-0225.
   In each, the compilers of the matrix agree with each other, and a gap
   review reads the C++23 text the other way. In Q-0277 this holds for
