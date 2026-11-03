@@ -206,6 +206,7 @@ impl P {
         self.expect(";")?;
         self.check_unused(&e);
         self.check_unsequenced(&e);
+        self.check_volatile_assign(&e, false);
         // DTOR-3: a class prvalue here is a temporary, which is destroyed.
         if e.cat == Cat::PR && !self.in_template() {
             if let Ty::Class(c) = e.ty.t {
@@ -746,6 +747,7 @@ impl P {
             }
         }
         self.check_unsequenced(&x);
+        self.check_volatile_assign(&x, true);
         // CPY-13: a cast to an rvalue that prevents the local variable from
         // being the return value.
         if self.wflag(&["-Wall", "-Wpessimizing-move"]) && !self.in_template() {
@@ -1319,9 +1321,14 @@ impl P {
         }
         let mut names = Vec::new();
         let mut decl = None;
+        let mut sb_ref: Option<bool> = None;
         if self.at("[") || ((self.at("&") || self.at("&&")) && self.at_k(1, "[")) {
-            self.eat("&");
-            self.eat("&&");
+            if self.eat("&") {
+                sb_ref = Some(true);
+            }
+            if self.eat("&&") {
+                sb_ref = Some(false);
+            }
             self.expect("[")?;
             loop {
                 names.push(self.ident()?);
@@ -1353,7 +1360,7 @@ impl P {
         // RFOR-1, RFOR-2: the loop as a block with a reference to the
         // range, an iterator and its end, for the interpreter. A step that
         // raises a diagnostic leaves the statement unsupported, as before.
-        let lowered = if decl.is_some() && names.is_empty() && !self.in_template() { self.lower_range_for(&range, s, line) } else { None };
+        let lowered = if (decl.is_some() || ds.auto == Some(false)) && !self.in_template() { self.lower_range_for(&range, s, line) } else { None };
         let mut loop_var = None;
         if let Some(d) = decl {
             let base = match (&ds.ty, ds.auto) {
@@ -1413,6 +1420,15 @@ impl P {
                         self.d.list.truncate(mark);
                     }
                 }
+            }
+        } else if let Some(lw) = &lowered {
+            // SB-1, RFOR-3: the hidden variable from `*__begin`, and the
+            // names that refer into it.
+            let named: Vec<(String, u32)> = names.iter().map(|n| (n.clone(), line)).collect();
+            let mark = self.d.list.len();
+            let ids = self.bind_names(&ds, sb_ref, lw.3.clone(), &named, Ctx::Block, line, line)?;
+            if self.d.list.len() == mark && ids.len() == names.len() + 1 {
+                loop_var = Some(ids[0]);
             }
         } else {
             for n in names {
@@ -1674,6 +1690,39 @@ fn mods_reads(e: &Expr, mods: &mut Vec<DeclId>, reads: &mut Vec<DeclId>) {
 }
 
 impl P {
+    /// VOL-5: the value of an assignment to a volatile object, used in a
+    /// larger expression, is deprecated. `used` is false for an expression
+    /// whose value is discarded.
+    pub fn check_volatile_assign(&mut self, e: &Expr, used: bool) {
+        if self.in_template() || !self.wflag(&["-Wall", "-Wdeprecated", "-Wvolatile", "-Wdeprecated-volatile"]) {
+            return;
+        }
+        let mut unused: Vec<*const Expr> = Vec::new();
+        fn discarded(e: &Expr, used: bool, out: &mut Vec<*const Expr>) {
+            match &e.k {
+                EK::Comma(a, b) => {
+                    discarded(a, false, out);
+                    discarded(b, used, out);
+                }
+                EK::Conv(Conv::ToVoid, a) => discarded(a, false, out),
+                _ if !used => out.push(e as *const Expr),
+                _ => {}
+            }
+        }
+        discarded(e, used, &mut unused);
+        let mut lines = Vec::new();
+        walk_expr(e, &mut |x: &Expr| {
+            if let EK::Assign(None, l, _) = &x.k {
+                if l.ty.v && !matches!(l.ty.t, Ty::Class(_)) && !unused.contains(&(x as *const Expr)) {
+                    lines.push(x.line);
+                }
+            }
+        });
+        for l in lines {
+            self.warn(l, "VOL-5", "the value of an assignment to a volatile object is used, which is deprecated");
+        }
+    }
+
     /// SEQ-7: warn when the unsequenced operands of a built-in operator
     /// both modify one variable, or one modifies it and the other reads it.
     pub fn check_unsequenced(&mut self, e: &Expr) {

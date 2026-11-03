@@ -85,7 +85,7 @@ impl P {
     /// The kind of the first parameter of a copy or move function of `c`:
     /// Some(false) for an lvalue reference or a value, Some(true) for an
     /// rvalue reference.
-    fn copy_param(&self, f: DeclId, c: usize, by_value: bool) -> Option<bool> {
+    pub fn copy_param(&self, f: DeclId, c: usize, by_value: bool) -> Option<bool> {
         let fi = self.func(f)?;
         let first = if fi.explicit_obj { 1 } else { 0 };
         if fi.params.len() <= first || fi.params.len() - first - 1 > fi.defaults {
@@ -335,6 +335,11 @@ impl P {
             return;
         }
         let name = ci.name.clone();
+        if self.capturing_closures.contains(&c) {
+            // LAM-26: a closure with captures has no default constructor.
+            self.error(line, "LAM-26", "a closure type with captures has no default constructor");
+            return;
+        }
         if !ci.ctors.is_empty() && ci.ctors.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)) {
             let any_default = ci.ctors.iter().any(|&i| self.func(i).is_some_and(|f| f.params.len() <= f.defaults));
             if !any_default {

@@ -51,6 +51,10 @@ pub struct Guide {
     pub alias: Option<(usize, QTy)>,
     /// The condition of a conditional `explicit` (CTAD-5).
     pub explicit_cond: Option<Source>,
+    /// The tokens of a user guide's result whose template arguments are
+    /// expressions of its parameters, as `S<M - 1>`, parsed again after
+    /// deduction.
+    pub result_src: Option<Source>,
 }
 
 impl P {
@@ -140,6 +144,17 @@ impl P {
             }
         };
         let qualified = self.toks[rstart.min(self.pos)..self.pos].iter().any(|t| t.text == "::");
+        // A result whose arguments are expressions of the parameters.
+        let opaque_arg = match &result.t {
+            Ty::Dep(d) => matches!(&**d, Dep::Id(_, args) if args.iter().any(|a| matches!(a, TArg::Val(TVal::Opaque)))),
+            _ => false,
+        };
+        let result_src = if opaque_arg && rstart < self.pos {
+            let (vid, base) = self.origin_of(rstart);
+            Some(Source { toks: self.copy_toks(rstart, self.pos), stack: self.stack.clone(), ctx, access: self.access_stack.last().copied().unwrap_or(0), limit: self.decls.len(), vid, base })
+        } else {
+            None
+        };
         let mut ok = true;
         if self.inst_depth == 0 {
             if bad_spec {
@@ -209,6 +224,7 @@ impl P {
             seq: self.decls.len(),
             alias: None,
             explicit_cond: None,
+            result_src,
         };
         if self.inst_depth == 0 {
             // CTAD-12: not declared twice; CTAD-13: each parameter
@@ -347,6 +363,7 @@ impl P {
             seq: 0,
             alias: None,
             explicit_cond: None,
+            result_src: None,
         };
         if defined {
             let pc = pc.unwrap();
@@ -372,6 +389,20 @@ impl P {
                     let fp = f.params.iter().position(|p| self.pack_params.contains(p));
                     let fc = self.fn_cons.get(c).cloned();
                     (params.clone(), f.fty.params.clone(), fp, crate::cons::and(cons.clone(), fc))
+                };
+                // The pattern reads the injected class name as an unknown
+                // type, so a copy or move constructor's parameter is a
+                // reference to an unknown type. It stands for the class.
+                let copy_shape = fparams.len() == 1 + f.defaults.min(fparams.len().saturating_sub(1)) && matches!(fparams.first().map(|q| &q.t), Some(Ty::LRef(x) | Ty::RRef(x)) if x.t == Ty::Unknown);
+                let fparams: Vec<QTy> = if copy_shape {
+                    let mut v = fparams.clone();
+                    if let Ty::LRef(x) | Ty::RRef(x) = &mut v[0].t {
+                        let (c, vq) = (x.c, x.v);
+                        **x = QTy { t: result.t.clone(), c, v: vq };
+                    }
+                    v
+                } else {
+                    fparams
                 };
                 if fparams.iter().any(|q| q.t.has_plain_unknown()) {
                     return None;
@@ -519,7 +550,7 @@ impl P {
             return None;
         }
         let _ = braced;
-        Some(Guide { head: params.clone(), depth, params: ptys, defaults: 0, variadic: false, fn_pack, result, explicit: false, kind: GKind::Aggregate, inherited: false, class_params: params.len(), cons: self.templs[tid].cons.clone(), line: 0, seq: 0, alias: None, explicit_cond: None })
+        Some(Guide { head: params.clone(), depth, params: ptys, defaults: 0, variadic: false, fn_pack, result, explicit: false, kind: GKind::Aggregate, inherited: false, class_params: params.len(), cons: self.templs[tid].cons.clone(), line: 0, seq: 0, alias: None, explicit_cond: None, result_src: None })
     }
 
     /// CTAD-14, CTAD-16: the guide `g` of a class template B, adapted to
@@ -602,6 +633,7 @@ impl P {
             seq: g.seq,
             alias: alias.map(|a| (a, check)),
             explicit_cond: None,
+            result_src: None,
         })
     }
 
@@ -828,6 +860,16 @@ impl P {
                     ps.push(self.subst_ty(q, &b));
                 }
                 let mut ret = self.subst_ty(&g.result, &b);
+                if let Some(src) = &g.result_src {
+                    // CTAD-11: the result with the deduced arguments.
+                    match self.replay(src, &g.head, &targs, None, |p| p.parse_type_id().ok()) {
+                        Some((Some(t), _)) if !t.is_unknown() => ret = t,
+                        _ => {
+                            self.d.muted -= 1;
+                            return None;
+                        }
+                    }
+                }
                 if let Some((al, check)) = &g.alias {
                     // CTAD-28: the result is a specialization of the alias,
                     // and the arguments satisfy its constraints.

@@ -1,5 +1,5 @@
 // Overload resolution for operator expressions
-// (specification/foundations/overload-resolution.md, OVL-7 to OVL-13, OVL-25,
+// (specification/overloading/overload-resolution.md, OVL-7 to OVL-13, OVL-25,
 // OVL-32, OVL-33, OVL-35, OVL-36; classes/operators.md, OPR-6, OPR-15;
 // classes/comparisons.md, DCMP-6).
 //
@@ -352,6 +352,12 @@ impl P {
         if some {
             return true;
         }
+        // OVL-27: a function that is not a template specialization (or a
+        // built-in candidate) beats a specialization.
+        let spec = |c: &OCand| c.fid.is_some_and(|f| self.spec_of.contains_key(&f));
+        if spec(x) != spec(y) && (x.fid.is_none() || y.fid.is_none()) {
+            return !spec(x);
+        }
         let rewritten = |k: CK| matches!(k, CK::Rewritten | CK::Swapped);
         // OVL-32: a candidate that is not rewritten wins.
         if !rewritten(x.kind) && rewritten(y.kind) {
@@ -386,6 +392,11 @@ impl P {
         };
         let name = format!("operator{}", op);
         let Some((members, others)) = self.op_functions(&name, class_of(&ops[0]), ops) else { return OpRes::NotHandled };
+        // DED-1: an operator function template adds its specialization for
+        // the operands.
+        let rev: Vec<Expr> = ops.iter().rev().cloned().collect();
+        let Some(members) = self.expand_fn_templates(&members, &ops[1..], line) else { return OpRes::NotHandled };
+        let Some(others) = self.expand_fn_templates(&others, ops, line) else { return OpRes::NotHandled };
         // OVL-8: with no class operand, a non-member needs a parameter of
         // the type of the matching enumeration operand.
         let enum_ok = |p: &P, fid: DeclId, order: &[usize]| -> bool {
@@ -438,6 +449,10 @@ impl P {
             if let Some(src) = src {
                 let Some((m_left, o_all)) = self.op_functions(src, class_of(&ops[0]), ops) else { return OpRes::NotHandled };
                 let m_right = class_of(&ops[1]).and_then(|c| self.lookup_member(c, src)).unwrap_or_default();
+                let Some(m_left) = self.expand_fn_templates(&m_left, &ops[1..], line) else { return OpRes::NotHandled };
+                let Some(m_right) = self.expand_fn_templates(&m_right, &ops[..1], line) else { return OpRes::NotHandled };
+                let Some(o_written) = self.expand_fn_templates(&o_all, ops, line) else { return OpRes::NotHandled };
+                let Some(o_swapped) = self.expand_fn_templates(&o_all, &rev, line) else { return OpRes::NotHandled };
                 let normal = src != format!("operator{}", op);
                 let mut add = |p: &mut P, fid: DeclId, member: bool, swapped: bool| -> bool {
                     let kind = if swapped { CK::Swapped } else { CK::Rewritten };
@@ -448,7 +463,7 @@ impl P {
                     }
                     match p.op_fn_seqs(fid, member, ops, swapped, false) {
                         Ok(Some(seqs)) => {
-                            if !member {
+                            if !member && !p.spec_of.contains_key(&fid) {
                                 rewritten_nonmember_params.push(p.func(fid).unwrap().fty.params.clone());
                             }
                             cands.push(OCand { fid: Some(fid), member, kind, seqs, params: vec![] });
@@ -464,7 +479,7 @@ impl P {
                             return OpRes::NotHandled;
                         }
                     }
-                    for &fid in &o_all {
+                    for &fid in &o_written {
                         if enum_ok(self, fid, &direct) && !add(self, fid, false, false) {
                             return OpRes::NotHandled;
                         }
@@ -475,7 +490,7 @@ impl P {
                         return OpRes::NotHandled;
                     }
                 }
-                for &fid in &o_all {
+                for &fid in &o_swapped {
                     if enum_ok(self, fid, &[1, 0]) && !add(self, fid, false, true) {
                         return OpRes::NotHandled;
                     }
@@ -484,7 +499,7 @@ impl P {
         }
         // OVL-9, OVL-10: the built-in candidates.
         let Some(lists) = self.builtin_params(op, ops.len(), ops) else { return OpRes::NotHandled };
-        let written_params: Vec<Vec<QTy>> = others.iter().filter_map(|&d| self.func(d)).filter(|f| !f.template).map(|f| f.fty.params.clone()).collect();
+        let written_params: Vec<Vec<QTy>> = others.iter().filter(|d| !self.spec_of.contains_key(d)).filter_map(|&d| self.func(d)).filter(|f| !f.template).map(|f| f.fty.params.clone()).collect();
         for params in lists {
             if written_params.contains(&params) || rewritten_nonmember_params.contains(&params) {
                 continue;
@@ -533,7 +548,27 @@ impl P {
             self.error_because(line, "OVL-35", "OPR-15", format!("no viable function for operator '{}'", op));
             return OpRes::Done(Expr::unknown(line, "bad operator"));
         }
+        // A function that two lookups find is one candidate.
+        let mut uniq: Vec<OCand> = Vec::new();
+        for c in cands {
+            if !uniq.iter().any(|u| u.fid.is_some() && u.fid == c.fid && u.kind == c.kind && u.member == c.member) {
+                uniq.push(c);
+            }
+        }
+        let cands = uniq;
+        // OVL-27 between a function and a template specialization with
+        // tied sequences is left to the older selection.
+        let spec = |c: &OCand| c.fid.is_some_and(|f| self.spec_of.contains_key(&f));
+        let tied = |a: &OCand, b: &OCand| a.seqs.iter().zip(b.seqs.iter()).all(|(x, y)| self.ics_cmp(x, y) == 0);
+        if cands.iter().any(|a| a.fid.is_some() && spec(a) && cands.iter().any(|b| b.fid.is_some() && !spec(b) && tied(a, b))) {
+            return OpRes::NotHandled;
+        }
         let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || self.op_better(&cands[i], &cands[j])));
+        if best.is_none() && cands.iter().any(|c| c.fid.is_some_and(|f| self.spec_of.contains_key(&f))) {
+            // OVL-27, OVL-28, ORD-6 for operator templates: left to the
+            // older selection.
+            return OpRes::NotHandled;
+        }
         let Some(bi) = best else {
             // OVL-36, OPR-15.
             self.error_because(line, "OVL-36", "OPR-15", format!("ambiguous operator '{}': no viable candidate is better than each of the others", op));
@@ -641,6 +676,9 @@ impl P {
             return CtorRes::Unknown;
         }
         let mut ctors = self.classes[c].ctors.clone();
+        if args.len() == 1 {
+            ctors.retain(|&cid| !self.inherited_copy_shape(cid, c));
+        }
         if list && args.is_empty() {
             // A constructor template whose parameters all need arguments
             // gives no candidate for empty braces.
@@ -651,6 +689,38 @@ impl P {
         }
         // DED-1: a constructor template adds its specialization.
         let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
+            if list && !args.is_empty() {
+                // ILC-3: an initializer-list constructor that is not a
+                // template and takes the elements comes first.
+                let mut list_viable = Vec::new();
+                for &cid in &ctors {
+                    let Some(f) = self.func(cid).cloned() else { return CtorRes::Unknown };
+                    let Some(&p0) = f.params.first() else { continue };
+                    let pt = nonref(&self.var(p0).map(|v| v.ty.clone()).unwrap_or(QTy::unknown()));
+                    let Ty::Class(lc) = pt.t else { continue };
+                    let Some(el) = self.init_list_elem(lc) else { continue };
+                    if f.template || f.params.len() - 1 > f.defaults || el.is_unknown() {
+                        return CtorRes::Unknown;
+                    }
+                    let mut all = true;
+                    for a in args {
+                        match self.ics_form(a, &el, false) {
+                            Ok(Some(_)) => {}
+                            Ok(None) => {
+                                all = false;
+                                break;
+                            }
+                            Err(()) => return CtorRes::Unknown,
+                        }
+                    }
+                    if all {
+                        list_viable.push(cid);
+                    }
+                }
+                if list_viable.len() == 1 {
+                    return CtorRes::Chosen(list_viable[0], Vec::new());
+                }
+            }
             if list {
                 return CtorRes::Unknown;
             }
@@ -689,7 +759,7 @@ impl P {
                     None => false,
                     Some(p) => self.var(p).is_none_or(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some()) || v.ty.is_unknown()),
                 });
-                if list_ctor || !self.classes[c].bases.is_empty() {
+                if (list_ctor && !zero) || !self.classes[c].bases.is_empty() {
                     return CtorRes::Unknown;
                 }
                 if !zero {
@@ -757,6 +827,7 @@ impl P {
         // constructor has no implicit copy or move constructor of that kind
         // (CPY-5); a declared copy constructor also removes the implicit
         // move constructor.
+        let mut implicit_user = false;
         if args.len() == 1 {
             let own = list && matches!(args[0].k, EK::InitList(_));
             let ct = QTy::new(Ty::Class(c));
@@ -780,6 +851,10 @@ impl P {
             for p in implicit {
                 match self.ics_form(&args[0], &p, own) {
                     Ok(None) => {}
+                    // A user-defined sequence to an implicit copy or move
+                    // constructor loses to a candidate whose sequences are
+                    // all standard (ICS-21).
+                    Ok(Some(s)) if matches!(s.kind, crate::ics::IK::User | crate::ics::IK::Ambig) && !matches!(nonref(&args[0].ty).t, Ty::Class(_)) && !list => implicit_user = true,
                     _ => return CtorRes::Unknown,
                 }
             }
@@ -788,7 +863,12 @@ impl P {
         self.ics_no_viable = false;
         let r = self.ics_select(None, &cands, args);
         match r {
+            Ok(Some((cid, seqs))) if implicit_user && !seqs.iter().all(|q| q.kind == crate::ics::IK::Std) => {
+                let _ = cid;
+                CtorRes::Unknown
+            }
             Ok(Some((cid, seqs))) => CtorRes::Chosen(cid, seqs),
+            Ok(None) if implicit_user => CtorRes::Unknown,
             Ok(None) => CtorRes::Ambiguous,
             Err(()) if std::mem::take(&mut self.ics_no_viable) => {
                 if cands.len() != ctors.len() {
@@ -798,6 +878,24 @@ impl P {
                 CtorRes::NoViable
             }
             Err(()) => CtorRes::Unknown,
+        }
+    }
+}
+
+impl P {
+    /// OVL-17: an inherited constructor whose first parameter is a
+    /// reference to its base, to the class `d`, or to a class between them.
+    /// A call with one argument does not consider it.
+    pub fn inherited_copy_shape(&self, cid: DeclId, d: usize) -> bool {
+        let Some(&bc) = self.inherited_from.get(&cid) else { return false };
+        let Some(b) = self.func(bc).and_then(|f| f.class) else { return false };
+        let Some(t) = self.func(cid).and_then(|f| f.fty.params.first().cloned()) else { return false };
+        match &t.t {
+            Ty::LRef(x) | Ty::RRef(x) => match x.t {
+                Ty::Class(k) => k == d || k == b || (self.is_base_of(k, d) && self.is_base_of(b, k)),
+                _ => false,
+            },
+            _ => false,
         }
     }
 }

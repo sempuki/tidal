@@ -540,6 +540,9 @@ impl<'a> Machine<'a> {
             return Ok(());
         };
         let v = v.clone();
+        if v.dependent && self.p.sb_place.contains_key(&id) {
+            return Ok(());
+        }
         if v.dependent {
             if self.constant {
                 return Ok(()); // structured bindings: reads are unsupported
@@ -550,6 +553,14 @@ impl<'a> Machine<'a> {
             if self.constant {
                 if v.constexpr {
                     return Ok(());
+                }
+                // CE-3: a const integer or enumeration with a constant
+                // initializer is usable, so CE-20 allows it.
+                if v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) && v.init.is_some() {
+                    let pl = self.const_var_place(id, v.clone())?;
+                    if !matches!(self.objs[pl.obj].val, Val::NotUsable(_)) {
+                        return Ok(());
+                    }
                 }
                 // CE-20: a static or thread_local variable.
                 return limit("CE-20", "definition of a static or thread_local variable in constant evaluation");
@@ -662,16 +673,7 @@ impl<'a> Machine<'a> {
             // Visible to a recursive use (STO-9) while it runs.
             let dummy = self.new_obj(Val::Uninit, true);
             self.globals.insert((self.tu, id), dummy);
-            let pl = self.full(|m| {
-                let pl = m.bind_ref(&init)?;
-                if binds_temporary_p(m.p, &init) {
-                    if let Some(c) = m.extend_temp(pl.obj) {
-                        m.objs[c.place.obj].is_static = true;
-                        m.static_dtors.push(c);
-                    }
-                }
-                Ok(pl)
-            })?;
+            let pl = self.bind_static_ref(&init)?;
             self.globals.remove(&(self.tu, id));
             self.global_refs.insert((self.tu, id), pl);
             return Ok(());
@@ -691,7 +693,7 @@ impl<'a> Machine<'a> {
         };
         // SINIT-1, IF-25: a static initializer that is a constant
         // expression is a constant evaluation.
-        let constant_val = if !self.constant && (v.ty.t.is_arithmetic() || matches!(v.ty.t, Ty::Enum(_))) { v.init.as_ref().and_then(|i| self.try_constant(i, &v.ty)) } else { None };
+        let constant_val = if !self.constant && (v.ty.t.is_arithmetic() || matches!(v.ty.t, Ty::Enum(_)) || (matches!(v.ty.t, Ty::Class(_)) && !self.needs_dtor(&v.ty.t))) { v.init.as_ref().and_then(|i| self.try_constant(i, &v.ty)) } else { None };
         match &v.init {
             Some(_) if constant_val.is_some() => {
                 self.write(&place, constant_val.unwrap(), true)?;
@@ -831,8 +833,17 @@ impl<'a> Machine<'a> {
         let t = ty.unqual();
         let place = m.alloc(&t).ok()?;
         m.full(|m| m.init_into(&place, &e, &t)).ok()?;
+        fn plain(v: &Val) -> bool {
+            match v {
+                Val::Int(_) | Val::Float(_) | Val::Null => true,
+                Val::Agg(xs) => xs.iter().all(plain),
+                _ => false,
+            }
+        }
         match m.objs[place.obj].val.clone() {
             v @ (Val::Int(_) | Val::Float(_)) => Some(v),
+            // A class of scalar members (IF-25, G106).
+            v @ Val::Agg(_) if matches!(t.t, Ty::Class(_)) && plain(&v) => Some(v),
             _ => None,
         }
     }

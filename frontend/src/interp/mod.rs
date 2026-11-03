@@ -319,7 +319,7 @@ impl<'a> Machine<'a> {
             global_refs: HashMap::new(),
             statics_running: Default::default(),
             steps: 0,
-            step_limit: if constant { 2_000_000 } else { 20_000_000 },
+            step_limit: if constant { 30_000_000 } else { 20_000_000 },
             depth: 0,
             depth_limit: if constant { 512 } else { 2000 },
             in_consteval_fn: false,
@@ -547,8 +547,12 @@ impl<'a> Machine<'a> {
                     v.push(self.shape(&QTy::new(Ty::Class(b.class.unwrap())))?);
                 }
                 let union = self.p.classes[c].key == 2;
-                for (_, fi) in self.fields(c) {
-                    if union {
+                for (f, fi) in self.fields(c) {
+                    if fi.bits.is_some() && self.p.decls[f].name.is_empty() && !union {
+                        // BF-12: an unnamed bit-field is not a member and
+                        // holds no value that a copy reads.
+                        v.push(Val::Int(0));
+                    } else if union {
                         v.push(Val::Inactive);
                     } else if fi.ty.t.is_ref() {
                         v.push(Val::Uninit);
@@ -566,6 +570,34 @@ impl<'a> Machine<'a> {
 
     /// Zero-initialization (INIT rules): every scalar is zero, and a union
     /// has its first member active.
+    /// The number of scalar parts of a type, stopping above 4096.
+    pub fn leaves(&self, t: &QTy, depth: u32) -> u64 {
+        if depth > 32 {
+            return u64::MAX;
+        }
+        match &t.t {
+            Ty::Array(el, Some(n)) => {
+                if *n > 4096 {
+                    return u64::MAX;
+                }
+                (*n as u64).saturating_mul(self.leaves(el, depth + 1))
+            }
+            Ty::Class(c) => {
+                let mut k: u64 = 0;
+                for b in &self.p.classes[*c].bases {
+                    if let Some(bc) = b.class {
+                        k = k.saturating_add(self.leaves(&QTy::new(Ty::Class(bc)), depth + 1));
+                    }
+                }
+                for (_, fi) in self.fields(*c) {
+                    k = k.saturating_add(self.leaves(&fi.ty, depth + 1));
+                }
+                k
+            }
+            _ => 1,
+        }
+    }
+
     pub fn zero(&self, t: &QTy) -> Val {
         match &t.t {
             Ty::Ptr(_) | Ty::NullPtr | Ty::MemPtr(..) => Val::Null,
@@ -769,6 +801,7 @@ impl<'a> Machine<'a> {
                 }
                 ub("UNI-6", "read of a union member that is not active")
             }
+            Val::Agg(_) if self.constant && first_not_usable(&v).is_some() => limit("CE-3", first_not_usable(&v).unwrap()),
             Val::Agg(_) if self.constant && has_unset(&v) => limit("CE-22", "copy of an object that has a scalar part with no value"),
             // OBJ-2: an implicit copy or move reads each scalar part.
             Val::Agg(_) if has_unset(&v) => ub("OBJ-2", "implicit copy of an object that has a scalar part with no value"),
@@ -1040,6 +1073,14 @@ impl<'a> Machine<'a> {
 }
 
 /// A value with a scalar part that has no value (CE-21, CE-22).
+pub fn first_not_usable(v: &Val) -> Option<String> {
+    match v {
+        Val::NotUsable(m) => Some(m.clone()),
+        Val::Agg(items) => items.iter().find_map(first_not_usable),
+        _ => None,
+    }
+}
+
 pub fn has_unset(v: &Val) -> bool {
     match v {
         Val::Uninit => true,

@@ -462,9 +462,22 @@ impl P {
                     }
                     if let SK::Class(c) = self.scopes[s].kind {
                         if self.classes[c].name == name {
-                            // inheriting constructors: not modeled
+                            // DER-8: inherited constructors, modeled when
+                            // the base is a complete direct base whose
+                            // constructors are not templates.
                             if let Ctx::Class(cc) = ctx {
-                                self.classes[cc].opaque = true;
+                                let ok = !self.in_template()
+                                    && !self.class_uncertain(cc)
+                                    && !self.class_uncertain(c)
+                                    && self.classes[c].complete
+                                    && !self.classes[c].opaque
+                                    && self.classes[cc].bases.iter().any(|b| b.class == Some(c))
+                                    && self.classes[c].ctors.iter().all(|&i| self.func(i).is_some_and(|f| !f.template));
+                                if ok {
+                                    self.inh_bases.entry(cc).or_default().push(c);
+                                } else {
+                                    self.classes[cc].opaque = true;
+                                }
                             }
                         }
                     }
@@ -888,6 +901,7 @@ impl P {
         }
         let dependent = self.templ > 0;
         let body_start = self.pos;
+        let mut friend_default = false;
         if self.inst_depth == 0 {
             if self.lang_c > 0 {
                 // TPL-3: no template with C language linkage.
@@ -901,6 +915,7 @@ impl P {
             }
             if self.at("friend") || (self.at_k(1, "friend") && !self.at("friend")) {
                 let def_fn = self.friend_template_defines_function();
+                friend_default = def_fn && tparams.iter().any(|p| p.default.is_some());
                 if tparams.iter().any(|p| p.default.is_some()) && !def_fn {
                     // TPL-37: a friend declaration of a template gives no
                     // default, unless it defines a function template.
@@ -908,6 +923,7 @@ impl P {
                 }
             }
         }
+        let saved_ft = self.friend_templ.take();
         let saved_last = self.last_templ.take();
         let saved_hc = std::mem::replace(&mut self.head_constrained, constrained);
         let saved_cons = std::mem::replace(&mut self.head_cons, head_cons.clone());
@@ -939,6 +955,14 @@ impl P {
         }
         let last = std::mem::replace(&mut self.last_templ, saved_last);
         r?;
+        let friend_id = std::mem::replace(&mut self.friend_templ, saved_ft);
+        if self.inst_depth == 0 {
+            match (&last, friend_id) {
+                (_, Some(id)) => self.check_friend_default(id, &tparams, friend_default, line),
+                (Some(crate::templ::Last::Func(id)), None) => self.check_friend_default(*id, &tparams, false, line),
+                _ => {}
+            }
+        }
         let body_end = self.pos;
         // A member template defined outside its class: the enclosing
         // head records the whole declaration (TPL-24).
@@ -1737,6 +1761,137 @@ impl P {
         }
     }
 
+    /// DER-8: at the end of the definition of `d`, the constructors that
+    /// it inherits. Each is a constructor of `d` with the parameters of the
+    /// base constructor, which initializes the base with them. A class
+    /// without its own constructors keeps its implicit default
+    /// constructor.
+    pub fn inherit_ctors(&mut self, d: usize, line: u32) {
+        let Some(bases) = self.inh_bases.get(&d).cloned() else { return };
+        let own = self.classes[d].ctors.clone();
+        let mut added = Vec::new();
+        for b in bases {
+            for bc in self.classes[b].ctors.clone() {
+                let Some(f) = self.func(bc).cloned() else { continue };
+                if f.template || self.copy_param(bc, b, false).is_some() || f.params.len() <= f.defaults {
+                    // Default, copy, and move constructors are not inherited.
+                    continue;
+                }
+                if own.iter().any(|&o| self.func(o).is_some_and(|g| g.fty.params == f.fty.params && g.fty.variadic == f.fty.variadic)) {
+                    // A constructor of `d` with the same parameters hides it.
+                    continue;
+                }
+                let mut args = Vec::new();
+                let mut ok = true;
+                for &p in &f.params {
+                    let Some(v) = self.var(p) else { ok = false; break };
+                    let t = v.ty.clone();
+                    let x = match &t.t {
+                        Ty::LRef(x) => Expr::new(EK::Var(p), (**x).clone(), Cat::L, line),
+                        Ty::RRef(x) => Expr::new(EK::Var(p), (**x).clone(), Cat::X, line),
+                        _ if self.is_scalar(&t) => {
+                            let lv = Expr::new(EK::Var(p), t.clone(), Cat::L, line);
+                            Expr::new(EK::Conv(Conv::LToR, Box::new(lv)), t.unqual(), Cat::PR, line)
+                        }
+                        _ => {
+                            ok = false;
+                            break;
+                        }
+                    };
+                    args.push(x);
+                }
+                let init = if ok && !f.fty.variadic { Some(Rc::new(Expr::new(EK::Construct(bc, args), QTy::new(Ty::Class(b)), Cat::PR, line))) } else { None };
+                let fi = FuncInfo {
+                    class: Some(d),
+                    mem_inits: vec![MemInit { field: None, base: Some(b), init }],
+                    body: Some(Rc::new(Stmt::Block(vec![]))),
+                    defined: true,
+                    defaulted: false,
+                    first_defaulted: false,
+                    opaque: false,
+                    fn_try: None,
+                    parse_failed: false,
+                    ..f.clone()
+                };
+                let sc = self.classes[d].scope;
+                let id = self.add_decl_in(sc, "\u{1}inherited", DK::Func(fi), line);
+                let acc = self.member_access.get(&bc).copied().unwrap_or(0);
+                self.member_access.insert(id, acc);
+                if let Some(e) = self.noexcept_errors.get(&bc).cloned() {
+                    self.noexcept_errors.insert(id, e);
+                }
+                self.inherited_from.insert(id, bc);
+                added.push(id);
+            }
+        }
+        // A class that inherits constructors is not an aggregate, also when
+        // it inherits none.
+        if own.is_empty() {
+            // The implicit default constructor stays (CTOR-20 decides
+            // whether it is deleted).
+            let fi = FuncInfo {
+                fty: FnTy { ret: QTy::new(Ty::Void), params: vec![], variadic: false, noexcept: false, cv_c: false, cv_v: false, refq: 0 },
+                params: vec![],
+                defaults: 0,
+                body: None,
+                defined: true,
+                constexpr: true,
+                consteval: false,
+                deleted: false,
+                defaulted: true,
+                class: Some(d),
+                kind: FnKind::Ctor,
+                is_static: false,
+                is_virtual: false,
+                template: false,
+                explicit: false,
+                opaque: false,
+                is_main: false,
+                explicit_obj: false,
+                default_exprs: vec![],
+                ret_auto: None,
+                mem_inits: vec![],
+                first_attrs: vec![],
+                first_defaulted: true,
+                constrained: false,
+                fn_try: None,
+                parse_failed: false,
+                noexcept_false: false,
+            };
+            let sc = self.classes[d].scope;
+            let id = self.add_decl_in(sc, "\u{1}implicit default", DK::Func(fi), line);
+            self.member_access.insert(id, 0);
+            self.implicit_default.insert(id);
+            self.classes[d].ctors.push(id);
+        }
+        self.classes[d].ctors.extend(added);
+    }
+
+    /// TPL-38: a friend function template defined with a default is the
+    /// only declaration of its template.
+    fn check_friend_default(&mut self, id: DeclId, tparams: &[crate::templ::TParam], friend_default: bool, line: u32) {
+        let Some(f) = self.func(id) else { return };
+        if f.class.is_some() {
+            return;
+        }
+        let name = self.decls[id].name.clone();
+        let key = (name.clone(), f.fty.params.len(), tparams.len());
+        if friend_default {
+            let earlier = self.templs.iter().any(|t| {
+                t.kind == crate::templ::TKind::Func
+                    && t.name == name
+                    && t.params.len() == tparams.len()
+                    && self.func(t.decl).is_some_and(|g| g.class.is_none() && g.fty.params.len() == key.1)
+            });
+            if earlier {
+                self.error(line, "TPL-38", "a friend template definition with a default is not the only declaration of the template");
+            }
+            self.friend_defaults.push(key);
+        } else if self.friend_defaults.contains(&key) {
+            self.error(line, "TPL-38", "a function template is declared again after a friend definition with a default");
+        }
+    }
+
     /// TPL-6, TPL-7: a structural type for a constant parameter.
     fn tparam_type_ok(&self, t: &QTy) -> bool {
         match &t.t {
@@ -1765,6 +1920,20 @@ impl P {
         let src = Source { toks: self.copy_toks(start, end), stack: self.stack.clone(), ctx, access: self.access_stack.last().copied().unwrap_or(0), limit: if self.inst_depth > 0 { self.lookup_limit } else { self.decls.len() }, vid, base };
         let scope = self.decl_scope();
         if !dependent && self.inst_depth == 0 {
+            if let Last::Func(id) = &last {
+                // TPL-35: each parameter after a pack has a default or is
+                // deducible from the function parameters (DED-20).
+                if let (Some(i), Some(f)) = (tparams.iter().position(|p| p.pack), self.func(*id)) {
+                    let b = crate::templ::Binds::new(depth, &tparams);
+                    let mut seen: Vec<u32> = Vec::new();
+                    for p in &f.fty.params {
+                        self.deducible_in_ty(p, &b, &mut seen);
+                    }
+                    if (i + 1..tparams.len()).any(|j| tparams[j].default.is_none() && !seen.contains(&(j as u32))) {
+                        self.error(line, "TPL-35", "a template parameter after a pack has no default and is not deducible");
+                    }
+                }
+            }
             let primary = matches!(last, Last::Class(_) | Last::Var(_) | Last::Alias(_));
             if primary {
                 // TPL-30: a pack is the last parameter.
@@ -2239,6 +2408,73 @@ impl P {
         Ok(ids)
     }
 
+    /// SB-3: the named non-static data members of a class or of the one
+    /// base that has them. None when they are split (SB-13) or a class is
+    /// not modeled.
+    fn sb_members(&self, c: usize, depth: u32) -> Option<Vec<DeclId>> {
+        let ci = &self.classes[c];
+        if depth > 16 || !ci.complete || ci.opaque || ci.template {
+            return None;
+        }
+        let own: Vec<DeclId> = ci.fields.iter().copied().filter(|&f| matches!(&self.decls[f].k, DK::Field(fi) if !(fi.bits.is_some() && self.decls[f].name.is_empty()))).collect();
+        let mut from_bases: Vec<Vec<DeclId>> = Vec::new();
+        for b in &ci.bases {
+            let bc = b.class?;
+            let m = self.sb_members(bc, depth + 1)?;
+            if !m.is_empty() {
+                from_bases.push(m);
+            }
+        }
+        match (own.is_empty(), from_bases.len()) {
+            (_, 0) => Some(own),
+            (true, 1) => from_bases.pop(),
+            _ => Some(vec![usize::MAX]),
+        }
+    }
+
+    /// SB-3, SB-13: the members that the names of a structured binding of
+    /// class `c` refer to.
+    fn sb_fields(&mut self, c: usize, line: u32) -> Option<Vec<DeclId>> {
+        let quiet = self.in_template();
+        if self.classes[c].key == 2 {
+            if !quiet {
+                self.error(line, "SB-13", "a structured binding of a union");
+            }
+            return None;
+        }
+        if !self.classes[c].anon_unions.is_empty() {
+            if !quiet {
+                self.error(line, "SB-13", "a structured binding of a class with an anonymous union member");
+            }
+            return None;
+        }
+        let fs = self.sb_members(c, 0)?;
+        if fs.contains(&usize::MAX) {
+            if !quiet {
+                self.error(line, "SB-13", "the members of a structured binding are in more than one class");
+            }
+            return None;
+        }
+        let Some(&f0) = fs.first() else { return Some(fs) };
+        let DK::Field(fi) = &self.decls[f0].k else { return None };
+        let owner = fi.class;
+        if !self.classes[owner].anon_unions.is_empty() {
+            if !quiet {
+                self.error(line, "SB-13", "a structured binding of a class with an anonymous union member");
+            }
+            return None;
+        }
+        for &f in &fs {
+            if let Err(r) = self.member_access_ok(f, c) {
+                if !quiet {
+                    self.error(line, r, format!("structured binding of the member '{}', which is not accessible here (SB-13)", self.decls[f].name));
+                }
+                return None;
+            }
+        }
+        Some(fs)
+    }
+
     /// Structured bindings (specification/declarations/structured-bindings.md).
     fn parse_structured_binding(&mut self, ds: &DeclSpec, ctx: Ctx, line: u32) -> PR<Vec<DeclId>> {
         let is_ref = if self.eat("&") {
@@ -2273,6 +2509,10 @@ impl P {
         }
         if matches!(ctx, Ctx::Class(_)) {
             self.error(line, "SB-15", "structured binding as a class member");
+        }
+        if ds.v > 0 && !self.in_template() && self.wflag(&["-Wall", "-Wdeprecated", "-Wvolatile", "-Wdeprecated-volatile"]) {
+            // VOL-5: a volatile structured binding declaration is deprecated.
+            self.warn(line, "VOL-5", "a structured binding declaration with 'volatile' is deprecated");
         }
         if self.pending_template.is_some() {
             self.error(line, "SB-15", "structured binding template");
@@ -2314,6 +2554,14 @@ impl P {
             Expr::unknown(il, "sb")
         };
         self.expect(";")?;
+        self.bind_names(ds, is_ref, init, &names, ctx, line, il)
+    }
+
+    /// SB-1 to SB-4: the element types, the hidden variable, and the
+    /// names of a structured binding with initializer `init`. The hidden
+    /// variable, if any, comes first in the result.
+    #[allow(clippy::too_many_arguments)]
+    pub fn bind_names(&mut self, ds: &DeclSpec, is_ref: Option<bool>, init: Expr, names: &[(String, u32)], ctx: Ctx, line: u32, il: u32) -> PR<Vec<DeclId>> {
         // element types
         let et = nonref(&init.ty);
         let cvc = ds.c > 0 || et.c;
@@ -2331,10 +2579,14 @@ impl P {
             }
             Ty::Class(c) => {
                 let c = *c;
-                let tuple = self.lookup_in_scope(self.global, "std", false).is_some();
-                if !tuple && self.is_simple_aggregate(c) {
+                let tuple = self.lookup_in_scope(self.global, "std", false).and_then(|ids| match self.decls[ids[0]].k {
+                    DK::Namespace(sc) => self.lookup_in_scope(sc, "tuple_size", false),
+                    _ => None,
+                }).is_some();
+                let fs = if tuple { None } else { self.sb_fields(c, il) };
+                if let Some(fs) = fs {
                     let mut v = Vec::new();
-                    for &f in &self.classes[c].fields {
+                    for &f in &fs {
                         if let DK::Field(fi) = &self.decls[f].k {
                             let mut t = fi.ty.clone();
                             if !t.t.is_ref() {
@@ -2367,11 +2619,82 @@ impl P {
         } else {
             Storage::Auto
         };
+        // SB-1: the hidden variable that the names refer into, for an array
+        // or a class whose members are bound one by one.
+        let mut hidden: Option<DeclId> = None;
+        let mut places: Vec<Expr> = Vec::new();
+        if !self.in_template() && elems.as_ref().is_some_and(|e| e.len() == names.len()) && !init.ty.is_unknown() && !matches!(init.k, EK::Unknown(_)) {
+            let mut base = if is_ref.is_some() { et.clone() } else { et.unqual() };
+            base.c |= ds.c > 0;
+            base.v |= ds.v > 0;
+            let hty = match is_ref {
+                Some(true) => QTy::new(Ty::LRef(Box::new(base.clone()))),
+                Some(false) if init.cat == Cat::L => QTy::new(Ty::LRef(Box::new(base.clone()))),
+                Some(false) => QTy::new(Ty::RRef(Box::new(base.clone()))),
+                None => base.clone(),
+            };
+            let mark = self.d.list.len();
+            let hinit = if is_ref.is_none() && matches!(base.t, Ty::Array(..)) {
+                // SB-3: each element of an array is copied.
+                match &et.t {
+                    Ty::Array(el, Some(n)) if self.is_scalar(el) => {
+                        let src = init.clone();
+                        let items: Vec<Expr> = (0..*n as i128).map(|i| {
+                            let d = Expr::new(EK::Conv(Conv::ArrayDecay, Box::new(src.clone())), QTy::new(Ty::Ptr(el.clone())), Cat::PR, il);
+                            let x = Expr::new(EK::Index(Box::new(d), Box::new(Expr::new(EK::Int(i), QTy::int(), Cat::PR, il))), (**el).clone(), Cat::L, il);
+                            Expr::new(EK::Conv(Conv::LToR, Box::new(x)), el.unqual(), Cat::PR, il)
+                        }).collect();
+                        if init.cat == Cat::L && items.len() < 4096 {
+                            Some(Expr::new(EK::InitList(items), QTy::unknown(), Cat::PR, il))
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            } else {
+                Some(self.convert_init(init.clone(), &hty, InitForm::Copy, il))
+            };
+            match hinit {
+                Some(hinit) if self.d.list.len() == mark && !matches!(hinit.k, EK::Unknown(_)) => {
+                    let hinit = if matches!(hinit.k, EK::InitList(_)) { self.convert_init(hinit, &hty, InitForm::CopyList, il) } else { hinit };
+                    let vi = VarInfo { ty: hty, storage, constexpr: false, constinit: false, init: Some(Rc::new(hinit)), param: false, local: ctx != Ctx::Namespace, dependent: false, defined: true, class: None };
+                    let hid = self.add_decl("\u{1}sb", DK::Var(vi), line);
+                    let var = Expr::new(EK::Var(hid), base.clone(), Cat::L, il);
+                    let es = elems.clone().unwrap();
+                    match &base.t {
+                        Ty::Array(el, _) => {
+                            for (i, t) in es.iter().enumerate() {
+                                let d = Expr::new(EK::Conv(Conv::ArrayDecay, Box::new(var.clone())), QTy::new(Ty::Ptr(el.clone())), Cat::PR, il);
+                                places.push(Expr::new(EK::Index(Box::new(d), Box::new(Expr::new(EK::Int(i as i128), QTy::int(), Cat::PR, il))), t.clone(), Cat::L, il));
+                            }
+                        }
+                        Ty::Class(c) => {
+                            let fs: Vec<DeclId> = self.sb_members(*c, 0).unwrap_or_default();
+                            for (f, t) in fs.iter().zip(es.iter()) {
+                                let t = nonref(t);
+                                places.push(Expr::new(EK::Member(Box::new(var.clone()), *f), t, Cat::L, il));
+                            }
+                        }
+                        _ => {}
+                    }
+                    if places.len() == names.len() {
+                        hidden = Some(hid);
+                    } else {
+                        places.clear();
+                    }
+                }
+                _ => self.d.list.truncate(mark),
+            }
+        }
         let mut ids = Vec::new();
         for (i, (n, nl)) in names.iter().enumerate() {
             let ty = elems.as_ref().and_then(|e| e.get(i).cloned()).unwrap_or(QTy::unknown());
             let vi = VarInfo { ty, storage, constexpr: false, constinit: false, init: None, param: false, local: ctx != Ctx::Namespace, dependent: true, defined: true, class: None };
             let id = self.add_decl(n, DK::Var(vi), *nl);
+            if let Some(p) = places.get(i) {
+                self.sb_place.insert(id, Rc::new(p.clone()));
+            }
             ids.push(id);
         }
         // ATTR-6: a structured binding declaration that is never read.
@@ -2379,6 +2702,9 @@ impl P {
         if ctx == Ctx::Block && storage == Storage::Auto && !ids.is_empty() && !maybe_unused && !self.in_template() {
             self.unused_cands.push((ids[0], line));
             self.binding_groups.insert(ids[0], ids.clone());
+        }
+        if let Some(h) = hidden {
+            ids.insert(0, h);
         }
         Ok(ids)
     }
@@ -2559,6 +2885,7 @@ impl P {
                     defaults: 0,
                     has_explicit_this: false,
                     trailing_auto: None,
+                    noexcept_dep: false,
                 };
                 let mut d2 = d.clone();
                 d2.ops.push(DOp::Func(Box::new(fd)));
@@ -3542,6 +3869,9 @@ impl P {
                 self.jump_vars.insert(id_placeholder);
             }
         }
+        if let Some(ce) = &converted {
+            self.check_volatile_assign(ce, true);
+        }
         // Store the final type and initializer.
         if let DK::Var(v) = &mut self.decls[id_placeholder].k {
             v.ty = ty.clone();
@@ -3563,6 +3893,7 @@ impl P {
     }
 
     pub fn set_var_init(&mut self, id: DeclId, ty: &QTy, e: Expr, ds: &DeclSpec) {
+        self.check_volatile_assign(&e, true);
         if let DK::Var(v) = &mut self.decls[id].k {
             v.ty = ty.clone();
             v.init = Some(Rc::new(e));
@@ -4276,8 +4607,12 @@ impl P {
             self.fn_label.insert(id, label);
             self.spec_of.insert(id, (t, args));
         }
-        if template && !d.qual_unknown && !is_friend {
+        if template && !d.qual_unknown && (!is_friend || is_def) {
+            // A friend template defined in its class is a template too.
             self.last_templ = Some(crate::templ::Last::Func(id));
+        }
+        if template && is_friend && !d.qual_unknown {
+            self.friend_templ = Some(id);
         }
         // ACC-7, NAM-29: a friend first declared in a class is hidden
         // from ordinary lookup until the namespace declares it.
@@ -4554,10 +4889,12 @@ impl P {
     pub fn run_deferred(&mut self) {
         let list = std::mem::take(&mut self.deferred);
         let mut snapshot: Option<Rc<Vec<crate::lexer::Token>>> = None;
+        // INST-5: the body of a member function of an instance waits for a
+        // use. Each such body is recorded first, so that a constructor
+        // body parsed below can use a member declared after it.
+        let mut rest = Vec::new();
         for df in list {
             if let Some(fid) = df.func {
-                // INST-5: the body of a member function of an instance
-                // waits for a use.
                 let lazy = !self.force_bodies && self.in_instance(df.class) && self.func(fid).is_some_and(|f| !matches!(f.kind, FnKind::Ctor | FnKind::Dtor));
                 if lazy {
                     let toks = snapshot.get_or_insert_with(|| Rc::new(self.toks.clone())).clone();
@@ -4567,6 +4904,9 @@ impl P {
                     continue;
                 }
             }
+            rest.push(df);
+        }
+        for df in rest {
             let save_pos = self.pos;
             let save_stack = std::mem::replace(&mut self.stack, df.stack.clone());
             let save_templ = self.templ;
@@ -4819,7 +5159,9 @@ impl P {
             }
         }
         if deduce {
-            let t = ctx.deduced.clone().unwrap_or(QTy::new(Ty::Void));
+            // In a template, a return value of a dependent type leaves the
+            // type to the specialization (DEP-2).
+            let t = ctx.deduced.clone().unwrap_or(if self.in_template() { QTy::unknown() } else { QTy::new(Ty::Void) });
             if !self.in_template() {
                 // CPT-22: the type constraint of the return type.
                 if let Some((rds, rd)) = ctx.ret_auto.clone() {

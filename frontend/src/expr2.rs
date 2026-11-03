@@ -1129,6 +1129,15 @@ impl P {
         };
         let is_list = matches!(form, InitForm::CopyList | InitForm::DirectList) || (form == InitForm::None && items.is_some());
         let is_paren = matches!(form, InitForm::Paren(_));
+        if let (Ty::Class(lc), Some(v), true) = (&ty.t, &items, is_list) {
+            if self.init_list_elem(*lc).is_some() && !self.classes[*lc].opaque && !self.in_template() {
+                // ILC-1: a braced list makes the list object.
+                return match self.make_init_list(*lc, v, line) {
+                    Some(x) => x,
+                    None => Expr::new(EK::Unknown("initializer list".into()), ty.unqual(), Cat::PR, line),
+                };
+            }
+        }
         if form == InitForm::Copy && items.is_none() && !ty.t.is_ref() && !matches!(ty.t, Ty::Class(_)) && !self.in_template() {
             if let Ty::Class(sc) = nonref(&e.ty).t {
                 if self.explicit_convs_only(sc, None) {
@@ -1741,6 +1750,13 @@ impl P {
                     self.error(line, "DEL-1", format!("call of deleted constructor of '{}'", self.classes[c].name));
                     return unknown;
                 }
+                if !self.in_template() && self.inherited_from.contains_key(&cid) && !self.accessible(cid, false) {
+                    // ACC-2, DER-20: the chosen constructor is not
+                    // accessible here.
+                    let rule = if self.member_access.get(&cid) == Some(&1) { "ACC-4" } else { "ACC-2" };
+                    self.error(line, rule, format!("the chosen constructor of '{}' is not accessible here", self.classes[c].name));
+                    return unknown;
+                }
                 if copy_list && f.explicit {
                     // ILC-8: the best match is explicit.
                     self.error(line, "ILC-8", format!("copy-list-initialization of '{}' chooses an explicit constructor", self.classes[c].name));
@@ -1769,9 +1785,16 @@ impl P {
                     }
                 }
                 if clean && is_list_ctor {
-                    // ILC-3: the initializer-list constructor wins. The
-                    // interpreter does not model the list object, and the
-                    // code below must not pick another constructor.
+                    // ILC-3: the initializer-list constructor wins. LSUP-1:
+                    // the list object comes from the constructor of two
+                    // parameters, with a pointer to an array of the
+                    // elements and their number.
+                    if let Some(x) = self.init_list_call(cid, &f, args, ty, line) {
+                        if self.in_unevaluated == 0 {
+                            self.use_fn(cid);
+                        }
+                        return x;
+                    }
                     return Expr::new(EK::Unknown("initializer-list constructor call".into()), ty.clone(), Cat::PR, line);
                 }
                 if clean {
@@ -1803,6 +1826,9 @@ impl P {
         }
         let mut viable = Vec::new();
         for cid in self.classes[c].ctors.clone() {
+            if args.len() == 1 && self.inherited_copy_shape(cid, c) {
+                continue;
+            }
             let Some(f) = self.func(cid).cloned() else { return unknown };
             if f.template {
                 return unknown;
@@ -1829,11 +1855,73 @@ impl P {
                 viable.push((cid, conv));
             }
         }
+        if viable.len() > 1 {
+            let first = self.func(viable[0].0).map(|f| f.fty.params.clone());
+            if viable.iter().all(|(v, _)| self.inherited_from.contains_key(v) && self.func(*v).map(|f| f.fty.params.clone()) == first) {
+                // DER-15: two bases give the chosen signature.
+                self.error(line, "DER-15", format!("the constructor of '{}' that the call selects is inherited from two bases", self.classes[c].name));
+            }
+        }
         if viable.len() != 1 {
             return unknown;
         }
         let (cid, conv) = viable.pop().unwrap();
+        if self.inherited_from.contains_key(&cid) && !self.accessible(cid, false) {
+            // ACC-2, DER-20: an inherited constructor keeps its access.
+            let rule = if self.member_access.get(&cid) == Some(&1) { "ACC-4" } else { "ACC-2" };
+            self.error(line, rule, format!("the chosen constructor of '{}' is not accessible here", self.classes[c].name));
+            return unknown;
+        }
         Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line)
+    }
+
+    /// LSUP-1, ILC-3: the call of initializer-list constructor `cid` with
+    /// the elements `items`: the array of the elements, the list object
+    /// that refers to it, and the call. None when a step is not modeled.
+    fn init_list_call(&mut self, cid: DeclId, f: &FuncInfo, items: &[Expr], ty: &QTy, line: u32) -> Option<Expr> {
+        if f.params.len() > 1 + f.defaults || f.fty.variadic || self.in_template() {
+            return None;
+        }
+        let pt = nonref(&f.fty.params[0]);
+        let Ty::Class(lc) = pt.t else { return None };
+        let list = self.make_init_list(lc, items, line)?;
+        Some(Expr::new(EK::Construct(cid, vec![list]), ty.unqual(), Cat::PR, line))
+    }
+
+    /// LSUP-1, ILC-1: the object of initializer-list class `lc` for the
+    /// elements `items`: an array of the converted elements, and the
+    /// constructor of two parameters with a pointer to it and the number.
+    pub fn make_init_list(&mut self, lc: usize, items: &[Expr], line: u32) -> Option<Expr> {
+        if self.in_template() {
+            return None;
+        }
+        self.require_class(lc, line);
+        let el = self.init_list_elem(lc)?;
+        let mk = self.classes[lc].ctors.iter().copied().find(|&k| self.func(k).is_some_and(|g| g.fty.params.len() == 2 && !g.template && matches!(g.fty.params[0].t, Ty::Ptr(_)) && g.fty.params[1].t.is_integral()))?;
+        let size_ty = self.func(mk)?.fty.params[1].clone();
+        let mark = self.d.list.len();
+        let mut conv = Vec::new();
+        for a in items {
+            if matches!(a.k, EK::Unknown(_)) {
+                return None;
+            }
+            let form = if matches!(a.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
+            conv.push(self.convert_init(a.clone(), &el.unqual(), form, line));
+        }
+        if self.d.list.len() != mark || conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+            self.d.list.truncate(mark);
+            return None;
+        }
+        let n = conv.len();
+        let cel = QTy { t: el.t.clone(), c: true, v: el.v };
+        let first = if n == 0 {
+            Expr::new(EK::NullPtr, QTy::new(Ty::Ptr(Box::new(cel))), Cat::PR, line)
+        } else {
+            let arr = Expr::new(EK::InitList(conv), QTy::new(Ty::Array(Box::new(cel.clone()), Some(n as u64))), Cat::PR, line);
+            Expr::new(EK::Conv(Conv::ArrayDecay, Box::new(arr)), QTy::new(Ty::Ptr(Box::new(cel))), Cat::PR, line)
+        };
+        let count = Expr::new(EK::Int(n as i128), size_ty.unqual(), Cat::PR, line);
+        Some(Expr::new(EK::Construct(mk, vec![first, count]), QTy::new(Ty::Class(lc)), Cat::PR, line))
     }
 
     pub fn is_simple_aggregate(&self, c: usize) -> bool {

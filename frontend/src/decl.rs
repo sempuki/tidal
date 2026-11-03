@@ -65,6 +65,9 @@ pub struct FnDecl {
     pub defaults: usize,
     pub has_explicit_this: bool,
     pub trailing_auto: Option<(DeclSpec, Declarator)>,
+    /// In a template, the operand of `noexcept` depends on a parameter
+    /// (DEP-9): a function type made from this declarator is dependent.
+    pub noexcept_dep: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -1243,7 +1246,7 @@ impl P {
         let mark = self.d.list.len();
         let scope = self.parse_nested_name();
         if let Ok(Some(Ok(s))) = scope {
-            self.eat("template");
+            let kw = self.eat("template");
             let name = self.ident()?;
             let found = self.lookup_qualified(s, &name).0;
             if let Some(ids) = found {
@@ -1251,6 +1254,13 @@ impl P {
                     if !self.in_template() && !self.accessible(id, false) {
                         // DED-26: access is checked in substitution too.
                         self.error(line, "ACC-2", format!("'{}' is not accessible here", name));
+                    }
+                    if !kw && self.at("<") && self.names_template(id) && self.has_fact(save, crate::templ::FACT_LESS) {
+                        // DEP-24: the pattern read `<` after the name as the
+                        // less-than operator.
+                        self.error(line, "DEP-24", format!("the template reads '<' after '{}' as the less-than operator; the member template needs 'template'", name));
+                        self.skip_template_args()?;
+                        return Ok(QTy::unknown());
                     }
                     if self.at("<") && self.names_template(id) {
                         return self.parse_template_id_type(id, line);
@@ -1286,6 +1296,15 @@ impl P {
             self.d.list.truncate(mark);
         }
         self.skip_qualified_name()?;
+        if self.in_template() {
+            // DEP-24: a `<` after a name that follows `::` without
+            // `template`.
+            let toks = &self.toks[save..self.pos];
+            let less = (2..toks.len()).any(|i| toks[i].text == "<" && toks[i - 1].kind == TK::Ident && toks[i - 2].text == "::");
+            if less {
+                self.note_fact(save, crate::templ::FACT_LESS);
+            }
+        }
         Ok(if self.in_template() { crate::templ::dep(Dep::Opaque) } else { QTy::unknown() })
     }
 
@@ -1294,6 +1313,22 @@ impl P {
     pub fn init_list_class(&mut self, el: QTy, line: u32) -> usize {
         if let Some(x) = self.init_list_classes.iter().find(|x| x.0 == el) {
             return x.1;
+        }
+        // LSUP-1: a program that declares std::initializer_list with the
+        // shape the language needs gets a specialization of its template.
+        if self.init_list_shape_ok() && self.inst_depth < 64 {
+            let tid = self.lookup_in_scope(self.global, "std", false).and_then(|ns| match self.decls[ns[0]].k {
+                DK::Namespace(s) => self.lookup_in_scope(s, "initializer_list", false),
+                _ => None,
+            }).and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)));
+            if let Some(tid) = tid {
+                let q = self.class_inst(tid, vec![TArg::Type(el.clone())], line);
+                if let Ty::Class(c) = q.t {
+                    self.init_list_classes.push((el, c));
+                    self.require_class(c, line);
+                    return c;
+                }
+            }
         }
         let parent = self.global;
         let scope = self.new_scope(SK::Class(self.classes.len()), Some(parent), "initializer_list");
@@ -1463,7 +1498,15 @@ impl P {
     /// Apply declarator operations to a base type (DCL-1).
     pub fn apply_ops(&mut self, base: QTy, ops: &[DOp], line: u32) -> QTy {
         let mut t = base;
-        for op in ops {
+        for (oi, op) in ops.iter().enumerate() {
+            if let DOp::Func(f) = op {
+                if f.noexcept_dep && oi + 1 < ops.len() {
+                    // DEP-9: a function type with a dependent noexcept
+                    // inside another type, as in a pointer to it.
+                    t = crate::templ::dep(Dep::Opaque);
+                    continue;
+                }
+            }
             t = match op {
                 DOp::Ptr(c, v) => {
                     if t.t.is_ref() {
@@ -1557,6 +1600,10 @@ impl P {
                         Ty::Array(..) => self.error(line, "DCL-21", "function returning an array"),
                         Ty::Func(_) => self.error(line, "DCL-21", "function returning a function"),
                         _ => {}
+                    }
+                    if t.v && f.trailing.is_none() && self.inst_depth == 0 && !self.in_template() {
+                        // CV-9: a volatile return type is deprecated.
+                        self.warn(line, "CV-9", "a return type with a top-level 'volatile' is deprecated");
                     }
                     let ret = if let Some(tr) = &f.trailing {
                         if !(t.t == Ty::Unknown && !t.c) {
@@ -2060,6 +2107,21 @@ impl P {
                 }
                 break;
             }
+            if self.at_k(k, "(") {
+                // `T(5)`: a declarator in parentheses starts with a name,
+                // `*`, `&`, `&&`, `(`, `[`, `::`, or `...`, so a literal
+                // or another operator makes an expression (DCL-1).
+                let t = self.peek(k + 1);
+                match t.kind {
+                    TK::Ident => {}
+                    TK::Punct => {
+                        if !matches!(t.text.as_str(), "*" | "&" | "&&" | "(" | ")" | "[" | "::" | "...") {
+                            return false;
+                        }
+                    }
+                    _ => return false,
+                }
+            }
             return !self.at_k(k, "{");
         }
         false
@@ -2110,6 +2172,7 @@ impl P {
             defaults: 0,
             has_explicit_this: false,
             trailing_auto: None,
+            noexcept_dep: false,
         };
         let r = self.parse_param_list(&mut f);
         self.pop_scope();
@@ -2170,6 +2233,9 @@ impl P {
                         f.trailing = Some(r?);
                     }
                     return Ok(f);
+                }
+                if self.in_template() && self.inst_depth == 0 && (e.ty.is_unknown() || matches!(e.k, EK::Unknown(_))) {
+                    f.noexcept_dep = true;
                 }
                 // EXS-1 / CE-11: the operand is a constant of type bool.
                 if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
@@ -2440,6 +2506,10 @@ impl P {
             if let Some((start, end)) = defer_default {
                 let c = self.current_class_any().unwrap();
                 self.deferred.push(Deferred { func: None, field: None, param: Some(id), start, end, stack: self.stack.clone(), templ: self.templ, class: c });
+            }
+            if ty.v && !ty.t.is_ref() && self.inst_depth == 0 && !self.in_template() {
+                // CV-9: a volatile parameter type is deprecated.
+                self.warn(line, "CV-9", "a parameter type with a top-level 'volatile' is deprecated");
             }
             f.params.push(id);
             if !explicit_this {

@@ -575,6 +575,15 @@ impl P {
             self.hard_error(a.line, "CNS-35", "the check of an atomic constraint needs its own result".into());
             return Sat::Error;
         }
+        // INST-1: a class argument is used as a complete type, so its
+        // specialization is instantiated (for its hidden friends, too).
+        for m in map {
+            if let TArg::Type(q) = m {
+                if let Ty::Class(c) = nonref(q).t {
+                    self.require_class(c, a.line);
+                }
+            }
+        }
         self.sat_busy.push((a.id, key_map.clone()));
         let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
         self.d.muted += 1;

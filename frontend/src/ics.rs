@@ -1,6 +1,6 @@
 // Implicit conversion sequences and their comparison
-// (specification/foundations/conversion-sequences.md, ICS-1 to ICS-45), and
-// overload resolution for calls (specification/foundations/overload-resolution.md,
+// (specification/overloading/conversion-sequences.md, ICS-1 to ICS-45), and
+// overload resolution for calls (specification/overloading/overload-resolution.md,
 // OVL-22 to OVL-25, OVL-34 to OVL-36).
 //
 // A sequence is formed for one argument and one parameter. Two sequences
@@ -939,6 +939,11 @@ impl P {
                 }
                 // OVL-28: the more specialized template wins.
                 if self.tie_more.contains(&(fx, fy)) {
+                    return true;
+                }
+                // OVL-31: a constructor of the derived class beats an
+                // inherited one.
+                if !self.inherited_from.contains_key(&fx) && self.inherited_from.contains_key(&fy) && self.func(fx).is_some_and(|f| f.kind == FnKind::Ctor) && self.spec_of.contains_key(&fx) == self.spec_of.contains_key(&fy) {
                     return true;
                 }
             }

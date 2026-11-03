@@ -1394,8 +1394,10 @@ impl P {
             }
             return Ok(Expr::unknown(line, "member of unknown"));
         };
-        if !self.classes[c].complete && !self.in_template() {
-            // TYN-7: no member access on an incomplete class.
+        let being_defined = self.stack.iter().any(|&s| self.scopes[s].kind == SK::Class(c));
+        if !self.classes[c].complete && !self.in_template() && !being_defined {
+            // TYN-7, PFX-11: no member access on an incomplete class, other
+            // than the class whose definition contains the access.
             self.error(line, "TYN-7", "member access into an incomplete class");
             return Ok(Expr::unknown(line, "incomplete"));
         }
@@ -2095,6 +2097,23 @@ impl P {
                 break;
             }
         }
+        if self.inst_depth == 0 {
+            if is_static && (cap_default.is_some() || !cap_items.is_empty()) {
+                // LAM-27: a static lambda captures nothing.
+                self.error(line, "LAM-27", "a static lambda has a capture");
+            }
+            if is_mutable && fdecl.as_ref().is_some_and(|f| f.has_explicit_this) {
+                // LAM-17: no `mutable` with an explicit object parameter.
+                self.error(line, "LAM-17", "a lambda with an explicit object parameter is 'mutable'");
+            }
+            if let Some(f) = &fdecl {
+                let caps: Vec<String> = cap_items.iter().filter(|x| x.0 <= 1).filter_map(|x| x.1).map(|d| self.decls[d].name.clone()).collect();
+                if let Some(&p) = f.params.iter().find(|&&p| !self.decls[p].name.is_empty() && caps.contains(&self.decls[p].name)) {
+                    // LAM-17: a parameter has the name of a capture.
+                    self.error(line, "LAM-17", format!("the parameter '{}' has the name of a capture", self.decls[p].name));
+                }
+            }
+        }
         // body: a separate function (JMP-7, SW-3)
         let mut ctx = FnCtx::new(ret.clone());
         ctx.deduce = ret.is_none();
@@ -2102,7 +2121,10 @@ impl P {
         ctx.lambda_mutable = is_mutable;
         ctx.lambda_copy_default = cap_default == Some(true);
         ctx.lambda_refs = cap_refs;
-        ctx.lambda_copies = cap_items.iter().filter(|x| x.0 == 0 && !x.2).filter_map(|x| x.1).collect();
+        ctx.lambda_copies = cap_items.iter().filter(|x| x.0 <= 1 && !x.2).filter_map(|x| x.1).collect();
+        ctx.lambda_default = cap_default;
+        ctx.lambda_this = cap_items.iter().any(|x| x.0 >= 2);
+        ctx.lambda_named = cap_items.iter().filter_map(|x| x.1).collect();
         ctx.scope_base = self.stack.len();
         self.fns.push(ctx);
         self.stack.push(scope);
@@ -2164,7 +2186,7 @@ impl P {
                 0 => {
                     let id = (*id)?;
                     let v = self.var(id)?.clone();
-                    if v.dependent || v.ty.is_unknown() {
+                    if (v.dependent && !self.sb_place.contains_key(&id)) || v.ty.is_unknown() {
                         return None;
                     }
                     explicit.push(id);
@@ -2217,7 +2239,7 @@ impl P {
                 }
             };
             let v = self.var(id)?.clone();
-            if v.dependent || v.ty.is_unknown() {
+            if (v.dependent && !self.sb_place.contains_key(&id)) || v.ty.is_unknown() {
                 return None;
             }
             let t = nonref(&v.ty);
@@ -2274,6 +2296,11 @@ impl P {
         let fty = FnTy { ret, params: ptys, variadic, noexcept, cv_c: !is_mutable && !is_static, cv_v: false, refq: 0 };
         let ptr_fty = FnTy { cv_c: false, ..fty.clone() };
         let captureless = caps.is_empty() && this_member.is_none() && self.classes[c].fields.is_empty();
+        if !captureless {
+            // LAM-26: a closure with captures has no default constructor
+            // and no copy assignment.
+            self.capturing_closures.insert(c);
+        }
         let fi = FuncInfo {
             fty,
             params: params.clone(),
@@ -2448,6 +2475,11 @@ impl P {
                 }
                 self.pos += 1;
                 items.push((if star { 3 } else { 2 }, None, false, None));
+                let member = self.fns.iter().rev().find(|f| !f.is_lambda).is_some_and(|f| f.class.is_some() && !f.is_static);
+                if !member && self.dmi_depth == 0 && !self.in_template() && !(self.class_depth > 0 && self.fns.iter().all(|f| f.is_lambda)) {
+                    // LAM-24: `this` is captured only where it exists.
+                    self.error(cl, "LAM-24", "'this' captured outside a non-static member function");
+                }
                 if seen.iter().any(|s| s == "this") {
                     self.error(cl, "LAM-6", "'this' captured twice");
                 }
@@ -2511,6 +2543,24 @@ impl P {
                     match self.lookup(&name) {
                         Some(ids) => {
                             items.push((0, Some(ids[0]), by_ref, None));
+                            if let Some(v) = self.var(ids[0]).cloned() {
+                                if !by_ref && !self.in_template() && v.local && v.storage == Storage::Auto && self.is_abstract(&nonref(&v.ty).t) {
+                                    // LAM-6: a capture by copy makes a member
+                                    // of the variable's type.
+                                    self.error(cl, "LAM-6", format!("'{}' has an abstract class type and cannot be captured by copy", name));
+                                }
+                                if !self.in_template() && v.local && v.storage == Storage::Auto && !v.dependent {
+                                    if let Some(f) = self.fns.last() {
+                                        let outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[ids[0]].scope);
+                                        let named = f.lambda_named.iter().any(|&d| d == ids[0] || self.decls[d].name == name);
+                                        if f.is_lambda && outside && f.lambda_default.is_none() && !named {
+                                            // LAM-9: an enclosing lambda must
+                                            // capture the variable too.
+                                            self.error(cl, "LAM-9", format!("'{}' is not captured by the enclosing lambda", name));
+                                        }
+                                    }
+                                }
+                            }
                             if let Some(v) = self.var(ids[0]) {
                                 if !(v.local && v.storage == Storage::Auto) && !v.dependent {
                                     // LAM-6: only automatic variables are captured.
@@ -2547,7 +2597,7 @@ impl P {
                 // DEP-19: the pattern reads the name as a value.
                 self.note_fact(start, crate::templ::FACT_VALUE_QUAL);
             }
-            if self.eat("template") {}
+            let kw = self.eat("template");
             if self.at("~") {
                 self.pos += 1;
             }
@@ -2555,6 +2605,19 @@ impl P {
                 self.pos += 1;
             } else {
                 self.ident()?;
+            }
+            if self.in_template() && self.qual_starts_with_tparam(start) {
+                let name_pos = self.pos.saturating_sub(1);
+                let kw = kw || (name_pos >= 1 && self.toks[name_pos - 1].text == "template");
+                if self.at("<") && !kw {
+                    // DEP-24: without `template` the `<` is the less-than
+                    // operator.
+                    self.note_fact(name_pos, crate::templ::FACT_LESS);
+                }
+                if kw && !self.at("<") {
+                    // DEP-26: `template` before a name without a list.
+                    self.note_fact(name_pos, crate::templ::FACT_TEMPLATE_NO_LIST);
+                }
             }
             if self.at("<") && self.in_template() {
                 self.skip_template_args()?;
@@ -2612,9 +2675,31 @@ impl P {
             Some(Ok(s)) => self.lookup_qualified(s, &name),
             Some(Err(())) => (None, false),
         };
+        let name_pos = self.pos.saturating_sub(1);
+        if let (Some(_), Some(ids)) = (&scope, &found) {
+            let is_templ = ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template) || matches!(self.decls[i].k, DK::Template(_)));
+            if is_templ && self.at("<") && self.has_fact(name_pos, crate::templ::FACT_LESS) {
+                // DEP-24: the pattern read `<` after the name as the
+                // less-than operator.
+                self.error(line, "DEP-24", format!("the template reads '<' after '{}' as the less-than operator; the member template needs 'template'", name));
+                self.skip_template_args()?;
+                if self.at("(") {
+                    self.skip_balanced();
+                }
+                return Ok(Expr::unknown(line, "member template without template"));
+            }
+            if self.has_fact(name_pos, crate::templ::FACT_TEMPLATE_NO_LIST) && (!is_templ || ids.iter().all(|&i| self.func(i).is_some() || matches!(self.decls[i].k, DK::Var(_) | DK::Field(_)))) {
+                // DEP-26: the name after `template` must name a template,
+                // with an argument list.
+                self.error(line, "DEP-26", format!("'{}' follows 'template' but has no template argument list", name));
+                return Ok(Expr::unknown(line, "template keyword without a list"));
+            }
+        }
+        let after_kw = name_pos >= 1 && self.toks[name_pos - 1].text == "template" && !self.at("<");
         if scope.is_some() && self.has_fact(start, crate::templ::FACT_VALUE_QUAL) {
             if let Some(ids) = &found {
-                if ids.iter().all(|&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias))) {
+                let template_name = after_kw && ids.iter().all(|&i| matches!(self.decls[i].k, DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias)));
+                if !template_name && ids.iter().all(|&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias))) {
                     // DEP-19: the template read the name as a value, and
                     // in this specialization it names a type.
                     self.error(line, "DEP-19", format!("'{}' names a type, but the template reads it as a value without 'typename'", name));
@@ -2959,6 +3044,11 @@ impl P {
             // DEL-1: no reference to a deleted function.
             self.error(line, "DEL-1", format!("use of the deleted function '{}'", self.decls[id].name));
         }
+        if ids.len() == 1 && !self.in_template() && self.lazy_bodies.contains_key(&id) && self.func(id).is_some_and(|f| f.ret_auto.is_some() && f.fty.ret.is_unknown()) {
+            // INST-31: a member of an instance whose return type is
+            // deduced gets its body now.
+            self.use_fn(id);
+        }
         if ids.len() == 1 && !self.in_template() {
             if let Some(f) = self.func(id) {
                 // RET-3: no use before the return type is known.
@@ -3009,7 +3099,28 @@ impl P {
                         return Expr::new(EK::Unknown(format!("template parameter#{}", id)), nonref(&v.ty), cat, line);
                     }
                     // SB-12: a structured binding name is an lvalue.
-                    return Expr::new(EK::Var(id), nonref(&v.ty), Cat::L, line);
+                    let mut t = nonref(&v.ty);
+                    if let Some(f) = self.fns.last() {
+                        if f.is_lambda && !f.lambda_mutable && f.lambda_copies.contains(&id) && !v.ty.t.is_ref() {
+                            // LAM-23: an init capture by copy is const in a
+                            // lambda that is not mutable.
+                            t.c = true;
+                        }
+                    }
+                    return Expr::new(EK::Var(id), t, Cat::L, line);
+                }
+                // LAM-9: an automatic variable of an enclosing function is
+                // named in a lambda only through a capture. A read of a
+                // constant needs none.
+                if let Some(f) = self.fns.last() {
+                    let constant = v.constexpr || (v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) && v.init.is_some());
+                    let named = f.lambda_named.iter().any(|&d| d == id || self.decls[d].name == self.decls[id].name);
+                    if f.is_lambda && (v.local || v.param) && v.storage == Storage::Auto && f.lambda_default.is_none() && !named && self.in_unevaluated == 0 && !self.in_template() && !constant && !self.sb_place.contains_key(&id) {
+                        let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
+                        if declared_outside && self.decls[id].scope != self.global {
+                            self.error(line, "LAM-9", format!("the lambda names '{}', which it does not capture", self.decls[id].name));
+                        }
+                    }
                 }
                 // CLS-28: a member function of a local class does not name
                 // an automatic variable of the enclosing function in an
@@ -3119,6 +3230,7 @@ impl P {
 
     /// `this` for implicit member access, or None if there is no object.
     fn implicit_this(&mut self, line: u32, for_call: bool) -> Option<Expr> {
+        self.lambda_this_check(line, true);
         let Some(f) = self.fns.iter().rev().find(|f| !f.is_lambda || f.class.is_some()) else {
             // PRIM-11, CLS-2: a default member initializer has `this`.
             if self.dmi_depth > 0 && self.fns.iter().all(|f| f.is_lambda) {
@@ -3141,7 +3253,37 @@ impl P {
         Some(Expr::new(EK::This, QTy::new(Ty::Ptr(Box::new(ct))), Cat::PR, line))
     }
 
+    /// LAM-17, LAM-21: a use of `this`, written or implicit, inside
+    /// lambdas: each lambda between the use and the member function
+    /// captures it. A capture through `[=]` alone is deprecated.
+    fn lambda_this_check(&mut self, line: u32, implicit: bool) {
+        if self.in_template() || self.in_unevaluated > 0 || !self.fns.last().is_some_and(|f| f.is_lambda) {
+            return;
+        }
+        if !self.fns.iter().any(|f| !f.is_lambda && f.class.is_some() && !f.is_static) {
+            return;
+        }
+        let mut warn = false;
+        for f in self.fns.iter().rev() {
+            if !f.is_lambda {
+                break;
+            }
+            if !f.lambda_this && f.lambda_default.is_none() {
+                let what = if implicit { "a member is used" } else { "'this' is used" };
+                self.error(line, "LAM-17", format!("{} in a lambda that does not capture 'this'", what));
+                return;
+            }
+            if !f.lambda_this && f.lambda_default == Some(true) {
+                warn = true;
+            }
+        }
+        if warn {
+            self.warn(line, "LAM-21", "'this' is captured implicitly through '[=]', which is deprecated");
+        }
+    }
+
     fn build_this(&mut self, line: u32) -> Expr {
+        self.lambda_this_check(line, false);
         let f = self.fns.iter().rev().find(|f| !f.is_lambda);
         match f.and_then(|f| f.class.map(|c| (c, f.is_static, f.this_const, f.this_volatile))) {
             Some((_, false, _, _)) if f.and_then(|f| f.func).and_then(|id| self.func(id)).is_some_and(|fi| fi.explicit_obj) => {
@@ -4582,7 +4724,25 @@ impl P {
                 if e.ty.is_unknown() {
                     return Expr::new(EK::Unary(op, Box::new(e)), QTy::unknown(), Cat::PR, line);
                 }
-                if let EK::Member(_, f) = &e.k {
+                if let EK::Var(id) = &e.k {
+                    if let (Some(f), Some(v)) = (self.fns.last(), self.var(*id)) {
+                        let named = f.lambda_named.iter().any(|&d| d == *id || self.decls[d].name == self.decls[*id].name);
+                        if f.is_lambda && v.local && v.storage == Storage::Auto && f.lambda_default.is_none() && !named && self.in_unevaluated == 0 && !self.in_template() {
+                            let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[*id].scope);
+                            if declared_outside {
+                                // LAM-17: the address of a local constant
+                                // needs a capture.
+                                self.error(line, "LAM-17", format!("the lambda takes the address of '{}', which it does not capture", self.decls[*id].name));
+                            }
+                        }
+                    }
+                }
+                let named = match &e.k {
+                    // SB-16: a structured binding that names a bit-field.
+                    EK::Var(id) => self.sb_place.get(id).map(|p| (**p).clone()),
+                    _ => None,
+                };
+                if let EK::Member(_, f) = &named.as_ref().unwrap_or(&e).k {
                     if let DK::Field(fi) = &self.decls[*f].k {
                         if fi.bits.is_some() {
                             self.error(line, "BF-4", "address of a bit-field");
@@ -4629,6 +4789,10 @@ impl P {
                         self.error(line, "UN-11", format!("invalid operand to '{}': {}", sp, show(&t)));
                         return Expr::unknown(line, "bad operand");
                     }
+                }
+                if t.v && !self.in_template() && self.wflag(&["-Wall", "-Wdeprecated", "-Wvolatile", "-Wdeprecated-volatile"]) {
+                    // VOL-5: `++` and `--` on a volatile object are deprecated.
+                    self.warn(line, "VOL-5", format!("'{}' on a volatile object is deprecated", sp));
                 }
                 let cat = if matches!(op, UOp::PreInc | UOp::PreDec) { Cat::L } else { Cat::PR };
                 let ty = if cat == Cat::PR { t.unqual() } else { t };
@@ -4698,8 +4862,33 @@ impl P {
                 // class declares no assignment operator.
                 let rt = nonref(&r.ty);
                 let same = rt.t == Ty::Class(c) || matches!(rt.t, Ty::Class(d) if self.is_base_of(c, d));
+                if same && self.capturing_closures.contains(&c) && !self.in_template() {
+                    // LAM-26: the copy assignment of a closure with
+                    // captures is deleted.
+                    self.error(line, "LAM-26", "assignment of a closure object with captures, whose copy assignment is deleted");
+                    return Expr::unknown(line, "bad closure assignment");
+                }
                 if same && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && (l.cat == Cat::L || self.in_unevaluated > 0) && !matches!(r.k, EK::Unknown(_)) {
                     return Expr::new(EK::Assign(None, Box::new(l), Box::new(r)), nonref(&lt), Cat::L, line);
+                }
+                // CPY-21, OVL-14: the implicit copy and move assignment
+                // operators take a `C` made from a value of another type by
+                // a converting constructor.
+                if !same && !rt.is_unknown() && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && l.cat == Cat::L && !lt.c && !matches!(r.k, EK::Unknown(_) | EK::InitList(_)) {
+                    if let Ty::Class(rc) = rt.t {
+                        let mut fns = Vec::new();
+                        self.conv_fns(rc, 0, &mut fns);
+                        if !self.class_uncertain(rc) && fns.is_empty() {
+                            let mark = self.d.list.len();
+                            let x = self.ctor_call_mode(c, std::slice::from_ref(&r), &QTy::new(Ty::Class(c)), false, true, false, line);
+                            if self.d.list.len() != mark {
+                                return Expr::unknown(line, "bad class assignment");
+                            }
+                            if !matches!(x.k, EK::Unknown(_)) && x.cat == Cat::PR {
+                                return Expr::new(EK::Assign(None, Box::new(l), Box::new(x)), nonref(&lt), Cat::L, line);
+                            }
+                        }
+                    }
                 }
             }
             return Expr::unknown(line, "class assignment");

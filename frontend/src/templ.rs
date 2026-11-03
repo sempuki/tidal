@@ -3740,6 +3740,9 @@ pub const FACT_LESS: u8 = 2;
 /// An unqualified call that does not depend on a parameter (DEP-3,
 /// DEP-5).
 pub const FACT_INDEPENDENT_CALL: u8 = 4;
+/// The keyword `template` before a name with no argument list after it
+/// (DEP-26).
+pub const FACT_TEMPLATE_NO_LIST: u8 = 8;
 
 impl P {
     /// The vector and index of the token at `pos` in the current tokens.

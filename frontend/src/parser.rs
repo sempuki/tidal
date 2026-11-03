@@ -268,6 +268,11 @@ pub struct FnCtx {
     pub lambda_refs: Vec<String>,
     /// LAM-18: the variables a lambda captures by copy explicitly.
     pub lambda_copies: Vec<DeclId>,
+    /// The capture default of a lambda (Some(true) for `=`), whether it
+    /// captures `this` explicitly, and the variables it names.
+    pub lambda_default: Option<bool>,
+    pub lambda_this: bool,
+    pub lambda_named: Vec<DeclId>,
     pub ret_auto: Option<(crate::decl::DeclSpec, crate::decl::Declarator)>,
     /// THR-1: the number of declarations at the start of each try block
     /// of the function that encloses the parser.
@@ -298,6 +303,9 @@ impl FnCtx {
             lambda_copy_default: false,
             lambda_refs: Vec::new(),
             lambda_copies: Vec::new(),
+            lambda_default: None,
+            lambda_this: false,
+            lambda_named: Vec::new(),
             ret_auto: None,
             try_marks: Vec::new(),
         }
@@ -526,6 +534,19 @@ pub struct P {
     pub replayed_defs: std::collections::HashSet<DeclId>,
     /// Function parameters declared as packs.
     pub pack_params: std::collections::HashSet<DeclId>,
+    /// TPL-38: friend function templates defined with a default.
+    pub friend_defaults: Vec<(String, usize, usize)>,
+    pub friend_templ: Option<DeclId>,
+    /// DER-8: the bases whose constructors a class inherits, the
+    /// constructor of the base for each inherited one, and the implicit
+    /// default constructors made beside them.
+    pub inh_bases: HashMap<usize, Vec<usize>>,
+    pub inherited_from: HashMap<DeclId, DeclId>,
+    pub implicit_default: std::collections::HashSet<DeclId>,
+    /// LAM-26: the closure classes of lambdas with captures.
+    pub capturing_closures: std::collections::HashSet<usize>,
+    /// SB-1: the place that each structured binding names.
+    pub sb_place: HashMap<DeclId, Rc<Expr>>,
     /// The last type name that named a bound or declared type pack.
     pub last_pack_ref: Option<DeclId>,
     /// The class template of the last dependent template-id before `::`.
@@ -788,6 +809,13 @@ impl P {
             class_targ_objs: Vec::new(),
             replayed_defs: Default::default(),
             pack_params: Default::default(),
+            friend_defaults: Vec::new(),
+            friend_templ: None,
+            inh_bases: HashMap::new(),
+            inherited_from: HashMap::new(),
+            implicit_default: Default::default(),
+            capturing_closures: Default::default(),
+            sb_place: HashMap::new(),
             last_pack_ref: None,
             last_qual_templ: None,
             last_partial_class: None,

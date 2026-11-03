@@ -374,6 +374,7 @@ impl P {
         self.classes[c].complete = true;
         self.pending_template = None;
         if !is_template {
+            self.inherit_ctors(c, self.line());
             self.check_overrides(c);
             self.prime_eligible(c);
         }
@@ -728,6 +729,7 @@ impl P {
         self.class_depth -= 1;
         self.stack = saved;
         self.classes[c].complete = true;
+        self.inherit_ctors(c, self.line());
         self.check_overrides(c);
         self.prime_eligible(c);
         if self.class_depth == 0 {

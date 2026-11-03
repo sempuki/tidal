@@ -44,6 +44,11 @@ impl<'a> Machine<'a> {
                 }
             }
         }
+        if let Some(e) = self.p.sb_place.get(&id) {
+            // SB-1: a structured binding names a part of the hidden variable.
+            let e = e.clone();
+            return self.lvalue(&e);
+        }
         let Some(v) = self.p.var(id) else {
             return unsup("reference to something that is not a variable");
         };
@@ -69,7 +74,7 @@ impl<'a> Machine<'a> {
     }
 
     /// A variable from outside the constant evaluation (CE-3).
-    fn const_var_place(&mut self, id: DeclId, v: VarInfo) -> R<Ptr> {
+    pub(crate) fn const_var_place(&mut self, id: DeclId, v: VarInfo) -> R<Ptr> {
         let name = self.p.decls[id].name.clone();
         let usable_local = v.local && !v.param && v.init.is_some() && !v.ty.v && (v.constexpr || (v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_)))));
         if (v.param || (v.local && v.storage == Storage::Auto)) && !usable_local {
@@ -149,7 +154,19 @@ impl<'a> Machine<'a> {
             } else {
                 format!("'{}' is not constexpr or a const integer with a constant initializer", name)
             };
-            Val::NotUsable(why)
+            // CE-14: the address of a subobject is a constant, so a class
+            // or array keeps its shape, and each scalar part is not usable.
+            if matches!(v.ty.t, Ty::Class(_) | Ty::Array(..)) && self.leaves(&v.ty, 0) <= 4096 {
+                fn mark(v: Val, why: &str) -> Val {
+                    match v {
+                        Val::Agg(xs) => Val::Agg(xs.into_iter().map(|x| mark(x, why)).collect()),
+                        _ => Val::NotUsable(why.to_string()),
+                    }
+                }
+                mark(self.zero(&v.ty), &why)
+            } else {
+                Val::NotUsable(why)
+            }
         };
         let o = self.new_obj(val, false);
         self.objs[o].is_static = true;
@@ -173,13 +190,20 @@ impl<'a> Machine<'a> {
     /// CE-14).
     pub fn bind_static_ref(&mut self, init: &Expr) -> R<Ptr> {
         self.full(|m| {
+            let mark = m.extended.len();
             let pl = m.bind_ref(init)?;
+            // REF-4, Q-0193: the temporaries that reference members of an
+            // extended aggregate bind are static too.
+            let mut cs = m.extended.split_off(mark);
             if super::stmt::binds_temporary_p(m.p, init) {
                 if let Some(c) = m.extend_temp(pl.obj) {
-                    m.objs[c.place.obj].is_static = true;
-                    if !m.constant {
-                        m.static_dtors.push(c);
-                    }
+                    cs.push(c);
+                }
+            }
+            for c in cs {
+                m.objs[c.place.obj].is_static = true;
+                if !m.constant {
+                    m.static_dtors.push(c);
                 }
             }
             Ok(pl)
@@ -1674,6 +1698,14 @@ impl<'a> Machine<'a> {
             }
             Conv::ArrayDecay => {
                 let p = if a.cat == Cat::PR { self.materialize(a)? } else { self.lvalue(a)? };
+                if a.cat == Cat::PR && matches!(a.k, EK::InitList(_)) {
+                    // ILC-5: the array behind a std::initializer_list lives
+                    // as long as the list object, as a temporary that a
+                    // reference binds does.
+                    if let Some(c) = self.extend_temp(p.obj) {
+                        self.extended.push(c);
+                    }
+                }
                 Ok(Val::Ptr(Ptr { obj: p.obj, path: full_path(&p), off: 0, array: true, bytes: false }))
             }
             Conv::FuncDecay => match &a.k {
@@ -3675,7 +3707,8 @@ impl<'a> Machine<'a> {
         // (id, rvalue reference, const, volatile)
         let ctors: Vec<(DeclId, bool, bool, bool)> = self.p.classes[c].ctors.iter().filter_map(|&i| {
             let f = self.p.func(i)?;
-            if f.params.is_empty() || f.params.len() - f.defaults.min(f.params.len()) > 1 || f.template || f.deleted {
+            if f.params.is_empty() || f.params.len() - f.defaults.min(f.params.len()) > 1 || f.template || f.deleted || self.p.inherited_from.contains_key(&i) {
+                // OVL-17: an inherited constructor is not a copy.
                 return None;
             }
             match &self.p.var(f.params[0])?.ty.t {
