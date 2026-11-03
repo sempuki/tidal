@@ -218,7 +218,7 @@ cast between their pointers keeps the original object:
 
 :::{rule} STG-1
 :kind: reject
-:tests: foundations/storage/array-size-exceeds-size-type.cpp foundations/storage/class-size-exceeds-size-type.cpp
+:tests: foundations/storage/array-size-exceeds-size-type.cpp foundations/storage/class-size-exceeds-size-type.cpp foundations/storage/class-size-exceeds-size-type-ilp32.cpp
 
 The size in bytes of a type must fit in `std::size_t` ({rule}`LSUP-4`).
 The rule covers arrays ({rule}`DCL-19`) and classes.
@@ -752,7 +752,7 @@ template <class T> void destroy_all(T* first, int n) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 77
-of 82 tests. EDG runs no programs, so its results for the run tests say
+of 83 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -763,8 +763,10 @@ only that the programs are valid.
 - STG-1: Clang 18 accepts a class whose size does not fit in
   `std::size_t` and gives `sizeof` a reduced value. GCC accepts the
   class definition and rejects `sizeof` of the class. Clang 22 and EDG
-  reject the class ({question}`Q-0308`). Every compiler rejects a
-  smaller limit too, as {rule}`DCL-10` allows.
+  reject the class ({question}`Q-0308`). With `-m32`, Clang 22 and 18
+  accept a class larger than `std::size_t` holds, and GCC and EDG reject
+  it ({question}`Q-0350`). Every compiler rejects a
+  smaller limit too, as {rule}`TR-14` and {rule}`TR-15` allow.
 - STG-4: no compiler treats an array of `char` differently from a byte
   array ({question}`Q-0305`).
 - STG-28: Clang and GCC, at `-O0`, at `-O2`, and with the address and

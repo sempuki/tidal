@@ -1,4 +1,4 @@
-// tidal-rules: DCL-10
+// tidal-rules: TR-14
 // tidal-expect-clang: reject
 // tidal-expect-gcc: accept
 // tidal-expect-edg: accept

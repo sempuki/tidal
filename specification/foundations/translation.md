@@ -7,6 +7,7 @@ following:
 - what an implementation must do with a program that breaks a rule,
 - where execution begins,
 - how constant evaluation relates to execution,
+- what limits each implementation sets on translation,
 - what each class of rule in this specification requires.
 
 The later pages use these classes without explaining them again.
@@ -164,6 +165,28 @@ execution in the following ways:
 A program can ask which mode it is in and act differently in each.
 :::
 
+:::{principle} TR-P6
+:rules: TR-13 TR-14 TR-15
+
+An implementation translates a program on a machine with finite
+memory, so translation has limits. Each implementation sets its own
+limits and documents them. This specification sets no minimum for any
+limit. If a program goes past a limit, the implementation rejects the
+program. The limits are of these kinds:
+
+| Limit | Rule |
+|---|---|
+| the depth of nested instantiations | TR-13 |
+| the size of an array type | TR-14 |
+| the size of a class type | TR-15 |
+| the depth of recursion and the number of steps in one constant evaluation | {rule}`CE-10` |
+
+Each configuration of a compiler is an implementation. So a compiler
+option that changes a limit gives an implementation with a different
+limit. A program that needs a high limit is portable only to the
+implementations whose limits are high enough.
+:::
+
 ## Constraints
 
 :::{rule} TR-1
@@ -290,6 +313,56 @@ receives the value modulo 256, as a number from 0 to 255. A value of 256
 gives status 0, and a value of -1 gives status 255.
 :::
 
+:::{rule} TR-13
+:kind: impl-defined
+:tests: foundations/translation/limit-depth-crossed.cpp foundations/translation/limit-depth-crossed-ilp32.cpp foundations/translation/limit-depth-ilp32.cpp foundations/translation/limit-depth-one-template-100.cpp foundations/translation/limit-depth-two-templates-100.cpp foundations/translation/limit-depth-two-templates-1000.cpp foundations/translation/limit-depth-flag-lowered.cpp foundations/translation/limit-depth-edg-flag-lowered.cpp templates/instantiation/recursion-within-limit.cpp templates/instantiation/recursion-function-within-limit.cpp templates/instantiation/recursion-endless.cpp templates/instantiation/recursion-endless-function.cpp
+
+An implementation rejects a program whose {term}`instantiations <instantiation>` nest
+deeper than a limit. The limit, and the way that the implementation
+counts the depth, are implementation-defined. The matrix compilers
+count and limit the depth as follows, on both targets:
+
+| Compiler | What the limit counts | Limit | Option that sets the limit |
+|---|---|---|---|
+| Clang 22, 18 | the nested instantiations of all templates | 1024 | `-ftemplate-depth=N` |
+| GCC 16, 14 | the nested instantiations of all templates | 900 | `-ftemplate-depth=N` |
+| EDG 7.0 | the nested instantiations of one template | 64 | `--pending_instantiations=N` |
+:::
+
+:::{rule} TR-14
+:kind: impl-defined
+:tests: foundations/translation/limit-array-largest-clang-lp64.cpp foundations/translation/limit-array-exceeded-clang-lp64.cpp foundations/translation/limit-array-largest-gcc-lp64.cpp foundations/translation/limit-array-exceeded-gcc-lp64.cpp foundations/translation/limit-array-largest-edg-lp64.cpp foundations/translation/limit-array-largest-gcc-ilp32.cpp foundations/translation/limit-array-exceeded-gcc-ilp32.cpp foundations/translation/limit-array-largest-ilp32.cpp declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp
+
+An implementation rejects an array type whose size in bytes is larger
+than a limit. The limit is implementation-defined, can depend on the
+target, and is never larger than {rule}`STG-1` allows. The largest
+array of the matrix compilers has this size in bytes:
+
+| Compiler | x86-64 Linux | `-m32` |
+|---|---|---|
+| Clang 22, 18 | 2<sup>61</sup> - 1 | 2<sup>32</sup> - 1 |
+| GCC 16, 14 | 2<sup>63</sup> - 1 | 2<sup>31</sup> - 1 |
+| EDG 7.0 | 2<sup>64</sup> - 1 | 2<sup>32</sup> - 1 |
+:::
+
+:::{rule} TR-15
+:kind: impl-defined
+:tests: foundations/translation/limit-class-largest-clang-lp64.cpp foundations/translation/limit-class-exceeded-clang-lp64.cpp foundations/translation/limit-class-largest-clang-18-lp64.cpp foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp foundations/translation/limit-class-largest-gcc-lp64.cpp foundations/translation/limit-class-exceeded-gcc-lp64.cpp foundations/translation/limit-class-largest-edg-lp64.cpp foundations/translation/limit-class-largest-gcc-ilp32.cpp foundations/translation/limit-class-exceeded-gcc-ilp32.cpp foundations/translation/limit-class-largest-ilp32.cpp
+
+If the size of a class type is larger than a limit, an implementation
+rejects each use that needs the size, such as an object definition or
+`sizeof`. The limit is implementation-defined, can depend on the
+target, and is never larger than {rule}`STG-1` allows. The largest
+class of the matrix compilers has this size in bytes:
+
+| Compiler | x86-64 Linux | `-m32` |
+|---|---|---|
+| Clang 22 | 2<sup>60</sup> - 1 | no limit (Evidence) |
+| Clang 18 | no limit (Evidence) | no limit (Evidence) |
+| GCC 16, 14 | 2<sup>63</sup> - 1 | 2<sup>31</sup> - 1 |
+| EDG 7.0 | 2<sup>64</sup> - 1 | 2<sup>32</sup> - 1 |
+:::
+
 ## Recommended Practice
 
 :::{rule} TR-6
@@ -318,8 +391,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 38
-of 39 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 53
+of 71 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -333,6 +406,35 @@ the run and link tests say only that the programs are valid.
   expression or a statement was expected. The grammar states which
   sequences are valid, and TR-12 gives the effect of a sequence outside
   them. No rule lists such sequences one by one ({question}`Q-0312`).
+- TR-13: each compiler names the limit in its message. Clang says
+  "recursive template instantiation exceeded maximum depth of 1024",
+  GCC says "template instantiation depth exceeds maximum of 900", and
+  EDG says "excessive recursion at instantiation". Clang and GCC accept
+  a chain of 100 instantiations of one template, and EDG rejects it.
+  All three accept a chain of 100 that alternates between two
+  templates. Clang accepts a chain of 1000 that alternates, and GCC and EDG
+  reject it ({question}`Q-0351`).
+  The flag tests lower each limit with the option of the table. The
+  other compilers reject the unknown option.
+- TR-13: on an endless chain of function templates, Clang 22 and 18
+  print the depth message and then end with a segmentation fault. Each
+  compiler rejects the program with a diagnostic first
+  ({rule}`INST-15`).
+- TR-14: EDG rejects an array only when its size does not fit in
+  `std::size_t`, and Clang does the same with `-m32`. GCC's largest
+  array has the largest value of `std::ptrdiff_t` as its size, and its
+  message says that the size "exceeds maximum object size". Clang's
+  message says "array is too large" ({question}`Q-0012`).
+- TR-15: no compiler rejects the definition of a large class, only the
+  uses that need its size. Clang 22 says "structure is too large", GCC
+  says "size of type is too large", and EDG says "class is too large".
+  Clang 18 rejects no class. On x86-64, Clang 18 gives the right
+  `sizeof` up to 2<sup>61</sup> - 1 bytes and a wrong value above. With
+  `-m32`, Clang 22 and 18 give the right `sizeof` up to
+  2<sup>32</sup> - 1 bytes. Above that, they accept the class and give
+  `sizeof` the size reduced modulo 2<sup>32</sup>, against
+  {rule}`STG-1` ({question}`Q-0350`,
+  {question}`Q-0012`).
 
 The table below gives, for each `recommended` rule that asks for a
 warning, the flag that turns the warning on in Clang 22 and GCC 16. The

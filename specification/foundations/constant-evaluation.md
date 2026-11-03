@@ -115,7 +115,8 @@ there (CE-30).
 
 An evaluation runs on the translator, so an evaluation has limits that
 a run does not. Each implementation sets and documents its own limits on
-the depth of recursion and on the number of steps.
+the depth of recursion and on the number of steps. These limits are
+among the limits of translation that {principle}`TR-P6` lists.
 :::
 
 ## Syntax

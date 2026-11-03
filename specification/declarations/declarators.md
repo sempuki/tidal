@@ -48,7 +48,7 @@ another name for an existing object or function, so:
 :::
 
 :::{principle} DCL-P5
-:rules: DCL-5 DCL-19 DCL-6 DCL-20 DCL-7 DCL-21 DCL-10
+:rules: DCL-5 DCL-19 DCL-6 DCL-20 DCL-7 DCL-21
 
 An array holds a known, positive number of complete elements, so its
 bound is a constant, or comes from the initializer or from a definition
@@ -56,7 +56,7 @@ elsewhere. Only the first bound of an array of arrays can be left out,
 because the element type must be complete. A function returns a value,
 so a function cannot return an array or a function, though it can
 return a pointer or a reference to an array or a function. The largest
-array is a limit of the implementation.
+array is a limit of the implementation ({rule}`TR-14`).
 :::
 
 :::{principle} DCL-P3
@@ -493,12 +493,9 @@ cases are {rule}`CAST-5` and {rule}`PRIM-8` (decision 0052), and
 ## Implementation Requirements
 
 :::{rule} DCL-10
-:kind: impl-defined
-:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp
+:kind: withdrawn
 
-The largest array that an implementation accepts is
-implementation-defined. The limit can depend on the target. The limit
-is never larger than the bound that DCL-19 sets.
+This rule merged into {rule}`TR-14`.
 :::
 
 ## Recommended Practice
@@ -567,15 +564,12 @@ void send(volatile int* to);   // valid
 
 ## Evidence
 
-All eight compilers agree on 97 of 101 tests. The results are in
+All eight compilers agree on 96 of 99 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
   size zero as extensions. Both reject these arrays only under
   `-pedantic-errors`. EDG rejects both in all modes.
-- **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16
-  and 14 and EDG 7.0 accept it. The provisional answer is that the limit
-  is implementation-defined. See {question}`Q-0012`.
 - **DCL-15.** Clang and EDG accept a pointer to member whose type is an
   alias of a function type with a ref-qualifier. GCC drops the
   ref-qualifier from the pointer's type and rejects the initialization

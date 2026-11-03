@@ -1,7 +1,7 @@
 # Q-0298: How do implementations treat a pointer difference that does not fit its type?
 
 **Status:** provisional
-**Affects:** ADD-18, DCL-10, `tests/expressions/additive/pointer-difference-overflow-ilp32.cpp`, `tests/expressions/additive/pointer-difference-largest-ilp32.cpp`
+**Affects:** ADD-18, TR-14, `tests/expressions/additive/pointer-difference-overflow-ilp32.cpp`, `tests/expressions/additive/pointer-difference-largest-ilp32.cpp`
 
 ## Context
 
@@ -35,7 +35,7 @@ result.
 ## Options
 
 1. A difference that does not fit its type is undefined (ADD-18).
-   GCC's object limit is an implementation limit (DCL-10). EDG's
+   GCC's object limit is an implementation limit (TR-14). EDG's
    rejection of positions past `INT_MAX` is a missing feature of its
    constant evaluator, and a possible defect.
 2. The same as option 1, and an implementation must also keep each

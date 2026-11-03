@@ -1,4 +1,4 @@
-// tidal-rules: INST-15
+// tidal-rules: INST-15 TR-13
 // tidal-expect: reject
 // tidal-error-clang: in instantiation of static data member 'Count<[0-9]{3,}>::value'
 // tidal-error-gcc: In instantiation of .constexpr const int Count<[0-9]{3,}>::value.

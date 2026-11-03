@@ -139,12 +139,12 @@ points must give the specialization the same meaning (INST-32).
 :::
 
 :::{principle} INST-P5
-:rules: INST-14
-:exceptions: INST-15
+:rules: INST-15
 
 An instantiation can need other instantiations, which can need others
 in turn. Each implementation sets a limit on the depth of this
-nesting. A chain with no end exceeds every limit.
+nesting ({rule}`TR-13`). A chain with no end exceeds every limit, so
+every implementation rejects it.
 :::
 
 ## Syntax
@@ -521,14 +521,13 @@ instantiation. A class specialization that needs such a declaration is
 not valid. INST-32 covers a function specialization ({question}`Q-0257`).
 :::
 
-## Undefined Behavior
-
 :::{rule} INST-15
-:kind: undefined
+:kind: reject
 :tests: templates/instantiation/recursion-endless.cpp templates/instantiation/recursion-endless-function.cpp
 
-If an instantiation needs an endless chain of other instantiations, the
-behavior is undefined.
+An instantiation must not need an endless chain of other
+instantiations. Such a chain goes past the limit of {rule}`TR-13` on
+every implementation.
 :::
 
 ## Implementation Requirements
@@ -550,10 +549,9 @@ that no use names is or is not instantiated.
 :::
 
 :::{rule} INST-14
-:kind: impl-defined
-:tests: templates/instantiation/recursion-within-limit.cpp templates/instantiation/recursion-function-within-limit.cpp
+:kind: withdrawn
 
-The greatest depth of nested instantiations is implementation-defined.
+This rule merged into {rule}`TR-13`.
 :::
 
 :::{rule} INST-28
@@ -627,8 +625,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 136 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 112
+of 134 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0231`, {question}`Q-0235`,
@@ -748,11 +746,9 @@ bullets below say so.
 - INST-11: every compiler instantiates an unused virtual function when
   the program defines an object of the class, and none does for
   `sizeof`. The rule allows either result.
-- INST-15: the behavior happens during translation, so no run test
-  covers the rule.
-- INST-14: Clang stops at a depth of 1024, GCC at 900, and EDG at 64
-  nested class instantiations. INST-15 allows any result for an endless
-  chain, and every compiler rejects the test.
+- INST-15: every compiler rejects both tests with its depth message
+  ({rule}`TR-13`). On the chain of function templates, Clang 22 and 18
+  then end with a segmentation fault.
 - INST-28: the baseline builds use no `-O` flag and fail to link in
   each test. The `-O2` report builds inline the inline function and
   run, and fail to link for the others. The rule is `no-diagnostic` and

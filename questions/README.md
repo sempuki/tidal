@@ -25,7 +25,7 @@ status, and the first sentence of its answer section.
 | [Q-0009](Q-0009-license.md) | Which license covers the specification, tests, and tools? | settled | Apache-2.0 with LLVM exception (option 1), added by the repository owner in `LICENSE.txt` |
 | [Q-0010](Q-0010-decltype-auto-braced-single.md) | Is `decltype(auto) x{e};` valid, deducing from `e`? | settled | Yes, as all implementations do |
 | [Q-0011](Q-0011-missing-definition-class.md) | Is using an entity with no definition `no-diagnostic` or `reject`? | provisional | No-diagnostic |
-| [Q-0012](Q-0012-largest-array.md) | Should Tidal set a minimum for the largest array an implementation accepts? | provisional | No; the limit is implementation-defined |
+| [Q-0012](Q-0012-largest-array.md) | Should Tidal set a minimum for the largest array or class an implementation accepts? | provisional | No; each limit is implementation-defined |
 | [Q-0013](Q-0013-edg-uninitialized-array-element.md) | Does EDG accepting a read of an uninitialized array element during constant evaluation change INIT-1? | compiler defect | No; likely EDG defect |
 | [Q-0014](Q-0014-early-dynamic-initialization.md) | May an implementation perform dynamic initialization before the program starts? | provisional | Yes, unspecified |
 | [Q-0015](Q-0015-clang18-braced-structured-binding.md) | Is `auto [a, b]{arr};` valid when `arr` is an array? | settled | Yes; Clang 18's rejection is fixed in later versions |
@@ -363,6 +363,8 @@ status, and the first sentence of its answer section.
 | [Q-0347](Q-0347-likely-on-identifier-label.md) | Can `[[likely]]` apply to a label that is an identifier? | provisional | Valid |
 | [Q-0348](Q-0348-pointer-to-member-ref-qualified-alias.md) | Does a pointer to member formed from an alias of a ref-qualified function type keep the ref-qualifier? | provisional | The ref-qualifier is kept |
 | [Q-0349](Q-0349-allocator-result-other-type.md) | In constant evaluation, can a member of `std::allocator<T>` convert the result of `::operator new` to a pointer to a type other than `T`? | provisional | No; only the conversion to `T*` is valid |
+| [Q-0350](Q-0350-clang-class-size-wrap.md) | Does Clang conform when it accepts a class whose size it cannot represent? | provisional | Clang has a defect in both cases |
+| [Q-0351](Q-0351-instantiation-depth-measure.md) | How is the depth of nested instantiations counted, and must it reach a minimum? | provisional | Both are implementation-defined, with no minimum |
 
 ## Status values
 
