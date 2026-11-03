@@ -77,7 +77,8 @@ iterator with prefix `++`. The loop compares the iterator with `end` by
 :kind: reject
 :tests: statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/data-member-begin-counts.cpp
 
-These conditions apply to the loop of RFOR-2:
+The range must be an array, a braced list, or an object of class
+type. A pointer is not a range. For a range of class type (RFOR-2):
 
 - The range must have a complete type, and the range must have both
   `begin` and `end`.
@@ -158,6 +159,9 @@ for (int v : Range{}) use(v);        // uses the member functions
 
 for (auto [x, y] : points) use(x, y);
 
+int* p = a;
+for (int v : p) use(v);              // rejected: a pointer is not a range
+
 for (int v : make().items()) use(v); // the result of make() lives
                                      // until the loop ends
 ```
@@ -173,10 +177,16 @@ The results are in `tests/RESULTS.md`.
   the use of free `begin` and `end` on any compiler. With members of both
   names, Clang and GCC use the member form for data members too. EDG
   uses the member form only for member functions ({question}`Q-0098`).
+  Otherwise EDG uses free `begin` and `end`. So EDG accepts a data
+  member `begin` of type `int` if argument-dependent lookup finds free
+  functions, and EDG rejects a range with callable data members and no
+  free functions.
 - RFOR-3: every compiler accepts a prvalue range of a class with no
   move constructor and with `begin` and `end` callable only on lvalues.
-- RFOR-5: GCC 14 accepts a storage class on the loop variable. GCC 16,
-  Clang, and EDG reject the storage class ({question}`Q-0026`).
+- RFOR-5: GCC 14 accepts `static` and `thread_local` on the loop
+  variable. GCC 16, Clang, and EDG reject them ({question}`Q-0026`).
+  Every compiler rejects `extern`. GCC 14 reports an `extern` variable
+  with an initializer.
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

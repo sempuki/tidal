@@ -79,7 +79,7 @@ The same holds for `if consteval`.
 :::
 
 :::{principle} IF-P4
-:rules: IF-18 IF-19 IF-20 IF-24
+:rules: IF-18 IF-19 IF-20 IF-24 IF-25
 
 `if consteval` asks which mode the program is running in
 ({principle}`TR-P4`):
@@ -231,8 +231,9 @@ A {term}`requires expression` in the condition can test that code
 
 In a {term}`templated context`, the parts of a {term}`discarded
 statement` that are the same for every template argument must be valid
-(IF-13). The
-implementation checks these parts.
+(IF-13). The implementation checks these parts. Such a part includes a
+name that is not a {term}`dependent name`, such as a function called
+with no arguments ({rule}`DEP-6`).
 :::
 
 :::{rule} IF-14
@@ -266,7 +267,7 @@ be valid (IF-15).
 
 The condition of the `if constexpr` form must be a constant expression
 after contextual conversion to `bool`. A conversion that loses
-information is permitted.
+information is permitted, such as an integer or an address to `bool`.
 :::
 
 :::{rule} IF-17
@@ -361,13 +362,33 @@ over initialization apply ({rule}`JMP-6`).
 
 :::{rule} IF-18
 :kind: required
-:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp
+:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-initializers.cpp
 
-The `if consteval` form executes its then branch during constant
-evaluation and its else branch at other times. The `if !consteval` form
+The `if consteval` form executes its then branch during
+{term}`constant evaluation` and its else branch at run time (IF-25).
+The `if !consteval` form
 does the opposite. In a `consteval` function, the then branch of
 `if consteval` always executes. In a function that is not `constexpr` or
 `consteval`, the then branch never executes.
+:::
+
+:::{rule} IF-25
+:kind: required
+:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp
+
+An evaluation is a constant evaluation only if it starts in one of
+these places:
+
+- a place in the table of {principle}`CE-P4`,
+- an initializer that is a constant expression, of a namespace-scope,
+  `static`, or `thread_local` variable ({rule}`SINIT-1`),
+- an initializer that is a constant expression, of a `const` variable
+  of integer or enumeration type that is not `volatile` ({rule}`CE-3`).
+
+Every other evaluation happens at run time, such as the initializer of
+a local variable that is not `const`. The initializer of a local
+reference that binds a temporary is in this group
+({question}`Q-0329`).
 :::
 
 ## Examples
@@ -395,9 +416,38 @@ constexpr int where() {
   if consteval { return 1; } else { return 2; }
 }
 static_assert(where() == 1);   // at run time, where() returns 2
+int offset = 0;
+int fixed = where();           // 1: a constant initializer (SINIT-1)
+int moved = where() + offset;  // 2: offset is not a constant
+
+void use() {
+  int local = where();         // 2: a local initializer runs at run time
+  const int kept = where();    // 1: a const integer (IF-25)
+}
+
+template <class T> void check(T t) {
+  if constexpr (false) {
+    t.anything();              // valid: depends on T, never instantiated
+    undeclared();              // rejected: no arguments depend on T
+  }
+}
+
+constexpr int g = 0;
+void conditions() {
+  if constexpr (2) {}          // valid: 2 converts to true
+  if constexpr (&g) {}         // valid: the address converts to true
+}
 ```
 
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on all 67 tests. The results are in `tests/RESULTS.md`.
+agree on 68 of 69 tests. The results are in `tests/RESULTS.md`.
+
+- IF-25: Clang and GCC take the then branch of `if consteval` in the
+  initializer of a local `const int` or `const` enumeration variable.
+  Both take the else branch for a local `const double`, a local
+  `const volatile int`, and a local variable that is not `const`. For a
+  local `const int&` that binds a temporary, Clang takes the else
+  branch and GCC takes the then branch
+  ({question}`Q-0329`).

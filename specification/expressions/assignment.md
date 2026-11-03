@@ -140,7 +140,9 @@ operand of a compound assignment to a scalar must not be a braced list
 :tests: expressions/assignment/volatile-simple.cpp expressions/assignment/volatile-compound.cpp
 
 The left operand can be `volatile`. Simple and compound assignment both
-apply to a `volatile` left operand.
+apply to a `volatile` left operand, and neither is deprecated. Use of the
+value of such an assignment in a larger expression is deprecated
+({rule}`VOL-5`).
 :::
 
 :::{rule} ASN-10
@@ -178,7 +180,8 @@ A compound assignment is one evaluation with respect to a function call
 whose order with the compound assignment is not set. The call runs
 before the read or after the write, never between them. The choice
 between the two orders is unspecified, and the behavior is not
-undefined.
+undefined. Constant evaluation also picks one of the two orders
+({rule}`CE-27`).
 :::
 
 ## Examples
@@ -198,6 +201,15 @@ int x = 0;
 x = {};           // 0
 x = {2.5};        // rejected: narrowing
 x += {1};         // rejected: braced list in compound assignment
+
+volatile int v = 0;
+v += 1;           // valid, not deprecated
+int w = (v = 2);  // deprecated: the value of a volatile assignment
+
+struct Counter {
+  int n;
+  void bump() const { n = 1; }  // rejected: n is const here (PRIM-12)
+};
 ```
 
 ## Evidence

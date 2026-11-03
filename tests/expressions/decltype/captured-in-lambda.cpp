@@ -1,4 +1,4 @@
-// tidal-rules: DTY-1
+// tidal-rules: DTY-1 LAM-18
 // tidal-expect: accept
 template <class A, class B> constexpr bool same = false;
 template <class A> constexpr bool same<A, A> = true;

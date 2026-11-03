@@ -146,6 +146,10 @@ calls are prvalues.
 finds ({rule}`NAM-37`). `E->m` is the same as `(*E).m`. Member access
 also follows these rules:
 
+- `m` can name a data member, a member function, a static member, or
+  an enumerator, of the class or of a base.
+- `m` can be a qualified name `N::m`. `N` names the class of `E`, a
+  base of that class, or an enumeration in the class.
 - A static member can be named through an object, and the object
   expression is still evaluated.
 - A member of a prvalue is an xvalue.
@@ -161,9 +165,10 @@ also follows these rules:
 The operand of `.` must be a class object, and the operand of `->` must
 be a pointer to a class. Member lookup ({rule}`NAM-37`) must find the
 named member, and the member must not be a type. The class must be
-complete, or be the class whose definition contains the access. There
-the access sees only the members declared before it ({rule}`NAM-6`,
-{question}`Q-0316`).
+complete, or be the class whose definition contains the access. There a
+member declaration, such as the type of a data member, sees only the
+earlier members, and a member function body sees all members
+({rule}`NAM-6`, {question}`Q-0316`).
 :::
 
 :::{rule} PFX-20
@@ -312,6 +317,17 @@ struct S { int v; };
 S obj{3};
 S* ptr = &obj;
 ptr->v;           // same as (*ptr).v
+obj.S::v;         // 3: a qualified name after the dot
+
+S made(S());      // declares a function made (DCL-13)
+made.v;           // rejected: made is a function, not an object
+
+struct Gauge {
+  int first;
+  decltype(((Gauge*)0)->later) b;   // rejected: later is not declared yet
+  int later;
+  int total() { return first + later; }  // valid: a body sees all members
+};
 
 int i = 5;
 int old = i++;    // old is 5, i is 6
@@ -330,6 +346,19 @@ of 69 tests.
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these cases during constant
   evaluation.
+- PFX-4, PFX-8, PFX-18, PFX-21: Clang and GCC stop these cases at run
+  time with a sanitizer. EDG does not run programs.
+
+  | Case | Sanitizer | Report |
+  |---|---|---|
+  | index outside a local array of known size | `-fsanitize=undefined` | index out of bounds |
+  | read past the end of an array from `new` | `-fsanitize=address` | heap-buffer-overflow |
+  | call through a null function pointer | `-fsanitize=address` | SEGV at address 0 |
+  | signed overflow in postfix `++` | `-fsanitize=undefined` | signed integer overflow |
+  | member call through a null pointer | `-fsanitize=undefined` | member call on null pointer |
+
+  The matrix targets map no code at address 0, so a call through a null
+  function pointer faults, and the address sanitizer reports the fault.
 - PFX-12: EDG rejects `++` on a `short` that holds its largest value
   during constant evaluation. Clang and GCC give the converted value
   ({question}`Q-0124`).
@@ -337,7 +366,11 @@ of 69 tests.
   evaluation, and UBSan reports one at run time. GCC accepts a pointer
   moved past the end of an array during constant evaluation. Clang and
   EDG reject it ({question}`Q-0031`).
-- PFX-13: Clang rejects `++` on `bool` as a pedantic diagnostic.
+- PFX-13: every compiler rejects `++` and `--` on `bool`, also without
+  `-pedantic-errors`. Clang reports `++` under `-Wincrement-bool`, a
+  warning that is an error by default. For `++` on `void*`, Clang and
+  EDG give an error. GCC accepts it as an extension with a
+  `-Wpointer-arith` warning, which `-pedantic-errors` makes an error.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
   conditional.

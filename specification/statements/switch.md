@@ -60,7 +60,8 @@ The condition must have one of these types:
 - an enumeration type,
 - a class type whose conversion functions that are not `explicit`
   convert to exactly one integer or enumeration type. Several of these
-  functions can convert to that one type.
+  functions can convert to that one type, and overload resolution
+  chooses one of them ({rule}`CVF-4`).
 :::
 
 :::{rule} SW-3
@@ -159,6 +160,15 @@ void f(unsigned u, double d) {
   switch (d) { case 1: break; }       // rejected: double condition
 }
 
+struct Code {
+  operator int() const { return 1; }
+  operator int() { return 2; }
+};
+void choose(Code c, const Code fixed) {
+  switch (c) { case 2: break; }       // calls the non-const function
+  switch (fixed) { case 1: break; }   // calls the const function
+}
+
 void g(int v) {
   switch (v) {
     case 1:
@@ -197,13 +207,20 @@ int code(State s) {
 
 ## Evidence
 
-All seven compilers agree on all tests in this page, except where a
-question is noted. The results are in `tests/RESULTS.md`.
+All eight compilers agree on 35 of 36 tests. The results are in
+`tests/RESULTS.md`.
 
-- SW-7: Clang and GCC warn under `-Wall` (`-Wswitch`) and name each
-  enumerator without a label. EDG gives no warning, even with remarks
-  on. The warning is recommended practice, so the rule is in the
-  recommended class.
+- SW-7: Clang warns with no flag and GCC warns under `-Wall`
+  (`-Wswitch`). Both name each enumerator without a label. The tests
+  use `-Wall -Werror`, so EDG skips them
+  ({ref}`baseline compilers <baseline-compilers>`). EDG gives no
+  warning, even with remarks on. The warning is recommended practice,
+  so the rule is in the recommended class.
+- SW-2, SW-3: Clang 18 and Clang 22 warn with no flag about a `bool`
+  condition (`-Wswitch-bool`). GCC 14 and GCC 16 warn with no flag
+  about a case value that the condition's type cannot hold
+  (`-Wswitch-outside-range`). Clang gives no warning for that case
+  value. EDG gives neither warning.
 - SW-1, FN-3: a `switch` with a `return` for every enumerator can
   still reach its end, because a scoped enumeration holds every value
   of its underlying type ({principle}`ENUM-P3`). Without the last

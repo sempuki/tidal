@@ -440,7 +440,9 @@ of 90 tests.
 - CLS-11: the size is 1 on every compiler in the matrix.
 - CLS-19: the tests check the consequence for a simple standard-layout
   class. They do not check each condition of the definition.
-- CLS-13: Clang 18 rejects a class prvalue for a by-value explicit
+- CLS-13: every baseline compiler supports explicit object
+  parameters, Clang 18 and GCC 14 included, and runs the tests that use
+  them. Clang 18 rejects a class prvalue for a by-value explicit
   object parameter when the class has no usable copy or move
   constructor. The other compilers initialize the parameter directly
   ({question}`Q-0181`).

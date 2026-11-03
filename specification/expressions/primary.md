@@ -476,8 +476,14 @@ is `mutable` or a reference. `::x` names `x` in the global namespace.
 :kind: reject
 :tests: expressions/primary/name-member-in-static.cpp expressions/primary/name-member-outside-object.cpp expressions/decltype/nested-class-member-evaluated.cpp
 
-Outside a member function, the name of a non-static member is valid only
-in an unevaluated operand (PRIM-12).
+Inside a member function that has `this` (PRIM-20), the name of any
+non-static member of the class or a base is valid (PRIM-12). Elsewhere,
+the name is valid only in an unevaluated operand ({rule}`UNEV-1`).
+These places are elsewhere:
+
+- a static member function,
+- a member function of a nested class, for a member of the enclosing
+  class.
 :::
 
 :::{rule} PRIM-14
@@ -660,6 +666,11 @@ char h = '\xff';                  // -1 where char is signed
 struct Counter {
   int n = 0;
   void bump() { ++n; }    // means ++this->n
+  static int get() { return n; }       // rejected: no object (PRIM-25)
+  static int size() { return sizeof n; }  // valid: unevaluated
+  struct Part {
+    int get() { return n; }            // rejected: no Counter object
+  };
 };
 
 template <class... T> int total(T... v) { return (0 + ... + v); }
@@ -671,7 +682,7 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+The results are in `tests/RESULTS.md`. All eight compilers agree on 106
 of 114 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
@@ -685,7 +696,10 @@ of 114 tests.
   operator without parentheses. EDG accepts it ({question}`Q-0194`).
 - PRIM-32: EDG, as the matrix configures it, rejects `"é"` because one
   `char` cannot hold the character. Its ordinary encoding is not UTF-8,
-  which PRIM-32 allows. EDG agrees on every ASCII value.
+  which PRIM-32 allows. EDG agrees on every ASCII value. Two tests show
+  the difference, one for each EDG target. EDG reads the source file as
+  UTF-8 and accepts a character outside ASCII in a literal with a `u8`,
+  `u`, `U`, or `L` prefix, such as `u'€'` and `L'é'`.
 - PRIM-28: every compiler evaluates a comma fold from the first element
   to the last, and stops a fold over `&&` or `||` at the first operand
   that decides the result.
@@ -698,6 +712,18 @@ of 114 tests.
   consecutive values from 0xF0 to 0xF9, and `'j' - 'a'` is 16. So only
   the digits are consecutive in every encoding, and the order of the
   letters belongs to the encoding. Clang accepts only UTF-8.
+- PRIM-13: Clang and GCC warn with no flag about a floating literal
+  outside the range of its type (Clang `-Wliteral-range`, GCC
+  `-Woverflow`) and about a multi-character literal (`-Wmultichar`).
+  So `-Werror` alone rejects both. EDG warns about a multi-character
+  literal and rejects `1e999f` (PRIM-15).
+- PRIM-18: Clang and GCC give a warning for an unknown escape such as
+  `'\q'`, and `-pedantic-errors` makes the warning an error. EDG in
+  strict mode gives a warning and accepts the program
+  ({question}`Q-0330`).
+- PRIM-8: the matrix targets keep string literals in memory that the
+  program cannot write. So a write to a literal faults at run time, and
+  `-fsanitize=address` reports the fault as SEGV.
 - PRIM-9: Clang rejects a comparison of the addresses of two string
   literals during constant evaluation. GCC and EDG accept it and fold it
   ({question}`Q-0033`).

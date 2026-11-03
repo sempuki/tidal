@@ -83,7 +83,8 @@ The operands of `&`, `^`, `|`, and `~` can have one of these types:
 - an unscoped enumeration type.
 
 The two operands of a binary operator can be of different types,
-including two different enumerations.
+including two different enumerations. Two different enumerations are
+deprecated (BIT-8).
 :::
 
 :::{rule} BIT-3
@@ -148,7 +149,8 @@ An implementation should warn if `~` applies to a `bool` operand.
 :tests: expressions/bitwise/mixed-enum-warns.cpp
 
 An implementation should warn when the operands of `&`, `^`, or `|` have
-two different enumeration types.
+two different enumeration types. Such operands are valid and
+deprecated (BIT-2).
 :::
 
 ## Examples
@@ -179,6 +181,10 @@ All eight compilers agree on all 21 tests. The results are in
   "suggest parentheses around comparison in operand of '&'". Both
   warnings are in `-Wparentheses`.
 - BIT-7: Clang and GCC warn under `-Wbool-operation`.
+- BIT-8: Clang and GCC warn under `-Wdeprecated-enum-enum-conversion`.
+  The warning is on by default, and `-pedantic-errors` does not make
+  it an error. So `-Werror` alone rejects the operands. {rule}`ADD-16` and
+  {rule}`MUL-16` give the same warning for `+`, `-`, `*`, `/`, and `%`.
 - EDG doesn't take these warning flags and skips the
   recommended-practice tests.
 

@@ -29,6 +29,19 @@ flags:
 | EDG 7.0 | EDG | a front end only, so EDG translates each program and runs none |
 | EDG 7.0, ILP32 | EDG | the same front end for a target with 32-bit `long` and pointers; runs only the tests for such a target |
 
+A compiler skips each test that uses a flag the compiler does not
+accept. A skipped test has no result on that compiler, so the
+outcome of the test is the outcome on the compilers that run it.
+
+| Flags | Compilers that skip the test |
+|---|---|
+| `-Werror`, `-Wall`, `-O2`, `-fsanitize=...` | EDG 7.0, EDG 7.0 ILP32 |
+| `-m32` | EDG 7.0, GCC 16 |
+| no `-m32` | EDG 7.0 ILP32 |
+
+Each test of a `recommended` rule that expects a rejection uses
+`-Werror`, so the outcome of such a test comes from Clang and GCC.
+
 "Clang" in an Evidence segment means every Clang compiler in the
 table, and the same holds for "GCC" and "EDG". A version number names
 one compiler. A result on any baseline compiler counts, also on an

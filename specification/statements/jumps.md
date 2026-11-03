@@ -161,7 +161,8 @@ A jump can skip the declaration of a `static` local variable.
 
 A variable whose declaration a jump skips (JMP-6) still exists in its
 block after the jump. The variable has no value until the program
-writes one (OBJ-2).
+writes one. A read before the write is undefined ({rule}`OBJ-2`), and
+constant evaluation rejects the read.
 :::
 
 :::{rule} JMP-10
@@ -184,7 +185,8 @@ These details apply:
 
 A name that JMP-10 makes an xvalue does not bind to an lvalue reference
 return type. A `static` local variable of a move-only type cannot be
-returned, because JMP-10 does not count such a variable.
+returned, because JMP-10 does not count such a variable. A class with a
+user-declared move constructor is move-only ({rule}`CPY-4`).
 :::
 
 :::{rule} JMP-12
@@ -310,6 +312,18 @@ again:
 goto skip;
 int x = 1;                       // rejected: the jump skips this
 skip:
+
+int pick(int v) {
+  switch (v) {
+    int x;                       // valid to skip: no initializer
+  case 1:
+    x = 5;
+    return x;                    // 5
+  case 2:
+    return x;                    // undefined: x has no value (JMP-16)
+  }
+  return 0;
+}
 ```
 
 ## Evidence
@@ -324,6 +338,11 @@ All eight compilers agree on 54 of 57 tests. The results are in
 
 - JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
   form "named break" and accepts it only in a later C mode.
+
+- JMP-16: Clang accepts a write to a skipped variable during constant
+  evaluation and a read after the write. GCC and EDG reject the write
+  ({question}`Q-0121`). Every compiler rejects a read before the write
+  during constant evaluation.
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
   accepts zero or one copy.

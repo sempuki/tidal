@@ -336,11 +336,13 @@ A lambda must not:
 
 :::{rule} LAM-18
 :kind: required
-:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp
+:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp
 
 The captures of a lambda are visible in its parameter list and trailing
 return type. In a lambda that is not `mutable`, `decltype((x))` for a
-copy capture `x` is a reference to `const`.
+copy capture `x` is a reference to `const`. The same holds for a name
+that a copy default would capture. The rule applies also if the lambda
+names `x` only in unevaluated operands, which capture nothing.
 :::
 
 ## Runtime Behavior
@@ -425,8 +427,8 @@ auto fact = [](this auto self, int v) -> int {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 62 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 63 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

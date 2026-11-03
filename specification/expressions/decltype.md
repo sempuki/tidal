@@ -181,7 +181,8 @@ These rules apply to such operands:
 
 For `decltype`, a function call that gives a prvalue of class type can
 have an incomplete or abstract type, and the class needs no usable
-destructor.
+destructor. This exception also holds for such a call as the right
+operand of a comma operator.
 :::
 
 :::{rule} UNEV-5
@@ -190,7 +191,8 @@ destructor.
 
 The operands of UNEV-1 still have these requirements:
 
-- `sizeof` needs a usable destructor.
+- `sizeof` needs a complete type ({rule}`UN-14`) and a usable
+  destructor.
 - A member access on a call that gives a prvalue of class type needs a
   complete class.
 - Name lookup, access control, and deleted functions are still checked.
@@ -262,6 +264,20 @@ decltype(i + 1)  f;          // int
 int log_once();              // no definition needed below
 auto n = sizeof(log_once()); // log_once is not called
 (void)log_once();            // called; result discarded
+
+struct Sealed { ~Sealed() = delete; };
+Sealed make();
+using A = decltype(make());      // valid: no destructor needed
+using B = decltype(0, make());   // valid: also after a comma
+auto z = sizeof(make());         // rejected: sizeof needs the destructor
+
+struct Outer {
+  int m;
+  struct Inner {
+    int size() { return sizeof(m); }  // valid: unevaluated
+    int get() { return m; }           // rejected: no Outer object
+  };
+};
 ```
 
 `decltype` of a built-in arithmetic expression names the common type of

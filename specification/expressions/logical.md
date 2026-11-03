@@ -211,7 +211,8 @@ parentheses.
 :tests: expressions/logical/not-on-lhs-warns.cpp expressions/logical/not-on-lhs-silences.cpp
 
 An implementation should warn if `!` applies only to the left operand of
-a comparison, as in `!a == b`.
+a comparison without parentheses, as in `!a == b`. Parentheses around
+`!a`, as in `(!a) == b`, should silence the warning.
 :::
 
 ## Examples
@@ -228,6 +229,7 @@ int i = 0;
 
 a || b && c                     // a || (b && c); compilers warn
 !a == b                         // (!a) == b; compilers warn
+(!a) == b                       // no warning
 
 if (Lock(m).held() && ready())  // the Lock lives to the end of the condition
   run();

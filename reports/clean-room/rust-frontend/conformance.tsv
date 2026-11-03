@@ -3066,7 +3066,7 @@ pass	expressions/primary/char-ucn-basic.cpp
 pass	expressions/primary/char-ucn-control.cpp
 pass	expressions/primary/char-ucn-surrogate.cpp
 pass	expressions/primary/char-unicode-multichar.cpp
-pass	expressions/primary/char-unknown-escape.cpp
+EDG-ONLY	expressions/primary/char-unknown-escape.cpp
 pass	expressions/primary/char-unprefixed-not-single-unit.cpp
 pass	expressions/primary/char-value-code-unit.cpp
 pass	expressions/primary/char16-not-bmp.cpp
@@ -4217,6 +4217,8 @@ pass	statements/if/consteval-goto-into.cpp
 pass	statements/if/consteval-immediate-context.cpp
 pass	statements/if/consteval-immediate-outside.cpp
 pass	statements/if/consteval-in-consteval.cpp
+RUN-WRONG-RESULT	statements/if/consteval-local-initializers.cpp
+pass	statements/if/consteval-local-reference.cpp
 pass	statements/if/consteval-no-condition.cpp
 pass	statements/if/consteval-plain-function.cpp
 pass	statements/if/consteval-requires-braces.cpp
@@ -4369,7 +4371,7 @@ pass	statements/switch/condition-floating.cpp
 pass	statements/switch/condition-name-redeclared.cpp
 pass	statements/switch/condition-once.cpp
 pass	statements/switch/condition-pointer.cpp
-pass	statements/switch/condition-two-conversions-same-type.cpp
+run-unsupported	statements/switch/condition-two-conversions-same-type.cpp
 pass	statements/switch/condition-two-conversions.cpp
 pass	statements/switch/condition-types.cpp
 pass	statements/switch/dispatch.cpp

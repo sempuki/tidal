@@ -130,6 +130,7 @@ are not valid:
 - `&m`, or `C::f` without `&` for a non-static member `f`,
 - `&obj.f` for a member function,
 - a bit-field, a constructor, or a member that is not accessible,
+- a member of reference type ({rule}`MPTR-8`),
 - a pointer to member for a function with an explicit object parameter.
 :::
 
@@ -186,7 +187,9 @@ These conversions are valid:
   types, or between two pointer-to-member-function types. Converting
   back gives the original value.
 - A conversion can add cv-qualifiers to the member type, at each level,
-  where the same conversion of ordinary pointers is valid.
+  where the same conversion of ordinary pointers is valid
+  ({rule}`CONV-9`). The pointer to member counts as the outermost
+  level.
 - The literal `0` converts to a null pointer to member.
 
 A pointer to member with static storage and no initializer is null.
@@ -203,7 +206,8 @@ These conversions are not valid:
   accessible,
 - a change of cv-qualifiers that is not valid for ordinary pointers,
 - between a pointer to member and an ordinary pointer,
-- between a pointer to data member and a pointer to member function.
+- between a pointer to data member and a pointer to member function,
+  also with `reinterpret_cast`.
 :::
 
 :::{rule} MPTR-5
@@ -263,11 +267,25 @@ int bad = p.*m();                  // rejected: needs parentheses
 
 struct Point3 : Point { int z; };
 int Point3::* any = &Point::x;     // base to derived: implicit
+
+struct Node { int* next; };
+int* Node::* link = &Node::next;
+const int* const Node::* safe = link;  // valid: const at every level above
+const int* Node::* unsafe = link;      // rejected: no const on the level above
 ```
 
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
 70 tests.
+
+- MPTR-6: Clang and GCC give a null pointer to data member the offset
+  -1, so a read through it lands before the object. On Clang 22 and
+  GCC 16, `-fsanitize=address` stops the read as a buffer underflow,
+  and `-fsanitize=undefined` stops it as a misaligned load of `int`.
+  `-fsanitize=vptr` stops a call through a pointer to member function
+  on an object that lacks the member. The `-fsanitize=undefined` of GCC
+  includes `vptr`, and the one of Clang does not. EDG does not run
+  programs.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

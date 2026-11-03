@@ -193,6 +193,14 @@ void h() {
   struct Point p{4};     // valid: struct names the class
   Point q{5};            // rejected: Point is the variable here
 }
+
+struct Name { Name(); Name(int); int v; Name* operator->(); };
+void k(int x) {
+  Name(x)->v = 5;        // expression: -> cannot continue a declarator
+  Name(c)(x);            // declaration of c, initialized with x
+  Name(*p) = nullptr;    // declaration of a pointer p
+  int(d);                // declaration of d
+}
 ```
 
 ## Evidence
@@ -201,9 +209,12 @@ All eight compilers agree on 24 of 26 tests. The results are in
 `tests/RESULTS.md`.
 
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement
-  has no effect" under `-Wunused-value`. EDG skips these tests.
-- STMT-5: GCC rejects a `case` or `default` label as the last item of a
-  block. Clang and EDG accept it ({question}`Q-0096`).
+  has no effect" under `-Wunused-value`. EDG does not accept `-Werror`
+  and skips these tests ({ref}`baseline compilers <baseline-compilers>`).
+- STMT-5: GCC 14 and GCC 16 reject a `case` or `default` label as the
+  last item of a block. Clang 18, Clang 22, and EDG accept it
+  ({question}`Q-0096`). Every compiler accepts a plain label as the
+  last item of a block.
 - STMT-7: the test shows that the statement is valid. The test cannot
   observe the read.
 - STMT-10: Clang says that the class is hidden by a non-type

@@ -138,15 +138,17 @@ or `-` must not have a scoped enumeration type.
 :tests: expressions/unary/indirection-lvalue.cpp expressions/unary/indirection-function.cpp expressions/unary/indirection-incomplete-lvalue.cpp
 
 `*p` gives an lvalue for the object or function that `p` points to. The
-type that `p` points to can be incomplete.
+type that `p` points to can be incomplete. A function operand of `*`
+becomes a pointer to the function first, so `**f` and `*f` give the
+same function.
 :::
 
 :::{rule} UN-6
 :kind: reject
 :tests: expressions/unary/indirection-void-pointer.cpp expressions/unary/indirection-non-pointer.cpp expressions/unary/indirection-nullptr-literal.cpp expressions/unary/indirection-incomplete-value.cpp
 
-The operand of `*` must be a pointer, and must not be a pointer to
-`void`. A program must not read the value of an object of incomplete
+The operand of `*` must be a pointer or a function (UN-5), and must
+not be a pointer to `void`. A program must not read the value of an object of incomplete
 type through the result.
 :::
 
@@ -234,9 +236,11 @@ apply:
 :kind: reject
 :tests: expressions/unary/alignof-expression.cpp expressions/unary/alignof-function.cpp expressions/unary/alignof-incomplete.cpp expressions/unary/alignof-void.cpp
 
-The operand of `alignof` must be a complete object type or a reference.
-The operand must not be one of these:
+The operand of `alignof` must be a type. The type must be a complete
+object type, a reference, or an array of unknown bound (UN-16). The
+operand must not be one of these:
 
+- an expression,
 - a function type,
 - `void`,
 - an incomplete class.
@@ -260,7 +264,10 @@ The operand must not be one of these:
   or to an accessible unambiguous base of that class, makes no check.
 - a throw-expression ({rule}`THR-5`).
 
-Otherwise the constant is `true`.
+Otherwise the constant is `true`. A destructor without a `noexcept`
+specifier is `noexcept` if the destructors of its bases and members are
+({rule}`DTOR-4`). The global `operator delete` forms are `noexcept`
+({rule}`NEW-19`).
 :::
 
 ## Runtime Behavior
@@ -376,7 +383,15 @@ bool b = false;
 
 void may_throw();
 noexcept(may_throw());  // false
+struct Calm { ~Calm() {} };
+noexcept(Calm());       // true: ~Calm is noexcept (DTOR-4)
 alignof(char);          // 1
+alignof(double[]);      // alignof(double)
+alignof(i);             // rejected: the operand is an expression
+
+int one();
+int (*f)() = one;
+(**f)();                // 1: *f is a function, which becomes a pointer again
 
 int data[6];
 sizeof(data) / sizeof(data[0]);  // 6: the element count
@@ -402,6 +417,11 @@ All eight compilers agree on 65 of 69 tests. The results are in
 
 - UN-4, UN-7: all compilers reject the operation during
   {term}`constant evaluation`.
+- UN-4, UN-7, UN-21: with `-fsanitize=undefined`, Clang and GCC stop
+  these cases at run time. The reports are "negation of ... cannot be
+  represented" for `-INT_MIN`, "load of null pointer" for a read
+  through a null pointer, and "signed integer overflow" for `++` past
+  the largest value. EDG does not run programs.
 - UN-15: `sizeof(void*)` and `sizeof(sizeof 0)` are 8 on x86-64 and 4
   with `-m32`.
 - UN-17: Clang and GCC accept `alignof` of an expression or a function
