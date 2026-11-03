@@ -216,7 +216,7 @@ class RuleIndexDirective(SphinxDirective):
 
     def run(self):
         root = Path(self.env.srcdir)
-        order = ["foundations", "statements", "expressions", "declarations", "classes", "templates", "exceptions"]
+        order = ["foundations", "statements", "expressions", "declarations", "classes", "overloading", "templates", "exceptions"]
         out = []
         for chapter in order:
             index = root / chapter / "index.md"

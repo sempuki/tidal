@@ -27,6 +27,8 @@ suppress_warnings = ["myst.header", "misc.highlighting_failure"]
 html_theme = "furo"
 html_title = "Tidal: a C++-compatible specification"
 html_static_path = ["_static"]
+# Pages that moved keep their old URLs as redirects.
+html_extra_path = ["_redirects"]
 html_css_files = ["tidal.css"]
 html_show_sourcelink = False
 html_theme_options = {

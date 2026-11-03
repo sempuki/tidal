@@ -14,7 +14,7 @@ the specialization. This page covers:
 - the initialization that follows the choice.
 
 Deduction for function templates is on {doc}`deduction`. Overload
-resolution is on {doc}`/foundations/overload-resolution`.
+resolution is on {doc}`/overloading/overload-resolution`.
 
 Depends on: deduction, partial ordering, overload resolution, the
 forms of initialization, aggregates, inherited constructors.

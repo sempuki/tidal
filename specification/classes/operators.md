@@ -14,7 +14,7 @@ Defaulted comparison operators have their own page.
 
 Depends on: class definitions and members, conversion functions, copy and
 move, sequencing and evaluation order, overload resolution
-({doc}`/foundations/overload-resolution`).
+({doc}`/overloading/overload-resolution`).
 
 ## Principles
 

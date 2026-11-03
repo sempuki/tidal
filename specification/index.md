@@ -92,6 +92,7 @@ statements/index
 expressions/index
 declarations/index
 classes/index
+overloading/index
 templates/index
 exceptions/index
 glossary

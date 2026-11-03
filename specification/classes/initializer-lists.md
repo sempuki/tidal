@@ -13,7 +13,7 @@ List initialization of aggregates and scalars is with initialization.
 
 Depends on: list initialization and aggregates, constructors and
 destructors, overload resolution
-({doc}`/foundations/overload-resolution`).
+({doc}`/overloading/overload-resolution`).
 
 ## Principles
 

@@ -827,6 +827,46 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 The results are in `tests/RESULTS.md`. All eight compilers agree on 92
 of 118 tests.
 
+### Sources
+
+The source of each rule:
+
+| Rule | Source |
+|---|---|
+| ICS-1, ICS-2 | grids arithmetic, pointers, classes; inventory A5, A8 to A13, B1, B3 to B5 |
+| ICS-3 | grid user-defined; inventory A14 to A17 |
+| ICS-4 | diagnostics for explicit conversion functions; probes of conversion functions that return a value; inventory E1 to E5; gap review E5, M6 |
+| ICS-5 | probe of a defaulted conversion template; inventory A18 |
+| ICS-6 | grids classes, user-defined; probes of braced lists for an ellipsis; inventory A4; front-end finding G51 |
+| ICS-7 | grid user-defined (ToBoth); probes of a constructor against a conversion function; inventory A1 to A3; gap review E2 |
+| ICS-8 | diagnostics in the `chosen-*` tests; inventory A7, C1, F6, F9, F19; gap review M1; front-end finding G43 |
+| ICS-9, ICS-10 | probes; inventory D1, D3 to D7, G1, G3; gap review M9 |
+| ICS-11, ICS-12 | grids references, list-references; inventory B2, C2 to C6; front-end finding G38 |
+| ICS-13, ICS-14, ICS-40, ICS-41 | grid object-parameter; inventory B6, C7 to C10, D2; gap review S4, S5, M9 |
+| ICS-15 to ICS-20 | grids lists, list-references, classes; inventory D8, D9, F1 to F18; gap review E1, M5, M7, M8; front-end finding G41 |
+| ICS-21 | grids classes, user-defined; inventory H1 to H3 |
+| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5; gap review of question cluster 2 |
+| ICS-25 | grid user-defined; inventory L1 to L3 |
+| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3; gap review of question cluster 2 |
+| ICS-27 | grid arithmetic; inventory J4 |
+| ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
+| ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
+| ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
+| ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
+| ICS-46 | probes of references to arrays of known and unknown bound; probes of direct bindings to pointers; front-end finding G49; gap review of question cluster 2 |
+| ICS-39 | grid arithmetic (enum : short); gap review S1 |
+| ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
+| ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |
+| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4; gap review of question cluster 2 |
+
+ICS-8 is a `reject` rule because each fault is rejected once its
+function is chosen. Every test has a fallback function that the call
+would use if the fault removed the sequence.
+
+Inputs: edg-overload.
+
+### Divergences
+
 The questions of the tie-breaker cluster on this page stay open under
 decision 0051: {question}`Q-0133`, {question}`Q-0137`,
 {question}`Q-0138`, {question}`Q-0152`, {question}`Q-0153`,
@@ -891,11 +931,6 @@ bound, for the reasons in Q-0188.
   prefers `int* const&` to `const int* const&` for an `int*` lvalue.
   Clang and GCC bind both references directly in a constant
   evaluation.
-- ICS-38: every compiler binds a reference to a braced string literal of
-  the referenced type directly. An rvalue reference cannot bind to the
-  literal, and an lvalue reference wins over an rvalue reference.
-- ICS-6: every compiler rejects a braced list for an ellipsis, and
-  chooses another viable function when one exists.
 - ICS-45: Clang lets direct initialization of a reference use an
   `explicit` conversion function that returns a value. GCC and EDG do
   not. ICS-45 follows Clang for an rvalue reference
@@ -913,11 +948,18 @@ bound, for the reasons in Q-0188.
 - ICS-37: Clang finds two conversion functions to `F&` and `F&&`
   ambiguous for a reference `F&&` to a function type. GCC and EDG apply
   {rule}`OVL-29` ({question}`Q-0138`).
+
+### Results where every compiler agrees
+
+- ICS-38: every compiler binds a reference to a braced string literal of
+  the referenced type directly. An rvalue reference cannot bind to the
+  literal, and an lvalue reference wins over an rvalue reference.
+- ICS-6: every compiler rejects a braced list for an ellipsis, and
+  chooses another viable function when one exists.
 - ICS-10, ICS-41: every compiler accepts a user-defined sequence to the
   explicit object parameter of an assignment operator.
-- ICS-8 is a `reject` rule because each fault is rejected once its
-  function is chosen. Every test has a fallback function that the call
-  would use if the fault removed the sequence.
+
+### Probe grids
 
 The probe grids are in `tests/foundations/conversion-sequences/grids/`,
 and `tools/probe_grid.py` prints these tables from them. Each column of a
@@ -930,6 +972,9 @@ for `&` and rref for `&&`. In the object-parameter grid, each column
 gives the qualifiers of a member `operator~` and the parameter of a
 non-member `operator~`. In the order grid, each column gives the
 parameters of `f(a)` and `f(b)`, and each row gives the argument.
+
+<details>
+<summary>The 11 probe grids of this page</summary>
 
 Arithmetic arguments (ICS-2, ICS-27, ICS-32, ICS-34):
 
@@ -1108,34 +1153,4 @@ Braced lists for references (ICS-12, ICS-20, ICS-30):
 | {s} short lvalue → first | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject |
 | {s} short lvalue → second | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject |
 
-The source of each rule:
-
-| Rule | Source |
-|---|---|
-| ICS-1, ICS-2 | grids arithmetic, pointers, classes; inventory A5, A8 to A13, B1, B3 to B5 |
-| ICS-3 | grid user-defined; inventory A14 to A17 |
-| ICS-4 | diagnostics for explicit conversion functions; probes of conversion functions that return a value; inventory E1 to E5; gap review E5, M6 |
-| ICS-5 | probe of a defaulted conversion template; inventory A18 |
-| ICS-6 | grids classes, user-defined; probes of braced lists for an ellipsis; inventory A4; front-end finding G51 |
-| ICS-7 | grid user-defined (ToBoth); probes of a constructor against a conversion function; inventory A1 to A3; gap review E2 |
-| ICS-8 | diagnostics in the `chosen-*` tests; inventory A7, C1, F6, F9, F19; gap review M1; front-end finding G43 |
-| ICS-9, ICS-10 | probes; inventory D1, D3 to D7, G1, G3; gap review M9 |
-| ICS-11, ICS-12 | grids references, list-references; inventory B2, C2 to C6; front-end finding G38 |
-| ICS-13, ICS-14, ICS-40, ICS-41 | grid object-parameter; inventory B6, C7 to C10, D2; gap review S4, S5, M9 |
-| ICS-15 to ICS-20 | grids lists, list-references, classes; inventory D8, D9, F1 to F18; gap review E1, M5, M7, M8; front-end finding G41 |
-| ICS-21 | grids classes, user-defined; inventory H1 to H3 |
-| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5; gap review of question cluster 2 |
-| ICS-25 | grid user-defined; inventory L1 to L3 |
-| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3; gap review of question cluster 2 |
-| ICS-27 | grid arithmetic; inventory J4 |
-| ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
-| ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
-| ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
-| ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
-| ICS-46 | probes of references to arrays of known and unknown bound; probes of direct bindings to pointers; front-end finding G49; gap review of question cluster 2 |
-| ICS-39 | grid arithmetic (enum : short); gap review S1 |
-| ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
-| ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |
-| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4; gap review of question cluster 2 |
-
-Inputs: edg-overload.
+</details>

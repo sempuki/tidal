@@ -10,7 +10,7 @@ function, unless the function is `explicit`. This page covers:
   standard conversions.
 
 Depends on: constructors and destructors, standard conversions, overload
-resolution ({doc}`/foundations/overload-resolution`).
+resolution ({doc}`/overloading/overload-resolution`).
 
 ## Principles
 

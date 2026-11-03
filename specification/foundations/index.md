@@ -15,8 +15,6 @@ objects
 storage
 values
 conversions
-conversion-sequences
-overload-resolution
 names
 odr
 evaluation-order
@@ -35,8 +33,6 @@ objects
 storage
 values
 conversions
-conversion-sequences
-overload-resolution
 names
 odr
 evaluation-order

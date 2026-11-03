@@ -806,6 +806,57 @@ tick(1, 1);                      // rejected: each is better on one argument
 The results are in `tests/RESULTS.md`. All eight compilers agree on 139
 of 166 tests.
 
+### Sources
+
+This table gives the source of each rule. A gap review item has the
+number that `reports/review/2026-10-31-gap-review-overload-resolution.md`
+gives it:
+
+| Rule | Source |
+|---|---|
+| OVL-1 | probes; inventory CC-6, CC-11 |
+| OVL-2, OVL-3 | grid contexts; diagnostics for a call without an object; inventory CC-3 to CC-5, gap G-1; gap review M-4, E-2 |
+| OVL-4 | grid contexts; inventory CC-1, CC-7 |
+| OVL-5, OVL-6 | grids contexts, object-call, surrogates; edg-overload (the surrogate candidates); inventory CC-2, CC-8 to CC-10, AF-7, gap G-10; gap review M-5, M-6 |
+| OVL-7 | grid operators; inventory CO-1, CO-4 to CO-7, CO-14 |
+| OVL-8 | probes; inventory CO-2, CO-3 |
+| OVL-9 | probes; grids compound-integral, three-way; inventory BI-1 to BI-4, BI-6 to BI-8, BI-10 to BI-12, BI-14, BI-15, BI-17, BI-18; gap review M-8, E-8 |
+| OVL-10 | probes; edg-overload (the removal of a built-in candidate with the signature of a function); inventory BI-5, gap G-9 |
+| OVL-11 | diagnostics; inventory BI-16 |
+| OVL-12 | probes; inventory BI-13, gap G-13 |
+| OVL-13 | probes; inventory CO-9, CO-10, CO-12, CO-13; gap review M-1 |
+| OVL-43 | diagnostics; gap review M-2 |
+| OVL-14, OVL-40 | grid initialization; inventory CI-1, CI-2, CI-4, CI-8, CI-9; gap review S-2 |
+| OVL-15 | probes; grid reference-kind; inventory CI-7, CI-10; gap review M-10 |
+| OVL-16 | probe; inventory CI-3, gap G-12 |
+| OVL-17 | probes; inventory DE-3, gap G-7; gap review E-3 |
+| OVL-42 | probes; {rule}`CPY-7`; gap review S-4 |
+| OVL-18 to OVL-20 | grids address, address-explicit; diagnostics; inventory AO-2 to AO-6, AO-9 to AO-12, gap G-11; gap review M-7, E-5, E-6 |
+| OVL-21, OVL-44 | probes; diagnostics; inventory AO-1, AO-7, gap G-2; gap review E-1, E-7 |
+| OVL-39 | probes; gap review S-1 |
+| OVL-22 to OVL-24 | grid viability; inventory VI-1 to VI-9 |
+| OVL-25 | grid templates; edg-overload (the argument loop of the comparison); inventory RK-1, RK-2, RK-12 to RK-14, RK-17, AF-3 |
+| OVL-26 to OVL-33, OVL-41 | grids templates, operators, reference-kind; edg-overload (the tie-breakers after the argument comparison); inventory RK-3 to RK-10, RK-16, gaps G-4 to G-6, G-15; gap review M-9, O-1 to O-3, S-3 |
+| OVL-34 | probes; edg-overload (the best-match set); inventory RK-15, AF-2 |
+| OVL-35, OVL-36 | diagnostics; inventory AF-2, AF-5, AF-7 |
+| OVL-37 | diagnostics; inventory AF-1, AF-6, DE-1, VI-6 |
+| OVL-38 | diagnostics; inventory AF-4, gap G-8; gap review E-4 |
+
+- Class template argument deduction and its deduction-guide steps
+  (inventory RK-11) are on {doc}`/templates/class-template-deduction`.
+- Inventory AF-8, a usable result of resolution, has no rule. No rule on
+  this page uses the notion, and {rule}`CPY-7` states its own
+  conditions.
+- Other pages state these inventory items: DE-2 ({rule}`CPY-7`), CO-1
+  ({rule}`OPR-5`), CO-8 ({rule}`OPR-4`), BI-3 ({rule}`COND-11`), BI-9
+  ({rule}`ICS-10`), CI-5 ({rule}`CVF-5`, {rule}`ICS-5`), CI-6
+  ({rule}`ILC-3`, {rule}`ILC-8`), OP-1 to OP-7 ({rule}`ICS-10`,
+  {rule}`ICS-13`, {rule}`ICS-14`), and AO-8 ({rule}`MPTR-2`).
+
+Inputs: edg-overload, clang-diag-sema.
+
+### Divergences
+
 The questions of the tie-breaker cluster on this page stay open under
 decision 0051: {question}`Q-0138`, {question}`Q-0139`,
 {question}`Q-0144`, {question}`Q-0145`, {question}`Q-0147`,
@@ -823,11 +874,6 @@ The question of the cluster of EDG differences (cluster 5) on this page,
 differs. Reporting this EDG difference to the EDG project waits on the
 maintainer.
 
-- OVL-25, OVL-6: every compiler chooses a static call operator over a
-  surrogate candidate with the same parameter types. Every compiler
-  finds the call ambiguous when the surrogate's parameter fits the
-  argument better. So the static member's object slot beats the
-  surrogate's user-defined conversion of the object.
 - OVL-27, OVL-28, OVL-29: the kind of function reference prefers one
   conversion function, and a template tie-breaker prefers the other.
   GCC follows the kind of reference, and EDG the template tie-breaker.
@@ -888,12 +934,6 @@ maintainer.
   with the ref-qualifier `&&` win and then reject the call. GCC gives
   the call an lvalue object, so the member is not viable and a static
   member wins ({question}`Q-0187`).
-- OVL-9: every compiler gives the built-in `!`, `&&`, and `||` an
-  `explicit` conversion function to `bool`. The built-in candidate then
-  ties with an operator function that needs a converting constructor.
-  An `explicit` conversion function to `int` gives no sequence.
-- OVL-8: every compiler takes a swapped `==` whose parameters meet the
-  enumeration operands only in the swapped order.
 - OVL-30: EDG lets a constraint decide between plain functions whose
   parameter lists differ in a defaulted parameter or an ellipsis. Clang
   18 does so for an ellipsis. Clang 22 and GCC find the call ambiguous
@@ -905,6 +945,20 @@ maintainer.
   two scopes. Clang and EDG accept it ({question}`Q-0140`). Every
   compiler accepts equal default arguments, which item E-4 of the gap
   review describes as not valid.
+
+### Results where every compiler agrees
+
+- OVL-25, OVL-6: every compiler chooses a static call operator over a
+  surrogate candidate with the same parameter types. Every compiler
+  finds the call ambiguous when the surrogate's parameter fits the
+  argument better. So the static member's object slot beats the
+  surrogate's user-defined conversion of the object.
+- OVL-9: every compiler gives the built-in `!`, `&&`, and `||` an
+  `explicit` conversion function to `bool`. The built-in candidate then
+  ties with an operator function that needs a converting constructor.
+  An `explicit` conversion function to `int` gives no sequence.
+- OVL-8: every compiler takes a swapped `==` whose parameters meet the
+  enumeration operands only in the swapped order.
 - OVL-9: for `ToDouble{} % 2`, Clang reports that the integer candidates
   are ambiguous, and GCC and EDG report no match. All reject.
 - OVL-9, OVL-11: in the three-way grid, `unsigned` against `long` is
@@ -918,22 +972,17 @@ maintainer.
 - OVL-36: a written `==` that is not `const` ties with its own swapped
   form (inventory RK-16). Every compiler rejects the comparison in
   strict mode, and {rule}`DCMP-7` recommends a warning.
-- Class template argument deduction and its deduction-guide steps
-  (inventory RK-11) are on {doc}`/templates/class-template-deduction`.
-- Inventory AF-8, a usable result of resolution, has no rule. No rule on
-  this page uses the notion, and {rule}`CPY-7` states its own
-  conditions.
-- Other pages state these inventory items: DE-2 ({rule}`CPY-7`), CO-1
-  ({rule}`OPR-5`), CO-8 ({rule}`OPR-4`), BI-3 ({rule}`COND-11`), BI-9
-  ({rule}`ICS-10`), CI-5 ({rule}`CVF-5`, {rule}`ICS-5`), CI-6
-  ({rule}`ILC-3`, {rule}`ILC-8`), OP-1 to OP-7 ({rule}`ICS-10`,
-  {rule}`ICS-13`, {rule}`ICS-14`), and AO-8 ({rule}`MPTR-2`).
+
+### Probe grids
 
 The probe grids are in `tests/foundations/overload-resolution/grids/`,
 and `tools/probe_grid.py` prints these tables from them. A cell shows
 `accept` or `reject` when every compiler agrees, and lists the compilers
 on each side when they split. In the labels, lref stands for `&` and
 rref for `&&`.
+
+<details>
+<summary>The 12 probe grids of this page</summary>
 
 Viability (OVL-22). Each column declares one `f`, and each row calls it.
 An `accept` means that the function is viable for the call:
@@ -1095,38 +1144,4 @@ merges. The first returns `One` and the second `Two`:
 | int pointer → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | accept | accept | accept | accept | reject | accept | accept |
 | int pointer → second | reject | reject | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | reject | accept | reject | accept | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject |
 
-This table gives the source of each rule. A gap review item has the
-number that `reports/review/2026-10-31-gap-review-overload-resolution.md`
-gives it:
-
-| Rule | Source |
-|---|---|
-| OVL-1 | probes; inventory CC-6, CC-11 |
-| OVL-2, OVL-3 | grid contexts; diagnostics for a call without an object; inventory CC-3 to CC-5, gap G-1; gap review M-4, E-2 |
-| OVL-4 | grid contexts; inventory CC-1, CC-7 |
-| OVL-5, OVL-6 | grids contexts, object-call, surrogates; edg-overload (the surrogate candidates); inventory CC-2, CC-8 to CC-10, AF-7, gap G-10; gap review M-5, M-6 |
-| OVL-7 | grid operators; inventory CO-1, CO-4 to CO-7, CO-14 |
-| OVL-8 | probes; inventory CO-2, CO-3 |
-| OVL-9 | probes; grids compound-integral, three-way; inventory BI-1 to BI-4, BI-6 to BI-8, BI-10 to BI-12, BI-14, BI-15, BI-17, BI-18; gap review M-8, E-8 |
-| OVL-10 | probes; edg-overload (the removal of a built-in candidate with the signature of a function); inventory BI-5, gap G-9 |
-| OVL-11 | diagnostics; inventory BI-16 |
-| OVL-12 | probes; inventory BI-13, gap G-13 |
-| OVL-13 | probes; inventory CO-9, CO-10, CO-12, CO-13; gap review M-1 |
-| OVL-43 | diagnostics; gap review M-2 |
-| OVL-14, OVL-40 | grid initialization; inventory CI-1, CI-2, CI-4, CI-8, CI-9; gap review S-2 |
-| OVL-15 | probes; grid reference-kind; inventory CI-7, CI-10; gap review M-10 |
-| OVL-16 | probe; inventory CI-3, gap G-12 |
-| OVL-17 | probes; inventory DE-3, gap G-7; gap review E-3 |
-| OVL-42 | probes; {rule}`CPY-7`; gap review S-4 |
-| OVL-18 to OVL-20 | grids address, address-explicit; diagnostics; inventory AO-2 to AO-6, AO-9 to AO-12, gap G-11; gap review M-7, E-5, E-6 |
-| OVL-21, OVL-44 | probes; diagnostics; inventory AO-1, AO-7, gap G-2; gap review E-1, E-7 |
-| OVL-39 | probes; gap review S-1 |
-| OVL-22 to OVL-24 | grid viability; inventory VI-1 to VI-9 |
-| OVL-25 | grid templates; edg-overload (the argument loop of the comparison); inventory RK-1, RK-2, RK-12 to RK-14, RK-17, AF-3 |
-| OVL-26 to OVL-33, OVL-41 | grids templates, operators, reference-kind; edg-overload (the tie-breakers after the argument comparison); inventory RK-3 to RK-10, RK-16, gaps G-4 to G-6, G-15; gap review M-9, O-1 to O-3, S-3 |
-| OVL-34 | probes; edg-overload (the best-match set); inventory RK-15, AF-2 |
-| OVL-35, OVL-36 | diagnostics; inventory AF-2, AF-5, AF-7 |
-| OVL-37 | diagnostics; inventory AF-1, AF-6, DE-1, VI-6 |
-| OVL-38 | diagnostics; inventory AF-4, gap G-8; gap review E-4 |
-
-Inputs: edg-overload, clang-diag-sema.
+</details>

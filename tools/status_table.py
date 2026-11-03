@@ -61,7 +61,7 @@ RESULTS = TESTS / "RESULTS.md"
 REPORTS = ROOT / "reports" / "clean-room"
 SIMILARITY = ROOT / "reports" / "similarity"
 CONFORMANCE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
-SECTIONS = ["foundations", "statements", "expressions", "declarations", "classes", "templates", "exceptions"]
+SECTIONS = ["foundations", "statements", "expressions", "declarations", "classes", "overloading", "templates", "exceptions"]
 KINDS = ["required", "reject", "undefined", "unspecified", "impl-defined",
          "no-diagnostic", "conditionally-supported", "recommended"]
 HEADER = ("| Section | Rules | Classes | Tests | Single-test rules | Overrides "

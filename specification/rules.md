@@ -51,7 +51,7 @@ Every rule ID starts with the prefix of its page.
 | `ENUM` | `declarations/enumerations.md` |
 | `EXS` | `declarations/exception-specifications.md` |
 | `FN` | `declarations/functions/definitions.md` |
-| `ICS` | `foundations/conversion-sequences.md` |
+| `ICS` | `overloading/conversion-sequences.md` |
 | `IF` | `statements/if.md` |
 | `ILC` | `classes/initializer-lists.md` |
 | `INC` | `foundations/odr.md` |
@@ -76,7 +76,7 @@ Every rule ID starts with the prefix of its page.
 | `ODR` | `foundations/odr.md` |
 | `OPR` | `classes/operators.md` |
 | `ORD` | `templates/ordering.md` |
-| `OVL` | `foundations/overload-resolution.md` |
+| `OVL` | `overloading/overload-resolution.md` |
 | `PACK` | `templates/packs.md` |
 | `PFX` | `expressions/postfix.md` |
 | `PRIM` | `expressions/primary.md` |
