@@ -398,7 +398,7 @@ Constant evaluation must not reach any of these constructs (CE-17):
 
 :::{rule} CE-21
 :kind: reject
-:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp expressions/constant-expressions/result-returned-local-every-element.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp
+:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp expressions/constant-expressions/result-returned-local-every-element.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp
 
 The value of a constant expression of class or array type must give a
 value to each of its scalar parts. These conditions apply:
@@ -455,15 +455,19 @@ fails the last condition.
 
 :::{rule} CE-24
 :kind: required
-:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-scalar.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp
+:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-scalar.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp expressions/constant-expressions/constant-initializer-trivial-empty-class.cpp
 
 A *constant initializer* is an initializer whose whole initialization of
 the variable, with each conversion and constructor call in it, is a
-constant expression. For a variable with no initializer, the default
-initialization of the variable is the initialization that this rule and
-CE-21 judge. A default initialization that calls no constructor, or only
-a {term}`trivial` one, leaves the zero of {rule}`STO-3` as a constant
-initializer ({question}`Q-0192`).
+constant expression. For a variable with no initializer, this rule and
+CE-21 judge the default initialization ({rule}`INIT-9`):
+
+- A scalar or an array of scalars gets no initialization. The zero of
+  {rule}`STO-3` is then a constant initializer.
+- A class or an array of a class calls the default constructor, also a
+  {term}`trivial` one. The zero does not count, so a trivial
+  constructor leaves each scalar member without a value
+  ({question}`Q-0192`).
 :::
 
 :::{rule} CE-18
@@ -567,12 +571,19 @@ constexpr Table make() {
 constexpr Table bad = make();         // rejected: v[3] has no value
 struct Filled { int v[4] = {}; };     // every element starts at 0, so a
                                       // builder can set only some
+
+struct Pair { int first; int second; };
+struct Empty {};
+constinit int counter;                // fine: the zero is the value
+constinit Pair pair;                  // rejected: the default constructor
+                                      // gives first and second no value
+constinit Empty empty;                // fine: Empty has no scalar part
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 134 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 137 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:
@@ -654,9 +665,15 @@ split on each of them.
     scalar temporary and rejects the read of a temporary that is not
     `const`.
 - CE-24: every compiler accepts `constinit` on a scalar or an array of
-  scalars with no initializer. For a class with a trivial default
-  constructor, GCC and EDG accept it, and Clang rejects it
-  ({question}`Q-0192`).
+  scalars with no initializer. Every compiler also accepts `constinit`
+  on an empty class with a trivial default constructor. For a class
+  with a trivial default constructor and a scalar member, Clang rejects
+  the variable and names the member that has no value. GCC and EDG
+  accept it ({question}`Q-0192`). The same split holds for an array of
+  that class and for a `static` variable in a block. The gap review of
+  question cluster 4
+  (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads
+  the reference as supporting Clang.
 - CE-26: all eight compilers accept constant evaluation of
   `i++ + i++`, `i + i++`, and `i++ * i`. CE-26 is class `no-diagnostic`
   because no compiler detects the pair. So the table below shows "no

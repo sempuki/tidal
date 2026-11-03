@@ -198,7 +198,7 @@ on `consteval`.
 
 :::{rule} CINIT-1
 :kind: reject
-:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp
+:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp
 
 A `constinit` variable must have a {term}`constant initializer`. For a
 variable with no initializer, {rule}`CE-24` and {rule}`CE-21` say when
@@ -282,7 +282,7 @@ Identifier bad = "2x";              // rejected
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 72 tests.
+of 75 tests.
 
 - CX-6: every compiler accepts a constant evaluation that reaches the
   definition of a `static const int` with a constant initializer, as

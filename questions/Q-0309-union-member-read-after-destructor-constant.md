@@ -42,6 +42,12 @@ rejection and records GCC's acceptance with an override.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 reject the read, and GCC 16 accepts it, so two families disagree. CE-P3 supports the provisional answer, because constant evaluation rejects any operation that is undefined (CE-9, OBJ-2, UNI-6). The front end's interpreter rejects the read with UNI-6.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1. A class object stops being alive when its destructor call begins, also for a trivial destructor. After the call the member is not active, and the union has no active member. A read of a member that is not active keeps an expression from being constant, apart from undefined behavior. GCC's acceptance has no support in the reference.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

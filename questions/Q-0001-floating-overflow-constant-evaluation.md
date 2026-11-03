@@ -57,4 +57,10 @@ and ADD-17, so the rules follow option 1 until a decision adopts it.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 accepts the overflow and gives an infinity, and GCC 16 and EDG 7.0 reject it, so two families disagree. A probe of an infinity minus itself is rejected by every compiler: by Clang for the NaN, and by GCC and EDG at the overflow. CE-P3 supports the provisional answer. An evaluation must not depend on the machine, and the result of the overflow depends on the floating-point format. The front end's interpreter rejects the overflow with MUL-12 and ADD-17.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1, with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. An evaluation whose result lies outside the values of its type is undefined, and undefined behavior keeps an expression from being constant. So a floating overflow is not constant, as GCC and EDG find. The doubt is that the reference does not define the set of values of a floating type. A reader who counts an infinity as a value would reach Clang's result. A NaN result has no mathematical value, so Clang's rejection of an infinity minus itself fits the reference. The reference neither supports nor rules out option 3.

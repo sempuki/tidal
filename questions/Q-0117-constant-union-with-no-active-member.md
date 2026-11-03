@@ -55,4 +55,10 @@ follows from CE-21 counting only the active member. The status is not
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 accept the union with no active member, as a constant and as a template argument, and GCC 16 rejects it, so two families disagree. CE-P2 supports the provisional answer. A result must have a value in every part, and in a union only the active member is a part (CE-21). The front end's interpreter accepts both tests.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1, with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. A union with no active member has no member whose lifetime has begun, so the checks on the value of a constant find no fault. The reference also counts two unions that both have no active member as equivalent template arguments, which only makes sense if such a union can be a constant. The doubt is that the check on subobjects does not say plainly that an inactive member is skipped. A reader who counts the inactive member as a subobject with no value would reach GCC's result.

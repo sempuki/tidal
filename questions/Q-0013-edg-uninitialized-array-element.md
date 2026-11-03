@@ -29,4 +29,10 @@ implementations treat them the same.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the read of the array element, and EDG 7.0 accepts it, so two families disagree. EDG 7.0 rejects the read of a scalar, and a probe shows that it also rejects the read of the one element of an array of length 1. CE-P3 supports the provisional answer, because constant evaluation rejects any operation that is undefined (CE-9, INIT-1, OBJ-2). The front end's interpreter rejects the read with OBJ-2 and INIT-1.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1. A read of an object with an indeterminate value keeps an expression from being constant, and an evaluation that produces such a value is undefined, with narrow exceptions for byte-like types. Neither rule treats an array element differently from a scalar. The next language version gives a new class of behavior at run time to automatic variables that are never written. Constant evaluation still rejects the read there.

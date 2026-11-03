@@ -42,6 +42,12 @@ and the result of a constant must match the result at run time.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 give a null pointer, and EDG 7.0 lets the cast succeed, so two families disagree. CE-P1 supports the provisional answer. Constant evaluation is the same program run at translation time, so the cast gives the null pointer that Clang and GCC give at run time. The front end's interpreter accepts the test, so it gives the null pointer too.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1. The run-time check for a cast down or across needs the operand to designate a public base subobject. A private base subobject fails both branches of the check, and a failed cast to a pointer gives a null pointer. Constant evaluation follows the same check.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

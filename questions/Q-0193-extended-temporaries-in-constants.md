@@ -65,4 +65,10 @@ binding would be harder to state and to check.
 
 The question stays open under decision 0051 (2026-11-03). The newest versions still split by part. EDG 7.0 rejects the two `constexpr` references whose temporary is extended through a member or through a braced aggregate, and Clang 22 and GCC 16 accept them. GCC 16 rejects the read of a `const` temporary of class type, and Clang 22 and EDG 7.0 accept it. CE-P2 supports the provisional answer, because a `const` temporary that a constant variable keeps alive is among the things that an evaluation can use, and REF-4 gives every form of binding the same lifetime. The front end's interpreter accepts the declarations and the read of a class temporary, and rejects the read of the nested temporary with OBJ-2.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1, with doubt. The review notes that the front end's interpreter rejects the read of the nested temporary with OBJ-2, and the provisional answer allows that read when both temporaries have a `const` type. This mismatch goes to item FE.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. Every form of REF-4, including a member of a class temporary, extends the temporary to the lifetime of the reference, and a temporary bound to a reference member of an extended temporary is extended too. A constant reference must refer to an object with static storage, and no rule depends on the form of the binding, so EDG's rejection of the declarations has no basis. A constant evaluation can read an extended temporary of a `const`, non-volatile literal type, and the type need not be a scalar. So the read of a `const` class temporary is allowed, as Clang and EDG find. When both temporaries in the nested case have a `const` type, the read is allowed, as Clang finds. The front end's rejection of that read with OBJ-2 does not fit the provisional answer. The doubt is that the reference does not say plainly that an extended temporary has static storage.

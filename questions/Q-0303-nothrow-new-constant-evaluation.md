@@ -32,6 +32,12 @@ without placement arguments are.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 evaluate `new (std::nothrow) int(4)`, and EDG 7.0 rejects it, so two families disagree. GCC 14 still rejects it. CE-P1 supports the provisional answer, because constant evaluation can allocate, and the nothrow forms are allocation functions of the implementation (NEW-37). The front end's interpreter rejects the test, because the program declares the nothrow allocation function itself.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1. A constant evaluation can use an allocating `new` expression that selects a replaceable global allocation function, if the storage is freed within the evaluation. The nothrow forms are among the replaceable global allocation functions, and placement arguments alone do not exclude a `new` expression. Whether a program can declare these functions itself without the header is a matter for LSUP-6. That point can explain the front end's rejection of the test, and it does not bear on the option.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
