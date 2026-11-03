@@ -319,6 +319,11 @@ impl P {
         if ci.bases.iter().any(|b| b.class.is_some_and(|bc| self.dtor_deleted(bc, depth + 1))) {
             return true;
         }
+        // DER-21: a base, also a virtual base that is not direct, whose
+        // destructor is private and which does not befriend the class.
+        if self.base_dtor_private(c) {
+            return true;
+        }
         // DTOR-3: a variant member counts as a member.
         ci.fields.iter().any(|&f| match &self.decls[f].k {
             DK::Field(fi) if !fi.ty.t.is_ref() => Self::class_of_elem(&fi.ty.t).is_some_and(|m| self.dtor_deleted(m, depth + 1)),
@@ -717,6 +722,38 @@ impl P {
             // that would be deleted.
             self.error(line, "CPY-17", "a function defaulted after its class would be deleted");
         }
+    }
+
+    /// DER-21: a direct or virtual base of `c` whose destructor is private
+    /// to `c`, when the friends of the base are known.
+    pub fn base_dtor_private(&self, c: usize) -> bool {
+        let mut parts: Vec<usize> = self.classes[c].bases.iter().filter_map(|b| b.class).collect();
+        let mut todo = parts.clone();
+        let mut d = 0;
+        while let Some(x) = todo.pop() {
+            d += 1;
+            if d > 64 {
+                break;
+            }
+            for b in &self.classes[x].bases {
+                if let Some(bc) = b.class {
+                    if b.virt && !parts.contains(&bc) {
+                        parts.push(bc);
+                    }
+                    todo.push(bc);
+                }
+            }
+        }
+        parts.into_iter().any(|m| {
+            let Some(dt) = self.classes[m].dtor else { return false };
+            if self.member_access.get(&dt).copied().unwrap_or(0) != 2 || self.class_uncertain(m) {
+                return false;
+            }
+            match self.friend_sets.get(&m) {
+                Some(fs) => !fs.open && !fs.classes.contains(&c) && !fs.class_names.contains(&self.classes[c].name),
+                None => !self.friend_classes.contains(&m),
+            }
+        })
     }
 
     /// Whether a special member of class `m`, used for a base (`base`) or

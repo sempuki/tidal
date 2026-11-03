@@ -122,10 +122,12 @@ impl P {
                     self.last_templ = Some(crate::templ::Last::Partial(*t, args.clone()));
                 }
             } else if explicit_spec && !args.iter().any(|a| a.is_dep()) {
+                self.head_align = if is_def { class_align } else { 0 };
                 return self.explicit_class_spec(*t, args.clone(), key, is_def, line);
             }
         }
         if let Some(req) = inst_req {
+            self.head_align = if is_def { class_align } else { 0 };
             return self.inst_class_body(req, key, is_def, line);
         }
         if !is_def {
@@ -283,6 +285,13 @@ impl P {
                 } else if self.at("decltype") {
                     self.pos += 1;
                     self.parse_decltype()?
+                } else if (self.in_template() && self.dependent_qualifier_at() && self.less_after_qualified(0)) || self.has_fact(self.pos, crate::templ::FACT_LESS) {
+                    // DEP-24: a base named `T::box<...>` without
+                    // `template`.
+                    self.in_base_clause += 1;
+                    let r = self.parse_typename_type();
+                    self.in_base_clause -= 1;
+                    r?
                 } else if self.qualified_names_type(0) {
                     self.in_base_clause += 1;
                     let r = self.parse_type_name();
@@ -624,6 +633,8 @@ impl P {
     /// The bases and the member list of a class that is not a template:
     /// an explicit specialization or an instance.
     fn class_body(&mut self, c: usize, key: u8, line: u32) -> PR<()> {
+        let head_align = std::mem::take(&mut self.head_align);
+        self.classes[c].align = self.classes[c].align.max(head_align);
         let name = self.classes[c].name.clone();
         let class_scope = self.classes[c].scope;
         if self.at("final") || (self.pos > 0 && self.toks[self.pos - 1].text == "final" && self.toks[self.pos - 1].kind == TK::Ident) {
@@ -652,20 +663,31 @@ impl P {
                 }
                 let bl = self.line();
                 let hits = self.binding_hits;
-                let bq = if self.at("decltype") {
-                    self.pos += 1;
-                    self.parse_decltype()?
-                } else if self.qualified_names_type(0) || self.at("typename") {
-                    self.eat("typename");
-                    self.in_base_clause += 1;
-                    let r = self.parse_type_name();
-                    self.in_base_clause -= 1;
-                    r?
-                } else {
-                    self.skip_qualified_name()?;
-                    QTy::unknown()
-                };
-                let expand = self.eat("...");
+                // PACK-14: `Bs...` gives one base for each element.
+                let (bqs, expanded) = self.parse_expansion(|p| {
+                    Ok(if p.at("decltype") {
+                        p.pos += 1;
+                        p.parse_decltype()?
+                    } else if p.has_fact(p.pos, crate::templ::FACT_LESS) {
+                        // DEP-24: the pattern read `<` as the less-than
+                        // operator.
+                        p.in_base_clause += 1;
+                        let r = p.parse_typename_type();
+                        p.in_base_clause -= 1;
+                        r?
+                    } else if p.qualified_names_type(0) || p.at("typename") {
+                        p.eat("typename");
+                        p.in_base_clause += 1;
+                        let r = p.parse_type_name();
+                        p.in_base_clause -= 1;
+                        r?
+                    } else {
+                        p.skip_qualified_name()?;
+                        QTy::unknown()
+                    })
+                })?;
+                let expand = !expanded && self.eat("...");
+                for bq in bqs {
                 self.class_base_types.entry(c).or_default().push((bq.clone(), expand));
                 self.require_ty(&bq, bl);
                 let bc = match bq.t {
@@ -702,6 +724,7 @@ impl P {
                     }
                 }
                 self.classes[c].bases.push(BaseInfo { class: bc, virt, access });
+                }
                 if !self.eat(",") {
                     break;
                 }
@@ -923,9 +946,19 @@ impl P {
     fn parse_enumerators(&mut self, e: usize, _line: u32) -> PR<()> {
         self.expect("{")?;
         let escope0 = self.enums[e].scope;
+        // INST-5: the definition of a scoped enumeration member of a class
+        // specialization is made only when a use needs it. The front end
+        // parses it at once and drops its errors (an approximation).
+        let lazy = self.enums[e].scoped && self.inst_depth > 0 && !self.in_template() && self.stack.last().is_some_and(|&s| matches!(self.scopes[s].kind, SK::Class(_)));
+        if lazy {
+            self.d.muted += 1;
+        }
         self.stack.push(escope0);
         let r = self.parse_enumerators_inner(e);
         self.stack.pop();
+        if lazy {
+            self.d.muted -= 1;
+        }
         r
     }
 
@@ -972,7 +1005,13 @@ impl P {
                             self.error_because(el, "ENUM-14", r, format!("enumerator value is not a constant expression ({}: {})", r, m));
                         }
                     }
-                    Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(el, format!("enumerator value: {}", m)),
+                    Err(crate::consteval::CeErr::Unsupported(m)) => {
+                        // A value that depends on a parameter is known in
+                        // a specialization.
+                        if !self.in_template() {
+                            self.unsupported(el, format!("enumerator value: {}", m));
+                        }
+                    }
                 }
                 if let Some(f) = &fixed {
                     if !fits(v, f) && !ex.ty.is_unknown() {

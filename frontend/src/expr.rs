@@ -396,6 +396,7 @@ impl P {
             s.push_str(&self.tok().text.clone());
             self.pos += 1;
             if s == "operator(" || s == "operator[" {
+                s.push_str(if s == "operator(" { ")" } else { "]" });
                 self.pos += 1;
             }
             s
@@ -1112,7 +1113,18 @@ impl P {
             } else if self.at(".") || self.at("->") {
                 let arrow = self.at("->");
                 self.pos += 1;
-                self.eat("template");
+                let kw = self.eat("template");
+                let name_pos = self.pos;
+                if kw && self.tok().kind == TK::Ident && !self.at_k(1, "<") {
+                    // DEP-26: `template` before a member name without an
+                    // argument list.
+                    if self.in_template() {
+                        self.note_fact(name_pos, crate::templ::FACT_TEMPLATE_NO_LIST);
+                    } else if self.has_fact(name_pos, crate::templ::FACT_TEMPLATE_NO_LIST) {
+                        let name = self.tok().text.clone();
+                        self.error(line, "DEP-26", format!("'{}' follows 'template' but has no template argument list", name));
+                    }
+                }
                 e = self.parse_member_access(e, arrow, line)?;
                 if let EK::BoundMember(_, fs) = &e.k {
                     let non_static = fs.iter().all(|&f| self.func(f).is_some_and(|fi| !fi.is_static) && !self.decls[f].name.starts_with("operator"));
@@ -2799,6 +2811,22 @@ impl P {
                     return Ok(self.build_call(callee, args, line));
                 }
                 let _ = save;
+                if name == "__builtin_memcpy" && args.len() == 3 && !self.in_template() {
+                    // An implementation's byte copy (outside knowledge):
+                    // void* (void*, const void*, size_t).
+                    let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
+                    let cvp = QTy::new(Ty::Ptr(Box::new(QTy { t: Ty::Void, c: true, v: false })));
+                    let mark = self.d.list.len();
+                    let mut it = args.into_iter();
+                    let a = self.convert_init(it.next().unwrap(), &vp, InitForm::Copy, line);
+                    let b = self.convert_init(it.next().unwrap(), &cvp, InitForm::Copy, line);
+                    let n = self.convert_init(it.next().unwrap(), &QTy::new(Ty::size_t()), InitForm::Copy, line);
+                    if self.d.list.len() == mark && ![&a, &b, &n].iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                        let callee = Expr::new(EK::Unknown("builtin __builtin_memcpy".into()), QTy::unknown(), Cat::L, line);
+                        return Ok(Expr::new(EK::Call(Box::new(callee), vec![a, b, n], None), vp, Cat::PR, line));
+                    }
+                    return Ok(Expr::unknown(line, "builtin call"));
+                }
                 let in_class_body = self.class_depth > 0 && self.fns.is_empty();
                 if self.in_template() && certain && !in_class_body && self.class_depth == 0 && self.fns.len() == 1 && self.fns[0].class.is_none()
                     && args.iter().all(|a| !a.ty.is_unknown() && !matches!(nonref(&a.ty).t, Ty::Class(_) | Ty::Enum(_)) && !matches!(a.k, EK::InitList(_)))
@@ -3867,12 +3895,30 @@ impl P {
         }
     }
 
+    /// A local variable of an enclosing function, named in a lambda that
+    /// does not capture it (LAM-9, LAM-17).
+    pub fn uncaptured_outer(&self, id: DeclId) -> bool {
+        let (Some(f), Some(v)) = (self.fns.last(), self.var(id)) else { return false };
+        let named = f.lambda_named.iter().any(|&d| d == id || self.decls[d].name == self.decls[id].name);
+        if f.is_lambda && v.local && v.storage == Storage::Auto && f.lambda_default.is_none() && !named && self.in_unevaluated == 0 && !self.in_template() {
+            return !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
+        }
+        false
+    }
+
     pub fn bind_ref(&mut self, e: Expr, to: &QTy, line: u32, rule: &'static str) -> Expr {
         let (is_l, inner) = match &to.t {
             Ty::LRef(i) => (true, (**i).clone()),
             Ty::RRef(i) => (false, (**i).clone()),
             _ => unreachable!(),
         };
+        if let EK::Var(id) = &e.k {
+            if e.cat == Cat::L && !e.ty.t.is_ref() && crate::templ::strip_cv(&nonref(&e.ty), true, true).t == crate::templ::strip_cv(&inner, true, true).t && self.uncaptured_outer(*id) {
+                // LAM-17: a reference bound to a local constant needs a
+                // capture.
+                self.error(line, "LAM-17", format!("the lambda binds a reference to '{}', which it does not capture", self.decls[*id].name));
+            }
+        }
         if e.ty.is_unknown() || inner.is_unknown() {
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
@@ -4725,16 +4771,10 @@ impl P {
                     return Expr::new(EK::Unary(op, Box::new(e)), QTy::unknown(), Cat::PR, line);
                 }
                 if let EK::Var(id) = &e.k {
-                    if let (Some(f), Some(v)) = (self.fns.last(), self.var(*id)) {
-                        let named = f.lambda_named.iter().any(|&d| d == *id || self.decls[d].name == self.decls[*id].name);
-                        if f.is_lambda && v.local && v.storage == Storage::Auto && f.lambda_default.is_none() && !named && self.in_unevaluated == 0 && !self.in_template() {
-                            let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[*id].scope);
-                            if declared_outside {
-                                // LAM-17: the address of a local constant
-                                // needs a capture.
-                                self.error(line, "LAM-17", format!("the lambda takes the address of '{}', which it does not capture", self.decls[*id].name));
-                            }
-                        }
+                    if self.uncaptured_outer(*id) {
+                        // LAM-17: the address of a local constant needs a
+                        // capture.
+                        self.error(line, "LAM-17", format!("the lambda takes the address of '{}', which it does not capture", self.decls[*id].name));
                     }
                 }
                 let named = match &e.k {
@@ -5093,6 +5133,13 @@ impl P {
     }
 
     fn build_member_ptr(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
+        // OPR-1: `->*` with a class operand calls an operator function.
+        if op == "->*" && (matches!(nonref(&l.ty).t, Ty::Class(_)) || matches!(nonref(&r.ty).t, Ty::Class(_))) {
+            match self.op_resolve("->*", &[l.clone(), r.clone()], false, line) {
+                crate::ovl::OpRes::Done(x) => return x,
+                crate::ovl::OpRes::NotHandled | crate::ovl::OpRes::Builtin(_) => {}
+            }
+        }
         let rt = self.rvalue(r);
         let lt = nonref(&l.ty);
         match &rt.ty.t {

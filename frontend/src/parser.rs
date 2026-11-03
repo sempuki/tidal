@@ -427,6 +427,19 @@ pub struct P {
     pub params_tn: bool,
     /// DEP-20: the parameters of the list being parsed.
     pub in_params_tn: bool,
+    /// DEP-19: the parameters of the next parameter list belong to a
+    /// function declared with an unqualified name outside a class.
+    pub params_value: bool,
+    pub in_params_value: bool,
+    /// The alignment from `alignas` in the head of the class whose body
+    /// `class_body` parses next.
+    pub head_align: u64,
+    /// ORD-7: reverse the parameters of the first or the second template
+    /// in the next `func_order`.
+    pub order_rev: (bool, bool),
+    /// DEP-23: the values that a using declaration names in a dependent
+    /// base, in a pattern.
+    pub dep_using: std::collections::HashSet<DeclId>,
     /// Inside the braces of an enumeration being defined.
     pub string_lits: usize,
     pub goto_sets: Vec<(String, u32, std::collections::HashSet<DeclId>, usize)>,
@@ -748,6 +761,11 @@ impl P {
             implicit_tn: false,
             params_tn: false,
             in_params_tn: false,
+            params_value: false,
+            in_params_value: false,
+            head_align: 0,
+            order_rev: (false, false),
+            dep_using: Default::default(),
             string_lits: 0,
             goto_sets: Vec::new(),
             try_regions: Vec::new(),

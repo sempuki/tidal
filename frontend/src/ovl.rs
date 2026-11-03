@@ -250,6 +250,13 @@ impl P {
                     }
                 }
             }
+            ("->*", 2) => {
+                // OVL-9: the built-in ->* needs a pointer operand; a class
+                // operand with a conversion function is not modeled.
+                if ops.iter().any(|o| matches!(nonref(&o.ty).t, Ty::Class(c) if self.any_conv(c, 0))) {
+                    return None;
+                }
+            }
             _ => return None,
         }
         Some(out)
@@ -338,7 +345,7 @@ impl P {
     }
 
     /// OVL-25, OVL-32, OVL-33: is `x` better than `y`?
-    fn op_better(&self, x: &OCand, y: &OCand) -> bool {
+    fn op_better(&self, x: &OCand, y: &OCand, more: &[((DeclId, CK), (DeclId, CK))]) -> bool {
         let mut some = false;
         for (a, b) in x.seqs.iter().zip(y.seqs.iter()) {
             let c = self.ics_cmp(a, b);
@@ -355,8 +362,18 @@ impl P {
         // OVL-27: a function that is not a template specialization (or a
         // built-in candidate) beats a specialization.
         let spec = |c: &OCand| c.fid.is_some_and(|f| self.spec_of.contains_key(&f));
-        if spec(x) != spec(y) && (x.fid.is_none() || y.fid.is_none()) {
+        if spec(x) != spec(y) {
             return !spec(x);
+        }
+        // OVL-28: the more specialized template, for two candidates of the
+        // same kind.
+        if let (Some(a), Some(b)) = (x.fid, y.fid) {
+            if more.contains(&((a, x.kind), (b, y.kind))) {
+                return true;
+            }
+            if more.contains(&((b, y.kind), (a, x.kind))) {
+                return false;
+            }
         }
         let rewritten = |k: CK| matches!(k, CK::Rewritten | CK::Swapped);
         // OVL-32: a candidate that is not rewritten wins.
@@ -556,14 +573,31 @@ impl P {
             }
         }
         let cands = uniq;
-        // OVL-27 between a function and a template specialization with
-        // tied sequences is left to the older selection.
-        let spec = |c: &OCand| c.fid.is_some_and(|f| self.spec_of.contains_key(&f));
-        let tied = |a: &OCand, b: &OCand| a.seqs.iter().zip(b.seqs.iter()).all(|(x, y)| self.ics_cmp(x, y) == 0);
-        if cands.iter().any(|a| a.fid.is_some() && spec(a) && cands.iter().any(|b| b.fid.is_some() && !spec(b) && tied(a, b))) {
-            return OpRes::NotHandled;
+        // OVL-28: the order of the templates of two specializations of the
+        // same kind.
+        let mut op_more: Vec<((DeclId, CK), (DeclId, CK))> = Vec::new();
+        let specs: Vec<(DeclId, CK, bool)> = cands.iter().filter_map(|c| c.fid.filter(|f| self.spec_of.contains_key(f)).map(|f| (f, c.kind, c.member))).collect();
+        for &(a, ka, ma) in &specs {
+            for &(b, kb, mb) in &specs {
+                if a == b || ma != mb {
+                    continue;
+                }
+                if (ka == CK::Swapped) == (kb == CK::Swapped) {
+                    if self.spec_more_specialized(a, b, ops.len() - ma as usize) {
+                        op_more.push(((a, ka), (b, kb)));
+                    }
+                } else if !ma && ops.len() == 2 && (ka == CK::Swapped || kb == CK::Swapped) {
+                    // ORD-7: the swapped candidate with its parameters
+                    // reversed.
+                    self.order_rev = (ka == CK::Swapped, kb == CK::Swapped);
+                    if self.spec_more_specialized(a, b, 2) {
+                        op_more.push(((a, ka), (b, kb)));
+                    }
+                    self.order_rev = (false, false);
+                }
+            }
         }
-        let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || self.op_better(&cands[i], &cands[j])));
+        let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || self.op_better(&cands[i], &cands[j], &op_more)));
         if best.is_none() && cands.iter().any(|c| c.fid.is_some_and(|f| self.spec_of.contains_key(&f))) {
             // OVL-27, OVL-28, ORD-6 for operator templates: left to the
             // older selection.

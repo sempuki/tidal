@@ -155,7 +155,7 @@ impl P {
     }
 
     /// Whether a class or one of its bases has a conversion function.
-    fn any_conv(&self, c: usize, depth: u32) -> bool {
+    pub fn any_conv(&self, c: usize, depth: u32) -> bool {
         let ci = &self.classes[c];
         ci.has_conv || depth > 16 || ci.bases.iter().any(|b| b.class.is_none_or(|bc| self.any_conv(bc, depth + 1)))
     }
@@ -907,6 +907,13 @@ impl P {
             if (kind == CastKind::Static) && ((et.c && !target.c) || (et.v && !target.v)) {
                 self.error(line, "CAST-2", "static_cast removes a cv-qualifier");
             }
+            if let (Ty::Class(a), Ty::Class(b)) = (&et.t, &target.t) {
+                if kind == CastKind::Static && a != b && !self.in_template() && self.has_virtual_base(*b, *a, 0) {
+                    // DER-11: no static_cast from a virtual base.
+                    self.error(line, "DER-11", format!("static_cast from the virtual base '{}' to the derived class '{}'", self.classes[*a].name, self.classes[*b].name));
+                    return Expr::unknown(line, "bad cast");
+                }
+            }
             if et.t == target.t || matches!((&et.t, &target.t), (Ty::Class(a), Ty::Class(b)) if self.is_base_of(*b, *a) || self.is_base_of(*a, *b)) {
                 return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), target, cat, line);
             }
@@ -981,6 +988,11 @@ impl P {
                         if x != y && self.is_base_of(*x, *y) && !self.in_template() && !self.base_accessible(*y, *x) {
                             // CAST-2: a downcast needs an accessible base.
                             self.error(line, "CAST-2", "static_cast to a derived class through a base that is not accessible");
+                            return Expr::unknown(line, "bad cast");
+                        }
+                        if x != y && !self.in_template() && self.has_virtual_base(*y, *x, 0) {
+                            // DER-11: no static_cast from a virtual base.
+                            self.error(line, "DER-11", format!("static_cast from the virtual base '{}' to the derived class '{}'", self.classes[*x].name, self.classes[*y].name));
                             return Expr::unknown(line, "bad cast");
                         }
                     }
@@ -1425,6 +1437,20 @@ impl P {
                                         let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), ty.unqual(), Cat::PR, line);
                                         return call;
                                     }
+                                    // OVL-14: a converting constructor won.
+                                    if self.classes[c].ctors.contains(&fid) {
+                                        if let Some(f) = self.func(fid).cloned().filter(|f| !f.deleted && !f.fty.variadic && !f.fty.params.is_empty()) {
+                                            let mark = self.d.list.len();
+                                            let conv = self.convert_args(&f.fty, vec![e.clone()], line, Some(fid));
+                                            if self.d.list.len() == mark && !conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                                                if self.in_unevaluated == 0 {
+                                                    self.use_fn(fid);
+                                                }
+                                                return Expr::new(EK::Construct(fid, conv), ty.unqual(), Cat::PR, line);
+                                            }
+                                            self.d.list.truncate(mark);
+                                        }
+                                    }
                                 }
                                 return Expr::new(EK::Unknown("conversion function".into()), ty.clone(), Cat::PR, line);
                             }
@@ -1570,7 +1596,14 @@ impl P {
         let xt = nonref(&v[0].ty);
         if matches!(v[0].k, EK::Str(_)) && matches!(inner.t, Ty::Array(..)) {
             // ICS-38 and ICS-24 treat one string literal as a list that
-            // initializes the array.
+            // initializes the array. A reference to the literal's own type,
+            // or to an array of unknown bound of its element type, binds
+            // directly to the literal.
+            if let (Ty::Array(e1, n1), Ty::Array(e2, n2)) = (&inner.t, &xt.t) {
+                if e1 == e2 && (n1.is_none() || n1 == n2) && inner.c == e1.c && inner.v == e1.v {
+                    return Some(v[0].clone());
+                }
+            }
             return None;
         }
         let direct = match (&inner.t, &xt.t) {

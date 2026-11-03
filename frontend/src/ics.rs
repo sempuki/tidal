@@ -652,9 +652,10 @@ impl P {
             if c != 0 {
                 return c > 0;
             }
-            // ICS-37, OVL-26: between two conversion functions, the better
-            // third part.
-            let t = if by_third || (conv(x.f) && conv(y.f)) { self.std_cmp(&x.third, &y.third, true) } else { 0 };
+            // ICS-37, OVL-26: between two conversion functions, or a
+            // conversion function and a constructor whose result has the
+            // identity (Q-0189), the better third part.
+            let t = if by_third || conv(x.f) || conv(y.f) { self.std_cmp(&x.third, &y.third, true) } else { 0 };
             if t != 0 {
                 return t > 0;
             }
@@ -694,7 +695,13 @@ impl P {
                 }
                 if let (Ty::Array(_, None), Ty::Array(..)) = (&inner.t, &nonref(&x.ty).t) {
                     let t2 = QTy { t: nonref(&x.ty).t, c: inner.c, v: inner.v };
-                    return self.ics_ref(&x, &t2, rref, std_only);
+                    // ICS-46: the referenced type keeps its unknown bound.
+                    return Ok(self.ics_ref(&x, &t2, rref, std_only)?.map(|mut r| {
+                        if let Some(b) = r.s.refb.as_mut() {
+                            b.referenced = inner.clone();
+                        }
+                        r
+                    }));
                 }
                 return self.ics_ref(&x, &inner, rref, std_only);
             }
@@ -1074,6 +1081,16 @@ impl P {
         }
         // g. ICS-30: fewer cv-qualifiers on the referenced type.
         if let (Some(ra), Some(rb)) = (&a.refb, &b.refb) {
+            // ICS-46: an array of known bound over an array of unknown
+            // bound, when both bind directly.
+            if let (Ty::Array(ea, na), Ty::Array(eb, nb)) = (&ra.referenced.t, &rb.referenced.t) {
+                if !ra.to_rvalue && !rb.to_rvalue && na.is_some() != nb.is_some() && ea.t == eb.t {
+                    let (x, y) = if na.is_some() { (ea, eb) } else { (eb, ea) };
+                    if (!x.c || y.c) && (!x.v || y.v) {
+                        return if na.is_some() { 1 } else { -1 };
+                    }
+                }
+            }
             if ra.referenced.t == rb.referenced.t {
                 let (x, y) = (&ra.referenced, &rb.referenced);
                 let x_sub = (!x.c || y.c) && (!x.v || y.v);

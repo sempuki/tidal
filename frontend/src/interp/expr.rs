@@ -136,10 +136,22 @@ impl<'a> Machine<'a> {
                     }
                 }
                 None => {
-                    if matches!(v.ty.t, Ty::Class(_)) {
+                    if matches!(v.ty.t, Ty::Class(_)) && v.constexpr && v.storage != Storage::Extern {
+                        // A constexpr class object without an initializer
+                        // runs its default constructor.
+                        let r = self.with_fresh_frame(|m| {
+                            let place = m.alloc(&v.ty.unqual())?;
+                            m.full(|m| m.default_init(&place, &v.ty))?;
+                            Ok(m.objs[place.obj].val.clone())
+                        });
+                        match r {
+                            Ok(x) => x,
+                            Err(Stop::Limit(r, msg) | Stop::Undefined(r, msg)) => return Err(Stop::Limit(r, msg)),
+                            Err(e) => return Err(e),
+                        }
+                    } else if matches!(v.ty.t, Ty::Class(_)) {
                         return unsup("default-initialized class object (constructor evaluation)");
-                    }
-                    if v.class.is_some() || v.storage == Storage::Extern {
+                    } else if v.class.is_some() || v.storage == Storage::Extern {
                         Val::NotUsable(format!("'{}' has no initializer here", name))
                     } else {
                         Val::NotUsable(format!("'{}' has no initializer", name))
@@ -1022,7 +1034,14 @@ impl<'a> Machine<'a> {
     /// A global allocation or deallocation function called by name
     /// (STG-7, NEW-5, NEW-19): storage of bytes with no object yet.
     fn call_allocation(&mut self, name: &str, args: &[Expr]) -> R<Ret> {
-        if self.constant {
+        // LSUP-11, NEW-37: during constant evaluation, only the members of
+        // std::allocator call ::operator new and ::operator delete by name.
+        let in_allocator = self.frame().func.and_then(|f| self.p.func(f)).and_then(|f| f.class).is_some_and(|c| {
+            let ci = &self.p.classes[c];
+            let base = ci.name.split('<').next().unwrap_or("");
+            base == "allocator" && self.p.scopes[ci.scope].parent.is_some_and(|ps| self.p.scopes[ps].name == "std" && self.p.scopes[ps].parent == Some(self.p.global))
+        });
+        if self.constant && !(in_allocator && matches!(name, "operatornew" | "operatordelete")) {
             return limit("CE-2", "call of an allocation function");
         }
         if name.starts_with("operatornew") {
@@ -1694,7 +1713,18 @@ impl<'a> Machine<'a> {
                     }
                 }
                 let p = self.lvalue(a)?;
-                self.read_gl(&p, &a.ty)
+                let v = self.read_gl(&p, &a.ty)?;
+                if let (Ty::Enum(e), Val::Int(x)) = (&a.ty.t, &v) {
+                    // ENUM-6: a stored value outside the range of an
+                    // enumeration without a fixed type.
+                    if self.p.enums[*e].fixed.is_none() && !self.p.enums[*e].scoped {
+                        let (lo, hi) = self.p.enum_range(*e);
+                        if *x < lo || *x > hi {
+                            return ub("ENUM-6", format!("load of value {}, which is outside the range of the enumeration", x));
+                        }
+                    }
+                }
+                Ok(v)
             }
             Conv::ArrayDecay => {
                 let p = if a.cat == Cat::PR { self.materialize(a)? } else { self.lvalue(a)? };
@@ -1768,9 +1798,11 @@ impl<'a> Machine<'a> {
                         return Ok(Val::Ptr(self.class_cast(p.clone(), &f.t, &t.t)?));
                     }
                     if f.t == Ty::Void && t.t != Ty::Void {
-                        if self.constant {
+                        let raw = self.residents.contains_key(&p.obj) && self.objs[p.obj].heap == Heap::Raw && !p.bytes;
+                        if self.constant && !raw {
                             // CE-4: a pointer to void to a pointer to an
-                            // object type.
+                            // object type. STG-28, LSUP-11: the storage that
+                            // std::allocator obtains is an array of T.
                             return limit("CE-4", "conversion from void*");
                         }
                         if self.residents.contains_key(&p.obj) && !p.bytes {
@@ -3338,6 +3370,25 @@ impl<'a> Machine<'a> {
         if let EK::Unknown(w) = &callee.k {
             if let Some(name) = w.strip_prefix("allocation function ") {
                 return self.call_allocation(name, args);
+            }
+            if w == "builtin __builtin_memcpy" {
+                if self.constant {
+                    return limit("CE-2", "call of __builtin_memcpy");
+                }
+                let d = self.eval(&args[0])?;
+                let s = self.eval(&args[1])?;
+                let n = match self.eval(&args[2])? {
+                    Val::Int(v) => v as i64,
+                    _ => return unsup("byte count"),
+                };
+                let (Val::Ptr(dp), Val::Ptr(sp)) = (&d, &s) else { return unsup("__builtin_memcpy of these pointers") };
+                let (dobj, doff) = self.byte_pos(dp)?;
+                let (sobj, soff) = self.byte_pos(sp)?;
+                for k in 0..n {
+                    let b = self.read_byte(sobj, soff + k)?;
+                    self.write_byte(dobj, doff + k, b)?;
+                }
+                return Ok(Ret::Val(d));
             }
         }
         // SEQ-2: the function, with its object, before the arguments.

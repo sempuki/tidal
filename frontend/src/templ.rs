@@ -492,6 +492,14 @@ impl P {
             break;
         }
         let save = self.pos;
+        let qualified = k > 0 && !self.at_k(0, "::");
+        if qualified && self.in_template() && self.dependent_qualifier_at() {
+            // DEP-24: a member of a dependent class named as a template
+            // argument without `template` is not a template name.
+            self.note_fact(save, FACT_LESS);
+        }
+        let less = qualified && self.has_fact(save, FACT_LESS);
+        let last = self.peek(k).text.clone();
         let mark = self.d.list.len();
         self.d.muted += 1;
         let r = (|| -> PR<Option<Vec<DeclId>>> {
@@ -511,6 +519,10 @@ impl P {
                     break;
                 }
                 if matches!(self.decls[id].k, DK::Template(TemplKind::Class(_)) | DK::Template(TemplKind::Alias) | DK::Template(TemplKind::Var { .. })) {
+                    if less {
+                        let line = self.line();
+                        self.error(line, "DEP-24", format!("'{}' names a member template without 'template'", last));
+                    }
                     if let Some(n) = self.tname_of(id) {
                         return Some(n);
                     }
@@ -3132,8 +3144,17 @@ impl P {
         };
         let (g1, k1) = shift(&f1, &f2, k1);
         let (g2, k2) = shift(&f2, &f1, k2);
-        let ty1 = types(&g1, k1, nargs);
-        let ty2 = types(&g2, k2, nargs);
+        let mut ty1 = types(&g1, k1, nargs);
+        let mut ty2 = types(&g2, k2, nargs);
+        // ORD-7: a swapped candidate takes part with its parameters in the
+        // reverse order.
+        let rev = std::mem::take(&mut self.order_rev);
+        if rev.0 && ty1.len() == 2 {
+            ty1.reverse();
+        }
+        if rev.1 && ty2.len() == 2 {
+            ty2.reverse();
+        }
         let (f1, f2) = (g1, g2);
         let n = ty1.len().min(ty2.len());
         // Steps 1 to 4: deduction in both directions, pair by pair.
@@ -3743,6 +3764,9 @@ pub const FACT_INDEPENDENT_CALL: u8 = 4;
 /// The keyword `template` before a name with no argument list after it
 /// (DEP-26).
 pub const FACT_TEMPLATE_NO_LIST: u8 = 8;
+/// A parameter type `T::name` without `typename` in a function declared
+/// outside a class with an unqualified name (DEP-19).
+pub const FACT_VALUE_PARAM: u8 = 16;
 
 impl P {
     /// The vector and index of the token at `pos` in the current tokens.

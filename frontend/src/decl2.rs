@@ -425,23 +425,41 @@ impl P {
         }
         loop {
             let typename = self.eat("typename");
-            let scope = self.parse_nested_name()?;
+            // PACK-21: `using Bs::f...;` names the member in each base.
+            let first = self.tok().text.clone();
+            let single = self.at_k(1, "::") && self.peek(2).kind == TK::Ident && !self.at_k(3, "::") && !self.at_k(3, "<");
+            let (items, _) = self.parse_expansion(|p| {
+                let scope = p.parse_nested_name()?;
+                if p.eat("operator") {
+                    return Ok((scope, None));
+                }
+                let mut name = p.ident()?;
+                if p.eat("~") {
+                    name = p.ident()?;
+                }
+                // DER-8: `using B::B;` where B names a class through a
+                // parameter or an alias inherits its constructors.
+                if single && name == first {
+                    if let Some(Ok(s)) = scope {
+                        if let SK::Class(c) = p.scopes[s].kind {
+                            name = p.classes[c].name.clone();
+                        }
+                    }
+                }
+                Ok((scope, Some(name)))
+            })?;
+            if items.iter().any(|x| x.1.is_none()) {
+                // A using declaration of an operator function.
+                self.recover_until_semicolon();
+                return Ok(());
+            }
+            self.eat("...");
+            for (scope, name) in items {
+            let name = name.unwrap_or_default();
             if scope.is_none() {
                 // NS-7: a using declaration needs a qualified name.
                 self.error(line, "NS-16", "using declaration without a qualified name");
             }
-            let mut name = if self.eat("operator") {
-                let mut d = Declarator { name: None, kind: NameKind::Plain, qual: None, qual_unknown: false, ops: vec![], line, conv_ty: None, template_args: false, pack: false };
-                let _ = &mut d;
-                self.recover_until_semicolon();
-                return Ok(());
-            } else {
-                self.ident()?
-            };
-            if self.eat("~") {
-                name = self.ident()?;
-            }
-            self.eat("...");
             match scope {
                 Some(Ok(s)) => {
                     let is_class_scope = matches!(self.scopes[s].kind, SK::Class(_));
@@ -523,6 +541,9 @@ impl P {
                         }
                     }
                 }
+                _ if self.in_template() && matches!(ctx, Ctx::Class(_)) && single && name == first => {
+                    // DER-8: the constructors of a dependent base.
+                }
                 _ if self.in_template() && matches!(ctx, Ctx::Class(_)) && !name.is_empty() => {
                     // DEP-23: a member of a dependent base. With `typename`
                     // the name is a type, without it a value (DEP-19). A
@@ -532,13 +553,15 @@ impl P {
                         self.add_decl_in(cur, &name, DK::Type(crate::templ::dep(Dep::Opaque)), line);
                     } else {
                         let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Static, constexpr: false, constinit: false, init: None, param: false, local: false, dependent: true, defined: true, class: None };
-                        self.add_decl_in(cur, &name, DK::Var(vi), line);
+                        let id = self.add_decl_in(cur, &name, DK::Var(vi), line);
+                        self.dep_using.insert(id);
                     }
                 }
                 _ => {
                     let cur = self.decl_scope();
                     self.scopes[cur].uncertain = true;
                 }
+            }
             }
             if !self.eat(",") {
                 break;
@@ -4293,7 +4316,9 @@ impl P {
                     }
                 }
                 DK::Var(_) | DK::Field(_) | DK::Type(_) | DK::Namespace(_) | DK::Enumerator(..) => {
-                    if !(d.qual.is_some()) && !(in_class_body && self.decls[p].scope != self.classes[class.unwrap()].scope) {
+                    // DEP-23: a using declaration of a dependent base can
+                    // name member functions.
+                    if !(d.qual.is_some()) && !(in_class_body && self.decls[p].scope != self.classes[class.unwrap()].scope) && !self.dep_using.contains(&p) {
                         self.error(line, if in_class_body { "CLS-9" } else { "NAM-3" }, format!("'{}' already declared as a different kind of entity", name));
                     }
                 }
@@ -4475,6 +4500,15 @@ impl P {
                 if kind == FnKind::Operator && !self.in_template() && !template {
                     self.check_operator(&name, member_class.is_some(), is_static, &fd, line);
                 }
+                if matches!(kind, FnKind::Ctor | FnKind::Dtor) && (ds.constexpr || ds.consteval) && !self.in_template() {
+                    if let Some(c) = member_class {
+                        if self.any_virtual_base(c, 0) {
+                            // DER-12: no constexpr constructor or destructor
+                            // in a class with a virtual base.
+                            self.error(line, "DER-12", format!("a constexpr {} of '{}', which has a virtual base", if kind == FnKind::Ctor { "constructor" } else { "destructor" }, self.classes[c].name));
+                        }
+                    }
+                }
                 if deleted && is_main {
                     // DEL-2: main must not be deleted.
                     self.error(line, "DEL-2", "'main' declared deleted");
@@ -4616,7 +4650,7 @@ impl P {
         }
         // ACC-7, NAM-29: a friend first declared in a class is hidden
         // from ordinary lookup until the namespace declares it.
-        if in_class_body && is_friend && d.qual.is_none() {
+        if in_class_body && is_friend && d.qual.is_none() && inst_req.is_none() {
             if let Some(c) = class {
                 let v = self.class_friends.entry(c).or_default();
                 if !v.contains(&id) {
@@ -5092,6 +5126,11 @@ impl P {
                     f.mem_inits = mi;
                 }
             }
+            if kind == FnKind::Ctor && !self.in_template() {
+                if let Some(c) = class {
+                    self.check_virtual_base_inits(c, fid);
+                }
+            }
             let body = self.parse_compound_in(param_scope)?;
             if is_try {
                 let hs = self.parse_handlers()?;
@@ -5201,35 +5240,58 @@ impl P {
         let mut field_order: Vec<(usize, u32)> = Vec::new();
         loop {
             let line = self.line();
-            // mem-initializer-id
-            let scope = self.parse_nested_name()?;
-            let name = self.ident()?;
-            if self.at("<") {
-                self.skip_template_args()?;
-            }
-            let target = match (scope, class) {
-                (None, Some(c)) => self.lookup_member(c, &name).or_else(|| self.lookup(&name)),
-                (Some(Ok(s)), _) => self.lookup_in_scope(s, &name, true),
-                _ => None,
-            };
-            let mut args = Vec::new();
-            let braced = self.at("{");
-            if braced {
-                args.push(self.parse_braced_init()?);
-            } else {
-                self.expect("(")?;
-                if !self.at(")") {
-                    loop {
-                        let a = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-                        args.push(a);
-                        if !self.eat(",") {
-                            break;
+            // PACK-14: `Bs(args)...` initializes each base of the pack.
+            let (items, expanded) = self.parse_expansion(|p| {
+                // mem-initializer-id
+                let scope = p.parse_nested_name()?;
+                let name = p.ident()?;
+                if p.at("<") {
+                    p.skip_template_args()?;
+                }
+                let mut target = match (scope, class) {
+                    (None, Some(c)) => p.lookup_member(c, &name).or_else(|| p.lookup(&name)),
+                    (Some(Ok(s)), _) => p.lookup_in_scope(s, &name, true),
+                    _ => None,
+                };
+                if let Some(ids) = &target {
+                    if let Some(v) = p.pack_binds.get(&ids[0]).cloned() {
+                        p.last_pack_ref = Some(ids[0]);
+                        p.pack_refs.push(v.len());
+                        if let Some(TArg::Type(QTy { t: Ty::Class(b), .. })) = v.get(p.pack_index.unwrap_or(0)) {
+                            let b = *b;
+                            let bname = p.classes[b].name.clone();
+                            target = p.lookup_in_scope(p.classes[b].scope, &bname, false);
                         }
                     }
                 }
-                self.expect(")")?;
+                let mut args = Vec::new();
+                let braced = p.at("{");
+                if braced {
+                    args.push(p.parse_braced_init()?);
+                } else {
+                    p.expect("(")?;
+                    if !p.at(")") {
+                        loop {
+                            let a = if p.at("{") { p.parse_braced_init()? } else { p.parse_assignment()? };
+                            args.push(a);
+                            if !p.eat(",") {
+                                break;
+                            }
+                        }
+                    }
+                    p.expect(")")?;
+                }
+                Ok((name, target, args, braced))
+            })?;
+            if !expanded {
+                self.eat("...");
             }
-            self.eat("...");
+            for (name, target, mut args, braced) in items {
+            if expanded && !self.in_template() && target.as_ref().is_some_and(|ids| matches!(self.decls[ids[0]].k, DK::Field(_))) {
+                // PACK-15: a pack expansion of a mem-initializer names a
+                // base.
+                self.error(line, "PACK-15", format!("the pack expansion in the mem-initializer names the data member '{}'", name));
+            }
             count += 1;
             if target.is_none() && class.is_some_and(|c| !self.class_uncertain(c)) && !self.in_template() {
                 self.error(line, "CTOR-15", format!("'{}' is not a member or base of the class", name));
@@ -5337,6 +5399,7 @@ impl P {
                 _ => init,
             };
             out.push(MemInit { field, base, init });
+            }
             if !self.eat(",") {
                 break;
             }
@@ -5359,6 +5422,49 @@ impl P {
             }
         }
         Ok(out)
+    }
+
+    /// DER-13: a constructor of a class that can be the most derived
+    /// names each virtual base that has no default constructor.
+    fn check_virtual_base_inits(&mut self, c: usize, fid: DeclId) {
+        if !self.any_virtual_base(c, 0) || self.class_uncertain(c) || self.is_abstract(&Ty::Class(c)) {
+            return;
+        }
+        let inits: Vec<Option<usize>> = self.func(fid).map(|f| f.mem_inits.iter().map(|m| m.base).collect()).unwrap_or_default();
+        if inits.contains(&Some(c)) {
+            return;
+        }
+        let mut vbases = Vec::new();
+        let mut todo = vec![(c, 0u32)];
+        while let Some((x, d)) = todo.pop() {
+            if d > 16 {
+                continue;
+            }
+            for b in &self.classes[x].bases {
+                if let Some(bc) = b.class {
+                    if b.virt && !vbases.contains(&bc) {
+                        vbases.push(bc);
+                    }
+                    todo.push((bc, d + 1));
+                }
+            }
+        }
+        for v in vbases {
+            let ci = &self.classes[v];
+            if !ci.complete || ci.ctors.is_empty() || self.class_uncertain(v) || inits.contains(&Some(v)) {
+                continue;
+            }
+            let no_default = ci.ctors.iter().all(|&k| self.func(k).is_some_and(|f| !f.template && !f.fty.variadic && f.params.len() > f.defaults && !self.inherited_from.contains_key(&k)));
+            if no_default {
+                let line = self.decls[fid].line;
+                self.error(line, "DER-13", format!("the constructor of '{}' does not initialize the virtual base '{}', which has no default constructor", self.classes[c].name, self.classes[v].name));
+            }
+        }
+    }
+
+    /// Whether `c` has a virtual base, at any depth.
+    pub fn any_virtual_base(&self, c: usize, depth: u32) -> bool {
+        depth < 16 && self.classes[c].bases.iter().any(|x| x.virt || x.class.is_some_and(|b| self.any_virtual_base(b, depth + 1)))
     }
 
     /// Whether `b` is a virtual base of `c`, at any depth (DER-6).

@@ -274,7 +274,7 @@ impl P {
     }
 
     /// The offset of the token that closes the group at offset `k`.
-    fn matching_close(&self, k: usize) -> usize {
+    pub fn matching_close(&self, k: usize) -> usize {
         let mut depth = 0i32;
         let mut i = k;
         loop {

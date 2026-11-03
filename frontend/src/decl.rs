@@ -249,6 +249,31 @@ impl P {
         matches!(self.decls[id].k, DK::TypeParam) || self.tparam.contains_key(&id) || next > k + 1
     }
 
+    /// From offset `k` at a qualified name: whether a `<` follows a name
+    /// after `::` with no `template` before it.
+    pub fn less_after_qualified(&self, mut k: usize) -> bool {
+        let mut after_colons = false;
+        loop {
+            let t = self.peek(k);
+            if t.kind != TK::Ident || is_keyword(&t.text) {
+                return false;
+            }
+            k += 1;
+            if self.at_k(k, "<") {
+                if after_colons {
+                    return true;
+                }
+                k = self.skip_angle_at(k);
+            }
+            if self.at_k(k, "::") {
+                k += 1;
+                after_colons = true;
+                continue;
+            }
+            return false;
+        }
+    }
+
     /// From offset `k` at a name in a qualified name: whether a declarator
     /// follows the last name, so that the qualified name names a type.
     pub fn declarator_after_qualified(&self, mut k: usize) -> bool {
@@ -343,10 +368,42 @@ impl P {
                 if self.at("(") {
                     let save = self.pos;
                     self.pos += 1;
-                    let mut val: Option<u64> = None;
+                    // PACK-16: `alignas(T...)` takes the largest of the
+                    // alignments; an empty expansion has no effect.
+                    let val: Option<u64> = match self.parse_expansion(|p| p.alignas_operand(line)) {
+                        Ok((vs, true)) => vs.into_iter().try_fold(0u64, |m, v| v.map(|v| m.max(v))),
+                        Ok((mut vs, false)) => vs.pop().flatten(),
+                        Err(_) => None,
+                    };
+                    if val.is_none() || !self.at(")") {
+                        self.pos = save;
+                        self.skip_balanced();
+                        self.align_unknown = true;
+                    } else {
+                        self.pos += 1;
+                    }
+                    let v = val.unwrap_or(0);
+                    self.last_align = self.last_align.max(v);
+                    self.saw_alignas = true;
+                }
+                continue;
+            }
+            break;
+        }
+    }
+
+    /// The operand of `alignas`: a type or a constant (ALN-1). None when
+    /// the front end cannot tell. Leaves the position after the operand.
+    fn alignas_operand(&mut self, line: u32) -> PR<Option<u64>> {
+        let mut val: Option<u64> = None;
                     if self.starts_type() {
                         if let Ok(t) = self.parse_type_id() {
-                            if self.at(")") {
+                            // The declarator took the `...` of a pack
+                            // expansion.
+                            if self.at(")") && self.pos > 0 && self.toks[self.pos - 1].kind == TK::Punct && self.toks[self.pos - 1].text == "..." {
+                                self.pos -= 1;
+                            }
+                            if self.at(")") || self.at("...") {
                                 val = self.alignof_ty(&nonref(&t).t).or(Some(0));
                             }
                         }
@@ -365,7 +422,7 @@ impl P {
                         } else {
                             e
                         };
-                        if self.at(")") {
+                        if self.at(")") || self.at("...") {
                             match self.const_int(&e) {
                                 Ok(v) => {
                                     if v < 0 || (v != 0 && (v & (v - 1)) != 0) {
@@ -384,22 +441,7 @@ impl P {
                             }
                         }
                     }
-                    if val.is_none() || !self.at(")") {
-                        self.pos = save;
-                        self.skip_balanced();
-                        self.align_unknown = true;
-                    } else {
-                        self.pos += 1;
-                    }
-                    self.eat("...");
-                    let v = val.unwrap_or(0);
-                    self.last_align = self.last_align.max(v);
-                    self.saw_alignas = true;
-                }
-                continue;
-            }
-            break;
-        }
+        Ok(val)
     }
 
     /// Attributes (specification/declarations/attributes.md). The front end parses
@@ -682,6 +724,11 @@ impl P {
                         break;
                     }
                     self.pos += 1;
+                    if self.tok().kind == TK::Ident && !is_keyword(&self.tok().text) && !self.at_k(1, "::") && !(self.at_k(1, "<") && self.at_k(self.skip_angle_at(1), "::")) {
+                        // DEP-21, DEP-29: the name after `typename` is a
+                        // qualified name.
+                        self.error(t.line, "DEP-21", "the name after 'typename' is not a qualified name");
+                    }
                     self.ctad_tid = None;
                     let q = self.parse_typename_type()?;
                     ds.ctad = self.ctad_tid.take();
@@ -699,6 +746,14 @@ impl P {
                     // A constructor declarator, not a type.
                     if self.is_ctor_start(in_class) {
                         break;
+                    }
+                    if (itn && self.dependent_qualifier_at() && self.less_after_qualified(0)) || self.has_fact(self.pos, crate::templ::FACT_LESS) {
+                        // DEP-20, DEP-24: a type-only position whose last
+                        // name is followed by `<`.
+                        let q = self.parse_typename_type()?;
+                        ds.ty = Some(q);
+                        ds.named_type = true;
+                        continue;
                     }
                     if !self.qualified_names_type(0) {
                         if itn && self.dependent_qualifier_at() {
@@ -989,6 +1044,27 @@ impl P {
                     self.require_class(c, l);
                 }
             }
+            // PACK-21: a pack of types before `::` gives the element of
+            // the current expansion.
+            let found = match found {
+                Some(ids) if matches!(self.decls[ids[0]].k, DK::Type(_)) && self.pack_binds.contains_key(&ids[0]) => {
+                    let v = self.pack_binds[&ids[0]].clone();
+                    self.last_pack_ref = Some(ids[0]);
+                    self.pack_refs.push(v.len());
+                    match v.get(self.pack_index.unwrap_or(0)) {
+                        Some(TArg::Type(QTy { t: Ty::Class(c), .. })) => {
+                            let c = *c;
+                            let l = self.line();
+                            self.require_class(c, l);
+                            scope = Some(Ok(self.classes[c].scope));
+                            self.pos += next + 1;
+                            continue;
+                        }
+                        _ => Some(ids),
+                    }
+                }
+                f => f,
+            };
             let s = match found {
                 Some(ids) => match &self.decls[ids[0]].k {
                     DK::Namespace(s) => Ok(*s),
@@ -1773,13 +1849,18 @@ impl P {
                 // A parenthesized initializer looks like this too; the
                 // caller decides with `looks_like_params` before calling.
                 let tn = d.qual.is_some() || d.qual_unknown || matches!(self.scopes[self.cur_scope()].kind, SK::Class(_));
-                if d.name.is_some() && !param_ctx && !self.looks_like_params_tn(tn) {
+                // DEP-19: `f(T::name) {` reads as a function whose
+                // parameter type is a value; the specialization fails.
+                let value_param = d.name.is_some() && !param_ctx && !tn && self.fns.is_empty() && self.class_depth == 0 && self.in_template() && self.dependent_qualifier_at_k(1) && self.at_k(self.matching_close(0) + 1, "{");
+                if d.name.is_some() && !param_ctx && !self.looks_like_params_tn(tn) && !value_param && !self.has_fact(self.pos + 1, crate::templ::FACT_VALUE_PARAM) {
                     break;
                 }
                 // DEP-20: the parameters of a member, of a friend in a
                 // class, and of a function declared with a qualified name.
                 if d.qual.is_some() || d.qual_unknown || matches!(self.scopes[self.cur_scope()].kind, SK::Class(_)) {
                     self.params_tn = true;
+                } else if d.name.is_some() && !param_ctx && self.fns.is_empty() && self.class_depth == 0 {
+                    self.params_value = true;
                 }
                 let f = self.parse_params()?;
                 suffixes.push(DOp::Func(Box::new(f)));
@@ -2150,8 +2231,11 @@ impl P {
     fn parse_params_inner(&mut self) -> PR<FnDecl> {
         let ptn = std::mem::take(&mut self.params_tn);
         let saved = std::mem::replace(&mut self.in_params_tn, ptn);
+        let pv = std::mem::take(&mut self.params_value);
+        let saved_v = std::mem::replace(&mut self.in_params_value, pv);
         let r = self.parse_params_inner2();
         self.in_params_tn = saved;
+        self.in_params_value = saved_v;
         r
     }
 
@@ -2297,7 +2381,18 @@ impl P {
             }
             let pstart = self.pos;
             let pmark = self.pack_refs.len();
-            self.implicit_tn = self.in_params_tn;
+            let mut value_qual = false;
+            if self.in_params_value && !self.in_params_tn {
+                // DEP-19: outside the positions of DEP-20, a parameter type
+                // `T::name` without `typename` reads as a value.
+                if self.in_template() && self.dependent_qualifier_at() {
+                    self.note_fact(pstart, crate::templ::FACT_VALUE_PARAM);
+                    value_qual = true;
+                } else if self.has_fact(pstart, crate::templ::FACT_VALUE_PARAM) {
+                    self.error(line, "DEP-19", "a parameter type names a member of a dependent class without 'typename'");
+                }
+            }
+            self.implicit_tn = self.in_params_tn || value_qual;
             let ds = self.parse_decl_specs(None)?;
             // DED-34: a placeholder parameter of a function declaration.
             let auto_k = if ds.auto.is_some() && self.param_nest == 1 && !self.at("[") {

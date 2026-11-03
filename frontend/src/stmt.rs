@@ -526,7 +526,7 @@ impl P {
                     }
                     if self.at_k(j, ")") {
                         let after = self.peek(j + 1);
-                        return after.kind == TK::Punct && matches!(after.text.as_str(), ";" | "=" | "," | "[" | "{") || (after.kind == TK::Punct && after.text == "(" && self.looks_like_params_at(j + 1));
+                        return after.kind == TK::Punct && matches!(after.text.as_str(), ";" | "=" | "," | "[" | "{") || (after.kind == TK::Punct && after.text == "(" && (self.looks_like_params_at(j + 1) || self.at_k(self.matching_close(j + 1) + 1, ";")));
                     }
                     return false;
                 }
@@ -740,7 +740,10 @@ impl P {
         };
         if let Some(id) = strip(&x) {
             if let Some(v) = self.var(id) {
-                let implicit_move = v.local && v.storage == Storage::Auto && (!v.ty.t.is_ref() || matches!(v.ty.t, Ty::RRef(_)));
+                // A variable of an enclosing function, named in a lambda
+                // through a capture, is not a local of the lambda.
+                let outside = self.fns.last().is_some_and(|f| f.is_lambda && !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope));
+                let implicit_move = v.local && !outside && v.storage == Storage::Auto && (!v.ty.t.is_ref() || matches!(v.ty.t, Ty::RRef(_)));
                 if implicit_move {
                     x.cat = Cat::X;
                 }
